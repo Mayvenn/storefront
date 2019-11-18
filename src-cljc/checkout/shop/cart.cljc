@@ -460,7 +460,7 @@
                                      {:cart-summary-line/id    "freeinstall-locked"
                                       :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
                                                                                   :height "2em" :width "2em"})
-                                      :cart-summary-line/label "FREEINSTALL"
+                                      :cart-summary-line/label "Free Mayvenn Install"
                                       :cart-summary-line/value (mf/as-money-or-free service-discount)
                                       :cart-summary-line/class "purple"}
                                      (coupon-code->remove-promo-action "freeinstall"))
@@ -478,6 +478,12 @@
                                             :cart-summary-line/label (orders/display-adjustment-name name)
                                             :cart-summary-line/class "purple"
                                             :cart-summary-line/value (mf/as-money-or-free price)}
+
+                                     (and install-summary-line?
+                                          (empty? coupon-code))
+                                     (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
+                                             :cart-summary-line/class "purple"}
+                                            (coupon-code->remove-promo-action "freeinstall"))
 
                                      install-summary-line?
                                      (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)

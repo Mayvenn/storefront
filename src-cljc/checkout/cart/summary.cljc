@@ -87,7 +87,6 @@
            black-friday-time?
            promo-data
            subtotal] :as data} owner _]
-
   [:div {:data-test "cart-order-summary"}
    [:div.hide-on-dt.border-top.border-light-gray]
    [:div.py1.border-bottom.border-light-gray
@@ -106,25 +105,32 @@
           (promo-entry promo-data)]])
 
       (for [[i {:keys [name price coupon-code] :as adjustment}] (map-indexed vector adjustments-including-tax)]
-        (when (adjustments/non-zero-adjustment? adjustment)
-          (summary-row
-           {:key       (str i "-" name)
-            :data-test (text->data-test-name name)}
-           [:div.flex.items-center.align-middle
-            (when (= "Bundle Discount" name)
-              (svg/discount-tag {:class  "mxnp6"
-                                 :height "2em" :width "2em"}))
-            (orders/display-adjustment-name name)
-            (when coupon-code
-              [:a.ml1.h6.gray.flex.items-center
-               (merge {:data-test "cart-remove-promo"}
-                      (utils/fake-href events/control-checkout-remove-promotion
-                                       {:code coupon-code}))
-               (svg/close-x {:class "stroke-white fill-gray"})])]
-           (if (and freeinstall-line-item-data
-                    (orders/freeinstall-promotion? adjustment))
-             (- 0 (:price freeinstall-line-item-data))
-             price))))
+        (let [freeinstall-adjustment? (and freeinstall-line-item-data
+                                           (orders/freeinstall-promotion? adjustment))]
+          (when (adjustments/non-zero-adjustment? adjustment)
+            (summary-row
+             {:key       (str i "-" name)
+              :data-test (text->data-test-name name)}
+             [:div.flex.items-center.align-middle
+              (when (= "Bundle Discount" name)
+                (svg/discount-tag {:class  "mxnp6"
+                                   :height "2em" :width "2em"}))
+              (orders/display-adjustment-name name)
+              (when coupon-code
+                [:a.ml1.h6.gray.flex.items-center
+                 (merge {:data-test "cart-remove-promo"}
+                        (utils/fake-href events/control-checkout-remove-promotion
+                                         {:code coupon-code}))
+                 (svg/close-x {:class "stroke-white fill-gray"})])
+              (when (and freeinstall-adjustment? (empty? coupon-code))
+                [:a.ml1.h6.gray.flex.items-center
+                 (merge {:data-test "cart-remove-promo"}
+                        (utils/fake-href events/control-checkout-remove-promotion
+                                         {:code "freeinstall"}))
+                 (svg/close-x {:class "stroke-white fill-gray"})])]
+             (if freeinstall-adjustment?
+               (- 0 (:price freeinstall-line-item-data))
+               price)))))
 
       (when (pos? store-credit)
         (summary-row "Store Credit" (- store-credit)))]]]
