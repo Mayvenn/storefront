@@ -395,7 +395,7 @@
    "paypal-invalid-address"      (str "Unfortunately, Mayvenn products cannot be delivered to this address at this time. "
                                       "Please choose a new shipping destination. ")
    "ineligible-for-free-install" (str "The 'FreeInstall' promotion code has been removed from your order."
-                                      " Please visit freeinstall.mayvenn.com  to complete your order.")})
+                                      " Please visit shop.mayvenn.com to complete your order.")})
 
 (defmethod effects/perform-effects events/navigate-cart [_ event args _ app-state]
   (api/get-shipping-methods)
