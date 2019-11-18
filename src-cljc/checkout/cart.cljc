@@ -263,10 +263,10 @@
 
 #?(:cljs
    (defn- reject-inapplicable-freeinstall-promo [session-id order]
-     (api/remove-promotion-code session-id
-                                order
-                                "freeinstall"
-                                #(history/enqueue-navigate events/navigate-cart {:query-params {:error "ineligible-for-free-install"}}))))
+     (api/remove-freeinstall-line-item session-id order
+                                       (fn [order]
+                                         (messages/handle-message events/api-success-remove-from-bag {:order order})
+                                         (history/enqueue-redirect events/navigate-cart {:query-params {:error "ineligible-for-free-install"}})))))
 
 (defn add-product-title-and-color-to-line-item [products facets line-item]
   (merge line-item {:product-title (->> line-item

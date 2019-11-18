@@ -699,15 +699,19 @@
    "frontal"     1038
    "three-sixty" 1039})
 
-(defn remove-freeinstall-line-item [session-id {:keys [install-type number token]}]
-  (let [variant-id (get freeinstall-line-item-name->variant-id install-type)]
-    (remove-from-bag
-     request-keys/remove-freeinstall-line-item
-     session-id {:variant-id variant-id
-                 :number     number
-                 :token      token
-                 :quantity   1}
-     #(messages/handle-message events/api-success-remove-from-bag {:order %}))))
+(defn remove-freeinstall-line-item
+  ([session-id order]
+   (remove-freeinstall-line-item session-id order
+                                 #(messages/handle-message events/api-success-remove-from-bag {:order %})))
+  ([session-id {:keys [install-type number token]} success-handler]
+   (let [variant-id (get freeinstall-line-item-name->variant-id install-type)]
+     (remove-from-bag
+      request-keys/remove-freeinstall-line-item
+      session-id {:variant-id variant-id
+                  :number     number
+                  :token      token
+                  :quantity   1}
+      success-handler))))
 
 (defn delete-line-item [session-id order variant-id]
   (remove-from-bag
