@@ -106,7 +106,7 @@
      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
       ^:inline (component/build social-section)]
      (when essence-copy
-       [:div.col-on-tb-dt.cold-4-on-tb-dt.px4.pt3.pb2.dark-gray.h8.center.line-height-4
+       [:div.col-on-tb-dt.cold-4-on-tb-dt.px4.pt3.pb2.dark-gray.h7.center.line-height-4.text-decoration.underline
         essence-copy])]]
 
    [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
@@ -136,7 +136,7 @@
                                  (filter :footer/order)
                                  (filter (partial auth/permitted-category? data))))
                           (sort-by :footer/order)))
-     :essence-copy (str "Included is a one year subscription to ESSENCE Magazine - a $12 value! "
+     :essence-copy (str "Included is a one year subscription to ESSENCE Magazine - a $10 value! "
                         "Offer and refund details will be included with your confirmation.")}))
 
 (defn dtc-link [{:keys [title new-category? nav-message slug]}]
