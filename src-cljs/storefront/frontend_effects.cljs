@@ -999,6 +999,8 @@
 (defmethod effects/perform-effects events/browser-share-click
   [_ _ _ {:keys [title url text] :as params} _ _]
   (try
-    (js/navigator.share (clj->js params))
+    (doto (js/navigator.share (clj->js params))
+      (.then  (fn [v] (prn "success!" "v")))
+      (.catch (fn [v] (prn "fail!"    "v"))))
     (catch js/Error error
       (js/alert "we caught an error"))))
