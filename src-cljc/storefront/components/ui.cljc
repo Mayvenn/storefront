@@ -1045,9 +1045,12 @@
   #?(:clj nil
      :cljs
      (when js/navigator.share
-             [:a (utils/fake-href
-                  events/browser-share-click {:title title
-                                              :url   url
-                                              :text  text})
-              (svg/share-icon {:height "19px"
-                               :width  "18px"})])))
+       [:a
+        {:onClick #(try
+                     (doto (js/navigator.share (clj->js params))
+                       (.then  (fn [v] (prn "success!" v)))
+                       (.catch (fn [v] (prn "fail!"    v))))
+                     (catch js/Error error
+                       (js/alert "we caught an error")))}
+        (svg/share-icon {:height "19px"
+                         :width  "18px"})])))

@@ -995,12 +995,3 @@
 (defmethod effects/perform-effects events/browser-back
   [_ _ _ _ _ _]
   (js/history.back))
-
-(defmethod effects/perform-effects events/browser-share-click
-  [_ _ _ {:keys [title url text] :as params} _ _]
-  (try
-    (doto (js/navigator.share (clj->js params))
-      (.then  (fn [v] (prn "success!" "v")))
-      (.catch (fn [v] (prn "fail!"    "v"))))
-    (catch js/Error error
-      (js/alert "we caught an error"))))
