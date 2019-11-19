@@ -145,7 +145,7 @@
                                   (utils/send-event-callback events/control-add-sku-to-bag
                                                              {:sku      sku
                                                               :quantity quantity})
-                                  :data-test      "add-to-cart"
+                                  :data-test      "sticky-add-to-cart"
                                   :disabled?      unpurchasable?
                                   :disabled-class "bg-gray"
                                   :spinning?      adding-to-bag?}
