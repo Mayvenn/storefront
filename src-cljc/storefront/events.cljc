@@ -143,6 +143,7 @@
 (defpath control-navigate)
 (defpath browser-navigate)
 (defpath browser-back)
+(defpath browser-share-click)
 
 (defpath stripe)
 (defpath stripe-success-create-token)

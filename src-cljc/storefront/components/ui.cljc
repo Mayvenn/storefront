@@ -1043,10 +1043,11 @@
 (defn navigator-share
   [title text url]
   #?(:clj nil
-     :cljs (when js/navigator.share
-             [:div
+     :cljs
+     (when js/navigator.share
+             [:a (utils/fake-href
+                  events/browser-share-click {:title title
+                                              :url   url
+                                              :text  text})
               (svg/share-icon {:height "19px"
-                               :width  "18px"})
-              (js/navigator.share (clj->js {:title title
-                                            :url   url
-                                            :text  text}))])))
+                               :width  "18px"})])))
