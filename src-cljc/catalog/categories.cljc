@@ -25,33 +25,33 @@
    :seo/sitemap           true})
 
 (def clip-in-tape-in-templates
-  {:page/title-template "%s Virgin %s | Mayvenn"
+  {:page/title-template "%sVirgin %s| Mayvenn"
    :page.meta/description-template
-   (copy "Get the hair of your dreams with our %s %s. Featuring a thin, polyurethane"
+   (copy "Get the hair of your dreams with our %s%s. Featuring a thin, polyurethane"
          "weft that flawlessly blends with your own hair.")})
 
 (def closures-templates
-  {:page/title-template "%s %s | Mayvenn"
+  {:page/title-template "%s%s| Mayvenn"
    :page.meta/description-template
-   (copy "Mayvenn's %s %s are beautifully crafted and provide a realistic part to"
+   (copy "Mayvenn's %s%sare beautifully crafted and provide a realistic part to"
          "close off any unit or install.")})
 
 (def frontals-templates
-  {:page/title-template "%s %s | Mayvenn"
+  {:page/title-template "%s%s| Mayvenn"
    :page.meta/description-template
-   (copy "Mayvenn's %s %s mimic a natural hairline and offer versatile parting options"
+   (copy "Mayvenn's %s%smimic a natural hairline and offer versatile parting options"
          "to achieve your desired look.")})
 
 (def wig-templates
-  {:page/title-template "%s | Mayvenn"
+  {:page/title-template "%s%s| Mayvenn"
    :page.meta/description-template
-   (copy "Mayvenn’s %s allow you to change up and achieve your desired look."
+   (copy "Mayvenn’s %s%sallow you to change up and achieve your desired look."
          "Shop our collection of virgin hair wigs today.")})
 
 (def texture-templates
-  {:page/title-template "%s %s | Mayvenn"
+  {:page/title-template "%s%s| Mayvenn"
    :page.meta/description-template
-   (copy "Mayvenn's %s human %s are machine-wefted and made with virgin"
+   (copy "Mayvenn's %shuman %sare machine-wefted and made with virgin"
          "hair for unbeatable quality. Shop to achieve your desired look!")})
 
 (def closures
@@ -509,7 +509,10 @@
                                                                            "these 100% human hair units will be"
                                                                            "your favorite option for a quick,"
                                                                            "convenient switch-up on the go.")}}}
-          wig-templates)])
+          ;; TODO: commented out the template because wigs presented a special challenge because their selected-facet-string
+          ;; contained the word "wigs" so the titles/descriptions kept showing redundant.  Revisit this once the wigs category
+          ;; page gets rebuilt.
+          #_wig-templates)])
 
 (def mayvenn-install-eligible
   [{:catalog/category-id            "23"

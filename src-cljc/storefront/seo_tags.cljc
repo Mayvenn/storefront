@@ -74,6 +74,12 @@
   (let [name-key (if (#{"origin" "color"} facet-slug) :sku/name :option/name)]
     (get-in facets [(keyword "hair" facet-slug) :facet/options option-slug name-key])))
 
+(defn format-with-nil-protection
+  [template & fill-strings]
+  (->> fill-strings
+       (map #(if (nil? %) "" (str % " ")))
+       (apply strings/format template)))
+
 (defn category-tags [data]
   (let [category              (categories/current-category data)
         facets                (facets/by-slug data)
@@ -86,24 +92,23 @@
                                (not-any? #(string/includes? % category/query-param-separator)
                                          (vals selected-options))
                                (<= (count selected-options) 3))
-        can-use-seo-template? (and (not-empty selected-options)
-                                   (:page/title-template category)
-                                   (:page.meta/description-template category)
-                                   indexable?)
-        selected-facet-string (->> selected-options
-                                   (mapv (partial facet-option->option-name facets))
-                                   (string/join " "))
+        can-use-seo-template? (and (:page/title-template category)
+                                   (:page.meta/description-template category))
+        selected-facet-string (when (and indexable?
+                                         (seq selected-options))
+                                (->> selected-options
+                                     (mapv (partial facet-option->option-name facets))
+                                     (string/join " ")))
 
-        {category-name :seo/title
-         :keys         [page/title-template
-                        page.meta/description-template]} category
-
-        page-title            (if can-use-seo-template?
-                                (strings/format title-template selected-facet-string category-name)
-                                (:page/title category))
-        page-meta-description (if can-use-seo-template?
-                                (strings/format description-template selected-facet-string category-name)
-                                (:page.meta/description category))]
+        {seo-title :seo/title
+         :keys     [page/title-template
+                    page.meta/description-template]} category
+        page-title                                   (if can-use-seo-template?
+                                                       (format-with-nil-protection title-template selected-facet-string seo-title)
+                                                       (:page/title category))
+        page-meta-description                        (if can-use-seo-template?
+                                                       (format-with-nil-protection description-template selected-facet-string seo-title)
+                                                       (:page.meta/description category))]
     (cond-> [[:title {} page-title]
          [:meta {:name "description" :content page-meta-description}]
          [:meta {:property "og:title" :content (:opengraph/title category)}]

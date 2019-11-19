@@ -548,89 +548,87 @@
            (re-find #"<title[^>]*>(.+)</title>")
            second))
 
+(defn validate-title-and-description
+  [resp expected-title expected-description]
+  (is (= 200 (:status resp)))
+  (is (= expected-title
+         (parse-title (:body resp))))
+  (is (= expected-description
+         (parse-meta-tag-content (:body resp) "description"))))
+
+(def default-closure-title
+  "Dyed Virgin Hair Closures | Mayvenn")
+
+(def default-closure-description
+  (str "Mayvenn's Dyed Virgin Hair Closures are beautifully crafted and "
+       "provide a realistic part to close off any unit or install."))
+
+(def dyed-virgin-closure-category-url
+  "https://shop.mayvenn.com/categories/17-dyed-virgin-closures")
+
 (deftest category-page-title-and-description-templates
   (with-services {}
     (with-handler handler
       (testing "a category page has a template"
+        (testing "no options are selected we get generic description"
+          (-> (mock/request :get dyed-virgin-closure-category-url)
+              handler
+              (validate-title-and-description default-closure-title
+                                              default-closure-description)))
+
         (testing "when one facet is selected"
-          (let [resp (->> "https://shop.mayvenn.com/categories/17-dyed-virgin-closures?origin=indian"
-                          (mock/request :get)
-                          handler)]
-            (is (= 200 (:status resp)))
-            (is (= "Mayvenn's Indian Dyed Virgin Hair Closures are beautifully crafted and provide a realistic part to close off any unit or install."
-                   (parse-meta-tag-content (:body resp) "description")))
-            (is (= "Indian Dyed Virgin Hair Closures | Mayvenn"
-                   (parse-title (:body resp))))))
+          (-> (mock/request :get (str dyed-virgin-closure-category-url
+                                      "?origin=indian"))
+              handler
+              (validate-title-and-description "Indian Dyed Virgin Hair Closures | Mayvenn"
+                                              (str "Mayvenn's Indian Dyed Virgin Hair Closures are beautifully "
+                                                   "crafted and provide a realistic part to close off any unit "
+                                                   "or install."))))
 
         (testing "two options are selected"
-          (let [resp (->> "https://shop.mayvenn.com/categories/17-dyed-virgin-closures?texture=loose-wave&color=%232-chocolate-brown"
-                          (mock/request :get)
-                          handler)]
-            (is (= 200 (:status resp)))
-            (is (= "Mayvenn's Loose Wave #2 Chocolate Brown Dyed Virgin Hair Closures are beautifully crafted and provide a realistic part to close off any unit or install."
-                   (parse-meta-tag-content (:body resp) "description")))
-            (is (= "Loose Wave #2 Chocolate Brown Dyed Virgin Hair Closures | Mayvenn"
-                   (parse-title (:body resp))))))
+          (testing "when one facet is selected"
+            (-> (mock/request :get (str dyed-virgin-closure-category-url
+                                        "?texture=loose-wave"
+                                        "&color=%232-chocolate-brown"))
+                handler
+                (validate-title-and-description "Loose Wave #2 Chocolate Brown Dyed Virgin Hair Closures | Mayvenn"
+                                                (str "Mayvenn's Loose Wave #2 Chocolate Brown Dyed Virgin Hair "
+                                                     "Closures are beautifully crafted and provide a realistic part to "
+                                                     "close off any unit or install.")))))
 
         (testing "three options are selected"
-          (let [resp (->> "https://shop.mayvenn.com/categories/17-dyed-virgin-closures?texture=loose-wave&origin=indian&color=%232-chocolate-brown"
-                          (mock/request :get)
-                          handler)]
-            (is (= 200 (:status resp)))
-            (is (= "Mayvenn's Indian Loose Wave #2 Chocolate Brown Dyed Virgin Hair Closures are beautifully crafted and provide a realistic part to close off any unit or install."
-                   (parse-meta-tag-content (:body resp) "description")))
-            (is (= "Indian Loose Wave #2 Chocolate Brown Dyed Virgin Hair Closures | Mayvenn"
-                   (parse-title (:body resp))))))
+          (-> (mock/request :get (str dyed-virgin-closure-category-url
+                                      "?texture=loose-wave"
+                                      "&origin=indian"
+                                      "&color=%232-chocolate-brown"))
+              handler
+              (validate-title-and-description "Indian Loose Wave #2 Chocolate Brown Dyed Virgin Hair Closures | Mayvenn"
+                                              (str "Mayvenn's Indian Loose Wave #2 Chocolate Brown Dyed Virgin "
+                                                   "Hair Closures are beautifully crafted and provide a realistic "
+                                                   "part to close off any unit or install."))))
 
         (testing "Four options from four facets are selected we get generic description"
-          (let [resp (->> "https://shop.mayvenn.com/categories/17-dyed-virgin-closures?origin=indian&texture=loose-wave&base-material=lace&color=%232-chocolate-brown"
-                          (mock/request :get)
-                          handler)]
-            (is (= 200 (:status resp)))
-            (is (= "Mayvenn’s dyed virgin hair closures allow you to close off any unit or install and come in a variety of different combinations. Shop now to create your look."
-                   (parse-meta-tag-content (:body resp) "description")))
-            (is (= "Dyed Virgin Closures: Human Hair Closures | Mayvenn"
-                   (parse-title (:body resp))))))
+          (-> (mock/request :get (str dyed-virgin-closure-category-url
+                                      "?texture=loose-wave"
+                                      "&origin=indian"
+                                      "&color=%232-chocolate-brown"
+                                      "&base-material=lace"))
+              handler
+              (validate-title-and-description default-closure-title
+                                              default-closure-description)))
 
         (testing "two options from the same facet are selected we get a generic description"
-          (let [resp (->> "https://shop.mayvenn.com/categories/17-dyed-virgin-closures?origin=indian~brazilian"
-                          (mock/request :get)
-                          handler)]
-            (is (= 200 (:status resp)))
-            (is (= "Mayvenn’s dyed virgin hair closures allow you to close off any unit or install and come in a variety of different combinations. Shop now to create your look."
-                   (parse-meta-tag-content (:body resp) "description")))
-            (is (= "Dyed Virgin Closures: Human Hair Closures | Mayvenn"
-                   (parse-title (:body resp))))))
-
-        (testing "when a hair family is selected"
-          (let [resp (->> "https://shop.mayvenn.com/categories/13-wigs?family=360-wigs"
-                          (mock/request :get)
-                          handler)]
-            (is (= 200 (:status resp)))
-            (is (= "Mayvenn’s 360 Wigs allow you to change up and achieve your desired look. Shop our collection of virgin hair wigs today."
-                   (parse-meta-tag-content (:body resp) "description")))
-            (is (= "360 Wigs | Mayvenn"
-                   (parse-title (:body resp))))))
-
-        (testing "no options are selected we get generic description"
-          (let [resp (->> "https://shop.mayvenn.com/categories/13-wigs"
-                          (mock/request :get)
-                          handler)]
-            (is (= 200 (:status resp)))
-            (is (= (str "Mayvenn’s virgin human hair wigs allow you to achieve a new look in minutes "
-                        "& come in different variations such as Brazilian, Malaysian, straight, "
-                        "& deep wave.")
-                   (parse-meta-tag-content (:body resp) "description")))
-            (is (= "Human Hair Wigs: Natural Hair Lace Wigs | Mayvenn"
-                   (parse-title (:body resp)))))))
+          (-> (mock/request :get (str dyed-virgin-closure-category-url
+                                      "?origin=indian~brazilian"))
+              handler
+              (validate-title-and-description default-closure-title
+                                              default-closure-description))))
 
       (testing "when a category page does not have a template and has selections"
-        (let [resp (->> "https://shop.mayvenn.com/categories/16-dyed-virgin-hair?origin=indian"
-                        (mock/request :get)
-                        handler)]
-          (is (= 200 (:status resp)))
-          (is (= (str "When natural brown isn’t cutting it, find your true color match with our Dyed Virgin Hair. Free shipping. "
-                      "Free 30 day returns. Made with 100% dyed virgin human hair extensions.")
-                 (parse-meta-tag-content (:body resp) "description")))
-          (is (= "Dyed Virgin Hair Extensions | Mayvenn"
-                 (parse-title (:body resp)))))))))
+        (testing "two options from the same facet are selected we get a generic description"
+          (-> (mock/request :get "https://shop.mayvenn.com/categories/16-dyed-virgin-hair?origin=indian")
+              handler
+              (validate-title-and-description "Dyed Virgin Hair Extensions | Mayvenn"
+                                              (str "When natural brown isn’t cutting it, find your true color match with "
+                                                   "our Dyed Virgin Hair. Free shipping. Free 30 day returns. Made with "
+                                                   "100% dyed virgin human hair extensions."))))))))
