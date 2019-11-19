@@ -1047,7 +1047,9 @@
      (when js/navigator.share
        [:a
         {:onClick #(try
-                     (doto (js/navigator.share (clj->js params))
+                     (doto (js/navigator.share (clj->js {:title title
+                                                         :text  text
+                                                         :url   url}))
                        (.then  (fn [v] (prn "success!" v)))
                        (.catch (fn [v] (prn "fail!"    v))))
                      (catch js/Error error
