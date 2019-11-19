@@ -50,17 +50,23 @@
                          :class "mr1"}) phone-number)))
 
 (defn circle-portrait-molecule  [{:circle-portrait/keys [portrait-url]}]
-  [:div.mr2 (ui/circle-picture {:width "72px"} portrait-url)])
+  [:div.mx2 (ui/circle-picture {:width "72px"} portrait-url)])
+
+(defn share-icon-molecule
+  [{:share-icon/keys [title text url]}]
+  [:div.flex.items-top.justify-center.mr2.col-1
+   (ui/navigator-share title text url)])
 
 (defcomponent stylist-profile-card-component
   [query _ _]
-  [:div.flex.bg-white.px1.mxn2.rounded.py3
+  [:div.flex.bg-white.rounded.py3
     ;; TODO: image-url should be format/auto?
    (circle-portrait-molecule query)
    [:div.flex-grow-1.left-align.dark-gray.h6.line-height-2
     (transposed-title-molecule query)
     (stars-rating-molecule query)
-    (stylist-phone-molecule query)]])
+    (stylist-phone-molecule query)]
+   (share-icon-molecule query)])
 
 (defn checks-or-x
   [specialty specialize?]
@@ -130,6 +136,10 @@
                                                                          :store-slug   (:store-slug stylist)
                                                                          :query-params {:offset j}}]})
                                                     ucare-img-urls))
+
+       :share-icon/title "Share Your Stylist"
+       :share-icon/text "Some clever text"
+       :share-icon/url "www.google.com"
 
        :details [{:section-details/title   "Experience"
                   :section-details/content (string/join ", " (remove nil?
@@ -228,7 +238,7 @@
                                      :margin-bottom "-1px"}}
    [:div.white (component/build header-org/organism header-data nil)]
    [:main
-    [:div.px3 (component/build stylist-profile-card-component query nil)]
+    [:div (component/build stylist-profile-card-component query nil)]
 
     #?(:cljs (component/build maps/component google-map-data))
 

@@ -302,3 +302,8 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "chat-bubble")]))
+
+(defn share-icon [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "share-icon")]))

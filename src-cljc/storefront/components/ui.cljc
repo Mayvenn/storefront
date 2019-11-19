@@ -1039,3 +1039,14 @@
   (screen-aware defer-ucare-img-component {:attrs img-attrs
                                            :id    image-id}
                 {:key image-id}))
+
+(defn navigator-share
+  [title text url]
+  #?(:clj nil
+     :cljs (when js/navigator.share
+             [:div
+              (svg/share-icon {:height "19px"
+                               :width  "18px"})
+              (js/navigator.share (clj->js {:title title
+                                            :url   url
+                                            :text  text}))])))
