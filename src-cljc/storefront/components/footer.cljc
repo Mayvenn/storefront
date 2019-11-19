@@ -106,7 +106,7 @@
      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
       ^:inline (component/build social-section)]
      (when essence-copy
-       [:div.col-on-tb-dt.cold-4-on-tb-dt.px4.pt3.pb2.dark-gray.h7.center.line-height-4.text-decoration.underline
+       [:div.col-on-tb-dt.cold-4-on-tb-dt.px4.pt3.pb2.dark-gray.h7.center.line-height-4.underline
         essence-copy])]]
 
    [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
