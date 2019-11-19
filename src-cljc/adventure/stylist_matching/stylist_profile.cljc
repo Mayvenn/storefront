@@ -20,7 +20,8 @@
             [storefront.transitions :as transitions]
             [stylist-directory.stylists :as stylists]
             [spice.core :as spice]
-            [stylist-matching.ui.header :as header-org]))
+            [stylist-matching.ui.header :as header-org]
+            [storefront.platform.strings :as strings]))
 
 (defn transposed-title-molecule
   [{:transposed-title/keys [id primary secondary]}]
@@ -94,7 +95,10 @@
                                         events/control-adventure-select-stylist-pre-purchase)
                                       {:servicing-stylist stylist
                                        :card-index        0}]
-        {:keys [latitude longitude]} (:salon stylist)]
+        {:keys [latitude longitude]} (:salon stylist)
+        environment                  (case (get-in data storefront.keypaths/environment)
+                                       "production" "mayvenn"
+                                       "diva-acceptance")]
     (when stylist
       {:header-data (cond-> {:header.title/id               "adventure-title"
                              :header.title/primary          (str "More about " stylist-name)
@@ -137,9 +141,12 @@
                                                                          :query-params {:offset j}}]})
                                                     ucare-img-urls))
 
-       :share-icon/title "Share Your Stylist"
-       :share-icon/text "Some clever text"
-       :share-icon/url "www.google.com"
+       :share-icon/title (str stylist-name " - " (get-in data (conj storefront.keypaths/store :location :city)))
+       :share-icon/text  "I'm a Mayvenn Certified Stylist chosen because of my top-rated reviews, professionalism, and amazing work. Check out some of my work now."
+       :share-icon/url   (strings/format "https://shop.%s.com/stylist/%d-%s?utm_campaign=stylistID&utm_term=fi_stylist_share&utm_medium=referral"
+                                         environment
+                                         stylist-id
+                                         (:store-slug stylist))
 
        :details [{:section-details/title   "Experience"
                   :section-details/content (string/join ", " (remove nil?
