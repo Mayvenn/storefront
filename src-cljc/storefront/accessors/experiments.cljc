@@ -96,4 +96,4 @@
   [data]
   (or (display-feature? data "black-friday-time")
       (date/after? (date/now)
-                   (date/date-time 2019 11 29 5 0 0))))
+                   (date/date-time 2019 11 29 4 55 0))))
