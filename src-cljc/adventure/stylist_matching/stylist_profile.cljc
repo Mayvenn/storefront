@@ -143,10 +143,11 @@
 
        :share-icon/title (str stylist-name " - " (get-in data (conj storefront.keypaths/store :location :city)))
        :share-icon/text  "I'm a Mayvenn Certified Stylist chosen because of my top-rated reviews, professionalism, and amazing work. Check out some of my work now."
-       :share-icon/url   (strings/format "https://shop.%s.com/stylist/%d-%s?utm_campaign=stylistID&utm_term=fi_stylist_share&utm_medium=referral"
+       :share-icon/url   (strings/format "https://shop.%s.com/stylist/%d-%s?utm_campaign=%d&utm_term=fi_stylist_share&utm_medium=referral"
                                          environment
                                          stylist-id
-                                         (:store-slug stylist))
+                                         (:store-slug stylist)
+                                          stylist-id)
 
        :details [{:section-details/title   "Experience"
                   :section-details/content (string/join ", " (remove nil?
