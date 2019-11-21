@@ -142,7 +142,7 @@
                                                     ucare-img-urls))
 
        :share-icon/title (str stylist-name " - " (get-in data (conj storefront.keypaths/store :location :city)))
-       :share-icon/text  "I'm a Mayvenn Certified Stylist chosen because of my top-rated reviews, professionalism, and amazing work. Check out some of my work now."
+       :share-icon/text  (str stylist-name " is a Mayvenn Certified Stylist with top-rated reviews, great professionalism, and amazing work. Check out this stylist here:")
        :share-icon/url   (strings/format "https://shop.%s.com/stylist/%d-%s?utm_campaign=stylistID&utm_term=fi_stylist_share&utm_medium=referral"
                                          environment
                                          stylist-id
