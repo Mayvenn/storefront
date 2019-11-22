@@ -7,6 +7,7 @@
             [spice.maps :as maps]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.experiments :as experiments]
             [storefront.config :as config]
             [storefront.events :as events]
             [storefront.hooks.talkable :as talkable]
@@ -620,8 +621,11 @@
           (assoc-in keypaths/popup nil)
           (assoc-in keypaths/email-capture-session "opted-in")))))
 
-(defmethod transition-state events/popup-show-email-capture [_ event args app-state]
-  (assoc-in app-state keypaths/popup :email-capture-quadpay))
+(defmethod transition-state events/popup-show-email-capture
+  [_ event args app-state]
+  (if (experiments/black-friday-time? app-state)
+    (assoc-in app-state keypaths/popup :email-capture-blackfriday)
+    (assoc-in app-state keypaths/popup :email-capture-quadpay)))
 
 (defmethod transition-state events/sign-out [_ event args app-state]
   (-> app-state
