@@ -23,8 +23,9 @@
                        :dsk-url   dsk-url
                        :file-name file-name
                        :alt       alt
-                       :opts      (merge {:class "block"
-                                          :style {:min-height "300px"}}
+                       :opts      (merge {:class     "block"
+                                          :style     {:min-height "300px"}
+                                          :data-test "hero-link"}
                                          (when navigation-message
                                            (apply utils/route-to navigation-message)))}))
    (when-let [buttons (:buttons data)]
