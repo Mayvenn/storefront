@@ -205,7 +205,8 @@
 (defn exact-page?
   "Returns whether page1 is the same as page2"
   [[page1-event page1-args] [page2-event page2-args]]
-  (and (= page1-event page2-event
+  (and (= page1-event page2-event)
+       (= (filter-args page1-args) (filter-args page2-args))))
 
 (defn should-redirect-affiliate-route?
   [experience]
