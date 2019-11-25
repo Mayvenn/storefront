@@ -15,7 +15,7 @@
 (defcomponent layer-hero
   [data _ opts]
   [:div.mx-auto.relative {:style {:min-height "300px"}}
-   (let [{:photo/keys [mob-uuid mob-url dsk-uuid dsk-url file-name alt]} data]
+   (let [{:photo/keys [mob-uuid mob-url dsk-uuid dsk-url file-name alt navigation-message]} data]
      (component/build ui.M/hero
                       {:mob-uuid  mob-uuid
                        :mob-url   mob-url
@@ -23,8 +23,10 @@
                        :dsk-url   dsk-url
                        :file-name file-name
                        :alt       alt
-                       :opts      {:class "block"
-                                   :style {:min-height "300px"}}}))
+                       :opts      (merge {:class "block"
+                                          :style {:min-height "300px"}}
+                                         (when navigation-message
+                                           (apply utils/route-to navigation-message)))}))
    (when-let [buttons (:buttons data)]
      [:div.relative.flex.justify-center
       [:div.absolute.bottom-0.col-6-on-tb-dt.col-12.pb2.mb3-on-dt

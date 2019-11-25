@@ -12,24 +12,30 @@
             [storefront.component :as component :refer [defcomponent]]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
+            [storefront.routes :as routes]
+            [storefront.events :as events]
             [storefront.effects :as effects]))
 
 (defn query
   [data]
-  (let [shop?              (= "shop" (get-in data storefront.keypaths/store-slug))
-        cms-homepage-hero  (some-> data (get-in storefront.keypaths/cms-homepage) :shop :hero)
-        cms-ugc-collection (get-in data storefront.keypaths/cms-ugc-collection)
-        current-nav-event  (get-in data storefront.keypaths/navigation-event)]
+  (let [shop?                                          (= "shop" (get-in data storefront.keypaths/store-slug))
+        cms-homepage-hero                              (some-> data (get-in storefront.keypaths/cms-homepage) :shop :hero)
+        cms-ugc-collection                             (get-in data storefront.keypaths/cms-ugc-collection)
+        current-nav-event                              (get-in data storefront.keypaths/navigation-event)
+        [cms-hero-event cms-hero-args :as routed-path] (-> cms-homepage-hero :path (routes/navigation-message-for nil (when shop? "shop")))]
     {:layers
      [(merge {:layer/type      :hero
-              :photo/file-name "free-install-hero"
-              :buttons         [[{:navigation-message [events/navigate-adventure-match-stylist]
-                                  :data-test          "adventure-home-choice-get-started"
-                                  :height-class       "py2"}
-                                 "Browse Stylists"]]}
-             {:photo/alt     (-> cms-homepage-hero :alt)
-              :photo/mob-url (-> cms-homepage-hero :mobile :file :url)
-              :photo/dsk-url (-> cms-homepage-hero :desktop :file :url)})
+              :photo/file-name "free-install-hero"}
+             {:photo/alt         (-> cms-homepage-hero :alt)
+              :photo/mob-url     (-> cms-homepage-hero :mobile :file :url)
+              :photo/dsk-url     (-> cms-homepage-hero :desktop :file :url)
+              :photo/cta-message (-> cms-homepage-hero :path)}
+             (if (or (nil? cms-hero-event) (= events/navigate-not-found cms-hero-event))
+               {:buttons [[{:navigation-message [events/navigate-adventure-match-stylist]
+                            :data-test          "adventure-home-choice-get-started"
+                            :height-class       "py2"}
+                           "Browse Stylists"]]}
+               {:photo/navigation-message routed-path}))
       {:layer/type :free-standard-shipping-bar}
       {:layer/type   :text-block
        :header/value "We're paying for your next hair appointment"
