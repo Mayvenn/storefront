@@ -197,11 +197,15 @@
           page2-event)
        (every? #(= (%1 page2-args) (%1 page1-args)) (keys page2-args))))
 
+(defn ^:private filter-args
+  [raw-args]
+  (or (dissoc raw-args :navigate/caused-by)
+      {}))
+
 (defn exact-page?
   "Returns whether page1 is the same as page2"
   [[page1-event page1-args] [page2-event page2-args]]
-  (and (= page1-event page2-event)
-       (= (or page1-args {}) (or page2-args {}))))
+  (and (= page1-event page2-event
 
 (defn should-redirect-affiliate-route?
   [experience]
