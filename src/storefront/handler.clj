@@ -630,8 +630,7 @@
                                                          (get-in data keypaths/categories))
         {:keys [skus products]} (api/fetch-v2-products storeback-config (spice.maps/map-values
                                                                          first
-                                                                         (skuers/essentials category)))
-        {:keys [facets]}        (api/fetch-v2-facets storeback-config)]
+                                                                         (skuers/essentials category)))]
     (-> data
         (assoc-in catalog.keypaths/category-id (:catalog/category-id params))
         (update-in keypaths/v2-products merge (products/index-products products))
