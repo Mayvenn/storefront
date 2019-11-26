@@ -85,20 +85,13 @@
              stylist-dashboard-events
              voucher-events))
 
-(def blank-footer-events
-  informational-events)
-
 (def minimal-header-events
   (set/union cart-events
              checkout-events
-             informational-events
              payout-events))
 
 (defn show-minimal-footer? [event]
   (contains? minimal-footer-events event))
-
-(defn show-blank-footer? [event]
-  (contains? blank-footer-events event))
 
 (defn show-minimal-header? [event]
   (contains? minimal-header-events event))

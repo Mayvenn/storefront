@@ -200,9 +200,6 @@
       (nav/show-minimal-footer? nav-event)
       (footer-minimal/built-component data nil)
 
-      (nav/show-blank-footer? nav-event)
-      [:div {:style {:height "85px"}}]
-
       (= (get-in data keypaths/store-slug) "shop")
       (component/build dtc-full-component (query data) {:key "dtc-full-footer"})
 
