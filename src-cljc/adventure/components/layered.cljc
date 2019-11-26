@@ -24,10 +24,9 @@
                        :file-name file-name
                        :alt       alt
                        :opts      (merge {:class     "block"
-                                          :style     {:min-height "300px"}
-                                          :data-test "hero-link"}
-                                         (when navigation-message
-                                           (apply utils/route-to navigation-message)))}))
+                                          :style     {:min-height "300px"}}
+                                         (when navigation-message {:data-test "hero-link"})
+                                         (when navigation-message (apply utils/route-to navigation-message)))}))
    (when-let [buttons (:buttons data)]
      [:div.relative.flex.justify-center
       [:div.absolute.bottom-0.col-6-on-tb-dt.col-12.pb2.mb3-on-dt
