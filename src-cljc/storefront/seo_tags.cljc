@@ -110,10 +110,10 @@
                                                        (format-with-nil-protection description-template selected-facet-string seo-title)
                                                        (:page.meta/description category))]
     (cond-> [[:title {} page-title]
-         [:meta {:name "description" :content page-meta-description}]
-         [:meta {:property "og:title" :content (:opengraph/title category)}]
-         [:meta {:property "og:type" :content "product"}]
-         [:meta {:property "og:image" :content (str "http:" (:category/image-url category))}]
+             [:meta {:name "description" :content page-meta-description}]
+             [:meta {:property "og:title" :content (:opengraph/title category)}]
+             [:meta {:property "og:type" :content "product"}]
+             [:meta {:property "og:image" :content (str "http:" (:category/image-url category))}]
              [:meta {:property "og:description" :content (:opengraph/description category)}]]
       (not indexable?)
       (conj [:meta {:name "robots" :content "noindex"}]))))
