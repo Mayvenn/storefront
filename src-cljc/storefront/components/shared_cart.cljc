@@ -58,7 +58,7 @@
    :shared-cart-promotion (shared-cart-promotion data)
    :store                 (get-in data keypaths/store)
    :advertised-promo      (promos/default-advertised-promotion (get-in data keypaths/promotions))
-   :fetching-products?    (utils/requesting? data (conj request-keys/search-v2-products {}))
+   :fetching-products?    (utils/requesting? data (conj request-keys/get-products {}))
    :creating-cart?        (utils/requesting? data request-keys/create-order-from-shared-cart)})
 
 (defn ^:export built-component

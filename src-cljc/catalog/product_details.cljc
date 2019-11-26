@@ -420,7 +420,7 @@
             :price-block/secondary              "per item"
             :ugc                                ugc
             :aladdin?                           (experiments/aladdin-experience? data)
-            :fetching-product?                  (utils/requesting? data (conj request-keys/search-v2-products
+            :fetching-product?                  (utils/requesting? data (conj request-keys/get-products
                                                                               (:catalog/product-id product)))
             :adding-to-bag?                     (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
             :sku-quantity                       (get-in data keypaths/browse-sku-quantity 1)
@@ -481,7 +481,7 @@
 
 #?(:cljs
    (defn fetch-product-details [app-state product-id]
-     (api/search-v2-products (get-in app-state keypaths/api-cache)
+     (api/get-products (get-in app-state keypaths/api-cache)
                              {:catalog/product-id product-id}
                              (fn [response]
                                (messages/handle-message events/api-success-v2-products-for-details response)

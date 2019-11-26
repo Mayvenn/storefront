@@ -106,7 +106,7 @@
 
 (defmethod effects/perform-effects events/adventure-fetch-matched-skus
   [_ _ {:keys [criteria] :or {criteria [:hair/family]}} _ app-state]
-  #?(:cljs (api/search-v2-skus (get-in app-state storefront.keypaths/api-cache)
+  #?(:cljs (api/get-skus (get-in app-state storefront.keypaths/api-cache)
                                (-> (get-in app-state keypaths/adventure-choices)
                                    adventure-choices->criteria
                                    (select-keys criteria)
@@ -122,7 +122,7 @@
 
 (defmethod effects/perform-effects events/adventure-fetch-matched-products
   [_ _ {:keys [criteria] :or {criteria [:hair/family]}} _ app-state]
-  #?(:cljs (api/search-v2-products (get-in app-state storefront.keypaths/api-cache)
+  #?(:cljs (api/get-products (get-in app-state storefront.keypaths/api-cache)
                                    (-> (get-in app-state keypaths/adventure-choices)
                                        adventure-choices->criteria
                                        (select-keys criteria)

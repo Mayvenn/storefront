@@ -308,7 +308,7 @@
      :all-product-cards   product-cards
      :subsections         subsections
      :open-panel          (get-in data catalog.keypaths/category-panel)
-     :loading-products?   (utils/requesting? data (conj request-keys/search-v2-products
+     :loading-products?   (utils/requesting? data (conj request-keys/get-products
                                                         (skuers/essentials category)))}))
 
 (defn ^:export built-component
@@ -339,7 +339,7 @@
                                "mayvenn-classic"))
            (effects/redirect events/navigate-home)))
        (if (auth/permitted-category? app-state category)
-         (api/search-v2-products (get-in app-state keypaths/api-cache)
+         (api/get-products (get-in app-state keypaths/api-cache)
                                  (skuers/essentials category)
                                  success-fn)
          (effects/redirect events/navigate-home))

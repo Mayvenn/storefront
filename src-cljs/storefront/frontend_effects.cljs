@@ -174,7 +174,7 @@
         handler   (partial messages/handle-message
                            events/api-success-v2-products)]
     (when missing-ids
-      (api/search-v2-products api-cache
+      (api/get-products api-cache
                               {:selector/sku-ids missing-ids}
                               handler))))
 

@@ -180,23 +180,23 @@
                 v]))
         criteria))
 
-(defn search-v2-products [cache criteria-or-id handler]
+(defn get-products [cache criteria-or-id handler]
   (cache-req
    cache
    GET
    "/v2/products"
-   (conj request-keys/search-v2-products criteria-or-id)
+   (conj request-keys/get-products criteria-or-id)
    {:params (if (map? criteria-or-id)
               (criteria->query-params criteria-or-id)
               {:id criteria-or-id})
     :handler handler}))
 
-(defn search-v2-skus [cache criteria-or-id handler]
+(defn get-skus [cache criteria-or-id handler]
   (cache-req
    cache
    GET
    "/v2/skus"
-   (conj request-keys/search-v2-skus criteria-or-id)
+   (conj request-keys/get-skus criteria-or-id)
    {:params (criteria->query-params criteria-or-id)
     :handler handler}))
 
