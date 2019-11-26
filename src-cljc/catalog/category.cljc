@@ -317,11 +317,20 @@
 
 (defmethod transitions/transition-state events/navigate-category
   [_ event {:keys [catalog/category-id query-params]} app-state]
-  (-> app-state
+  (let [[_ {prev-category-id :catalog/category-id}] (-> (get-in app-state keypaths/navigation-undo-stack)
+                                                        first
+                                                        :navigation-message)]
+    (cond-> app-state
+      true
       (assoc-in catalog.keypaths/category-id category-id)
+
+      true
       (assoc-in catalog.keypaths/category-selections
                 (->> (maps/select-rename-keys query-params query-params->facet-slugs)
-                     (maps/map-values #(set (string/split % query-param-separator)))))))
+                     (maps/map-values #(set (string/split % query-param-separator)))))
+
+      (not= prev-category-id category-id)
+      (assoc-in catalog.keypaths/category-panel nil))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-category
