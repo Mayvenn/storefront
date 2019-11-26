@@ -265,3 +265,10 @@
         to     (if (contains? #{"looks.mayvenn.com"} host)
                  url "https://shop.mayvenn.com")]
     (util.response/redirect to)))
+
+(defn derive-all-looks [cms-data]
+  (assoc-in cms-data [:ugc-collection :all-looks]
+            (->> (:ugc-collection cms-data)
+                 vals
+                 (mapcat :looks)
+                 (maps/index-by (comp keyword :content/id)))))

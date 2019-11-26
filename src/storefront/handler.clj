@@ -24,7 +24,7 @@
             [ring.util.codec :as codec]
             [ring.util.response :as util.response]
             [spice.core :as spice]
-            [spice.maps :as maps :refer [auto-map index-by]]
+            [spice.maps :as maps]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
@@ -295,14 +295,6 @@
              keypath
              (get-in cms-data keypath))))
 
-;; TODO contentful namespace
-(defn derive-all-looks [cms-data]
-  (assoc-in cms-data [:ugc-collection :all-looks]
-            (->> (:ugc-collection cms-data)
-                 vals
-                 (mapcat :looks)
-                 (maps/index-by (comp keyword :content/id)))))
-
 (defn wrap-set-cms-cache
   [h contentful]
   (fn [req]
@@ -323,21 +315,21 @@
                                           (-> {}
                                               (update-data [:homepage])
                                               (update-data [:ugc-collection :free-install-mayvenn])
-                                              derive-all-looks)
+                                              contentful/derive-all-looks)
 
                                           (contains? #{events/navigate-shop-by-look events/navigate-shop-by-look-details} nav-event)
                                           (-> {}
                                               (update-data [:ugc-collection (if (= :look album-keyword)
                                                                               :aladdin-free-install
                                                                               album-keyword)])
-                                              derive-all-looks)
+                                              contentful/derive-all-looks)
 
                                           (= events/navigate-product-details nav-event)
                                           (-> {}
                                               (update-data [:ugc-collection (some->> (conj keypaths/v2-products product-id :legacy/named-search-slug)
                                                                                      (get-in-req-state req)
                                                                                      keyword)])
-                                              derive-all-looks)
+                                              contentful/derive-all-looks)
                                           :else nil)
 
                                     aladdin?
@@ -351,21 +343,21 @@
                                               (update-data [:ugc-collection :sleek-and-straight])
                                               (update-data [:ugc-collection :waves-and-curly])
                                               (update-data [:ugc-collection :free-install-mayvenn])
-                                              derive-all-looks)
+                                              contentful/derive-all-looks)
 
                                           (contains? #{events/navigate-shop-by-look events/navigate-shop-by-look-details} nav-event)
                                           (-> {}
                                               (update-data [:ugc-collection (if (= :look album-keyword)
                                                                               :aladdin-free-install
                                                                               album-keyword)])
-                                              derive-all-looks)
+                                              contentful/derive-all-looks)
 
                                           (= events/navigate-product-details nav-event)
                                           (-> {}
                                               (update-data [:ugc-collection (some->> (conj keypaths/v2-products product-id :legacy/named-search-slug)
                                                                                      (get-in-req-state req)
                                                                                      keyword)])
-                                              derive-all-looks)
+                                              contentful/derive-all-looks)
                                           :else nil)
 
                                     :else
@@ -571,7 +563,7 @@
   [render-ctx data req {:keys [legacy/product-slug]}]
   (when-let [[type id] (legacy-product-slug->new-location product-slug)]
     (let [product    (first (:products (api/fetch-v2-products (:storeback-config render-ctx) {:catalog/product-id id})))
-          categories (index-by :catalog/category-id (get-in data keypaths/categories))
+          categories (maps/index-by :catalog/category-id (get-in data keypaths/categories))
           path       (if (= :product type)
                        (path-for req events/navigate-product-details product)
                        (path-for req events/navigate-category (categories id)))]
@@ -657,7 +649,7 @@
     (let [nav-message        (get-in-req-state req keypaths/navigation-message)
           [nav-event params] nav-message]
       (when (not= nav-event events/navigate-not-found)
-        (let [render-ctx (auto-map storeback-config environment client-version)
+        (let [render-ctx (maps/auto-map storeback-config environment client-version)
               data       (cond-> state
                            (= events/navigate-category nav-event)
                            (assoc-category-route-data storeback-config params)
@@ -938,7 +930,7 @@
       (seq ugc-collections)
       (merge (-> (select-keys cms-data [:ugc-collection])
                  (update :ugc-collection select-keys ugc-collections)
-                 derive-all-looks)))
+                 contentful/derive-all-looks)))
     cms-data))
 
 (defn create-handler
