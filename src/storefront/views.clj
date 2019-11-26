@@ -151,12 +151,12 @@
 
           [:script {:type "text/javascript"} (raw prefetch-script)]
 
-          ;; Quadpay Widget -- TODO: can we move this below our app scripts in prod?
+          ;; Quadpay Widget
           #_[:script {:type  "text/javascript"
                       :src   "https://widgets.quadpay.com/mayvenn/quadpay-widget-2.2.1.js"
                       :defer true}]
 
-          ;; Talkable -- TODO: try to move below app scripts (in prod)
+          ;; Talkable
           [:script {:type  "text/javascript"
                     :src   (case environment
                              "production" "https://d2jjzw81hqbuqv.cloudfront.net/integration/clients/mayvenn.min.js"
