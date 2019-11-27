@@ -113,12 +113,14 @@
            :data-test      id
            :class          "dark-gray flex medium not-rounded items-center justify-center"}
           (utils/fake-href target))
-   (svg/forward-arrow {:style     {:width  "14px"
-                                   :height "14px"}})))
+   (svg/forward-arrow {:style {:width  "14px"
+                               :height "14px"}})))
 
 (defn input-group-field-and-button-molecule
-  [data]
-  [:div.bg-white.border.border-light-gray.rounded.overflow-hidden.table.flex.col-12
+  [{:submit-button/keys [target disabled?] :as data}]
+  [:form.bg-white.border.border-light-gray.rounded.overflow-hidden.table.flex.col-12
+   (when-not disabled?
+     {:on-submit (utils/send-event-callback target)})
    (labeled-input-molecule data)
    (submit-button-molecule data)])
 

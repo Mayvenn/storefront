@@ -510,7 +510,8 @@
                                            (messages/handle-message events/control-change-state
                                                                     {:keypath keypath
                                                                      :value   (.. e -target -value)})))
-       :submit-button/disabled? (empty? value)
+       :submit-button/disabled? (or (update-pending? data)
+                                    (empty? value))
        :submit-button/id        "cart-apply-promo"
        :submit-button/target    events/control-cart-update-coupon})))
 

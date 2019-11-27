@@ -209,7 +209,7 @@
           (cart-item-pick-stylist-molecule cart-item)]]
 
          ;; price group
-        [:div.right.right-align.h6.pt1.flex.flex-column
+        [:div.right.right-align.h6.pt1.flex.flex-column.items-end
          {:style {:min-width "67px"}}
          (cart-item-remove-action-molecule cart-item)
          (cart-item-swap-action-molecule cart-item)
