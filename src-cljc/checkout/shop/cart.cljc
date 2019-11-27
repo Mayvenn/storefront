@@ -600,7 +600,7 @@
               :servicing-stylist-banner/stylist-id (:stylist-id servicing-stylist)
               :servicing-stylist-portrait-url      (-> servicing-stylist :portrait :resizable-url)})
 
-      (and (experiments/mayvenn_rating? data)
+      (and (experiments/mayvenn-rating? data)
            entered?
            servicing-stylist
            (:mayvenn-rating servicing-stylist))

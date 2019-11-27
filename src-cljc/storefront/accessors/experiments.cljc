@@ -98,6 +98,6 @@
       (date/after? (date/now)
                    (date/date-time 2019 11 29 4 55 0))))
 
-(defn mayvenn_rating?
+(defn mayvenn-rating?
   [data]
   (display-feature? data "mayvenn-rating"))

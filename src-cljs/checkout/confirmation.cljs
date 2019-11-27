@@ -359,7 +359,7 @@
         :servicing-stylist-banner/rating    {:rating/value (:external-rating stylist)}
         :servicing-stylist-banner/image-url (some-> stylist :portrait :resizable-url)})
 
-      (and (experiments/mayvenn_rating? data)
+      (and (experiments/mayvenn-rating? data)
            (:mayvenn-rating stylist))
       (merge
        {:servicing-stylist-banner/rating {:rating/value (:mayvenn-rating stylist)}}))))

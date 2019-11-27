@@ -33,7 +33,7 @@
 (defn stylist-card-query
   [stylist-profiles?
    post-purchase?
-   mayvenn_rating?
+   mayvenn-rating?
    idx
    {:keys [salon service-menu gallery-images store-slug stylist-id external-rating mayvenn-rating] :as stylist}]
   (let [{salon-name :name :keys [address-1 address-2 city state zipcode]} salon
@@ -75,7 +75,7 @@
 
              :stylist-card.gallery/id           (str "stylist-card-gallery-" store-slug)}
 
-      (and mayvenn_rating? mayvenn-rating)
+      (and mayvenn-rating? mayvenn-rating)
       (merge
          {:rating/value mayvenn-rating})
 
@@ -156,8 +156,8 @@
                                                                zipcode])}))))
 
 (defn stylist-cards-query
-  [stylist-profiles? post-purchase? mayvenn_rating? stylists]
-  (map-indexed (partial stylist-card-query stylist-profiles? post-purchase? mayvenn_rating?) stylists))
+  [stylist-profiles? post-purchase? mayvenn-rating? stylists]
+  (map-indexed (partial stylist-card-query stylist-profiles? post-purchase? mayvenn-rating?) stylists))
 
 (def call-out-query
   {:call-out-center/bg-class    "bg-lavender"
@@ -223,5 +223,5 @@
                                                       call-out-query
                                                       (stylist-cards-query (experiments/stylist-profiles? app-state)
                                                                            post-purchase?
-                                                                           (experiments/mayvenn_rating? app-state)
+                                                                           (experiments/mayvenn-rating? app-state)
                                                                            stylist-search-results))}))))

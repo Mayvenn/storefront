@@ -237,7 +237,7 @@
         :matched-component.cta/label     "Pick a Stylist"
         :matched-component.cta/target    [events/navigate-adventure-matching-stylist-wait-post-purchase]})
 
-      (and (experiments/mayvenn_rating? data)
+      (and (experiments/mayvenn-rating? data)
            (:mayvenn-rating servicing-stylist))
       (merge
        {:rating/value (:mayvenn-rating servicing-stylist)}))))

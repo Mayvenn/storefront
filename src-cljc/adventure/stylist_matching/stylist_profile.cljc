@@ -166,7 +166,7 @@
                            {:section-details/title   "Specialties"
                             :section-details/content (:service-menu stylist)})]}
 
-        (and (experiments/mayvenn_rating? data)
+        (and (experiments/mayvenn-rating? data)
              (:mayvenn-rating stylist))
         (merge
          {:rating/value (:mayvenn-rating stylist)})

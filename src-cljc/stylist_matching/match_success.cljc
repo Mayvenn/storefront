@@ -39,7 +39,7 @@
             :header.cart/color             "white"})))
 
 (defn stylist-card-query
-  [stylist-profiles? {:keys [salon service-menu store-slug stylist-id] :as stylist} post-purchase? mayvenn_rating?]
+  [stylist-profiles? {:keys [salon service-menu store-slug stylist-id] :as stylist} post-purchase? mayvenn-rating?]
   (let [{salon-name :name
          :keys      [address-1 address-2 city state zipcode]} salon
         {:keys [specialty-sew-in-leave-out
@@ -67,7 +67,7 @@
                                                                                 (boolean specialty-sew-in-360-frontal))
                                                 (stylist-cards/checks-or-x-atom "Frontal" (boolean specialty-sew-in-frontal))]}
 
-      (and mayvenn_rating?
+      (and mayvenn-rating?
            (:mayvenn-rating stylist))
       (merge
        {:rating/value (:mayvenn-rating stylist)})
@@ -194,7 +194,7 @@
   (let [servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
         nav-event         (get-in app-state storefront.keypaths/navigation-event)
         post-purchase?    (post-purchase? nav-event)
-        mayvenn-rating?   (experiments/mayvenn_rating? app-state)
+        mayvenn-rating?   (experiments/mayvenn-rating? app-state)
         order             (if (pre-purchase? nav-event)
                             (api.orders/current app-state)
                             (api.orders/completed app-state))
