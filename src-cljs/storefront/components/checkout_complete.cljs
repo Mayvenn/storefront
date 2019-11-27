@@ -1,7 +1,6 @@
 (ns storefront.components.checkout-complete
   (:require [adventure.stylist-matching.stylist-results :as stylist-results]
             [adventure.keypaths :as adv-keypaths]
-            [adventure.components.profile-card :as profile-card]
             [storefront.components.svg :as svg]
             api.orders
             [spice.core :as spice]
