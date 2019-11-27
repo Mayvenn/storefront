@@ -4,6 +4,7 @@
               [storefront.components.payment-request-button :as payment-request-button]
               [storefront.components.popup :as popup]
               [storefront.confetti :as confetti]
+              [storefront.history :as history]
               [storefront.hooks.quadpay :as quadpay]
               [storefront.platform.messages :as messages]])
    [catalog.facets :as facets]
@@ -36,6 +37,7 @@
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.request-keys :as request-keys]
+   [storefront.routes :as routes]
    [ui.molecules :as ui-molecules]
    [ui.promo-banner :as promo-banner]))
 
@@ -58,11 +60,11 @@
 
 (defmethod effects/perform-effects events/control-pick-stylist-button
   [_ _ _ _ _]
-  #?(:cljs (messages/handle-message events/navigate-adventure-match-stylist)))
+  #?(:cljs (history/enqueue-navigate events/navigate-adventure-match-stylist)))
 
 (defmethod effects/perform-effects events/control-change-stylist
   [_ _ _ _ _]
-  #?(:cljs (messages/handle-message events/navigate-adventure-find-your-stylist)))
+  #?(:cljs (history/enqueue-navigate events/navigate-adventure-find-your-stylist)))
 
 (def or-separator
   [:div.h5.black.py1.flex.items-center
@@ -80,8 +82,9 @@
       [:div name]
       [:div.mt1 (ui.molecules/stars-rating-molecule rating)]]
      [:a.block.gray.medium.m1
-      (merge {:data-test "stylist-swap"}
-             (utils/route-to events/control-change-stylist {:stylist-id stylist-id}))
+      (merge {:data-test "stylist-swap"
+              :href (routes/path-for events/navigate-adventure-find-your-stylist)
+              :on-click (utils/send-event-callback events/control-change-stylist {:stylist-id stylist-id})})
       (svg/swap-person {:width  "20px"
                         :height "21px"})]]))
 
