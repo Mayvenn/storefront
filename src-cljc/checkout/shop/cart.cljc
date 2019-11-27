@@ -55,6 +55,10 @@
                                                    {:order %
                                                     :shop? (get-in app-state keypaths/store-slug)}))))
 
+(defmethod effects/perform-effects events/control-pick-stylist-button
+  [_ _ _ _ _]
+  #?(:cljs (messages/handle-message events/navigate-adventure-match-stylist)))
+
 (def or-separator
   [:div.h5.black.py1.flex.items-center
    [:div.flex-grow-1.border-bottom.border-light-gray]
@@ -378,7 +382,7 @@
 
           (and applied? (not matched?))
           (merge {:cart-item-pick-stylist/id      "pick-a-stylist"
-                  :cart-item-pick-stylist/target  [events/navigate-adventure-match-stylist]
+                  :cart-item-pick-stylist/target  [events/control-pick-stylist-button]
                   :cart-item-pick-stylist/content "pick stylist"})
 
           applied?
@@ -642,3 +646,4 @@
                      :flash     app-state
                      :data      app-state
                      :nav-event nav-event})))
+

@@ -213,6 +213,7 @@
 (defpath control-cart-line-item-dec)
 (defpath control-cart-remove)
 (defpath control-cart-share-show)
+(defpath control-pick-stylist-button)
 
 (defpath control-popup-hide)
 

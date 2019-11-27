@@ -445,3 +445,7 @@
                            :store_slug store-slug
                            :amount     (js/parseFloat amount)
                            :method     (:type payout-method)})))
+
+(defmethod perform-track events/control-pick-stylist-button
+  [_ _ _ _]
+  (stringer/track-event "pick_stylist_button_pressed"))
