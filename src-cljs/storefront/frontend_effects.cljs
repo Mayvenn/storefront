@@ -175,8 +175,8 @@
                            events/api-success-v2-products)]
     (when missing-ids
       (api/get-products api-cache
-                              {:selector/sku-ids missing-ids}
-                              handler))))
+                        {:selector/sku-ids missing-ids}
+                        handler))))
 
 (defmethod effects/perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))

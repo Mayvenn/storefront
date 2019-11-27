@@ -482,10 +482,10 @@
 #?(:cljs
    (defn fetch-product-details [app-state product-id]
      (api/get-products (get-in app-state keypaths/api-cache)
-                             {:catalog/product-id product-id}
-                             (fn [response]
-                               (messages/handle-message events/api-success-v2-products-for-details response)
-                               (messages/handle-message events/viewed-sku {:sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)})))
+                       {:catalog/product-id product-id}
+                       (fn [response]
+                         (messages/handle-message events/api-success-v2-products-for-details response)
+                         (messages/handle-message events/viewed-sku {:sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)})))
 
      (if-let [current-product (products/current-product app-state)]
        (if (auth/permitted-product? app-state current-product)

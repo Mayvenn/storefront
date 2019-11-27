@@ -349,8 +349,8 @@
            (effects/redirect events/navigate-home)))
        (if (auth/permitted-category? app-state category)
          (api/get-products (get-in app-state keypaths/api-cache)
-                                 (skuers/essentials category)
-                                 success-fn)
+                           (skuers/essentials category)
+                           success-fn)
          (effects/redirect events/navigate-home))
        (when-let [subsection-key (:subsection query-params)]
          (js/setTimeout (partial scroll/scroll-selector-to-top (str "#subsection-" subsection-key)) 0)))))

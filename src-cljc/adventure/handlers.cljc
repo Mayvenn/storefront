@@ -107,13 +107,13 @@
 (defmethod effects/perform-effects events/adventure-fetch-matched-skus
   [_ _ {:keys [criteria] :or {criteria [:hair/family]}} _ app-state]
   #?(:cljs (api/get-skus (get-in app-state storefront.keypaths/api-cache)
-                               (-> (get-in app-state keypaths/adventure-choices)
-                                   adventure-choices->criteria
-                                   (select-keys criteria)
-                                   (update :hair/family disj nil)
-                                   (assoc :catalog/department    "hair"
-                                          :catalog/discontinued? "false"))
-                               #(messages/handle-message events/api-success-adventure-fetch-skus %))))
+                         (-> (get-in app-state keypaths/adventure-choices)
+                             adventure-choices->criteria
+                             (select-keys criteria)
+                             (update :hair/family disj nil)
+                             (assoc :catalog/department    "hair"
+                                    :catalog/discontinued? "false"))
+                         #(messages/handle-message events/api-success-adventure-fetch-skus %))))
 
 (defmethod transitions/transition-state events/api-success-adventure-fetch-skus
   [_ event {:keys [skus]} app-state]
@@ -123,12 +123,12 @@
 (defmethod effects/perform-effects events/adventure-fetch-matched-products
   [_ _ {:keys [criteria] :or {criteria [:hair/family]}} _ app-state]
   #?(:cljs (api/get-products (get-in app-state storefront.keypaths/api-cache)
-                                   (-> (get-in app-state keypaths/adventure-choices)
-                                       adventure-choices->criteria
-                                       (select-keys criteria)
-                                       (update :hair/family disj nil)
-                                       (assoc :catalog/department "hair"))
-                                   #(messages/handle-message events/api-success-v2-products %))))
+                             (-> (get-in app-state keypaths/adventure-choices)
+                                 adventure-choices->criteria
+                                 (select-keys criteria)
+                                 (update :hair/family disj nil)
+                                 (assoc :catalog/department "hair"))
+                             #(messages/handle-message events/api-success-v2-products %))))
 
 (defmethod transitions/transition-state events/api-success-remove-servicing-stylist [_ _ {:keys [order]} app-state]
   (-> app-state
