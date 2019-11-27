@@ -214,6 +214,7 @@
 (defpath control-cart-remove)
 (defpath control-cart-share-show)
 (defpath control-pick-stylist-button)
+(defpath control-change-stylist)
 
 (defpath control-popup-hide)
 

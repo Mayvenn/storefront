@@ -25,6 +25,7 @@
    [storefront.accessors.stylists :as stylists]
    [storefront.component :as component :refer [defcomponent defdynamic-component]]
    [storefront.components.checkout-delivery :as checkout-delivery]
+
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
    [storefront.components.money-formatters :as mf]
@@ -59,6 +60,10 @@
   [_ _ _ _ _]
   #?(:cljs (messages/handle-message events/navigate-adventure-match-stylist)))
 
+(defmethod effects/perform-effects events/control-change-stylist
+  [_ _ _ _ _]
+  #?(:cljs (messages/handle-message events/navigate-adventure-find-your-stylist)))
+
 (def or-separator
   [:div.h5.black.py1.flex.items-center
    [:div.flex-grow-1.border-bottom.border-light-gray]
@@ -66,7 +71,7 @@
    [:div.flex-grow-1.border-bottom.border-light-gray]])
 
 (defn ^:private servicing-stylist-banner-component
-  [{:servicing-stylist-banner/keys [id name image-url rating]}]
+  [{:servicing-stylist-banner/keys [id name image-url rating stylist-id]}]
   (when id
     [:div.flex.bg-too-light-lavender.pl5.pr3.py2.items-center {:data-test id}
      (ui/circle-picture {:width 50} (ui/square-image {:resizable-url image-url} 50))
@@ -76,7 +81,7 @@
       [:div.mt1 (ui.molecules/stars-rating-molecule rating)]]
      [:a.block.gray.medium.m1
       (merge {:data-test "stylist-swap"}
-             (utils/route-to events/navigate-adventure-find-your-stylist))
+             (utils/route-to events/control-change-stylist {:stylist-id stylist-id}))
       (svg/swap-person {:width  "20px"
                         :height "21px"})]]))
 
@@ -584,12 +589,13 @@
               :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})
 
       (and entered? servicing-stylist)
-      (merge {:checkout-caption-copy              (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
-              :servicing-stylist-banner/id        "servicing-stylist-banner"
-              :servicing-stylist-banner/name      (stylists/->display-name servicing-stylist)
-              :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)}
-              :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)
-              :servicing-stylist-portrait-url     (-> servicing-stylist :portrait :resizable-url)})
+      (merge {:checkout-caption-copy               (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
+              :servicing-stylist-banner/id         "servicing-stylist-banner"
+              :servicing-stylist-banner/name       (stylists/->display-name servicing-stylist)
+              :servicing-stylist-banner/rating     {:rating/value (:rating servicing-stylist)}
+              :servicing-stylist-banner/image-url  (some-> servicing-stylist :portrait :resizable-url)
+              :servicing-stylist-banner/stylist-id (:stylist-id servicing-stylist)
+              :servicing-stylist-portrait-url      (-> servicing-stylist :portrait :resizable-url)})
 
       applied?
       (merge {:confetti-spout/mode (get-in data keypaths/confetti-mode)

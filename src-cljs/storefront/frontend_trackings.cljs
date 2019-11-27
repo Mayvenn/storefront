@@ -449,3 +449,7 @@
 (defmethod perform-track events/control-pick-stylist-button
   [_ _ _ _]
   (stringer/track-event "pick_stylist_button_pressed"))
+
+(defmethod perform-track events/control-change-stylist
+  [_ _ {:keys [stylist-id]} _]
+  (stringer/track-event "change_stylist_icon_pressed" {:current_servicing_stylist_id stylist-id}))
