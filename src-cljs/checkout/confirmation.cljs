@@ -13,6 +13,7 @@
             [storefront.api :as api]
             [storefront.config :as config]
             [storefront.browser.cookie-jar :as cookie-jar]
+            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.checkout-credit-card :as checkout-credit-card]
             [storefront.components.checkout-delivery :as checkout-delivery]
@@ -309,8 +310,8 @@
 
 (defn query
   [data]
-  (let [order             (get-in data keypaths/order)
-        selected-quadpay? (-> (get-in data keypaths/order) :cart-payments :quadpay)
+  (let [order                                   (get-in data keypaths/order)
+        selected-quadpay?                       (-> (get-in data keypaths/order) :cart-payments :quadpay)
         {:mayvenn-install/keys [service-discount
                                 applied?
                                 stylist]
@@ -355,8 +356,13 @@
         :servicing-stylist-banner/heading   "Your Mayvenn Certified Stylist"
         :servicing-stylist-banner/title     (stylists/->display-name stylist)
         :servicing-stylist-banner/subtitle  (-> stylist :salon :name)
-        :servicing-stylist-banner/rating    {:rating/value (:rating stylist)}
-        :servicing-stylist-banner/image-url (some-> stylist :portrait :resizable-url)}))))
+        :servicing-stylist-banner/rating    {:rating/value (:external-rating stylist)}
+        :servicing-stylist-banner/image-url (some-> stylist :portrait :resizable-url)})
+
+      (and (experiments/mayvenn_rating? data)
+           (:mayvenn-rating stylist))
+      (merge
+       {:servicing-stylist-banner/rating {:rating/value (:mayvenn-rating stylist)}}))))
 
 (defn ^:private built-non-auth-component [data opts]
   (component/build component (query data) opts))

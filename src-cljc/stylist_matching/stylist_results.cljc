@@ -33,8 +33,9 @@
 (defn stylist-card-query
   [stylist-profiles?
    post-purchase?
+   mayvenn_rating?
    idx
-   {:keys [salon service-menu gallery-images store-slug stylist-id] :as stylist}]
+   {:keys [salon service-menu gallery-images store-slug stylist-id external-rating mayvenn-rating] :as stylist}]
   (let [{salon-name :name :keys [address-1 address-2 city state zipcode]} salon
 
         {:keys [specialty-sew-in-leave-out
@@ -57,7 +58,7 @@
 
              :stylist-card.title/id             "stylist-name"
              :stylist-card.title/primary        (stylists/->display-name stylist)
-             :rating/value                      (:rating stylist)
+             :rating/value                      external-rating
              :stylist-card.services-list/id     (str "stylist-card-services-" store-slug)
              :stylist-card.services-list/value  [(stylist-cards/checks-or-x-atom "Leave Out"
                                                                                  (boolean specialty-sew-in-leave-out))
@@ -73,6 +74,10 @@
                                                   :card-index        idx}]
 
              :stylist-card.gallery/id           (str "stylist-card-gallery-" store-slug)}
+
+      (and mayvenn_rating? mayvenn-rating)
+      (merge
+         {:rating/value mayvenn-rating})
 
       (not stylist-profiles?) ;; Control
       (merge
@@ -151,8 +156,8 @@
                                                                zipcode])}))))
 
 (defn stylist-cards-query
-  [stylist-profiles? post-purchase? stylists]
-  (map-indexed (partial stylist-card-query stylist-profiles? post-purchase?) stylists))
+  [stylist-profiles? post-purchase? mayvenn_rating? stylists]
+  (map-indexed (partial stylist-card-query stylist-profiles? post-purchase? mayvenn_rating?) stylists))
 
 (def call-out-query
   {:call-out-center/bg-class    "bg-lavender"
@@ -218,4 +223,5 @@
                                                       call-out-query
                                                       (stylist-cards-query (experiments/stylist-profiles? app-state)
                                                                            post-purchase?
+                                                                           (experiments/mayvenn_rating? app-state)
                                                                            stylist-search-results))}))))

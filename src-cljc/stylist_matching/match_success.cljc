@@ -5,6 +5,7 @@
             api.orders
             [clojure.string :as string]
             [spice.date :as date]
+            [storefront.accessors.experiments :as experiments]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
             [storefront.components.formatters :as formatters]
@@ -38,7 +39,7 @@
             :header.cart/color             "white"})))
 
 (defn stylist-card-query
-  [stylist-profiles? {:keys [salon service-menu store-slug stylist-id] :as stylist} post-purchase?]
+  [stylist-profiles? {:keys [salon service-menu store-slug stylist-id] :as stylist} post-purchase? mayvenn_rating?]
   (let [{salon-name :name
          :keys      [address-1 address-2 city state zipcode]} salon
         {:keys [specialty-sew-in-leave-out
@@ -65,6 +66,11 @@
                                                 (stylist-cards/checks-or-x-atom "360° Frontal"
                                                                                 (boolean specialty-sew-in-360-frontal))
                                                 (stylist-cards/checks-or-x-atom "Frontal" (boolean specialty-sew-in-frontal))]}
+
+      (and mayvenn_rating?
+           (:mayvenn-rating stylist))
+      (merge
+       {:rating/value (:mayvenn-rating stylist)})
 
       (not stylist-profiles?) ;; Control
       (merge
@@ -123,7 +129,7 @@
                                                                zipcode])}))))
 
 (defn matched-stylist-query
-  [servicing-stylist {:order/keys [submitted?] :order.shipping/keys [phone]} post-purchase?]
+  [servicing-stylist {:order/keys [submitted?] :order.shipping/keys [phone]} post-purchase? mayvenn-rating?]
   (when submitted?
     (merge {:matched-stylist.title/id            "matched-with-stylist"
             :matched-stylist.title/primary       "Chat with your Stylist"
@@ -141,7 +147,7 @@
             :matched-stylist.cta-title/primary   "In the meantime…"
             :matched-stylist.cta-title/secondary "Get inspired for your appointment"
             :matched-stylist.cta-title/target    ["https://www.instagram.com/explore/tags/mayvennfreeinstall/"]}
-           (stylist-card-query false servicing-stylist post-purchase?))))
+           (stylist-card-query false servicing-stylist post-purchase? mayvenn-rating?))))
 
 (defn shopping-method-choice-query
   [servicing-stylist {:order/keys [submitted?]}]
@@ -188,6 +194,7 @@
   (let [servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
         nav-event         (get-in app-state storefront.keypaths/navigation-event)
         post-purchase?    (post-purchase? nav-event)
+        mayvenn-rating?   (experiments/mayvenn_rating? app-state)
         order             (if (pre-purchase? nav-event)
                             (api.orders/current app-state)
                             (api.orders/completed app-state))
@@ -199,4 +206,5 @@
                                                                             order)
                       :matched-stylist        (matched-stylist-query servicing-stylist
                                                                      order
-                                                                     post-purchase?)})))
+                                                                     post-purchase?
+                                                                     mayvenn-rating?)})))

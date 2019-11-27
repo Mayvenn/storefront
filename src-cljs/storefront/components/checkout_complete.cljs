@@ -4,6 +4,7 @@
             [storefront.components.svg :as svg]
             api.orders
             [spice.core :as spice]
+            [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
             [storefront.transitions :as transitions]
             [storefront.events :as events]
@@ -234,7 +235,12 @@
                                                  "In your area"])]
         :matched-component.cta/id        (when match-via-web? "pick-a-stylist")
         :matched-component.cta/label     "Pick a Stylist"
-        :matched-component.cta/target    [events/navigate-adventure-matching-stylist-wait-post-purchase]}))))
+        :matched-component.cta/target    [events/navigate-adventure-matching-stylist-wait-post-purchase]})
+
+      (and (experiments/mayvenn_rating? data)
+           (:mayvenn-rating servicing-stylist))
+      (merge
+       {:rating/value (:mayvenn-rating servicing-stylist)}))))
 
 (defn ^:export built-component [data opts]
   (let [{:as queried-data :keys [show-match-component?]} (query data)]

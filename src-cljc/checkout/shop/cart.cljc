@@ -597,6 +597,13 @@
               :servicing-stylist-banner/stylist-id (:stylist-id servicing-stylist)
               :servicing-stylist-portrait-url      (-> servicing-stylist :portrait :resizable-url)})
 
+      (and (experiments/mayvenn_rating? data)
+           entered?
+           servicing-stylist
+           (:mayvenn-rating servicing-stylist))
+      (merge
+       {:servicing-stylist-banner/rating {:rating/value (:mayvenn-rating servicing-stylist)}})
+
       applied?
       (merge {:confetti-spout/mode (get-in data keypaths/confetti-mode)
               :confetti-spout/id   "confetti-spout"}))))
