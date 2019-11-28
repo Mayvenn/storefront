@@ -203,12 +203,33 @@
 (defprotocol CMSCache
   (read-cache [_] "Returns a map representing the CMS cache"))
 
+(def fallback-homepage-data
+  {:title      "Homepage"
+   :hero {:title "100% That Woman"
+          :alt   "Hair For Your Every Side - Shop Now"
+          :desktop {:title       "100% That Woman Hero Desktop"
+                    :description "Hero Desktop"
+                    :file {:url "//images.ctfassets.net/76m8os65degn/lV0nzdWVyeTwjzURC7DGy/f5567542de75981d4a6a8304b40c9a39/holiday-01-site-classic-homepage-hero-dsk-03.jpg"
+                           :details      {:size 135257, :image {:width 1400, :height 600}}
+                           :file-name    "holiday-01-site-classic-homepage-hero-dsk-03.jpg"
+                           :content-type "image/jpeg"}}
+          :mobile {:title       "100% That Woman Mobile"
+                   :description "Mobile Hero"
+                   :file {:url "//images.ctfassets.net/76m8os65degn/Dn1lKquC80iwMltrNUgOG/0f1079918959ba4c17a6c83768e532c1/holiday-01-site-classic-homepage-hero-mob-03.jpg"
+                          :details      {:size 147774, :image {:width 750, :height 930}}
+                          :file-name    "holiday-01-site-classic-homepage-hero-mob-03.jpg"
+                          :content-type "image/jpeg"}}
+          :path  "/shop/look"}})
+
 (defrecord ContentfulContext [logger exception-handler environment cache-timeout api-key space-id endpoint]
   component/Lifecycle
   (start [c]
     (let [pool        (at-at/mk-pool)
           production? (= environment "production")
-          cache       (atom {})
+          cache       (atom {:homepage
+                             {:aladdin fallback-homepage-data
+                              :classic fallback-homepage-data
+                              :shop    fallback-homepage-data}})
           env-param   (if production?
                         "production"
                         "acceptance")]
