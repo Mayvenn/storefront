@@ -193,7 +193,8 @@
 
 (defn shared-cart-promo->discount
   [promotions price shared-cart-promo has-service-line-item? black-friday-time?]
-  (if has-service-line-item?
+  (if (or has-service-line-item?
+          (= "freeinstall" shared-cart-promo))
     {:discount-text    (if black-friday-time?
                          "25% OFF + FREE Install"
                          "10% OFF + FREE Install")
