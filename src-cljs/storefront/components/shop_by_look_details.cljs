@@ -192,42 +192,48 @@
                        {:legacy/variant-id :legacy/variant-id}))))
 
 (defn shared-cart-promo->discount
-  [promotions price shared-cart-promo data]
-  (let [black-friday-time? (experiments/black-friday-time? data)]
-    (if (= "freeinstall" shared-cart-promo)
+  [promotions price shared-cart-promo has-service-line-item? black-friday-time?]
+  (if has-service-line-item?
+    {:discount-text    (if black-friday-time?
+                         "25% OFF + FREE Install"
+                         "10% OFF + FREE Install")
+     :discounted-price (if black-friday-time?
+                         (* 0.75 price)
+                         (* 0.90 price))}
+    (let [promotion% (some->> promotions
+                              (filter (comp #{shared-cart-promo} str/lower-case :code))
+                              first
+                              :description
+                              (re-find #"\b(\d\d?\d?)%")
+                              second)]
       {:discount-text    (if black-friday-time?
-                           "25% OFF + FREE Install"
-                           "10% OFF + FREE Install")
-       :discounted-price (if black-friday-time?
-                           (* 0.75 price)
-                           (* 0.90 price))}
-      (let [promotion% (some->> promotions
-                                (filter (comp #{shared-cart-promo} str/lower-case :code))
-                                first
-                                :description
-                                (re-find #"\b(\d\d?\d?)%")
-                                second)]
-        {:discount-text    (if black-friday-time?
-                             (some-> promotion% (str "% OFF"))
-                             (some-> promotion% (str "% + 10% Bundle Discount")))
-         :discounted-price (or
-                            (if black-friday-time?
-                              (some->> promotion%
-                                       spice/parse-int
-                                       (* 0.01)
-                                       (- 1.0)  ;; 100% - discount %
-                                       (* price))
-                              (some->> promotion%
-                                       spice/parse-int
-                                       (* 0.01)
-                                       (+ 0.10) ;; bundle-discount
-                                       (- 1.0)  ;; 100% - discount %
-                                       (* price)))
-                            price)})))) ;; discounted price was unparsable
+                           (some-> promotion% (str "% OFF"))
+                           (some-> promotion% (str "% + 10% Bundle Discount")))
+       :discounted-price (or
+                          (if black-friday-time?
+                            (some->> promotion%
+                                     spice/parse-int
+                                     (* 0.01)
+                                     (- 1.0)  ;; 100% - discount %
+                                     (* price))
+                            (some->> promotion%
+                                     spice/parse-int
+                                     (* 0.01)
+                                     (+ 0.10) ;; bundle-discount
+                                     (- 1.0)  ;; 100% - discount %
+                                     (* price)))
+                          price)}))) ;; discounted price was unparsable
+
+
+(defn has-service-line-item?
+  [{:keys [line-items]}]
+  (let [service-line-item-variant-ids (set (vals api/freeinstall-line-item-name->variant-id))]
+    (some service-line-item-variant-ids (map :legacy/variant-id line-items))))
 
 (defn query [data]
   (let [skus                  (get-in data keypaths/v2-skus)
-        shared-cart-with-skus (some-> (get-in data keypaths/shared-cart-current)
+        shared-cart           (get-in data keypaths/shared-cart-current)
+        shared-cart-with-skus (some-> shared-cart
                                       (put-skus-on-shared-cart skus))
         navigation-event      (get-in data keypaths/navigation-event)
         album-keyword         (get-in data keypaths/selected-album-keyword)
@@ -242,25 +248,26 @@
         discount          (shared-cart-promo->discount (get-in data keypaths/promotions)
                                                        base-price
                                                        shared-cart-promo
-                                                       data)
+                                                       (has-service-line-item? shared-cart)
+                                                       (experiments/black-friday-time? data))
         back              (first (get-in data keypaths/navigation-undo-stack))
         back-event        (:default-back-event album-copy)]
-    (merge {:shared-cart                shared-cart-with-skus
-            :album-keyword              album-keyword
-            :look                       look
-            :creating-order?            (utils/requesting? data request-keys/create-order-from-shared-cart)
-            :skus                       skus
-            :sold-out?                  (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
-            :fetching-shared-cart?      (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
-            :shared-cart-type-copy      (:short-name album-copy)
-            :look-detail-price?         (not= album-keyword :deals)
-            :base-price                 base-price
-            :discounted-price           (:discounted-price discount)
-            :quadpay-loaded?            (get-in data keypaths/loaded-quadpay)
-            :desktop-two-column?        true
-            :discount-text              (:discount-text discount)
+    (merge {:shared-cart           shared-cart-with-skus
+            :album-keyword         album-keyword
+            :look                  look
+            :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
+            :skus                  skus
+            :sold-out?             (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
+            :fetching-shared-cart? (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
+            :shared-cart-type-copy (:short-name album-copy)
+            :look-detail-price?    (not= album-keyword :deals)
+            :base-price            base-price
+            :discounted-price      (:discounted-price discount)
+            :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
+            :desktop-two-column?   true
+            :discount-text         (:discount-text discount)
 
-            :return-link/copy           (:back-copy album-copy)
+            :return-link/copy          (:back-copy album-copy)
             :return-link/event-message (if (and (not back) back-event)
                                          [back-event]
                                          [events/navigate-shop-by-look {:album-keyword album-keyword}])
