@@ -3,7 +3,8 @@
   (:require #?@(:cljs
                 [[storefront.api :as api]
                  [storefront.hooks.google-maps :as google-maps]
-                 [storefront.platform.maps :as maps]])
+                 [storefront.platform.maps :as maps]
+                 [storefront.platform.messages :refer [handle-message]]])
             [adventure.keypaths :as keypaths]
             api.orders
             [clojure.string :as string]
@@ -55,9 +56,9 @@
   [:div.mx2 (ui/circle-picture {:width "72px"} portrait-url)])
 
 (defn share-icon-molecule
-  [{:share-icon/keys [title text url]}]
+  [share-icon-data]
   [:div.flex.items-top.justify-center.mr2.col-1
-   (ui/navigator-share title text url)])
+   (ui/navigator-share share-icon-data)])
 
 (defcomponent stylist-profile-card-component
   [query _ _]
@@ -142,13 +143,16 @@
                                                                                  :query-params {:offset j}}]})
                                                             ucare-img-urls))
 
-               :share-icon/title (str stylist-name " - " (get-in data (conj storefront.keypaths/store :location :city)))
-               :share-icon/text  (str stylist-name " is a Mayvenn Certified Stylist with top-rated reviews, great professionalism, and amazing work. Check out this stylist here:")
-               :share-icon/url   (strings/format "https://shop.%s.com/stylist/%d-%s?utm_campaign=%d&utm_term=fi_stylist_share&utm_medium=referral"
-                                                 environment
-                                                 stylist-id
-                                                 (:store-slug stylist)
-                                                 stylist-id)
+               :share-icon/target [events/share-stylist {:stylist-id (:stylist-id stylist)
+                                                         :title      (str stylist-name " - " (get-in data (conj storefront.keypaths/store :location :city)))
+                                                         :text       (str stylist-name " is a Mayvenn Certified Stylist with top-rated reviews, great professionalism, and amazing work. Check out this stylist here:")
+                                                         :url        (strings/format "https://shop.%s.com/stylist/%d-%s?utm_campaign=%d&utm_term=fi_stylist_share&utm_medium=referral"
+                                                                                     environment
+                                                                                     stylist-id
+                                                                                     (:store-slug stylist)
+                                                                                     stylist-id)}]
+               :share-icon/icon   (svg/share-icon {:height "19px"
+                                                   :width  "18px"})
 
                :details [{:section-details/title   "Experience"
                           :section-details/content (string/join ", " (remove nil?
@@ -165,12 +169,10 @@
                          (when (-> stylist :service-menu :specialty-sew-in-leave-out)
                            {:section-details/title   "Specialties"
                             :section-details/content (:service-menu stylist)})]}
-
         (and (experiments/mayvenn-rating? data)
              (:mayvenn-rating stylist))
         (merge
-         {:rating/value (:mayvenn-rating stylist)})
-        ))))
+         {:rating/value (:mayvenn-rating stylist)})))))
 
 (defn carousel-molecule
   [{:carousel/keys [items]}]
@@ -277,6 +279,18 @@
   #?@(:cljs
       [(google-maps/insert)
        (api/fetch-stylist-details (get-in app-state storefront.keypaths/api-cache) stylist-id)]))
+
+(defmethod effects/perform-effects events/share-stylist
+  [_ _ {:keys [url text title stylist-id]} _]
+  #?(:cljs
+     (.. (js/navigator.share (clj->js {:title title
+                                       :text  text
+                                       :url   url}))
+         (then  (fn []
+                  (handle-message events/api-success-shared-stylist {:stylist-id stylist-id})))
+         (catch (fn [err]
+                  (handle-message events/api-failure-shared-stylist {:stylist-id stylist-id
+                                                                     :error (.toString err)}))))))
 
 (defmethod transitions/transition-state events/navigate-adventure-stylist-profile
   [_ _ {:keys [stylist-id]} app-state]

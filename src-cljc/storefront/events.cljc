@@ -215,6 +215,7 @@
 (defpath control-cart-share-show)
 (defpath control-pick-stylist-button)
 (defpath control-change-stylist)
+(defpath share-stylist)
 
 (defpath control-popup-hide)
 
@@ -359,6 +360,8 @@
 
 (defpath api-success-voucher-redemption)
 
+(defpath api-success-shared-stylist)
+
 (defpath api-failure)
 (defpath api-failure-no-network-connectivity)
 (defpath api-failure-bad-server-response)
@@ -366,6 +369,7 @@
 (defpath api-failure-errors-invalid-promo-code)
 (defpath api-failure-pending-promo-code)
 (defpath api-failure-order-not-created-from-shared-cart)
+(defpath api-failure-shared-stylist)
 
 (defpath flash)
 (defpath flash-show)

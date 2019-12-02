@@ -453,3 +453,16 @@
 (defmethod perform-track events/control-change-stylist
   [_ _ {:keys [stylist-id]} _]
   (stringer/track-event "change_stylist_icon_pressed" {:current_servicing_stylist_id stylist-id}))
+
+(defmethod perform-track events/share-stylist
+  [_ _ {:keys [stylist-id]} _]
+  (stringer/track-event "share_stylist_icon_pressed" {:current_servicing_stylist_id stylist-id}))
+
+(defmethod perform-track events/api-success-shared-stylist
+  [_ _ {:keys [stylist-id]} _]
+  (stringer/track-event "stylist_profile_share_success" {:current_servicing_stylist_id stylist-id}))
+
+(defmethod perform-track events/api-failure-shared-stylist
+  [_ _ {:keys [stylist-id error]} _]
+  (stringer/track-event "stylist_profile_share_error" {:current_servicing_stylist_id stylist-id
+                                                       :error_message                error}))
