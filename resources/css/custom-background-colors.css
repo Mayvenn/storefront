@@ -29,7 +29,6 @@
 .bg-lighten-5              { background-color: var(--lighten-5); }
 
 :root {
-    --white:          #ffffff;
     --fate-white:     #f8f8f8;
     --light-silver:   #f2f2f2;
     --silver:         #ebebeb;
@@ -37,7 +36,6 @@
     --light-gray:     #b4b4b4;
     --gray:           #666666;
     --dark-gray:      #333333;
-    --black:          #000000;
     --error:          #ff004f;
 
     --transparent-teal:       #40cbac19;
@@ -60,5 +58,15 @@
 
     --lighten-5: rgba(255, 255, 255, .925);
     --clear: rgba(0, 0, 0, 0);
+
+    /* THESE ARE OUR NEW COLORS TODO: vet that these will be used for background*/
+    --p-color:     #4427c1;
+    --s-color:     #6bc8ad;
+    --red:         #f94941;
+    --paypal:      #49bbf0;
+    --pale-purple: #dedbe5;
+    --white:       #ffffff;
+    --cool-gray:   #eeefef;
+    --black:       #000000;
 }
 
