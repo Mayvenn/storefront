@@ -93,7 +93,6 @@
       [:li (section-link "Buttons" events/navigate-design-system-buttons)]
       [:li (section-link "Form Fields" events/navigate-design-system-form-fields)]
       [:li (section-link "Navigation" events/navigate-design-system-navigation)]
-      [:li (section-link "Progress" events/navigate-design-system-progress)]
       [:li (section-link "Carousels" events/navigate-design-system-carousel)]]]]])
 
 (def lorem "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam euismod justo ut metus blandit commodo. Quisque iaculis odio non sem suscipit porta. Donec id bibendum tellus. Proin eu malesuada massa, mattis vestibulum orci.")
@@ -515,17 +514,6 @@
                                              events/navigate-design-system-navigation
                                              events/navigate-design-system-navigation-tab3]}}))]]]])
 
-(defcomponent ^:private progress [data _ _]
-  [:section
-   (header "Progress Indicator")
-   [:.dark-gray
-    [:div.bg-white
-     [:div.col-6-on-tb-dt.mx-auto
-      (ui/progress-indicator {:value 0 :maximum 100})
-      (ui/progress-indicator {:value 50 :maximum 100})
-      (ui/progress-indicator {:value 5 :maximum 7})
-      (ui/progress-indicator {:value 100 :maximum 100})]]]])
-
 (defcomponent ^:private carousel [data _ _]
   [:section
    (header "Carousels")
@@ -684,7 +672,6 @@
          events/navigate-design-system-navigation      (component/build navigation data opts)
          events/navigate-design-system-navigation-tab1 (component/build navigation data opts)
          events/navigate-design-system-navigation-tab3 (component/build navigation data opts)
-         events/navigate-design-system-progress        (component/build progress data opts)
          events/navigate-design-system-carousel        (component/build carousel data opts))]]])
 
 (defn ^:export built-component [data opts]
