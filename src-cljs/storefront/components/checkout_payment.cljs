@@ -163,117 +163,6 @@
                                            :disabled? disabled?
                                            :data-test "payment-form-submit"})])]])])
 
-(defcomponent adventure-component
-  [{:keys [step-bar
-           saving?
-           disabled?
-           loaded-stripe?
-           store-credit
-           field-errors
-           credit-card
-           promo-code
-           selected-payment-methods
-           freeinstall-applied?
-           can-use-store-credit?
-           loaded-quadpay?
-           promo-banner]}
-   owner _]
-  [:div.container.p2
-   (component/build promo-banner/sticky-organism promo-banner nil)
-   (component/build checkout-steps/component step-bar)
-
-   (ui/narrow-container
-    [:div.m2
-     [:h3.my2 "Payment Information"]
-     [:form
-      {:on-submit (utils/send-event-callback events/control-checkout-choose-payment-method-submit)
-       :data-test "payment-form"}
-
-      (let [{:keys [credit-applicable fully-covered?]} store-credit
-            selected-stripe-or-store-credit?           (and (seq selected-payment-methods)
-                                                            (set/subset? selected-payment-methods #{:stripe :store-credit}))
-            selected-quadpay?                          (contains? selected-payment-methods :quadpay)]
-        (if (and fully-covered? can-use-store-credit?)
-          (ui/note-box
-           {:color     "teal"
-            :data-test "store-credit-note"}
-           [:.p2.navy
-            [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]])
-          [:div
-           (ui/radio-section
-            (merge {:name         "payment-method"
-                    :id           "payment-method-credit-card"
-                    :data-test    "payment-method"
-                    :data-test-id "credit-card"
-                    :on-click     (utils/send-event-callback events/control-checkout-payment-select {:payment-method :stripe})}
-                   (when selected-stripe-or-store-credit? {:checked "checked"}))
-            [:div.overflow-hidden
-             [:div "Pay with Credit/Debit Card"]
-             [:p.h6 "All transactions are secure and encrypted."]])
-
-           (when selected-stripe-or-store-credit?
-             (let [{:keys [credit-available credit-applicable]} store-credit]
-               [:div.p2.ml5
-                (when (pos? credit-available)
-                  (if can-use-store-credit?
-                    (ui/note-box
-                     {:color     "teal"
-                      :data-test "store-credit-note"}
-                     [:.p2.navy
-                      [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
-                      [:.h6.mt1
-                       "Please enter an additional payment method below for the remaining total on your order."]])
-                    (ui/note-box
-                     {:color     "orange"
-                      :data-test "store-credit-note"}
-                     [:div.p2.black
-                      [:div "Your "
-                       [:span.medium (as-money credit-applicable)]
-                       " in store credit "
-                       [:span.medium "cannot"]
-                       " be used with " [:span.shout freeinstall-applied?] " orders."]
-                      [:div.h6.mt1
-                       "To use store credit, please remove promo code " [:span.shout freeinstall-applied?] " from your bag."]])))
-
-                [:div
-                 (component/build cc/component
-                                  {:credit-card  credit-card
-                                   :field-errors field-errors})
-                 [:div.h5
-                  "You can review your order on the next page before we charge your card."]]]))
-           (ui/radio-section
-            (merge {:name         "payment-method"
-                    :id           "payment-method-quadpay"
-                    :data-test    "payment-method"
-                    :data-test-id "quadpay"
-                    :on-click     (utils/send-event-callback events/control-checkout-payment-select
-                                                             {:payment-method :quadpay})}
-                   (when selected-quadpay? {:checked "checked"}))
-
-            [:div.overflow-hidden
-             [:div.flex
-              [:div.mr1 "Pay with "]
-              [:div.mt1 {:style {:width "85px" :height "17px"}}
-               ^:inline (svg/quadpay-logo)]]
-             [:p.h6 "4 interest-free payments with QuadPay. "
-              [:a.blue.block {:href "#"
-                              :on-click (fn [e]
-                                          (.preventDefault e)
-                                          (quadpay/show-modal))}
-               "Learn more."]
-              (when loaded-quadpay?
-                [:div.hide (component/build quadpay/widget-component {} nil)])]])
-
-           (when selected-quadpay?
-             [:div.h6.px2.ml5.dark-gray
-              "Before completing your purchase, you will be redirected to Quadpay to securely set up your payment plan."])]))
-
-      (when loaded-stripe?
-        [:div.my4.col-6-on-tb-dt.mx-auto
-         (ui/submit-button "Review Order" {:spinning? saving?
-                                           :disabled? disabled?
-                                           :data-test "payment-form-submit"})])]])])
-
 (defn query [data]
   (let [available-store-credit   (get-in data keypaths/user-total-available-store-credit)
         credit-to-use            (min available-store-credit (get-in data keypaths/order-total))
@@ -307,9 +196,7 @@
      (cc/query data))))
 
 (defn ^:private built-non-auth-component [data opts]
-  (if (= "freeinstall" (get-in data keypaths/store-slug))
-    (component/build adventure-component (query data) opts)
-    (component/build component (query data) opts)))
+  (component/build component (query data) opts))
 
 (defn ^:export built-component [data opts]
   (checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout
