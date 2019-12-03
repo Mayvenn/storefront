@@ -7,7 +7,7 @@
 (defn return-link
   [{:return-link/keys [copy id back]
     [event & args]    :return-link/event-message}]
-  [:div.h6.medium.navy
+  [:div.h6.medium.black
    (when id {:data-test id})
    [:a.inherit-color (if (= :navigate (first event))
                        (apply utils/route-back-or-to back event args)
@@ -19,7 +19,7 @@
   (when rating
     (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars rating)]
       [:div.h5.flex.items-center.line-height-2
-       [:span.orange.bold.mr1 rating]
+       [:span.s-color.bold.mr1 rating]
        whole-stars
        partial-star
        empty-stars])))
@@ -89,7 +89,7 @@
 (defn labeled-input-molecule
   [{:labeled-input/keys [id label value on-change]}]
   (when id
-    [:input.h5.border-none.px2.bg-white.placeholder-dark-silver.flex-grow-1
+    [:input.h5.border-none.px2.bg-white.placeholder-black.flex-grow-1
      {:key         id
       :data-test   id
       :name        id
@@ -103,22 +103,22 @@
 
 (defn submit-button-molecule
   [{:submit-button/keys [id contents target classes disabled?]}]
-  (ui/teal-button
+  (ui/p-color-button
    (merge {:style          {:width   "40px"
                             :height  "40px"
                             :padding "0"}
            :width          :small
            :disabled?      disabled?
-           :disabled-class "bg-light-gray gray"
+           :disabled-class "bg-cool-gray gray"
            :data-test      id
-           :class          "dark-gray flex medium not-rounded items-center justify-center"}
+           :class          "flex medium not-rounded items-center justify-center"}
           (utils/fake-href target))
    (svg/forward-arrow {:style {:width  "14px"
                                :height "14px"}})))
 
 (defn input-group-field-and-button-molecule
   [{:submit-button/keys [target disabled?] :as data}]
-  [:form.bg-white.border.border-light-gray.rounded.overflow-hidden.table.flex.col-12
+  [:form.bg-white.border.border-cool-gray.rounded.overflow-hidden.table.flex.col-12
    (when-not disabled?
      {:on-submit (utils/send-event-callback target)})
    (labeled-input-molecule data)
@@ -154,5 +154,5 @@
 (defn svg-star-rating-molecule
   [{:rating/keys [value]}]
   (component/html
-   [:div.h6.orange
+   [:div.h6.s-color
     (svg-star-rating value)]))

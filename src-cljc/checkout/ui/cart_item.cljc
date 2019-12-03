@@ -21,7 +21,7 @@
 (defn cart-item-copy-molecule
   [{:cart-item-copy/keys [id value]}]
   (when value
-    [:div.h7.dark-gray {:data-test id} value]))
+    [:div.h7 {:data-test id} value]))
 
 (defn cart-item-title-molecule
   [{:cart-item-title/keys [id primary secondary]}]
@@ -34,7 +34,7 @@
 
 (defn completed-progress-circle-atom
   [i _]
-  [:div.bg-purple.flex.justify-center.items-center.white.bold.h5
+  [:div.bg-p-color.flex.justify-center.items-center.white.bold.h5
    {:key (str "complete-" i)
     :style {:height 21
             :width  21
@@ -43,7 +43,7 @@
 
 (defn incomplete-progress-circle-atom
   [i content]
-  [:div.bg-light-gray.flex.justify-center.items-center.dark-silver.bold.h6
+  [:div.bg-gray.flex.justify-center.items-center.bold.h6
    {:key (str "incomplete-" i)
     :style {:height 21
             :width  21
@@ -51,7 +51,7 @@
    content])
 
 (def steps-hyphen-seperator-atom
-  [:div.border-top.border-light-gray])
+  [:div.border-top.border-gray])
 
 (defn cart-item-steps-to-complete-molecule
   [{:cart-item-steps-to-complete/keys
@@ -70,11 +70,11 @@
                                  uncompleted)))]
        (when (and action-target action-label)
          [:div.mb2 ; margin bottom for 320px screens
-          (ui/teal-button (assoc (apply utils/route-to action-target)
-                                 :height-class :small
-                                 :width-class  :small
-                                 :data-test id)
-                          action-label)])])))
+          (ui/p-color-button (assoc (apply utils/route-to action-target)
+                                    :height-class :small
+                                    :width-class  :small
+                                    :data-test id)
+                             action-label)])])))
 
 (defn cart-item-squircle-thumbnail-molecule
   [{:cart-item-squircle-thumbnail/keys
@@ -85,7 +85,7 @@
        {:style {:height "49px"
                 :width  "52px"}}
        (when sticker-label
-         [:div.absolute.z1.circle.border.border-white.medium.h6.bg-too-light-teal
+         [:div.absolute.z1.circle.border.border-white.medium.h6.bg-cool-gray
           (css-transitions/background-fade
            highlighted?
            {:key       sticker-id
@@ -102,7 +102,7 @@
           :key       (str "cart-item-squircle-thumbnail-" sku-id)
           :data-test (str "line-item-img-" sku-id)})
         (ui/ucare-img {:width 48
-                       :class "block rounded border border-light-gray"}
+                       :class "block rounded border border-cool-gray"}
                       ucare-id)]])))
 
 (defn confetti-handler
@@ -177,12 +177,12 @@
   [{:cart-item-pick-stylist/keys [id target content]}]
   (when id
     [:div
-     (ui/teal-ghost-button (merge {:height-class :small
-                                   :width-class  "col-6"
-                                   :class        "teal bold mt1"
-                                   :data-test    id}
-                                  (apply utils/route-to target))
-                           content)]))
+     (ui/p-color-ghost-button (merge {:height-class :small
+                                      :width-class  "col-6"
+                                      :class        "p-color bold mt1"
+                                      :data-test    id}
+                                     (apply utils/route-to target))
+                              content)]))
 
 (defcomponent organism
   [{:keys [cart-item suggestions]} _ _]

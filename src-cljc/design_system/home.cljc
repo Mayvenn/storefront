@@ -135,10 +135,7 @@
 
     (font-weight :light "300")
     (font-weight :medium "400")
-    (font-weight :bold "700")]
-
-   #_(header "Text Links")
-   #_[:p [:a.navy {:href "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"} "Learn more"]]])
+    (font-weight :bold "700")]])
 
 (declare color-swatch)
 (defn ^:private buttons [data]
@@ -156,8 +153,8 @@
       [:div "Backgrounds: "]
       [:a.black {:href "#" :on-click (partial set-state [:design-system :buttons-bg] "bg-white")}
        (color-swatch "white" "ffffff")]
-      [:a.black {:href "#" :on-click (partial set-state [:design-system :buttons-bg] "bg-teal")}
-       (color-swatch "teal" "40cbac")]]
+      [:a.black {:href "#" :on-click (partial set-state [:design-system :buttons-bg] "bg-p-color")}
+       (color-swatch "p-color" "4427c1")]]
      [:div.h6
       "Button States: "
       [:pre
@@ -188,37 +185,35 @@
        ":disabled? "
        (if (get-in data [:design-system :buttons :disabled?]) "true" "false")]
       "}"]]
-    [:div.h6.dark-gray
+    [:div.h6
      "Not every button state is used everywhere (eg - spinners are only used if the action may take some time and we would like feedback. Eg - a button to an external site will not spin)"]
     [:div.clearfix.mxn1
      (when-let [bg (get-in data [:design-system :buttons-bg])]
        {:class (str bg)})
-     [:div.col.col-6.p1 (ui/teal-button button-attrs "ui/teal-button")]
-     [:div.col.col-6.p1 (ui/navy-button button-attrs "ui/navy-button")]
+     [:div.col.col-6.p1 (ui/p-color-button button-attrs "ui/p-color-button")]
      [:div.col.col-6.p1 (ui/aqua-button button-attrs "ui/aqua-button")]
-     [:div.col.col-6.p1 (ui/dark-gray-button button-attrs "ui/dark-gray-button")]
      [:div.col.col-6.p1 (ui/facebook-button button-attrs "ui/facebook-button")]
 
      [:div.col.col-6.p1 (ui/ghost-button button-attrs "ui/ghost-button")]
-     [:div.col.col-6.p1 (ui/navy-ghost-button button-attrs "ui/navy-ghost-button")]
      [:div.col.col-6.p1 (ui/light-ghost-button button-attrs "ui/light-ghost-button")]
-     [:div.col.col-6.p1 (ui/teal-ghost-button button-attrs "ui/teal-ghost-button")]
+     [:div.col.col-6.p1 (ui/p-color-ghost-button button-attrs "ui/p-color-ghost-button")]
 
      [:div.col.col-6.p1 (ui/underline-button button-attrs "ui/underline-button")]
-     [:div.col.col-12.p1 (ui/teal-button button-attrs
-                                         [:div "col-12 with styled "
-                                          [:span.medium.italic.underline "SPAN™"]
-                                          " and svg "
-                                          ^:inline (svg/dropdown-arrow {:class  "stroke-white"
-                                                                        :width  "12px"
-                                                                        :height "10px"
-                                                                        :style  {:transform "rotate(-90deg)"}})])]
+     [:div.col.col-6.p1 (ui/black-button button-attrs "ui/black-button")]
+     [:div.col.col-12.p1 (ui/p-color-button button-attrs
+                                            [:div "col-12 with styled "
+                                             [:span.medium.italic.underline "SPAN™"]
+                                             " and svg "
+                                             ^:inline (svg/dropdown-arrow {:class  "stroke-white"
+                                                                           :width  "12px"
+                                                                           :height "10px"
+                                                                           :style  {:transform "rotate(-90deg)"}})])]
      [:div.col.col-12.p1 (ui/input-group
                           {:type          "text"
                            :wrapper-class "col-7 pl3 flex items-center bg-white circled-item"
                            :placeholder   "Text"
                            :focused       false}
-                          {:ui-element ui/teal-button
+                          {:ui-element ui/p-color-button
                            :content    "Button"
                            :args       (merge button-attrs
                                               {:class       "flex justify-center items-center circled-item"
@@ -235,8 +230,8 @@
               [:div {:key (str class "-" px)}
                [:div.m1
                 [:div.border-dashed.border-gray.inline-block.center
-                 [:div.border.border-teal.inline-block {:class class}
-                  [:div.border.border-gray.inline-block.bg-light-gray
+                 [:div.border.border-p-color.inline-block {:class class}
+                  [:div.border.border-gray.inline-block.bg-cool-gray
                    [:div
                     [:p.h6 (str "." class)]
                     [:p.h6 px]]]]]]])
@@ -246,16 +241,16 @@
                       body])]
     [:section
      (header "Spacing")
-     [:div.h4.light.mb2.dark-gray "Margin puts space between elements. Padding puts space within elements."]
+     [:div.h4.light.mb2 "Margin puts space between elements. Padding puts space within elements."]
 
      [:h3 "Key"]
      (subsection
       ""
       [:div.border-dashed.border-gray.inline-block.p1.center.h6
        "Margin"
-       [:div.border.border-teal.p1
+       [:div.border.border-p-color.p1
         "Padding"
-        [:div.border.border-gray.p1.bg-light-gray
+        [:div.border.border-gray.p1.bg-cool-gray
          "Content"]]])
 
      [:h3 "Margin"]
@@ -282,7 +277,7 @@
      [:h3 "Padding"]
 
      [:p.mt1.gray "Backgrounds and borders are usually symmetrical around their content. For example, buttons look best when their content is equidistant from their edges. Therefore, padding is usually symmetrical too."]
-     [:p.mt1.gray "So, " [:code.dark-gray ".pl1"] ", " [:code.dark-gray ".pl2"] ", etc. exist, but are discouraged and are not show here."]
+     [:p.mt1.gray "So, " [:code ".pl1"] ", " [:code ".pl2"] ", etc. exist, but are discouraged and are not show here."]
 
      (subsection
       "in rems"
@@ -310,7 +305,7 @@
    [:div.p1
     [:div.p4
      {:class (str "bg-" color-class
-                  (when (#{"purple" "black" "quadpay-blue" "fb-blue" "dark-gray"} color-class) " white")
+                  (when (#{"black" "quadpay-blue" "fb-blue" "p-color"} color-class) " white")
                   (when (string/ends-with? color-class "white") " border border-gray"))
       :style {:height "8em"}}
      [:div.mt4
@@ -334,42 +329,25 @@
 
    (subheader "Primary")
    [:div.flex.flex-wrap.mxn1.mb4
-    (color-swatch "too-light-teal" "f5fcfb")
-    (color-swatch "light-teal" "9fe5d5")
-    (color-swatch "teal" "40cbac")]
+    (color-swatch "p-color" "4427c1")
+    (color-swatch "s-color" "6bc8ad")
+    (color-swatch "cool-gray" "eeefef")]
 
    (subheader "Grays")
    [:div.flex.flex-wrap.mxn1.mb4
     (color-swatch "black" "000000")
-    (color-swatch "dark-gray" "666666")
-    (color-swatch "dark-silver" "aaaaaa")
     (color-swatch "gray" "cccccc")
-    (color-swatch "silver" "dadada")
-    (color-swatch "light-gray" "ebebeb")
-    (color-swatch "fate-white" "f8f8f8")
     (color-swatch "white" "ffffff")]
 
    (subheader "Success dialog and error handling")
    [:div.flex.flex-wrap.mxn1.mb4
-    (color-swatch "green" "00cc00")
+    (color-swatch "s-color" "6bc8ad")
     (color-swatch "error" "ff004f")]
 
    (subheader "Flourishes")
    [:div.flex.flex-wrap.mxn1.mb4
-    (color-swatch "light-orange" "fff8e5")
-    (color-swatch "orange" "ffc520")
-    (color-swatch "transparent-light-teal" "9fe5d5cc")
-    (color-swatch "hover-only-teal-gray" "e5eeec")
-    (color-swatch "purple" "7e006d")]
-
-   (subheader "Adventure Flow")
-   [:div.flex.flex-wrap.mxn1.mb4
-    (color-swatch "lavender" "af9fc4")
-    (color-swatch "light-lavender" "cab6d7")
-    (color-swatch "too-light-lavender" "efebf5")
-    (color-gradient-swatch "Lavender-gradient" "cdB8d9" "9a8fb4")
-    (color-swatch "lavender-gradient-light" "cdB8d9")
-    (color-swatch "lavender-gradient-dark" "9a8fb4")]
+    (color-swatch "s-color" "ffc520")
+    (color-swatch "pale-purple" "dedbe5")]
 
    (subheader "Third party")
    [:div.flex.flex-wrap.mxn1.mb4
@@ -467,13 +445,13 @@
      :errors        (if (= (get-in data [:design-system :form :pill-phone]) "wrong")
                       [{:long-message "wrong"}]
                       [])}
-    {:ui-element ui/teal-button
+    {:ui-element ui/p-color-button
      :content    "Get Survey"
      :args       {:class          "flex justify-center medium items-center circled-item"
                   :width-class    "col-4"
                   :height-class   "py2"
                   :data-test      ""
-                  :disabled-class "disabled bg-teal"}})
+                  :disabled-class "disabled bg-p-color"}})
    (ui/input-group
     {:keypath       [:design-system :form :pill-phone-2]
      :wrapper-class "col-8 flex bg-white pl3 items-center circled-item"
@@ -486,7 +464,7 @@
      :errors        (if (= (get-in data [:design-system :form :pill-phone-2]) "wrong")
                       [{:long-message "wrong"}]
                       [])}
-    {:ui-element ui/teal-button
+    {:ui-element ui/p-color-button
      :content    "Get Survey"
      :args       {:class        "flex justify-center medium items-center circled-item"
                   :width-class  "col-4"
@@ -502,8 +480,8 @@
 (defcomponent ^:private navigation [data _ _]
   [:section
    (header "Navigation")
-   [:.dark-gray
-    [:div.bg-light-gray
+   [:div
+    [:div.bg-cool-gray
      [:div.col-6-on-tb-dt.mx-auto
       #?(:cljs
          (component/build tabs/component
@@ -565,7 +543,7 @@
 (defn simple-option
   [{:keys [on-click primary-label secondary-label selected? sold-out?]}]
   (let [label-style (cond
-                      sold-out? "dark-gray"
+                      sold-out? "gray"
                       selected? "medium"
                       :else     nil)]
     (ui/option {:key      primary-label

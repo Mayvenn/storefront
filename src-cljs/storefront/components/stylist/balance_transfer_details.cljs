@@ -22,7 +22,7 @@
 
 (defn ^:private info-block [header content]
   [:div.align-top.mb2
-   [:span.h6.dark-gray.shout.nowrap header]
+   [:span.h6.shout.nowrap header]
    [:div.h6.medium (or content "--")]])
 
 (defn ^:private info-columns [[left-header left-content] [right-header right-content]]
@@ -93,7 +93,7 @@
          [:h5.col-12.left.medium (str "Commission Earned" (when-let [name (orders/first-name-plus-last-name-initial order)]
                                                             (str " - " name)))]]
         [:div.col.col-3.mtp1.right-align.pb2
-         [:div.h5.medium.teal (mf/as-money amount)]]
+         [:div.h5.medium.p-color (mf/as-money amount)]]
 
         (info-columns
          ["Deposit Date" (f/long-date commission-date)]
@@ -104,7 +104,7 @@
          "Shipped Date" (f/long-date (or shipped-at commission-date)))
 
         [:div.align-top
-         [:span.h6.dark-gray.shout.nowrap "order details"]
+         [:span.h6.shout.nowrap "order details"]
          (component/build line-items/component {:line-items  line-items
                                                 :show-price? true}
                           {})]
@@ -184,8 +184,8 @@
        [:div.col.col-9
         [:h4.col-12.left.medium "Money Transfer"]]
        [:div.col.col-3.mtp1.right-align
-        [:div.h5.medium.green (mf/as-money amount)]]
-       [:div.h8.dark-gray.col.col-12.pb4.right-align payout-method-name]
+        [:div.h5.medium.s-color (mf/as-money amount)]]
+       [:div.h8.col.col-12.pb4.right-align payout-method-name]
        (payout-method-details
         (f/long-date (or created-at (:transfered_at data)))
         (or payout-method (:payout_method data)))]]]))
@@ -204,8 +204,8 @@
        [:div.col-12
         (info-block "Deposit Date" (f/long-date (or transfered-at (:transfered_at data))))]]
       [:div.col.col-2.mtp1.right-align
-       [:div.h5.medium.green (mf/as-money amount)]
-       [:div.h8.dark-gray "Cash"]]]]))
+       [:div.h5.medium.s-color (mf/as-money amount)]
+       [:div.h8 "Cash"]]]]))
 
 (defn ^:private voucher-award-component
   [{:keys [balance-transfer] :as queried-data}]
@@ -234,9 +234,9 @@
                          events/navigate-stylist-dashboard-order-details
                          {:order-number order-number}))
                        order-number
-                       [:span.teal " View"]]))]]
+                       [:span.p-color " View"]]))]]
       [:div.col.col-2.mtp1.right-align
-       [:div.h5.medium.green (mf/as-money amount)]]]]))
+       [:div.h5.medium.s-color (mf/as-money amount)]]]]))
 
 (defn query [data]
   (let [balance-transfer-id (get-in data keypaths/stylist-earnings-balance-transfer-details-id)

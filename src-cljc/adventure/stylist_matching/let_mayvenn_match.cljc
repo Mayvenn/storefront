@@ -11,13 +11,13 @@
    [:h3.bold "In the meantime…"]
    [:h4.py2 "Get inspired for your appointment"]
    [:div.py2
-    (ui/teal-button {:href  "https://www.instagram.com/explore/tags/mayvennfreeinstall/"
-                     :class "bold"}
-                    "View #MayvennFreeInstall")]])
+    (ui/p-color-button {:href  "https://www.instagram.com/explore/tags/mayvennfreeinstall/"
+                        :class "bold"}
+                       "View #MayvennFreeInstall")]])
 
 (defcomponent component
   [_ _ _]
-  [:div.bg-lavender.white {:style {:min-height "95vh"}}
+  [:div.bg-pale-purple.white {:style {:min-height "95vh"}}
    (ui/narrow-container
     [:div.center
      [:div.col-11.mx-auto.py4

@@ -25,7 +25,7 @@
 
 (defmethod component :adventure-freeinstall/applied adventure-freeinstall-applied
   [_ _ _]
-  [:a.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
+  [:a.white.center.p2.bg-p-color.mbnp5.h6.bold.flex.items-center.justify-center
    {:on-click  (utils/send-event-callback events/popup-show-adventure-free-install)
     :data-test "adventure-promo-banner"}
    (svg/celebration-horn {:height "1.6em"
@@ -38,12 +38,12 @@
   [_ _ _]
   [:a {:on-click  (utils/send-event-callback events/popup-show-v2-homepage)
        :data-test "v2-free-install-promo-banner"}
-   [:div.white.center.pp5.bg-teal.h5.bold.pointer
+   [:div.white.center.pp5.bg-p-color.h5.bold.pointer
     "Mayvenn will pay for your install! " [:span.underline "Learn more"]]])
 
 (defmethod component :v2-freeinstall/applied v2-freeinstall-applied
   [_ _ _]
-  [:a.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
+  [:a.white.center.p2.bg-p-color.mbnp5.h6.bold.flex.items-center.justify-center
    {:on-click  (utils/send-event-callback events/popup-show-v2-homepage)
     :data-test "v2-free-install-promo-banner"}
    (svg/celebration-horn {:height "1.6em"
@@ -54,7 +54,7 @@
 
 (defmethod component :shop/blackfriday shop-freeinstall
   [_ _ _]
-  [:a.block.white.p2.bg-lavender.flex.justify-center
+  [:a.block.white.p2.bg-pale-purple.flex.justify-center
    {:on-click  (utils/send-event-callback events/popup-show-consolidated-cart-free-install)
     :data-test "shop-black-friday-promo-banner"}
    [:div.pointer.h6.medium.center
@@ -64,7 +64,7 @@
 
 (defmethod component :shop/freeinstall shop-freeinstall
   [_ _ _]
-  [:a.block.white.p2.bg-lavender.flex.justify-center
+  [:a.block.white.p2.bg-pale-purple.flex.justify-center
    {:on-click  (utils/send-event-callback events/popup-show-consolidated-cart-free-install)
     :data-test "shop-freeinstall-promo-banner"}
    (svg/info {:height "14px"
@@ -76,7 +76,7 @@
 
 (defmethod component :basic basic
   [{:keys [promo]} _ _]
-  [:div.white.center.pp5.bg-teal.h5.bold
+  [:div.white.center.pp5.bg-p-color.h5.bold
    {:data-test "promo-banner"}
    (:description promo)])
 

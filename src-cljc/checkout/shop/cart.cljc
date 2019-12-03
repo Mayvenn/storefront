@@ -68,14 +68,14 @@
 
 (def or-separator
   [:div.h5.black.py1.flex.items-center
-   [:div.flex-grow-1.border-bottom.border-light-gray]
+   [:div.flex-grow-1.border-bottom.border-gray]
    [:div.mx2 "or"]
-   [:div.flex-grow-1.border-bottom.border-light-gray]])
+   [:div.flex-grow-1.border-bottom.border-gray]])
 
 (defn ^:private servicing-stylist-banner-component
   [{:servicing-stylist-banner/keys [id name image-url rating stylist-id]}]
   (when id
-    [:div.flex.bg-too-light-lavender.pl5.pr3.py2.items-center {:data-test id}
+    [:div.flex.bg-white.pl5.pr3.py2.items-center {:data-test id}
      (ui/circle-picture {:width 50} (ui/square-image {:resizable-url image-url} 50))
      [:div.flex-grow-1.ml5.line-height-1.medium
       [:div.h7 "Your Certified Mayvenn Stylist"]
@@ -129,7 +129,7 @@
            share-carts?
            show-browser-pay?
            suggestions]
-    :as queried-data}
+    :as   queried-data}
    _ _]
   [:div.container.px2
 
@@ -146,13 +146,13 @@
     [:div.px4.my2 (ui-molecules/return-link queried-data)]
 
     (servicing-stylist-banner-component queried-data)
-    [:div.col-on-tb-dt.col-6-on-tb-dt.px3.border-top.border-light-gray
+    [:div.col-on-tb-dt.col-6-on-tb-dt.px3.border-top.border-gray
      {:data-test "cart-line-items"}
      ;; HACK: have suggestions be paired with appropriate cart item
      (interpose
       [:div.flex
        [:div.ml2 {:style {:width "78px"}}]
-       [:div.flex-grow-1.border-bottom.border-light-gray.ml-auto]]
+       [:div.flex-grow-1.border-bottom.border-gray.ml-auto]]
       (map-indexed
        (fn [index cart-item]
          (component/build cart-item/organism {:cart-item   cart-item
@@ -168,7 +168,7 @@
       #?@(:cljs
           [(component/build quadpay/component queried-data nil)])
 
-      [:div.bg-too-light-teal.p2
+      [:div.bg-cool-gray.p2
        (when checkout-caption-copy
          [:div.flex.h6.pt1.pr3.pb2
           {:data-test "checkout-caption"}
@@ -180,11 +180,11 @@
             (ui/square-image {:resizable-url servicing-stylist-portrait-url} 50))]
           [:div.left-align.pl2 checkout-caption-copy]])
 
-       (ui/teal-button {:spinning? false
-                        :disabled? checkout-disabled?
-                        :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
-                        :data-test "start-checkout-button"}
-                       [:div "Check out"])
+       (ui/p-color-button {:spinning? false
+                           :disabled? checkout-disabled?
+                           :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
+                           :data-test "start-checkout-button"}
+                          [:div "Check out"])
 
        (when locked?
          [:div.error.h7.center.medium.py1
@@ -193,9 +193,9 @@
        (when-not locked?
          [:div
           [:div.h5.black.py1.flex.items-center
-           [:div.flex-grow-1.border-bottom.border-light-gray]
+           [:div.flex-grow-1.border-bottom.border-gray]
            [:div.mx2 "or"]
-           [:div.flex-grow-1.border-bottom.border-light-gray]]
+           [:div.flex-grow-1.border-bottom.border-gray]]
 
           [:div
            (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
@@ -209,27 +209,27 @@
 
      (when entered?
        [:div.my4.center
-        [:a.h5.teal.medium
+        [:a.h5.p-color.medium
          (apply utils/fake-href remove-freeinstall-event)
          "Checkout without a free Mayvenn Install"]])
 
      (when share-carts?
        [:div.py2
         [:div.h6.center.pt2.black.bold "Is this bag for a customer?"]
-        (ui/navy-ghost-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
-                               :class     "border-width-2 border-navy"
-                               :spinning? requesting-shared-cart?
-                               :data-test "share-cart"}
-                              [:div.flex.items-center.justify-center.bold
-                               (svg/share-arrow {:class  "stroke-navy mr1 fill-navy"
-                                                 :width  "24px"
-                                                 :height "24px"})
-                               "Share your bag"])])]]])
+        (ui/ghost-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
+                          :class     "border-width-2 border-black"
+                          :spinning? requesting-shared-cart?
+                          :data-test "share-cart"}
+                         [:div.flex.items-center.justify-center.bold
+                          (svg/share-arrow {:class  "stroke-black mr1 fill-black"
+                                            :width  "24px"
+                                            :height "24px"})
+                          "Share your bag"])])]]])
 
 (defn empty-cta-molecule
   [{:cta/keys [id label target]}]
   (when (and id label target)
-    (ui/teal-button
+    (ui/p-color-button
      (merge {:data-test id} (apply utils/fake-href target))
      [:div.flex.items-center.justify-center.inherit-color label])))
 
@@ -241,8 +241,7 @@
       (ui/ucare-img {:width "185"} image-id)]
 
      [:p.m2.h2.light primary]
-     [:div.col-10.mx-auto.m2.mb3.h5.dark-gray
-      secondary]]))
+     [:div.col-10.mx-auto.m2.mb3.h5 secondary]]))
 
 (defcomponent empty-component [queried-data _ _]
   (ui/narrow-container
@@ -250,7 +249,7 @@
     [:div.center {:data-test "empty-cart"}
      [:div.px4.my2 (ui-molecules/return-link queried-data)]
 
-     [:div.col-12.border-bottom.border-light-silver.mb4]
+     [:div.col-12.border-bottom.border-cool-gray.mb4]
 
      (empty-cart-body-molecule queried-data)
 
@@ -435,16 +434,16 @@
                                         [:div
                                          [:div.bold.h2
                                           (some-> total mf/as-money)]
-                                         [:div.h6.bg-purple.white.px2.nowrap.mb1
+                                         [:div.h6.bg-p-color.white.px2.nowrap.mb1
                                           "Includes Mayvenn Install"]
                                          (when (pos? total-savings)
-                                           [:div.h6.light.dark-gray.pxp1.nowrap.italic
+                                           [:div.h6.light.pxp1.nowrap.italic
                                             "You've saved "
-                                            [:span.bold.purple {:data-test "total-savings"}
+                                            [:span.bold.p-color {:data-test "total-savings"}
                                              (mf/as-money total-savings)]])]
 
                                         locked?
-                                        [:div.h7.dark-gray.light
+                                        [:div.h7.light
                                          "Add " quantity-remaining
                                          " more " (ui/pluralize quantity-remaining "item")
                                          " to "
@@ -474,7 +473,7 @@
                                                                                   :height "2em" :width "2em"})
                                       :cart-summary-line/label "Free Mayvenn Install"
                                       :cart-summary-line/value (mf/as-money-or-free service-discount)
-                                      :cart-summary-line/class "purple"}
+                                      :cart-summary-line/class "p-color"}
                                      (coupon-code->remove-promo-action "freeinstall"))
 
                                     {:cart-summary-line/action-id     "cart-remove-promo"
@@ -488,18 +487,18 @@
                                             :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
                                                                                         :height "2em" :width "2em"})
                                             :cart-summary-line/label (orders/display-adjustment-name name)
-                                            :cart-summary-line/class "purple"
+                                            :cart-summary-line/class "p-color"
                                             :cart-summary-line/value (mf/as-money-or-free price)}
 
                                      (and install-summary-line?
                                           (empty? coupon-code))
                                      (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
-                                             :cart-summary-line/class "purple"}
+                                             :cart-summary-line/class "p-color"}
                                             (coupon-code->remove-promo-action "freeinstall"))
 
                                      install-summary-line?
                                      (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
-                                             :cart-summary-line/class "purple"})
+                                             :cart-summary-line/class "p-color"})
                                      coupon-code
                                      (merge (coupon-code->remove-promo-action coupon-code))))
 

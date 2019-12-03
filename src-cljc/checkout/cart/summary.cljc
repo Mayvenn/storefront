@@ -25,7 +25,7 @@
   ([row-attrs content amount]
    [:tr.h5
     (merge
-     {:class "purple"}
+     {:class "p-color"}
      row-attrs)
     [:td.pyp1 content]
     [:td.pyp1.right-align.medium
@@ -47,7 +47,7 @@
                       [{:long-message error-message
                         :path         ["promo-code"]}])
      :data-ref      "promo-code"}
-    {:ui-element ui/teal-button
+    {:ui-element ui/p-color-button
      :content    "Apply"
      :args       {:on-click    (utils/send-event-callback events/control-cart-update-coupon)
                   :class       "flex justify-center items-center"
@@ -70,10 +70,10 @@
    (when freeinstall-line-item-data
      [:div
       [:div.flex.justify-end
-       [:div.h6.bg-purple.white.px1.nowrap.medium.mb1
+       [:div.h6.bg-p-color.white.px1.nowrap.medium.mb1
         "Includes Free Install"]]
       [:div.flex.justify-end
-       [:div.h6.light.dark-gray.px1.nowrap.italic
+       [:div.h6.light.px1.nowrap.italic
         "You've saved "
         [:span.bold {:data-test "total-savings"}
          (mf/as-money (:total-savings freeinstall-line-item-data))]]]])])
@@ -88,8 +88,8 @@
            promo-data
            subtotal] :as data} owner _]
   [:div {:data-test "cart-order-summary"}
-   [:div.hide-on-dt.border-top.border-light-gray]
-   [:div.py1.border-bottom.border-light-gray
+   [:div.hide-on-dt.border-top.border-cool-gray]
+   [:div.py1.border-bottom.border-cool-gray
     [:table.col-12
      [:tbody
       (summary-row {:class     "black"

@@ -46,9 +46,9 @@
      :subtitle/copy                      [[:div.mtb1 "Including Free Install purchases."]]
      :description/copy                   [:div.mt1
                                           "Buy hair with "
-                                          [:span.purple "0%"]
+                                          [:span.p-color "0%"]
                                           " interest over "
-                                          [:div [:span.purple "4"]
+                                          [:div [:span.p-color "4"]
                                            " installments."]]
      :single-field-form/callback         events/control-email-captured-submit
      :single-field-form/field-data       {:errors    (get errors ["email"])
@@ -60,7 +60,7 @@
                                           :value     email
                                           :data-test "email-input"}
      :single-field-form/button-data      {:title        "Sign up & Save"
-                                          :color-kw     :color/teal
+                                          :color-kw     :color/p-color
                                           :height-class :large
                                           :data-test    "email-input-submit"}}))
 
@@ -119,9 +119,9 @@
                                            ^:inline (svg/quadpay-logo)]]
      :description/copy                   [:div.mt1
                                           "Buy hair with "
-                                          [:span.purple "0%"]
+                                          [:span.p-color "0%"]
                                           " interest over "
-                                          [:div [:span.purple "4"]
+                                          [:div [:span.p-color "4"]
                                            " installments."]]
      :single-field-form/callback         events/control-email-captured-submit
      :single-field-form/field-data       {:errors    (get errors ["email"])
@@ -133,7 +133,7 @@
                                           :value     email
                                           :data-test "email-input"}
      :single-field-form/button-data      {:title        "Shop Now"
-                                          :color-kw     :color/teal
+                                          :color-kw     :color/p-color
                                           :height-class :large
                                           :data-test    "email-input-submit"}}))
 

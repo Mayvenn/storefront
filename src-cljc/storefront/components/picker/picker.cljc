@@ -15,7 +15,7 @@
             [storefront.accessors.experiments :as experiments]))
 
 (defn simple-selected-layer []
-  [:div.absolute.border.border-width-3.rounded-0.border-light-teal.overlay.flex
+  [:div.absolute.border.border-width-3.rounded-0.border-cool-gray.overlay.flex
    [:div.self-center.flex.items-center
     [:div {:style {:width "1em"}}]
     (ui/ucare-img {:width           "30"
@@ -24,8 +24,8 @@
                   "ae0e9566-f688-4a6d-a0a9-378138308e48")]])
 
 (defn simple-sold-out-layer [text]
-  [:div.bg-darken-1.absolute.border.border-silver.rounded-0.overlay.flex.justify-end
-   [:div.self-center.flex.items-center.mr4.dark-gray
+  [:div.bg-darken-1.absolute.border.border-cool-gray.rounded-0.overlay.flex.justify-end
+   [:div.self-center.flex.items-center.mr4
     text]])
 
 (defn simple-content-layer [content]
@@ -42,7 +42,7 @@
    [:div.ml2.flex-auto selected-value-html]
    [:div.self-center ^:inline (svg/dropdown-arrow {:height ".575em"
                                                    :width  ".575em"
-                                                   :class  "stroke-teal"})]])
+                                                   :class  "stroke-p-color"})]])
 
 (defn desktop-dropdown [label-html selected-value-html select-html]
   [:div.flex.flex-column.relative.flex-auto {:style {:height "100%"}}
@@ -52,13 +52,13 @@
     [:div.ml2.flex-auto selected-value-html]
     [:div.self-center ^:inline (svg/dropdown-arrow {:height ".575em"
                                                     :width  ".575em"
-                                                    :class  "stroke-teal"})]]
+                                                    :class  "stroke-p-color"})]]
    select-html])
 
 (defn field
   ([html-widget] (field nil html-widget))
   ([attrs html-widget]
-   [:div.border-bottom.border-light-silver.border-width-2.px4.flex.items-center
+   [:div.border-bottom.border-cool-gray.border-width-2.px4.flex.items-center
     (merge {:style {:height "75px"}}
            attrs)
     html-widget]))
@@ -240,8 +240,6 @@
                    {:key "secondary-label"}
                    secondary-label]))
                 [:div
-                 (when disabled?
-                   (simple-sold-out-layer "Sold Out"))
                  (when checked?
                    (simple-selected-layer))])]))
 
@@ -279,7 +277,7 @@
                    {:style {:margin-top "-30px"}}
                    "Sold Out"]])
                (when checked?
-                 [:div.absolute.border.border-width-3.rounded-0.border-light-teal.overlay.flex
+                 [:div.absolute.border.border-width-3.rounded-0.border-cool-gray.overlay.flex
                   [:div.self-center.flex.items-center
                    {:style {:margin-left "-2em"}}
                    [:div {:style {:width "1em"}}]
@@ -300,15 +298,15 @@
 (defn picker-dialog
   "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
   [{:keys [title items cell-component-fn product-alternative]}]
-  [:div.hide-on-tb-dt.z4.fixed.overlay.overflow-auto.bg-light-silver
+  [:div.hide-on-tb-dt.z4.fixed.overlay.overflow-auto.bg-cool-gray
    {:key (str "picker-dialog-" title) :data-test "picker-dialog"}
    [:div.p3.h5.bg-white.relative.border-bottom.border-gray
     {:style {:min-height "3em"}}
     [:div.absolute.overlay.flex.items-center.justify-center
-     [:div.dark-gray title]]
+     title]
 
     [:div.absolute.overlay.flex.items-center.justify-end
-     [:a.teal.medium.p3
+     [:a.p-color.medium.p3
       (merge {:data-test "picker-close"}
              (utils/fake-href events/control-product-detail-picker-close))
       "Done"]]]
@@ -318,7 +316,7 @@
      [:div.center.mt6
       {:data-test "picker-product-alternative"}
       [:div.h6 lead-in]
-      [:div.h4.medium.mt2 [:a.teal.underline link-attrs link-text]]])])
+      [:div.h4.medium.mt2 [:a.p-color.underline link-attrs link-text]]])])
 
 (defcomponent component
   [{:keys [navigation-event

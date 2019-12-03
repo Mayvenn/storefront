@@ -8,7 +8,7 @@
     :as query
     :keys [promo-field-data black-friday-time?]} owner _]
   [:div {:data-test id}
-   [:div.py1.bg-fate-white.px4
+   [:div.py1.bg-cool-gray.px4
     [:table.col-12
      [:tbody
       (for [line lines]

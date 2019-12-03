@@ -92,8 +92,8 @@
           :stylist-card.address-marker/id    (str "stylist-card-address-" store-slug)
           :stylist-card.address-marker/value [:div
                                               [:div.bold.line-height-4.py1
-                                               [:div.dark-gray salon-name]
-                                               [:a.navy
+                                               [:div salon-name]
+                                               [:a.inherit-color
                                                 (merge
                                                  {:data-test "stylist-salon-address"}
                                                  (utils/route-to events/control-adventure-stylist-salon-address-clicked
@@ -105,14 +105,14 @@
                                                  " "
                                                  zipcode]]]
                                               (ui/link :link/phone
-                                                       :a.navy.light.my3
+                                                       :a.inherit-color.light.my3
                                                        {:data-test "stylist-phone"
                                                         :on-click
                                                         (utils/send-event-callback events/control-adventure-stylist-phone-clicked
                                                                                    {:stylist-id   (:stylist-id stylist)
                                                                                     :phone-number phone-number})}
                                                        phone-number)
-                                              [:div.dark-gray
+                                              [:div
                                                (into [:div.flex.flex-wrap]
                                                      (comp
                                                       (remove nil?)
@@ -183,7 +183,7 @@
 
 (defcomponent template
   [{:keys [header shopping-method-choice matched-stylist]} _ _]
-  [:div.bg-lavender.white.center.flex.flex-auto.flex-column
+  [:div.bg-pale-purple.white.center.flex.flex-auto.flex-column
    stylist-matching.A/bottom-right-party-background
    (component/build header/organism header nil)
    (component/build shopping-method-choice/organism shopping-method-choice nil)

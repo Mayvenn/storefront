@@ -20,7 +20,7 @@
             (css-transitions/background-fade
              highlight?
              {:key (str react-key "-image")})
-            [:div.absolute.z1.circle.stacking-context.border.border-light-gray.bg-too-light-teal.flex.items-center.justify-center
+            [:div.absolute.z1.circle.stacking-context.border.border-cool-gray.bg-cool-gray.flex.items-center.justify-center
              {:data-test id
               :style     {:right  "-5px"
                           :top    "-12px"

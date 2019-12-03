@@ -79,7 +79,7 @@
 
     [:div.my2.col-12.clearfix
      ui/nbsp
-     [:div.border-light-gray.border-top.hide-on-mb.mb3]
+     [:div.border-gray.border-top.hide-on-mb.mb3]
      [:div.col-12.col-5-on-tb-dt.mx-auto
       (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]])

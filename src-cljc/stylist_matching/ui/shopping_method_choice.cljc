@@ -31,8 +31,8 @@
   (when id
     (component/html
      [:div.center.flex.flex-column.items-center
-      [:div.h2.my2.light.col-10.purple primary]
-      [:div.h5.my2.light.col-10.dark-gray secondary]])))
+      [:div.h2.my2.light.col-10.p-color primary]
+      [:div.h5.my2.light.col-10 secondary]])))
 
 (defn shopping-method-choice-title-molecule
   [{:shopping-method-choice.title/keys [id primary secondary]}]

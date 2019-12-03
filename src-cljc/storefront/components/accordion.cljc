@@ -32,7 +32,7 @@
      [:div.px2
       (when expanded?
         {:class "rotate-180"})
-      ^:inline (svg/dropdown-arrow {:class  "stroke-dark-gray"
+      ^:inline (svg/dropdown-arrow {:class  "stroke-black"
                                     :style  {:stroke-width "3px"}
                                     :height "12px"
                                     :width  "12px"})]]

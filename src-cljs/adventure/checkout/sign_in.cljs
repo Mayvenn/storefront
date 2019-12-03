@@ -58,10 +58,10 @@
     [:h1.center.my2.mb3 "Sign in to your account"]
     (component/build password-component sign-in-form-data nil)
     [:div.my2
-     [:div.dark-gray.center
+     [:div.center
       "Forgot Password? "
-      [:a.teal (utils/route-to events/navigate-checkout-returning-or-guest) "Continue As Guest"]]
-     [:div.dark-gray.center "OR"]]
+      [:a.p-color (utils/route-to events/navigate-checkout-returning-or-guest) "Continue As Guest"]]
+     [:div.center "OR"]]
     [:div.col-12.col-6-on-tb-dt.mx-auto
      (facebook/sign-in-button facebook-loaded?)]]))
 

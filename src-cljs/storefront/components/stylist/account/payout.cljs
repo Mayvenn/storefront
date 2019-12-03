@@ -42,10 +42,10 @@
              [:div.clearfix
               [:div#green-dot-card-number.col.col-8.h4.line-height-1.rounded-left.rounded.border.x-group-item.border-gray.p2.mb2
                {:style {:height "43px"}
-                :class (when-not ready? "bg-light-gray")}]
+                :class (when-not ready? "bg-gray")}]
               [:div#green-dot-cvv.col.col-4.h4.line-height-1.rounded.rounded-right.border.x-group-item.border-gray.p2.mb2
                {:style {:height "43px"}
-                :class (when-not ready? "bg-light-gray")}]]))))
+                :class (when-not ready? "bg-gray")}]]))))
 
 (def green-dot-keypath (partial conj keypaths/stylist-manage-account-green-dot-payout-attributes))
 
@@ -201,11 +201,11 @@
         [:div])]
 
      [:div.col.col-12.pt3.pb4.underline.center
-      [:a.teal (utils/route-to events/navigate-v2-stylist-dashboard-payments) "View your earnings"]]]
+      [:a.p-color (utils/route-to events/navigate-v2-stylist-dashboard-payments) "View your earnings"]]]
 
     [:div.col.col-12.col-6-on-tb-dt
      [:div.mx-auto.col-12.col-10-on-tb-dt
-      [:div.border-light-gray.border-top.hide-on-tb-dt.mb3]
+      [:div.border-gray.border-top.hide-on-tb-dt.mb3]
       (ui/text-field {:data-test "account-address1"
                       :errors    (get field-errors ["address" "address1"])
                       :id        "account-address1"
@@ -279,7 +279,7 @@
 
    [:div.my2.col-12
     ui/nbsp
-    [:div.border-light-gray.border-top.hide-on-mb.mb3]
+    [:div.border-gray.border-top.hide-on-mb.mb3]
     [:div.col-12.col-5-on-tb-dt.mx-auto
      (ui/submit-button "Update" {:spinning? spinning?
                                  :data-test "account-form-submit"})]]])

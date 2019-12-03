@@ -128,7 +128,7 @@
     --bold-font-weight:   700;
 
     --button-line-height: 1.2;
-    --button-background-color: var(--teal);
+    --button-background-color: var(--p-color);
     --button-font-weight: var(--medium-font-weight);
     --button-padding-y: var(--space-2);
     --button-padding-x: var(--space-2);
@@ -137,25 +137,9 @@
     --border-radius: 5px;
     --border-radius-1: 8px;
 
-    --teal:        #40cbac;
-    --light-teal:  #9fe5d5;
-
-    --green:       #00cc00;
-
-    --navy:        #175674;
-    --orange:      #ffc520;
     --aqua:        #49bbf0;
-    --purple:      #931280;
 
-    --light-lavender: rgb(202, 182, 215);
-    --lavender:       rgb(175, 159, 196);
-
-    --light-silver: #f2f2f2; /* #f8f8f8 */
-    --silver:       #dadada;
-    --dark-silver:  #aaaaaa;
-    --light-gray:   #ebebeb;
-    --gray:         #cccccc;
-    --dark-gray:    #666666;
+    --gray:         #B9B9B9;
 
     --facebook-blue: #3b5998;
     --twitter-blue:  #00aced;
@@ -170,6 +154,8 @@
     --white:       #ffffff;
     --cool-gray:   #eeefef;
     --black:       #000000;
+
+    --s-color-transparent:  rgba(107, 200, 173, 0.20);
 
     --lighten-1: rgba(255, 255, 255, .125);
     --lighten-2: rgba(255, 255, 255, .375);

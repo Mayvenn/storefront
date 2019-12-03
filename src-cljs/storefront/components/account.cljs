@@ -10,7 +10,7 @@
 (defn store-credit [available-credit]
   [:div.my3
    [:div.medium.mb1 "Store Credit"]
-   [:div.teal.h0 (ui/big-money available-credit)]])
+   [:div.p-color.h0 (ui/big-money available-credit)]])
 
 (defcomponent profile-component [{:keys [focused
                                          saving?
@@ -45,14 +45,14 @@
                     :type      "password"
                     :hint      (when show-password? password)})
 
-    [:div.dark-gray.mtn2.mb2.col-12.left
+    [:div.mtn2.mb2.col-12.left
      (ui/check-box {:label   "Show password"
                     :keypath keypaths/account-show-password?
                     :value   show-password?})]]
 
    [:div.my2.col-12.clearfix
     ui/nbsp
-    [:div.border-light-gray.border-top.hide-on-mb.mb3]
+    [:div.border-cool-gray.border-top.hide-on-mb.mb3]
     [:div.col-12.col-5-on-tb-dt.mx-auto
      (ui/submit-button "Update" {:spinning? saving?
                                  :data-test "account-form-submit"})]]])
@@ -69,13 +69,13 @@
                                  available-credit
                                  fetching?
                                  profile]} owner opts]
-  [:div.container.bg-white.dark-gray
+  [:div.container.bg-white
    [:div.p2.m-auto.overflow-hidden
     [:div.flex.justify-center.items-center.center
      [:div.ml3
       (when available-credit (store-credit available-credit))]]
 
-    [:div.bg-light-gray.mt3.mxn2 ;; Oppose padding on page
+    [:div.bg-cool-gray.mt3.mxn2 ;; Oppose padding on page
      (component/build tabs/component {:selected-tab current-nav-event}
                       {:opts {:tab-refs ["profile"]
                               :labels   ["Profile"]

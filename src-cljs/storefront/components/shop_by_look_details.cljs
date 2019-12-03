@@ -29,7 +29,7 @@
     [:div.btn.col-12.h5.btn-primary.bg-gray.white
      {:on-click nil}
      "Sold Out"]
-    (ui/teal-button
+    (ui/p-color-button
      (merge (utils/fake-href events/control-create-order-from-shared-cart
                              {:shared-cart-id number
                               :look-id        (:id look)})
@@ -131,7 +131,7 @@
       (when yotpo-data-attributes
         [:div (component/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil)])
       (when-not (str/blank? (:description look))
-        [:p.h7.px3.pb1.dark-gray.bg-white.clearfix (:description look)])])
+        [:p.h7.px3.pb1.bg-white.clearfix (:description look)])])
    (if fetching-shared-cart?
      [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
      (when shared-cart
@@ -142,13 +142,13 @@
            (if desktop-two-column?
              "col-on-tb-dt col-6-on-tb-dt px3-on-tb-dt"
              [:mt3])}
-          [:div.border-top.border-light-gray.mt2.mxn2
+          [:div.border-top.border-cool-gray.mt2.mxn2
            (when desktop-two-column? {:class "hide-on-tb-dt"})]
           [:div.h4.medium.pt2
            {:data-test "item-quantity-in-look"}
            (str item-count " items in this " shared-cart-type-copy)]
           (display-line-items line-items skus)
-          [:div.border-top.border-light-gray.mxn2]
+          [:div.border-top.border-cool-gray.mxn2]
           [:div.center.pt2.mb3
            (when discount-text
              [:p.center.h5.flex.items-center.justify-center.bold
@@ -156,7 +156,7 @@
                                  :width  "40px"})
               discount-text])
            (when-not (= discounted-price base-price)
-             [:div.strike.dark-gray.h6 (mf/as-money base-price)])
+             [:div.strike.h6 (mf/as-money base-price)])
            [:div.h2.bold (mf/as-money discounted-price)]]
           [:div.mt2.col-11.mx-auto
            (add-to-cart-button sold-out? creating-order? look shared-cart)]

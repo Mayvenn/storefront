@@ -38,42 +38,42 @@
    (let [links (mapv category->link categories)]
      [:div.col-12
       [:div.medium.border-bottom.border-gray.mb1 "Shop"]
-      [:nav.clearfix {:aria-label "Shop Products"}
+      [:nav.black.clearfix {:aria-label "Shop Products"}
        (for [link-column (partition-all partition-count links)]
          [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :slug))}
           (for [{:keys [title new-category? nav-message slug]} link-column]
-            [:a.block.py1.dark-gray.light.titleize
+            [:a.inherit-color.block.py1.light.titleize
              (merge {:key (str "footer-link-" slug)}
                     (apply utils/route-to nav-message))
              (when new-category?
-               [:span.teal "NEW "])
+               [:span.p-color "NEW "])
              title])])]])))
 
 (defcomponent contacts-section [{:keys [call-number sms-number contact-email]} _ _]
   [:div
    [:div.medium.border-bottom.border-gray.mb1 "Contact"]
-   [:div.dark-gray.light
+   [:div.light
     [:div.py1
-     [:span.hide-on-tb-dt (ui/link :link/phone :a.dark-gray {} call-number)] ;; mobile
+     [:span.hide-on-tb-dt (ui/link :link/phone :a.inherit-color {} call-number)] ;; mobile
      [:span.hide-on-mb call-number] ;; desktop
      " | 8am-5pm PST M-F"]
-    (ui/link :link/email :a.block.py1.dark-gray {} contact-email)]
+    (ui/link :link/email :a.block.py1.inherit-color {} contact-email)]
 
    [:div.py1.hide-on-tb-dt
     (ui/ghost-button {:href (phone-uri call-number)
                       :class "my1"}
                      [:div.flex.items-center.justify-center
-                      ^:inline (svg/phone-ringing {:class "stroke-teal"})
+                      ^:inline (svg/phone-ringing {:class "stroke-p-color"})
                       [:div.ml1.left-align "Call Now"]])
     (ui/ghost-button {:href (str "sms:" sms-number)
                       :class "my1"}
                      [:div.flex.items-center.justify-center
-                      ^:inline (svg/message-bubble {:class "stroke-teal"})
+                      ^:inline (svg/message-bubble {:class "stroke-p-color"})
                       [:div.ml1.left-align "Send Message"]])
     (ui/ghost-button {:href (str "mailto:" contact-email)
                       :class "my1"}
                      [:div.flex.items-center.justify-center
-                      ^:inline (svg/mail-envelope {:class "stroke-teal"})
+                      ^:inline (svg/mail-envelope {:class "stroke-p-color"})
                       [:div.ml1.left-align "Send Email"]])]])
 
 (defcomponent social-section [_ _ _]
@@ -96,7 +96,7 @@
 
 (defcomponent full-component
   [{:keys [contacts categories essence-copy]} owner opts]
-  [:div.h5.border-top.border-gray.bg-light-gray
+  [:div.h5.border-top.border-gray.bg-cool-gray
    [:div.container
     [:div.col-12.clearfix
      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
@@ -106,10 +106,10 @@
      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
       ^:inline (component/build social-section)]
      (when essence-copy
-       [:div.col-on-tb-dt.col-4-on-tb-dt.px4.pt3.pb2.dark-gray.h7.center.line-height-4.underline
+       [:div.col-on-tb-dt.col-4-on-tb-dt.px4.pt3.pb2.h7.center.line-height-4.underline
         essence-copy])]]
 
-   [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
+   [:div.mt3.bg-black.white.py1.px3.clearfix.h8
     [:div
      {:style {:margin-bottom "90px"}}
      (component/build footer-links/component {:minimal? false} nil)]]])
@@ -141,7 +141,7 @@
 
 (defn dtc-link [{:keys [title new-category? nav-message slug]}]
   (component/html
-   [:a.block.py1.dark-gray.light.titleize
+   [:a.inherit-color.block.py1.light.titleize
     (merge {:key (str "footer-link-" slug)}
            ;; be super specific so we can utilize the routing fast path
            (utils/route-to (first nav-message)
@@ -152,7 +152,7 @@
                                          :named-search-slug
                                          :legacy/product-slug])))
     (when new-category?
-      [:span.teal "NEW "])
+      [:span.p-color "NEW "])
     (str title)]))
 
 (defcomponent dtc-shop-section [{:keys [categories partition-count]} _ _]
@@ -160,12 +160,12 @@
         [column-1-links rest-of-links] (split-at partition-count links)]
     [:div.col-12
      [:div.medium.border-bottom.border-gray.mb1 "Shop"]
-     [:nav.clearfix {:aria-label "Shop Products"}
+     [:nav.black.clearfix {:aria-label "Shop Products"}
       [:div.col.col-6
-       [:a.block.py1.dark-gray.light.titleize
+       [:a.inherit-color.block.py1.light.titleize
         (assoc (utils/route-to events/navigate-adventure-match-stylist)
                :data-test "freeinstall-footer-link")
-        [:span.teal "NEW "]
+        [:span.p-color "NEW "]
         "Mayvenn Install"]
        (map dtc-link column-1-links)]
       (for [link-column (partition-all partition-count rest-of-links)]
@@ -174,7 +174,7 @@
 
 (defcomponent dtc-full-component
   [{:keys [contacts categories essence-copy]} owner opts]
-  [:div.h5.border-top.border-gray.bg-light-gray
+  [:div.h5.border-top.border-gray.bg-cool-gray
    [:div.container
     [:div.col-12.clearfix
      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
@@ -185,10 +185,10 @@
      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
       ^:inline (component/build social-section)]
      (when essence-copy
-       [:div.col-on-tb-dt.col-4-on-tb-dt.px4.pt3.pb2.dark-gray.h7.center.line-height-4.underline
+       [:div.col-on-tb-dt.col-4-on-tb-dt.px4.pt3.pb2.h7.center.line-height-4.underline
         essence-copy])]]
 
-   [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
+   [:div.mt3.bg-black.white.py1.px3.clearfix.h8
     [:div
      {:style {:margin-bottom "90px"}}
      (component/build footer-links/component {:minimal? false} nil)]]])

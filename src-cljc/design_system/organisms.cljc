@@ -8,7 +8,7 @@
 
 (defcomponent demo-component
   [{:organism/keys [label component query]} _ _]
-  [:div.py3.border.border-black.bg-light-gray
+  [:div.py3.border.border-black.bg-cool-gray
    [:div.h3.px6.py2.bold (str label)]
    ;[:div.border.border-black (component/build @component query)]
    [:div.p6
@@ -18,8 +18,8 @@
 (defcomponent popup-button-component
   [_ _ _]
   [:div.bg-white
-   (ui/teal-button (utils/fake-href events/control-design-system-popup-show)
-                   "Show popup")])
+   (ui/p-color-button (utils/fake-href events/control-design-system-popup-show)
+                      "Show popup")])
 
 (defn demo
   [organisms & [{:keys [popup-visible?]}]]

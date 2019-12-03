@@ -12,9 +12,6 @@
   {:height-class "py6"
    :style {:border-radius "3px"}})
 
-(defn teal-rect-button [attrs & content]
-  (ui/teal-button (maps/deep-merge rect-button-attrs attrs) content))
-
 (defn white-rect-button [attrs & content]
   (ui/white-button (maps/deep-merge rect-button-attrs attrs) content))
 
@@ -57,7 +54,7 @@
 (defcomponent component
   [{:keys [input-data header-data prompt-image prompt-desktop-image prompt mini-prompt on-submit] :as data} owner _]
   [:div
-   [:div.z5.bg-lavender.white.center.fixed.overlay.bg-contain.bg-no-repeat.max-580.mx-auto.bg-contain.hide-on-mb
+   [:div.z5.bg-pale-purple.white.center.fixed.overlay.bg-contain.bg-no-repeat.max-580.mx-auto.bg-contain.hide-on-mb
     {:style {:background-position "123px bottom"
              :background-size     "80%"
              :background-image    (str "url('" prompt-desktop-image  ")")}}
@@ -66,7 +63,7 @@
                      {:opts {:text-style "48px"
                              :desktop-header-dt "-desktop"}})]
 
-   [:div.z5.bg-lavender.white.center.absolute.overflow-scroll.overflow-auto.overlay.bg-contain.bg-no-repeat.max-580.mx-auto.bg-contain.hide-on-tb-dt.pb3
+   [:div.z5.bg-pale-purple.white.center.absolute.overflow-scroll.overflow-auto.overlay.bg-contain.bg-no-repeat.max-580.mx-auto.bg-contain.hide-on-tb-dt.pb3
     {:style {:position "fixed"
              :background-position "right top 34px"
              :background-size     "90vw auto"

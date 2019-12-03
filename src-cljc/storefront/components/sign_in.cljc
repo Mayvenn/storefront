@@ -42,29 +42,29 @@
                     :value   show-password?})]
 
     [:div.right.col-6.right-align
-     [:a.dark-gray
-      (merge {:data-test "forgot-password"}
-             (utils/route-to events/navigate-forgot-password)) "Forgot Password?"]]]
+     [:a (merge {:data-test "forgot-password"}
+                (utils/route-to events/navigate-forgot-password))
+      "Forgot Password?"]]]
    [:div.col-12.col-6-on-tb-dt
     (ui/submit-button "Sign In"
                       {:data-test "user-submit"})]])
 
 (defcomponent form-component
   [{:keys [facebook-loaded?] :as data} _ _]
-  [:div.flex.flex-column.items-center.dark-gray.col-12.mt1
+  [:div.flex.flex-column.items-center.col-12.mt1
 
    [:div.col-12.col-6-on-tb-dt (facebook/sign-in-button facebook-loaded?)]
-   [:div.h5.dark-gray.light.my2 "OR"]
+   [:div.h5.light.my2 "OR"]
 
    (component/build password-component data nil)
 
-   [:div.clearfix.center.dark-gray.my2 "Don't have an account? "
-    [:a.teal (utils/route-to events/navigate-sign-up) "Register Here"]]])
+   [:div.clearfix.center.my2 "Don't have an account? "
+    [:a.p-color (utils/route-to events/navigate-sign-up) "Register Here"]]])
 
 (defcomponent component [form-data owner opts]
   (ui/narrow-container
    [:div.p2
-    [:h1.h2.center.my2.mb3.navy "Sign in to your account"]
+    [:h1.h2.center.my2.mb3 "Sign in to your account"]
     (component/build form-component form-data nil)]))
 
 (defn query [data]

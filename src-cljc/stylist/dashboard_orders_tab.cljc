@@ -25,15 +25,15 @@
 
 (defn status->appearance [status]
   (case status
-    :sale/shipped     [1 ["titleize" "teal"]]
+    :sale/shipped     [1 ["titleize" "p-color"]]
     :sale/returned    [2 ["shout"    "error"]]
     :sale/pending     [2 ["shout"    "yellow"]]
     :sale/unknown     [2 ["shout"    "error"]]
     :voucher/pending  nil
     :voucher/returned nil
-    :voucher/redeemed [1 ["titleize" "teal"]]
+    :voucher/redeemed [1 ["titleize" "p-color"]]
     :voucher/expired  [1 ["titleize" "error"]]
-    :voucher/active   [1 ["titleize" "purple"]]
+    :voucher/active   [1 ["titleize" "p-color"]]
     :voucher/none     [1 ["titleize" "light" "gray"]]
     nil               nil))
 
@@ -54,13 +54,13 @@
 (def empty-ledger
   [:div.my6.center
    [:h4.gray.bold.p1 "No orders yet"]
-   [:h6.dark-gray.col-5.mx-auto.line-height-2 "Orders from your store will appear here."]])
+   [:h6.col-5.mx-auto.line-height-2 "Orders from your store will appear here."]])
 
 (def show-program-terms
   [:div.mx-auto
    [:div.border-top.border-gray.mx-auto.my2 {:style {:width "100px"}}]
    [:div.center.my2.h6
-    [:a.dark-gray (utils/route-to events/navigate-content-program-terms) "Mayvenn Program Terms"]]])
+    [:a.inherit-color (utils/route-to events/navigate-content-program-terms) "Mayvenn Program Terms"]]])
 
 (defcomponent component
   [{:keys [sales-ui pagination-ui fetching-data? header-ui]} _ _]
@@ -81,22 +81,22 @@
     :else empty-ledger))
 
 (defn sale-row [{:keys [order order-number id order-updated-at] :as sale}]
-  [:tr.border-bottom.border-gray.py2.pointer.fate-white-hover
+  [:tr.border-bottom.border-gray.py2.pointer.cool-gray-hover
    (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
           {:key       (str "sales-table-" id)
            :data-test (str "sales-" order-number)})
-   [:td.p2.left-align.dark-gray.h8 (some-> order-updated-at #?(:cljs f/abbr-date))]
+   [:td.p2.left-align.h8 (some-> order-updated-at #?(:cljs f/abbr-date))]
    [:td.p2.left-align.medium.h5.nowrap
     {:style {:overflow-x :hidden :max-width 120 :text-overflow :ellipsis}}  ; For really long first names
     (some-> order orders/first-name-plus-last-name-initial)]
    (sale-status-cell sale)])
 
 (defn sale-row-with-voucher [{:keys [order order-number id order-updated-at] :as sale}]
-  [:tr.border-bottom.border-gray.py2.pointer.fate-white-hover
+  [:tr.border-bottom.border-gray.py2.pointer.cool-gray-hover
    (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
           {:key       (str "sales-table-" id)
            :data-test (str "sales-" order-number)})
-   [:td.p2.left-align.dark-gray.h8 (some-> order-updated-at #?(:cljs f/abbr-date))]
+   [:td.p2.left-align.h8 (some-> order-updated-at #?(:cljs f/abbr-date))]
    [:td.p2.left-align.medium.h5.nowrap
     {:style {:overflow-x :hidden :max-width 120 :text-overflow :ellipsis}}  ; For really long first names
     (some-> order orders/first-name-plus-last-name-initial)]
@@ -104,7 +104,7 @@
    (voucher-status-cell sale)])
 
 (defn header-ui [show-voucher-elements?]
-  [:thead.bg-silver.border-0
+  [:thead.bg-cool-gray.border-0
    [:tr.h8.medium
     [:th.px2.py1.left-align.medium.col-2.nowrap
      {:data-test "header-order-updated"}

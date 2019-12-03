@@ -25,13 +25,13 @@
                 [:div.flex.justify-center.items-end.mb2
                  {:style {:height "39px"}}
                  (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
-                [:div.h5.teal.medium title]
+                [:div.h5.p-color.medium title]
                 [:p.h6.col-10.col-9-on-dt.mx-auto description]])]
 
     [:div.col-12
      [:div.mt2.flex.flex-column.items-center
       [:h2 "Get a FREE Install"]
-      [:div.h6.dark-gray "In three easy steps"]]
+      [:div.h6 "In three easy steps"]]
 
      [:div.col-8-on-dt.mx-auto.flex.flex-wrap
       (step {:icon-uuid   "e90526f9-546f-4a6d-a05a-3bea94aedc21"
@@ -52,7 +52,7 @@
                             "Redeem the voucher when you go in for your appointment with: ")})]
 
      [:div.mt2.flex.flex-column.items-center
-      [:div.h6.my1.dark-gray "Your Stylist"]
+      [:div.h6.my1 "Your Stylist"]
       [:div.circle.hide-on-mb-tb
        (if (:resizable-url stylist-portrait)
          (ui/circle-picture {:width "100"} (ui/square-image stylist-portrait 100))
@@ -64,9 +64,9 @@
       [:div.h5.bold stylist-name]
       [:div.h6
        (when (:licensed store)
-         [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
-          ^:inline (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Licensed"])
-       [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
+         [:div.flex.items-center {:style {:height "1.5em"}}
+          ^:inline (svg/check {:class "stroke-p-color" :height "2em" :width "2em"}) "Licensed"])
+       [:div.flex.items-center {:style {:height "1.5em"}}
         (ui/ucare-img {:width "7" :class "pr2"} "bd307d38-277d-465b-8360-ac8717aedb03")
         (let [salon-city    (-> store :salon :city not-empty)
               salon-state   (-> store :salon :state not-empty)
@@ -77,8 +77,9 @@
             (str stylist-city ", " stylist-state)))]]
       (when (seq gallery-ucare-ids)
         [:div.h6.pt1.flex.items-center
+         ;; TODO: Non teal asset
          (ui/ucare-img {:width "25"} "18ced560-296f-4b6c-9c82-79a4e8c15d95")
-         [:a.ml1.teal.medium
+         [:a.ml1.p-color.medium
           (utils/fake-href events/control-stylist-gallery-open)
           "Hair Gallery"]
          (modal-gallery/simple
@@ -102,15 +103,15 @@
                   [:div.flex.justify-center.items-end.mb1
                    {:style {:height "35px"}}
                    (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
-                  [:div.h6.teal.medium.mbnp4 title]
+                  [:div.h6.p-color.medium.mbnp4 title]
 
                   [:p.h6.col-11.center description]])]
-     [:div.col-12.bg-transparent-teal.mt3.py8.px4
+     [:div.col-12.bg-pale-purple.mt3.py8.px4
       [:div.col-11-on-dt.justify-center.flex.flex-wrap.mx-auto.pb2
 
        [:div.my2.flex.flex-column.items-center.col-12
         [:h2.titleize "Why Mayvenn?"]
-        [:div.h6.dark-gray.titleize "It's not just about hair"]]
+        [:div.h6.black.titleize "It's not just about hair"]]
 
        (entry {:icon-uuid   "ab1d2ed4-ff93-40e6-978a-721133ca88a7"
                :icon-width  "29"
@@ -130,7 +131,7 @@
                :description "Get your hair installed absolutely FREE!"})]])))
 
 (def ^:private faq-section-copy
-  (let [phone-link (ui/link :link/phone :a.dark-gray {} "1-888-562-7952")]
+  (let [phone-link (ui/link :link/phone :a.inherit-color {} "1-888-562-7952")]
     [(accordion/section [:h6 "How does this all work? How do I get a free install?"]
                         ["It’s easy! Mayvenn will pay your stylist directly for your install."
                          " Just purchase 3 bundles or more (frontals and closures count as bundles)"

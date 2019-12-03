@@ -11,7 +11,7 @@
 
 (defn desktop-header [{:keys [store user cart signed-in vouchers?]}]
   [:div.hide-on-mb.relative
-   [:div.relative.border-bottom.border-light-gray {:style {:height "125px"}}
+   [:div.relative.border-bottom.border-cool-gray {:style {:height "125px"}}
     [:div.max-960.mx-auto
      [:div.left (storefront-header/store-info signed-in store)]
      [:div.right
@@ -34,16 +34,16 @@
     [:div
      (desktop-header desktop-header-data)
 
-     [:div.col-7-on-dt.container.mx-auto.border-bottom.border-light-gray.flex.items-center
+     [:div.col-7-on-dt.container.mx-auto.border-bottom.border-cool-gray.flex.items-center
       [:div.col-3.hide-on-mb-tb
        (when-not hide-back-to-shopping-link?
          [:a.h5.black.pointer.flex.justify-start.items-center close-cart-route
-          (svg/left-caret {:class "stroke-dark-gray"
+          (svg/left-caret {:class "stroke-black"
                            :height "18px" :width "18px"}) "Back to Shopping"])]
 
       [:div.col-1.hide-on-dt]
 
-      [:div.flex-auto.py4.center.dark-gray
+      [:div.flex-auto.py4.center
        {:data-test "mobile-cart"}
        "Shopping Cart - " (ui/pluralize-with-amount item-count "item")]
 
@@ -52,7 +52,7 @@
       [:div.col-1.hide-on-dt
        [:a.h3.pointer.flex.items-center (merge close-cart-route
                                                {:data-test "cart-close" :title "Close"})
-        (svg/close-x {:class "stroke-dark-gray fill-none"})]]]]))
+        (svg/close-x {:class "stroke-black fill-none"})]]]]))
 
 (defn query [data]
   (let [shop? (= "shop" (get-in data keypaths/store-slug))]

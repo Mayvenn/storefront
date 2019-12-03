@@ -18,7 +18,7 @@
 
 (def pending-approval
   (component/html
-   [:div.container-size.bg-dark-gray.white.medium.flex.items-center.center.p2
+   [:div.container-size.bg-gray.white.medium.flex.items-center.center.p2
     "Your image has been successfully submitted and is pending approval. Check back here to be updated on its status."]))
 
 (defn images [{:keys [gallery]}]

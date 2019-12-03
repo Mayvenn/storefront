@@ -14,16 +14,15 @@
 
 .btn-outline:disabled,
 .btn-outline.is-disabled {
-    background-color: var(--silver);
-    color: var(--light-gray);
+    background-color: var(--cool-gray);
+    color: var(--gray);
 }
 
 :root {
   --button-border-radius: 50px;
 
-  --silver: #EBEBEB;
-  --light-gray: #B4B4B4;
-  --teal: #40cbac;
+  --gray:       #B9B9B9;
+  --cool-gray:  #EEEFEF;
   --darken-1: rgba(0, 0, 0, .075);
   --darken-3: rgba(0, 0, 0, .375);
 }

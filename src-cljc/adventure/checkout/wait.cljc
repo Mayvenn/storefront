@@ -17,7 +17,7 @@
   (ui/narrow-container
    [:div.py6.h2
     [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
-    [:h2.center.navy "Processing your order..."]]))
+    [:h2.center "Processing your order..."]]))
 
 (defn query [data] {})
 

@@ -5,7 +5,7 @@
             [storefront.keypaths :as keypaths]))
 
 (defn success-img []
-  (svg/circled-check {:class "stroke-teal"
+  (svg/circled-check {:class "stroke-p-color"
                       :style {:width "1em" :height "1em"}}))
 
 (defn error-img []
@@ -13,7 +13,7 @@
               :style {:width "1em" :height "1em"}}))
 
 (defn success-box [box-opts body]
-  [:div.teal.bg-teal.border.border-teal.rounded.light.letter-spacing-1
+  [:div.p-color.bg-p-color.border.border-p-color.rounded.light.letter-spacing-1
    [:div.clearfix.px2.py1.bg-lighten-5.rounded box-opts
     [:div.right.ml1 ^:inline (success-img)]
     [:div.overflow-hidden body]]])

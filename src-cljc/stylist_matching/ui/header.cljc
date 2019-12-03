@@ -41,7 +41,7 @@
 (defcomponent organism
   [data _ _]
   [:div#header
-   [:div.flex.items-center.justify-between.bg-lavender-dark.white
+   [:div.flex.items-center.justify-between.bg-pale-purple.white
     [:div.col-1
      (header-back-navigation-molecule data)]
     [:div

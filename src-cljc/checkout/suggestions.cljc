@@ -66,7 +66,7 @@
                                                :width       "3em"
                                                :margin-left "-23px"
                                                :margin-top  "-20px"}})]
-     [:div.border.border-light-gray.bg-light-gray
+     [:div.border.border-cool-gray.bg-cool-gray
       {:style {:height "68px"}}
       [:div.bg-white.h5.medium.center
        (first (:hair/length short-sku))
@@ -77,26 +77,26 @@
        [:img.m1 sized-image]
        [:img.m1 sized-image]]
       [:div.col-10.mx-auto
-       (ui/navy-button {:class              "p1"
-                        :height-class       "py1"
-                        ;; we don't want to draw attention to the disabling of the other 'Add' button,
-                        ;; but we do want to prevent people from clicking both.
-                        ;; :disabled? (and (not this-is-adding-to-bag?) any-adding-to-bag?)
-                        :on-click           (if (and (not this-is-adding-to-bag?) any-adding-to-bag?)
-                                              utils/noop-callback
-                                              (utils/send-event-callback events/control-suggested-add-to-bag
-                                                                         {:skus        skus
-                                                                          :initial-sku initial-sku}))
-                        :spinning?          this-is-adding-to-bag?
-                        :data-test          (str "add-" (name position))
-                        :data-test-disabled (and (not this-is-adding-to-bag?) any-adding-to-bag?)
-                        :style              {:margin-top "-10px"}}
-                       "Add")]]]))
+       (ui/black-button {:class              "p1"
+                         :height-class       "py1"
+                         ;; we don't want to draw attention to the disabling of the other 'Add' button,
+                         ;; but we do want to prevent people from clicking both.
+                         ;; :disabled? (and (not this-is-adding-to-bag?) any-adding-to-bag?)
+                         :on-click           (if (and (not this-is-adding-to-bag?) any-adding-to-bag?)
+                                               utils/noop-callback
+                                               (utils/send-event-callback events/control-suggested-add-to-bag
+                                                                          {:skus        skus
+                                                                           :initial-sku initial-sku}))
+                         :spinning?          this-is-adding-to-bag?
+                         :data-test          (str "add-" (name position))
+                         :data-test-disabled (and (not this-is-adding-to-bag?) any-adding-to-bag?)
+                         :style              {:margin-top "-10px"}}
+                        "Add")]]]))
 
 (defcomponent component
   [{:keys [suggestions]} _ _]
   (when (seq suggestions)
-    [:div.mb4.px1.col-12.mx-auto.bg-light-orange
+    [:div.mb4.px1.col-12.mx-auto.bg-cool-gray
      {:style     {:height "135px"}
       :data-test "auto-complete"}
      [:div.flex.justify-center (map suggested-bundles suggestions)]]))
@@ -118,7 +118,7 @@
         {:class "pr3"})
       (when sticker-label
         ;; TODO: highlighting does not work as before
-        [:div.right.z1.circle.stacking-context.border.border-white.flex.items-center.justify-center.medium.h6.bg-too-light-teal
+        [:div.right.z1.circle.stacking-context.border.border-white.flex.items-center.justify-center.medium.h6.bg-cool-gray
          {:key       sticker-id
           :data-test sticker-id
           :style     {:margin-left left-margin
@@ -133,12 +133,12 @@
         {:key       (str "thumbnail-" sku-id)
          :data-test (str "line-item-img-" sku-id)})
        (ui/ucare-img {:width image-width
-                      :class "rounded border border-light-gray"} ucare-id)]]))
+                      :class "rounded border border-cool-gray"} ucare-id)]]))
 
 (defn ->consolidated-suggested-bundles
   "TODO Heat needs to be updated to use new dt"
   [{:suggested-bundles/keys [id images-with-stickers label target cta-id disabled? spinning?]}]
-  [:div.bg-fate-white.mt1.rounded
+  [:div.bg-cool-gray.mt1.rounded
    {:data-test id :key id}
    [:div.flex.justify-between.items-center.px2
     (let [[first-image second-image] images-with-stickers]
@@ -147,17 +147,17 @@
        [:span.pr2 "+"]
        (image-with-sticker second-image)])
     [:div.my1.col-5
-     (ui/teal-ghost-button {:class        "bg-white"
-                            :height-class :small
-                            ;; we don't want to draw attention to the disabling of the other 'Add' button,
-                            ;; but we do want to prevent people from clicking both.
-                            ;; :disabled? (and (not this-is-adding-to-bag?) any-adding-to-bag?)
-                            :on-click     (if disabled?
-                                            utils/noop-callback
-                                            (apply utils/send-event-callback target))
-                            :spinning?    spinning?
-                            :data-test    cta-id}
-                           label)]]])
+     (ui/p-color-ghost-button {:class        "bg-white"
+                               :height-class :small
+                               ;; we don't want to draw attention to the disabling of the other 'Add' button,
+                               ;; but we do want to prevent people from clicking both.
+                               ;; :disabled? (and (not this-is-adding-to-bag?) any-adding-to-bag?)
+                               :on-click     (if disabled?
+                                               utils/noop-callback
+                                               (apply utils/send-event-callback target))
+                               :spinning?    spinning?
+                               :data-test    cta-id}
+                              label)]]])
 
 (defcomponent consolidated-component
   [{:keys [suggestions]} _ _]
@@ -165,9 +165,8 @@
     [:div {:data-test "auto-complete"}
      [:div.flex.items-center
       ^:inline (svg/angle-arrow {:style {:width  "13px"
-                                         :height "13px"}
-                                 :class "teal"})
-      [:div.h6.dark-gray.pl1 "Bundles often bought together"]]
+                                         :height "13px"}})
+      [:div.h6.pl1 "Bundles often bought together"]]
      (map ->consolidated-suggested-bundles suggestions)]))
 
 (defn consolidated-query

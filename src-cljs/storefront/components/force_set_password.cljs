@@ -13,7 +13,7 @@
   [{:keys [focused password show-password? loaded-facebook? field-errors]} owner _]
   (ui/narrow-container
    [:div.p2
-    [:h2.center.my2.navy.mb3
+    [:h2.center.my2.mb3
      "Please set your password"]
     [:form.col-12
      {:on-submit (utils/send-event-callback events/control-force-set-password-submit)}
@@ -27,7 +27,7 @@
                      :type       "password"
                      :value      password
                      :hint       (when show-password? password)})
-     [:div.dark-gray.col-12.left
+     [:div.col-12.left
       (ui/check-box {:label   "Show password"
                      :keypath keypaths/account-show-password?
                      :focused focused

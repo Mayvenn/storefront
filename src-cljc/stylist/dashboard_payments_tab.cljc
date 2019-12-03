@@ -30,7 +30,7 @@
             :amount-description nil
             :styles {:background ""
                      :title-color "black"
-                     :amount-color "teal"}}
+                     :amount-color "p-color"}}
            (case type
              "commission" {:title (str "Commission Earned" (when-let [name (orders/first-name-plus-last-name-initial order)]
                                                              (str " - " name)))
@@ -46,9 +46,9 @@
                        :icon "4939408b-1ec8-4a47-bb0e-5cdeb15d544d"
                        :data-test (str "payout-" id)
                        :amount-description payout-method-name
-                       :styles {:background "bg-too-light-teal"
-                                :title-color "teal"
-                                :amount-color "teal"}}
+                       :styles {:background "bg-cool-gray"
+                                :title-color "p-color"
+                                :amount-color "p-color"}}
              "sales_bonus" {:title "Sales Bonus"
                             :data-test (str "sales-bonus-" id)
                             :icon "56bfbe66-6db0-48c7-9069-f86c6393b15d"}
@@ -56,7 +56,7 @@
 
 (defn payment-row [item]
   (let [{:keys [id icon title date subtitle amount amount-description styles data-test non-clickable?]} item]
-    [:a.block.border-bottom.border-light-gray.px3.py2.flex.items-center
+    [:a.block.border-bottom.border-cool-gray.px3.py2.flex.items-center
      (merge
       (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details
                       {:balance-transfer-id id})
@@ -67,13 +67,12 @@
      (ui/ucare-img {:width 20} icon)
      [:div.flex-auto.mx3
       [:h5.medium {:class (:title-color styles)} title]
-      [:div.flex.h8.dark-gray
+      [:div.flex.h8
        [:div.mr4 #?(:cljs (f/long-date date))]
        subtitle]]
      [:div.right-align
       [:div.bold {:class (:amount-color styles)} amount]
-      [:div.h8.dark-gray (or amount-description
-                             ui/nbsp)]]]))
+      [:div.h8 (or amount-description ui/nbsp)]]]))
 
 (defn pending-voucher-row [{:as pending-voucher :keys [discount date]} service-menu]
   (let [item {:id                 (str "pending-voucher-" 1)
@@ -87,7 +86,7 @@
               :amount-description "Pending"
               :styles             {:background   ""
                                    :title-color  "black"
-                                   :amount-color "orange"}
+                                   :amount-color "s-color"}
               :non-clickable?     true}]
     (payment-row item)))
 
@@ -105,7 +104,7 @@
 (def empty-payments
   [:div.my6.center
    [:h4.gray.bold.p1 "No payments yet"]
-   [:h6.dark-gray.col-5.mx-auto.line-height-2 "Payments and bonus activity will appear here"]])
+   [:h6.col-5.mx-auto.line-height-2 "Payments and bonus activity will appear here"]])
 
 (defn payments-table [pending-voucher service-menu balance-transfers pagination fetching?]
   (let [payments (map balance-transfer->payment balance-transfers)
@@ -126,7 +125,7 @@
            (pending-voucher-row pending-voucher service-menu))
          (for [{:keys [title items] :as section} sections]
            [:div {:key (str "payments-table-" title)}
-            [:div.h8.bg-silver.px2.py1.medium title]
+            [:div.h8.bg-cool-gray.px2.py1.medium title]
             ;; ASK: Sales Bonus row
             (for [item (reverse (sort-by :date items))]
               (payment-row item))])]

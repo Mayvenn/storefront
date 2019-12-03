@@ -22,8 +22,8 @@
 
 @keyframes lineItemGlow {
     25% {
-        background-color: var(--teal);
-        color: var(--too-light-teal);
+        background-color: var(--s-color);
+        color: var(--cool-gray);
     }
 }
 
@@ -40,15 +40,13 @@
     transition: all 300ms 0ms ease-in-out;
 }
 
-.fate-white-hover:hover {
-    background-color: var(--fate-white);
+.cool-gray-hover:hover {
+    background-color: var(--cool-gray);
 }
 
 :root {
-    --teal: #40cbac;
-    --silver: #000000;
-    --fate-white: #F8F8F8;
-    --too-light-teal: #f5fcfb;
+    --s-color:   #6bc8ad;
+    --cool-gray: #EEEFEF;
 }
 
 .picker-enter, .picker-leave.picker-leave-active {

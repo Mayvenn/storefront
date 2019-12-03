@@ -24,7 +24,7 @@
             [adventure.keypaths :as adv-keypaths]))
 
 (defn uploadcare-photo [{:keys [status] :as portrait} saving?]
-  [:a.navy
+  [:a.black
    (merge (utils/route-to events/navigate-stylist-account-portrait)
           {:data-test "change-photo-link"})
    (when saving?
@@ -34,8 +34,8 @@
                                  :top   "-12px" :left   "-12px"}})])
    [:div.mx-auto.circle.border.mb2.content-box
     {:style {:width "100px" :height "100px" :border-width "3px"}
-     :class (if saving? "border-light-gray" "border-teal")}
-    [:div.circle.border-light-gray.border.content-box.border-width-2.overflow-hidden {:style {:width "96px" :height "96px"}}
+     :class (if saving? "border-cool-gray" "border-p-color")}
+    [:div.circle.border-cool-gray.border.content-box.border-width-2.overflow-hidden {:style {:width "96px" :height "96px"}}
      (ui/circle-picture {:width        "96px"
                          :overlay-copy (case status
                                          "pending" [:span.white.medium "Approval Pending"]
@@ -47,7 +47,7 @@
 (defn store-credit [available-credit]
   [:div.mb3
    [:div.medium.mb1 "Store Credit"]
-   [:div.teal.h0 (when available-credit (ui/big-money available-credit))]
+   [:div.p-color.h0 (when available-credit (ui/big-money available-credit))]
    [:div.mb1 ui/nbsp]])
 
 (defcomponent component [{:keys [fetching?
@@ -60,7 +60,7 @@
                                  commission
                                  social
                                  loaded-uploadcare?]} owner opts]
-  [:div.bg-white.dark-gray
+  [:div.bg-white
    [:div.container.p2.m-auto.overflow-hidden
     [:div.flex.justify-center.items-center.center
      [:div
@@ -70,7 +70,7 @@
      [:div.ml3
       (store-credit available-credit)]]
 
-    [:div.bg-light-gray.mt3.mxn2 ;; Oppose padding on page
+    [:div.bg-cool-gray.mt3.mxn2 ;; Oppose padding on page
      (component/build tabs/component {:selected-tab current-nav-event}
                       {:opts {:tab-refs ["profile" "password" "payout" "social"]
                               :labels   ["Profile" "Password" "Payout" "Social"]

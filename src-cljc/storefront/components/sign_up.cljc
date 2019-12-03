@@ -37,7 +37,7 @@
                    :value     password
                    :hint      (when show-password? password)})
 
-   [:div.dark-gray.mt2.mb2.col-12.left
+   [:div.mt2.mb2.col-12.left
     (ui/check-box {:label   "Show password"
                    :keypath keypaths/account-show-password?
                    :value   show-password?})]
@@ -49,18 +49,18 @@
 (defcomponent component [{:keys [facebook-loaded?] :as data} _ _]
   (ui/narrow-container
    [:div.p2
-    [:h1.h2.center.mt2.mb3.navy "Sign up for an account"]
+    [:h1.h2.center.mt2.mb3 "Sign up for an account"]
 
     [:div
      [:div.col-12.col-6-on-tb-dt.mx-auto
       (facebook/sign-in-button facebook-loaded?)]
 
-     [:div.h5.center.dark-gray.light.my2 "OR"]
+     [:div.h5.center.light.my2 "OR"]
 
      (form data {:sign-up-text "Sign Up"})]
 
-    [:div.center.dark-gray.mt2.mb2 "Already have an account? "
-     [:a.teal (utils/route-to events/navigate-sign-in) "Log In"]]]))
+    [:div.center.mt2.mb2 "Already have an account? "
+     [:a.p-color (utils/route-to events/navigate-sign-in) "Log In"]]]))
 
 (defn query [data]
   {:email            (get-in data keypaths/sign-up-email)

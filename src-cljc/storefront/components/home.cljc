@@ -60,7 +60,7 @@
                          [:div first-word]
                          [:div (string/join " " last-words)]])]]))
       (grid-block "spare-block"
-                  [:a.bg-light-teal.white.absolute.overlay
+                  [:a.bg-cool-gray.white.absolute.overlay
                    (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
                           :data-test "nav-shop-look")
                    [:div.flex.container-size.justify-center.items-center
@@ -234,8 +234,7 @@
       ::marquee/show-what-we-have [:div.left.pr2 (marquee/stylist-portrait portrait)]
       ::marquee/ask-for-portrait  [:div.left.pr2 marquee/add-portrait-cta]
       ::marquee/show-nothing      [:div.left {:style {:height (str ui/header-image-size "px")}}])
-    [:div.dark-gray
-     [:span.black store-nickname "'s"] " shop"
+    [:div (str store-nickname "'s shop")
      (when expandable?
        [:span.ml1 ^:inline (ui/expand-icon expanded?)])]]))
 
@@ -263,8 +262,8 @@
                  :height "70px"}]
       [:h3.h2 "Stylist Recommended"]
       [:p.h5 "Mayvenn hair is the #1 recommended hair company by over 100,000 hair stylists across the country, making it the most trusted hair brand on the market."]
-      [:a.h5.teal (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                         :data-test "nav-shop-look")
+      [:a.h5.p-color (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+                            :data-test "nav-shop-look")
        "Shop our looks"]]
 
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
@@ -273,8 +272,8 @@
                  :height "70px"}]
       [:h3.h2 "30 Day Guarantee"]
       [:p.h5 "Try the best quality hair on the market risk free! Wear it, dye it, even cut it. If you’re not happy with your bundles, we will exchange them within 30 days for FREE!"]
-      [:a.h5.teal (assoc (utils/route-to events/navigate-content-guarantee)
-                         :data-test "nav-our-guarantee")
+      [:a.h5.p-color (assoc (utils/route-to events/navigate-content-guarantee)
+                            :data-test "nav-our-guarantee")
        "Learn more about Our Guarantee"]]
 
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
@@ -283,8 +282,8 @@
                           :height "44px"}]]
       [:h3.h2 "Fast Free Shipping"]
       [:p.h5 "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]
-      [:a.h5.teal (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                         :data-test "nav-shop-look")
+      [:a.h5.p-color (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+                            :data-test "nav-shop-look")
        "Shop our looks"]]]]))
 
 (defn video-autoplay []
@@ -302,7 +301,7 @@
         [:h1 "We Love Our Customers"]
         [:p.h4 "And they love Mayvenn! Watch and see why they absolutely love wearing our hair."]]
        [:div.container.col-12.mx-auto.mt6 {:dangerouslySetInnerHTML {:__html video-html}}]]
-      [:div.center.bg-teal.py4.white.hide-on-mb
+      [:div.center.bg-p-color.py4.white.hide-on-mb
        [:h1.mt1 "We love our customers"]
        [:p.h4 "And they love Mayvenn! Watch and see why they absolutely love wearing our hair."]
        [:div.container.col-12.mx-auto.mt6.mb4 {:dangerouslySetInnerHTML {:__html video-html}}]]])))

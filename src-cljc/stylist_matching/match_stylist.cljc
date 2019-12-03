@@ -18,7 +18,7 @@
 
 (defcomponent template
   [{:keys [logo-header match-stylist]} _ _]
-  [:div.bg-lavender.white.center.flex.flex-column
+  [:div.bg-pale-purple.white.center.flex.flex-column
    stylist-matching.A/woman-in-yellow-background
    (component/build logo-header/organism logo-header nil)
    (component/build match-stylist/organism match-stylist nil)])

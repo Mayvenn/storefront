@@ -88,7 +88,7 @@
                                         (:option/name (first product-colors))
                                         (for [{option-slug  :option/slug
                                                :option/keys [circle-swatch]} product-colors]
-                                          [:img.mx1.border-light-gray
+                                          [:img.mx1.border-cool-gray
                                            {:key    (str "product-card-details-" product-slug "-" option-slug)
                                             :width  10
                                             :height 10
@@ -132,7 +132,7 @@
 (defn product-card-details-molecule
   [{:product-card-details/keys [id content]}]
   (when id
-    [:div.h6.dark-gray.mb4
+    [:div.h6.mb4
      (for [[idx item] (map-indexed vector content)]
        [:div {:key (str id "-" idx)}
         item])]))
@@ -144,7 +144,7 @@
     (merge (apply utils/route-to target)
            {:key       react-key
             :data-test react-key})
-    [:div.border.border-light-silver.rounded.container-height.center
+    [:div.border.border-cool-gray.rounded.container-height.center
      (ui/screen-aware card-image-molecule data)
      (product-card-title-molecule data)
      (product-card-details-molecule data)]]))

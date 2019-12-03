@@ -38,7 +38,7 @@
     {:on-submit (utils/send-event-callback callback)}
     [:div.col-12.mx-auto
      (ui/text-field (merge {:required  true
-                            :class     "dark-gray h6 bg-light-silver"}
+                            :class     "h6 bg-cool-gray"}
                            field-data))
      (ui/submit-button (:title button-data) (merge {:class "h3 bold mt1"} button-data))]]])
 
@@ -56,8 +56,7 @@
     [:div.flex.flex-column.bg-cover.bg-top.bg-white.p2.rounded.col-12
      {:style {:max-width "345px"}}
      (close-x modal-close-event
-              {:class     "dark-gray"
-               :data-test "dismiss-email-capture"})
+              {:data-test "dismiss-email-capture"})
      [:div.bold.px3
       pre-title-content
       (monstrous-title query)

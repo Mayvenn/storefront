@@ -58,7 +58,7 @@
       (when-not length-circle-value
         {:class "pr3"})
       (when length-circle-value
-        [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
+        [:div.right.z1.circle.stacking-context.border.border-cool-gray.flex.items-center.justify-center.medium.h5.bg-cool-gray
          (css-transitions/background-fade
           just-added-to-order?
           {:key       (str "length-circle-" sku-id)
@@ -97,7 +97,7 @@
                    (utils/fake-href events/control-cart-remove (:id line-item)))
             ^:inline (svg/trash-can {:height "1.1em"
                                      :width  "1.1em"
-                                     :class  "stroke-dark-gray"})])]]
+                                     :class  "stroke-black"})])]]
        [:div.flex.justify-between.mt1
         [:div.h3
          {:data-test (str "line-item-quantity-" sku-id)}
@@ -136,7 +136,7 @@
                  (apply utils/fake-href remove-event))
           ^:inline (svg/trash-can {:height "1.1em"
                                    :width  "1.1em"
-                                   :class  "stroke-dark-gray"})])]]
+                                   :class  "stroke-black"})])]]
      [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]]]])
 
 (defcomponent full-component [{:keys [order
@@ -185,16 +185,16 @@
                             :quadpay/show?       loaded-quadpay?
                             :quadpay/directive   :just-select}
                            nil)])
-     (ui/teal-button {:spinning? false
-                      :disabled? updating?
-                      :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
-                      :data-test "start-checkout-button"}
-                     [:div "Check out"])
+     (ui/p-color-button {:spinning? false
+                         :disabled? updating?
+                         :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
+                         :data-test "start-checkout-button"}
+                        [:div "Check out"])
 
      [:div.h5.black.center.py1.flex.justify-around.items-center
-      [:div.flex-grow-1.border-bottom.border-light-gray]
+      [:div.flex-grow-1.border-bottom.border-cool-gray]
       [:div.mx2 "or"]
-      [:div.flex-grow-1.border-bottom.border-light-gray]]
+      [:div.flex-grow-1.border-bottom.border-cool-gray]]
 
      [:div.pb2
       (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
@@ -210,15 +210,15 @@
      (when share-carts?
        [:div.py2
         [:div.h6.center.pt2.black.bold "Is this bag for a customer?"]
-        (ui/navy-ghost-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
-                               :class     "border-width-2 border-navy"
-                               :spinning? requesting-shared-cart?
-                               :data-test "share-cart"}
-                              [:div.flex.items-center.justify-center.bold
-                               (svg/share-arrow {:class  "stroke-navy mr1 fill-navy"
-                                                 :width  "24px"
-                                                 :height "24px"})
-                               "Share your bag"])])]]])
+        (ui/ghost-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
+                          :class     "border-width-2 border-black"
+                          :spinning? requesting-shared-cart?
+                          :data-test "share-cart"}
+                         [:div.flex.items-center.justify-center.bold
+                          (svg/share-arrow {:class  "stroke-black mr1 fill-black"
+                                            :width  "24px"
+                                            :height "24px"})
+                          "Share your bag"])])]]])
 
 (defcomponent empty-component [{:keys [promotions aladdin?]} owner _]
   (ui/narrow-container
@@ -235,8 +235,8 @@
               promo    (:description promo)
               :else    promos/bundle-discount-description))]]
 
-    (ui/teal-button (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                    "Shop Our Looks")]))
+    (ui/p-color-button (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+                       "Shop Our Looks")]))
 
 (defn ^:private variants-requests [data request-key variant-ids]
   (->> variant-ids

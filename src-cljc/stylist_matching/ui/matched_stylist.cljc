@@ -18,7 +18,7 @@
      [:div.py2
       [:h3.bold primary]
       [:div.my3 secondary]
-      (ui/teal-button
+      (ui/p-color-button
        {:data-test id
         :class     "bold"
         :href      target}

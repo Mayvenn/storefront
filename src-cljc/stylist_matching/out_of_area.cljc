@@ -41,7 +41,7 @@
 
 (defcomponent template
   [{:keys [header shopping-method-choice]} _ _]
-  [:div.dark-gray.bg-white.center.flex.flex-auto.flex-column
+  [:div.bg-white.center.flex.flex-auto.flex-column
    (component/build header/organism header nil)
    (component/build shopping-method-choice/organism shopping-method-choice nil)])
 

@@ -9,12 +9,12 @@
   [:div.border-top.border-gray.bg-white
    [:div.container
     [:div.center.px3.my2
-     [:div.my1.medium.dark-gray "Have Questions?"]
-     [:div.dark-gray.light.h5
+     [:div.my1.medium "Have Questions?"]
+     [:div.light.h5
       [:span.hide-on-tb-dt
-       (ui/link :link/phone :a.dark-gray {} call-number)]
+       (ui/link :link/phone :a.inherit-color {} call-number)]
       [:span.hide-on-mb
-       (ui/link :link/phone :a.dark-gray {} call-number)]
+       (ui/link :link/phone :a.inherit-color {} call-number)]
       " | 8am-5pm PST M-F"]]]])
 
 (defn query

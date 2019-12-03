@@ -28,7 +28,7 @@
                        :height      "0"
                        :border-top  "28px solid rgba(159, 229, 213, 0.8)"
                        :border-left "21px solid transparent"}}]
-        [:div.flex.items-center.px3.bold.h6.bg-transparent-light-teal.whisper
+        [:div.flex.items-center.px3.bold.h6.bg-pale-purple.whisper
          overlay]])]
     [:div.bg-white.p1.px2.pb2
      [:div.h5.medium.mt1.mb2.black
@@ -55,7 +55,7 @@
    owner
    {:keys [copy]}]
   (let [cta-button-fn (case button-type
-                        :teal-button      ui/teal-button
+                        :p-color-button      ui/p-color-button
                         :underline-button ui/underline-button)]
     [:div.pb2.px1-on-tb-dt.col-12
      (merge {:key (str "small-" id)}
@@ -70,9 +70,9 @@
         [:div.absolute.flex.justify-end.bottom-0.right-0.mb8
          [:div {:style {:width       "0"
                         :height      "0"
-                        :border-top  "28px solid rgba(159, 229, 213, 0.8)"
+                        :border-top  "28px solid #dedbe5"
                         :border-left "21px solid transparent"}}]
-         [:div.flex.items-center.px3.bold.h6.bg-transparent-light-teal.whisper.white
+         [:div.flex.items-center.px3.bold.h6.bg-pale-purple.whisper.white
           overlay]])]
      [:div.bg-white.p1.px2.pb2
       [:div.h5.medium.mt1.mb2

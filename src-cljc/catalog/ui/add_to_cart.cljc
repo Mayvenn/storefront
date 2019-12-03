@@ -7,7 +7,7 @@
 (defn cta-molecule
   [{:cta/keys [id label target spinning? disabled?]}]
   (when (and id label target)
-    (ui/teal-button
+    (ui/p-color-button
      (merge {:data-test id
              :spinning? (boolean spinning?)
              :disabled? (boolean disabled?)}
@@ -24,11 +24,11 @@
       [:div.flex.flex-column
        [:div.h7
         [:span.mr1 message]
-        [:a.underline.navy.pointer
+        [:a.inherit-color.underline.pointer
          {:data-test "freeinstall-add-to-cart-info-link"
           :on-click  (apply utils/send-event-callback link-target)}
          link-label]]
-       [:div.dark-silver.h8 footnote]]])))
+       [:div.h8 footnote]]])))
 
 (defn add-to-cart-background-atom
   [color]

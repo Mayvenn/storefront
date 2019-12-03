@@ -56,12 +56,13 @@
   ;; on mobile.
   [:div.hide-on-tb-dt.mxn2 body])
 
+;; GROT: UNUSED
 (defn quantity-and-price-structure [quantity price]
   [:div
-   [:div.right-align.dark-gray.h6 "PRICE"]
+   [:div.right-align.black.h6 "PRICE"]
    [:div.flex.h2 {:style {:min-height "1.5em"}} ; prevent slight changes to size depending on content of counter
     [:div.flex-auto quantity]
-    [:div.navy price]]])
+    [:div price]]])
 
 (defn counter-or-out-of-stock [can-supply? quantity]
   (if can-supply?
@@ -77,18 +78,18 @@
     [:span.h4 "Currently out of stock"]))
 
 (def sold-out-button
-  (ui/navy-button {:on-click       utils/noop-callback
-                   :data-test      "sold-out"
-                   :disabled?      true
-                   :disabled-class "bg-gray"}
-                  "Sold Out"))
+  (ui/black-button {:on-click       utils/noop-callback
+                    :data-test      "sold-out"
+                    :disabled?      true
+                    :disabled-class "bg-gray"}
+                   "Sold Out"))
 
 (def unavailable-button
-  (ui/navy-button {:on-click       utils/noop-callback
-                   :data-test      "unavailable"
-                   :disabled?      true
-                   :disabled-class "bg-gray"}
-                  "Unavailable"))
+  (ui/black-button {:on-click       utils/noop-callback
+                    :data-test      "unavailable"
+                    :disabled?      true
+                    :disabled-class "bg-gray"}
+                   "Unavailable"))
 
 (defn ^:private handle-scroll [component e]
   #?(:cljs (component/set-state! component :show? (< 866 (.-y (goog.dom/getDocumentScroll))))))
@@ -129,7 +130,7 @@
                 show?        {:style {:margin-bottom "0"}}
                 :else        {:style {:margin-bottom (str "-" add-button-height "px")}})
               [:div {:ref (component/use-ref c "add-button")}
-               [:div.p3.flex.justify-center.items-center.bg-white.border-top.border-light-gray
+               [:div.p3.flex.justify-center.items-center.bg-white.border-top.border-cool-gray
                 [:div.col-8
                  [:a.inherit-color
                   #?(:cljs {:on-click #(scroll/scroll-selector-to-top "body")})
@@ -141,37 +142,39 @@
                    [:span.ml2 "Length: " [:span text-style (:option/name (:hair/length selected-options))]]
                    [:span.ml2 "Qty: " [:span text-style quantity]]]]]
                 [:div.col-4
-                 (ui/teal-button {:on-click
-                                  (utils/send-event-callback events/control-add-sku-to-bag
-                                                             {:sku      sku
-                                                              :quantity quantity})
-                                  :data-test      "sticky-add-to-cart"
-                                  :disabled?      unpurchasable?
-                                  :disabled-class "bg-gray"
-                                  :spinning?      adding-to-bag?}
-                                 (cond
-                                   unavailable? "Unavailable"
-                                   sold-out?    "Sold Out"
-                                   :default     "Add"))]]]]))))
+                 (ui/p-color-button {:on-click
+                                     (utils/send-event-callback events/control-add-sku-to-bag
+                                                                {:sku      sku
+                                                                 :quantity quantity})
+                                     :data-test      "sticky-add-to-cart"
+                                     :disabled?      unpurchasable?
+                                     :disabled-class "bg-gray"
+                                     :spinning?      adding-to-bag?}
+                                    (cond
+                                      unavailable? "Unavailable"
+                                      sold-out?    "Sold Out"
+                                      :default     "Add"))]]]]))))
 
 (def checkout-button
   (component/html
    [:div
     {:data-test "cart-button"
      :data-ref "cart-button"}
-    (ui/teal-button (utils/route-to events/navigate-cart) "Check out")]))
+    (ui/p-color-button (utils/route-to events/navigate-cart) "Check out")]))
 
 (defn- hacky-fix-of-bad-slugs-on-facets [slug]
   (string/replace (str slug) #"#" ""))
 
+; TODO: GROT UNUSED
 (defn summary-structure [desc quantity-and-price]
   [:div
    (when (seq desc)
      [:div
       [:h2.h3.light "Summary"]
-      [:div.navy desc]])
+      [:div desc]])
    quantity-and-price])
 
+; TODO: GROT UNUSED
 (defn sku-summary [{:keys [sku sku-quantity]}]
   (let [{:keys [inventory/in-stock? sku/price]} sku]
     (summary-structure
@@ -190,7 +193,7 @@
 
 (def shipping-and-guarantee
   (component/html
-   [:div.border-top.border-bottom.border-gray.p2.my2.center.navy.shout.medium.h6
+   [:div.border-top.border-bottom.border-gray.p2.my2.center.shout.medium.h6
     "Free shipping & 30 day guarantee"]))
 
 (defn image-body [{:keys [filename url alt]}]
@@ -285,7 +288,7 @@
            (component/build freeinstall-banner/organism data opts)
            [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
        (when aladdin?
-         [:div.py10.bg-transparent-teal.col-on-tb-dt.mt4
+         [:div.py10.bg-pale-purple.col-on-tb-dt.mt4
           (component/build v2/get-a-free-install get-a-free-install-section-data)])
        (when (seq reviews)
          [:div.container.col-7-on-tb-dt.px2
@@ -387,7 +390,7 @@
              :quadpay/price   sku-price}
 
       shop?
-      (merge {:add-to-cart.background/color            "bg-fate-white"
+      (merge {:add-to-cart.background/color            "bg-cool-gray"
               :add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
               :add-to-cart.incentive-block/footnote    "*Mayvenn Install cannot be combined with other promo codes."
               :add-to-cart.incentive-block/icon        "d7fbb4a1-6ad7-4122-b737-ade7dec8dfd3"

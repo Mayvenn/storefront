@@ -59,17 +59,17 @@
 
 (defn phone-ringing [opts]
   (component/html
-   [:svg (merge {:class "stroke-dark-gray" :style {:width "30px" :height "30px"}} opts)
+   [:svg (merge {:class "stroke-black" :style {:width "30px" :height "30px"}} opts)
     ^:inline (svg-xlink "phone-ringing")]))
 
 (defn mail-envelope [opts]
   (component/html
-   [:svg (merge {:class "stroke-dark-gray" :style {:width "30px" :height "30px"}} opts)
+   [:svg (merge {:class "stroke-black" :style {:width "30px" :height "30px"}} opts)
     ^:inline (svg-xlink "closed-mail-envelope")]))
 
 (defn message-bubble [opts]
   (component/html
-   [:svg (merge {:class "stroke-dark-gray" :style {:width "30px" :height "30px"}} opts)
+   [:svg (merge {:class "stroke-black" :style {:width "30px" :height "30px"}} opts)
     ^:inline (svg-xlink "message-bubble")]))
 
 ;;
@@ -123,10 +123,12 @@
      ^:inline (svg-xlink "quadpay-logo")])))
 
 ;; Social
-(defn instagram []
-  (component/html
-   [:svg.container-size
-    ^:inline (svg-xlink "instagram")]))
+(defn instagram
+  ([] (instagram {}))
+  ([opts]
+   (component/html
+    [:svg.container-size (maps/deep-merge {:class "fill-black"} opts)
+     ^:inline (svg-xlink "instagram")])))
 
 (defn facebook-f []
   (component/html
@@ -143,10 +145,12 @@
    [:svg.container-size
     ^:inline (svg-xlink "twitter")]))
 
-(defn styleseat []
-  (component/html
-   [:svg.container-size
-    ^:inline (svg-xlink "styleseat")]))
+(defn styleseat
+  ([] (styleseat {}))
+  ([opts]
+   (component/html
+    [:svg.container-size (maps/deep-merge {:class "fill-black"} opts)
+     ^:inline (svg-xlink "styleseat")])))
 
 (def social-icon
   {"instagram" instagram
@@ -161,7 +165,7 @@
 (defn ^:private mayvenn-on-social [title xlink]
   (let [title-id (str "social-title-" xlink)]
     (component/html
-     [:svg.container-size {:class "fill-dark-gray" :role "img" :aria-labelledby title-id}
+     [:svg.container-size {:class "fill-black" :role "img" :aria-labelledby title-id}
       [:title {:id title-id} title]
       ^:inline (svg-xlink {:role "presentation"} xlink)])))
 
@@ -210,7 +214,7 @@
 
 (defn discount-tag [opts]
   (component/html
-   [:svg.fill-orange opts
+   [:svg.fill-s-color opts
     ^:inline (svg-xlink "discount-tag")]))
 
 (defn share-arrow [opts]

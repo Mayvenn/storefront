@@ -44,7 +44,7 @@
   [{{:keys [social-cards product-id page-slug sku-id destination-event]} :carousel-data} owner opts]
   (when (seq social-cards)
     [:div.center.mt4
-     [:div.h2.medium.dark-gray.crush.m2 "#MayvennMade"]
+     [:div.h2.medium.crush.m2 "#MayvennMade"]
      (component/build
       carousel/component
       {:slides   (map-indexed
@@ -60,7 +60,7 @@
                   :items      2
                   :responsive {1000 {:items 3}}}}
       opts)
-     [:p.center.dark-gray.m2
+     [:p.center.m2
       "Want to show up on our homepage? "
       "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]]))
 
@@ -80,5 +80,5 @@
                        {})
       [:div.absolute
        {:style {:top "1.5rem" :right "1.5rem"}}
-       (ui/modal-close {:class       "stroke-dark-gray fill-gray"
+       (ui/modal-close {:class       "stroke-black fill-gray"
                         :close-attrs close-attrs})]])))

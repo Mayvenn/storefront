@@ -45,9 +45,9 @@ Thanks,
              [:div.bg-white.rounded.p4.center
               (ui/modal-close {:close-attrs close-attrs :data-test "share-url-close"})
               [:div.p1
-               [:div.h3.navy.medium
+               [:div.h3.medium
                 "Share your bag"]
-               [:div.h5.dark-gray.light.my2
+               [:div.h5.light.my2
                 "Share this link so your customers know exactly what to buy"]
                [:div.border-top.border-bottom.border-gray.py2
                 [:div.clearfix.mxn1
@@ -73,19 +73,19 @@ Thanks,
                                   :style {:height "18px"}} "7e992996-0495-4707-998b-f04ea56c7c73")
                    "SMS"]]
                  [:div.p1.col.col-6.col-12-on-dt
-                  [:a.h6.col-12.btn.btn-primary.bg-dark-gray
+                  [:a.h6.col-12.btn.btn-primary.bg-black
                    {:href (email-link utm-url store-nickname)
                     :target "_blank"}
                    ^:inline (svg/mail-envelope {:class "stroke-white align-middle mr1"
                                                 :style {:height "18px" :width "18px"}})
                    "Email"]]]]
                [:div.mt3.mb1
-                [:input.border.border-dark-gray.rounded.pl1.py1.bg-white.teal.col-12
+                [:input.border.border-black.rounded.pl1.py1.bg-white.p-color.col-12
                  {:type      "text"
                   :value     share-url
                   :data-test "share-url"
                   :on-click  utils/select-all-text}]]
-               [:div.navy "(select and copy link to share)"]]])))
+               [:div "(select and copy link to share)"]]])))
 
 (defmethod popup/query :share-cart
   [data]

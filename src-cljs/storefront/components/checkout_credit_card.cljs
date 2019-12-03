@@ -51,7 +51,7 @@
                     (:long-message (first card-errors))])])
               (when (and (not guest?) (empty? saved-cards))
                 [:div.mb2
-                 [:label.dark-gray
+                 [:label
                   [:input.mr1 (merge (utils/toggle-checkbox keypaths/checkout-credit-card-save save-credit-card?)
                                      {:type     "checkbox"
                                       :data-test "payment-form-save-credit-card"})]

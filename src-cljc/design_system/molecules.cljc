@@ -4,7 +4,7 @@
 
 (defcomponent demo-component
   [{:molecule/keys [label component query]} _ _]
-  [:div.py3.border.border-black.bg-light-gray
+  [:div.py3.border.border-black.bg-cool-gray
    [:div.h3.px6.py2.bold (str label)]
    [:div.border.border-black
     (component/build component query nil)]

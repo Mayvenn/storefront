@@ -33,7 +33,7 @@
        [:div.col.col-12.flex.justify-center
         (let [num-buttons (count buttons)]
           (for [button buttons]
-            [:div.px2 {:class (str "col-" (if (= num-buttons 1) 9 6))} (apply ui/teal-button button)]))]]])])
+            [:div.px2 {:class (str "col-" (if (= num-buttons 1) 9 6))} (apply ui/p-color-button button)]))]]])])
 
 (defcomponent free-standard-shipping-bar
   [_ _ _]
@@ -52,7 +52,7 @@
   [{:cta/keys [navigation-message href value id]}]
   (component/html
    (when (or navigation-message href)
-     [:a.block.h4.medium.teal.my2
+     [:a.block.h4.medium.p-color.my2
       (merge
        (when href
          {:href href})
@@ -61,7 +61,7 @@
        (when id
          {:data-test id}))
       value
-      ^:inline (svg/dropdown-arrow {:class  "stroke-teal ml2"
+      ^:inline (svg/dropdown-arrow {:class  "stroke-p-color ml2"
                                     :style  {:stroke-width "3px"
                                              :transform "rotate(-90deg)"}
                                     :height "14px"
@@ -74,19 +74,19 @@
      [:a {:name n}])
    (when-let [v (:header/value data)]
      [:div.h2 v])
-   [:div.h5.dark-gray.mt3 (:body/value data)]
+   [:div.h5.mt3 (:body/value data)]
    ^:inline (cta-with-chevron data)])
 
 (defcomponent escape-hatch
   [_ _ _]
-  [:div.col-12.bg-fate-white.py8.flex.flex-column.items-center.justify-center
+  [:div.col-12.bg-cool-gray.py8.flex.flex-column.items-center.justify-center
    [:div.h2.col-8.center "Not interested in a Mayvenn Install?"]
 
-   [:a.block.h3.medium.teal.mt2.flex.items-center
+   [:a.block.h3.medium.p-color.mt2.flex.items-center
     (utils/fake-href events/control-open-shop-escape-hatch)
     "Shop all products"
     [:div.flex.items-end.ml2 {:style {:transform "rotate(-90deg)"}}
-     ^:inline (svg/dropdown-arrow {:class  "stroke-teal"
+     ^:inline (svg/dropdown-arrow {:class  "stroke-p-color"
                                    :style  {:stroke-width "3px"}
                                    :height "14px"
                                    :width  "14px"})]]])
@@ -115,18 +115,18 @@
      [:div.h2 v])
    (when-let [v (:subheader/value data)]
      [:div.h5.mt6.mb4 v])
-   [:ul.h6.list-img-purple-checkmark.dark-gray.left-align.mx-auto
+   [:ul.h6.list-img-purple-checkmark.left-align.mx-auto
     {:style {:width "max-content"}}
     (for [[i b] (map-indexed vector (:bullets data))]
       [:li.mb1.pl1 {:key (str i)} b])]])
 
-(def teal-play-video-mobile
-  (svg/white-play-video {:class  "mr1 fill-teal"
+(def p-color-play-video-mobile
+  (svg/white-play-video {:class  "mr1 fill-p-color"
                          :height "30px"
                          :width  "30px"}))
 
-(def teal-play-video-desktop
-  (svg/white-play-video {:class  "mr1 fill-teal"
+(def p-color-play-video-desktop
+  (svg/white-play-video {:class  "mr1 fill-p-color"
                          :height "41px"
                          :width  "41px"}))
 
@@ -153,24 +153,24 @@
        (ui/ucare-img {:alt "" :width "212"}
                      "c487eeef-0f84-4378-a9be-13dc7c311e23")
        [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
-        teal-play-video-desktop]]
-      [:a.block.ml4.dark-gray
+        p-color-play-video-desktop]]
+      [:a.block.ml4.black
        video-link
        [:div.h4.bold (:header/value data)]
        [:div.h4.my2 (:body/value data)]
-       [:div.h5.teal.flex.items-center.medium.shout (:cta/value data)]]]
+       [:div.h5.p-color.flex.items-center.medium.shout (:cta/value data)]]]
      [:div.hide-on-dt.flex.justify-center.pb10.px4
       [:a.block.relative
        video-link
        (ui/defer-ucare-img {:alt "" :width "152"}
          "1b58b859-842a-44b1-885c-eac965eeaa0f")
        [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
-        teal-play-video-mobile]]
-      [:a.block.ml2.dark-gray
+        p-color-play-video-mobile]]
+      [:a.block.ml2.black
        video-link
        [:h6.bold.mbnp6 (:header/value data)]
        [:p.pt2.h7 (:body/value data)]
-       [:h6.teal.flex.items-center.medium.shout
+       [:h6.p-color.flex.items-center.medium.shout
         (:cta/value data)]]]]))
 
 (defcomponent find-out-more
@@ -182,7 +182,7 @@
        [:div.col-10.my2.h2 value]))
    (let [{:body/keys [value]} data]
      (when value
-       [:div.col-10.my2.h5.dark-gray value]))
+       [:div.col-10.my2.h5 value]))
    (cta-with-chevron data)])
 
 (letfn [(step [width-class
@@ -195,16 +195,16 @@
              {:style {:height "39px"}}
              (ui/defer-ucare-img {:alt (:header/title point) :width width} uuid)]
             [:div.h5.medium (:header/value point)]
-            [:p.h6.mx-auto.dark-gray (:body/value point)]
+            [:p.h6.mx-auto.black (:body/value point)]
             ^:inline (cta-with-chevron point)]))]
   (defcomponent bulleted-explainer
     [{:keys [bullets] :as data} owner opts]
-    [:div.col-12.py10.bg-transparent-teal
+    [:div.col-12.py10.bg-pale-purple
      [:div.mt2.flex.flex-column.items-center
       (let [{:header/keys [value]} data]
         [:h2.center value])
       (let [{:subheader/keys [value]} data]
-        [:div.h6.dark-gray value])]
+        [:div.h6.black value])]
      [:div.col-12.flex.flex-column.items-center.hide-on-dt
       (map (partial step "col-10")
            bullets)]
@@ -228,7 +228,7 @@
    (let [{:header/keys [value]} data]
      [:h2.center value])
    (let [{:subheader/keys [value]} data]
-     [:h6.center.dark-gray value])
+     [:h6.center value])
    [:div.flex.flex-wrap.pt2
     (for [{:keys [image-url]} (:images data)]
       [:a.col-6.col-3-on-tb-dt.p1
@@ -256,16 +256,16 @@
   [:a.block.py3.col-12.col-4-on-tb-dt
    {:href url}
    svg
-   [:div.h6.teal.bold.titlize title]
+   [:div.h6.p-color.bold.titlize title]
    [:div.col-8.mx-auto.h6.black copy]])
 
 (defcomponent contact
   [_ _ _]
-  [:div.bg-transparent-teal.center.py8
-   [:h5.mt6.teal.letter-spacing-3.shout.bold "Contact Us"]
+  [:div.bg-pale-purple.center.py8
+   [:h5.mt6.p-color.letter-spacing-3.shout.bold "Contact Us"]
    [:h1.black.titleize "Have Questions?"]
    [:h5 "We're here to help"]
-   [:div.py2.mx-auto.teal.border-bottom.border-width-2.mb2-on-tb-dt
+   [:div.py2.mx-auto.p-color.border-bottom.border-width-2.mb2-on-tb-dt
     {:style {:width "30px"}}]
    [:div.flex.flex-wrap.items-baseline.justify-center.col-12.col-8-on-tb-dt.mx-auto
     (contact-us-block
@@ -297,7 +297,7 @@
         diishan-image-2     "ec9e0533-9eee-41ae-a61b-8dc22f045cb5"]
     [:div.pt10.px4.pb8
      [:div.h2.center "We're Changing The Game"]
-     [:h6.center.mb2.dark-gray "Founded in Oakland, CA • 2013"]
+     [:h6.center.mb2 "Founded in Oakland, CA • 2013"]
 
      [:div
       [:div.hide-on-tb-dt
@@ -307,15 +307,15 @@
          [:div.relative
           (ui/defer-ucare-img {:class "col-12"} diishan-image)
           [:div.absolute.bg-darken-3.overlay.flex.items-center.justify-center
-           teal-play-video-mobile]]]
+           p-color-play-video-mobile]]]
         [:a.col-6.px2
          we-are-mayvenn-link
-         [:h4.my1.dark-gray.medium "Our Story"]
-         [:div.h6.teal.flex.items-center.medium.shout
+         [:h4.my1.medium "Our Story"]
+         [:div.h6.p-color.flex.items-center.medium.shout
           "Watch Now"]]
         [:div.col-6.p1 (ui/defer-ucare-img {:class "col-12"} mikka-image)]
         [:div.col-6.p1 (ui/defer-ucare-img {:class "col-12"} stylist-image)]
-        [:div.col-6.px2.dark-gray
+        [:div.col-6.px2
          [:h4.my2.line-height-1 "“You deserve quality extensions and exceptional service without the unreasonable price tag.“"]
          [:h6.medium.line-height-1 "- Diishan Imira"]
          [:h6 "CEO of Mayvenn"]]
@@ -326,7 +326,7 @@
         [:div.col-6.flex.flex-wrap.items-center
          [:div.col-6.p1 (ui/defer-ucare-img {:class "col-12"} mikka-image)]
          [:div.col-6.p1 (ui/defer-ucare-img {:class "col-12"} stylist-image)]
-         [:div.col-6.px1.pb1.dark-gray.flex.justify-start.flex-column
+         [:div.col-6.px1.pb1.flex.justify-start.flex-column
           [:div.h3.line-height-3.col-11
            "“You deserve quality extensions and exceptional service without the unreasonable price tag.“"]
           [:h6.medium.line-height-1.mt2 "- Diishan Imira"]
@@ -336,7 +336,7 @@
          we-are-mayvenn-link
          [:div.relative (ui/defer-ucare-img {:class "col-12"} diishan-image)
           [:div.absolute.overlay.flex.items-center.justify-center.bg-darken-3
-           teal-play-video-desktop]]]]]]]))
+           p-color-play-video-desktop]]]]]]]))
 
 (def sticky-footer
   #?(:clj (fn [_ _ _] (component/create "sticky-footer" [:div]))
@@ -388,13 +388,13 @@
                        [:div.col-7 "We can't wait to pay for your install!"]
                        [:div.col-1]
                        [:div.col-4
-                        (ui/teal-button (merge
-                                         (when navigation-message
-                                           (apply utils/route-to navigation-message))
-                                         {:height-class "py2"
-                                          :data-test    "sticky-footer-get-started"
-                                          :href         href})
-                                        [:div.h7 "Get started"])]]]]]]]))))))
+                        (ui/p-color-button (merge
+                                            (when navigation-message
+                                              (apply utils/route-to navigation-message))
+                                            {:height-class "py2"
+                                             :data-test    "sticky-footer-get-started"
+                                             :href         href})
+                                           [:div.h7 "Get started"])]]]]]]]))))))
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (case type

@@ -20,13 +20,13 @@
                 [:div.flex.justify-center.items-end.mb2
                  {:style {:height "39px"}}
                  (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
-                [:div.h5.teal.medium title]
+                [:div.h5.p-color.medium title]
                 [:p.h6.col-10.col-9-on-dt.mx-auto description]])]
 
     [:div.col-12
      [:div.mt2.flex.flex-column.items-center
       [:h2 "Get a FREE Install"]
-      [:div.h6.dark-gray "In three easy steps"]]
+      [:div.h6 "In three easy steps"]]
 
      [:div.col-8-on-dt.mx-auto.flex.flex-wrap
       (step {:icon-uuid   "e90526f9-546f-4a6d-a05a-3bea94aedc21"
@@ -48,15 +48,15 @@
                  [:div.flex.justify-center.items-end.mb1
                   {:style {:height "35px"}}
                   (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
-                 [:div.h6.teal.medium.mbnp4 title]
+                 [:div.h6.p-color.medium.mbnp4 title]
 
                  [:p.h6.col-11.center description]])]
-    [:div.col-12.bg-transparent-teal.mt3.py8.px4
+    [:div.col-12.bg-pale-purple.mt3.py8.px4
      [:div.col-11-on-dt.justify-center.flex.flex-wrap.mx-auto.pb2
 
       [:div.my2.flex.flex-column.items-center.col-12
        [:h2.titleize "Why mayvenn is right for you"]
-       [:div.h6.dark-gray.titleize "It's not just about hair"]]
+       [:div.h6.black.titleize "It's not just about hair"]]
 
       (entry {:icon-uuid   "ab1d2ed4-ff93-40e6-978a-721133ca88a7"
               :icon-width  "29"
@@ -97,7 +97,7 @@
              [:div.flex.flex-column
               [:div.center
                [:div  ;; Body
-                [:h1.h3.bold.white.bg-teal.p3
+                [:h1.h3.bold.white.bg-p-color.p3
                  "Get a FREE install when you"
                  [:br]
                  "buy 3 bundles or more"]]]
@@ -136,13 +136,13 @@
                  {:style {:height "39px"}}
                  (ui/ucare-img {:alt header-value :width width} uuid)]
                 [:div.h5.medium header-value]
-                [:p.h6.col-8.col-9-on-dt.mx-auto.dark-gray
+                [:p.h6.col-8.col-9-on-dt.mx-auto
                  body-value]])]
 
     [:div.col-12
      [:div.mt2.flex.flex-column.items-center
       [:h1 "How to get a FREE Install"]
-      [:div.h5.dark-gray "In three easy steps"]]
+      [:div.h5 "In three easy steps"]]
 
      [:div.col-8-on-dt.mx-auto.flex.flex-wrap
       (map step
@@ -168,13 +168,13 @@
                  {:style {:height "39px"}}
                  (ui/ucare-img {:alt header-value :width width} uuid)]
                 [:div.h5.medium header-value]
-                [:p.h6.col-8.col-9-on-dt.mx-auto.dark-gray
+                [:p.h6.col-8.col-9-on-dt.mx-auto
                  body-value]])]
 
     [:div.col-12
      [:div.mt2.flex.flex-column.items-center
       [:h1 "Get a FREE Install"]
-      [:div.h5.dark-gray "In three easy steps"]]
+      [:div.h5 "In three easy steps"]]
 
      [:div.col-8-on-dt.mx-auto.flex.flex-wrap
       (map step
@@ -198,14 +198,14 @@
                   {:style {:height "35px"}}
                   (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
                  [:div.h5.medium.my2 title]
-                 [:p.h6.col-8.center.dark-gray description]])]
+                 [:p.h6.col-8.center.black description]])]
 
-    [:div.col-12.bg-transparent-teal.mt3.py8.px4
+    [:div.col-12.bg-pale-purple.mt3.py8.px4
      [:div.col-11-on-dt.justify-center.flex.flex-wrap.mx-auto.pb2
 
       [:div.my2.flex.flex-column.items-center.col-12
        [:h1.titleize.center "Mayvenn is more than a hair company"]
-       [:div.h5.mt2.dark-gray "It's a movement"]]
+       [:div.h5.mt2.black "It's a movement"]]
 
       (entry {:icon-uuid   "ab1d2ed4-ff93-40e6-978a-721133ca88a7"
               :icon-width  "21"
@@ -228,7 +228,7 @@
   [{:cta/keys [id label target]}]
   (when (and id label target)
     (-> (merge {:data-test id} (apply utils/route-to target))
-        (ui/teal-button [:div.flex.items-center.justify-center.inherit-color label]))))
+        (ui/p-color-button [:div.flex.items-center.justify-center.inherit-color label]))))
 
 (defmethod popup/component :consolidated-cart-free-install
   [{:keys [footer-data faq-data black-friday-time?] :as queried-data} owner _]
@@ -237,7 +237,7 @@
              :bg-class    "bg-darken-4"}
             [:div.bg-white
              {:style {:max-width "400px"}}
-             [:div.col-12.clearfix.pt1.pk2.bg-lavender.white
+             [:div.col-12.clearfix.pt1.pk2.bg-pale-purple.white
               [:div.right.pt2.pr2.pointer
                (svg/simple-x
                 (merge (utils/fake-href events/control-consolidated-cart-free-install-dismiss)
@@ -289,7 +289,7 @@
   {:faq-data                    (faq/free-install-query data)
    :footer-data                 (footer-modal/query data)
    :black-friday-time?          (experiments/black-friday-time? data)
-   :call-out-center/bg-class    "bg-lavender"
+   :call-out-center/bg-class    "bg-pale-purple"
    :call-out-center/bg-ucare-id "6a221a42-9a1f-4443-8ecc-595af233ab42"
    :call-out-center/title       "We can't wait to pay for your install!"
    :call-out-center/subtitle    "" ;; For spacing

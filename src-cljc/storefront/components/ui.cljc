@@ -38,7 +38,7 @@
 (defn back-caret
   [back-copy width]
   (component/html
-   [:div.flex.items-center.stroke-navy
+   [:div.flex.items-center.stroke-black
     ^:inline
     (svg/left-caret {:width  width
                      :height width})
@@ -117,18 +117,15 @@
      content]))
 
 (defn ^:private button-colors [color-kw]
-  (let [color (color-kw {:color/teal        "btn-primary bg-teal white"
-                         :color/navy        "btn-primary bg-navy white"
-                         :color/aqua        "btn-primary bg-aqua white"
-                         :color/white       "btn-primary btn-primary-teal-hover bg-white border-light-gray black"
-                         :color/ghost       "btn-outline border-gray black"
-                         :color/light-ghost "btn-outline border-white white"
-                         :color/teal-ghost  "btn-outline border-teal teal"
-                         :color/navy-ghost  "btn-outline border-navy navy"
-                         :color/facebook    "btn-primary bg-fb-blue white"
-                         :color/purple      "btn-primary bg-purple white"
-                         :color/dark-gray   "btn-primary bg-dark-gray white"
-                         :color/quadpay     "btn-primary bg-quadpay-blue white"})]
+  (let [color (color-kw {:color/p-color       "btn-primary bg-p-color white"
+                         :color/aqua          "btn-primary bg-aqua white"
+                         :color/white         "btn-primary btn-primary-teal-hover bg-white border-cool-gray black"
+                         :color/ghost         "btn-outline border-gray black"
+                         :color/light-ghost   "btn-outline cool-gray border-white white"
+                         :color/p-color-ghost "btn-outline border-p-color p-color"
+                         :color/facebook      "btn-primary bg-fb-blue white"
+                         :color/black         "btn-primary bg-black white"
+                         :color/quadpay       "btn-primary bg-quadpay-blue white"})]
     (assert color (str "Button color " color-kw " has not been defined."))
     color))
 
@@ -156,24 +153,18 @@
               (assoc :class (button-class color-kw attrs)))
           (into [:div] content)))
 
-(defn teal-button [attrs & content]
-  (color-button :color/teal attrs content))
-
-(defn purple-button [attrs & content]
-  (color-button :color/purple attrs content))
+(defn p-color-button [attrs & content]
+  (color-button :color/p-color attrs content))
 
 (defn white-button [attrs & content]
   (color-button :color/white attrs content))
 
 (defn underline-button [attrs & content]
   (color-button :color/white attrs
-                [:span.pxp3.border-bottom.border-teal.border-width-2 content]))
+                [:span.pxp3.border-bottom.border-p-color.border-width-2 content]))
 
-(defn dark-gray-button [attrs & content]
-  (color-button :color/dark-gray attrs content))
-
-(defn navy-button [attrs & content]
-  (color-button :color/navy attrs content))
+(defn black-button [attrs & content]
+  (color-button :color/black attrs content))
 
 (defn aqua-button [attrs & content]
   (color-button :color/aqua attrs content))
@@ -187,17 +178,14 @@
 (defn light-ghost-button [attrs & content]
   (color-button :color/light-ghost attrs content))
 
-(defn teal-ghost-button [attrs & content]
-  (color-button :color/teal-ghost attrs content))
-
-(defn navy-ghost-button [attrs content]
-  (color-button :color/navy-ghost attrs content))
+(defn p-color-ghost-button [attrs & content]
+  (color-button :color/p-color-ghost attrs content))
 
 (defn submit-button
   ([title] (submit-button title {}))
   ([title {:keys [spinning? disabled? data-test color-kw]
            :as attrs
-           :or {color-kw :color/teal}}]
+           :or {color-kw :color/p-color}}]
    (if spinning?
      (color-button color-kw attrs)
      [:input
@@ -210,10 +198,6 @@
 (def nbsp (component/html [:span {:dangerouslySetInnerHTML {:__html "&nbsp;"}}]))
 (def rarr (component/html [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}]))
 (def times (component/html [:span {:dangerouslySetInnerHTML {:__html " &times;"}}]))
-(def new-flag
-  (component/html
-   [:div.right
-    [:div.border.border-navy.navy.pp2.h8.line-height-1.medium "NEW"]]))
 
 (defn- add-classes [attributes classes]
   (update attributes :class #(str %1 " " %2) classes))
@@ -255,7 +239,7 @@
 
 (defn text-input [{:keys [id type label keypath value] :as input-attributes}]
   (component/html
-   [:input.h5.border-none.px2.bg-white.col-12.rounded.placeholder-dark-silver
+   [:input.h5.border-none.px2.bg-white.col-12.rounded.placeholder-black
     (merge
      {:style       {:height    "56px"
                     :font-size "16px"}
@@ -464,7 +448,7 @@
       (when disabled
         {:class "border-gray"})
       (if value
-        (svg/simple-x {:class        "block teal"
+        (svg/simple-x {:class        "block p-color"
                        :width        "15px"
                        :height       "15px"})
         [:div {:style {:width "15px" :height "15px"}}])]
@@ -562,8 +546,8 @@
     [:div.relative.rotate-45.p2 (merge  {:style     {:height "70px"}
                                          :data-test data-test}
                                         attrs)
-     [:div.absolute.border-right.border-dark-gray {:style {:width "25px" :height "50px"}}]
-     [:div.absolute.border-bottom.border-dark-gray {:style {:width "50px" :height "25px"}}]]]))
+     [:div.absolute.border-right {:style {:width "25px" :height "50px"}}]
+     [:div.absolute.border-bottom {:style {:width "50px" :height "25px"}}]]]))
 
 (defn square-image [{:keys [resizable-url]} size]
   (some-> resizable-url (str "-/scale_crop/" size "x" size "/center/")))
@@ -597,7 +581,7 @@
   [{:keys [width] :as attrs :or {width "4em"}} image-id]
   (let [width (spice/parse-int width)
         size {:style {:height (str width "px") :width (str width "px")}}]
-    [:div.circle.bg-light-gray.overflow-hidden.relative
+    [:div.circle.bg-cool-gray.overflow-hidden.relative
      (merge size
             (dissoc attrs :width))
      (if image-id
@@ -607,7 +591,7 @@
 (defn circle-picture
   ([src] (circle-picture {} src))
   ([{:keys [width overlay-copy] :as attrs :or {width "4em"}} src]
-   [:div.circle.bg-light-gray.overflow-hidden.relative
+   [:div.circle.bg-cool-gray.overflow-hidden.relative
     (merge {:style {:width width :height width}}
            (dissoc attrs :width :overlay-copy))
     (if src
@@ -688,10 +672,10 @@
    [:a.relative.pointer.block (merge (utils/route-to events/navigate-cart)
                                      opts)
     ^:inline (svg/bag {:class (str "absolute overlay m-auto "
-                                   (if (pos? quantity) "fill-navy" "fill-black"))})
+                                   (if (pos? quantity) "fill-p-color" "fill-black"))})
     (when (pos? quantity)
       [:div.absolute.overlay.m-auto {:style {:height "9px"}}
-       [:div.center.navy.h6.line-height-1 {:data-test (:data-test opts)} quantity]])]))
+       [:div.center.h6.line-height-1 {:data-test (:data-test opts)} quantity]])]))
 
 (defn lqip
   "Generates a Low Quality Image Placeholder.
@@ -807,7 +791,7 @@
                light-forward-arrow-uuid)))
 
 (defn clickable-logo [{:as attrs :keys [height event]}]
-  [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
+  [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.p-color
    (merge {:style     {:height height}
            :title     "Mayvenn"
            :content   (assets/path "/images/header_logo.svg")}

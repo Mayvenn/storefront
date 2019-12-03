@@ -35,7 +35,7 @@
   [{rating :rating/value}]
   (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars rating)]
     [:div.flex.items-center
-     [:span.orange.bold.mr1 rating]
+     [:span.s-color.bold.mr1 rating]
      whole-stars
      partial-star
      empty-stars]))
@@ -44,7 +44,7 @@
   [{:phone-link/keys [target phone-number]}]
   (when (and target phone-number)
     (ui/link :link/phone
-             :a.dark-gray
+             :a.inherit-color
              {:data-test "stylist-phone"
               :class     "block mt1 flex items-center"
               :on-click  (apply utils/send-event-callback target)}
@@ -65,7 +65,7 @@
   [:div.flex.bg-white.rounded.py3
     ;; TODO: image-url should be format/auto?
    (circle-portrait-molecule query)
-   [:div.flex-grow-1.left-align.dark-gray.h6.line-height-2
+   [:div.flex-grow-1.left-align.h6.line-height-2
     (transposed-title-molecule query)
     (stars-rating-molecule query)
     (stylist-phone-molecule query)]
@@ -76,7 +76,7 @@
   [:div.h6.flex.items-center
    (if specialize?
      [:span.mr1 (ui/ucare-img {:width "12"} "2560cee9-9ac7-4706-ade4-2f92d127b565")]
-     (svg/simple-x {:class "dark-silver mr1"
+     (svg/simple-x {:class "mr1"
                     :style {:width "12px" :height "12px"}}))
    specialty])
 
@@ -201,7 +201,7 @@
 (defn cta-molecule
   [{:cta/keys [id label target]}]
   (when (and id label target)
-    (ui/teal-button
+    (ui/p-color-button
      (merge {:data-test id} (apply utils/fake-href target))
      [:div.flex.items-center.justify-center.inherit-color label])))
 
@@ -224,7 +224,7 @@
 (defn footer-body-molecule
   [{:footer/keys [copy id]}]
   (when id
-    [:div.dark-gray.h5.mb2
+    [:div.h5.mb2
      {:data-test id}
      copy]))
 
@@ -240,11 +240,11 @@
              (if (= :navigate (first event))
                (apply utils/route-to target)
                (apply utils/fake-href target)))
-      [:span.medium.dark-gray.border-bottom.border-teal label])]))
+      [:span.medium.border-bottom.border-p-color label])]))
 
 (defcomponent footer [data _ _]
   (when (seq data)
-    [:div.mt6.border-top.border-fate-white.border-width-2
+    [:div.mt6.border-top.border-cool-gray.border-width-2
      [:div.py5.center
       (footer-body-molecule data)
       (footer-cta-molecule data)]]))

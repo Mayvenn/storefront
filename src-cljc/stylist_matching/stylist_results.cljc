@@ -110,8 +110,8 @@
           :stylist-card.address-marker/id    (str "stylist-card-address-" store-slug)
           :stylist-card.address-marker/value [:div
                                               [:div.bold.line-height-4.py1
-                                               [:div.dark-gray salon-name]
-                                               [:a.navy
+                                               [:div salon-name]
+                                               [:a.inherit-color
                                                 (merge
                                                  {:data-test "stylist-salon-address"}
                                                  (utils/route-to events/control-adventure-stylist-salon-address-clicked
@@ -123,12 +123,12 @@
                                                  " "
                                                  zipcode]]]
                                               (ui/link :link/phone
-                                                       :a.navy.light.my3
+                                                       :a.inherit-color.light.my3
                                                        {:data-test "stylist-phone"
                                                         :on-click  (utils/send-event-callback events/control-adventure-stylist-phone-clicked {:stylist-id   (:stylist-id stylist)
                                                                                                                                               :phone-number phone-number})}
                                                        phone-number)
-                                              [:div.dark-gray
+                                              [:div
                                                (into [:div.flex.flex-wrap]
                                                      (comp
                                                       (remove nil?)
@@ -160,7 +160,7 @@
   (map-indexed (partial stylist-card-query stylist-profiles? post-purchase? mayvenn-rating?) stylists))
 
 (def call-out-query
-  {:call-out-center/bg-class    "bg-lavender"
+  {:call-out-center/bg-class    "bg-pale-purple"
    :call-out-center/bg-ucare-id "6a221a42-9a1f-4443-8ecc-595af233ab42"
    :call-out-center/title       "Want to book with your own stylist?"
    :call-out-center/subtitle    "Recommend them to become Mayvenn Certified"
@@ -195,7 +195,7 @@
 
 (defcomponent template
   [{:keys [gallery-modal header list/results]} _ _]
-  [:div.bg-fate-white.black.center.flex.flex-auto.flex-column
+  [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
    (component/build gallery-modal/organism gallery-modal nil)
    (component/build header/organism header nil)
    [:div

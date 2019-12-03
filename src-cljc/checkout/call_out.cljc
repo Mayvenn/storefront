@@ -13,14 +13,15 @@
 (defn v2-cart-promo
   [qualified?]
   [:div.mb3
+   ;; TODO: Revisit back ground colors
    (if qualified?
-     [:div.bg-teal.bg-celebrate.p2.white.center {:data-test "v2-cart-promo"}
+     [:div.bg-p-color.bg-celebrate.p2.white.center {:data-test "v2-cart-promo"}
       [:div.flex.justify-center.mb1 (ui/ucare-img {:width 46} "014c70a0-0d57-495d-add0-f2f46248d224")]
       [:h4 "This order qualifies for a"]
       [:h1.shout.bold "Free Install"]
       [:h4.pb6 "You'll receive a voucher via email after purchase"]]
 
-     [:div.p2.bg-orange.white.center {:data-test "ineligible-v2-cart-promo"}
+     [:div.p2.bg-s-color.white.center {:data-test "ineligible-v2-cart-promo"}
       [:h4.medium "You're almost there..."]
       [:h4.medium "Buy 3 bundles or more and get a"]
       [:h1.shout.bold "Free Install"]

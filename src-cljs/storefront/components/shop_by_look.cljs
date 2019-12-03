@@ -12,15 +12,15 @@
     (ui/large-spinner {:style {:height "4em"}})
     [:div
      [:div.center.bg-white.py3
-      [:h1.h2.navy (:title copy)]
+      [:h1.h2 (:title copy)]
       [:div.bg-no-repeat.bg-contain.mx-auto
        (if deals?
          {:class "img-shop-by-bundle-deal-icon"
           :style {:width "110px" :height "110px"}}
          {:class "img-shop-by-look-icon my2"
           :style {:width "101px" :height "85px"}})]
-      [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto (:description copy)]]
-     [:div.flex.flex-wrap.mbn2.justify-center.justify-start-on-tb-dt.bg-light-gray.py2-on-tb-dt.px1-on-tb-dt
+      [:p.col-10.col-6-on-tb-dt.mx-auto (:description copy)]]
+     [:div.flex.flex-wrap.mbn2.justify-center.justify-start-on-tb-dt.bg-cool-gray.py2-on-tb-dt.px1-on-tb-dt
       (for [look looks]
         (component/build component-ugc/social-image-card-component look {:opts {:copy copy}
                                                                          :key  (str (:id look))}))]]))

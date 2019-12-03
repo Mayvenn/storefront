@@ -14,21 +14,19 @@
 
 .btn-primary:disabled,
 .btn-primary.is-disabled {
-    color: var(--dark-silver);
-    background-color: var(--light-gray);
+    color: var(--gray);
+    background-color: var(--cool-gray);
 }
 
 :root {
-  --blue:                 #0074d9;
-  --light-gray:           #b4b4b4;
-  --silver:               #ebebeb;
-  --dark-silver:          #aaaaaa;
-  --hover-only-teal-gray: #e5eeec;
+  --p-color:              #4427c1;
+  --gray:                 #B9B9B9;
+  --cool-gray:            #eeefef;
 
   --darken-1: rgba(0, 0, 0, .075);
   --darken-3: rgba(0, 0, 0, .375);
 
   --button-color: #fff;
-  --button-background-color: var(--blue);
+  --button-background-color: var(--p-color);
   --button-border-radius: 27px;
 }

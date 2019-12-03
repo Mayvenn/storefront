@@ -22,7 +22,7 @@
 
 (defn ^:private divider []
   (component/html
-   [:hr.border-top.border-silver.col-12.m0
+   [:hr.border-top.border-gray.col-12.m0
     {:style {:border-bottom 0
              :border-left 0
              :border-right 0}}]))
@@ -34,9 +34,9 @@
     [:h6 "Your camera will be used as the scanner."]
     [:div.flex.justify-center.py4 (ui/ucare-img {:width "50"} "4bd0f715-fa5a-4d82-9cec-62dc993c5d23")]
     [:div.mx-auto.col-10.col-3-on-tb-dt.mb4
-     (ui/teal-button {:on-click     (utils/send-event-callback events/control-voucher-scan)
-                      :height-class "py2"
-                      :data-test    "voucher-scan"} "Scan")]]))
+     (ui/p-color-button {:on-click     (utils/send-event-callback events/control-voucher-scan)
+                         :height-class "py2"
+                         :data-test    "voucher-scan"} "Scan")]]))
 
 (defn ^:private qr-preview-section []
   (component/html
@@ -69,7 +69,7 @@
        :value         code
        :errors        (get field-errors ["voucher-code"])
        :data-ref      "voucher-code"}
-      {:ui-element ui/teal-button
+      {:ui-element ui/p-color-button
        :content    "Redeem"
        :args       {:class        "flex justify-center items-center circled-item"
                     :on-click     (utils/send-event-callback events/control-voucher-redeem {:code code})
@@ -78,7 +78,7 @@
                     :spinning?    redeeming-voucher?
                     :data-test    "voucher-redeem"}})]
 
-    [:h6.pt6.line-height-2.dark-gray.center.my2
+    [:h6.pt6.line-height-2.center.my2
      "Vouchers are sent to Mayvenn customers via text and/or email when they buy 3 or more bundles and use a special promo code."]]])
 
 (def ^:private missing-service-menu
@@ -95,7 +95,7 @@
 
 (defcomponent ^:private component
   [{:keys [service-menu-fetching? service-menu-missing?] :as data} owner opts]
-  [:div.bg-light-silver
+  [:div.bg-cool-gray
    (cond service-menu-fetching?
          spinner
 

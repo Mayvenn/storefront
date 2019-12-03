@@ -21,9 +21,9 @@
        (if (= type "Mayvenn::GreenDotPayoutMethod")
          [:div.h6 "Linked Card xxxx-xxxx-xxxx-" (or last-4 "????")]
          [:div.h6 email])]
-      [:h2.teal (mf/as-money amount)]]
+      [:h2.p-color (mf/as-money amount)]]
      [:div
-      [:div.navy.center.h8
+      [:div.center.h8
        (case payout-timeframe
          "immediate"                 "Instant: Funds typically arrive in minutes"
          "next_business_day"         "Funds paid out to this card will become available the next business day."
@@ -32,12 +32,12 @@
       [:div.my3
        {:data-test "cash-out-commit-button"
         :data-ref  "cash-out-button"}
-       (ui/teal-button {:on-click  (utils/send-event-callback events/control-stylist-dashboard-cash-out-commit
-                                                              {:amount amount
-                                                               :payout-method-name name})
-                        :disabled? (not (payouts/cash-out-eligible? payout-method))
-                        :spinning? cashing-out?}
-                       "Cash out")]]]))
+       (ui/p-color-button {:on-click  (utils/send-event-callback events/control-stylist-dashboard-cash-out-commit
+                                                                 {:amount amount
+                                                                  :payout-method-name name})
+                           :disabled? (not (payouts/cash-out-eligible? payout-method))
+                           :spinning? cashing-out?}
+                          "Cash out")]]]))
 
 (defn query [data]
   (let [{:keys [amount payout-method]} (get-in data keypaths/stylist-payout-stats-next-payout)]

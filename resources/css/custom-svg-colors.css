@@ -1,48 +1,36 @@
-.stroke-teal   { stroke: var(--teal); }
-.stroke-navy   { stroke: var(--navy); }
-.stroke-orange { stroke: var(--orange); }
 .stroke-aqua   { stroke: var(--aqua); }
-.stroke-purple { stroke: var(--purple); }
 
 .fill-twitter-blue { fill: var(--twitter-blue); }
-.fill-teal         { fill: var(--teal); }
-.fill-navy         { fill: var(--navy); }
-.fill-orange       { fill: var(--orange); }
 .fill-aqua         { fill: var(--aqua); }
 .fill-none         { fill: none; }
 
-.stroke-white          { stroke: var(--white); }
-.stroke-light-silver   { stroke: var(--light-silver); }
-.stroke-silver         { stroke: var(--silver); }
-.stroke-dark-silver    { stroke: var(--dark-silver); }
-.stroke-light-gray     { stroke: var(--light-gray); }
 .stroke-gray           { stroke: var(--gray); }
-.stroke-dark-gray      { stroke: var(--dark-gray); }
-.stroke-black          { stroke: var(--black); }
 
-.fill-white            { fill: var(--white); }
-.fill-light-silver     { fill: var(--light-silver); }
-.fill-silver           { fill: var(--silver); }
-.fill-dark-silver      { fill: var(--dark-silver); }
-.fill-light-gray       { fill: var(--light-gray); }
 .fill-gray             { fill: var(--gray); }
-.fill-dark-gray        { fill: var(--dark-gray); }
-.fill-black            { fill: var(--black); }
+
+/* NEW COLORS */
+.stroke-p-color { stroke: var(--p-color); }
+.stroke-white   { stroke: var(--white); }
+.stroke-black   { stroke: var(--black); }
+
+.fill-p-color { fill: var(--p-color); }
+.fill-s-color { fill: var(--s-color); }
+.fill-white   { fill: var(--white); }
+.fill-black   { fill: var(--black); }
 
 :root { /* Compare to app.css :( */
   --twitter-blue:   #00aced;
-  --teal:         #40CBAC;
-  --navy:         #175674;
-  --orange:       #FFC520;
   --aqua:         #49BBF0;
-  --purple:       #931280;
 
-  --white:        #ffffff;
-  --light-silver: #f2f2f2;
-  --silver:       #ebebeb;
-  --dark-silver:  #dadada;
-  --light-gray:   #b4b4b4;
-  --gray:         #666666;
-  --dark-gray:    #333333;
-  --black:        #000000;
+  --gray:         #B9B9B9;
+
+  /* THESE ARE OUR NEW COLORS */
+  --p-color:     #4427c1;
+  --s-color:     #6bc8ad;
+  --red:         #f94941;
+  --paypal:      #49bbf0;
+  --pale-purple: #dedbe5;
+  --white:       #ffffff;
+  --cool-gray:   #eeefef;
+  --black:       #000000;
 }

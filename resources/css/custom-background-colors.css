@@ -2,59 +2,27 @@
 .bg-quadpay-blue            { background-color: var(--quadpay-blue); }
 .bg-twitter-blue            { background-color: var(--twitter-blue); }
 .bg-sms-green               { background-color: var(--sms-green); }
-.bg-light-orange            { background-color: var(--light-orange); }
-.bg-light-lavender          { background-color: var(--light-lavender); }
-.bg-lavender                { background-color: var(--lavender); }
-.bg-lavender-dark           { background-color: var(--lavender-dark); }
-.bg-lavender-gradient-light { background-color: var(--lavender-gradient-light); }
-.bg-lavender-gradient-dark  { background-color: var(--lavender-gradient-dark); }
-.bg-too-light-lavender      { background-color: var(--too-light-lavender); }
 .bg-error                   { background-color: var(--error); }
 
 .bg-white                  { background-color: var(--white); }
-.bg-fate-white             { background-color: var(--fate-white); }
-.bg-light-silver           { background-color: var(--light-silver); }
-.bg-silver                 { background-color: var(--silver); }
-.bg-dark-silver            { background-color: var(--dark-silver); }
-.bg-light-gray             { background-color: var(--light-gray); }
 .bg-gray                   { background-color: var(--gray); }
-.bg-dark-gray              { background-color: var(--dark-gray); }
 .bg-black                  { background-color: var(--black); }
 .bg-clear                  { background-color: var(--clear); }
-.bg-light-teal             { background-color: var(--light-teal); }
-.bg-transparent-light-teal { background-color: var(--transparent-light-teal); }
-.bg-hover-only-teal-gray   { background-color: var(--hover-only-teal-gray); }
-.bg-too-light-teal         { background-color: var(--too-light-teal); }
-.bg-transparent-teal       { background-color: var(--transparent-teal); }
 .bg-lighten-5              { background-color: var(--lighten-5); }
 
+.bg-p-color     { background-color: var(--p-color); }
+.bg-s-color     { background-color: var(--s-color); }
+.bg-cool-gray   { background-color: var(--cool-gray); }
+.bg-pale-purple { background-color: var(--pale-purple); }
+
 :root {
-    --fate-white:     #f8f8f8;
-    --light-silver:   #f2f2f2;
-    --silver:         #ebebeb;
-    --dark-silver:    #dadada;
-    --light-gray:     #b4b4b4;
-    --gray:           #666666;
-    --dark-gray:      #333333;
+    --gray:           #B9B9B9;
     --error:          #ff004f;
 
-    --transparent-teal:       #40cbac19;
-    --light-teal:             #9fe5d5;
-    --transparent-light-teal: #9fe5d5cc;
-    --hover-only-teal-gray:   #e5eeec;
-    --too-light-teal:         #f5fcfb;
     --facebook-blue:          #3b5998;
     --quadpay-blue:           #1d73ec;
     --twitter-blue:           #00aced;
     --sms-green:              #1fcc23;
-    --light-orange:           rgb(255, 248, 229);
-    --light-lavender:         rgb(202, 182, 215);
-    --lavender:               rgb(175, 159, 196);
-    --lavender-dark:          rgb(144,128,166);
-    --too-light-lavender:     #efebf5;
-
-    --lavender-gradient-light: rgb(205, 184, 217);
-    --lavender-gradient-dark: rgb(154, 143, 180);
 
     --lighten-5: rgba(255, 255, 255, .925);
     --clear: rgba(0, 0, 0, 0);

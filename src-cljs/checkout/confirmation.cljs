@@ -164,9 +164,9 @@
         (when requires-additional-payment?
           [:div
            (ui/note-box
-            {:color     "teal"
+            {:color     "p-color"
              :data-test "additional-payment-required-note"}
-            [:.p2.navy
+            [:div.p2.black
              "Please enter an additional payment method below for the remaining total on your order."])
            (component/build checkout-credit-card/component payment nil)])
         (component/build cart-summary/organism cart-summary nil)
@@ -184,7 +184,7 @@
          (checkout-button selected-quadpay? checkout-button-data)]]]]
      [:div.py6.h2
       [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
-      [:h2.center.navy "Processing your order..."]])])
+      [:h2.center "Processing your order..."]])])
 
 (defn item-card-query
   [data]
@@ -265,12 +265,12 @@
                                       [:div
                                        [:div.bold.h2
                                         (some-> total (- available-store-credit) (max 0) mf/as-money)]
-                                       [:div.h6.bg-purple.white.px2.nowrap.mb1
+                                       [:div.h6.bg-p-color.white.px2.nowrap.mb1
                                         "Includes Mayvenn Install"]
                                        (when (pos? total-savings)
-                                         [:div.h6.light.dark-gray.pxp1.nowrap.italic
+                                         [:div.h6.light.black.pxp1.nowrap.italic
                                           "You've saved "
-                                          [:span.bold.purple {:data-test "total-savings"}
+                                          [:span.bold.p-color {:data-test "total-savings"}
                                            (mf/as-money total-savings)]])]
 
                                       :else
@@ -292,12 +292,12 @@
                                             :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
                                                                                         :height "2em" :width "2em"})
                                             :cart-summary-line/label (orders/display-adjustment-name name)
-                                            :cart-summary-line/class "purple"
+                                            :cart-summary-line/class "p-color"
                                             :cart-summary-line/value (mf/as-money-or-free price)}
 
                                      install-summary-line?
                                      (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
-                                             :cart-summary-line/class "purple"})))
+                                             :cart-summary-line/class "p-color"})))
                                  (when (pos? tax)
                                    [{:cart-summary-line/id       "tax"
                                      :cart-summary-line/label    "Tax"
@@ -305,7 +305,7 @@
                                  (when (pos? available-store-credit)
                                    [{:cart-summary-line/id    "store-credit"
                                      :cart-summary-line/label "Store Credit"
-                                     :cart-summary-line/class "purple"
+                                     :cart-summary-line/class "p-color"
                                      :cart-summary-line/value (mf/as-money (- (min available-store-credit total)))}]))}))
 
 (defn query

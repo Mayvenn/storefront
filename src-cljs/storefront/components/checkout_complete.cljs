@@ -65,7 +65,7 @@
    [:div
     (when id
       (list
-       [:div.h6.dark-gray.mbn1 {:key secondary} secondary]
+       [:div.h6.mbn1 {:key secondary} secondary]
        [:div.h3
         {:data-test id
          :key       primary}
@@ -84,7 +84,7 @@
   [{:phone-link/keys [phone-number]}]
   (when phone-number
     (ui/link :link/phone
-             :a.dark-gray
+             :a.inherit-color
              {:data-test "stylist-phone"
               :class     "block flex items-center h6"}
              (svg/phone {:style {:width  "9px"
@@ -108,7 +108,7 @@
   (when id
     [:div.center
      [:div.h5.medium title]
-     [:div.h6.dark-gray.center.my2.px2
+     [:div.h6.center.my2.px2
       body]]))
 
 (def get-inspired-cta
@@ -116,19 +116,19 @@
    [:h3.bold "In the meantime…"]
    [:h4.py2 "Get inspired for your appointment"]
    [:div.py2
-    (ui/teal-button {:href  "https://www.instagram.com/explore/tags/mayvennfreeinstall/"
-                     :class "bold"}
-                    "View #MayvennFreeInstall")]])
+    (ui/p-color-button {:href  "https://www.instagram.com/explore/tags/mayvennfreeinstall/"
+                        :class "bold"}
+                       "View #MayvennFreeInstall")]])
 
 (defn matched-with-servicing-stylist-component [{:matched-component.message/keys [id] :as queried-data}]
-  [:div.bg-too-light-lavender.rounded.px4.py3
+  [:div.bg-white.rounded.px4.py3
    {:data-test id}
    (matched-component-message-molecule queried-data)
    [:div.my2 (servicing-stylist-card-molecule queried-data)]
    (let [{:matched-component.cta/keys [id label target]} queried-data]
      (when id
        [:div.col-10.my2.mx-auto
-        (ui/teal-button
+        (ui/p-color-button
          (merge (apply utils/route-to target)
                 {:data-test id}) label)]))])
 
@@ -140,7 +140,7 @@
     [:div.center
      [:div.mt5.h1.mb2 {:data-test "checkout-success-message"}
       "Thank you for your order!"]
-     [:div.h5.dark-gray.col-10.mx-auto
+     [:div.h5.col-10.mx-auto
       (copy "We've received your order and will contact you as soon as your package is shipped.")]]
 
     [:div.py2.mx-auto.white.border-bottom

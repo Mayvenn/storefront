@@ -26,5 +26,5 @@
                                     :edgePadding 0}})
        [:div.absolute
         {:style {:top "1.5rem" :right "1.5rem"}}
-        (ui/modal-close {:class       "stroke-dark-gray fill-gray"
+        (ui/modal-close {:class       "stroke-black fill-gray"
                          :close-attrs (apply utils/fake-href target)})]]))])

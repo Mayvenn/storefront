@@ -9,7 +9,7 @@
 (defcomponent component [{:keys [focused reset-password show-password? loaded-facebook? field-errors]} owner _]
   (ui/narrow-container
    [:div.p2
-    [:h2.center.my2.navy.mb3 "Reset Your Password"]
+    [:h2.center.my2.mb3 "Reset Your Password"]
     [:form.col-12
      {:on-submit (utils/send-event-callback events/control-reset-password-submit)}
      (ui/text-field {:errors     (get field-errors ["password"])
@@ -22,7 +22,7 @@
                      :type       "password"
                      :value      reset-password
                      :hint       (when show-password? reset-password)})
-     [:div.dark-gray.col-12.left
+     [:div.col-12.left
       (ui/check-box {:label   "Show password"
                      :keypath keypaths/account-show-password?
                      :focused focused
@@ -31,7 +31,7 @@
      [:div.col-12.col-6-on-tb-dt.mx-auto
       (ui/submit-button "Save & Continue"
                         {:data-test "reset-password-submit"})]]
-    [:.h5.center.dark-gray.light.my2 "OR"]
+    [:.h5.center.light.my2 "OR"]
 
     [:div.col-12.col-6-on-tb-dt.mx-auto
      (facebook/reset-button loaded-facebook?)]]))

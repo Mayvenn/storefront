@@ -18,8 +18,8 @@
 
 @media (--over-max-580) {
     .max-580 {
-        border-left: 1px var(--light-gray) solid;
-        border-right: 1px var(--light-gray) solid;
+        border-left: 1px var(--cool-gray) solid;
+        border-right: 1px var(--cool-gray) solid;
     }
 }
 
@@ -31,17 +31,8 @@
     --error:          #ff004f;
     --yellow:         #ffc520;
     --white:          #ffffff;
-    --fate-white:     #f8f8f8;
-    --light-silver:   #f2f2f2;
-    --silver:         #dadada;
-    --dark-silver:    #aaaaaa;
-    --light-gray:     #b4b4b4;
-    --gray:           #666666;
-    --dark-gray:      #333333;
+    --gray:           #B9B9B9;
     --black:          #000000;
-    --light-teal:     #9fe5d5;
-    --light-lavender: rgb(202, 182, 215);
-    --lavender:       rgb(175, 159, 196);
 
     --p-color:     #4427c1;
     --s-color:     #6bc8ad;

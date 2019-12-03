@@ -127,7 +127,7 @@
 
 .carousel-prev:before,
 .carousel-next:before {
-    color: var(--dark-gray);
+    color: var(--gray);
     font-family: sans-serif;
     content: "";
 }
@@ -141,6 +141,5 @@
 
 :root {
     --white:        #FFFFFF;
-    --gray:         #666666;
-    --dark-gray:    #333333;
+    --gray:         #B9B9B9;
 }

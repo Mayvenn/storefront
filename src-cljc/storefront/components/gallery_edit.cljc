@@ -21,24 +21,24 @@
    [:p "Show off your best work to your clients by uploading images of your #MayvennMade hairstyles."]])
 
 (defn manage-section [gallery-images editing? adding-photo?]
-  [:div.p2.center.dark-gray.bg-light-gray
+  [:div.p2.center.bg-gray
    [:h1 "Manage your gallery"]
    [:div.p1 "Here you can upload images, edit posts and manage your gallery settings."]
    (ui/narrow-container
     [:div
-     [:div.p1 (ui/teal-button (merge (utils/route-to events/navigate-gallery-image-picker)
-                                     {:data-test "add-to-gallery-link"
-                                      :spinning?  adding-photo?})
-                              "Choose an image to upload")]
+     [:div.p1 (ui/p-color-button (merge (utils/route-to events/navigate-gallery-image-picker)
+                                        {:data-test "add-to-gallery-link"
+                                         :spinning?  adding-photo?})
+                                 "Choose an image to upload")]
      (when (seq gallery-images)
        [:div.p1
         (if editing?
-          (ui/dark-gray-button (utils/fake-href events/control-cancel-editing-gallery) "Finish editing")
+          (ui/black-button (utils/fake-href events/control-cancel-editing-gallery) "Finish editing")
           (ui/ghost-button (utils/fake-href events/control-edit-gallery) "Edit your gallery"))])])])
 
 (def pending-approval
   (component/html
-   [:div.container-size.bg-dark-gray.white.medium.flex.items-center.center.p2
+   [:div.container-size.bg-gray.white.medium.flex.items-center.center.p2
     "Your image has been successfully submitted and is pending approval. Check back here to be updated on its status."]))
 
 (defn images [editing? gallery-images]

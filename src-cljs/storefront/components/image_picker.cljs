@@ -2,9 +2,9 @@
   (:require [storefront.components.ui :as ui]
             [storefront.component :as component :refer [defdynamic-component]]
             [storefront.events :as events]
-            [storefront.assets :as assets]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :refer [handle-message]]))
+            [storefront.platform.messages :refer [handle-message]]
+            [storefront.components.svg :as svg]))
 
 (defdynamic-component component
   (did-mount [this]
@@ -21,11 +21,11 @@
             (component/html
              [:div.container.sans-serif
               [:div.p2
-               [:a.dark-gray.block.mb2
+               [:a.inherit-color.block.mb2.flex.items-center
                 (utils/route-to (:navigation-event back-link))
-                (ui/ucare-img {:class "px1 mbnp4"
-                               :style {:height  "1.25rem"
-                                       :display "inline"}} "942d4023-ae6b-4228-8394-00293229e895")
+                (svg/left-caret {:class  "stroke-black"
+                                 :width  "1.25rem"
+                                 :height "1.25rem"})
                 (:back-copy back-link)]
                [:h1.center "Select a source below"]]
               [:div {:id selector} ui/nbsp]]))))

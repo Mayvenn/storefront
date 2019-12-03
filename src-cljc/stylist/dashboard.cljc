@@ -40,14 +40,14 @@
              {:key (str "ledger-tabs-" id)
               :data-test (str "nav-" (name id))
               :class (if (= id active-tab-name)
-                       "bg-silver bold"
-                       "bg-fate-white")})
+                       "bg-cool-gray bold"
+                       "bg-white")})
       title])])
 
 (defn ^:private empty-ledger [{:keys [empty-title empty-copy]}]
   [:div.my6.center
    [:h4.gray.bold.p1 empty-title]
-   [:h6.dark-gray.col-5.mx-auto.line-height-2 empty-copy]])
+   [:h6.col-5.mx-auto.line-height-2 empty-copy]])
 
 (defcomponent component
   [{:keys [stats-cards activity-ledger-tab

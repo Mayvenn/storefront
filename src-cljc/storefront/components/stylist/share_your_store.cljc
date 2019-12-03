@@ -82,7 +82,7 @@
        "//ucarecdn.com/0bb20f76-52b6-4ad5-b094-a292352473b1/-/format/auto/sms"
        "Send a text")
       [:div.h5.my4 "Tap to select, copy and share"]
-      [:input.border.border-gray.rounded.pl1.py1.bg-white.teal.col-12.center
+      [:input.border.border-gray.rounded.pl1.py1.bg-white.p-color.col-12.center
        {:type     "text"
         :value    store-link
         :on-click utils/select-all-text

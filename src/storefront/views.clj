@@ -80,6 +80,7 @@
             :type  "image/png",
             :rel   "icon"}]
     [:link {:rel "manifest" :href "/web_app_manifest.json"}]
+    ; TODO: Keep this teal for the favicon until new asset?
     [:link {:color "#40cbac",
             :href  "/safari-pinned-tab.svg",
             :rel   "mask-icon"}]
@@ -251,7 +252,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
           [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
           favicon-links
           (page/include-css (assets/path "/css/app.css"))]
-         [:body.bg-light-gray
+         [:body.bg-cool-gray
           [:div.container
            [:div.col-9-on-tb-dt.mx-auto.px2.flex.flex-column.items-center
             {:style "min-height: 100vh;"}

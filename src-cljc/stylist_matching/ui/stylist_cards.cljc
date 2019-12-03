@@ -41,7 +41,7 @@
      (if value?
        (ui/ucare-img {:width 10}
                      "2560cee9-9ac7-4706-ade4-2f92d127b565")
-       (svg/simple-x {:class "dark-silver"
+       (svg/simple-x {:class "black"
                       :style {:width  8
                               :height 8}}))]
     label]])
@@ -50,7 +50,7 @@
   [{:stylist-card.services-list/keys [id value]}]
   (when id
     (component/html
-     [:div.h8.col-12.dark-gray
+     [:div.h8.col-12
       value])))
 
 (defn stylist-card-address-marker-molecule
@@ -61,7 +61,7 @@
       (svg/position {:width "10px"
                      :height "13px"
                      :class "flex-none mr1"})
-      [:span.overflow-hidden.nowrap.dark-gray
+      [:span.overflow-hidden.nowrap
        {:style {:text-overflow "ellipsis"}}
        value]])))
 
@@ -75,14 +75,14 @@
 (defn stylist-card-stars-rating-molecule
   [{:rating/keys [value]}]
   (component/html
-   [:div.h6.orange
+   [:div.h6.s-color
     (star-rating value)]))
 
 (defn stylist-card-title-molecule
   [{:stylist-card.title/keys [id primary]}]
   (when id
     (component/html
-     [:div.h4.navy.line-height-1
+     [:div.h4.line-height-1
       {:data-test id}
       primary])))
 
@@ -138,7 +138,7 @@
   (when id
     (component/html
      [:div
-      [:h6.dark-gray.bold.left-align.mb2.ml1.h7 title]
+      [:h6.bold.left-align.mb2.ml1.h7 title]
       (component/build carousel/component
                        {:slides   (map control-stylist-card-gallery-item-molecule items)
                         :settings {:nav   false
@@ -161,7 +161,7 @@
   [{:stylist-card.cta/keys [id label target]}]
   (when id
     (component/html
-     (ui/teal-button
+     (ui/p-color-button
       (merge {:data-test id}
              (apply utils/fake-href target))
       label))))
@@ -228,7 +228,7 @@
 
 (defcomponent experiment-organism
   [data _ _]
-  [:div.flex.flex-column.left-align.rounded.border.border-light-gray.mx3.my3.bg-white
+  [:div.flex.flex-column.left-align.rounded.border.border-cool-gray.mx3.my3.bg-white
    {:key (:react/key data)}
    (stylist-card-header-molecule data)
    [:div.col-12

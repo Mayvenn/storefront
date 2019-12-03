@@ -84,9 +84,9 @@
             selected-quadpay?                          (contains? selected-payment-methods :quadpay)]
         (if (and fully-covered? can-use-store-credit?)
           (ui/note-box
-           {:color     "teal"
+           {:color     "p-color"
             :data-test "store-credit-note"}
-           [:.p2.navy
+           [:.p2
             [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]])
           [:div
            (ui/radio-section
@@ -106,14 +106,14 @@
                 (when (pos? credit-available)
                   (if can-use-store-credit?
                     (ui/note-box
-                     {:color     "teal"
+                     {:color     "p-color"
                       :data-test "store-credit-note"}
-                     [:.p2.navy
+                     [:.p2
                       [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
                       [:.h6.mt1
                        "Please enter an additional payment method below for the remaining total on your order."]])
                     (ui/note-box
-                     {:color     "orange"
+                     {:color     "s-color"
                       :data-test "store-credit-note"}
                      [:div.p2.black
                       [:div "Your "
@@ -154,7 +154,7 @@
                 [:div.hide (component/build quadpay/widget-component {} nil)])]])
 
            (when selected-quadpay?
-             [:div.h6.px2.ml5.dark-gray
+             [:div.h6.px2.ml5
               "Before completing your purchase, you will be redirected to Quadpay to securely set up your payment plan."])]))
 
       (when loaded-stripe?

@@ -9,7 +9,7 @@
 (defcomponent component [{:keys [email facebook-loaded? field-errors focused]} owner opts]
   (ui/narrow-container
    [:div.p2
-    [:h1.h2.center.my2.navy.mb3 "Reset your password"]
+    [:h1.h2.center.my2.mb3 "Reset your password"]
 
     [:form.col-12.flex.flex-column.items-center
      {:on-submit (utils/send-event-callback events/control-forgot-password-submit)}
@@ -26,7 +26,7 @@
      [:div.col-12.col-6-on-tb-dt.mx-auto
       (ui/submit-button "Reset my password" {:data-test "forgot-password-submit"})]]
 
-    [:div.h5.center.dark-gray.light.my2 "OR"]
+    [:div.h5.center.light.my2 "OR"]
 
     [:div.col-12.col-6-on-tb-dt.mx-auto
      (facebook/sign-in-button facebook-loaded?)]]))

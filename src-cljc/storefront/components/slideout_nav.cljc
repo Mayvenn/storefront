@@ -59,7 +59,7 @@
   (when (-> signed-in ::auth/at-all)
     [:div.my3
      [:div.h8.medium "Signed in with:"]
-     [:a.teal.h5.bold
+     [:a.p-color.h5.bold
       (merge
        {:data-test "signed-in-as"}
        (utils/route-to (if (-> signed-in ::auth/as (= :stylist))
@@ -69,17 +69,17 @@
      (when (pos? store-credit)
        [:div
         [:div.h8.medium "Store credit:"]
-        [:div.teal.h5.bold (as-money store-credit)]])]))
+        [:div.p-color.h5.bold (as-money store-credit)]])]))
 
 (defn ^:private stylist-actions
   [vouchers? show-community?]
   (component/html
    [:div
     (when vouchers?
-      (ui/teal-button (assoc (utils/route-to events/navigate-voucher-redeem)
-                             :height-class "py2"
-                             :data-test    "redeem-voucher")
-                      "Redeem Client Voucher"))
+      (ui/p-color-button (assoc (utils/route-to events/navigate-voucher-redeem)
+                                :height-class "py2"
+                                :data-test    "redeem-voucher")
+                         "Redeem Client Voucher"))
     [:div
      (marquee-row
       (ui/underline-button (assoc (utils/route-to events/navigate-stylist-account-profile)
@@ -111,7 +111,7 @@
     (ui/underline-button (assoc (utils/route-to events/navigate-sign-in)
                                 :data-test "sign-in")
                          "Sign in")
-    [:div.h6.col-12.center.dark-gray
+    [:div.h6.col-12.center
      [:div "No account?"]
      [:a.inherit-color.underline
       (assoc (utils/route-to events/navigate-sign-up)
@@ -137,7 +137,7 @@
      (when show-freeinstall-link?
        [{:link-attrs (utils/route-to events/navigate-adventure-match-stylist)
          :data-test  "menu-shop-freeinstall"
-         :content    [[:span.teal.pr1 "NEW"]
+         :content    [[:span.p-color.pr1 "NEW"]
                       [:span.medium "Get a Mayvenn Install"]]}])
 
      (when-not show-bundle-sets-and-hide-deals?
@@ -183,7 +183,7 @@
                                    {:page/slug           "wigs"
                                     :catalog/category-id "13"})
        :data-test "menu-shop-wigs"
-       :content [[:span.teal.pr1 "NEW"]
+       :content [[:span.p-color.pr1 "NEW"]
                  [:span.medium.flex-auto "Wigs"]]}
       {:link-attrs (utils/route-to events/navigate-category
                                    {:page/slug           "seamless-clip-ins"
@@ -253,11 +253,11 @@
 (defcomponent ^:private root-menu
   [{:keys [user signed-in show-community? vouchers?] :as data} owner opts]
   [:div
-   [:div.px6.border-bottom.border-gray.bg-light-gray.pt3
+   [:div.px6.border-bottom.border-gray.bg-cool-gray.pt3
     (when (auth/stylist? signed-in)
       [:div.flex.items-center (stylist-portrait user) gallery-link])
     (account-info-marquee signed-in user)
-    [:div.my3.dark-gray
+    [:div.my3
      (actions-marquee signed-in vouchers? show-community?)]]
    [:div.px6
     (menu-area data)]

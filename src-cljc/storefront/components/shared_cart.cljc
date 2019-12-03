@@ -22,14 +22,13 @@
       (when (:resizable-url portrait)
         [:div.mb2.h2
          (ui/circle-picture {:class "mx-auto"} (ui/square-image portrait 96))])
-      [:p.center.h3.navy.medium
+      [:p.center.h3.medium
        store-nickname " has created a bag for you!"]]
-     [:div.flex.items-center.px1.py3.border-dark-gray.border-top.border-bottom
+     [:div.flex.items-center.px1.py3.border-top.border-bottom
       (ui/ucare-img {:width 90} "8787e30c-2879-4a43-8d01-9d6790575084")
       [:div.ml2.flex-auto
-       [:p.medium.navy.shout.mb2 "Free shipping & 30 day guarantee"]
-       [:p.dark-gray
-        "Shop with confidence: Wear it, dye it, even color it. "
+       [:p.medium.shout.mb2 "Free shipping & 30 day guarantee"]
+       [:p "Shop with confidence: Wear it, dye it, even color it. "
         "If you do not love your Mayvenn hair we will exchange it within 30 days of purchase!"]]]
      [:div.p3.h4.center
       (or (:description shared-cart-promotion)

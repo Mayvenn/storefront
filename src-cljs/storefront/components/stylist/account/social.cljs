@@ -20,9 +20,9 @@
    [:div.col.col-12.col-6-on-tb-dt
     [:div.flex.col-12
      [:div.flex-none.mr2.mt1
-      {:style {:width "2.5rem" :height "2.5rem"}
-       :class (if (seq instagram-account) "fill-teal" "fill-dark-gray")}
-      ^:inline (svg/instagram)]
+      {:style {:width "2.5rem" :height "2.5rem"}}
+      ^:inline (svg/instagram
+                {:class (if (seq instagram-account) "fill-p-color" "fill-black")} )]
      [:div.flex-auto
       (ui/text-field {:data-test "account-instagram"
                       :errors    (get field-errors ["instagram-account"])
@@ -36,9 +36,9 @@
 
     [:div.flex.col-12
      [:div.flex-none.mr2.mt1
-      {:style {:width "2.5rem" :height "2.5rem"}
-       :class (if (seq styleseat-account) "fill-teal" "fill-dark-gray")}
-      ^:inline (svg/styleseat)]
+      {:style {:width "2.5rem" :height "2.5rem"}}
+      ^:inline (svg/styleseat
+                {:class (if (seq styleseat-account) "fill-p-color" "fill-black")})]
      [:div.flex-auto
       (ui/text-field {:data-test "account-styleseat"
                       :errors    (get field-errors ["styleseat-account"])
@@ -52,7 +52,7 @@
 
    [:div.my2.col-12.clearfix
     ui/nbsp
-    [:div.border-light-gray.border-top.hide-on-mb.mb3]
+    [:div.border-gray.border-top.hide-on-mb.mb3]
     [:div.col-12.col-5-on-tb-dt.mx-auto
      (ui/submit-button "Update" {:spinning? saving?
                                  :data-test "account-form-submit"})]]])

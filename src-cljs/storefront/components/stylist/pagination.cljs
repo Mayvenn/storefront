@@ -10,6 +10,6 @@
    (if fetching?
      [:.h2 ui/spinner]
      (when (more-pages? page pages)
-       [:.btn.btn-outline.navy.col-12
+       [:.btn.btn-outline.col-12
         {:on-click (utils/send-event-callback event)}
         "Load More"]))])

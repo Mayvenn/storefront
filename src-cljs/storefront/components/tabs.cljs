@@ -3,7 +3,7 @@
             [storefront.platform.component-utils :as utils]))
 
 (defn tab-link [event id ref label]
-  [:a.dark-gray.center.pt2
+  [:a.inherit-color.center.pt2
    (merge (utils/route-to event) {:key id})
    [:.py1 {:ref ref
            :data-test (str "nav-" id)}
@@ -12,7 +12,7 @@
 (defcomponent sliding-indicator [{:keys [selected-tab tab-bounds]} owner {:keys [tabs]}]
   (let [tab-position         (utils/position #{selected-tab} tabs)
         {:keys [left width]} (get tab-bounds tab-position)]
-    [:div.border-navy.border.relative.transition-ease-in.transition-1
+    [:div.border-black.border.relative.transition-ease-in.transition-1
      {:style {:margin-top "-2px"
               :left       (str left "px")
               :width      (str width "px")}}]))

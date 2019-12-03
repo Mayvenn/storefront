@@ -29,13 +29,13 @@
       ;; TODO: Use new header
       {:header-data {:subtitle     [:div.h4.medium
                                     (str (stylists/->display-name stylist) "'s Recent work")]
-                     :header-attrs {:class "bg-too-light-lavender black"}
+                     :header-attrs {:class "bg-white black"}
                      :right-corner {:id    "close-stylist-gallery"
                                     :opts (utils/route-back-or-to back
                                                                   events/navigate-adventure-stylist-profile
                                                                   {:stylist-id stylist-id
                                                                    :store-slug (:store-slug stylist)})
-                                    :value (svg/simple-x {:class "dark-gray"
+                                    :value (svg/simple-x {:class "black"
                                                           :style {:width  "20px"
                                                                   :height "20px"}})}}
        :gallery     (map (comp ui/ucare-img-id :resizable-url) (:gallery-images stylist))})))

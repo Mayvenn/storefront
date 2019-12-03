@@ -30,33 +30,33 @@
     [:div.h8.mt6.line-height-3
      {:key       id
       :data-test id}
-     [:span.purple "*"]
+     [:span.p-color "*"]
      copy]))
 
 (defn notification-molecule
   [{:notification/keys [id content]}]
   (when id
-    [:div.mb2.h6.flex-wrap.flex.items-center.justify-center.border.border-width-2.border-light-teal.bg-too-light-teal.rounded.teal.p1.medium.col-12
+    [:div.mb2.h6.flex-wrap.flex.items-center.justify-center.border.border-width-2.border-cool-gray.bg-cool-gray.rounded.p-color.p1.medium.col-12
      {:key       id
       :data-test id}
-     ^:inline (svg/check {:class  "stroke-teal"
+     ^:inline (svg/check {:class  "stroke-p-color"
                           :height "32px"
                           :width  "32px"
                           :style  {:stroke-width "1"}})
      content]))
 
 (def icon-molecule
-  [:div.purple.my2
+  [:div.p-color.my2
    (svg/circled-check {:height "87px"
                        :width  "87px"
-                       :class  "stroke-purple"
+                       :class  "stroke-p-color"
                        :style  {:stroke-width "0.75"}})])
 
 (defn ^:private informational-molecule
   [{:informational/keys [primary-id primary secondary-id secondary]}]
   (when primary-id
     [:div {:key primary-id}
-     [:div.h5.purple.bold {:data-test primary-id}
+     [:div.h5.p-color.bold {:data-test primary-id}
       primary]
      (when secondary-id
        (into [:div.h8.center
@@ -68,11 +68,11 @@
                secondary-id
                secondary-copy]}]
   [:div.center
-   (ui/teal-button (assoc (apply utils/route-to target)
-                          :data-test id
-                          :class "mb3")
-                   copy)
-   [:a.medium.h6.navy
+   (ui/p-color-button (assoc (apply utils/route-to target)
+                             :data-test id
+                             :class "mb3")
+                      copy)
+   [:a.medium.h6.black
     (merge
      (apply utils/route-to secondary-target)
      {:data-test secondary-id})
@@ -137,7 +137,7 @@
                                             [:span.bold payout-amount]]
                                            [:div install-type-display-name " Advertised Price: "
                                             [:span.bold advertised-amount]
-                                            [:span.purple "*"]])}))))
+                                            [:span.p-color "*"]])}))))
 
 (defn ^:export built-component
   [data opts]

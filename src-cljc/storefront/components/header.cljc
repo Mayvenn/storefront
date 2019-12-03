@@ -15,12 +15,13 @@
 
 (def hamburger
   (component/html
-   [:a.block.px3.py4 (assoc (utils/fake-href events/control-menu-expand-hamburger
-                                             {:keypath keypaths/menu-expanded})
-                            :style {:width "70px"}
-                            :data-test "hamburger")
-    [:div.border-top.border-bottom.border-dark-gray {:style {:height "15px"}} [:span.hide "MENU"]]
-    [:div.border-bottom.border-dark-gray {:style {:height "15px"}}]]))
+   [:a.inherit-color.block.px3.py4
+    (assoc (utils/fake-href events/control-menu-expand-hamburger
+                            {:keypath keypaths/menu-expanded})
+           :style {:width "70px"}
+           :data-test "hamburger")
+    [:div.border-top.border-bottom {:style {:height "15px"}} [:span.hide "MENU"]]
+    [:div.border-bottom {:style {:height "15px"}}]]))
 
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
@@ -59,8 +60,7 @@
       ::marquee/show-what-we-have [:div.left.pr2 (marquee/stylist-portrait portrait)]
       ::marquee/ask-for-portrait  [:div.left.pr2 marquee/add-portrait-cta]
       ::marquee/show-nothing      [:div.left {:style {:height (str ui/header-image-size "px")}}])
-    [:div.dark-gray
-     "Welcome to " [:span.black.medium {:data-test "nickname"} store-nickname "'s"] " shop"
+    [:div "Welcome to " [:span.black.medium {:data-test "nickname"} store-nickname "'s"] " shop"
      (when expandable?
        [:span.ml1 (ui/expand-icon expanded?)])]]))
 
@@ -87,7 +87,7 @@
    expanded?
    keypaths/account-menu-expanded
    [:a.inherit-color.h6
-    "Signed in with: " [:span.teal email]
+    "Signed in with: " [:span.p-color email]
     " | Account" [:span.ml1 (ui/expand-icon expanded?)]]
    [:div.bg-white.absolute.right-0.top-lit
     [:div
@@ -102,9 +102,9 @@
    expanded?
    keypaths/account-menu-expanded
    [:a.inherit-color.h6
-    "Signed in with: " [:span.teal email]
+    "Signed in with: " [:span.p-color email]
     " | My dashboard" [:span.ml1 (ui/expand-icon expanded?)]]
-   [:div.bg-white.absolute.right-0.border.border-gray.dark-gray.top-lit
+   [:div.bg-white.absolute.right-0.border.border-gray.top-lit
     [:div
      (drop-down-row (utils/route-to events/navigate-v2-stylist-dashboard-orders) "My Dashboard")]
 
@@ -151,7 +151,7 @@
       (header-menu-link
        (assoc (utils/route-to events/navigate-adventure-match-stylist)
               :on-mouse-enter close-header-menus)
-       [:span [:span.teal.pr1 "NEW"] "Get a Mayvenn Install"]))
+       [:span [:span.p-color.pr1 "NEW"] "Get a Mayvenn Install"]))
 
     (when-not show-bundle-sets-and-hide-deals?
       (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
@@ -198,7 +198,7 @@
        [:a.inherit-color.block.pyp2.titleize
         (apply utils/route-to nav-message)
         (when new?
-          [:span.teal "NEW "])
+          [:span.p-color "NEW "])
         (string/capitalize copy)]])]))
 
 (defn flyout [columns expanded?]
