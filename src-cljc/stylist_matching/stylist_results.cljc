@@ -77,7 +77,7 @@
 
       (and mayvenn-rating? mayvenn-rating)
       (merge
-         {:rating/value mayvenn-rating})
+       {:rating/value mayvenn-rating})
 
       (not stylist-profiles?) ;; Control
       (merge
