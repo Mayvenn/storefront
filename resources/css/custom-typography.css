@@ -1,6 +1,7 @@
 @font-face {
     font-family: 'Canela';
     src: url(/fonts/Canela-Light-Web.woff2) format('woff2');
+    font-weight: 300;
     unicode-range: U+0020-007F; /* The bare minimum for the English Language */
     font-display: swap;
 }
@@ -23,10 +24,11 @@
 .sans-serif  { font-family: var(--sans-serif); }
 
 body {
-    font: 400 16px/21px var(--font-family-proxima)
+    font: 300 16px/21px var(--font-family-proxima)
 }
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-family-canela);
+    font-weight: 300
 }
 
 .title-1.canela {
