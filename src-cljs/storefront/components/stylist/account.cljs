@@ -34,7 +34,7 @@
                                  :top   "-12px" :left   "-12px"}})])
    [:div.mx-auto.circle.border.mb2.content-box
     {:style {:width "100px" :height "100px" :border-width "3px"}
-     :class (if saving? "border-light-gray" "border-teal")}
+     :class (if saving? "border-light-gray" "border-p-color")}
     [:div.circle.border-light-gray.border.content-box.border-width-2.overflow-hidden {:style {:width "96px" :height "96px"}}
      (ui/circle-picture {:width        "96px"
                          :overlay-copy (case status
@@ -47,7 +47,7 @@
 (defn store-credit [available-credit]
   [:div.mb3
    [:div.medium.mb1 "Store Credit"]
-   [:div.teal.h0 (when available-credit (ui/big-money available-credit))]
+   [:div.p-color.h0 (when available-credit (ui/big-money available-credit))]
    [:div.mb1 ui/nbsp]])
 
 (defcomponent component [{:keys [fetching?

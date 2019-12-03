@@ -26,10 +26,10 @@
    [:div.p1 "Here you can upload images, edit posts and manage your gallery settings."]
    (ui/narrow-container
     [:div
-     [:div.p1 (ui/teal-button (merge (utils/route-to events/navigate-gallery-image-picker)
-                                     {:data-test "add-to-gallery-link"
-                                      :spinning?  adding-photo?})
-                              "Choose an image to upload")]
+     [:div.p1 (ui/p-color-button (merge (utils/route-to events/navigate-gallery-image-picker)
+                                        {:data-test "add-to-gallery-link"
+                                         :spinning?  adding-photo?})
+                                 "Choose an image to upload")]
      (when (seq gallery-images)
        [:div.p1
         (if editing?

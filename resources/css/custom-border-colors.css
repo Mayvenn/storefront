@@ -7,8 +7,10 @@
 .border-gray          { border-color: var(--gray); }
 .border-dark-gray     { border-color: var(--dark-gray); }
 .border-black         { border-color: var(--black); }
-.border-light-teal    { border-color: var(--light-teal); }
 .border-error         { border-color: var(--error); }
+
+.border-p-color   { border-color: var(--p-color); }
+.border-cool-gray { border-color: var(--cool-gray); }
 
 .debug * { outline: 1px solid gold; }
 
@@ -24,7 +26,9 @@
   --gray:          #666666;
   --dark-gray:     #333333;
   --black:         #000000;
-  --light-teal:    #9fe5d5;
   --orange:        #ffc520;
   --error:         #ff004f;
+
+  --p-color:   #4427c1;
+  --cool-gray: #eeefef;
 }

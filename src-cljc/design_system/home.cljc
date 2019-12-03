@@ -156,8 +156,8 @@
       [:div "Backgrounds: "]
       [:a.black {:href "#" :on-click (partial set-state [:design-system :buttons-bg] "bg-white")}
        (color-swatch "white" "ffffff")]
-      [:a.black {:href "#" :on-click (partial set-state [:design-system :buttons-bg] "bg-teal")}
-       (color-swatch "teal" "40cbac")]]
+      [:a.black {:href "#" :on-click (partial set-state [:design-system :buttons-bg] "bg-p-color")}
+       (color-swatch "p-color" "4427c1")]]
      [:div.h6
       "Button States: "
       [:pre
@@ -193,7 +193,7 @@
     [:div.clearfix.mxn1
      (when-let [bg (get-in data [:design-system :buttons-bg])]
        {:class (str bg)})
-     [:div.col.col-6.p1 (ui/teal-button button-attrs "ui/teal-button")]
+     [:div.col.col-6.p1 (ui/p-color-button button-attrs "ui/p-color-button")]
      [:div.col.col-6.p1 (ui/navy-button button-attrs "ui/navy-button")]
      [:div.col.col-6.p1 (ui/aqua-button button-attrs "ui/aqua-button")]
      [:div.col.col-6.p1 (ui/dark-gray-button button-attrs "ui/dark-gray-button")]
@@ -202,23 +202,23 @@
      [:div.col.col-6.p1 (ui/ghost-button button-attrs "ui/ghost-button")]
      [:div.col.col-6.p1 (ui/navy-ghost-button button-attrs "ui/navy-ghost-button")]
      [:div.col.col-6.p1 (ui/light-ghost-button button-attrs "ui/light-ghost-button")]
-     [:div.col.col-6.p1 (ui/teal-ghost-button button-attrs "ui/teal-ghost-button")]
+     [:div.col.col-6.p1 (ui/p-color-ghost-button button-attrs "ui/p-color-ghost-button")]
 
      [:div.col.col-6.p1 (ui/underline-button button-attrs "ui/underline-button")]
-     [:div.col.col-12.p1 (ui/teal-button button-attrs
-                                         [:div "col-12 with styled "
-                                          [:span.medium.italic.underline "SPAN™"]
-                                          " and svg "
-                                          ^:inline (svg/dropdown-arrow {:class  "stroke-white"
-                                                                        :width  "12px"
-                                                                        :height "10px"
-                                                                        :style  {:transform "rotate(-90deg)"}})])]
+     [:div.col.col-12.p1 (ui/p-color-button button-attrs
+                                            [:div "col-12 with styled "
+                                             [:span.medium.italic.underline "SPAN™"]
+                                             " and svg "
+                                             ^:inline (svg/dropdown-arrow {:class  "stroke-white"
+                                                                           :width  "12px"
+                                                                           :height "10px"
+                                                                           :style  {:transform "rotate(-90deg)"}})])]
      [:div.col.col-12.p1 (ui/input-group
                           {:type          "text"
                            :wrapper-class "col-7 pl3 flex items-center bg-white circled-item"
                            :placeholder   "Text"
                            :focused       false}
-                          {:ui-element ui/teal-button
+                          {:ui-element ui/p-color-button
                            :content    "Button"
                            :args       (merge button-attrs
                                               {:class       "flex justify-center items-center circled-item"
@@ -235,7 +235,7 @@
               [:div {:key (str class "-" px)}
                [:div.m1
                 [:div.border-dashed.border-gray.inline-block.center
-                 [:div.border.border-teal.inline-block {:class class}
+                 [:div.border.border-p-color.inline-block {:class class}
                   [:div.border.border-gray.inline-block.bg-light-gray
                    [:div
                     [:p.h6 (str "." class)]
@@ -253,7 +253,7 @@
       ""
       [:div.border-dashed.border-gray.inline-block.p1.center.h6
        "Margin"
-       [:div.border.border-teal.p1
+       [:div.border.border-p-color.p1
         "Padding"
         [:div.border.border-gray.p1.bg-light-gray
          "Content"]]])
@@ -310,7 +310,7 @@
    [:div.p1
     [:div.p4
      {:class (str "bg-" color-class
-                  (when (#{"purple" "black" "quadpay-blue" "fb-blue" "dark-gray"} color-class) " white")
+                  (when (#{"purple" "black" "quadpay-blue" "fb-blue" "dark-gray" "p-color"} color-class) " white")
                   (when (string/ends-with? color-class "white") " border border-gray"))
       :style {:height "8em"}}
      [:div.mt4
@@ -334,9 +334,8 @@
 
    (subheader "Primary")
    [:div.flex.flex-wrap.mxn1.mb4
-    (color-swatch "too-light-teal" "f5fcfb")
-    (color-swatch "light-teal" "9fe5d5")
-    (color-swatch "teal" "40cbac")]
+    (color-swatch "p-color" "4427c1")
+    (color-swatch "cool-gray" "eeefef")]
 
    (subheader "Grays")
    [:div.flex.flex-wrap.mxn1.mb4
@@ -358,8 +357,7 @@
    [:div.flex.flex-wrap.mxn1.mb4
     (color-swatch "light-orange" "fff8e5")
     (color-swatch "orange" "ffc520")
-    (color-swatch "transparent-light-teal" "9fe5d5cc")
-    (color-swatch "hover-only-teal-gray" "e5eeec")
+    (color-swatch "pale-purple" "dedbe5")
     (color-swatch "purple" "7e006d")]
 
    (subheader "Adventure Flow")
@@ -467,13 +465,13 @@
      :errors        (if (= (get-in data [:design-system :form :pill-phone]) "wrong")
                       [{:long-message "wrong"}]
                       [])}
-    {:ui-element ui/teal-button
+    {:ui-element ui/p-color-button
      :content    "Get Survey"
      :args       {:class          "flex justify-center medium items-center circled-item"
                   :width-class    "col-4"
                   :height-class   "py2"
                   :data-test      ""
-                  :disabled-class "disabled bg-teal"}})
+                  :disabled-class "disabled bg-primary"}})
    (ui/input-group
     {:keypath       [:design-system :form :pill-phone-2]
      :wrapper-class "col-8 flex bg-white pl3 items-center circled-item"
@@ -486,7 +484,7 @@
      :errors        (if (= (get-in data [:design-system :form :pill-phone-2]) "wrong")
                       [{:long-message "wrong"}]
                       [])}
-    {:ui-element ui/teal-button
+    {:ui-element ui/p-color-button
      :content    "Get Survey"
      :args       {:class        "flex justify-center medium items-center circled-item"
                   :width-class  "col-4"

@@ -168,7 +168,7 @@
       #?@(:cljs
           [(component/build quadpay/component queried-data nil)])
 
-      [:div.bg-too-light-teal.p2
+      [:div.bg-cool-gray.p2
        (when checkout-caption-copy
          [:div.flex.h6.pt1.pr3.pb2
           {:data-test "checkout-caption"}
@@ -180,11 +180,11 @@
             (ui/square-image {:resizable-url servicing-stylist-portrait-url} 50))]
           [:div.left-align.pl2 checkout-caption-copy]])
 
-       (ui/teal-button {:spinning? false
-                        :disabled? checkout-disabled?
-                        :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
-                        :data-test "start-checkout-button"}
-                       [:div "Check out"])
+       (ui/p-color-button {:spinning? false
+                           :disabled? checkout-disabled?
+                           :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
+                           :data-test "start-checkout-button"}
+                          [:div "Check out"])
 
        (when locked?
          [:div.error.h7.center.medium.py1
@@ -209,7 +209,7 @@
 
      (when entered?
        [:div.my4.center
-        [:a.h5.teal.medium
+        [:a.h5.p-color.medium
          (apply utils/fake-href remove-freeinstall-event)
          "Checkout without a free Mayvenn Install"]])
 
@@ -229,7 +229,7 @@
 (defn empty-cta-molecule
   [{:cta/keys [id label target]}]
   (when (and id label target)
-    (ui/teal-button
+    (ui/p-color-button
      (merge {:data-test id} (apply utils/fake-href target))
      [:div.flex.items-center.justify-center.inherit-color label])))
 

@@ -12,7 +12,7 @@
                  (if (= :navigate (first event))
                    (apply utils/route-to target)
                    (apply utils/fake-href target)))
-          (ui/teal-button [:div.flex.items-center.justify-center.inherit-color label])))))
+          (ui/p-color-button [:div.flex.items-center.justify-center.inherit-color label])))))
 
 (defcomponent organism
   [{:call-out-center/keys [bg-class bg-ucare-id title subtitle] react-key :react/key :as query} _ _]

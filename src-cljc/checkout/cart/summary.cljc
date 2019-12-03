@@ -47,7 +47,7 @@
                       [{:long-message error-message
                         :path         ["promo-code"]}])
      :data-ref      "promo-code"}
-    {:ui-element ui/teal-button
+    {:ui-element ui/p-color-button
      :content    "Apply"
      :args       {:on-click    (utils/send-event-callback events/control-cart-update-coupon)
                   :class       "flex justify-center items-center"

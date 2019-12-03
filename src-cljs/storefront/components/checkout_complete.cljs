@@ -116,9 +116,9 @@
    [:h3.bold "In the meantime…"]
    [:h4.py2 "Get inspired for your appointment"]
    [:div.py2
-    (ui/teal-button {:href  "https://www.instagram.com/explore/tags/mayvennfreeinstall/"
-                     :class "bold"}
-                    "View #MayvennFreeInstall")]])
+    (ui/p-color-button {:href  "https://www.instagram.com/explore/tags/mayvennfreeinstall/"
+                        :class "bold"}
+                       "View #MayvennFreeInstall")]])
 
 (defn matched-with-servicing-stylist-component [{:matched-component.message/keys [id] :as queried-data}]
   [:div.bg-too-light-lavender.rounded.px4.py3
@@ -128,7 +128,7 @@
    (let [{:matched-component.cta/keys [id label target]} queried-data]
      (when id
        [:div.col-10.my2.mx-auto
-        (ui/teal-button
+        (ui/p-color-button
          (merge (apply utils/route-to target)
                 {:data-test id}) label)]))])
 

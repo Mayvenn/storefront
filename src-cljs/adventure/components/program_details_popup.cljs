@@ -20,7 +20,7 @@
                 [:div.flex.justify-center.items-end.mb2
                  {:style {:height "39px"}}
                  (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
-                [:div.h5.teal.medium title]
+                [:div.h5.p-color.medium title]
                 [:p.h6.col-10.col-9-on-dt.mx-auto description]])]
 
     [:div.col-12
@@ -48,7 +48,7 @@
                  [:div.flex.justify-center.items-end.mb1
                   {:style {:height "35px"}}
                   (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
-                 [:div.h6.teal.medium.mbnp4 title]
+                 [:div.h6.p-color.medium.mbnp4 title]
 
                  [:p.h6.col-11.center description]])]
     [:div.col-12.bg-transparent-teal.mt3.py8.px4
@@ -97,7 +97,7 @@
              [:div.flex.flex-column
               [:div.center
                [:div  ;; Body
-                [:h1.h3.bold.white.bg-teal.p3
+                [:h1.h3.bold.white.bg-primary.p3
                  "Get a FREE install when you"
                  [:br]
                  "buy 3 bundles or more"]]]
@@ -228,7 +228,7 @@
   [{:cta/keys [id label target]}]
   (when (and id label target)
     (-> (merge {:data-test id} (apply utils/route-to target))
-        (ui/teal-button [:div.flex.items-center.justify-center.inherit-color label]))))
+        (ui/p-color-button [:div.flex.items-center.justify-center.inherit-color label]))))
 
 (defmethod popup/component :consolidated-cart-free-install
   [{:keys [footer-data faq-data black-friday-time?] :as queried-data} owner _]

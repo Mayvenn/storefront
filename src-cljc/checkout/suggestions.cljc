@@ -118,7 +118,7 @@
         {:class "pr3"})
       (when sticker-label
         ;; TODO: highlighting does not work as before
-        [:div.right.z1.circle.stacking-context.border.border-white.flex.items-center.justify-center.medium.h6.bg-too-light-teal
+        [:div.right.z1.circle.stacking-context.border.border-white.flex.items-center.justify-center.medium.h6.bg-cool-gray
          {:key       sticker-id
           :data-test sticker-id
           :style     {:margin-left left-margin
@@ -147,17 +147,17 @@
        [:span.pr2 "+"]
        (image-with-sticker second-image)])
     [:div.my1.col-5
-     (ui/teal-ghost-button {:class        "bg-white"
-                            :height-class :small
-                            ;; we don't want to draw attention to the disabling of the other 'Add' button,
-                            ;; but we do want to prevent people from clicking both.
-                            ;; :disabled? (and (not this-is-adding-to-bag?) any-adding-to-bag?)
-                            :on-click     (if disabled?
-                                            utils/noop-callback
-                                            (apply utils/send-event-callback target))
-                            :spinning?    spinning?
-                            :data-test    cta-id}
-                           label)]]])
+     (ui/p-color-ghost-button {:class        "bg-white"
+                               :height-class :small
+                               ;; we don't want to draw attention to the disabling of the other 'Add' button,
+                               ;; but we do want to prevent people from clicking both.
+                               ;; :disabled? (and (not this-is-adding-to-bag?) any-adding-to-bag?)
+                               :on-click     (if disabled?
+                                               utils/noop-callback
+                                               (apply utils/send-event-callback target))
+                               :spinning?    spinning?
+                               :data-test    cta-id}
+                              label)]]])
 
 (defcomponent consolidated-component
   [{:keys [suggestions]} _ _]
@@ -165,8 +165,7 @@
     [:div {:data-test "auto-complete"}
      [:div.flex.items-center
       ^:inline (svg/angle-arrow {:style {:width  "13px"
-                                         :height "13px"}
-                                 :class "teal"})
+                                         :height "13px"}})
       [:div.h6.dark-gray.pl1 "Bundles often bought together"]]
      (map ->consolidated-suggested-bundles suggestions)]))
 

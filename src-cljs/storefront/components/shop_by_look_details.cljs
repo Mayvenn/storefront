@@ -29,7 +29,7 @@
     [:div.btn.col-12.h5.btn-primary.bg-gray.white
      {:on-click nil}
      "Sold Out"]
-    (ui/teal-button
+    (ui/p-color-button
      (merge (utils/fake-href events/control-create-order-from-shared-cart
                              {:shared-cart-id number
                               :look-id        (:id look)})

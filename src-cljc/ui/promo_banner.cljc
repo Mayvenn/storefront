@@ -25,7 +25,7 @@
 
 (defmethod component :adventure-freeinstall/applied adventure-freeinstall-applied
   [_ _ _]
-  [:a.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
+  [:a.white.center.p2.bg-primary.mbnp5.h6.bold.flex.items-center.justify-center
    {:on-click  (utils/send-event-callback events/popup-show-adventure-free-install)
     :data-test "adventure-promo-banner"}
    (svg/celebration-horn {:height "1.6em"
@@ -38,12 +38,12 @@
   [_ _ _]
   [:a {:on-click  (utils/send-event-callback events/popup-show-v2-homepage)
        :data-test "v2-free-install-promo-banner"}
-   [:div.white.center.pp5.bg-teal.h5.bold.pointer
+   [:div.white.center.pp5.bg-primary.h5.bold.pointer
     "Mayvenn will pay for your install! " [:span.underline "Learn more"]]])
 
 (defmethod component :v2-freeinstall/applied v2-freeinstall-applied
   [_ _ _]
-  [:a.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
+  [:a.white.center.p2.bg-primary.mbnp5.h6.bold.flex.items-center.justify-center
    {:on-click  (utils/send-event-callback events/popup-show-v2-homepage)
     :data-test "v2-free-install-promo-banner"}
    (svg/celebration-horn {:height "1.6em"
@@ -76,7 +76,7 @@
 
 (defmethod component :basic basic
   [{:keys [promo]} _ _]
-  [:div.white.center.pp5.bg-teal.h5.bold
+  [:div.white.center.pp5.bg-primary.h5.bold
    {:data-test "promo-banner"}
    (:description promo)])
 

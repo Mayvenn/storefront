@@ -14,7 +14,7 @@
   [qualified?]
   [:div.mb3
    (if qualified?
-     [:div.bg-teal.bg-celebrate.p2.white.center {:data-test "v2-cart-promo"}
+     [:div.bg-primary.bg-celebrate.p2.white.center {:data-test "v2-cart-promo"}
       [:div.flex.justify-center.mb1 (ui/ucare-img {:width 46} "014c70a0-0d57-495d-add0-f2f46248d224")]
       [:h4 "This order qualifies for a"]
       [:h1.shout.bold "Free Install"]

@@ -28,8 +28,8 @@
     [:div.bg-gray.flex-auto
      (cond
        (zero? value) [:div.px2 {:style bar-style}]
-       (= value maximum) [:div.bg-teal.px2 {:style bar-style}]
-       :else [:div.bg-teal.px2 {:style (merge bar-style {:width bar-width})}])]))
+       (= value maximum) [:div.bg-primary.px2 {:style bar-style}]
+       :else [:div.bg-primary.px2 {:style (merge bar-style {:width bar-width})}])]))
 
 (defn ^:private cash-balance-card
   [payout-method
@@ -39,7 +39,7 @@
    {:as services :keys [lifetime-services monthly-services]}]
   (let [toggle-expand (utils/fake-href events/control-v2-stylist-dashboard-section-toggle
                                        {:keypath keypaths/v2-ui-dashboard-cash-balance-section-expanded?})]
-    [:div.h6.bg-too-light-teal.px2.pt2.pb3
+    [:div.h6.bg-cool-gray.px2.pt2.pb3
      [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
       [:a.dark-gray toggle-expand
        "Cash Balance"
@@ -55,7 +55,7 @@
        [:div.h1.black.medium.flex (mf/as-money cash-balance)]]
       [:div.col-5
        (if (payouts/cash-out-eligible? payout-method)
-         (ui/teal-button
+         (ui/p-color-button
           {:height-class   "py2"
            :data-test      "cash-out-begin-button"
            :on-click       (utils/send-event-callback events/control-stylist-dashboard-cash-out-begin
@@ -68,7 +68,7 @@
            (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "3d651ddf-b37d-441b-a162-b83728f2a2eb")
            "Cash Out"])
          [:div.h8
-          "Cash out now with " [:a.teal (utils/fake-href events/navigate-stylist-account-payout) "Mayvenn InstaPay"]])]]
+          "Cash out now with " [:a.p-color (utils/fake-href events/navigate-stylist-account-payout) "Mayvenn InstaPay"]])]]
      [:div
       (when-not expanded? {:class "hide"})
       [:div.flex.mt2
@@ -90,7 +90,7 @@
 (defn ^:private store-credit-balance-card [total-available-store-credit lifetime-earned expanded?]
   (let [toggle-expand (utils/fake-href events/control-v2-stylist-dashboard-section-toggle
                                        {:keypath keypaths/v2-ui-dashboard-store-credit-section-expanded?})]
-    [:div.h6.bg-too-light-teal.px2.pt2.pb3
+    [:div.h6.bg-cool-gray.px2.pt2.pb3
      [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
       [:a.dark-gray toggle-expand
        "Credit Balance"
@@ -104,11 +104,11 @@
       [:a.col-7 toggle-expand
        [:div.h1.black.medium.flex (mf/as-money total-available-store-credit)]]
       [:div.col-5
-       (ui/teal-button (merge (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                              {:height-class "py2"})
-                       [:div.flex.items-center.justify-center.regular.h5
-                        (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "81775e67-9a83-46b7-b2ae-1cdb5a737876")
-                        "Shop"])]]
+       (ui/p-color-button (merge (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+                                 {:height-class "py2"})
+                          [:div.flex.items-center.justify-center.regular.h5
+                           (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "81775e67-9a83-46b7-b2ae-1cdb5a737876")
+                           "Shop"])]]
      [:div.flex.pt2 {:class (when-not expanded? "hide")}
       [:div.col-7
        (earnings-count "Lifetime Bonuses" (mf/as-money lifetime-earned))]]]))

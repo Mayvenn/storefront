@@ -93,7 +93,7 @@
          [:h5.col-12.left.medium (str "Commission Earned" (when-let [name (orders/first-name-plus-last-name-initial order)]
                                                             (str " - " name)))]]
         [:div.col.col-3.mtp1.right-align.pb2
-         [:div.h5.medium.teal (mf/as-money amount)]]
+         [:div.h5.medium.p-color (mf/as-money amount)]]
 
         (info-columns
          ["Deposit Date" (f/long-date commission-date)]
@@ -234,7 +234,7 @@
                          events/navigate-stylist-dashboard-order-details
                          {:order-number order-number}))
                        order-number
-                       [:span.teal " View"]]))]]
+                       [:span.p-color " View"]]))]]
       [:div.col.col-2.mtp1.right-align
        [:div.h5.medium.green (mf/as-money amount)]]]]))
 

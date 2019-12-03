@@ -58,7 +58,7 @@
       (when-not length-circle-value
         {:class "pr3"})
       (when length-circle-value
-        [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
+        [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-cool-gray
          (css-transitions/background-fade
           just-added-to-order?
           {:key       (str "length-circle-" sku-id)
@@ -185,11 +185,11 @@
                             :quadpay/show?       loaded-quadpay?
                             :quadpay/directive   :just-select}
                            nil)])
-     (ui/teal-button {:spinning? false
-                      :disabled? updating?
-                      :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
-                      :data-test "start-checkout-button"}
-                     [:div "Check out"])
+     (ui/p-color-button {:spinning? false
+                         :disabled? updating?
+                         :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
+                         :data-test "start-checkout-button"}
+                        [:div "Check out"])
 
      [:div.h5.black.center.py1.flex.justify-around.items-center
       [:div.flex-grow-1.border-bottom.border-light-gray]
@@ -235,8 +235,8 @@
               promo    (:description promo)
               :else    promos/bundle-discount-description))]]
 
-    (ui/teal-button (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                    "Shop Our Looks")]))
+    (ui/p-color-button (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+                       "Shop Our Looks")]))
 
 (defn ^:private variants-requests [data request-key variant-ids]
   (->> variant-ids

@@ -21,12 +21,13 @@
 .bg-dark-gray              { background-color: var(--dark-gray); }
 .bg-black                  { background-color: var(--black); }
 .bg-clear                  { background-color: var(--clear); }
-.bg-light-teal             { background-color: var(--light-teal); }
-.bg-transparent-light-teal { background-color: var(--transparent-light-teal); }
 .bg-hover-only-teal-gray   { background-color: var(--hover-only-teal-gray); }
-.bg-too-light-teal         { background-color: var(--too-light-teal); }
 .bg-transparent-teal       { background-color: var(--transparent-teal); }
 .bg-lighten-5              { background-color: var(--lighten-5); }
+
+.bg-p-color     { background-color: var(--p-color); }
+.bg-cool-gray   { background-color: var(--cool-gray); }
+.bg-pale-purple { background-color: var(--pale-purple); }
 
 :root {
     --fate-white:     #f8f8f8;
@@ -39,10 +40,7 @@
     --error:          #ff004f;
 
     --transparent-teal:       #40cbac19;
-    --light-teal:             #9fe5d5;
-    --transparent-light-teal: #9fe5d5cc;
     --hover-only-teal-gray:   #e5eeec;
-    --too-light-teal:         #f5fcfb;
     --facebook-blue:          #3b5998;
     --quadpay-blue:           #1d73ec;
     --twitter-blue:           #00aced;

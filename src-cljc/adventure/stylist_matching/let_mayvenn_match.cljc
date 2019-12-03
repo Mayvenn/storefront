@@ -11,9 +11,9 @@
    [:h3.bold "In the meantime…"]
    [:h4.py2 "Get inspired for your appointment"]
    [:div.py2
-    (ui/teal-button {:href  "https://www.instagram.com/explore/tags/mayvennfreeinstall/"
-                     :class "bold"}
-                    "View #MayvennFreeInstall")]])
+    (ui/p-color-button {:href  "https://www.instagram.com/explore/tags/mayvennfreeinstall/"
+                        :class "bold"}
+                       "View #MayvennFreeInstall")]])
 
 (defcomponent component
   [_ _ _]

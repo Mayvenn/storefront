@@ -132,7 +132,7 @@
     --bold-font-weight:   700; /* Roboto's bold */
 
     --button-line-height: 1.2;
-    --button-background-color: var(--teal);
+    --button-background-color: var(--p-color);
     --button-font-weight: var(--medium-font-weight);
     --button-padding-y: var(--space-2);
     --button-padding-x: var(--space-2);
@@ -141,7 +141,7 @@
     --border-radius: 5px;
     --border-radius-1: 8px;
 
-    --teal:        #40cbac;
+    /* TODO: GROT light teal after custom glow animation is changed*/
     --light-teal:  #9fe5d5;
 
     --green:       #00cc00;

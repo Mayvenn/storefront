@@ -25,7 +25,7 @@
                 [:div.flex.justify-center.items-end.mb2
                  {:style {:height "39px"}}
                  (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
-                [:div.h5.teal.medium title]
+                [:div.h5.p-color.medium title]
                 [:p.h6.col-10.col-9-on-dt.mx-auto description]])]
 
     [:div.col-12
@@ -65,7 +65,7 @@
       [:div.h6
        (when (:licensed store)
          [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
-          ^:inline (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Licensed"])
+          ^:inline (svg/check {:class "stroke-p-color" :height "2em" :width "2em"}) "Licensed"])
        [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
         (ui/ucare-img {:width "7" :class "pr2"} "bd307d38-277d-465b-8360-ac8717aedb03")
         (let [salon-city    (-> store :salon :city not-empty)
@@ -78,7 +78,7 @@
       (when (seq gallery-ucare-ids)
         [:div.h6.pt1.flex.items-center
          (ui/ucare-img {:width "25"} "18ced560-296f-4b6c-9c82-79a4e8c15d95")
-         [:a.ml1.teal.medium
+         [:a.ml1.p-color.medium
           (utils/fake-href events/control-stylist-gallery-open)
           "Hair Gallery"]
          (modal-gallery/simple
@@ -102,7 +102,7 @@
                   [:div.flex.justify-center.items-end.mb1
                    {:style {:height "35px"}}
                    (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
-                  [:div.h6.teal.medium.mbnp4 title]
+                  [:div.h6.p-color.medium.mbnp4 title]
 
                   [:p.h6.col-11.center description]])]
      [:div.col-12.bg-transparent-teal.mt3.py8.px4

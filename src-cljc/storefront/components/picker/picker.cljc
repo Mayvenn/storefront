@@ -15,7 +15,7 @@
             [storefront.accessors.experiments :as experiments]))
 
 (defn simple-selected-layer []
-  [:div.absolute.border.border-width-3.rounded-0.border-light-teal.overlay.flex
+  [:div.absolute.border.border-width-3.rounded-0.border-cool-gray.overlay.flex
    [:div.self-center.flex.items-center
     [:div {:style {:width "1em"}}]
     (ui/ucare-img {:width           "30"
@@ -42,7 +42,7 @@
    [:div.ml2.flex-auto selected-value-html]
    [:div.self-center ^:inline (svg/dropdown-arrow {:height ".575em"
                                                    :width  ".575em"
-                                                   :class  "stroke-teal"})]])
+                                                   :class  "stroke-p-color"})]])
 
 (defn desktop-dropdown [label-html selected-value-html select-html]
   [:div.flex.flex-column.relative.flex-auto {:style {:height "100%"}}
@@ -52,7 +52,7 @@
     [:div.ml2.flex-auto selected-value-html]
     [:div.self-center ^:inline (svg/dropdown-arrow {:height ".575em"
                                                     :width  ".575em"
-                                                    :class  "stroke-teal"})]]
+                                                    :class  "stroke-p-color"})]]
    select-html])
 
 (defn field
@@ -279,7 +279,7 @@
                    {:style {:margin-top "-30px"}}
                    "Sold Out"]])
                (when checked?
-                 [:div.absolute.border.border-width-3.rounded-0.border-light-teal.overlay.flex
+                 [:div.absolute.border.border-width-3.rounded-0.border-cool-gray.overlay.flex
                   [:div.self-center.flex.items-center
                    {:style {:margin-left "-2em"}}
                    [:div {:style {:width "1em"}}]
@@ -308,7 +308,7 @@
      [:div.dark-gray title]]
 
     [:div.absolute.overlay.flex.items-center.justify-end
-     [:a.teal.medium.p3
+     [:a.p-color.medium.p3
       (merge {:data-test "picker-close"}
              (utils/fake-href events/control-product-detail-picker-close))
       "Done"]]]
@@ -318,7 +318,7 @@
      [:div.center.mt6
       {:data-test "picker-product-alternative"}
       [:div.h6 lead-in]
-      [:div.h4.medium.mt2 [:a.teal.underline link-attrs link-text]]])])
+      [:div.h4.medium.mt2 [:a.p-color.underline link-attrs link-text]]])])
 
 (defcomponent component
   [{:keys [navigation-event

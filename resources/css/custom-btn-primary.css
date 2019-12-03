@@ -19,7 +19,7 @@
 }
 
 :root {
-  --blue:                 #0074d9;
+  --p-color:              #4427c1;
   --light-gray:           #b4b4b4;
   --silver:               #ebebeb;
   --dark-silver:          #aaaaaa;
@@ -29,6 +29,6 @@
   --darken-3: rgba(0, 0, 0, .375);
 
   --button-color: #fff;
-  --button-background-color: var(--blue);
+  --button-background-color: var(--p-color);
   --button-border-radius: 27px;
 }

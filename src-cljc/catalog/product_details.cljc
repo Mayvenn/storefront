@@ -141,25 +141,25 @@
                    [:span.ml2 "Length: " [:span text-style (:option/name (:hair/length selected-options))]]
                    [:span.ml2 "Qty: " [:span text-style quantity]]]]]
                 [:div.col-4
-                 (ui/teal-button {:on-click
-                                  (utils/send-event-callback events/control-add-sku-to-bag
-                                                             {:sku      sku
-                                                              :quantity quantity})
-                                  :data-test      "sticky-add-to-cart"
-                                  :disabled?      unpurchasable?
-                                  :disabled-class "bg-gray"
-                                  :spinning?      adding-to-bag?}
-                                 (cond
-                                   unavailable? "Unavailable"
-                                   sold-out?    "Sold Out"
-                                   :default     "Add"))]]]]))))
+                 (ui/p-color-button {:on-click
+                                     (utils/send-event-callback events/control-add-sku-to-bag
+                                                                {:sku      sku
+                                                                 :quantity quantity})
+                                     :data-test      "sticky-add-to-cart"
+                                     :disabled?      unpurchasable?
+                                     :disabled-class "bg-gray"
+                                     :spinning?      adding-to-bag?}
+                                    (cond
+                                      unavailable? "Unavailable"
+                                      sold-out?    "Sold Out"
+                                      :default     "Add"))]]]]))))
 
 (def checkout-button
   (component/html
    [:div
     {:data-test "cart-button"
      :data-ref "cart-button"}
-    (ui/teal-button (utils/route-to events/navigate-cart) "Check out")]))
+    (ui/p-color-button (utils/route-to events/navigate-cart) "Check out")]))
 
 (defn- hacky-fix-of-bad-slugs-on-facets [slug]
   (string/replace (str slug) #"#" ""))

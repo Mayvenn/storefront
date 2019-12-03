@@ -10,7 +10,7 @@
 (defn store-credit [available-credit]
   [:div.my3
    [:div.medium.mb1 "Store Credit"]
-   [:div.teal.h0 (ui/big-money available-credit)]])
+   [:div.p-color.h0 (ui/big-money available-credit)]])
 
 (defcomponent profile-component [{:keys [focused
                                          saving?

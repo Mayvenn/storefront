@@ -46,7 +46,7 @@
              (merge {:key (str "footer-link-" slug)}
                     (apply utils/route-to nav-message))
              (when new-category?
-               [:span.teal "NEW "])
+               [:span.p-color "NEW "])
              title])])]])))
 
 (defcomponent contacts-section [{:keys [call-number sms-number contact-email]} _ _]
@@ -63,17 +63,17 @@
     (ui/ghost-button {:href (phone-uri call-number)
                       :class "my1"}
                      [:div.flex.items-center.justify-center
-                      ^:inline (svg/phone-ringing {:class "stroke-teal"})
+                      ^:inline (svg/phone-ringing {:class "stroke-p-color"})
                       [:div.ml1.left-align "Call Now"]])
     (ui/ghost-button {:href (str "sms:" sms-number)
                       :class "my1"}
                      [:div.flex.items-center.justify-center
-                      ^:inline (svg/message-bubble {:class "stroke-teal"})
+                      ^:inline (svg/message-bubble {:class "stroke-p-color"})
                       [:div.ml1.left-align "Send Message"]])
     (ui/ghost-button {:href (str "mailto:" contact-email)
                       :class "my1"}
                      [:div.flex.items-center.justify-center
-                      ^:inline (svg/mail-envelope {:class "stroke-teal"})
+                      ^:inline (svg/mail-envelope {:class "stroke-p-color"})
                       [:div.ml1.left-align "Send Email"]])]])
 
 (defcomponent social-section [_ _ _]
@@ -152,7 +152,7 @@
                                          :named-search-slug
                                          :legacy/product-slug])))
     (when new-category?
-      [:span.teal "NEW "])
+      [:span.p-color "NEW "])
     (str title)]))
 
 (defcomponent dtc-shop-section [{:keys [categories partition-count]} _ _]
@@ -165,7 +165,7 @@
        [:a.block.py1.dark-gray.light.titleize
         (assoc (utils/route-to events/navigate-adventure-match-stylist)
                :data-test "freeinstall-footer-link")
-        [:span.teal "NEW "]
+        [:span.p-color "NEW "]
         "Mayvenn Install"]
        (map dtc-link column-1-links)]
       (for [link-column (partition-all partition-count rest-of-links)]

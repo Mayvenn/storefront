@@ -6,7 +6,6 @@
 .light-gray     { color: var(--light-gray); }
 .gray           { color: var(--gray); }
 .dark-gray      { color: var(--dark-gray); }
-.light-teal     { color: var(--light-teal); }
 .light-lavender { color: var(--light-lavender); }
 .lavender       { color: var(--lavender); }
 .error          { color: var(--error); }
@@ -33,7 +32,6 @@
   --light-gray:     #b4b4b4;
   --gray:           #666666;
   --dark-gray:      #333333;
-  --light-teal:     #9fe5d5;
   --light-lavender: rgb(202, 182, 215);
   --lavender:       rgb(175, 159, 196);
 

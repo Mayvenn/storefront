@@ -201,7 +201,7 @@
 (defn cta-molecule
   [{:cta/keys [id label target]}]
   (when (and id label target)
-    (ui/teal-button
+    (ui/p-color-button
      (merge {:data-test id} (apply utils/fake-href target))
      [:div.flex.items-center.justify-center.inherit-color label])))
 
@@ -240,7 +240,7 @@
              (if (= :navigate (first event))
                (apply utils/route-to target)
                (apply utils/fake-href target)))
-      [:span.medium.dark-gray.border-bottom.border-teal label])]))
+      [:span.medium.dark-gray.border-bottom.border-p-color label])]))
 
 (defcomponent footer [data _ _]
   (when (seq data)

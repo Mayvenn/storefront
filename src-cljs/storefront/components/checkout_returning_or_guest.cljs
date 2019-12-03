@@ -27,9 +27,9 @@
        [:div.my2.mx-auto.col-12.col-6-on-tb-dt
         [:div.clearfix.mxn1
          [:div.col.col-6.p1
-          (ui/teal-button (assoc (utils/route-to events/navigate-checkout-sign-in)
-                                 :data-test "begin-password-sign-in-button")
-                          "Sign in")]
+          (ui/p-color-button (assoc (utils/route-to events/navigate-checkout-sign-in)
+                                    :data-test "begin-password-sign-in-button")
+                             "Sign in")]
          [:div.col.col-6.p1
           (facebook/narrow-sign-in-button facebook-loaded?)]]]]]
 

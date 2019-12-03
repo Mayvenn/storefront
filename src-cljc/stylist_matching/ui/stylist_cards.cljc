@@ -161,7 +161,7 @@
   [{:stylist-card.cta/keys [id label target]}]
   (when id
     (component/html
-     (ui/teal-button
+     (ui/p-color-button
       (merge {:data-test id}
              (apply utils/fake-href target))
       label))))

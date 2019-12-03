@@ -80,7 +80,7 @@ Thanks,
                                                 :style {:height "18px" :width "18px"}})
                    "Email"]]]]
                [:div.mt3.mb1
-                [:input.border.border-dark-gray.rounded.pl1.py1.bg-white.teal.col-12
+                [:input.border.border-dark-gray.rounded.pl1.py1.bg-white.p-color.col-12
                  {:type      "text"
                   :value     share-url
                   :data-test "share-url"

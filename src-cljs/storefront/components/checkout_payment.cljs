@@ -84,7 +84,7 @@
             selected-quadpay?                          (contains? selected-payment-methods :quadpay)]
         (if (and fully-covered? can-use-store-credit?)
           (ui/note-box
-           {:color     "teal"
+           {:color     "p-color"
             :data-test "store-credit-note"}
            [:.p2.navy
             [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]])
@@ -106,7 +106,7 @@
                 (when (pos? credit-available)
                   (if can-use-store-credit?
                     (ui/note-box
-                     {:color     "teal"
+                     {:color     "p-color"
                       :data-test "store-credit-note"}
                      [:.p2.navy
                       [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]

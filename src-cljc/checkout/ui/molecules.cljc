@@ -20,7 +20,7 @@
                       [{:long-message error-message
                         :path         ["promo-code"]}])
      :data-ref      "promo-code"}
-    {:ui-element ui/teal-button
+    {:ui-element ui/p-color-button
      :content    "Apply"
      :args       {:on-click    (utils/send-event-callback events/control-cart-update-coupon)
                   :class       "flex justify-center items-center"
@@ -72,11 +72,11 @@
        "Save 25% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below."
        "Save 10% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below.")]
     [:div.flex.justify-left.py1
-     [:div (ui/teal-button {:height-class :small
-                            :class        "bold"
-                            :data-test    "add-freeinstall-coupon"
-                            :on-click     (utils/send-event-callback events/control-cart-add-freeinstall-coupon)} "Add Mayvenn Install")]
-     [:div.teal.h7.flex.items-center
+     [:div (ui/p-color-button {:height-class :small
+                               :class        "bold"
+                               :data-test    "add-freeinstall-coupon"
+                               :on-click     (utils/send-event-callback events/control-cart-add-freeinstall-coupon)} "Add Mayvenn Install")]
+     [:div.p-color.h7.flex.items-center
       {:data-test "cart-learn-more"}
       (ui/button {:class    "inherit-color px4 py1 medium"
                   :on-click (utils/send-event-callback events/popup-show-consolidated-cart-free-install)} "learn more")]]

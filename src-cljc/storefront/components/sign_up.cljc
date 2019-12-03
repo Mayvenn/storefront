@@ -60,7 +60,7 @@
      (form data {:sign-up-text "Sign Up"})]
 
     [:div.center.dark-gray.mt2.mb2 "Already have an account? "
-     [:a.teal (utils/route-to events/navigate-sign-in) "Log In"]]]))
+     [:a.p-color (utils/route-to events/navigate-sign-in) "Log In"]]]))
 
 (defn query [data]
   {:email            (get-in data keypaths/sign-up-email)

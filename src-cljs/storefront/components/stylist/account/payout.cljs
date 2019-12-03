@@ -201,7 +201,7 @@
         [:div])]
 
      [:div.col.col-12.pt3.pb4.underline.center
-      [:a.teal (utils/route-to events/navigate-v2-stylist-dashboard-payments) "View your earnings"]]]
+      [:a.p-color (utils/route-to events/navigate-v2-stylist-dashboard-payments) "View your earnings"]]]
 
     [:div.col.col-12.col-6-on-tb-dt
      [:div.mx-auto.col-12.col-10-on-tb-dt

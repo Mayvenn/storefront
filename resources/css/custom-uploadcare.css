@@ -56,7 +56,7 @@
 }
 
 .uploadcare-dialog-big-button, .uploadcare-dialog-big-button:hover, .uploadcare-dialog-big-button:focus, .uploadcare-dialog-big-button:active, .big-button, .big-button:hover, .big-button:focus, .big-button:active {
-    background: #40CBAC;
+    background: #4427c1;
     box-shadow: none;
     border: none;
     text-shadow: none;
@@ -89,7 +89,7 @@
 }
 
 .uploadcare-dialog-tab-preview.uploadcare-dialog-tab_current .uploadcare-widget-circle--canvas {
-    color: var(--teal);
+    color: var(--primary);
 }
 
 .uploadcare-draganddrop .uploadcare-dialog-file-drop-area {
@@ -130,7 +130,7 @@
     --button-border-radius: var(--border-radius);
     --border-radius: 2px;
 
-    --teal: #40cbac;
+    --primary: #4427c1;
     --white: #ffffff;
     --facebook-blue: #3b5998;
 

@@ -12,9 +12,6 @@
   {:height-class "py6"
    :style {:border-radius "3px"}})
 
-(defn teal-rect-button [attrs & content]
-  (ui/teal-button (maps/deep-merge rect-button-attrs attrs) content))
-
 (defn white-rect-button [attrs & content]
   (ui/white-button (maps/deep-merge rect-button-attrs attrs) content))
 

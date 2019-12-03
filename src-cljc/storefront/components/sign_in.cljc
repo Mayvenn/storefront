@@ -59,7 +59,7 @@
    (component/build password-component data nil)
 
    [:div.clearfix.center.dark-gray.my2 "Don't have an account? "
-    [:a.teal (utils/route-to events/navigate-sign-up) "Register Here"]]])
+    [:a.p-color (utils/route-to events/navigate-sign-up) "Register Here"]]])
 
 (defcomponent component [form-data owner opts]
   (ui/narrow-container

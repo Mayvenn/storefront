@@ -36,10 +36,10 @@
 (defn notification-molecule
   [{:notification/keys [id content]}]
   (when id
-    [:div.mb2.h6.flex-wrap.flex.items-center.justify-center.border.border-width-2.border-light-teal.bg-too-light-teal.rounded.teal.p1.medium.col-12
+    [:div.mb2.h6.flex-wrap.flex.items-center.justify-center.border.border-width-2.border-cool-gray.bg-cool-gray.rounded.p-color.p1.medium.col-12
      {:key       id
       :data-test id}
-     ^:inline (svg/check {:class  "stroke-teal"
+     ^:inline (svg/check {:class  "stroke-p-color"
                           :height "32px"
                           :width  "32px"
                           :style  {:stroke-width "1"}})
@@ -68,10 +68,10 @@
                secondary-id
                secondary-copy]}]
   [:div.center
-   (ui/teal-button (assoc (apply utils/route-to target)
-                          :data-test id
-                          :class "mb3")
-                   copy)
+   (ui/p-color-button (assoc (apply utils/route-to target)
+                             :data-test id
+                             :class "mb3")
+                      copy)
    [:a.medium.h6.navy
     (merge
      (apply utils/route-to secondary-target)

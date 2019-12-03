@@ -70,11 +70,11 @@
                                  uncompleted)))]
        (when (and action-target action-label)
          [:div.mb2 ; margin bottom for 320px screens
-          (ui/teal-button (assoc (apply utils/route-to action-target)
-                                 :height-class :small
-                                 :width-class  :small
-                                 :data-test id)
-                          action-label)])])))
+          (ui/p-color-button (assoc (apply utils/route-to action-target)
+                                    :height-class :small
+                                    :width-class  :small
+                                    :data-test id)
+                             action-label)])])))
 
 (defn cart-item-squircle-thumbnail-molecule
   [{:cart-item-squircle-thumbnail/keys
@@ -85,7 +85,7 @@
        {:style {:height "49px"
                 :width  "52px"}}
        (when sticker-label
-         [:div.absolute.z1.circle.border.border-white.medium.h6.bg-too-light-teal
+         [:div.absolute.z1.circle.border.border-white.medium.h6.bg-cool-gray
           (css-transitions/background-fade
            highlighted?
            {:key       sticker-id
@@ -177,12 +177,12 @@
   [{:cart-item-pick-stylist/keys [id target content]}]
   (when id
     [:div
-     (ui/teal-ghost-button (merge {:height-class :small
-                                   :width-class  "col-6"
-                                   :class        "teal bold mt1"
-                                   :data-test    id}
-                                  (apply utils/route-to target))
-                           content)]))
+     (ui/p-color-ghost-button (merge {:height-class :small
+                                      :width-class  "col-6"
+                                      :class        "p-color bold mt1"
+                                      :data-test    id}
+                                     (apply utils/route-to target))
+                              content)]))
 
 (defcomponent organism
   [{:keys [cart-item suggestions]} _ _]

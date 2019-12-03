@@ -117,18 +117,18 @@
      content]))
 
 (defn ^:private button-colors [color-kw]
-  (let [color (color-kw {:color/teal        "btn-primary bg-teal white"
-                         :color/navy        "btn-primary bg-navy white"
-                         :color/aqua        "btn-primary bg-aqua white"
-                         :color/white       "btn-primary btn-primary-teal-hover bg-white border-light-gray black"
-                         :color/ghost       "btn-outline border-gray black"
-                         :color/light-ghost "btn-outline border-white white"
-                         :color/teal-ghost  "btn-outline border-teal teal"
-                         :color/navy-ghost  "btn-outline border-navy navy"
-                         :color/facebook    "btn-primary bg-fb-blue white"
-                         :color/purple      "btn-primary bg-purple white"
-                         :color/dark-gray   "btn-primary bg-dark-gray white"
-                         :color/quadpay     "btn-primary bg-quadpay-blue white"})]
+  (let [color (color-kw {:color/p-color       "btn-primary bg-p-color white"
+                         :color/navy          "btn-primary bg-navy white"
+                         :color/aqua          "btn-primary bg-aqua white"
+                         :color/white         "btn-primary btn-primary-teal-hover bg-white border-light-gray black"
+                         :color/ghost         "btn-outline border-gray black"
+                         :color/light-ghost   "btn-outline border-white white"
+                         :color/p-color-ghost "btn-outline border-p-color p-color"
+                         :color/navy-ghost    "btn-outline border-navy navy"
+                         :color/facebook      "btn-primary bg-fb-blue white"
+                         :color/purple        "btn-primary bg-purple white"
+                         :color/dark-gray     "btn-primary bg-dark-gray white"
+                         :color/quadpay       "btn-primary bg-quadpay-blue white"})]
     (assert color (str "Button color " color-kw " has not been defined."))
     color))
 
@@ -156,8 +156,8 @@
               (assoc :class (button-class color-kw attrs)))
           (into [:div] content)))
 
-(defn teal-button [attrs & content]
-  (color-button :color/teal attrs content))
+(defn p-color-button [attrs & content]
+  (color-button :color/p-color attrs content))
 
 (defn purple-button [attrs & content]
   (color-button :color/purple attrs content))
@@ -167,7 +167,7 @@
 
 (defn underline-button [attrs & content]
   (color-button :color/white attrs
-                [:span.pxp3.border-bottom.border-teal.border-width-2 content]))
+                [:span.pxp3.border-bottom.border-p-color.border-width-2 content]))
 
 (defn dark-gray-button [attrs & content]
   (color-button :color/dark-gray attrs content))
@@ -187,8 +187,8 @@
 (defn light-ghost-button [attrs & content]
   (color-button :color/light-ghost attrs content))
 
-(defn teal-ghost-button [attrs & content]
-  (color-button :color/teal-ghost attrs content))
+(defn p-color-ghost-button [attrs & content]
+  (color-button :color/p-color-ghost attrs content))
 
 (defn navy-ghost-button [attrs content]
   (color-button :color/navy-ghost attrs content))
@@ -197,7 +197,7 @@
   ([title] (submit-button title {}))
   ([title {:keys [spinning? disabled? data-test color-kw]
            :as attrs
-           :or {color-kw :color/teal}}]
+           :or {color-kw :color/p-color}}]
    (if spinning?
      (color-button color-kw attrs)
      [:input
@@ -464,7 +464,7 @@
       (when disabled
         {:class "border-gray"})
       (if value
-        (svg/simple-x {:class        "block teal"
+        (svg/simple-x {:class        "block p-color"
                        :width        "15px"
                        :height       "15px"})
         [:div {:style {:width "15px" :height "15px"}}])]
@@ -807,7 +807,7 @@
                light-forward-arrow-uuid)))
 
 (defn clickable-logo [{:as attrs :keys [height event]}]
-  [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
+  [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.p-color
    (merge {:style     {:height height}
            :title     "Mayvenn"
            :content   (assets/path "/images/header_logo.svg")}

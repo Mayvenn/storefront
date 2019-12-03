@@ -69,9 +69,9 @@
 
 (defn popup [text]
   [:div.tooltip-popup
-   [:div.tooltip-popup-before.border-teal
-    [:div.tooltip-popup-after.border-teal]]
-   [:div.bg-white.p1.top-lit-light.border.border-teal.dark-gray.light.h6 text]])
+   [:div.tooltip-popup-before.border-p-color
+    [:div.tooltip-popup-after.border-p-color]]
+   [:div.bg-white.p1.top-lit-light.border.border-p-color.dark-gray.light.h6 text]])
 
 (defn voucher-status [sale balance-transfer-id popup-visible?]
   (let [set-popup-visible #(utils/send-event-callback
@@ -88,13 +88,13 @@
      [:span.titleize (sales/voucher-status->copy voucher-status)]
 
      (when (and balance-transfer-id (= :voucher/redeemed voucher-status))
-       [:a.teal.ml1
+       [:a.p-color.ml1
         (utils/route-to
          events/navigate-stylist-dashboard-balance-transfer-details
          {:balance-transfer-id balance-transfer-id}) "View"])
 
      (when tooltip-text
-       [:div.border.border-teal.circle.teal.center.inline-block.ml1
+       [:div.border.border-p-color.circle.p-color.center.inline-block.ml1
         {:style {:width       "18px"
                  :height      "18px"
                  :line-height "15px"}}

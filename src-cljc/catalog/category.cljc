@@ -75,7 +75,7 @@
                             1 "1 filter applied:"
                             (str selections-count " filters applied:"))]
          [:p.h6.dark-gray (str product-count " Item" (when (not= 1 product-count) "s"))]]
-        (into [:div.border.h6.border-teal.rounded.flex.center]
+        (into [:div.border.h6.border-p-color.rounded.flex.center]
               (map-indexed
                (fn [idx elective]
                  (let [facet (elective facets)
@@ -88,8 +88,8 @@
                        (utils/fake-href events/control-category-panel-open {:selected elective}))
                      :data-test (str "filter-" (name elective))
                      :key elective
-                     :class (if selected? "bg-teal white" "dark-gray"))
-                    [:div.border-teal.my1
+                     :class (if selected? "bg-primary white" "dark-gray"))
+                    [:div.border-p-color.my1
                      {:class (when-not (zero? idx) "border-left")}
                      title]]))
                electives))])]))
@@ -115,7 +115,7 @@
             :data-test (str "filter-option-" slug)}
            (ui/check-box {:label     [:span
                                       (when (categories/new-facet? [open-panel slug])
-                                        [:span.mr1.teal "NEW"])
+                                        [:span.mr1.p-color "NEW"])
                                       (:option/name option)]
                           :value     selected?
                           :disabled  (not represented?)
@@ -127,12 +127,12 @@
                                                                   :option slug}))})]))])
    [:div.clearfix.mxn3.px1.py4.hide-on-dt
     [:div.col.col-6.px3
-     (ui/teal-ghost-button
+     (ui/p-color-ghost-button
       (merge (utils/fake-href events/control-category-option-clear)
              {:data-test "filters-clear-all"})
       "Clear all")]
     [:div.col.col-6.px3
-     (ui/teal-button
+     (ui/p-color-button
       (merge (utils/fake-href events/control-category-panel-close)
              {:data-test "filters-done"})
       "Done")]]])
@@ -161,7 +161,7 @@
     [:div.h5.dark-gray.light.my2.mx6-on-mb.col-8-on-tb-dt.mx-auto-on-tb-dt
      (:copy/description category)
      (when-let [learn-more-event (:copy/learn-more category)]
-       [:a.teal.h6.medium
+       [:a.p-color.h6.medium
         {:on-click (apply utils/send-event-callback learn-more-event)}
         "learn" ui/nbsp "more"])]]))
 
@@ -174,7 +174,7 @@
        [:p.h1.py4 "😞"]
        [:p.h2.dark-gray.py6 "Sorry, we couldn’t find any matches."]
        [:p.h4.dark-gray.mb10.pb10
-        [:a.teal (utils/fake-href events/control-category-option-clear) "Clear all filters"]
+        [:a.p-color (utils/fake-href events/control-category-option-clear) "Clear all filters"]
         " to see more hair."]])]))
 
 (defn ^:private subsection-component

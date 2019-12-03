@@ -74,7 +74,7 @@
       base
       {:title                  social-media-handle
        :description            social-media-post
-       :cta/button-type        :teal-button
+       :cta/button-type        :p-color-button
        :cta/navigation-message (-> base :cta/navigation-message)}))))
 
 (defn look->pdp-social-card
@@ -89,7 +89,7 @@
      (merge
       base
       {:title                  social-media-handle
-       :cta/button-type        :teal-button
+       :cta/button-type        :p-color-button
        :cta/navigation-message (-> base :cta/navigation-message)}))))
 
 (defn look->homepage-social-card
@@ -104,7 +104,7 @@
      (merge
       base
       {:description            description
-       :cta/button-type        :teal-button
+       :cta/button-type        :p-color-button
        :cta/navigation-message (-> base :cta/navigation-message)}))))
 
 (defn album-kw->homepage-social-cards

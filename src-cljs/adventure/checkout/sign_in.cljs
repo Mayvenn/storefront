@@ -60,7 +60,7 @@
     [:div.my2
      [:div.dark-gray.center
       "Forgot Password? "
-      [:a.teal (utils/route-to events/navigate-checkout-returning-or-guest) "Continue As Guest"]]
+      [:a.p-color (utils/route-to events/navigate-checkout-returning-or-guest) "Continue As Guest"]]
      [:div.dark-gray.center "OR"]]
     [:div.col-12.col-6-on-tb-dt.mx-auto
      (facebook/sign-in-button facebook-loaded?)]]))

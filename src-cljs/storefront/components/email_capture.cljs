@@ -60,7 +60,7 @@
                                           :value     email
                                           :data-test "email-input"}
      :single-field-form/button-data      {:title        "Sign up & Save"
-                                          :color-kw     :color/teal
+                                          :color-kw     :color/p-color
                                           :height-class :large
                                           :data-test    "email-input-submit"}}))
 
@@ -133,7 +133,7 @@
                                           :value     email
                                           :data-test "email-input"}
      :single-field-form/button-data      {:title        "Shop Now"
-                                          :color-kw     :color/teal
+                                          :color-kw     :color/p-color
                                           :height-class :large
                                           :data-test    "email-input-submit"}}))
 

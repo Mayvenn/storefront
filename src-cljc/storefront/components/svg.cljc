@@ -123,10 +123,12 @@
      ^:inline (svg-xlink "quadpay-logo")])))
 
 ;; Social
-(defn instagram []
-  (component/html
-   [:svg.container-size
-    ^:inline (svg-xlink "instagram")]))
+(defn instagram
+  ([] (instagram {}))
+  ([opts]
+   (component/html
+    [:svg.container-size (maps/deep-merge {:class "fill-dark-gray"} opts)
+     ^:inline (svg-xlink "instagram")])))
 
 (defn facebook-f []
   (component/html
@@ -143,10 +145,12 @@
    [:svg.container-size
     ^:inline (svg-xlink "twitter")]))
 
-(defn styleseat []
-  (component/html
-   [:svg.container-size
-    ^:inline (svg-xlink "styleseat")]))
+(defn styleseat
+  ([] (styleseat {}))
+  ([opts]
+   (component/html
+    [:svg.container-size (maps/deep-merge {:class "fill-dark-gray"} opts)
+     ^:inline (svg-xlink "styleseat")])))
 
 (def social-icon
   {"instagram" instagram

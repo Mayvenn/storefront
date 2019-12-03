@@ -87,7 +87,7 @@
    expanded?
    keypaths/account-menu-expanded
    [:a.inherit-color.h6
-    "Signed in with: " [:span.teal email]
+    "Signed in with: " [:span.p-color email]
     " | Account" [:span.ml1 (ui/expand-icon expanded?)]]
    [:div.bg-white.absolute.right-0.top-lit
     [:div
@@ -102,7 +102,7 @@
    expanded?
    keypaths/account-menu-expanded
    [:a.inherit-color.h6
-    "Signed in with: " [:span.teal email]
+    "Signed in with: " [:span.p-color email]
     " | My dashboard" [:span.ml1 (ui/expand-icon expanded?)]]
    [:div.bg-white.absolute.right-0.border.border-gray.dark-gray.top-lit
     [:div
@@ -151,7 +151,7 @@
       (header-menu-link
        (assoc (utils/route-to events/navigate-adventure-match-stylist)
               :on-mouse-enter close-header-menus)
-       [:span [:span.teal.pr1 "NEW"] "Get a Mayvenn Install"]))
+       [:span [:span.p-color.pr1 "NEW"] "Get a Mayvenn Install"]))
 
     (when-not show-bundle-sets-and-hide-deals?
       (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
@@ -198,7 +198,7 @@
        [:a.inherit-color.block.pyp2.titleize
         (apply utils/route-to nav-message)
         (when new?
-          [:span.teal "NEW "])
+          [:span.p-color "NEW "])
         (string/capitalize copy)]])]))
 
 (defn flyout [columns expanded?]

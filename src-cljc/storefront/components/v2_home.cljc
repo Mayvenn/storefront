@@ -27,13 +27,13 @@
     [:div.h6.white.light
      "FREE standard shipping"]]])
 
-(defn teal-play-video-mobile []
-  (svg/white-play-video {:class  "mr1 fill-teal"
+(defn play-video-mobile []
+  (svg/white-play-video {:class  "mr1 fill-p-color"
                          :height "30px"
                          :width  "30px"}))
 
-(defn teal-play-video-desktop []
-  (svg/white-play-video {:class  "mr1 fill-teal"
+(defn play-video-desktop []
+  (svg/white-play-video {:class  "mr1 fill-color"
                          :height "41px"
                          :width  "41px"}))
 
@@ -46,12 +46,12 @@
        (ui/defer-ucare-img {:alt "" :width "212"}
          "c487eeef-0f84-4378-a9be-13dc7c311e23")
        [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
-        ^:inline (teal-play-video-desktop)]]
+        ^:inline (p-color-play-video-desktop)]]
       [:a.block.ml4.dark-gray
        video-link
        [:div.h4.bold "#MayvennFreeInstall"]
        [:div.h4.my2 "See why customers love their free Mayvenn Install"]
-       [:div.h5.teal.flex.items-center.medium.shout
+       [:div.h5.p-color.flex.items-center.medium.shout
         "Watch Now"]]]
 
      [:div.hide-on-dt.flex.justify-center.py3
@@ -60,7 +60,7 @@
        (ui/defer-ucare-img {:alt "" :width "152"}
          "1b58b859-842a-44b1-885c-eac965eeaa0f")
        [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
-        ^:inline (teal-play-video-mobile)]]
+        ^:inline (p-color-play-video-mobile)]]
       [:a.block.ml2.dark-gray
        video-link
        [:h6.bold.mbnp6 "#MayvennFreeInstall"]
@@ -68,7 +68,7 @@
         [:span {:style {:white-space "nowrap"}} "See why customers love their free"]
         " "
         [:span {:style {:white-space "nowrap"}} "Mayvenn Install"]]
-       [:h6.teal.flex.items-center.medium.shout
+       [:h6.p-color.flex.items-center.medium.shout
         "Watch Now"]]]]))
 
 (defn carousel-slide
@@ -91,16 +91,16 @@
                       :height      "0"
                       :border-top  "28px solid rgba(159, 229, 213, 0.8)"
                       :border-left "21px solid transparent"}}]
-       [:div.flex.items-center.px2.medium.h6.bg-transparent-light-teal
+       [:div.flex.items-center.px2.medium.h6.bg-pale-purple
         overlay]])]
    [:div.h6.mx1.mt1.dark-gray.medium description]])
 
 (defn ^:private shop-button [album-keyword link-text]
-  (ui/teal-button (merge
-                   {:height-class "py2"}
-                   (utils/route-to events/navigate-shop-by-look {:album-keyword album-keyword}))
-                  [:span.bold
-                   (str "Shop " link-text " Looks")]))
+  (ui/p-color-button (merge
+                      {:height-class "py2"}
+                      (utils/route-to events/navigate-shop-by-look {:album-keyword album-keyword}))
+                     [:span.bold
+                      (str "Shop " link-text " Looks")]))
 
 (defn ^:private style-carousel-component [images]
   (component/build carousel/component
@@ -245,11 +245,11 @@
         [:div.relative
          diishan-image
          [:div.absolute.bg-darken-3.overlay.flex.items-center.justify-center
-          ^:inline (teal-play-video-mobile)]]]
+          ^:inline (p-color-play-video-mobile)]]]
        [:a.col-6.px2
         we-are-mayvenn-link
         [:h4.my1.dark-gray.medium "Our Story"]
-        [:div.h6.teal.flex.items-center.medium.shout
+        [:div.h6.p-color.flex.items-center.medium.shout
          "Watch Now"]]
        [:div.col-6.p1 mikka-image]
        [:div.col-6.p1 stylist-image]
@@ -274,7 +274,7 @@
         we-are-mayvenn-link
         [:div.relative diishan-image
          [:div.absolute.overlay.flex.items-center.justify-center.bg-darken-3
-          ^:inline (teal-play-video-desktop)]]]]]]))
+          ^:inline (p-color-play-video-desktop)]]]]]]))
 
 (defcomponent component [{:keys [signed-in
                                  store

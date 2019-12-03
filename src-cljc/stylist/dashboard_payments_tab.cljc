@@ -30,7 +30,7 @@
             :amount-description nil
             :styles {:background ""
                      :title-color "black"
-                     :amount-color "teal"}}
+                     :amount-color "p-color"}}
            (case type
              "commission" {:title (str "Commission Earned" (when-let [name (orders/first-name-plus-last-name-initial order)]
                                                              (str " - " name)))
@@ -46,9 +46,9 @@
                        :icon "4939408b-1ec8-4a47-bb0e-5cdeb15d544d"
                        :data-test (str "payout-" id)
                        :amount-description payout-method-name
-                       :styles {:background "bg-too-light-teal"
-                                :title-color "teal"
-                                :amount-color "teal"}}
+                       :styles {:background "bg-cool-gray"
+                                :title-color "p-color"
+                                :amount-color "p-color"}}
              "sales_bonus" {:title "Sales Bonus"
                             :data-test (str "sales-bonus-" id)
                             :icon "56bfbe66-6db0-48c7-9069-f86c6393b15d"}
