@@ -191,9 +191,8 @@
   (messages/handle-message event-key options)
   (messages/handle-later events/control-product-detail-picker-close nil))
 
-(defn quantity-option [{:keys [key quantity primary-label checked? disabled?]}]
+(defn quantity-option [{:keys [key quantity primary-label checked?]}]
   (let [label-style (cond
-                      disabled? "dark-gray"
                       checked?  "medium"
                       :else     nil)]
     [:div {:key       key
@@ -209,15 +208,12 @@
                     {:class label-style})
                   primary-label])
                 [:div
-                 (when disabled?
-                   (simple-sold-out-layer ""))
                  (when checked?
                    (simple-selected-layer))])]))
 
 (defn length-option
-  [{:keys [item key primary-label secondary-label checked? disabled? selected-picker navigation-event]}]
+  [{:keys [item key primary-label secondary-label checked? selected-picker navigation-event]}]
   (let [label-style (cond
-                      disabled? "dark-gray"
                       checked?  "medium"
                       :else     nil)]
     [:div {:key       key
@@ -260,7 +256,7 @@
     name]])
 
 (defn color-option
-  [{:keys [key color sku-image checked? disabled? selected-picker navigation-event]}]
+  [{:keys [key color sku-image checked? selected-picker navigation-event]}]
   [:div {:key       key
          :data-test (str "picker-color-" (hacky-fix-of-bad-slugs-on-facets (:option/slug color)))}
    (ui/option {:key      (str key "-option")
@@ -271,11 +267,6 @@
                             :value            (:option/slug color)})}
               (swatch-content-layer color sku-image checked?)
               [:div
-               (when disabled?
-                 [:div.absolute.overlay.bg-lighten-3.flex.items-center.justify-center
-                  [:div.dark-gray.self-center.flex.items-center.mr2
-                   {:style {:margin-top "-30px"}}
-                   "Sold Out"]])
                (when checked?
                  [:div.absolute.border.border-width-3.rounded-0.border-cool-gray.overlay.flex
                   [:div.self-center.flex.items-center
