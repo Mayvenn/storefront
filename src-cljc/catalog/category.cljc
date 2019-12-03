@@ -112,7 +112,8 @@
           ;;{:keys [slug label represented? selected?]}
           [:div.py1.mr4
            {:key       (str "filter-option-" slug)
-            :data-test (str "filter-option-" slug)}
+            :data-test (str "filter-option-" slug)
+            :disabled  (not represented?)}
            (ui/check-box {:label     [:span
                                       (when (categories/new-facet? [open-panel slug])
                                         [:span.mr1.teal "NEW"])
