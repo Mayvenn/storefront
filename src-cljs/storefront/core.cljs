@@ -100,16 +100,6 @@
     (f)
     (.addEventListener js/document "DOMContentLoaded" f)))
 
-;; Delay in msec to call React.render() after the app-state changes
-;;
-;; Choosen by anecdotally to try and minimize the number of time we tell react
-;; to render. There isn't any reason to have react do a lot of work when we know
-;; our application tends to churn through app state in quick succession.
-(def ^:private render-delay 0)
-
-;; timer until React.render is called used in the function below
-(def ^:private render-timer)
-
 (defn- app-template [app-state]
   ;; NOTE: this function is not affected by figwheel's reload
   (let [tup             (react/useState #js{:state @app-state})
@@ -118,10 +108,7 @@
         template        (component/build top-level-component app-state-value)]
     (add-watch app-state :renderer (fn [key ref old-value new-value]
                                      (when (not= old-value new-value)
-                                       (when render-timer
-                                         (js/clearTimeout render-timer))
-                                       (set! render-timer (js/setTimeout #(setter #js{:state new-value})
-                                                                         render-delay)))))
+                                       (setter #js{:state new-value}))))
     template))
 
 (defn main- [app-state]
