@@ -932,6 +932,14 @@
                  contentful/derive-all-looks)))
     cms-data))
 
+(def ^{:doc "A map of file extensions to mime-types that are incorrect or missing."}
+  extra-mimetypes
+  {"otf"   "font/otf"
+   "sfnt"  "font/sfnt"
+   "ttf"   "font/ttf"
+   "woff"  "font/woff"
+   "woff2" "font/woff2"})
+
 (defn create-handler
   ([] (create-handler {}))
   ([{:keys [logger exception-handler environment contentful] :as ctx}]
@@ -964,7 +972,7 @@
                            (routes-with-orders ctx)
                            (route/not-found views/not-found))
                    (wrap-resource "public")
-                   (wrap-content-type)))
+                   (wrap-content-type {:mime-types extra-mimetypes})))
        (wrap-redirect-legacy-routes ctx)
        (wrap-redirect-inconsistent-subdomain-bundle-sets-routes)
        (wrap-add-nav-message)
