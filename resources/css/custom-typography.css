@@ -7,12 +7,14 @@
 @font-face {
     font-family: 'Proxima Nova';
     src: url(/fonts/Proxima-Nova.woff) format('woff');
+    font-weight: 400;
     unicode-range: U+0020-007F; /* The bare minimum for the English Language */
     font-display: swap;
 }
 @font-face {
-    font-family: 'Proxima Nova Black';
+    font-family: 'Proxima Nova';
     src: url(/fonts/Proxima-Nova-Black.woff) format('woff');
+    font-weight: 900;
     unicode-range: U+0020-007F; /* The bare minimum for the English Language */
     font-display: swap;
 }
@@ -21,34 +23,34 @@
 .sans-serif  { font-family: var(--sans-serif); }
 
 body {
-    font: 16px/21px var(--font-family-proxima)
+    font: 400 16px/21px var(--font-family-proxima)
 }
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-family-canela);
 }
 
-.title-1, .canela {
+.title-1.canela {
     font: 36px/42px var(--font-family-canela);
     letter-spacing: 1.09px;
 }
-.title-2, .canela {
+.title-2.canela {
     font: 24px/36px var(--font-family-canela);
     letter-spacing: 0.6px;
 }
-.title-3, .canela {
+.title-3.canela {
     font: 18px/36px var(--font-family-canela);
     letter-spacing: 0.45px;
 }
-.title-1, .proxima {
-    font: 24px/46px var(--font-family-proxima-black);
+.title-1.proxima {
+    font: 900 24px/46px var(--font-family-proxima);
     letter-spacing: 1.07px;
 }
-.title-2, .proxima {
-    font: 18px/24px var(--font-family-proxima-black);
+.title-2.proxima {
+    font: 900 18px/24px var(--font-family-proxima);
     letter-spacing: 0.6px;
 }
-.title-3, .proxima {
-    font: 12px/27px var(--font-family-proxima-black);
+.title-3.proxima {
+    font: 900 12px/27px var(--font-family-proxima);
     letter-spacing: 0.92px;
 }
 .content-1 {
@@ -105,7 +107,6 @@ h1, h2, h3, h4, h5, h6 {
 
     --font-family-canela: 'Canela', 'Times New Roman', Times, serif;
     --font-family-proxima: 'Proxima Nova', Arial, sans-serif;
-    --font-family-proxima-black: 'Proxima Nova Black', 'Arial Black', sans-serif;
 
     --darken-2: rgba(0, 0, 0, .125);
     --darken-3: rgba(0, 0, 0, .375);
