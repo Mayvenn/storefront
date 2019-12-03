@@ -1,7 +1,68 @@
+@font-face {
+    font-family: 'Canela';
+    src: url(/fonts/Canela-Light-Web.woff2) format('woff2');
+    unicode-range: U+0020-007F; /* The bare minimum for the English Language */
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Proxima Nova';
+    src: url(/fonts/Proxima-Nova.woff) format('woff');
+    unicode-range: U+0020-007F; /* The bare minimum for the English Language */
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Proxima Nova Black';
+    src: url(/fonts/Proxima-Nova-Black.woff) format('woff');
+    unicode-range: U+0020-007F; /* The bare minimum for the English Language */
+    font-display: swap;
+}
+
 .serif       { font-family: var(--serif); }
 .sans-serif  { font-family: var(--sans-serif); }
 
-h1, h2, h3, h4, h5, h6 { font-weight: var(--heading-font-weight); }
+body {
+    font: 16px/21px var(--font-family-proxima)
+}
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-family-canela);
+}
+
+.title-1, .canela {
+    font: 36px/42px var(--font-family-canela);
+    letter-spacing: 1.09px;
+}
+.title-2, .canela {
+    font: 24px/36px var(--font-family-canela);
+    letter-spacing: 0.6px;
+}
+.title-3, .canela {
+    font: 18px/36px var(--font-family-canela);
+    letter-spacing: 0.45px;
+}
+.title-1, .proxima {
+    font: 24px/46px var(--font-family-proxima-black);
+    letter-spacing: 1.07px;
+}
+.title-2, .proxima {
+    font: 18px/24px var(--font-family-proxima-black);
+    letter-spacing: 0.6px;
+}
+.title-3, .proxima {
+    font: 12px/27px var(--font-family-proxima-black);
+    letter-spacing: 0.92px;
+}
+.content-1 {
+    font: 20px/30px var(--font-family-proxima);
+}
+.content-2 {
+    font: 16px/21px var(--font-family-proxima);
+}
+.content-3 {
+    font: 13px/18px var(--font-family-proxima);
+}
+.content-4 {
+    font: 11px/16px var(--font-family-proxima);
+}
 
 .regular { font-weight: var(--font-weight); }
 .light   { font-weight: var(--light-font-weight); }
@@ -42,12 +103,14 @@ h1, h2, h3, h4, h5, h6 { font-weight: var(--heading-font-weight); }
     --serif: serif;
     --sans-serif: sans-serif;
 
+    --font-family-canela: 'Canela', 'Times New Roman', Times, serif;
+    --font-family-proxima: 'Proxima Nova', Arial, sans-serif;
+    --font-family-proxima-black: 'Proxima Nova Black', 'Arial Black', sans-serif;
+
     --darken-2: rgba(0, 0, 0, .125);
     --darken-3: rgba(0, 0, 0, .375);
 
     --font-weight: var(--medium-font-weight);
-
-    --heading-font-weight: var(--bold-font-weight);
 
     --light-font-weight: 300;
     --medium-font-weight: 400;

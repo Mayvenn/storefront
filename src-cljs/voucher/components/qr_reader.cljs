@@ -93,7 +93,7 @@
 (defn draw-text [ctx [cw ch]]
   (let [scale     1
         font-size (* 16 scale)]
-    (set! (.-font ctx) (str "bold " font-size "px Roboto"))
+    (set! (.-font ctx) (str "bold " font-size "px 'Proxima Nova'"))
     (set! (.-fillStyle ctx) "white")
     (set! (.-textAlign ctx) "center")
     (.fillText ctx "Point camera at QR code"

@@ -16,14 +16,13 @@
          (set! (.-stripe js/window) stripe))))))
 
 (def fonts {:fonts
-            [{:family "roboto-300"
-              :src    "url('https://d6w7wdcyyr51t.cloudfront.net/cdn/fonts/Roboto-Light-webfont.2dbb9930.woff') format('woff')"
-              :style  "normal"
-              :weight "300"}]})
+            [{:family "Proxima Nova"
+              :src    "url('https://ucarecdn.com/f08df364-8ec8-4377-94de-4882e12747c8/ProximaNova400.woff') format('woff')"
+              :style  "normal"}]})
 
 (def styles {:style
              {:base {:color          "#000000"
-                     :fontFamily     "roboto-300"
+                     :fontFamily     "Proxima Nova"
                      :fontSize       "14px"
                      :lineHeight     "1.75"
                      "::placeholder" {:color "#ccc"}}}})

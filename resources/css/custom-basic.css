@@ -20,7 +20,6 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--heading-font-family);
   margin-top: var(--heading-margin-top);
   margin-bottom: var(--heading-margin-bottom);
 }
@@ -42,11 +41,9 @@ a {
 @custom-media --on-tablet-and-desktop (min-width: 750px);
 
 :root {
-    --sans-serif: -apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
+    --sans-serif: 'Proxima Nova', Arial, sans-serif;
 
     --font-family: var(--sans-serif);
-    --heading-font-family: var(--sans-serif);
-    --heading-font-weight: var(--bold-font-weight);
     --heading-margin-top: 0;
     --heading-margin-bottom: 0;
 

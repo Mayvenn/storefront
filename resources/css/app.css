@@ -1,7 +1,5 @@
 /* The CSS for the app */
 
-@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap');
-
 @import 'normalize.css';
 @import 'custom-basic.css';
 
@@ -116,20 +114,18 @@
 /* Custom variables */
 
 :root {
-    --font-family-roboto: 'Roboto',-apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
+    --font-family-proxima: 'Proxima Nova', Arial, sans-serif;
 
     --serif: serif;
-    --sans-serif: var(--font-family-roboto);
+    --sans-serif: var(--font-family-proxima);
 
     --font-family: var(--sans-serif);
-    --heading-font-family: var(--sans-serif);
 
-    --font-weight:         var(--light-font-weight); /* Not medium... by default, we use lightest font */
-    --heading-font-weight: var(--light-font-weight); /* Not bolder by default, use .medium or .bold */
+    --font-weight: var(--light-font-weight); /* Not medium... by default, we use lightest font */
 
     --light-font-weight:  300;
     --medium-font-weight: 400;
-    --bold-font-weight:   700; /* Roboto's bold */
+    --bold-font-weight:   700;
 
     --button-line-height: 1.2;
     --button-background-color: var(--teal);
