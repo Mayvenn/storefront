@@ -539,15 +539,16 @@
     [:a.h3.right (merge {:data-test data-test :title "Close"} close-attrs)
      (svg/close-x {:class (or class "stroke-white fill-gray")})]]))
 
-;; TODO(ellie) Replace with svg version
 (defn big-x [{:keys [data-test attrs]}]
   (component/html
-   [:div {:style {:width "70px"}}
-    [:div.relative.rotate-45.p2 (merge  {:style     {:height "70px"}
-                                         :data-test data-test}
-                                        attrs)
-     [:div.absolute.border-right {:style {:width "25px" :height "50px"}}]
-     [:div.absolute.border-bottom {:style {:width "50px" :height "25px"}}]]]))
+   [:div.relative.rotate-45.p2
+    (merge  attrs
+            {:style     {:height "70px"}
+             :data-test data-test})
+    [:div.absolute.border-right
+     {:style {:width "25px" :height "50px"}}]
+    [:div.absolute.border-bottom
+     {:style {:width "50px" :height "25px"}}]]))
 
 (defn square-image [{:keys [resizable-url]} size]
   (some-> resizable-url (str "-/scale_crop/" size "x" size "/center/")))
@@ -667,15 +668,21 @@
     (mf/as-money-without-cents amount)
     [:span.h5 {:style {:margin "5px 3px"}} (mf/as-money-cents-only amount)]]))
 
-(defn shopping-bag [opts {:keys [quantity]}]
-  (component/html
-   [:a.relative.pointer.block (merge (utils/route-to events/navigate-cart)
-                                     opts)
-    ^:inline (svg/bag {:class (str "absolute overlay m-auto "
-                                   (if (pos? quantity) "fill-p-color" "fill-black"))})
-    (when (pos? quantity)
-      [:div.absolute.overlay.m-auto {:style {:height "9px"}}
-       [:div.center.h6.line-height-1 {:data-test (:data-test opts)} quantity]])]))
+(defn shopping-bag
+  "TODO(corey,stella) fix fonts after new fonts land
+   TODO(corey,stella) fix colors after colors land"
+  [opts {:keys [quantity]}]
+   (component/html
+   [:a.relative.pointer.block.p-color
+    (merge (utils/route-to events/navigate-cart)
+           opts)
+    [:div.relative.container-size.flex.items-center.justify-center
+     [:div.absolute.rotate-45.border.border-width-2
+      {:style {:height "24.75px"
+               :width  "24.75px"}}]
+     [:div.absolute.bold.flex.items-center.justify-center.content-3
+      {:style {:font "900 14px/17px 'Proxima Nova'"}}
+      quantity]]]))
 
 (defn lqip
   "Generates a Low Quality Image Placeholder.
@@ -793,8 +800,7 @@
 (defn clickable-logo [{:as attrs :keys [height event]}]
   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.p-color
    (merge {:style     {:height height}
-           :title     "Mayvenn"
-           :content   (assets/path "/images/header_logo.svg")}
+           :title     "Mayvenn"}
           (when event (utils/route-to event))
           (dissoc attrs :height :event))])
 

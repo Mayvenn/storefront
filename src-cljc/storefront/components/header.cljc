@@ -15,13 +15,15 @@
 
 (def hamburger
   (component/html
-   [:a.inherit-color.block.px3.py4
+   [:a.block.px3.py4.content-box.black
     (assoc (utils/fake-href events/control-menu-expand-hamburger
                             {:keypath keypaths/menu-expanded})
-           :style {:width "70px"}
+           :style     {:width "50px"}
            :data-test "hamburger")
-    [:div.border-top.border-bottom {:style {:height "15px"}} [:span.hide "MENU"]]
-    [:div.border-bottom {:style {:height "15px"}}]]))
+    [:div.border-top.border-bottom
+     {:style {:height       "17px"
+              :border-width "2px"}}
+     [:span.hide "MENU"]]]))
 
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
@@ -243,7 +245,7 @@
     hamburger
     [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
                                             :data-test "header-logo"
-                                            :height    "40px"})]
+                                            :height    "29px"})]
     (ui/shopping-bag {:style     {:height "70px" :width "70px"}
                       :data-test "mobile-cart"}
                      cart)]])

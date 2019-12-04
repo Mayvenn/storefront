@@ -23,14 +23,16 @@
 (defn burger-header [cart]
   (component/html
    [:div.bg-white.flex.items-center.border-bottom.border-gray
-    (ui/big-x {:data-test "close-slideout"
-               :attrs     {:on-click #(messages/handle-message events/control-menu-collapse-all)}})
+    [:div.col-1
+     (ui/big-x {:data-test "close-slideout"
+                :attrs     {:on-click #(messages/handle-message events/control-menu-collapse-all)}})]
     [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
                                             :data-test "header-logo"
                                             :height    "40px"})]
-    (ui/shopping-bag {:style     {:height "70px" :width "70px"}
-                      :data-test "mobile-cart"}
-                     cart)]))
+    [:div.col-1
+     (ui/shopping-bag {:style     {:height "70px" :width "70px"}
+                       :data-test "mobile-cart"}
+                      cart)]]))
 
 (defn ^:private marquee-col [content]
   [:div.flex-auto
