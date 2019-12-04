@@ -200,7 +200,7 @@ function revAssets() {
 
   var options = {
     prefix: "https://" + argv.host + "/cdn/",
-    includeFilesInManifest: ['.css', '.js', '.svg', '.png', '.gif', '.woff', '.cljs', '.cljc', '.map'],
+    includeFilesInManifest: ['.css', '.js', '.svg', '.png', '.gif', '.woff', '.woff2', '.cljs', '.cljc', '.map'],
     dontSearchFile: ['.js']
   };
 
