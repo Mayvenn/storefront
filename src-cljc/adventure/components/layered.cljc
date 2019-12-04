@@ -396,8 +396,54 @@
                                              :href         href})
                                            [:div.h7 "Get started"])]]]]]]]))))))
 
+(defn ^:private shop-cta-with-chevron
+  [{:cta/keys [navigation-message href value id]}]
+  (component/html
+   (when (or navigation-message href)
+     [:a.block.h4.medium.p-color.my2
+      (merge
+       (when href
+         {:href href})
+       (when navigation-message
+         (apply utils/route-to navigation-message))
+       (when id
+         {:data-test id}))
+      value
+      ^:inline (svg/dropdown-arrow {:class  "stroke-p-color ml2"
+                                    :style  {:stroke-width "3px"
+                                             :transform "rotate(-90deg)"}
+                                    :height "14px"
+                                    :width  "14px"})])))
+
+(defcomponent shop-text-block
+  [data _ _]
+  [:div.pt10.pb2.px6.center.col-6-on-dt.mx-auto
+   (when-let [n (:anchor/name data)]
+     [:a {:name n}])
+   (when-let [v (:header/value data)]
+     [:div.title-1.canela v])
+   [:div.mt3 (:body/value data)]
+   ^:inline (cta-with-chevron data)])
+
+(defcomponent framed-checklist
+  [data _ _]
+  [:div.pb10.px6.center.col-6-on-dt.mx-auto
+   (when-let [v (:header/value data)]
+     [:div.h2 v])
+   (when-let [v (:subheader/value data)]
+     [:div.mt6.mb4.title-2.proxima v])
+   [:ul.h6.list-purple-diamond.left-align.mx-auto
+    {:style {:width "max-content"}}
+    (for [[i b] (map-indexed vector (:bullets data))]
+      [:li.mb1.pl1 {:key (str i)} b])]])
+
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (case type
+    ;; REBRAND
+    :shop-text-block  (component/build shop-text-block                 view-data opts)
+    :framed-checklist (component/build framed-checklist                       view-data opts)
+
+    ;; LEGACY
     :image-block                     (component/build image-block                     view-data opts)
     :hero                            (component/build layer-hero                      view-data opts)
     :free-standard-shipping-bar      (component/build free-standard-shipping-bar      view-data opts)

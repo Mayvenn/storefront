@@ -37,11 +37,13 @@
                            "Browse Stylists"]]}
                {:photo/navigation-message routed-path}))
       {:layer/type :free-standard-shipping-bar}
-      {:layer/type   :text-block
-       :header/value "We're paying for your next hair appointment"
-       :body/value   "Purchase 3 or more bundles, closures or frontals and we’ll pay for you to get them installed. That’s a shampoo, condition, braid down, sew-in, and style, all on us."
-       :anchor/name  "learn-more"}
-      {:layer/type      :checklist
+      {:layer/type             :shop-text-block
+       :header/value           "Buy 3 bundles and we’ll pay for your service"
+       :anchor/name            "learn-more" ; TODO: do we need this anchor?
+       :cta/value              "Browse Stylist"
+       :cta/id                 "info-certified-stylists" ; TODO
+       :cta/navigation-message [events/navigate-info-certified-stylists]} ; TODO
+      {:layer/type      :framed-checklist
        :subheader/value "What's included?"
        :bullets         ["Shampoo and condition"
                          "Braid down"
