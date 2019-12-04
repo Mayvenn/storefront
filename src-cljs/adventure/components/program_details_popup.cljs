@@ -125,40 +125,6 @@
 (defmethod transitions/transition-state events/popup-show-adventure-free-install [_ event args app-state]
   (assoc-in app-state keypaths/popup :adventure-free-install))
 
-;;; Consolidated cart
-
-(def get-a-mayvenn-install-black-friday
-  (let [step (fn [{:keys        [icon/uuid icon/width]
-                   header-value :header/value
-                   body-value   :body/value}]
-               [:div.col-12.mt2.center
-                [:div.flex.justify-center.items-end.mb2
-                 {:style {:height "39px"}}
-                 (ui/ucare-img {:alt header-value :width width} uuid)]
-                [:div.h5.medium header-value]
-                [:p.h6.col-8.col-9-on-dt.mx-auto
-                 body-value]])]
-
-    [:div.col-12
-     [:div.mt2.flex.flex-column.items-center
-      [:h1 "How to get a FREE Install"]
-      [:div.h5 "In three easy steps"]]
-
-     [:div.col-8-on-dt.mx-auto.flex.flex-wrap
-      (map step
-           [{:icon/uuid    "3d2b326c-7773-4672-827e-f13dedfae15a"
-             :icon/width   "22"
-             :header/value "1. Choose a Mayvenn Certified Stylist"
-             :body/value   "We’ve partnered with thousands of top stylists around the nation. Choose one in your local area and we’ll pay the stylist to do your install."}
-            {:icon/uuid    "08e9d3d8-6f3d-4b3c-bc46-3590175a9a4d"
-             :icon/width   "24"
-             :header/value "2. Buy Any 3 Items or More"
-             :body/value   "Purchase 3 or more bundles, closures or frontals. Rest easy - your 100% virgin hair purchase is backed by our 30 day guarantee."}
-            {:icon/uuid    "3fb9c2bf-c30e-4bee-957c-f273b1b5a233"
-             :icon/width   "27"
-             :header/value "3. Schedule Your Appointment"
-             :body/value   "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."}])]]))
-
 (def get-a-mayvenn-install
   (let [step (fn [{:keys        [icon/uuid icon/width]
                    header-value :header/value
@@ -231,7 +197,7 @@
         (ui/p-color-button [:div.flex.items-center.justify-center.inherit-color label]))))
 
 (defmethod popup/component :consolidated-cart-free-install
-  [{:keys [footer-data faq-data black-friday-time?] :as queried-data} owner _]
+  [{:keys [footer-data faq-data] :as queried-data} owner _]
   (ui/modal {:col-class   "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
              :close-attrs (utils/fake-href events/control-consolidated-cart-free-install-dismiss)
              :bg-class    "bg-darken-4"}
@@ -246,19 +212,12 @@
                         :width     "20px"
                         :class     "white"}))]
 
-              (if black-friday-time?
-                [:div.py2.center.col-8.bold.mx-auto.pointer.h6.medium
-                 "25% off EVERYTHING"
-                 [:div "Use promo code: " [:span.bold "SALE"]]]
-
-                [:div.py2.center.col-8.bold.mx-auto
-                 "Buy 3 items and receive your free Mayvenn Install"])]
+              [:div.py2.center.col-8.bold.mx-auto
+               "Buy 3 items and receive your free Mayvenn Install"]]
 
              [:div.flex.flex-column
               [:div.mt10.mb6
-               (if black-friday-time?
-                 get-a-mayvenn-install-black-friday
-                 get-a-mayvenn-install)
+               get-a-mayvenn-install
 
                [:div.col-8.mx-auto.mt5
                 (cta-molecule queried-data)]]
@@ -288,7 +247,6 @@
   [data]
   {:faq-data                    (faq/free-install-query data)
    :footer-data                 (footer-modal/query data)
-   :black-friday-time?          (experiments/black-friday-time? data)
    :call-out-center/bg-class    "bg-pale-purple"
    :call-out-center/bg-ucare-id "6a221a42-9a1f-4443-8ecc-595af233ab42"
    :call-out-center/title       "We can't wait to pay for your install!"

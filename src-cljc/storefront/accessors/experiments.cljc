@@ -92,12 +92,6 @@
   [data]
   (display-feature? data "blog"))
 
-(defn black-friday-time?
-  [data]
-  (or (display-feature? data "black-friday-time")
-      (date/after? (date/now)
-                   (date/date-time 2019 11 29 4 55 0))))
-
 (defn mayvenn-rating?
   [data]
   (display-feature? data "mayvenn-rating"))

@@ -32,43 +32,6 @@
 (def close-dialog-href (utils/fake-href events/control-email-captured-dismiss))
 (def submit-callback (utils/send-event-callback events/control-email-captured-submit))
 
-;; TODO Please clean this up and the :email-capture after black friday
-
-(defmethod popup/query :email-capture-blackfriday
-  [app-state]
-  (let [errors  (get-in app-state keypaths/field-errors)
-        focused (get-in app-state keypaths/ui-focus)
-        email   (get-in app-state keypaths/captured-email)]
-    {:modal-close/event                  events/control-email-captured-dismiss
-     :pre-title/content                  (ui/ucare-img {:width "24px"} ;; Mayvenn logo
-                                                       "6620eab6-ca9b-4400-b8e5-d6ec00654dd3")
-     :monstrous-title/copy               ["25% off everything."]
-     :subtitle/copy                      [[:div.mtb1 "Including Free Install purchases."]]
-     :description/copy                   [:div.mt1
-                                          "Buy hair with "
-                                          [:span.p-color "0%"]
-                                          " interest over "
-                                          [:div [:span.p-color "4"]
-                                           " installments."]]
-     :single-field-form/callback         events/control-email-captured-submit
-     :single-field-form/field-data       {:errors    (get errors ["email"])
-                                          :keypath   keypaths/captured-email
-                                          :focused   focused
-                                          :label     "Your E-Mail Address"
-                                          :name      "email"
-                                          :type      "email"
-                                          :value     email
-                                          :data-test "email-input"}
-     :single-field-form/button-data      {:title        "Sign up & Save"
-                                          :color-kw     :color/p-color
-                                          :height-class :large
-                                          :data-test    "email-input-submit"}}))
-
-(defmethod popup/component :email-capture-blackfriday
-  [query-data _ _]
-  [:div.quadpay-popup
-   (component/build popup.organisms/organism query-data _)])
-
 (defmethod popup/query :email-capture
   [app-state]
   {:capture/email (get-in app-state keypaths/captured-email)

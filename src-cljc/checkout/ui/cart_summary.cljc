@@ -6,7 +6,7 @@
 (defcomponent organism
   [{:cart-summary/keys [id lines]
     :as query
-    :keys [promo-field-data black-friday-time?]} owner _]
+    :keys [promo-field-data]} owner _]
   [:div {:data-test id}
    [:div.py1.bg-cool-gray.px4
     [:table.col-12
@@ -19,7 +19,7 @@
        (ui.M/input-group-field-and-button-molecule promo-field-data)])
 
     (when (:freeinstall-informational/value query)
-      (checkout.M/freeinstall-informational black-friday-time?))]
+      (checkout.M/freeinstall-informational))]
 
    [:div.pt2.px4
     (checkout.M/cart-summary-total-line query)]])

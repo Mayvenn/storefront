@@ -59,7 +59,7 @@
      [:div.right-align value]]))
 
 (defn freeinstall-informational
-  [black-friday-time?]
+  []
   [:div.flex.py2
    "✋"
    [:div.flex.flex-column.pl1
@@ -68,9 +68,7 @@
      [:span.bold
       "free Mayvenn Install"]]
     [:div.h6
-     (if black-friday-time?
-       "Save 25% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below."
-       "Save 10% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below.")]
+     "Save 10% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below."]
     [:div.flex.justify-left.py1
      [:div (ui/p-color-button {:height-class :small
                                :class        "bold"
@@ -80,6 +78,5 @@
       {:data-test "cart-learn-more"}
       (ui/button {:class    "inherit-color px4 py1 medium"
                   :on-click (utils/send-event-callback events/popup-show-consolidated-cart-free-install)} "learn more")]]
-    (when-not black-friday-time?
-      [:div.h8
-       "*Mayvenn Install cannot be combined with other promo codes."])]])
+    [:div.h8
+     "*Mayvenn Install cannot be combined with other promo codes."]]])

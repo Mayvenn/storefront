@@ -52,16 +52,6 @@
    [:div.pointer "CONGRATS — Your next install is FREE! "
     [:span.underline "More info"]]])
 
-(defmethod component :shop/blackfriday shop-freeinstall
-  [_ _ _]
-  [:a.block.white.p2.bg-pale-purple.flex.justify-center
-   {:on-click  (utils/send-event-callback events/popup-show-consolidated-cart-free-install)
-    :data-test "shop-black-friday-promo-banner"}
-   [:div.pointer.h6.medium.center
-    "25% off EVERYTHING, including "
-    [:span.underline "FREE" ui/nbsp "INSTALL"]
-    [:div "Use promo code: " [:span.bold "SALE"]]]])
-
 (defmethod component :shop/freeinstall shop-freeinstall
   [_ _ _]
   [:a.block.white.p2.bg-pale-purple.flex.justify-center
@@ -127,12 +117,8 @@
    experiment for"
   [data]
   (let [shop?              (= "shop" (get-in data keypaths/store-slug))
-        aladdin?           (experiments/aladdin-experience? data)
-        black-friday-time? (experiments/black-friday-time? data)]
+        aladdin?           (experiments/aladdin-experience? data)]
     (cond
-      (and black-friday-time? (or shop? aladdin?))
-      :shop/blackfriday
-
       shop?
       :shop/freeinstall
 

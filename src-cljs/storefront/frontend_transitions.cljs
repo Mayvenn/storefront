@@ -623,9 +623,7 @@
 
 (defmethod transition-state events/popup-show-email-capture
   [_ event args app-state]
-  (if (experiments/black-friday-time? app-state)
-    (assoc-in app-state keypaths/popup :email-capture-blackfriday)
-    (assoc-in app-state keypaths/popup :email-capture-quadpay)))
+  (assoc-in app-state keypaths/popup :email-capture-quadpay))
 
 (defmethod transition-state events/sign-out [_ event args app-state]
   (-> app-state

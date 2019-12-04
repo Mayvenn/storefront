@@ -192,37 +192,25 @@
                        {:legacy/variant-id :legacy/variant-id}))))
 
 (defn shared-cart-promo->discount
-  [promotions price shared-cart-promo has-service-line-item? black-friday-time?]
+  [promotions price shared-cart-promo has-service-line-item?]
   (if (or has-service-line-item?
           (= "freeinstall" shared-cart-promo))
-    {:discount-text    (if black-friday-time?
-                         "25% OFF + FREE Install"
-                         "10% OFF + FREE Install")
-     :discounted-price (if black-friday-time?
-                         (* 0.75 price)
-                         (* 0.90 price))}
+    {:discount-text    "10% OFF + FREE Install"
+     :discounted-price (* 0.90 price)}
     (let [promotion% (some->> promotions
                               (filter (comp #{shared-cart-promo} str/lower-case :code))
                               first
                               :description
                               (re-find #"\b(\d\d?\d?)%")
                               second)]
-      {:discount-text    (if black-friday-time?
-                           (some-> promotion% (str "% OFF"))
-                           (some-> promotion% (str "% + 10% Bundle Discount")))
+      {:discount-text    (some-> promotion% (str "% + 10% Bundle Discount"))
        :discounted-price (or
-                          (if black-friday-time?
-                            (some->> promotion%
-                                     spice/parse-int
-                                     (* 0.01)
-                                     (- 1.0)  ;; 100% - discount %
-                                     (* price))
-                            (some->> promotion%
-                                     spice/parse-int
-                                     (* 0.01)
-                                     (+ 0.10) ;; bundle-discount
-                                     (- 1.0)  ;; 100% - discount %
-                                     (* price)))
+                          (some->> promotion%
+                                   spice/parse-int
+                                   (* 0.01)
+                                   (+ 0.10) ;; bundle-discount
+                                   (- 1.0)  ;; 100% - discount %
+                                   (* price))
                           price)}))) ;; discounted price was unparsable
 
 
@@ -249,8 +237,7 @@
         discount          (shared-cart-promo->discount (get-in data keypaths/promotions)
                                                        base-price
                                                        shared-cart-promo
-                                                       (has-service-line-item? shared-cart)
-                                                       (experiments/black-friday-time? data))
+                                                       (has-service-line-item? shared-cart))
         back              (first (get-in data keypaths/navigation-undo-stack))
         back-event        (:default-back-event album-copy)]
     (merge {:shared-cart           shared-cart-with-skus

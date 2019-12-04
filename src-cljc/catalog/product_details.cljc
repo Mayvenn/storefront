@@ -396,12 +396,7 @@
               :add-to-cart.incentive-block/icon        "d7fbb4a1-6ad7-4122-b737-ade7dec8dfd3"
               :add-to-cart.incentive-block/link-label  "Learn more"
               :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
-              :add-to-cart.incentive-block/message     (if (experiments/black-friday-time? data)
-                                                         "Save 25% & get a free Mayvenn Install when you purchase 3 bundles, closure, or frontals.* "
-                                                         "Save 10% & get a free Mayvenn Install when you purchase 3 bundles, closure, or frontals.* ")})
-
-      (and shop? (experiments/black-friday-time? data))
-      (merge {:add-to-cart.incentive-block/footnote ""}))))
+              :add-to-cart.incentive-block/message     "Save 10% & get a free Mayvenn Install when you purchase 3 bundles, closure, or frontals.* "}))))
 
 (defn query [data]
   (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
