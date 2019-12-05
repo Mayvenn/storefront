@@ -22,7 +22,7 @@
      [:div.flex-none.mr2.mt1
       {:style {:width "2.5rem" :height "2.5rem"}}
       ^:inline (svg/instagram
-                {:class (if (seq instagram-account) "fill-p-color" "fill-black")} )]
+                {:class (if (seq instagram-account) "fill-p-color" "fill-black")})]
      [:div.flex-auto
       (ui/text-field {:data-test "account-instagram"
                       :errors    (get field-errors ["instagram-account"])

@@ -121,7 +121,7 @@
   [{:field-reveal/keys [id label target]}]
   (when id
     [:a.mlp3.h6 (merge {:data-test id}
-               (apply utils/fake-href target))
+                       (apply utils/fake-href target))
      label]))
 
 (defn input-group-field-and-button-molecule

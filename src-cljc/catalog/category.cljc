@@ -71,9 +71,9 @@
        [:div
         [:div.pb1.flex.justify-between
          [:p.h6 (case selections-count
-                            0 "Filter by:"
-                            1 "1 filter applied:"
-                            (str selections-count " filters applied:"))]
+                  0 "Filter by:"
+                  1 "1 filter applied:"
+                  (str selections-count " filters applied:"))]
          [:p.h6 (str product-count " Item" (when (not= 1 product-count) "s"))]]
         (into [:div.border.h6.border-p-color.rounded.flex.center]
               (map-indexed

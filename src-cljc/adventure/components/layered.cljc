@@ -453,29 +453,29 @@
                   :height              "24px"}}]])
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
-    (component/build
-     (case type
+  (component/build
+   (case type
        ;; REBRAND
-       :shop-text-block       shop-text-block
-       :shop-framed-checklist shop-framed-checklist
+     :shop-text-block       shop-text-block
+     :shop-framed-checklist shop-framed-checklist
 
        ;; LEGACY
-       :image-block                     image-block
-       :hero                            layer-hero
-       :free-standard-shipping-bar      free-standard-shipping-bar
-       :text-block                      text-block
-       :escape-hatch                    escape-hatch
-       :checklist                       checklist
-       :video-overlay                   video-overlay
-       :video-block                     video-block
-       :find-out-more                   find-out-more
-       :bulleted-explainer              bulleted-explainer
-       :ugc                             ugc
-       :faq                             faq
-       :contact                         contact
-       :homepage-were-changing-the-game homepage-were-changing-the-game
-       :sticky-footer                   sticky-footer)
-     view-data opts))
+     :image-block                     image-block
+     :hero                            layer-hero
+     :free-standard-shipping-bar      free-standard-shipping-bar
+     :text-block                      text-block
+     :escape-hatch                    escape-hatch
+     :checklist                       checklist
+     :video-overlay                   video-overlay
+     :video-block                     video-block
+     :find-out-more                   find-out-more
+     :bulleted-explainer              bulleted-explainer
+     :ugc                             ugc
+     :faq                             faq
+     :contact                         contact
+     :homepage-were-changing-the-game homepage-were-changing-the-game
+     :sticky-footer                   sticky-footer)
+   view-data opts))
 
 (defcomponent component [{:keys [layers]} owner opts]
   [:div

@@ -672,7 +672,7 @@
   "TODO(corey,stella) fix fonts after new fonts land
    TODO(corey,stella) fix colors after colors land"
   [opts {:keys [quantity]}]
-   (component/html
+  (component/html
    [:a.relative.pointer.block.p-color
     (merge (utils/route-to events/navigate-cart)
            opts)
