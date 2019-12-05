@@ -55,8 +55,7 @@
 
 (defmethod popup/component :pick-a-stylist-email-capture
   [queried-data owner _]
-  [:div
-   (component/build adventure.components.answer-prompt/component queried-data nil)])
+  [:div (component/build adventure.components.answer-prompt/component queried-data nil)])
 
 (defmethod effects/perform-effects events/control-pick-a-stylist-email-capture-submit
   [_ _ args _ app-state]

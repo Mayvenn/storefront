@@ -83,7 +83,7 @@
    (str (uri/map->URI {:host (str/replace-first js/location.host #"^[^\.]*\." "shop.")
                        :path (routes/path-for navigation-event args)}))})
 
-(defn route-back [{:keys [navigation-message]}]
+(defn ^:private route-back [{:keys [navigation-message]}]
   {:href (apply routes/path-for navigation-message)
    :on-click
    (fn [e]
