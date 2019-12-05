@@ -425,40 +425,57 @@
    [:div.mt3 (:body/value data)]
    ^:inline (cta-with-chevron data)])
 
-(defcomponent framed-checklist
-  [data _ _]
-  [:div.pb10.px6.center.col-6-on-dt.mx-auto
-   (when-let [v (:header/value data)]
-     [:div.h2 v])
-   (when-let [v (:subheader/value data)]
-     [:div.mt6.mb4.title-2.proxima v])
-   [:ul.h6.list-purple-diamond.left-align.mx-auto
-    {:style {:width "max-content"}}
-    (for [[i b] (map-indexed vector (:bullets data))]
-      [:li.mb1.pl1 {:key (str i)} b])]])
+(defcomponent shop-framed-checklist
+  [{:keys [bullets] header-value :header/value} _ _]
+  [:div
+   [:div.relative
+    {:style {:margin-top "60px"}}
+    [:div.absolute.col-12.flex.justify-center
+     {:style {:top "-50px"}}
+     [:object {:style {:height "67px"}
+               :type  "image/svg+xml"
+               :data  "/images/vertical-squiggle.svg"}]]
+
+    [:div.col-10.col-6-on-dt.mx-auto.border.border-dotted.flex.justify-center.mb8
+     [:div.col-12.flex.flex-column.items-center.m5
+      {:style {:width "max-content"}}
+      (when header-value
+        [:div.proxima.title-2.shout.py1
+         header-value])
+      [:ul.col-12.list-purple-diamond
+       {:style {:padding-left "15px"}}
+       (for [[i b] (map-indexed vector bullets)]
+         [:li.py1 {:key (str i)} b])]]]]
+
+   [:div {:style {:background-image    (str "url('//ucarecdn.com/2d3a98e3-b49a-4f0f-9340-828d12865315/-/resize/x24/')")
+                  :background-position "center"
+                  :background-repeat   "repeat-x"
+                  :height              "24px"}}]])
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
-  (case type
-    ;; REBRAND
-    :shop-text-block  (component/build shop-text-block                 view-data opts)
-    :framed-checklist (component/build framed-checklist                       view-data opts)
+    (component/build
+     (case type
+       ;; REBRAND
+       :shop-text-block       shop-text-block
+       :shop-framed-checklist shop-framed-checklist
 
-    ;; LEGACY
-    :image-block                     (component/build image-block                     view-data opts)
-    :hero                            (component/build layer-hero                      view-data opts)
-    :free-standard-shipping-bar      (component/build free-standard-shipping-bar      view-data opts)
-    :text-block                      (component/build text-block                      view-data opts)
-    :escape-hatch                    (component/build escape-hatch                    view-data opts)
-    :checklist                       (component/build checklist                       view-data opts)
-    :video-overlay                   (component/build video-overlay                   view-data opts)
-    :video-block                     (component/build video-block                     view-data opts)
-    :find-out-more                   (component/build find-out-more                   view-data opts)
-    :bulleted-explainer              (component/build bulleted-explainer              view-data opts)
-    :ugc                             (component/build ugc                             view-data opts)
-    :faq                             (component/build faq                             view-data opts)
-    :contact                         (component/build contact                         view-data opts)
-    :homepage-were-changing-the-game (component/build homepage-were-changing-the-game view-data opts)
-    :sticky-footer                   (component/build sticky-footer                   view-data opts)))
+       ;; LEGACY
+       :image-block                     image-block
+       :hero                            layer-hero
+       :free-standard-shipping-bar      free-standard-shipping-bar
+       :text-block                      text-block
+       :escape-hatch                    escape-hatch
+       :checklist                       checklist
+       :video-overlay                   video-overlay
+       :video-block                     video-block
+       :find-out-more                   find-out-more
+       :bulleted-explainer              bulleted-explainer
+       :ugc                             ugc
+       :faq                             faq
+       :contact                         contact
+       :homepage-were-changing-the-game homepage-were-changing-the-game
+       :sticky-footer                   sticky-footer)
+     view-data opts))
 
 (defcomponent component [{:keys [layers]} owner opts]
   [:div

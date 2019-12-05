@@ -40,24 +40,15 @@
       {:layer/type             :shop-text-block
        :header/value           "Buy 3 bundles and we’ll pay for your service"
        :anchor/name            "learn-more" ; TODO: do we need this anchor?
-       :cta/value              "Browse Stylist"
+       :cta/value              "Browse Stylists"
        :cta/id                 "info-certified-stylists" ; TODO
        :cta/navigation-message [events/navigate-info-certified-stylists]} ; TODO
-      {:layer/type      :framed-checklist
-       :subheader/value "What's included?"
-       :bullets         ["Shampoo and condition"
-                         "Braid down"
-                         "Sew-in and style"
-                         "Paid for by Mayvenn"]}
-      {:layer/type :video-overlay
-       :video      (get-in data keypaths/adventure-home-video)}
-      {:layer/type             :video-block
-       :header/value           "#MayvennFreeInstall"
-       :body/value             [:span "Learn how you can get your free "
-                                [:span.nowrap "Mayvenn Install"]]
-       :cta/value              "Watch Now"
-       :cta/navigation-message [events/navigate-home
-                                {:query-params {:video "free-install"}}]}
+      {:layer/type   :shop-framed-checklist
+       :header/value "What's included?"
+       :bullets      ["Shampoo"
+                      "Braid down"
+                      "Sew-in and style"
+                      "Paid for by Mayvenn"]}
       {:layer/type             :bulleted-explainer
        :header/value           "How it Works"
        :subheader/value        "It's simple"

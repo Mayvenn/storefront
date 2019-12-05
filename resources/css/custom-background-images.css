@@ -11,9 +11,8 @@
 .list-img-purple-checkmark { list-style-image: url('//ucarecdn.com/2560cee9-9ac7-4706-ade4-2f92d127b565/-/resize/12x/-/format/auto/iconCheckmark'); }
 
 .list-purple-diamond {
-    color: var(--p-color);
-    list-style-type: 'p';
-    list-style-type: "\25C6";
+    list-style-image: url('/images/bullet-purple-diamond-12.svg');
+    padding-left: 15px;
 }
 
 .bg-email-capture {
