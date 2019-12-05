@@ -183,11 +183,11 @@
             (ui/square-image {:resizable-url servicing-stylist-portrait-url} 50))]
           [:div.left-align.pl2 checkout-caption-copy]])
 
-       (ui/p-color-button {:spinning? false
-                           :disabled? checkout-disabled?
-                           :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
-                           :data-test "start-checkout-button"}
-                          [:div "Check out"])
+       (ui/button-large-primary {:spinning? false
+                                 :disabled? checkout-disabled?
+                                 :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
+                                 :data-test "start-checkout-button"}
+                                "Check out")
 
        (when locked?
          [:div.error.h7.center.medium.py1
@@ -201,13 +201,13 @@
            [:div.flex-grow-1.border-bottom.border-gray]]
 
           [:div
-           (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
-                            :spinning? redirecting-to-paypal?
-                            :disabled? checkout-disabled?
-                            :data-test "paypal-checkout"}
-                           [:div
-                            "Check out with "
-                            [:span.medium.italic "PayPal™"]])]])
+           (ui/button-large-paypal {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
+                                    :spinning? redirecting-to-paypal?
+                                    :disabled? checkout-disabled?
+                                    :data-test "paypal-checkout"}
+                                   [:div
+                                    "Check out with "
+                                    [:span.medium.italic "PayPal™"]])]])
        #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])]]
 
      (when entered?
@@ -219,20 +219,20 @@
      (when share-carts?
        [:div.py2
         [:div.h6.center.pt2.black.bold "Is this bag for a customer?"]
-        (ui/ghost-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
-                          :class     "border-width-2 border-black"
-                          :spinning? requesting-shared-cart?
-                          :data-test "share-cart"}
-                         [:div.flex.items-center.justify-center.bold
-                          (svg/share-arrow {:class  "stroke-black mr1 fill-black"
-                                            :width  "24px"
-                                            :height "24px"})
-                          "Share your bag"])])]]])
+        (ui/button-large-secondary {:on-click  (utils/send-event-callback events/control-cart-share-show)
+                                    :class     "border-width-2 border-black"
+                                    :spinning? requesting-shared-cart?
+                                    :data-test "share-cart"}
+                                   [:div.flex.items-center.justify-center.bold
+                                    (svg/share-arrow {:class  "stroke-black mr1 fill-black"
+                                                      :width  "24px"
+                                                      :height "24px"})
+                                    "Share your bag"])])]]])
 
 (defn empty-cta-molecule
   [{:cta/keys [id label target]}]
   (when (and id label target)
-    (ui/p-color-button
+    (ui/button-large-primary
      (merge {:data-test id} (apply utils/fake-href target))
      [:div.flex.items-center.justify-center.inherit-color label])))
 

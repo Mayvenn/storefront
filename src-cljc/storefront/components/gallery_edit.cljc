@@ -26,15 +26,15 @@
    [:div.p1 "Here you can upload images, edit posts and manage your gallery settings."]
    (ui/narrow-container
     [:div
-     [:div.p1 (ui/p-color-button (merge (utils/route-to events/navigate-gallery-image-picker)
-                                        {:data-test "add-to-gallery-link"
-                                         :spinning?  adding-photo?})
-                                 "Choose an image to upload")]
+     [:div.p1 (ui/button-large-primary (merge (utils/route-to events/navigate-gallery-image-picker)
+                                              {:data-test "add-to-gallery-link"
+                                               :spinning?  adding-photo?})
+                                       "Choose an image to upload")]
      (when (seq gallery-images)
        [:div.p1
         (if editing?
-          (ui/black-button (utils/fake-href events/control-cancel-editing-gallery) "Finish editing")
-          (ui/ghost-button (utils/fake-href events/control-edit-gallery) "Edit your gallery"))])])])
+          (ui/button-large-primary (utils/fake-href events/control-cancel-editing-gallery) "Finish editing")
+          (ui/button-large-secondary (utils/fake-href events/control-edit-gallery) "Edit your gallery"))])])])
 
 (def pending-approval
   (component/html

@@ -96,11 +96,9 @@
    [:div.h6.mx1.mt1.medium description]])
 
 (defn ^:private shop-button [album-keyword link-text]
-  (ui/p-color-button (merge
-                      {:height-class "py2"}
-                      (utils/route-to events/navigate-shop-by-look {:album-keyword album-keyword}))
-                     [:span.bold
-                      (str "Shop " link-text " Looks")]))
+  (ui/button-medium-primary (utils/route-to events/navigate-shop-by-look {:album-keyword album-keyword})
+                            [:span.bold
+                             (str "Shop " link-text " Looks")]))
 
 (defn ^:private style-carousel-component [images]
   (component/build carousel/component

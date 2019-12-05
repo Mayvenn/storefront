@@ -100,7 +100,8 @@
     [:div.absolute.overlay attrs content]]))
 
 (defn button
-  [{:keys [disabled? disabled-class spinning? navigation-message href]
+  [additional-classes
+   {:keys [disabled? disabled-class spinning? navigation-message href]
     :as   opts}
    content]
   (let [shref   (str href)
@@ -111,10 +112,19 @@
                   (or disabled? spinning?)                                  (assoc :on-click utils/noop-callback)
                   disabled?                                                 (assoc :data-test-disabled "yes")
                   spinning?                                                 (assoc :data-test-spinning "yes")
-                  disabled?                                                 (update :class str (str " btn-disabled " (or disabled-class "is-disabled"))))
+                  :always                                                   (update :class str " " additional-classes)
+                  disabled?                                                 (update :class str (str " btn-gray btn-disabled " (or disabled-class "is-disabled"))))
         content (if spinning? [spinner] content)]
     [:a (merge {:href "#"} attrs)
      content]))
+
+(defn button-large-primary    [attrs & content] (button "btn-large btn-p-color button-font-1 shout" attrs content))
+(defn button-large-secondary  [attrs & content] (button "btn-large btn-ghost button-font-1 shout" attrs content))
+(defn button-large-paypal     [attrs & content] (button "btn-large btn-paypal-color button-font-1 shout" attrs content))
+(defn button-medium-primary   [attrs & content] (button "btn-medium btn-p-color button-font-1 shout" attrs content))
+(defn button-medium-secondary [attrs & content] (button "btn-medium btn-ghost button-font-1 shout" attrs content))
+(defn button-small-primary    [attrs & content] (button "btn-small btn-p-color button-font-2 shout" attrs content))
+(defn button-small-secondary  [attrs & content] (button "btn-small btn-ghost button-font-2 shout" attrs content))
 
 (defn ^:private button-colors [color-kw]
   (let [color (color-kw {:color/p-color       "btn-primary bg-p-color white"
@@ -129,71 +139,17 @@
     (assert color (str "Button color " color-kw " has not been defined."))
     color))
 
-(def ^:private predefined-height-classes
-  {:small  "py1 h7 bold letter-spacing-half"
-   :medium "py2"
-   :large  "py3"})
-
-(def ^:private predefined-width-classes
-  {:small "px3"})
-
-(defn button-class [color-kw {:keys [height-class width-class class]
-                              :or   {width-class "col-12" height-class "py3"}}]
-  (string/join " "
-               ["btn h5"
-                (predefined-width-classes width-class width-class)
-                (predefined-height-classes height-class height-class)
-                (button-colors color-kw)
-                class]))
-
-(defn color-button [color-kw attrs & content]
-  (button (-> attrs
-              (dissoc :width-class)
-              (dissoc :height-class)
-              (assoc :class (button-class color-kw attrs)))
-          (into [:div] content)))
-
-(defn p-color-button [attrs & content]
-  (color-button :color/p-color attrs content))
-
-(defn white-button [attrs & content]
-  (color-button :color/white attrs content))
-
-(defn underline-button [attrs & content]
-  (color-button :color/white attrs
-                [:span.pxp3.border-bottom.border-p-color.border-width-2 content]))
-
-(defn black-button [attrs & content]
-  (color-button :color/black attrs content))
-
-(defn aqua-button [attrs & content]
-  (color-button :color/aqua attrs content))
-
-(defn facebook-button [attrs & content]
-  (color-button :color/facebook attrs content))
-
-(defn ghost-button [attrs & content]
-  (color-button :color/ghost attrs content))
-
-(defn light-ghost-button [attrs & content]
-  (color-button :color/light-ghost attrs content))
-
-(defn p-color-ghost-button [attrs & content]
-  (color-button :color/p-color-ghost attrs content))
-
 (defn submit-button
   ([title] (submit-button title {}))
-  ([title {:keys [spinning? disabled? data-test color-kw]
-           :as attrs
-           :or {color-kw :color/p-color}}]
+  ([title {:keys [spinning? disabled? data-test]
+           :as attrs}]
    (if spinning?
-     (color-button color-kw attrs)
-     [:input
-      {:type "submit"
-       :class (button-class color-kw attrs)
-       :data-test data-test
-       :value title
-       :disabled (boolean disabled?)}])))
+     (button-large-primary attrs
+                           [:input
+                            {:type "submit"
+                             :data-test data-test
+                             :value title
+                             :disabled (boolean disabled?)}]))))
 
 (def nbsp (component/html [:span {:dangerouslySetInnerHTML {:__html "&nbsp;"}}]))
 (def rarr (component/html [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}]))

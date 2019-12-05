@@ -45,7 +45,7 @@
        [:div.m1.self-start {:style {:width "21px"
                                     :height "21px"}}
         ^:inline (svg/instagram)]]
-      [:div.mt2 (ui/underline-button {:height-class "py2"} "Shop Look")]]]]])
+      [:div.mt2 (ui/button-medium-secondary {} "Shop Look")]]]]])
 
 (defcomponent social-image-card-component
   [{:keys                [desktop-aware?
@@ -55,8 +55,8 @@
    owner
    {:keys [copy]}]
   (let [cta-button-fn (case button-type
-                        :p-color-button      ui/p-color-button
-                        :underline-button ui/underline-button)]
+                        :p-color-button      ui/button-large-primary
+                        :underline-button ui/button-large-secondary)]
     [:div.pb2.px1-on-tb-dt.col-12
      (merge {:key (str "small-" id)}
             (when desktop-aware?

@@ -21,7 +21,7 @@
        [:div.bold.h3.col-6 title]
        [:div.h7.col-6 subtitle]
        [:div.h7.bold.my1.col-5
-        (ui/p-color-button {:height-class :small} button-copy)]]]
+        (ui/button-small-secondary {} button-copy)]]]
      [:div.z5.absolute.bottom-0
       {:style {:right "-15px"}}
       (ui/ucare-img {:width "192"} image-ucare-id)]]))

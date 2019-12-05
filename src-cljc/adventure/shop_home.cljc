@@ -32,8 +32,7 @@
               :photo/cta-message (-> cms-homepage-hero :path)}
              (if (or (nil? cms-hero-event) (= events/navigate-not-found cms-hero-event))
                {:buttons [[{:navigation-message [events/navigate-adventure-match-stylist]
-                            :data-test          "adventure-home-choice-get-started"
-                            :height-class       "py2"}
+                            :data-test          "adventure-home-choice-get-started"}
                            "Browse Stylists"]]}
                {:photo/navigation-message routed-path}))
       {:layer/type :free-standard-shipping-bar}

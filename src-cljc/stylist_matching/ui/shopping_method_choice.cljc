@@ -7,7 +7,7 @@
   [{:shopping-method-choice.button/keys [id target ucare-id label]}]
   (when id
     (component/html
-     (ui/white-button
+     (ui/button-large-secondary
       (merge {:style     {:border-radius "3px"}
               :class     "my1 px3"
               :key       id

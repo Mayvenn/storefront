@@ -104,7 +104,7 @@
 (defn submit-button-molecule
   [{:submit-button/keys [id contents target classes disabled?]}]
   (when id
-    (ui/p-color-button
+    (ui/button-large-primary
      (merge {:style          {:width   "40px"
                               :height  "40px"
                               :padding "0"}

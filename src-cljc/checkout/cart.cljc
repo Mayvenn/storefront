@@ -185,11 +185,11 @@
                             :quadpay/show?       loaded-quadpay?
                             :quadpay/directive   :just-select}
                            nil)])
-     (ui/p-color-button {:spinning? false
-                         :disabled? updating?
-                         :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
-                         :data-test "start-checkout-button"}
-                        [:div "Check out"])
+     (ui/button-large-primary {:spinning? false
+                               :disabled? updating?
+                               :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
+                               :data-test "start-checkout-button"}
+                              [:div "Check out"])
 
      [:div.h5.black.center.py1.flex.justify-around.items-center
       [:div.flex-grow-1.border-bottom.border-cool-gray]
@@ -197,28 +197,28 @@
       [:div.flex-grow-1.border-bottom.border-cool-gray]]
 
      [:div.pb2
-      (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
-                       :spinning? redirecting-to-paypal?
-                       :disabled? updating?
-                       :data-test "paypal-checkout"}
-                      [:div
-                       "Check out with "
-                       [:span.medium.italic "PayPal™"]])]
+      (ui/button-large-paypal {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
+                               :spinning? redirecting-to-paypal?
+                               :disabled? updating?
+                               :data-test "paypal-checkout"}
+                              [:div
+                               "Check out with "
+                               [:span.medium.italic "PayPal™"]])]
 
      #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])
 
      (when share-carts?
        [:div.py2
         [:div.h6.center.pt2.black.bold "Is this bag for a customer?"]
-        (ui/ghost-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
-                          :class     "border-width-2 border-black"
-                          :spinning? requesting-shared-cart?
-                          :data-test "share-cart"}
-                         [:div.flex.items-center.justify-center.bold
-                          (svg/share-arrow {:class  "stroke-black mr1 fill-black"
-                                            :width  "24px"
-                                            :height "24px"})
-                          "Share your bag"])])]]])
+        (ui/button-large-secondary {:on-click  (utils/send-event-callback events/control-cart-share-show)
+                                    :class     "border-width-2 border-black"
+                                    :spinning? requesting-shared-cart?
+                                    :data-test "share-cart"}
+                                   [:div.flex.items-center.justify-center.bold
+                                    (svg/share-arrow {:class  "stroke-black mr1 fill-black"
+                                                      :width  "24px"
+                                                      :height "24px"})
+                                    "Share your bag"])])]]])
 
 (defcomponent empty-component [{:keys [promotions aladdin?]} owner _]
   (ui/narrow-container
@@ -235,8 +235,8 @@
               promo    (:description promo)
               :else    promos/bundle-discount-description))]]
 
-    (ui/p-color-button (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                       "Shop Our Looks")]))
+    (ui/button-large-primary (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+                             "Shop Our Looks")]))
 
 (defn ^:private variants-requests [data request-key variant-ids]
   (->> variant-ids

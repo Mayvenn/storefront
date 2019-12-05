@@ -78,41 +78,40 @@
   (component/html
    [:div
     (when vouchers?
-      (ui/p-color-button (assoc (utils/route-to events/navigate-voucher-redeem)
-                                :height-class "py2"
-                                :data-test    "redeem-voucher")
-                         "Redeem Client Voucher"))
+      (ui/button-medium-primary (assoc (utils/route-to events/navigate-voucher-redeem)
+                                       :data-test    "redeem-voucher")
+                                "Redeem Client Voucher"))
     [:div
      (marquee-row
-      (ui/underline-button (assoc (utils/route-to events/navigate-stylist-account-profile)
-                                  :data-test "account-settings")
-                           "Settings")
-      (ui/underline-button (assoc (utils/route-to events/navigate-stylist-share-your-store)
-                                  :data-test "share-your-store")
-                           "Share your store"))
+      (ui/button-large-secondary (assoc (utils/route-to events/navigate-stylist-account-profile)
+                                        :data-test "account-settings")
+                                 "Settings")
+      (ui/button-large-secondary (assoc (utils/route-to events/navigate-stylist-share-your-store)
+                                        :data-test "share-your-store")
+                                 "Share your store"))
      (marquee-row
-      (ui/underline-button (assoc (utils/route-to events/navigate-v2-stylist-dashboard-orders)
-                                  :data-test "dashboard")
-                           "Dashboard")
+      (ui/button-large-secondary (assoc (utils/route-to events/navigate-v2-stylist-dashboard-orders)
+                                        :data-test "dashboard")
+                                 "Dashboard")
       (when show-community?
-        (ui/underline-button community/community-url
-                             "Community")))]]))
+        (ui/button-large-secondary community/community-url
+                                   "Community")))]]))
 
 (def ^:private user-actions
   (component/html
    (marquee-row
-    (ui/underline-button (assoc (utils/route-to events/navigate-account-manage)
-                                :data-test "account-settings")
-                         "Account")
-    (ui/underline-button (utils/route-to events/navigate-account-referrals)
-                         "Refer a friend"))))
+    (ui/button-large-secondary (assoc (utils/route-to events/navigate-account-manage)
+                                      :data-test "account-settings")
+                               "Account")
+    (ui/button-large-secondary (utils/route-to events/navigate-account-referrals)
+                               "Refer a friend"))))
 
 (def ^:private guest-actions
   (component/html
    (marquee-row
-    (ui/underline-button (assoc (utils/route-to events/navigate-sign-in)
-                                :data-test "sign-in")
-                         "Sign in")
+    (ui/button-large-secondary (assoc (utils/route-to events/navigate-sign-in)
+                                      :data-test "sign-in")
+                               "Sign in")
     [:div.h6.col-12.center
      [:div "No account?"]
      [:a.inherit-color.underline
@@ -241,9 +240,9 @@
 (def ^:private sign-out-area
   (component/html
    (marquee-row
-    (ui/ghost-button (assoc (utils/fake-href events/control-sign-out)
-                            :data-test "sign-out")
-                     "Sign out")
+    (ui/button-large-secondary (assoc (utils/fake-href events/control-sign-out)
+                                      :data-test "sign-out")
+                               "Sign out")
     [:div])))
 
 (def ^:private gallery-link

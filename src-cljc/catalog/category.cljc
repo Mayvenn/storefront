@@ -128,12 +128,12 @@
                                                                   :option slug}))})]))])
    [:div.clearfix.mxn3.px1.py4.hide-on-dt
     [:div.col.col-6.px3
-     (ui/p-color-ghost-button
+     (ui/button-large-secondary
       (merge (utils/fake-href events/control-category-option-clear)
              {:data-test "filters-clear-all"})
       "Clear all")]
     [:div.col.col-6.px3
-     (ui/p-color-button
+     (ui/button-large-primary
       (merge (utils/fake-href events/control-category-panel-close)
              {:data-test "filters-done"})
       "Done")]]])

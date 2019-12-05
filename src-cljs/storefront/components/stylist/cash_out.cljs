@@ -32,12 +32,12 @@
       [:div.my3
        {:data-test "cash-out-commit-button"
         :data-ref  "cash-out-button"}
-       (ui/p-color-button {:on-click  (utils/send-event-callback events/control-stylist-dashboard-cash-out-commit
-                                                                 {:amount amount
-                                                                  :payout-method-name name})
-                           :disabled? (not (payouts/cash-out-eligible? payout-method))
-                           :spinning? cashing-out?}
-                          "Cash out")]]]))
+       (ui/button-large-primary {:on-click  (utils/send-event-callback events/control-stylist-dashboard-cash-out-commit
+                                                                       {:amount amount
+                                                                        :payout-method-name name})
+                                 :disabled? (not (payouts/cash-out-eligible? payout-method))
+                                 :spinning? cashing-out?}
+                                "Cash out")]]]))
 
 (defn query [data]
   (let [{:keys [amount payout-method]} (get-in data keypaths/stylist-payout-stats-next-payout)]

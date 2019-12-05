@@ -34,6 +34,51 @@
   box-shadow: 0 0 0 3px var(--darken-3);
 }
 
+.btn-large, .btn-medium, .btn-small {
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    display: block;
+}
+
+.btn-large {
+	  border-image-slice: 21 fill;
+    border-image-width: 21px;
+    padding: 26px;
+    border-image-repeat: space;
+}
+
+.btn-medium {
+	  border-image-slice: 15 fill;
+    border-image-width: 15px;
+    padding: 15px;
+    border-image-repeat: space;
+}
+
+.btn-small {
+    padding: 10px;
+}
+
+
+.btn-p-color            { color: var(--white); }
+.btn-p-color.btn-large  { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--p-color), stroke=none); }
+.btn-p-color.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--p-color), stroke=none); }
+.btn-p-color.btn-small  { background-color: var(--p-color); }
+
+.btn-ghost            { color: var(--p-color); }
+.btn-ghost.btn-large  { border-image-source: svg-load(var(--oct-button-large-svg), fill=none, stroke=var(--s-color), vector-effect="non-scaling-stroke"); }
+.btn-ghost.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=none, stroke=var(--s-color), vector-effect="non-scaling-stroke"); }
+.btn-ghost.btn-small  { border: solid 1px var(--s-color); }
+
+.btn-paypal-color           { color: var(--white); }
+.btn-paypal-color.btn-large { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--paypal), stroke=none); }
+
+/* Ordering matters here.  Gray has to beat the others. */
+.btn-gray            { color: var(--gray); }
+.btn-gray.btn-large  { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--cool-gray), stroke=none); }
+.btn-gray.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--cool-gray), stroke=none); }
+.btn-gray.btn-small  { background-color: var(--cool-gray); border-style: none; }
+
 ::-moz-focus-inner {
   border: 0;
   padding: 0;
@@ -51,6 +96,15 @@
   --button-padding-x: 1rem;
   --button-border-radius: 50px;
 
+  --oct-button-large-svg: '../public/images/oct_button_large.svg';
+  --oct-button-medium-svg: '../public/images/oct_button_medium.svg';
+
   --darken-1: rgba(0, 0, 0, .075);
   --darken-3: rgba(0, 0, 0, .375);
+  --p-color:   #4427C1;
+  --s-color:   #6bc8ad;
+  --cool-gray: #eeefef;
+  --paypal:    #49bbf0;
+  --gray:      #B9B9B9;
+  --white:     #ffffff;
 }

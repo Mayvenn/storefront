@@ -60,21 +60,21 @@
     (ui/link :link/email :a.block.py1.inherit-color {} contact-email)]
 
    [:div.py1.hide-on-tb-dt
-    (ui/ghost-button {:href (phone-uri call-number)
-                      :class "my1"}
-                     [:div.flex.items-center.justify-center
-                      ^:inline (svg/phone-ringing {:class "stroke-p-color"})
-                      [:div.ml1.left-align "Call Now"]])
-    (ui/ghost-button {:href (str "sms:" sms-number)
-                      :class "my1"}
-                     [:div.flex.items-center.justify-center
-                      ^:inline (svg/message-bubble {:class "stroke-p-color"})
-                      [:div.ml1.left-align "Send Message"]])
-    (ui/ghost-button {:href (str "mailto:" contact-email)
-                      :class "my1"}
-                     [:div.flex.items-center.justify-center
-                      ^:inline (svg/mail-envelope {:class "stroke-p-color"})
-                      [:div.ml1.left-align "Send Email"]])]])
+    (ui/button-large-secondary {:href (phone-uri call-number)
+                                :class "my1"}
+                               [:div.flex.items-center.justify-center
+                                ^:inline (svg/phone-ringing {:class "stroke-p-color"})
+                                [:div.ml1.left-align "Call Now"]])
+    (ui/button-large-secondary {:href (str "sms:" sms-number)
+                                :class "my1"}
+                               [:div.flex.items-center.justify-center
+                                ^:inline (svg/message-bubble {:class "stroke-p-color"})
+                                [:div.ml1.left-align "Send Message"]])
+    (ui/button-large-secondary {:href (str "mailto:" contact-email)
+                                :class "my1"}
+                               [:div.flex.items-center.justify-center
+                                ^:inline (svg/mail-envelope {:class "stroke-p-color"})
+                                [:div.ml1.left-align "Send Email"]])]])
 
 (defcomponent social-section [_ _ _]
   [:div

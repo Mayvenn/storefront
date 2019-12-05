@@ -67,6 +67,14 @@ h1, h2, h3, h4, h5, h6 {
 .content-4 {
     font: 11px/16px var(--font-family-proxima);
 }
+.button-font-1 {
+    font: 900 15px/18px var(--font-family-proxima);
+    letter-spacing: 0.92px;
+}
+.button-font-2 {
+    font: 900 11px/13px var(--font-family-proxima);
+    letter-spacing: 0.68px;
+}
 
 .regular { font-weight: var(--font-weight); }
 .light   { font-weight: var(--light-font-weight); }

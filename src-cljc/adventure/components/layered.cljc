@@ -33,7 +33,7 @@
        [:div.col.col-12.flex.justify-center
         (let [num-buttons (count buttons)]
           (for [button buttons]
-            [:div.px2 {:class (str "col-" (if (= num-buttons 1) 9 6))} (apply ui/p-color-button button)]))]]])])
+            [:div.px2 {:class (str "col-" (if (= num-buttons 1) 9 6))} (apply ui/button-large-primary button)]))]]])])
 
 (defcomponent free-standard-shipping-bar
   [_ _ _]
@@ -388,13 +388,12 @@
                        [:div.col-7 "We can't wait to pay for your install!"]
                        [:div.col-1]
                        [:div.col-4
-                        (ui/p-color-button (merge
-                                            (when navigation-message
-                                              (apply utils/route-to navigation-message))
-                                            {:height-class "py2"
-                                             :data-test    "sticky-footer-get-started"
-                                             :href         href})
-                                           [:div.h7 "Get started"])]]]]]]]))))))
+                        (ui/button-medium-primary (merge
+                                                   (when navigation-message
+                                                     (apply utils/route-to navigation-message))
+                                                   {:data-test    "sticky-footer-get-started"
+                                                    :href         href})
+                                                  [:div.h7 "Get started"])]]]]]]]))))))
 
 (defn ^:private shop-cta-with-chevron
   [{:cta/keys [navigation-message href value id]}]

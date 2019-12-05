@@ -68,10 +68,10 @@
                secondary-id
                secondary-copy]}]
   [:div.center
-   (ui/p-color-button (assoc (apply utils/route-to target)
-                             :data-test id
-                             :class "mb3")
-                      copy)
+   (ui/button-large-primary (assoc (apply utils/route-to target)
+                                   :data-test id
+                                   :class "mb3")
+                            copy)
    [:a.medium.h6.black
     (merge
      (apply utils/route-to secondary-target)

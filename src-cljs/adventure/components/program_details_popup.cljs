@@ -194,7 +194,7 @@
   [{:cta/keys [id label target]}]
   (when (and id label target)
     (-> (merge {:data-test id} (apply utils/route-to target))
-        (ui/p-color-button [:div.flex.items-center.justify-center.inherit-color label]))))
+        (ui/button-large-primary [:div.flex.items-center.justify-center.inherit-color label]))))
 
 (defmethod popup/component :consolidated-cart-free-install
   [{:keys [footer-data faq-data] :as queried-data} owner _]

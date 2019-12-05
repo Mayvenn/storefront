@@ -7,7 +7,7 @@
   [{:match-stylist.button/keys [id label target]}]
   (when id
     (component/html
-     (ui/white-button
+     (ui/button-large-secondary
       (merge {:style     {:border-radius "3px"}
               :class     "my1 col-12"
               :key       id

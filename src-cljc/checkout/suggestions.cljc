@@ -77,21 +77,19 @@
        [:img.m1 sized-image]
        [:img.m1 sized-image]]
       [:div.col-10.mx-auto
-       (ui/black-button {:class              "p1"
-                         :height-class       "py1"
-                         ;; we don't want to draw attention to the disabling of the other 'Add' button,
+       (ui/button-small-primary {;; we don't want to draw attention to the disabling of the other 'Add' button,
                          ;; but we do want to prevent people from clicking both.
                          ;; :disabled? (and (not this-is-adding-to-bag?) any-adding-to-bag?)
-                         :on-click           (if (and (not this-is-adding-to-bag?) any-adding-to-bag?)
-                                               utils/noop-callback
-                                               (utils/send-event-callback events/control-suggested-add-to-bag
-                                                                          {:skus        skus
-                                                                           :initial-sku initial-sku}))
-                         :spinning?          this-is-adding-to-bag?
-                         :data-test          (str "add-" (name position))
-                         :data-test-disabled (and (not this-is-adding-to-bag?) any-adding-to-bag?)
-                         :style              {:margin-top "-10px"}}
-                        "Add")]]]))
+                                 :on-click           (if (and (not this-is-adding-to-bag?) any-adding-to-bag?)
+                                                       utils/noop-callback
+                                                       (utils/send-event-callback events/control-suggested-add-to-bag
+                                                                                  {:skus        skus
+                                                                                   :initial-sku initial-sku}))
+                                 :spinning?          this-is-adding-to-bag?
+                                 :data-test          (str "add-" (name position))
+                                 :data-test-disabled (and (not this-is-adding-to-bag?) any-adding-to-bag?)
+                                 :style              {:margin-top "-10px"}}
+                                "Add")]]]))
 
 (defcomponent component
   [{:keys [suggestions]} _ _]
@@ -147,17 +145,16 @@
        [:span.pr2 "+"]
        (image-with-sticker second-image)])
     [:div.my1.col-5
-     (ui/p-color-ghost-button {:class        "bg-white"
-                               :height-class :small
+     (ui/button-small-secondary {:class        "bg-white"
                                ;; we don't want to draw attention to the disabling of the other 'Add' button,
                                ;; but we do want to prevent people from clicking both.
                                ;; :disabled? (and (not this-is-adding-to-bag?) any-adding-to-bag?)
-                               :on-click     (if disabled?
-                                               utils/noop-callback
-                                               (apply utils/send-event-callback target))
-                               :spinning?    spinning?
-                               :data-test    cta-id}
-                              label)]]])
+                                 :on-click     (if disabled?
+                                                 utils/noop-callback
+                                                 (apply utils/send-event-callback target))
+                                 :spinning?    spinning?
+                                 :data-test    cta-id}
+                                label)]]])
 
 (defcomponent consolidated-component
   [{:keys [suggestions]} _ _]

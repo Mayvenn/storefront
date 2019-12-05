@@ -8,13 +8,6 @@
             [storefront.platform.messages :as messages]
             [spice.core :as spice]))
 
-(def rect-button-attrs
-  {:height-class "py6"
-   :style {:border-radius "3px"}})
-
-(defn white-rect-button [attrs & content]
-  (ui/white-button (maps/deep-merge rect-button-attrs attrs) content))
-
 (defcomponent ^:private content-component
   [{:keys [input-data header-data prompt-image prompt mini-prompt on-submit title-image-uuid title-image-alt]}
    owner

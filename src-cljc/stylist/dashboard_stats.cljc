@@ -55,9 +55,8 @@
        [:div.h1.black.medium.flex (mf/as-money cash-balance)]]
       [:div.col-5
        (if (payouts/cash-out-eligible? payout-method)
-         (ui/p-color-button
-          {:height-class   "py2"
-           :data-test      "cash-out-begin-button"
+         (ui/button-medium-primary
+          {:data-test      "cash-out-begin-button"
            :on-click       (utils/send-event-callback events/control-stylist-dashboard-cash-out-begin
                                                       {:amount             cash-balance
                                                        :payout-method-name payout-method})
@@ -104,11 +103,10 @@
       [:a.col-7 toggle-expand
        [:div.h1.black.medium.flex (mf/as-money total-available-store-credit)]]
       [:div.col-5
-       (ui/p-color-button (merge (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                                 {:height-class "py2"})
-                          [:div.flex.items-center.justify-center.regular.h5
-                           (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "81775e67-9a83-46b7-b2ae-1cdb5a737876")
-                           "Shop"])]]
+       (ui/button-medium-primary (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+                                 [:div.flex.items-center.justify-center.regular.h5
+                                  (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "81775e67-9a83-46b7-b2ae-1cdb5a737876")
+                                  "Shop"])]]
      [:div.flex.pt2 {:class (when-not expanded? "hide")}
       [:div.col-7
        (earnings-count "Lifetime Bonuses" (mf/as-money lifetime-earned))]]]))

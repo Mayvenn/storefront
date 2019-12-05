@@ -78,18 +78,18 @@
     [:span.h4 "Currently out of stock"]))
 
 (def sold-out-button
-  (ui/black-button {:on-click       utils/noop-callback
-                    :data-test      "sold-out"
-                    :disabled?      true
-                    :disabled-class "bg-gray"}
-                   "Sold Out"))
+  (ui/button-large-primary {:on-click       utils/noop-callback
+                            :data-test      "sold-out"
+                            :disabled?      true
+                            :disabled-class "bg-gray"}
+                           "Sold Out"))
 
 (def unavailable-button
-  (ui/black-button {:on-click       utils/noop-callback
-                    :data-test      "unavailable"
-                    :disabled?      true
-                    :disabled-class "bg-gray"}
-                   "Unavailable"))
+  (ui/button-large-primary {:on-click       utils/noop-callback
+                            :data-test      "unavailable"
+                            :disabled?      true
+                            :disabled-class "bg-gray"}
+                           "Unavailable"))
 
 (defn ^:private handle-scroll [component e]
   #?(:cljs (component/set-state! component :show? (< 866 (.-y (goog.dom/getDocumentScroll))))))
@@ -142,25 +142,25 @@
                    [:span.ml2 "Length: " [:span text-style (:option/name (:hair/length selected-options))]]
                    [:span.ml2 "Qty: " [:span text-style quantity]]]]]
                 [:div.col-4
-                 (ui/p-color-button {:on-click
-                                     (utils/send-event-callback events/control-add-sku-to-bag
-                                                                {:sku      sku
-                                                                 :quantity quantity})
-                                     :data-test      "sticky-add-to-cart"
-                                     :disabled?      unpurchasable?
-                                     :disabled-class "bg-gray"
-                                     :spinning?      adding-to-bag?}
-                                    (cond
-                                      unavailable? "Unavailable"
-                                      sold-out?    "Sold Out"
-                                      :default     "Add"))]]]]))))
+                 (ui/button-large-primary {:on-click
+                                           (utils/send-event-callback events/control-add-sku-to-bag
+                                                                      {:sku      sku
+                                                                       :quantity quantity})
+                                           :data-test      "sticky-add-to-cart"
+                                           :disabled?      unpurchasable?
+                                           :disabled-class "bg-gray"
+                                           :spinning?      adding-to-bag?}
+                                          (cond
+                                            unavailable? "Unavailable"
+                                            sold-out?    "Sold Out"
+                                            :default     "Add"))]]]]))))
 
 (def checkout-button
   (component/html
    [:div
     {:data-test "cart-button"
      :data-ref "cart-button"}
-    (ui/p-color-button (utils/route-to events/navigate-cart) "Check out")]))
+    (ui/button-large-primary (utils/route-to events/navigate-cart) "Check out")]))
 
 (defn- hacky-fix-of-bad-slugs-on-facets [slug]
   (string/replace (str slug) #"#" ""))

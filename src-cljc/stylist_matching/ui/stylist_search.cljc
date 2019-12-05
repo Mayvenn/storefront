@@ -35,11 +35,11 @@
   [{:stylist-search.button/keys [id disabled? target label]}]
   (when id
     (component/html
-     (ui/p-color-button (merge {:disabled?      disabled?
-                                :disabled-class "bg-cool-gray gray"
-                                :data-test      "stylist-match-address-submit"}
-                               (apply utils/fake-href target))
-                        label))))
+     (ui/button-large-primary (merge {:disabled?      disabled?
+                                      :disabled-class "bg-cool-gray gray"
+                                      :data-test      "stylist-match-address-submit"}
+                                     (apply utils/fake-href target))
+                              label))))
 
 (defn stylist-search-title-molecule
   [{:stylist-search.title/keys [id primary secondary]}]

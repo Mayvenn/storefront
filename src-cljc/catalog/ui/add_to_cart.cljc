@@ -7,7 +7,7 @@
 (defn cta-molecule
   [{:cta/keys [id label target spinning? disabled?]}]
   (when (and id label target)
-    (ui/p-color-button
+    (ui/button-large-primary
      (merge {:data-test id
              :spinning? (boolean spinning?)
              :disabled? (boolean disabled?)}

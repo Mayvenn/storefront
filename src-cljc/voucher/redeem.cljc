@@ -34,9 +34,8 @@
     [:h6 "Your camera will be used as the scanner."]
     [:div.flex.justify-center.py4 (ui/ucare-img {:width "50"} "4bd0f715-fa5a-4d82-9cec-62dc993c5d23")]
     [:div.mx-auto.col-10.col-3-on-tb-dt.mb4
-     (ui/p-color-button {:on-click     (utils/send-event-callback events/control-voucher-scan)
-                         :height-class "py2"
-                         :data-test    "voucher-scan"} "Scan")]]))
+     (ui/button-medium-primary {:on-click     (utils/send-event-callback events/control-voucher-scan)
+                                :data-test    "voucher-scan"} "Scan")]]))
 
 (defn ^:private qr-preview-section []
   (component/html
@@ -69,12 +68,10 @@
        :value         code
        :errors        (get field-errors ["voucher-code"])
        :data-ref      "voucher-code"}
-      {:ui-element ui/p-color-button
+      {:ui-element ui/button-medium-primary
        :content    "Redeem"
        :args       {:class        "flex justify-center items-center circled-item"
                     :on-click     (utils/send-event-callback events/control-voucher-redeem {:code code})
-                    :width-class  "col-4"
-                    :height-class "py2"
                     :spinning?    redeeming-voucher?
                     :data-test    "voucher-redeem"}})]
 

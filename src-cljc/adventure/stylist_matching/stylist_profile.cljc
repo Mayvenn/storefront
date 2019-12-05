@@ -201,7 +201,7 @@
 (defn cta-molecule
   [{:cta/keys [id label target]}]
   (when (and id label target)
-    (ui/p-color-button
+    (ui/button-large-primary
      (merge {:data-test id} (apply utils/fake-href target))
      [:div.flex.items-center.justify-center.inherit-color label])))
 
@@ -234,9 +234,8 @@
     :cta/target}]
   (when id
     [:div.col-7.mx-auto
-     (ui/ghost-button
-      (merge {:height-class "py2"
-              :data-test    id}
+     (ui/button-medium-secondary
+      (merge {:data-test id}
              (if (= :navigate (first event))
                (apply utils/route-to target)
                (apply utils/fake-href target)))

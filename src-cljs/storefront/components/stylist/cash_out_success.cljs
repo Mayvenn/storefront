@@ -15,10 +15,10 @@
                                 :style {:width "100px" :height "100px"}})
    [:h2.my3 "Cha-Ching!"]
    [:p.my4 "You have successfully cashed out your earnings. View your transfer by clicking the button below."]
-   (ui/p-color-button (merge (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details
-                                             {:balance-transfer-id (:balance-transfer-id data)})
-                             {:data-test "see-transfer-button"})
-                      "See Transfer")])
+   (ui/button-large-primary (merge (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details
+                                                   {:balance-transfer-id (:balance-transfer-id data)})
+                                   {:data-test "see-transfer-button"})
+                            "See Transfer")])
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))

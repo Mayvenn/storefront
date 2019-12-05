@@ -97,7 +97,6 @@
                                           :data-test "email-input"}
      :single-field-form/button-data      {:title        "Shop Now"
                                           :color-kw     :color/p-color
-                                          :height-class :large
                                           :data-test    "email-input-submit"}}))
 
 (defmethod popup/component :email-capture-quadpay

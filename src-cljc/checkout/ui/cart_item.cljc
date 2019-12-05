@@ -70,11 +70,9 @@
                                  uncompleted)))]
        (when (and action-target action-label)
          [:div.mb2 ; margin bottom for 320px screens
-          (ui/p-color-button (assoc (apply utils/route-to action-target)
-                                    :height-class :small
-                                    :width-class  :small
-                                    :data-test id)
-                             action-label)])])))
+          (ui/button-small-primary (assoc (apply utils/route-to action-target)
+                                          :data-test id)
+                                   action-label)])])))
 
 (defn cart-item-squircle-thumbnail-molecule
   [{:cart-item-squircle-thumbnail/keys
@@ -177,12 +175,10 @@
   [{:cart-item-pick-stylist/keys [id target content]}]
   (when id
     [:div
-     (ui/p-color-ghost-button (merge {:height-class :small
-                                      :width-class  "col-6"
-                                      :class        "p-color bold mt1"
-                                      :data-test    id}
-                                     (apply utils/route-to target))
-                              content)]))
+     (ui/button-small-secondary (merge {:class        "p-color bold mt1"
+                                        :data-test    id}
+                                       (apply utils/route-to target))
+                                content)]))
 
 (defcomponent organism
   [{:keys [cart-item suggestions]} _ _]

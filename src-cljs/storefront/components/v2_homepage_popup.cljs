@@ -51,11 +51,9 @@
 
                [:h6.bold.col-12.center.mb2 "Just check out with promo code: FREEINSTALL"]
                [:div.col-11.mx-auto
-                (ui/p-color-button (merge
-                                    {:height-class "py2"}
-                                    (utils/route-to events/navigate-shop-by-look {:album-keyword :look
-                                                                                  :query-params {:sha "freeinstall"}}))
-                                   [:span "Shop looks"])]]
+                (ui/button-medium-primary (utils/route-to events/navigate-shop-by-look {:album-keyword :look
+                                                                                        :query-params {:sha "freeinstall"}})
+                                          [:span "Shop looks"])]]
 
               (v2/why-mayvenn-is-right-for-you true)
 
@@ -63,11 +61,10 @@
                [:span.col-7.mr2 "Buy 3 bundles or more and get a FREE install!"]
                [:div.col-5.flex.justify-end
                 [:div.col-9
-                 (ui/p-color-button
+                 (ui/button-small-primary
                   (merge (utils/route-to events/navigate-shop-by-look {:album-keyword :look
                                                                        :query-params {:sha "freeinstall"}})
-                         {:data-test    "v2-homepage-popup-shop"
-                          :height-class "py1"})
+                         {:data-test    "v2-homepage-popup-shop"})
                   [:span.h6 "Shop"])]]]
 
               [:div.mt10

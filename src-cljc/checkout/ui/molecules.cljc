@@ -20,11 +20,10 @@
                       [{:long-message error-message
                         :path         ["promo-code"]}])
      :data-ref      "promo-code"}
-    {:ui-element ui/p-color-button
+    {:ui-element ui/button-large-primary
      :content    "Apply"
      :args       {:on-click    (utils/send-event-callback events/control-cart-update-coupon)
                   :class       "flex justify-center items-center"
-                  :width-class "flex-grow-3"
                   :data-test   "cart-apply-promo"
                   :disabled?   updating?
                   :spinning?   applying?}})])
@@ -70,13 +69,12 @@
     [:div.h6
      "Save 10% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below."]
     [:div.flex.justify-left.py1
-     [:div (ui/p-color-button {:height-class :small
-                               :class        "bold"
-                               :data-test    "add-freeinstall-coupon"
-                               :on-click     (utils/send-event-callback events/control-cart-add-freeinstall-coupon)} "Add Mayvenn Install")]
-     [:div.p-color.h7.flex.items-center
+     [:div (ui/button-small-primary {:class        "bold"
+                                     :data-test    "add-freeinstall-coupon"
+                                     :on-click     (utils/send-event-callback events/control-cart-add-freeinstall-coupon)} "Add Mayvenn Install")]
+     [:div.p-color.h7.flex.items-center.px2
       {:data-test "cart-learn-more"}
-      (ui/button {:class    "inherit-color px4 py1 medium"
-                  :on-click (utils/send-event-callback events/popup-show-consolidated-cart-free-install)} "learn more")]]
+      [:a {:class    "inherit-color"
+           :on-click (utils/send-event-callback events/popup-show-consolidated-cart-free-install)} "learn more"]]]
     [:div.h8
      "*Mayvenn Install cannot be combined with other promo codes."]]])

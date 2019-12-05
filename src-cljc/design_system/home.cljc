@@ -153,22 +153,12 @@
       [:div "Backgrounds: "]
       [:a.black {:href "#" :on-click (partial set-state [:design-system :buttons-bg] "bg-white")}
        (color-swatch "white" "ffffff")]
-      [:a.black {:href "#" :on-click (partial set-state [:design-system :buttons-bg] "bg-p-color")}
-       (color-swatch "p-color" "4427c1")]]
+      [:a.black {:href "#" :on-click (partial set-state [:design-system :buttons-bg] "bg-cool-gray")}
+       (color-swatch "cool-gray" "eeefef")]]
      [:div.h6
       "Button States: "
       [:pre
        "{"
-       [:label
-        ":height-class "
-        [:select
-         {:on-change #(handle-message events/control-change-state
-                                      {:keypath [:design-system :buttons :height-class]
-                                       :value   (keyword (.. % -target -value))})}
-         (for [option [:small :medium :large]]
-           [:option {:value (name option)
-                     :selected (= option (get-in data [:design-system :buttons :height-class]))}
-            (pr-str option)])]]
        [:br]
        [:label
         [:input.mr1.ml2 {:type      "checkbox"
@@ -184,40 +174,39 @@
                         :on-change (partial toggle-state [:design-system :buttons :disabled?])}]
        ":disabled? "
        (if (get-in data [:design-system :buttons :disabled?]) "true" "false")]
-      "}"]]
-    [:div.h6
-     "Not every button state is used everywhere (eg - spinners are only used if the action may take some time and we would like feedback. Eg - a button to an external site will not spin)"]
-    [:div.clearfix.mxn1
-     (when-let [bg (get-in data [:design-system :buttons-bg])]
-       {:class (str bg)})
-     [:div.col.col-6.p1 (ui/p-color-button button-attrs "ui/p-color-button")]
-     [:div.col.col-6.p1 (ui/aqua-button button-attrs "ui/aqua-button")]
-     [:div.col.col-6.p1 (ui/facebook-button button-attrs "ui/facebook-button")]
-
-     [:div.col.col-6.p1 (ui/ghost-button button-attrs "ui/ghost-button")]
-     [:div.col.col-6.p1 (ui/light-ghost-button button-attrs "ui/light-ghost-button")]
-     [:div.col.col-6.p1 (ui/p-color-ghost-button button-attrs "ui/p-color-ghost-button")]
-
-     [:div.col.col-6.p1 (ui/underline-button button-attrs "ui/underline-button")]
-     [:div.col.col-6.p1 (ui/black-button button-attrs "ui/black-button")]
-     [:div.col.col-12.p1 (ui/p-color-button button-attrs
-                                            [:div "col-12 with styled "
-                                             [:span.medium.italic.underline "SPAN™"]
-                                             " and svg "
-                                             ^:inline (svg/dropdown-arrow {:class  "stroke-white"
-                                                                           :width  "12px"
-                                                                           :height "10px"
-                                                                           :style  {:transform "rotate(-90deg)"}})])]
-     [:div.col.col-12.p1 (ui/input-group
-                          {:type          "text"
-                           :wrapper-class "col-7 pl3 flex items-center bg-white circled-item"
-                           :placeholder   "Text"
-                           :focused       false}
-                          {:ui-element ui/p-color-button
-                           :content    "Button"
-                           :args       (merge button-attrs
-                                              {:class       "flex justify-center items-center circled-item"
-                                               :width-class "col-5"})})]]))
+      "}"]
+     [:div.h6
+      "Not every button state is used everywhere (eg - spinners are only used if the action may take some time and we would like feedback. Eg - a button to an external site will not spin)"]
+     [:div.clearfix.mxn1.flex.flex-wrap
+      (when-let [bg (get-in data [:design-system :buttons-bg])]
+        {:class (str bg)})
+      [:div.col-4
+       [:div.p1 (ui/button-large-primary button-attrs "primary large")]
+       [:div.p1 (ui/button-large-secondary button-attrs "secondary large")]
+       [:div.p1 (ui/button-large-paypal button-attrs "paypal large")]]
+      [:div.col-4
+       [:div.p1 (ui/button-medium-primary button-attrs "primary medium")]
+       [:div.p1 (ui/button-medium-secondary button-attrs "secondary medium")]]
+      [:div.col-4
+       [:div.p1 (ui/button-small-primary button-attrs "primary small")]
+       [:div.p1 (ui/button-small-secondary button-attrs "secondary small")]]
+      [:div.col.col-12.p1 (ui/button-large-primary button-attrs
+                                                   [:div "col-12 with styled "
+                                                    [:span.medium.italic.underline "SPAN™"]
+                                                    " and svg "
+                                                    ^:inline (svg/dropdown-arrow {:class  "stroke-white"
+                                                                                  :width  "12px"
+                                                                                  :height "10px"
+                                                                                  :style  {:transform "rotate(-90deg)"}})])]
+      [:div.col.col-12.p1 (ui/input-group
+                           {:type          "text"
+                            :wrapper-class "col-7 pl3 flex items-center bg-white circled-item"
+                            :placeholder   "Text"
+                            :focused       false}
+                           {:ui-element ui/button-large-primary
+                            :content    "Button"
+                            :args       (merge button-attrs
+                                               {:class "flex justify-center items-center circled-item"})})]]]))
 
 (def ^:private increment->size
   {1 "5px"
@@ -445,11 +434,9 @@
      :errors        (if (= (get-in data [:design-system :form :pill-phone]) "wrong")
                       [{:long-message "wrong"}]
                       [])}
-    {:ui-element ui/p-color-button
+    {:ui-element ui/button-medium-primary
      :content    "Get Survey"
      :args       {:class          "flex justify-center medium items-center circled-item"
-                  :width-class    "col-4"
-                  :height-class   "py2"
                   :data-test      ""
                   :disabled-class "disabled bg-p-color"}})
    (ui/input-group
@@ -464,11 +451,9 @@
      :errors        (if (= (get-in data [:design-system :form :pill-phone-2]) "wrong")
                       [{:long-message "wrong"}]
                       [])}
-    {:ui-element ui/p-color-button
+    {:ui-element ui/button-medium-primary
      :content    "Get Survey"
      :args       {:class        "flex justify-center medium items-center circled-item"
-                  :width-class  "col-4"
-                  :height-class "py2"
                   :data-test    ""
                   :disabled?    true}})])
 

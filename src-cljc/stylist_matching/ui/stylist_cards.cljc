@@ -152,7 +152,7 @@
   [{:stylist-card.cta/keys [id label target]}]
   (when id
     (component/html
-     (ui/underline-button
+     (ui/button-large-secondary
       (merge {:data-test id}
              (apply utils/fake-href target))
       label))))
@@ -161,7 +161,7 @@
   [{:stylist-card.cta/keys [id label target]}]
   (when id
     (component/html
-     (ui/p-color-button
+     (ui/button-large-primary
       (merge {:data-test id}
              (apply utils/fake-href target))
       label))))

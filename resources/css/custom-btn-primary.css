@@ -3,7 +3,6 @@
 .btn-primary {
   color: var(--button-color);
   background-color: var(--button-background-color);
-  border-radius: var(--button-border-radius);
 }
 
 .btn-primary.is-active,

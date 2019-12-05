@@ -18,8 +18,8 @@
 (defcomponent popup-button-component
   [_ _ _]
   [:div.bg-white
-   (ui/p-color-button (utils/fake-href events/control-design-system-popup-show)
-                      "Show popup")])
+   (ui/button-large-primary (utils/fake-href events/control-design-system-popup-show)
+                            "Show popup")])
 
 (defn demo
   [organisms & [{:keys [popup-visible?]}]]
