@@ -171,7 +171,8 @@
                                                    :stripe   false
                                                    :facebook false
                                                    :places   false}
-          :confetti-mode                          "ready"}
+          :confetti-mode                          "ready"
+          :promo-code-entry-open?                 false}
 
      :v2 {:ui {:dashboard initial-dashboard-state}
           :db {}}}))

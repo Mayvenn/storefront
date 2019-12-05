@@ -542,6 +542,7 @@
 
 (defpath popup-show-consolidated-cart-free-install)
 (defpath control-consolidated-cart-free-install-dismiss)
+(defpath control-toggle-promo-code-entry)
 
 (defpath api-success-fetch-matched-stylist)
 (defpath api-success-fetch-matched-stylists)

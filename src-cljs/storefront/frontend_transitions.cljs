@@ -194,7 +194,9 @@
 
 (defmethod transition-state events/navigate-cart
   [_ event _ app-state]
-  (assoc-in app-state keypaths/cart-paypal-redirect false))
+  (-> app-state
+      (assoc-in keypaths/cart-paypal-redirect false)
+      (assoc-in keypaths/promo-code-entry-open? false)))
 
 (defmethod transition-state events/navigate-sign-in
   [_ event {{:keys [telligent-url path]} :query-params} app-state]

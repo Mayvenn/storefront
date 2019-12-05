@@ -20,13 +20,12 @@
    [storefront.accessors.adjustments :as adjustments]
    [storefront.accessors.mayvenn-install :as mayvenn-install]
    [storefront.accessors.experiments :as experiments]
-   [storefront.accessors.line-items :as line-items]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.products :as products]
    [storefront.accessors.stylists :as stylists]
    [storefront.component :as component :refer [defcomponent defdynamic-component]]
    [storefront.components.checkout-delivery :as checkout-delivery]
-
+   [storefront.transitions :as transitions]
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
    [storefront.components.money-formatters :as mf]
@@ -65,6 +64,10 @@
 (defmethod effects/perform-effects events/control-change-stylist
   [_ _ _ _ _]
   #?(:cljs (history/enqueue-navigate events/navigate-adventure-find-your-stylist)))
+
+(defmethod transitions/transition-state events/control-toggle-promo-code-entry
+  [_ _ _ app-state]
+  (update-in app-state keypaths/promo-code-entry-open? not))
 
 (def or-separator
   [:div.h5.black.py1.flex.items-center
@@ -508,20 +511,36 @@
 (defn promo-input-query
   [data order entered?]
   (when (and (orders/no-applied-promo? order) (not entered?))
-    (let [keypath keypaths/cart-coupon-code
-          value   (get-in data keypath)]
-      {:labeled-input/label     "enter promocode"
-       :labeled-input/id        "promo-code"
-       :labeled-input/value     value
-       :labeled-input/on-change #?(:clj (fn [_e] nil)
-                                   :cljs (fn [^js/Event e]
-                                           (messages/handle-message events/control-change-state
-                                                                    {:keypath keypath
-                                                                     :value   (.. e -target -value)})))
-       :submit-button/disabled? (or (update-pending? data)
-                                    (empty? value))
-       :submit-button/id        "cart-apply-promo"
-       :submit-button/target    events/control-cart-update-coupon})))
+    (let [keypath                keypaths/cart-coupon-code
+          value                  (get-in data keypath)
+          promo-code-entry-open? (get-in data keypaths/promo-code-entry-open?)
+          promo-link?            (experiments/promo-link? data)
+          input-form-data        {:labeled-input/label     "enter promocode"
+                                  :labeled-input/id        "promo-code"
+                                  :labeled-input/value     value
+                                  :labeled-input/on-change #?(:clj (fn [_e] nil)
+                                                              :cljs (fn [^js/Event e]
+                                                                      (messages/handle-message events/control-change-state
+                                                                                               {:keypath keypath
+                                                                                                :value   (.. e -target -value)})))
+                                  :submit-button/disabled? (or (update-pending? data) (empty? value))
+                                  :submit-button/id        "cart-apply-promo"
+                                  :submit-button/target    events/control-cart-update-coupon}]
+      (cond-> {}
+
+        (not promo-link?)
+        (merge input-form-data)
+
+        promo-link?
+        (merge
+         {:field-reveal/id     "reveal-promo-entry"
+          :field-reveal/target [events/control-toggle-promo-code-entry]})
+
+        promo-code-entry-open?
+        (merge input-form-data {:field-reveal/label "Hide promo code"})
+
+        (not promo-code-entry-open?)
+        (merge {:field-reveal/label "Add promo code"})))))
 
 (defn full-cart-query [data]
   (let [order                                (get-in data keypaths/order)
@@ -657,4 +676,3 @@
                      :flash     app-state
                      :data      app-state
                      :nav-event nav-event})))
-

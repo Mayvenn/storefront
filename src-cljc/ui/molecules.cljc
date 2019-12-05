@@ -103,26 +103,36 @@
 
 (defn submit-button-molecule
   [{:submit-button/keys [id contents target classes disabled?]}]
-  (ui/p-color-button
-   (merge {:style          {:width   "40px"
-                            :height  "40px"
-                            :padding "0"}
-           :width          :small
-           :disabled?      disabled?
-           :disabled-class "bg-cool-gray gray"
-           :data-test      id
-           :class          "flex medium not-rounded items-center justify-center"}
-          (utils/fake-href target))
-   (svg/forward-arrow {:style {:width  "14px"
-                               :height "14px"}})))
+  (when id
+    (ui/p-color-button
+     (merge {:style          {:width   "40px"
+                              :height  "40px"
+                              :padding "0"}
+             :width          :small
+             :disabled?      disabled?
+             :disabled-class "bg-cool-gray gray"
+             :data-test      id
+             :class          "flex medium not-rounded items-center justify-center"}
+            (utils/fake-href target))
+     (svg/forward-arrow {:style {:width  "14px"
+                                 :height "14px"}}))))
+
+(defn field-reveal-molecule
+  [{:field-reveal/keys [id label target]}]
+  (when id
+    [:a.mlp3.h6 (merge {:data-test id}
+               (apply utils/fake-href target))
+     label]))
 
 (defn input-group-field-and-button-molecule
   [{:submit-button/keys [target disabled?] :as data}]
-  [:form.bg-white.border.border-cool-gray.rounded.overflow-hidden.table.flex.col-12
-   (when-not disabled?
-     {:on-submit (utils/send-event-callback target)})
-   (labeled-input-molecule data)
-   (submit-button-molecule data)])
+  [:div
+   (field-reveal-molecule data)
+   [:form.bg-white.border.border-cool-gray.rounded.overflow-hidden.table.flex.col-12
+    (when-not disabled?
+      {:on-submit (utils/send-event-callback target)})
+    (labeled-input-molecule data)
+    (submit-button-molecule data)]])
 
 (defn ^:private star [index type]
   [:span.mrp1
