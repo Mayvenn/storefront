@@ -45,3 +45,7 @@
                    no-repeat,
                 linear-gradient(#CDB8D9,#9A8FB4)
 }
+
+:root {
+    --p-color:     #4427c1;
+}
