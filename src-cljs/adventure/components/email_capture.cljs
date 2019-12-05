@@ -41,16 +41,12 @@
                             [:span.light "We can't wait for you to get a free install."]]
      :title-image-uuid     "57fde383-01eb-494f-96e1-7070b8fc434d"
      :title-image-alt      "Mayvenn"
-     :header-data          {:header-attrs nil
-                            :right-corner {:id    "dismiss-email-capture"
+     :header-data          {:right-corner {:id    "dismiss-email-capture"
                                            :opts  (utils/fake-href events/control-pick-a-stylist-email-capture-dismiss)
                                            :value (svg/simple-x {:class "white"
                                                                  :style {:width  "20px"
                                                                          :height "20px"
-                                                                         :fill   "currentColor"}})}
-                            :logo?        false
-                            :title        nil
-                            :subtitle     nil}
+                                                                         :fill   "currentColor"}})}}
      :on-submit            [events/control-pick-a-stylist-email-capture-submit {:email email}]}))
 
 (defmethod popup/component :pick-a-stylist-email-capture

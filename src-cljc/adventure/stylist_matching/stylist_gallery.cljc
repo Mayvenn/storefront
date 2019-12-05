@@ -27,14 +27,14 @@
         back       (first (get-in data storefront.keypaths/navigation-undo-stack))]
     (when stylist
       ;; TODO: Use new header
-      {:header-data {:subtitle     [:div.h4.medium
-                                    (str (stylists/->display-name stylist) "'s Recent work")]
+      {:header-data {:title        [:div.h4.medium
+                                    (stylists/->display-name stylist) "'s Recent work"]
                      :header-attrs {:class "bg-white black"}
                      :right-corner {:id    "close-stylist-gallery"
-                                    :opts (utils/route-back-or-to back
-                                                                  events/navigate-adventure-stylist-profile
-                                                                  {:stylist-id stylist-id
-                                                                   :store-slug (:store-slug stylist)})
+                                    :opts  (utils/route-back-or-to back
+                                                                   events/navigate-adventure-stylist-profile
+                                                                   {:stylist-id stylist-id
+                                                                    :store-slug (:store-slug stylist)})
                                     :value (svg/simple-x {:class "black"
                                                           :style {:width  "20px"
                                                                   :height "20px"}})}}
