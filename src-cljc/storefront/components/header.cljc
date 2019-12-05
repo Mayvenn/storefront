@@ -19,7 +19,8 @@
     (assoc (utils/fake-href events/control-menu-expand-hamburger
                             {:keypath keypaths/menu-expanded})
            :style     {:width "50px"}
-           :data-test "hamburger")
+           ;; only associate data test when cljs registers the click handler
+           #?@(:cljs [:data-test "hamburger"]))
     [:div.border-top.border-bottom
      {:style {:height       "17px"
               :border-width "2px"}}
