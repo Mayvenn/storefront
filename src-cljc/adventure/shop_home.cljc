@@ -1,5 +1,6 @@
 (ns adventure.shop-home
   (:require [adventure.components.layered :as layered]
+            [storefront.components.ui :as ui]
             adventure.handlers ;; Needed for its defmethods
             [storefront.accessors.contentful :as contentful]
             [storefront.keypaths :as storefront.keypaths]
@@ -38,7 +39,7 @@
       {:layer/type :free-standard-shipping-bar}
       {:layer/type             :shop-text-block
        :header/value           "Buy 3 bundles and we’ll pay for your service"
-       :anchor/name            "learn-more" ; TODO: do we need this anchor?
+       :anchor/name            "learn-more"              ; TODO: do we need this anchor?
        :cta/value              "Browse Stylists"
        :cta/id                 "info-certified-stylists" ; TODO
        :cta/navigation-message [events/navigate-info-certified-stylists]} ; TODO
@@ -48,24 +49,19 @@
                       "Braid down"
                       "Sew-in and style"
                       "Paid for by Mayvenn"]}
-      {:layer/type             :bulleted-explainer
-       :header/value           "How it Works"
-       :subheader/value        "It's simple"
-       :bullets                [{:icon/uuid    "3d2b326c-7773-4672-827e-f13dedfae15a"
-                                 :icon/width   "22"
-                                 :header/value "1. Choose a Mayvenn Certified Stylist"
-                                 :body/value   "We’ve partnered with thousands of top stylists around the nation. Choose one in your local area and we’ll pay the stylist to do your install."}
-                                {:icon/uuid    "08e9d3d8-6f3d-4b3c-bc46-3590175a9a4d"
-                                 :icon/width   "24"
-                                 :header/value "2. Buy Any 3 Items or More"
-                                 :body/value   "Purchase 3 or more bundles, closures or frontals. Rest easy - your 100% virgin hair purchase is backed by our 30 day guarantee."}
-                                {:icon/uuid    "3fb9c2bf-c30e-4bee-957c-f273b1b5a233"
-                                 :icon/width   "27"
-                                 :header/value "3. Schedule Your Appointment"
-                                 :body/value   "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."}]
-       :cta/value              "Learn more"
-       :cta/id                 "info-how-it-works"
-       :cta/navigation-message [events/navigate-info-how-it-works]}
+      {:layer/type             :shop-bulleted-explainer
+       :title/value            ["You buy the hair,"
+                                "we cover the service."]
+       :subtitle/value         ["Here's how it works."]
+       :bullets                [{:title/value "Pick Your Dream Look"
+                                 :body/value  "Have a vision in mind? We’ve got the hair for it. Otherwise, peruse our site for inspiration to find your next look."}
+                                {:title/value ["Select A Mayvenn" ui/hyphen "Certified Stylist"]
+                                 :body/value  "We’ve hand-picked thousands of talented stylists around the country. We’ll cover the cost of your salon appointment with them when you buy 3 or more bundles."}
+                                {:title/value "Schedule Your Appointment"
+                                 :body/value  "We’ll connect you with your stylist to set up your install. Then, we’ll send you a prepaid voucher to cover the cost of service."}]
+       :cta/value              "Watch Video"
+       :cta/img                "/images/play-video.svg"
+       :cta/navigation-message [events/navigate-home {:query-params {:video "free-install"}}]}
       {:layer/type             :text-block
        :header/value           "Who's doing my hair?"
        :body/value             "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."

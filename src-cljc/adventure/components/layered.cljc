@@ -199,7 +199,7 @@
             ^:inline (cta-with-chevron point)]))]
   (defcomponent bulleted-explainer
     [{:keys [bullets] :as data} owner opts]
-    [:div.col-12.py10.bg-pale-purple
+    [:div.col-12.py10.bg-cool-gray
      [:div.mt2.flex.flex-column.items-center
       (let [{:header/keys [value]} data]
         [:h2.center value])
@@ -414,6 +414,25 @@
                                     :height "14px"
                                     :width  "14px"})])))
 
+(defn ^:private cta-with-img
+  [{:cta/keys [navigation-message href img value id]}]
+  (component/html
+   (when (or navigation-message href)
+     [:a.my2
+      (merge
+       (when href
+         {:href href})
+       (when navigation-message
+         (apply utils/route-to navigation-message))
+       (when id
+         {:data-test id}))
+      (when img
+        [:img {:width "30px"
+               :height "30px"
+               :src img}])
+      [:div.underline.block.content-3.bold.p-color.shout
+       value]])))
+
 (defcomponent shop-text-block
   [data _ _]
   [:div.pt10.pb2.px6.center.col-6-on-dt.mx-auto
@@ -451,14 +470,56 @@
                   :background-repeat   "repeat-x"
                   :height              "24px"}}]])
 
+(letfn [(step [width-class
+               idx
+               {title :title/value
+                body  :body/value}]
+          (component/html
+           [:div.p1
+            [:div.title-2.canela.py1
+             (str "0" (inc idx))]
+            [:div.title-2.proxima.py1.shout
+             title]
+            [:p.content-2.py1 body]
+            ^:inline (cta-with-chevron {})]))]
+
+  (defcomponent shop-bulleted-explainer
+    [{:as            data
+      :keys          [bullets]
+      subtitle-value :subtitle/value
+      title-value    :title/value}
+     owner
+     opts]
+    [:div.col-12.bg-cool-gray.center.flex.flex-column.items-center
+     [:div.mt2
+      (when title-value
+        [:h2.title-1.canela
+         (interpose [:br] title-value)])
+      (when subtitle-value
+        [:div.title-1.proxima.shout.sub
+         (interpose [:br] subtitle-value)])]
+     [:div.col-8.flex.flex-column.items-center.hide-on-dt
+      [:object
+       {:style {:width  "4px"
+                :height "42px"}
+        :type  "image/svg+xml"
+        :data  "/images/vertical-straight.svg"}]
+      (map-indexed (partial step "col-10")
+           bullets)
+     [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
+      (map-indexed (partial step "col-3")
+           bullets)]
+      ^:inline (cta-with-img data)]]))
+
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (component/build
    (case type
-       ;; REBRAND
-     :shop-text-block       shop-text-block
-     :shop-framed-checklist shop-framed-checklist
+     ;; REBRAND
+     :shop-text-block         shop-text-block
+     :shop-framed-checklist   shop-framed-checklist
+     :shop-bulleted-explainer shop-bulleted-explainer
 
-       ;; LEGACY
+     ;; LEGACY
      :image-block                     image-block
      :hero                            layer-hero
      :free-standard-shipping-bar      free-standard-shipping-bar

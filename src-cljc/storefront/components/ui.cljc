@@ -152,6 +152,10 @@
                            :style     {:background "transparent"
                                        :border     "none"}}])))
 
+(def hyphen (component/html [:span {:dangerouslySetInnerHTML {:__html "&hyphen;"}}]))
+(def shy (component/html [:span {:dangerouslySetInnerHTML {:__html "&shy;"}}]))
+(def wbr (component/html [:wbr]))
+
 (def nbsp (component/html [:span {:dangerouslySetInnerHTML {:__html "&nbsp;"}}]))
 (def rarr (component/html [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}]))
 (def times (component/html [:span {:dangerouslySetInnerHTML {:__html " &times;"}}]))
