@@ -1,16 +1,10 @@
 (ns storefront.components.checkout-complete
-  (:require [adventure.stylist-matching.stylist-results :as stylist-results]
-            [adventure.keypaths :as adv-keypaths]
+  (:require [adventure.keypaths :as adv-keypaths]
             [storefront.components.svg :as svg]
             api.orders
-            [spice.core :as spice]
             [storefront.accessors.experiments :as experiments]
-            [storefront.assets :as assets]
-            [storefront.transitions :as transitions]
             [storefront.events :as events]
-            [storefront.effects :as effects]
             [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
             [storefront.components.formatters :as formatters]
             [storefront.components.facebook :as facebook]
             [storefront.components.sign-up :as sign-up]

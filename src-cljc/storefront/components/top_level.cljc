@@ -15,13 +15,15 @@
                        storefront.components.v2-homepage-popup])
             #?@(:clj
                 [[design-system.home :as design-system]])
+            adventure.checkout.wait
             adventure.informational.about-our-hair
             adventure.informational.certified-stylists
             adventure.informational.how-it-works
             adventure.stylist-matching.matching-stylist-wait
-            ;; TODO GROT should be included in new designs
-            adventure.stylist-matching.stylist-results
+
+            ;; TODO GROT unused
             adventure.stylist-matching.let-mayvenn-match
+
             adventure.stylist-matching.stylist-profile
             adventure.stylist-matching.stylist-gallery
 
