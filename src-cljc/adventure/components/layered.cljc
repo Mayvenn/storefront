@@ -185,34 +185,36 @@
        [:div.col-10.my2.h5 value]))
    (cta-with-chevron data)])
 
-(letfn [(step [width-class
-               {:as point
-                :keys [icon/uuid icon/width]}]
-          (component/html
-           [:div.mt2.center.px1
-            {:class width-class}
-            [:div.flex.justify-center.items-end.my2
-             {:style {:height "39px"}}
-             (ui/defer-ucare-img {:alt (:header/title point) :width width} uuid)]
-            [:div.h5.medium (:header/value point)]
-            [:p.h6.mx-auto.black (:body/value point)]
-            ^:inline (cta-with-chevron point)]))]
-  (defcomponent bulleted-explainer
-    [{:keys [bullets] :as data} owner opts]
-    [:div.col-12.py10.bg-cool-gray
-     [:div.mt2.flex.flex-column.items-center
-      (let [{:header/keys [value]} data]
-        [:h2.center value])
-      (let [{:subheader/keys [value]} data]
-        [:div.h6.black value])]
-     [:div.col-12.flex.flex-column.items-center.hide-on-dt
-      (map (partial step "col-10")
-           bullets)]
-     [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
-      (map (partial step "col-3")
-           bullets)]
-     [:div.center.pt3
-      ^:inline (cta-with-chevron data)]]))
+(defn ^:private step
+  [width-class
+   {:as point
+    :keys [icon/uuid icon/width]}]
+  (component/html
+   [:div.mt2.center.px1
+    {:class width-class}
+    [:div.flex.justify-center.items-end.my2
+     {:style {:height "39px"}}
+     (ui/defer-ucare-img {:alt (:header/value point) :width width} uuid)]
+    [:div.h5.medium (:header/value point)]
+    [:p.h6.mx-auto.black (:body/value point)]
+    ^:inline (cta-with-chevron point)]))
+
+(defcomponent bulleted-explainer
+  [{:keys [bullets] :as data} owner opts]
+  [:div.col-12.py10.bg-cool-gray
+   [:div.mt2.flex.flex-column.items-center
+    (let [{:header/keys [value]} data]
+      [:h2.center value])
+    (let [{:subheader/keys [value]} data]
+      [:div.h6.black value])]
+   [:div.col-12.flex.flex-column.items-center.hide-on-dt
+    (map (partial step "col-10")
+         bullets)]
+   [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
+    (map (partial step "col-3")
+         bullets)]
+   [:div.center.pt3
+    ^:inline (cta-with-chevron data)]])
 
 (defcomponent ^:private ugc-image [{:screen/keys [seen?] :keys [image-url]} owner opts]
   (ui/aspect-ratio
@@ -470,44 +472,45 @@
                   :background-repeat   "repeat-x"
                   :height              "24px"}}]])
 
-(letfn [(step [width-class
-               idx
-               {title :title/value
-                body  :body/value}]
-          (component/html
-           [:div.p1
-            [:div.title-2.canela.py1
-             (str "0" (inc idx))]
-            [:div.title-2.proxima.py1.shout
-             title]
-            [:p.content-2.py1 body]
-            ^:inline (cta-with-chevron {})]))]
+(defn ^:private shop-step
+  [width-class
+   idx
+   {title :title/value
+    body  :body/value}]
+  (component/html
+   [:div.p1
+    [:div.title-2.canela.py1
+     (str "0" (inc idx))]
+    [:div.title-2.proxima.py1.shout
+     title]
+    [:p.content-2.py1 body]
+    ^:inline (cta-with-chevron {})]))
 
-  (defcomponent shop-bulleted-explainer
-    [{:as            data
-      :keys          [bullets]
-      subtitle-value :subtitle/value
-      title-value    :title/value}
-     owner
-     opts]
-    [:div.col-12.bg-cool-gray.center.flex.flex-column.items-center
-     [:div.mt2
-      (when title-value
-        [:h2.title-1.canela
-         (interpose [:br] title-value)])
-      (when subtitle-value
-        [:div.title-1.proxima.shout.sub
-         (interpose [:br] subtitle-value)])]
-     [:div.col-8.flex.flex-column.items-center.hide-on-dt
-      [:div.stroke-s-color
-       (svg/straight-line {:width  "1px"
-                           :height "42px"})]
-      (map-indexed (partial step "col-10")
-           bullets)
-     [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
-      (map-indexed (partial step "col-3")
-           bullets)]
-      ^:inline (cta-with-img data)]]))
+(defcomponent shop-bulleted-explainer
+  [{:as            data
+    :keys          [bullets]
+    subtitle-value :subtitle/value
+    title-value    :title/value}
+   owner
+   opts]
+  [:div.col-12.bg-cool-gray.center.flex.flex-column.items-center
+   [:div.mt2
+    (when title-value
+      [:h2.title-1.canela
+       (interpose [:br] title-value)])
+    (when subtitle-value
+      [:div.title-1.proxima.shout.sub
+       (interpose [:br] subtitle-value)])]
+   [:div.col-8.flex.flex-column.items-center.hide-on-dt
+    [:div.stroke-s-color
+     (svg/straight-line {:width  "1px"
+                         :height "42px"})]
+    (map-indexed (partial shop-step "col-10")
+                 bullets)
+    [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
+     (map-indexed (partial shop-step "col-3")
+                  bullets)]
+    ^:inline (cta-with-img data)]])
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (component/build
