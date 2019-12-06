@@ -142,14 +142,15 @@
 (defn submit-button
   ([title] (submit-button title {}))
   ([title {:keys [spinning? disabled? data-test]
-           :as attrs}]
-   (if spinning?
-     (button-large-primary attrs
-                           [:input
-                            {:type "submit"
-                             :data-test data-test
-                             :value title
-                             :disabled (boolean disabled?)}]))))
+           :as   attrs}]
+   (button-large-primary attrs
+                         [:input
+                          {:type      "submit"
+                           :data-test data-test
+                           :value     title
+                           :disabled  (boolean disabled?)
+                           :style     {:background "transparent"
+                                       :border     "none"}}])))
 
 (def nbsp (component/html [:span {:dangerouslySetInnerHTML {:__html "&nbsp;"}}]))
 (def rarr (component/html [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}]))
