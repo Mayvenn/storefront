@@ -50,6 +50,7 @@
                       "Sew-in and style"
                       "Paid for by Mayvenn"]}
       {:layer/type             :shop-bulleted-explainer
+       :layer/id               "heres-how-it-works"
        :title/value            ["You buy the hair,"
                                 "we cover the service."]
        :subtitle/value         ["Here's how it works."]
@@ -92,6 +93,7 @@
       (merge {:layer/type :faq} (faq/free-install-query data))
       (when shop? {:layer/type :escape-hatch})
       {:layer/type      :bulleted-explainer
+       :layer/id        "more-than-a-hair-company"
        :header/value    "Mayvenn is More than a Hair Company"
        :subheader/value "It's a movement"
        :bullets         [{:icon/uuid    "ab1d2ed4-ff93-40e6-978a-721133ca88a7"

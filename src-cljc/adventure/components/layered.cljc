@@ -200,12 +200,16 @@
    (cta-with-chevron data)])
 
 (defn ^:private step
-  [width-class
+  [layer-id
+   width-class
    {:as point
-    :keys [icon/uuid icon/width]}]
+    :keys [icon/uuid icon/width]}
+   idx]
   (component/html
    [:div.mt2.center.px1
-    {:class width-class}
+    {:class width-class
+     :key (str layer-id "-" idx "-" width-class)
+     }
     [:div.flex.justify-center.items-end.my2
      {:style {:height "39px"}}
      (ui/defer-ucare-img {:alt (:header/value point) :width width} uuid)]
@@ -214,7 +218,9 @@
     ^:inline (cta-with-chevron point)]))
 
 (defcomponent bulleted-explainer
-  [{:keys [bullets] :as data} owner opts]
+  [{:keys    [bullets]
+    :as      data
+    layer-id :layer/id} owner opts]
   [:div.col-12.py10.bg-cool-gray
    [:div.mt2.flex.flex-column.items-center
     (let [{:header/keys [value]} data]
@@ -222,11 +228,9 @@
     (let [{:subheader/keys [value]} data]
       [:div.h6.black value])]
    [:div.col-12.flex.flex-column.items-center.hide-on-dt
-    (map (partial step "col-10")
-         bullets)]
+    (map-indexed (partial step layer-id "col-10") bullets)]
    [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
-    (map (partial step "col-3")
-         bullets)]
+    (map-indexed (partial step layer-id "col-3") bullets)]
    [:div.center.pt3
     ^:inline (cta-with-chevron data)]])
 
@@ -468,12 +472,13 @@
                   :height              "24px"}}]])
 
 (defn ^:private shop-step
-  [width-class
+  [key-prefix
    idx
    {title :title/value
     body  :body/value}]
   (component/html
    [:div.p1
+    {:key (str key-prefix idx)}
     [:div.title-2.canela.py1
      (str "0" (inc idx))]
     [:div.title-2.proxima.py1.shout
@@ -485,7 +490,8 @@
   [{:as            data
     :keys          [bullets]
     subtitle-value :subtitle/value
-    title-value    :title/value}
+    title-value    :title/value
+    layer-id       :layer/id}
    owner
    opts]
   [:div.col-12.bg-cool-gray.center.flex.flex-column.items-center
@@ -500,10 +506,10 @@
     [:div.stroke-s-color
      (svg/straight-line {:width  "1px"
                          :height "42px"})]
-    (map-indexed (partial shop-step "col-10")
+    (map-indexed (partial shop-step (str layer-id "-mb-tb-"))
                  bullets)
     [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
-     (map-indexed (partial shop-step "col-3")
+     (map-indexed (partial shop-step (str layer-id "-dt-"))
                   bullets)]
     ^:inline (cta-with-img data)]])
 
