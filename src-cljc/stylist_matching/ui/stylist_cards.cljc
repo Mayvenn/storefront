@@ -65,13 +65,6 @@
        {:style {:text-overflow "ellipsis"}}
        value]])))
 
-(defn control-stylist-card-address-marker-molecule
-  [{:stylist-card.address-marker/keys [id value]}]
-  (when id
-    (component/html
-     [:div.h7.col-12.flex.items-center
-      value])))
-
 (defn stylist-card-stars-rating-molecule
   [{:rating/keys [value]}]
   (component/html
@@ -83,14 +76,6 @@
   (when id
     (component/html
      [:div.h4.line-height-1
-      {:data-test id}
-      primary])))
-
-(defn control-stylist-card-title-molecule
-  [{:stylist-card.title/keys [id primary]}]
-  (when id
-    (component/html
-     [:div.h3.line-height-1.light
       {:data-test id}
       primary])))
 
@@ -121,47 +106,11 @@
                                    :loop  false}}
                        {})])))
 
-(defn control-stylist-card-gallery-item-molecule
-  [{:stylist-card.gallery-item/keys [id target ucare-id]}]
-  (component/html
-   [:a.block.px1
-    (merge
-     (apply utils/fake-href target)
-     {:key id})
-    (ui/aspect-ratio
-     1 1
-     [:img {:src   (str ucare-id "-/scale_crop/216x216/-/format/auto/")
-            :class "rounded col-12"}])]))
-
-(defn control-stylist-card-gallery-molecule
-  [{:stylist-card.gallery/keys [id title items]}]
-  (when id
-    (component/html
-     [:div
-      [:h6.bold.left-align.mb2.ml1.h7 title]
-      (component/build carousel/component
-                       {:slides   (map control-stylist-card-gallery-item-molecule items)
-                        :settings {:nav   false
-                                   :items 3
-                                   ;; setting this to true causes some of our event listeners to
-                                   ;; get dropped by tiny-slider.
-                                   :loop  false}}
-                       {})])))
-
 (defn stylist-card-cta-molecule
   [{:stylist-card.cta/keys [id label target]}]
   (when id
     (component/html
      (ui/button-large-secondary
-      (merge {:data-test id}
-             (apply utils/fake-href target))
-      label))))
-
-(defn control-stylist-card-cta-molecule
-  [{:stylist-card.cta/keys [id label target]}]
-  (when id
-    (component/html
-     (ui/button-large-primary
       (merge {:data-test id}
              (apply utils/fake-href target))
       label))))
@@ -177,17 +126,6 @@
                                            72))
        [:div {:style {:height "72px" :width "72px"}}]))))
 
-(defn control-stylist-card-thumbnail-molecule
-  "We want ucare-ids here but we do not have them"
-  [{:stylist-card.thumbnail/keys [id ucare-id] :as data}]
-  (when id
-    (component/html
-     (if (:screen/seen? data)
-       (ui/circle-picture {:width "104px"}
-                          (ui/square-image {:resizable-url ucare-id}
-                                           72))
-       [:div {:style {:height "104px" :width "104px"}}]))))
-
 (defn stylist-card-header-molecule
   [{:stylist-card/keys [target id] :as data}]
   (when id
@@ -202,31 +140,7 @@
       (stylist-card-address-marker-molecule data)
       (stylist-card-services-list-molecule data)]]))
 
-(defn control-stylist-card-header-molecule
-  [{:stylist-card/keys [target id] :as data}]
-  (when id
-    [:div.col-12.flex.items-start.p2
-     (assoc (apply utils/route-to target) :data-test id)
-     [:div.flex.justify-center.items-center
-      (control-stylist-card-thumbnail-molecule data)]
-     [:div.medium.px2
-      (control-stylist-card-title-molecule data)
-      [:span.h7.flex.items-center.pyp2
-       (stylist-card-stars-rating-molecule data)]
-      (control-stylist-card-address-marker-molecule data)]]))
-
-(defcomponent control-organism
-  [data _ _]
-  [:div.flex.flex-column.left-align.mx3.my3
-   (control-stylist-card-header-molecule data)
-   [:div.col-12
-    (if (:screen/seen? data)
-      (control-stylist-card-gallery-molecule data)
-      (ui/aspect-ratio 548 183 [:div]))]
-   [:div.col-12.p2
-    (control-stylist-card-cta-molecule data)]])
-
-(defcomponent experiment-organism
+(defcomponent organism
   [data _ _]
   [:div.flex.flex-column.left-align.rounded.border.border-cool-gray.mx3.my3.bg-white
    {:key (:react/key data)}
@@ -235,5 +149,4 @@
     (if (:screen/seen? data)
       (stylist-card-gallery-molecule data)
       (ui/aspect-ratio 426 105 [:div]))]
-   [:div.col-12.p2
-    (stylist-card-cta-molecule data)]])
+   [:div.col-12.p2 (stylist-card-cta-molecule data)]])

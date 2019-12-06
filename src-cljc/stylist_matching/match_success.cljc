@@ -39,7 +39,7 @@
             :header.cart/color             "white"})))
 
 (defn stylist-card-query
-  [stylist-profiles? {:keys [salon service-menu store-slug stylist-id] :as stylist} post-purchase? mayvenn-rating?]
+  [{:keys [salon service-menu store-slug stylist-id] :as stylist} post-purchase? mayvenn-rating?]
   (let [{salon-name :name
          :keys      [address-1 address-2 city state zipcode]} salon
         {:keys [specialty-sew-in-leave-out
@@ -57,6 +57,7 @@
              :stylist-card.thumbnail/ucare-id  (-> stylist :portrait :resizable-url)
              :stylist-card.title/id            "stylist-name"
              :stylist-card.title/primary       (stylists/->display-name stylist)
+             ;;TODO: rating -> external-rating
              :rating/value                     (:rating stylist)
              :stylist-card.services-list/id    (str "stylist-card-services-" store-slug)
              :stylist-card.services-list/value [(stylist-cards/checks-or-x-atom "Leave Out"
@@ -65,68 +66,16 @@
                                                                                 (boolean specialty-sew-in-closure))
                                                 (stylist-cards/checks-or-x-atom "360° Frontal"
                                                                                 (boolean specialty-sew-in-360-frontal))
-                                                (stylist-cards/checks-or-x-atom "Frontal" (boolean specialty-sew-in-frontal))]}
+                                                (stylist-cards/checks-or-x-atom "Frontal" (boolean specialty-sew-in-frontal))]
+             :element/type                      :stylist-card
+             :stylist-card.address-marker/id    (str "stylist-card-address-" store-slug)
+             :stylist-card.address-marker/value (string/join " "
+                                                             [(string/join ", "
+                                                                           [address-1 address-2 city state])
+                                                              zipcode]) }
 
-      (and mayvenn-rating?
-           (:mayvenn-rating stylist))
-      (merge
-       {:rating/value (:mayvenn-rating stylist)})
-
-      (not stylist-profiles?) ;; Control
-      (merge
-       (let [phone-number             (some-> stylist :address :phone formatters/phone-number)
-             google-maps-redirect-url (str "https://www.google.com/maps/place/"
-                                           (string/join "+" (list address-1 address-2 city state zipcode)))
-             detail-attributes        [(when (:licensed stylist)
-                                         "Licensed")
-                                       (case (-> stylist :salon :salon-type)
-                                         "salon"   "In-Salon"
-                                         "in-home" "In-Home"
-                                         nil)
-                                       (when (:stylist-since stylist)
-                                         (str (ui/pluralize-with-amount
-                                               (- (date/year (date/now)) (:stylist-since stylist))
-                                               "yr")
-                                              " Experience"))]]
-         {:element/type                      :control-stylist-card
-          :stylist-card.address-marker/id    (str "stylist-card-address-" store-slug)
-          :stylist-card.address-marker/value [:div
-                                              [:div.bold.line-height-4.py1
-                                               [:div salon-name]
-                                               [:a.inherit-color
-                                                (merge
-                                                 {:data-test "stylist-salon-address"}
-                                                 (utils/route-to events/control-adventure-stylist-salon-address-clicked
-                                                                 {:stylist-id               (:stylist-id stylist)
-                                                                  :google-maps-redirect-url google-maps-redirect-url}))
-                                                [:div (string/join ", " [address-1 address-2])]
-                                                [:div
-                                                 (string/join ", " [city state])
-                                                 " "
-                                                 zipcode]]]
-                                              (ui/link :link/phone
-                                                       :a.inherit-color.light.my3
-                                                       {:data-test "stylist-phone"
-                                                        :on-click
-                                                        (utils/send-event-callback events/control-adventure-stylist-phone-clicked
-                                                                                   {:stylist-id   (:stylist-id stylist)
-                                                                                    :phone-number phone-number})}
-                                                       phone-number)
-                                              [:div
-                                               (into [:div.flex.flex-wrap]
-                                                     (comp
-                                                      (remove nil?)
-                                                      (map (fn [x] [:div x]))
-                                                      (interpose [:div.mxp3 "·"]))
-                                                     detail-attributes)]]}))
-
-      stylist-profiles? ;; Experiment Variation
-      (merge {:element/type                      :experiment-stylist-card
-              :stylist-card.address-marker/id    (str "stylist-card-address-" store-slug)
-              :stylist-card.address-marker/value (string/join " "
-                                                              [(string/join ", "
-                                                                            [address-1 address-2 city state])
-                                                               zipcode])}))))
+      (and mayvenn-rating? (:mayvenn-rating stylist))
+      (merge {:rating/value (:mayvenn-rating stylist)}))))
 
 (defn matched-stylist-query
   [servicing-stylist {:order/keys [submitted?] :order.shipping/keys [phone]} post-purchase? mayvenn-rating?]
@@ -147,7 +96,7 @@
             :matched-stylist.cta-title/primary   "In the meantime…"
             :matched-stylist.cta-title/secondary "Get inspired for your appointment"
             :matched-stylist.cta-title/target    ["https://www.instagram.com/explore/tags/mayvennfreeinstall/"]}
-           (stylist-card-query false servicing-stylist post-purchase? mayvenn-rating?))))
+           (stylist-card-query servicing-stylist post-purchase? mayvenn-rating?))))
 
 (defn shopping-method-choice-query
   [servicing-stylist {:order/keys [submitted?]}]

@@ -80,10 +80,6 @@
   [data]
   (display-feature? data "adv-cart-promo-entry"))
 
-(defn stylist-profiles?
-  [data]
-  (display-feature? data "stylist-profiles"))
-
 (defn stylist-results-updated?
   [data]
   (display-feature? data "stylist-results-updated"))
