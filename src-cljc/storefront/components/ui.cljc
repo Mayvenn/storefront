@@ -133,13 +133,12 @@
            :as   attrs}]
    (if spinning?
      (button-large-primary attrs)
-     [:input
+     [:input.col-12
       {:type      "submit"
-       :class     (str "mx-auto " button-large-primary-classes)
+       :class     button-large-primary-classes
        :data-test data-test
        :value     title
-       :disabled  (boolean disabled?)
-       :style     {:background "transparent"}}])))
+       :disabled  (boolean disabled?)}])))
 
 (def hyphen (component/html [:span {:dangerouslySetInnerHTML {:__html "&hyphen;"}}]))
 (def shy (component/html [:span {:dangerouslySetInnerHTML {:__html "&shy;"}}]))
