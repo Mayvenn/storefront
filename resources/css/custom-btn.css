@@ -1,5 +1,6 @@
 /* Inspired by Basscss Btn */
 
+/* TODO: Do we use/need this class and its overrides? */
 .btn {
   font-family: var(--button-font-family);
   font-size: var(--button-font-size);

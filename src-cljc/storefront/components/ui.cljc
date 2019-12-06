@@ -118,7 +118,8 @@
     [:a (merge {:href "#"} attrs)
      content]))
 
-(defn button-large-primary    [attrs & content] (button "btn-large btn-p-color button-font-1 shout" attrs content))
+(def ^:private button-large-primary-classes "btn-large btn-p-color button-font-1 shout")
+(defn button-large-primary    [attrs & content] (button button-large-primary-classes attrs content))
 (defn button-large-secondary  [attrs & content] (button "btn-large btn-ghost button-font-1 shout" attrs content))
 (defn button-large-paypal     [attrs & content] (button "btn-large btn-paypal-color button-font-1 shout" attrs content))
 (defn button-medium-primary   [attrs & content] (button "btn-medium btn-p-color button-font-1 shout" attrs content))
@@ -126,31 +127,19 @@
 (defn button-small-primary    [attrs & content] (button "btn-small btn-p-color button-font-2 shout" attrs content))
 (defn button-small-secondary  [attrs & content] (button "btn-small btn-ghost button-font-2 shout" attrs content))
 
-(defn ^:private button-colors [color-kw]
-  (let [color (color-kw {:color/p-color       "btn-primary bg-p-color white"
-                         :color/aqua          "btn-primary bg-aqua white"
-                         :color/white         "btn-primary btn-primary-teal-hover bg-white border-cool-gray black"
-                         :color/ghost         "btn-outline border-gray black"
-                         :color/light-ghost   "btn-outline cool-gray border-white white"
-                         :color/p-color-ghost "btn-outline border-p-color p-color"
-                         :color/facebook      "btn-primary bg-fb-blue white"
-                         :color/black         "btn-primary bg-black white"
-                         :color/quadpay       "btn-primary bg-quadpay-blue white"})]
-    (assert color (str "Button color " color-kw " has not been defined."))
-    color))
-
 (defn submit-button
   ([title] (submit-button title {}))
   ([title {:keys [spinning? disabled? data-test]
            :as   attrs}]
-   (button-large-primary attrs
-                         [:input
-                          {:type      "submit"
-                           :data-test data-test
-                           :value     title
-                           :disabled  (boolean disabled?)
-                           :style     {:background "transparent"
-                                       :border     "none"}}])))
+   (if spinning?
+     (button-large-primary attrs)
+     [:input
+      {:type      "submit"
+       :class     (str "mx-auto " button-large-primary-classes)
+       :data-test data-test
+       :value     title
+       :disabled  (boolean disabled?)
+       :style     {:background "transparent"}}])))
 
 (def hyphen (component/html [:span {:dangerouslySetInnerHTML {:__html "&hyphen;"}}]))
 (def shy (component/html [:span {:dangerouslySetInnerHTML {:__html "&shy;"}}]))
