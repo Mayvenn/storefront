@@ -499,11 +499,9 @@
         [:div.title-1.proxima.shout.sub
          (interpose [:br] subtitle-value)])]
      [:div.col-8.flex.flex-column.items-center.hide-on-dt
-      [:object
-       {:style {:width  "4px"
-                :height "42px"}
-        :type  "image/svg+xml"
-        :data  "/images/vertical-straight.svg"}]
+      [:div.stroke-s-color
+       (svg/straight-line {:width  "1px"
+                           :height "42px"})]
       (map-indexed (partial step "col-10")
            bullets)
      [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb

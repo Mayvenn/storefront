@@ -311,3 +311,8 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "share-icon")]))
+
+(defn straight-line [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "straight-line")]))
