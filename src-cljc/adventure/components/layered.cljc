@@ -52,7 +52,7 @@
   [{:cta/keys [navigation-message href value id]}]
   (component/html
    (when (or navigation-message href)
-     [:a.block.h4.medium.p-color.my2
+     (ui/button-large-primary
       (merge
        (when href
          {:href href})
@@ -60,12 +60,26 @@
          (apply utils/route-to navigation-message))
        (when id
          {:data-test id}))
-      value
-      ^:inline (svg/dropdown-arrow {:class  "stroke-p-color ml2"
-                                    :style  {:stroke-width "3px"
-                                             :transform "rotate(-90deg)"}
-                                    :height "14px"
-                                    :width  "14px"})])))
+      value))))
+
+(defn ^:private cta-with-img
+  [{:cta/keys [navigation-message href img value id]}]
+  (component/html
+   (when (or navigation-message href)
+     [:a.my2
+      (merge
+       (when href
+         {:href href})
+       (when navigation-message
+         (apply utils/route-to navigation-message))
+       (when id
+         {:data-test id}))
+      (when img
+        [:img {:width "30px"
+               :height "30px"
+               :src img}])
+      [:div.underline.block.content-3.bold.p-color.shout
+       value]])))
 
 (defcomponent text-block
   [data _ _]
@@ -75,7 +89,7 @@
    (when-let [v (:header/value data)]
      [:div.h2 v])
    [:div.h5.mt3 (:body/value data)]
-   ^:inline (cta-with-chevron data)])
+   ^:inline (cta-with-img data)])
 
 (defcomponent escape-hatch
   [_ _ _]
@@ -415,25 +429,6 @@
                                              :transform "rotate(-90deg)"}
                                     :height "14px"
                                     :width  "14px"})])))
-
-(defn ^:private cta-with-img
-  [{:cta/keys [navigation-message href img value id]}]
-  (component/html
-   (when (or navigation-message href)
-     [:a.my2
-      (merge
-       (when href
-         {:href href})
-       (when navigation-message
-         (apply utils/route-to navigation-message))
-       (when id
-         {:data-test id}))
-      (when img
-        [:img {:width "30px"
-               :height "30px"
-               :src img}])
-      [:div.underline.block.content-3.bold.p-color.shout
-       value]])))
 
 (defcomponent shop-text-block
   [data _ _]

@@ -39,10 +39,10 @@
       {:layer/type :free-standard-shipping-bar}
       {:layer/type             :shop-text-block
        :header/value           "Buy 3 bundles and we’ll pay for your service"
-       :anchor/name            "learn-more"              ; TODO: do we need this anchor?
        :cta/value              "Browse Stylists"
-       :cta/id                 "info-certified-stylists" ; TODO
-       :cta/navigation-message [events/navigate-info-certified-stylists]} ; TODO
+       :cta/button?            true
+       :cta/id                 "browse-stylist"
+       :cta/navigation-message [events/navigate-adventure-match-stylist]} ; TODO
       {:layer/type   :shop-framed-checklist
        :header/value "What's included?"
        :bullets      ["Shampoo"
