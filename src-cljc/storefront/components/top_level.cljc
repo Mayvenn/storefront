@@ -21,9 +21,6 @@
             adventure.informational.how-it-works
             adventure.stylist-matching.matching-stylist-wait
 
-            ;; TODO GROT unused
-            adventure.stylist-matching.let-mayvenn-match
-
             adventure.stylist-matching.stylist-profile
             adventure.stylist-matching.stylist-gallery
 
@@ -128,7 +125,6 @@
    events/navigate-adventure-match-success-pre-purchase          (constantly stylist-matching.match-success/page)
    events/navigate-adventure-match-success-post-purchase         (constantly stylist-matching.match-success/page)
    events/navigate-adventure-checkout-wait                       #(ui/lazy-load-component :checkout 'adventure.checkout.wait/built-component events/navigate-adventure-checkout-wait)
-   events/navigate-adventure-let-mayvenn-match                   (constantly adventure.stylist-matching.let-mayvenn-match/built-component)
    events/navigate-adventure-stylist-profile                     (constantly adventure.stylist-matching.stylist-profile/built-component)
    events/navigate-adventure-stylist-profile-post-purchase       (constantly adventure.stylist-matching.stylist-profile/built-component)
    events/navigate-adventure-stylist-gallery                     (constantly adventure.stylist-matching.stylist-gallery/built-component)})

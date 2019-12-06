@@ -54,7 +54,6 @@
    "/adv/match-success"                                                (edn->bidi events/navigate-adventure-match-success-pre-purchase)
    "/adv/match-success-post-purchase"                                  (edn->bidi events/navigate-adventure-match-success-post-purchase)
    "/adv/checkout-wait"                                                (edn->bidi events/navigate-adventure-checkout-wait)
-   "/adv/let-mayvenn-match"                                            (edn->bidi events/navigate-adventure-let-mayvenn-match)
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug]                  (edn->bidi events/navigate-adventure-stylist-profile)
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "-post-purchase"] (edn->bidi events/navigate-adventure-stylist-profile-post-purchase)
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "/gallery"]       (edn->bidi events/navigate-adventure-stylist-gallery)
