@@ -78,8 +78,15 @@
         [:img {:width "30px"
                :height "30px"
                :src img}])
-      [:div.underline.block.content-3.bold.p-color.shout
+      [:div.underline.block.content-3.bold.p-color.shout.pb6
        value]])))
+
+(defn divider
+  [divider-img]
+  [:div {:style {:background-image   divider-img
+                 :background-position "center"
+                 :background-repeat   "repeat-x"
+                 :height              "24px"}}])
 
 (defcomponent text-block
   [data _ _]
@@ -435,17 +442,30 @@
                                     :width  "14px"})])))
 
 (defcomponent shop-text-block
-  [data _ _]
-  [:div.pt10.pb2.px6.center.col-6-on-dt.mx-auto
-   (when-let [n (:anchor/name data)]
-     [:a {:name n}])
-   (when-let [v (:header/value data)]
-     [:div.title-1.canela v])
-   [:div.mt3 (:body/value data)]
-   ^:inline (cta-with-chevron data)])
+  [{anchor-name :anchor/name
+    title       :header/value
+    body        :body/value
+    divider-img :divider-img
+    :as data}
+   _
+   _]
+  [:div 
+   [:div.pt10.pb2.px6.center.col-6-on-dt.mx-auto
+    (when anchor-name
+      [:a {:name anchor-name}])
+    (when title
+      [:div.title-1.canela
+       title])
+    (when body
+      [:div.title-2.canela body])
+    ^:inline
+    [:div.pt3
+     (cta-with-img data)]]
+   (when divider-img
+     (divider divider-img))])
 
 (defcomponent shop-framed-checklist
-  [{:keys [bullets] header-value :header/value} _ _]
+  [{:keys [bullets divider-img] header-value :header/value} _ _]
   [:div
    [:div.relative
     {:style {:margin-top "60px"}}
@@ -465,11 +485,8 @@
        {:style {:padding-left "15px"}}
        (for [[i b] (map-indexed vector bullets)]
          [:li.py1 {:key (str i)} b])]]]]
-
-   [:div {:style {:background-image    (str "url('//ucarecdn.com/2d3a98e3-b49a-4f0f-9340-828d12865315/-/resize/x24/')")
-                  :background-position "center"
-                  :background-repeat   "repeat-x"
-                  :height              "24px"}}]])
+   (when divider-img
+     (divider divider-img))])
 
 (defn ^:private shop-step
   [key-prefix
@@ -494,7 +511,7 @@
     layer-id       :layer/id}
    owner
    opts]
-  [:div.col-12.bg-cool-gray.center.flex.flex-column.items-center
+  [:div.col-12.bg-cool-gray.center.flex.flex-column.items-center.my2
    [:div.mt2
     (when title-value
       [:h2.title-1.canela

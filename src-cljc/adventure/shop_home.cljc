@@ -48,7 +48,8 @@
        :bullets      ["Shampoo"
                       "Braid down"
                       "Sew-in and style"
-                      "Paid for by Mayvenn"]}
+                      "Paid for by Mayvenn"]
+       :divider-img  "url('//ucarecdn.com/2d3a98e3-b49a-4f0f-9340-828d12865315/-/resize/x24/')"}
       {:layer/type             :shop-bulleted-explainer
        :layer/id               "heres-how-it-works"
        :title/value            ["You buy the hair,"
@@ -63,9 +64,12 @@
        :cta/value              "Watch Video"
        :cta/img                "/images/play-video.svg"
        :cta/navigation-message [events/navigate-home {:query-params {:video "free-install"}}]}
-      {:layer/type             :text-block
-       :header/value           "Who's doing my hair?"
-       :body/value             "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."
+      {:layer/type             :shop-text-block
+       :header/value           [:div.title-1.proxima.py1.shout
+                                "Sit back and" [:br]
+                                ;; TODO this is a design exception
+                                [:span.title-1.shout.canela "relax"]]
+       :body/value             "We’ve rounded up the best stylists in the country so you can be sure your hair is in really, really good hands."
        :cta/value              "Learn more"
        :cta/id                 "info-certified-stylists"
        :cta/navigation-message [events/navigate-info-certified-stylists]}
@@ -73,16 +77,16 @@
        :photo/mob-uuid  "a6a607e6-aeb4-4b61-8bc7-60fd17d15abe"
        :photo/dsk-uuid  "f2d82c41-2051-47d8-86c5-1c82568e324d"
        :photo/file-name "who-shop-hair"}
-      {:layer/type             :text-block
-       :header/value           "Quality-Guaranteed Virgin Hair"
-       :body/value             "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors."
-       :cta/value              "Learn more"
+      {:layer/type             :shop-text-block
+       :header/value           [:div.title-1.proxima.py1.shout
+                                "Hold your hair" [:br]
+                                ;; TODO this is a design exception
+                                [:span.title-1.shout.canela "high"]]
+       :body/value             "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
+       :cta/value              "shop hair"
        :cta/id                 "info-about-our-hair"
-       :cta/navigation-message [events/navigate-info-about-our-hair]}
-      {:layer/type      :image-block
-       :photo/mob-uuid  "e994076c-b21f-4925-b72b-f804b7408599"
-       :photo/dsk-uuid  "ddce59fd-2607-4415-a3e1-e1f12c459dc6"
-       :photo/file-name "quality-guaranteed"}
+       :cta/navigation-message [events/navigate-info-about-our-hair]
+       :divider-img            "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"}
       {:layer/type      :ugc
        :header/value    "#MayvennFreeInstall"
        :subheader/value "Showcase your new look by tagging #MayvennFreeInstall"
