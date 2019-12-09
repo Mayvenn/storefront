@@ -532,8 +532,6 @@
 (defpath clear-selected-location)
 (defpath control-adventure-location-submit)
 
-(defpath control-open-shop-escape-hatch)
-
 (defpath popup-show-adventure-free-install)
 
 (defpath popup-show-pick-a-stylist-email-capture)

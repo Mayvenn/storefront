@@ -98,20 +98,6 @@
    [:div.h5.mt3 (:body/value data)]
    ^:inline (shop-cta-with-img data)])
 
-(defcomponent escape-hatch
-  [_ _ _]
-  [:div.col-12.bg-cool-gray.py8.flex.flex-column.items-center.justify-center
-   [:div.h2.col-8.center "Not interested in a Mayvenn Install?"]
-
-   [:a.block.h3.medium.p-color.mt2.flex.items-center
-    (utils/fake-href events/control-open-shop-escape-hatch)
-    "Shop all products"
-    [:div.flex.items-end.ml2 {:style {:transform "rotate(-90deg)"}}
-     ^:inline (svg/dropdown-arrow {:class  "stroke-p-color"
-                                   :style  {:stroke-width "3px"}
-                                   :height "14px"
-                                   :width  "14px"})]]])
-
 (defcomponent hero-image-component [{:screen/keys [seen?] :as data} owner opts]
   [:div (component/build ui.M/hero (merge data {:off-screen? (not seen?)}) nil)])
 
@@ -422,25 +408,6 @@
                                                     :href         href})
                                                   [:div.h7 "Get started"])]]]]]]]))))))
 
-(defn ^:private shop-cta-with-chevron
-  [{:cta/keys [navigation-message href value id]}]
-  (component/html
-   (when (or navigation-message href)
-     [:a.block.h4.medium.p-color.my2
-      (merge
-       (when href
-         {:href href})
-       (when navigation-message
-         (apply utils/route-to navigation-message))
-       (when id
-         {:data-test id}))
-      value
-      ^:inline (svg/dropdown-arrow {:class  "stroke-p-color ml2"
-                                    :style  {:stroke-width "3px"
-                                             :transform "rotate(-90deg)"}
-                                    :height "14px"
-                                    :width  "14px"})])))
-
 (defcomponent shop-text-block
   [{anchor-name :anchor/name
     title       :header/value
@@ -561,7 +528,6 @@
      :hero                            layer-hero
      :free-standard-shipping-bar      free-standard-shipping-bar
      :text-block                      text-block
-     :escape-hatch                    escape-hatch
      :checklist                       checklist
      :video-overlay                   video-overlay
      :video-block                     video-block

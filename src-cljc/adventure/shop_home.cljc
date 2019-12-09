@@ -100,7 +100,6 @@
        :cta/navigation-message [events/navigate-shop-by-look {:album-keyword :look}]}
       (merge {:layer/type :faq}
              (faq/free-install-query data))
-      (when shop? {:layer/type :escape-hatch})
       {:layer/type      :bulleted-explainer
        :layer/id        "more-than-a-hair-company"
        :header/value    "Mayvenn is More than a Hair Company"
@@ -131,9 +130,3 @@
 (defn built-component
   [data opts]
   (component/build layered/component (query data) opts))
-
-(defmethod effects/perform-effects events/control-open-shop-escape-hatch
-  [_ _ _ _ _]
-  (messages/handle-message events/control-menu-expand-hamburger
-                           {:keypath storefront.keypaths/menu-expanded})
-  #?(:cljs (scroll/snap-to-top)))
