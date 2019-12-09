@@ -35,12 +35,10 @@
   (will-unmount [this]
                 (set! (.-indexChanged this) nil)
                 (safely-destroy (.-carousel this)))
-  (should-update [this _ _]
-                 false)
   (render [this]
           (component/html
-           (let [;;{:keys [settings]}                     (component/get-props this)
-                 {:keys [settings slides]}              (component/get-opts this)
+           (let [{:keys [slides]}                       (component/get-props this)
+                 {:keys [settings]}                     (component/get-opts this)
                  {:keys [controls] :or {controls true}} settings]
              [:div.relative
               (when controls
@@ -57,7 +55,7 @@
 
 (defcomponent component [{:keys [slides] :as data} owner _]
   (component/build inner-component
-                   nil
+                   {:slides slides}
                    {:opts
                     (cond-> (assoc-in data [:settings :autoplay] false)
 
