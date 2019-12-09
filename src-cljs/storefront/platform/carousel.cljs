@@ -8,8 +8,8 @@
 (defn build-carousel [this settings]
   (when (component/get-ref this "container")
     (let [carousel (js/tns
-                    (clj->js (merge {:container (component/get-ref this "container")
-                                     :edgePadding     30
+                    (clj->js (merge {:container        (component/get-ref this "container")
+                                     :edgePadding      30
                                      :items            3
                                      :loop             true
                                      :controlsPosition "bottom"
