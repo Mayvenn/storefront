@@ -347,7 +347,7 @@
 
 (defn ^:private form [data]
   [:div
-   [:p.h6.mb2 "Type " [:pre.inline "wrong"] " in input field to show it's failed validation state."]
+   [:div.h6.mb2 "Type " [:pre.inline "wrong"] " in input field to show it's failed validation state."]
    (ui/text-input {:label   "Text Input"
                    :id      "text-input"
                    :keypath [:design-system :form :text-input]
