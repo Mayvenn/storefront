@@ -2,7 +2,7 @@
 .bg-quadpay-blue            { background-color: var(--quadpay-blue); }
 .bg-twitter-blue            { background-color: var(--twitter-blue); }
 .bg-sms-green               { background-color: var(--sms-green); }
-.bg-error                   { background-color: var(--error); }
+.bg-error                   { background-color: var(--light-red); }
 
 .bg-white                  { background-color: var(--white); }
 .bg-gray                   { background-color: var(--gray); }
@@ -16,8 +16,7 @@
 .bg-pale-purple { background-color: var(--pale-purple); }
 
 :root {
-    --gray:           #B9B9B9;
-    --error:          #ff004f;
+    --gray:  #B9B9B9;
 
     --facebook-blue:          #3b5998;
     --quadpay-blue:           #1d73ec;
@@ -31,6 +30,7 @@
     --p-color:     #4427c1;
     --s-color:     #6bc8ad;
     --red:         #f94941;
+    --light-red:   #fef7fa;
     --paypal:      #49bbf0;
     --pale-purple: #dedbe5;
     --white:       #ffffff;
