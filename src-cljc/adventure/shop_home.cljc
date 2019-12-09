@@ -83,18 +83,23 @@
                                 ;; TODO this is a design exception
                                 [:span.title-1.shout.canela "high"]]
        :body/value             "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
-       :cta/value              "shop hair"
        :cta/id                 "info-about-our-hair"
+       :cta/value              "shop hair"
        :cta/navigation-message [events/navigate-info-about-our-hair]
        :divider-img            "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"}
-      {:layer/type      :ugc
-       :header/value    "#MayvennFreeInstall"
-       :subheader/value "Showcase your new look by tagging #MayvennFreeInstall"
-       :images          (mapv (partial contentful/look->homepage-social-card
-                                       current-nav-event
-                                       :free-install-mayvenn)
-                              (->> cms-ugc-collection :free-install-mayvenn :looks))}
-      (merge {:layer/type :faq} (faq/free-install-query data))
+      {:layer/type             :shop-ugc
+       :header/value           "#MayvennFreeInstall"
+       :images                 (->> cms-ugc-collection
+                                    :free-install-mayvenn
+                                    :looks
+                                    (mapv (partial contentful/look->homepage-social-card
+                                                   current-nav-event
+                                                   :free-install-mayvenn)))
+       :cta/id                 "see-more-looks"
+       :cta/value              "see more looks"
+       :cta/navigation-message [events/navigate-shop-by-look {:album-keyword :look}]}
+      (merge {:layer/type :faq}
+             (faq/free-install-query data))
       (when shop? {:layer/type :escape-hatch})
       {:layer/type      :bulleted-explainer
        :layer/id        "more-than-a-hair-company"

@@ -62,7 +62,7 @@
          {:data-test id}))
       value))))
 
-(defn ^:private cta-with-img
+(defn ^:private shop-cta-with-img
   [{:cta/keys [navigation-message href img value id]}]
   (component/html
    (when (or navigation-message href)
@@ -96,7 +96,7 @@
    (when-let [v (:header/value data)]
      [:div.h2 v])
    [:div.h5.mt3 (:body/value data)]
-   ^:inline (cta-with-img data)])
+   ^:inline (shop-cta-with-img data)])
 
 (defcomponent escape-hatch
   [_ _ _]
@@ -460,7 +460,7 @@
       [:div.title-2.canela body])
     ^:inline
     [:div.pt3
-     (cta-with-img data)]]
+     (shop-cta-with-img data)]]
    (when divider-img
      (divider divider-img))])
 
@@ -528,7 +528,24 @@
     [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
      (map-indexed (partial shop-step (str layer-id "-dt-"))
                   bullets)]
-    ^:inline (cta-with-img data)]])
+    ^:inline (shop-cta-with-img data)]])
+
+(defcomponent shop-ugc
+  [{title  :header/value
+    images :images
+    :as    data} _ _]
+  [:div.py8.col-10.mx-auto.center
+   (when title
+     [:div.title-2.proxima.shout.bold title])
+   [:div.flex.flex-wrap.py3
+    (for [{:keys [image-url]} images]
+      [:a.col-6.col-3-on-tb-dt.p1
+       {:key (str image-url)}
+       (ui/screen-aware
+        ugc-image
+        {:image-url image-url}
+        nil)])]
+   ^:inline (shop-cta-with-img data)])
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (component/build
@@ -537,6 +554,7 @@
      :shop-text-block         shop-text-block
      :shop-framed-checklist   shop-framed-checklist
      :shop-bulleted-explainer shop-bulleted-explainer
+     :shop-ugc                shop-ugc
 
      ;; LEGACY
      :image-block                     image-block
