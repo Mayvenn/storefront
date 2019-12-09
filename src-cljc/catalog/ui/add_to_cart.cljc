@@ -8,10 +8,12 @@
   [{:cta/keys [id label target spinning? disabled?]}]
   (when (and id label target)
     (ui/button-large-primary
-     (merge {:data-test id
-             :spinning? (boolean spinning?)
-             :disabled? (boolean disabled?)}
-            (apply utils/fake-href target))
+     (merge
+      {:data-test id
+       :spinning? (boolean spinning?)
+       :disabled? (boolean disabled?)}
+      #?(:clj {:disabled? true})
+      (apply utils/fake-href target))
      [:div.flex.items-center.justify-center.inherit-color label])))
 
 (defn add-to-cart-incentive-block-molecule
