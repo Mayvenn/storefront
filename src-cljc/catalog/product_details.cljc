@@ -212,8 +212,7 @@
     (component/build carousel/component
                      {:slides   (map :body items)
                       :settings {:edgePadding 0
-                                 :items       1}}
-                     {:react-key (apply str "category-swiper-" slug (interpose "-" (map :id items)))})))
+                                 :items       1}})))
 
 (defn reviews-summary [reviews opts]
   [:div.h6
