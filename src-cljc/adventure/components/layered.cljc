@@ -267,14 +267,14 @@
 
 (defcomponent faq
   [{:keys [expanded-index sections]} owner opts]
-  [:div.px6.mx-auto.col-6-on-dt.mb8
-   [:h2.center "Frequently Asked Questions"]
+  [:div.px6.mx-auto.col-6-on-dt.bg-pale-purple.py6
+   [:div.canela.title-1.center.my7 "Frequently Asked Questions"]
    (component/build
     accordion/component
     {:expanded-indices #{expanded-index}
      :sections         (map
                         (fn [{:keys [title paragraphs]}]
-                          {:title [:h6 title]
+                          {:title [:content-1 title]
                            :paragraphs paragraphs})
                         sections)}
     {:opts {:section-click-event events/faq-section-selected}})])

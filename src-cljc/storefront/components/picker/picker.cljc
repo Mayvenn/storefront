@@ -42,7 +42,7 @@
    [:div.ml2.flex-auto selected-value-html]
    [:div.self-center ^:inline (svg/dropdown-arrow {:height ".575em"
                                                    :width  ".575em"
-                                                   :class  "stroke-p-color"})]])
+                                                   :class  "fill-p-color"})]])
 
 (defn desktop-dropdown [label-html selected-value-html select-html]
   [:div.flex.flex-column.relative.flex-auto {:style {:height "100%"}}
@@ -52,7 +52,7 @@
     [:div.ml2.flex-auto selected-value-html]
     [:div.self-center ^:inline (svg/dropdown-arrow {:height ".575em"
                                                     :width  ".575em"
-                                                    :class  "stroke-p-color"})]]
+                                                    :class  "fill-p-color"})]]
    select-html])
 
 (defn field

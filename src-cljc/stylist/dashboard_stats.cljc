@@ -43,11 +43,10 @@
      [:div.letter-spacing-1.shout.mbnp5.flex.items-center
       [:a.inherit-color toggle-expand
        "Cash Balance"
-       ^:inline (svg/dropdown-arrow {:class  (str "ml1 stroke-black "
+       ^:inline (svg/dropdown-arrow {:class  (str "ml1 "
                                                   (when expanded? "rotate-180"))
-                                     :style  {:stroke-width "2"}
-                                     :height ".75em"
-                                     :width  ".75em"
+                                     :height "1em"
+                                     :width  "1em"
                                      :data-test "toggle-cash-balance"})]]
 
      [:div.flex.mt1.items-center.justify-between
@@ -93,11 +92,10 @@
      [:div.letter-spacing-1.shout.mbnp5.flex.items-center
       [:a.inherit-color toggle-expand
        "Credit Balance"
-       ^:inline (svg/dropdown-arrow {:class  (str "ml1 stroke-black "
+       ^:inline (svg/dropdown-arrow {:class  (str "ml1 "
                                                   (when expanded? "rotate-180"))
-                                     :style  {:stroke-width "2"}
-                                     :height ".75em"
-                                     :width  ".75em"})]]
+                                     :height "1em"
+                                     :width  "1em"})]]
 
      [:div.flex.items-center
       [:a.col-7 toggle-expand

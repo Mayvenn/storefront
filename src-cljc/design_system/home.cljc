@@ -194,9 +194,9 @@
                                                    [:div "col-12 with styled "
                                                     [:span.medium.italic.underline "SPAN™"]
                                                     " and svg "
-                                                    ^:inline (svg/dropdown-arrow {:class  "stroke-white"
-                                                                                  :width  "12px"
-                                                                                  :height "10px"
+                                                    ^:inline (svg/dropdown-arrow {:class  "fill-white"
+                                                                                  :width  "16px"
+                                                                                  :height "16px"
                                                                                   :style  {:transform "rotate(-90deg)"}})])]
       [:div.col.col-12.p1 (ui/input-group
                            {:type          "text"

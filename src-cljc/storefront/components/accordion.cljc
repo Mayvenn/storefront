@@ -32,10 +32,9 @@
      [:div.px2
       (when expanded?
         {:class "rotate-180"})
-      ^:inline (svg/dropdown-arrow {:class  "stroke-black"
-                                    :style  {:stroke-width "3px"}
-                                    :height "12px"
-                                    :width  "12px"})]]
+      ^:inline (svg/dropdown-arrow {:class  "fill-black"
+                                    :height "16px"
+                                    :width  "16px"})]]
     (slide-down
      (when (or expanded? #?(:clj true)) ;; always show for server-side rendered html
        [:div.mr8

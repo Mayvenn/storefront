@@ -30,7 +30,7 @@
                                              content)])))
 
 (defn forward-caret [{:keys [height width color]}]
-  (svg/dropdown-arrow {:class  (if color (str "stroke-" color) "stroke-black")
+  (svg/dropdown-arrow {:class  (if color (str "fill-" color) "fill-black")
                        :height height
                        :width  width
                        :style  {:transform "rotate(-90deg)"}}))
@@ -339,7 +339,7 @@
 (def ^:private custom-select-dropdown
   (component/html
    [:div.absolute.floating-label--icon
-    ^:inline (svg/dropdown-arrow {:class "stroke-gray"
+    ^:inline (svg/dropdown-arrow {:class "fill-gray"
                                   :style {:width "1.2em" :height "1em"}})]))
 
 (defn ^:private plain-select-field
