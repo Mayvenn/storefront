@@ -416,7 +416,6 @@
         (messages/handle-message events/enable-feature {:experiment experiment :feature (:feature variation)})))))
 
 (defmethod effects/perform-effects events/navigate-checkout [_ event args _ app-state]
-  (google-maps/insert)
   (let [have-cart? (get-in app-state keypaths/order-number)]
     (when (not have-cart?)
       (effects/redirect events/navigate-cart))
@@ -434,6 +433,7 @@
 
 (defmethod effects/perform-effects events/navigate-checkout-returning-or-guest [_ event args _ app-state]
   (google-maps/remove-containers)
+  (google-maps/insert)
   (api/get-states (get-in app-state keypaths/api-cache))
   (facebook/insert))
 
@@ -445,6 +445,7 @@
   (when-not (get-in app-state keypaths/user-id)
     (effects/redirect events/navigate-checkout-returning-or-guest))
   (google-maps/remove-containers)
+  (google-maps/insert)
   (api/get-states (get-in app-state keypaths/api-cache))
   (fetch-saved-cards app-state))
 
