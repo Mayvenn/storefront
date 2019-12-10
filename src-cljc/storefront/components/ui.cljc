@@ -149,7 +149,7 @@
            :as   attrs}]
    (if spinning?
      (button-large-primary attrs)
-     [:input.col-12
+     [:input.col-12.bg-clear
       {:type      "submit"
        :class     button-large-primary-classes
        :data-test data-test
