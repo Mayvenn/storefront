@@ -321,3 +321,8 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "straight-line")]))
+
+(defn quotation-mark [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "quotation-mark")]))
