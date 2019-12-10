@@ -459,8 +459,8 @@
                                   :margin-bottom "-1px"}}
    #?(:cljs (popup/built-component app-state nil))
 
+   ^:inline (promo-banner/built-static-organism app-state nil)
    (header/built-component app-state nil)
-   (promo-banner/built-static-organism app-state nil)
    [:div.relative.flex.flex-column.flex-auto
     (flash/built-component app-state nil)
 

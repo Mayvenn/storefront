@@ -150,12 +150,11 @@
       [:div {:key "popup"}
        #?(:cljs (popup/built-component data nil))]
 
-      ^:inline (header/built-component data nil)
-
       (when-not v2-home?
         [:div {:key "promo"}
-         ^:inline (promo-banner/built-static-organism data nil)
-         ^:inline (sticky-promo-bar data)])
+         ^:inline (promo-banner/built-static-sticky-organism data nil)])
+
+      ^:inline (header/built-component data nil)
 
       [:div.relative.flex.flex-column.flex-auto
        ;; HACK: one page does not have a white background, nor enough

@@ -650,9 +650,10 @@
                                   :margin-bottom "-1px"}}
    #?(:cljs (popup/built-component popup nil))
 
-   (header/built-component header nil)
    (when promo-banner
      (promo-banner/built-static-organism promo-banner nil))
+
+   (header/built-component header nil)
    [:div.relative.flex.flex-column.flex-auto
     (flash/built-component flash nil)
 

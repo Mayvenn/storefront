@@ -54,14 +54,14 @@
 
 (defmethod component :shop/freeinstall shop-freeinstall
   [_ _ _]
-  [:a.block.white.p2.bg-pale-purple.flex.justify-center
+  [:a.block.white.p2.bg-p-color.flex.justify-center.items-center
    {:on-click  (utils/send-event-callback events/popup-show-consolidated-cart-free-install)
     :data-test "shop-freeinstall-promo-banner"}
    (svg/info {:height "14px"
               :width  "14px"
-              :class  "mr1 mt1"})
-   [:div.pointer.h6.medium "Buy 3 items and receive your free "
-    [:span.bold.underline
+              :class  "mr1"})
+   [:div.pointer.h6 "Buy 3 items and receive your free "
+    [:span.underline
      "Mayvenn" ui/nbsp "Install"]]])
 
 (defmethod component :basic basic
@@ -190,3 +190,13 @@
   [app-state opts]
   (component/html
    (component (query app-state) nil opts)))
+
+;; page-top-most sticky promo bar
+(defn built-static-sticky-organism
+  [app-state opts]
+  (component/html
+   [:div
+    [:div.invisible {:key "promo-filler"} ;; provides height spacing for layout
+     (component (query app-state) nil opts)]
+    [:div.fixed.z5.top-0.left-0.right-0 {:key "promo"}
+     (component (query app-state) nil opts)]]))
