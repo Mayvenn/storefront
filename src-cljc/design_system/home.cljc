@@ -458,10 +458,9 @@
      :wrapper-class "col-11"
      :name        "arrow"
      :focused     (get-in data keypaths/ui-focus)
-     :type        "tel"
      :placeholder "arrowed"
-     :value       (get-in data [:design-system :form :pill-phone-2])
-     :errors      (if (= (get-in data [:design-system :form :pill-phone-2]) "wrong")
+     :value       (get-in data [:design-system :form :arrow])
+     :errors      (if (= (get-in data [:design-system :form :arrow]) "wrong")
                     [{:long-message "wrong"}]
                     [])}
     {:content (svg/forward-arrow {:width  "12px"
@@ -474,8 +473,8 @@
      :name        "disabled arrow"
      :focused     (get-in data keypaths/ui-focus)
      :placeholder "disabled arrowed"
-     :value       (get-in data [:design-system :form :pill-phone-2])
-     :errors      (if (= (get-in data [:design-system :form :pill-phone-2]) "wrong")
+     :value       (get-in data [:design-system :form :disabled-arrow])
+     :errors      (if (= (get-in data [:design-system :form :disabled-arrow]) "wrong")
                     [{:long-message "wrong"}]
                     [])}
     {:content (svg/forward-arrow {:width  "12px"
