@@ -63,7 +63,7 @@
 
 (defn remove-containers []
   (let [containers (.querySelectorAll js/document ".pac-container")]
-    (dotimes [i (.-length containers)]
+    (dotimes [i (dec (.-length containers))]
       (let [node (aget containers i)]
         (.removeChild (.-parentNode node) node)))))
 
