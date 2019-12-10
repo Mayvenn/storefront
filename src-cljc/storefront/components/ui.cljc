@@ -237,7 +237,7 @@
       [:div.pp1.col-12
        (floating-label label id status)
        [:label
-        [:input.col-12.h4.line-height-1
+        [:input.col-12.line-height-1
          (field-class (merge {:key         id
                               :placeholder label
                               :label       label
