@@ -490,12 +490,14 @@
   (component/html
    [:div.relative.rotate-45.p2
     (merge  attrs
-            {:style     {:height "70px"}
+            {:style     {:height "40px"}
              :data-test data-test})
     [:div.absolute.border-right
-     {:style {:width "25px" :height "50px"}}]
+     {:style {:width "25px" :height "50px"
+              :border-width "2px"}}]
     [:div.absolute.border-bottom
-     {:style {:width "50px" :height "25px"}}]]))
+     {:style {:width "50px" :height "25px"
+              :border-width "2px"}}]]))
 
 (defn square-image [{:keys [resizable-url]} size]
   (some-> resizable-url (str "-/scale_crop/" size "x" size "/center/")))

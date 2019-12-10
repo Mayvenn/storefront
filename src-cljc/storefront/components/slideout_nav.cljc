@@ -13,7 +13,8 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            [ui.promo-banner :as promo-banner]))
 
 (def blog-url "https://blog.mayvenn.com")
 
@@ -23,16 +24,19 @@
 (defn burger-header [cart]
   (component/html
    [:div.bg-white.flex.items-center.border-bottom.border-gray
-    [:div.col-1
-     (ui/big-x {:data-test "close-slideout"
-                :attrs     {:on-click #(messages/handle-message events/control-menu-collapse-all)}})]
-    [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
-                                            :data-test "header-logo"
-                                            :height    "40px"})]
-    [:div.col-1
-     (ui/shopping-bag {:style     {:height "70px" :width "70px"}
-                       :data-test "mobile-cart"}
-                      cart)]]))
+    [:div {:style {:height "55px"
+                   :width  "80px"}}
+     ;; HACKY(jeff): b/c of relative+absolute position of big-x, padding-left also increases y-offset, so we use negative margin to correct it
+     [:div.mtn1.pl4
+      (ui/big-x {:data-test "close-slideout"
+                 :attrs     {:on-click #(messages/handle-message events/control-menu-collapse-all)}})]]
+    [:div.py3.flex-auto
+     (ui/clickable-logo {:event     events/navigate-home
+                         :data-test "header-logo"
+                         :height    "29px"})]
+    (ui/shopping-bag {:style     {:height "70px" :width "80px"}
+                      :data-test "mobile-cart"}
+                     cart)]))
 
 (defn ^:private marquee-col [content]
   [:div.flex-auto
@@ -267,10 +271,11 @@
       sign-out-area])])
 
 (defcomponent component
-  [{:keys [cart on-taxon? menu-data] :as data}
+  [{:keys [cart on-taxon? menu-data promo-banner] :as data}
    owner
    opts]
   [:div
+   (promo-banner/static-organism promo-banner nil nil)
    [:div.top-0.sticky.z4
     (burger-header cart)]
    (if on-taxon?
@@ -290,6 +295,7 @@
         aladdin?                           (experiments/aladdin-experience? data)]
     {:signed-in                        (auth/signed-in data)
      :on-taxon?                        (get-in data keypaths/current-traverse-nav)
+     :promo-banner                     (promo-banner/query data)
      :user                             {:stylist-portrait (get-in data keypaths/user-stylist-portrait)
                                         :email            (get-in data keypaths/user-email)}
      :store                            store

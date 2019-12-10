@@ -247,7 +247,7 @@
     [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
                                             :data-test "header-logo"
                                             :height    "29px"})]
-    (ui/shopping-bag {:style     {:height "70px" :width "70px"}
+    (ui/shopping-bag {:style     {:height "70px" :width "80px"}
                       :data-test "mobile-cart"}
                      cart)]])
 
