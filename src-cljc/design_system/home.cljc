@@ -27,7 +27,7 @@
 
 (defn compression [data]
   (let [{:keys [viewport-width file-width format quality]} (get-in data [:design-system :compression])
-        focused? (get-in data keypaths/ui-focus)]
+        focused?                                           (get-in data keypaths/ui-focus)]
     [:div
      (header "Compression")
      [:div.clearfix.mxn2
@@ -69,7 +69,8 @@
          :value   file-width})]
       (for [file ["//ucarecdn.com/927f7594-e766-4985-98fa-3bc80e340947/"
                   "//ucarecdn.com/b307f889-6402-4ff2-801a-7cba0f43e8cf/"]]
-        [:div.col {:style (when (seq viewport-width) {:width (str viewport-width "px")})}
+        [:div.col {:key   file
+                   :style (when (seq viewport-width) {:width (str viewport-width "px")})}
          [:img.block.col-12 {:src (str file
                                        (when (seq format) (str "-/format/" format "/"))
                                        (when (seq quality) (str "-/quality/" quality "/"))
