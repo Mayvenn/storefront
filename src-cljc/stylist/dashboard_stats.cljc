@@ -39,7 +39,7 @@
    {:as services :keys [lifetime-services monthly-services]}]
   (let [toggle-expand (utils/fake-href events/control-v2-stylist-dashboard-section-toggle
                                        {:keypath keypaths/v2-ui-dashboard-cash-balance-section-expanded?})]
-    [:div.h6.bg-cool-gray.px2.pt2.pb3
+    [:div.h6.px2.pt2.pb3
      [:div.letter-spacing-1.shout.mbnp5.flex.items-center
       [:a.inherit-color toggle-expand
        "Cash Balance"
@@ -60,7 +60,6 @@
                                                       {:amount             cash-balance
                                                        :payout-method-name payout-method})
            :disabled?      (not (pos? cash-balance))
-           :disabled-class "bg-gray"
            :spinning?      cashing-out?}
           [:div.flex.items-center.justify-center.regular.h5
            (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "3d651ddf-b37d-441b-a162-b83728f2a2eb")
