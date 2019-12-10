@@ -60,6 +60,14 @@
     padding: 10px;
 }
 
+.btn-pill {
+    padding: 0px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: var(--border-width) solid var(--gray);
+    border-left-style: none;
+}
 
 .btn-p-color            { color: var(--white); }
 .btn-p-color.btn-large  { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--p-color), stroke=none); }
@@ -74,11 +82,14 @@
 .btn-paypal-color           { color: var(--white); }
 .btn-paypal-color.btn-large { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--paypal), stroke=none); }
 
+.btn-s-color { color: var(--white); background-color: var(--s-color); }
+
 /* Ordering matters here.  Gray has to beat the others. */
 .btn-gray            { color: var(--gray); }
 .btn-gray.btn-large  { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--cool-gray), stroke=none); }
 .btn-gray.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--cool-gray), stroke=none); }
 .btn-gray.btn-small  { background-color: var(--cool-gray); border-style: none; }
+.btn-gray.btn-pill   { background-color: var(--cool-gray); }
 
 ::-moz-focus-inner {
   border: 0;

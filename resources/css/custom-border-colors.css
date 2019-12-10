@@ -1,7 +1,6 @@
 .border-white         { border-color: var(--white); }
 .border-gray          { border-color: var(--gray); }
 .border-black         { border-color: var(--black); }
-.border-error         { border-color: var(--error); }
 
 .border-p-color   { border-color: var(--p-color); }
 .border-cool-gray { border-color: var(--cool-gray); }

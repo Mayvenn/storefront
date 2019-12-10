@@ -200,13 +200,13 @@
                                                                                   :style  {:transform "rotate(-90deg)"}})])]
       [:div.col.col-12.p1 (ui/input-group
                            {:type          "text"
-                            :wrapper-class "col-7 pl3 flex items-center bg-white circled-item"
+                            :wrapper-class "col-7 pl3 flex items-center bg-white"
                             :placeholder   "Text"
                             :focused       false}
                            {:ui-element ui/button-large-primary
                             :content    "Button"
                             :args       (merge button-attrs
-                                               {:class "flex justify-center items-center circled-item"})})]]]))
+                                               {:class "flex justify-center items-center"})})]]]))
 
 (def ^:private increment->size
   {1 "5px"
@@ -347,7 +347,7 @@
 
 (defn ^:private form [data]
   [:div
-   [:div.h6.mb2 "Type " [:pre.inline "wrong"] " in input field to show it's failed validation state."]
+   [:div.h6.mb2 "Type " [:pre.inline "wrong"] " in input field to show its failed validation state."]
    (ui/text-input {:label   "Text Input"
                    :id      "text-input"
                    :keypath [:design-system :form :text-input]
@@ -424,8 +424,8 @@
 
    (ui/input-group
     {:keypath       [:design-system :form :pill-phone]
-     :wrapper-class "col-8 flex bg-white pl3 items-center circled-item"
-     :class         ""
+     :id            "other-thing"
+     :wrapper-class "col-8"
      :name          "phone"
      :focused       (get-in data keypaths/ui-focus)
      :placeholder   "(xxx) xxx - xxxx"
@@ -434,15 +434,12 @@
      :errors        (if (= (get-in data [:design-system :form :pill-phone]) "wrong")
                       [{:long-message "wrong"}]
                       [])}
-    {:ui-element ui/button-medium-primary
-     :content    "Get Survey"
-     :args       {:class          "flex justify-center medium items-center circled-item"
-                  :data-test      ""
-                  :disabled-class "disabled bg-p-color"}})
+    {:content "Get Survey"
+     :args    {:data-test ""
+               :class     "col-4"}})
    (ui/input-group
     {:keypath       [:design-system :form :pill-phone-2]
-     :wrapper-class "col-8 flex bg-white pl3 items-center circled-item"
-     :class         ""
+     :wrapper-class "col-8"
      :name          "phone"
      :focused       (get-in data keypaths/ui-focus)
      :placeholder   "With disabled button"
@@ -451,11 +448,40 @@
      :errors        (if (= (get-in data [:design-system :form :pill-phone-2]) "wrong")
                       [{:long-message "wrong"}]
                       [])}
-    {:ui-element ui/button-medium-primary
-     :content    "Get Survey"
-     :args       {:class        "flex justify-center medium items-center circled-item"
-                  :data-test    ""
-                  :disabled?    true}})])
+    {:content "Get Survey"
+     :args    {:data-test ""
+               :class     "col-4"
+               :disabled? true}})
+   (ui/input-group
+    {:keypath     [:design-system :form :arrow]
+     :wrapper-class "col-11"
+     :name        "arrow"
+     :focused     (get-in data keypaths/ui-focus)
+     :type        "tel"
+     :placeholder "arrowed"
+     :value       (get-in data [:design-system :form :pill-phone-2])
+     :errors      (if (= (get-in data [:design-system :form :pill-phone-2]) "wrong")
+                    [{:long-message "wrong"}]
+                    [])}
+    {:content (svg/forward-arrow {:width  "12px"
+                                  :height "12px"})
+     :args    {:data-test ""
+               :class "col-1"}})
+   (ui/input-group
+    {:keypath     [:design-system :form :disabled-arrow]
+     :wrapper-class "col-11"
+     :name        "disabled arrow"
+     :focused     (get-in data keypaths/ui-focus)
+     :placeholder "disabled arrowed"
+     :value       (get-in data [:design-system :form :pill-phone-2])
+     :errors      (if (= (get-in data [:design-system :form :pill-phone-2]) "wrong")
+                    [{:long-message "wrong"}]
+                    [])}
+    {:content (svg/forward-arrow {:width  "12px"
+                                  :height "12px"})
+     :args    {:data-test ""
+               :disabled? true
+               :class "col-1"}})])
 
 (defn ^:private form-fields [data]
   [:section

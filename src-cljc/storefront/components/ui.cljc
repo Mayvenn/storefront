@@ -126,6 +126,21 @@
 (defn button-medium-secondary [attrs & content] (button "btn-medium btn-ghost button-font-1 shout" attrs content))
 (defn button-small-primary    [attrs & content] (button "btn-small btn-p-color button-font-3 shout" attrs content))
 (defn button-small-secondary  [attrs & content] (button "btn-small btn-ghost button-font-3 shout" attrs content))
+(defn button-pill             [attrs & content] (button "btn-pill btn-s-color button-font-2 shout" attrs content))
+
+;; GROT
+(defn ^:private button-colors [color-kw]
+  (let [color (color-kw {:color/p-color       "btn-primary bg-p-color white"
+                         :color/aqua          "btn-primary bg-aqua white"
+                         :color/white         "btn-primary btn-primary-teal-hover bg-white border-cool-gray black"
+                         :color/ghost         "btn-outline border-gray black"
+                         :color/light-ghost   "btn-outline cool-gray border-white white"
+                         :color/p-color-ghost "btn-outline border-p-color p-color"
+                         :color/facebook      "btn-primary bg-fb-blue white"
+                         :color/black         "btn-primary bg-black white"
+                         :color/quadpay       "btn-primary bg-quadpay-blue white"})]
+    (assert color (str "Button color " color-kw " has not been defined."))
+    color))
 
 
 (defn submit-button
@@ -175,21 +190,20 @@
 
 (defn ^:private field-wrapper-class [wrapper-class {:keys [error? focused?]}]
   (cond-> {:class wrapper-class}
-    :always      (add-classes "rounded border x-group-item")
+    :always      (add-classes "border x-group-item")
     focused?     (add-classes "glow")
     ;; .z1.relative keeps border between adjacent fields red if one of them is in error
-    error?       (add-classes "border-error z1 relative")
+    error?       (add-classes "bg-error z1 relative border-gray")
     (not error?) (add-classes "border-gray")))
 
 (defn ^:private field-class [{:as base :keys [label]} {:keys [error? value?]}]
   (cond-> base
-    true                     (add-classes "floating-label--input rounded border-none")
-    error?                   (add-classes "error")
+    :always            (add-classes "bg-clear floating-label--input border-none")
     (and value? label) (add-classes "has-value")))
 
 (defn text-input [{:keys [id type label keypath value] :as input-attributes}]
   (component/html
-   [:input.h5.border-none.px2.bg-white.col-12.rounded.placeholder-black
+   [:input.h5.border-none.px2.bg-white.col-12
     (merge
      {:style       {:height    "56px"
                     :font-size "16px"}
@@ -266,35 +280,23 @@
                         (dissoc input-attributes :label :keypath :value :errors))
       (field-error-message error data-test)])))
 
-(defn input-group [{:keys [label keypath value errors data-test class] :as input-attributes :or {class "col-12"}}
-                   {:keys [ui-element args content]}]
+(defn input-group [{:keys [label keypath value errors] :as text-input-attrs :or {class "col-12"}}
+                   {:keys [args content] :as button-attrs}]
   (component/html
    (let [error (first errors)]
-     [:div.mb2.stacking-context
-      [:div.flex.justify-around
+     [:div.mb2
+      [:div.flex
        (plain-text-field label keypath value (not (nil? error))
-                         (-> input-attributes
+                         (-> text-input-attrs
                              (dissoc :label :keypath :value :errors)
-                             (update :wrapper-class str " rounded-left x-group-item")))
-       (ui-element (update args :class str " rounded-right x-group-item") content)]
-      (field-error-message error data-test)])))
-
-(defn pill-group [{:keys [label keypath value errors data-test class] :as input-attributes :or {class "col-12"}}
-                  {:keys [ui-element args content]}]
-  (component/html
-   (let [error (first errors)]
-     [:div.mb2.stacking-context
-      [:div.flex.justify-around
-       (plain-text-field label keypath value (not (nil? error))
-                         (-> input-attributes
-                             (dissoc :label :keypath :value :errors)
-                             (update :wrapper-class str " x-group-item")))
-       (ui-element (update args :class str " x-group-item") content)]
-      (field-error-message error data-test)])))
+                             (update :wrapper-class str " x-group-item")
+                             (assoc-in [:wrapper-style :border-right] "none")))
+       (button-pill args content)]
+      (field-error-message error "input-group")])))
 
 (defn text-field-group
-  "For grouping many fields on one line. Sets up columns, rounding of
-  first and last fields, and avoids doubling of borders between fields.
+  "For grouping many fields on one line. Sets up columns
+  and avoids doubling of borders between fields.
 
   column expects the css grid column, but as a vector:
   [''2fr'' ''1fr'']
@@ -319,16 +321,11 @@
            (concat
             (for [[idx {:keys [label keypath value errors id] :as field}]
                   (map-indexed vector fields)]
-              (let [first?        (zero? idx)
-                    last?         (= idx (dec (count fields)))
-                    wrapper-class (str (when first? " rounded-left")
-                                       (when last? " rounded-right"))]
-                (plain-text-field
-                 label keypath value (seq errors)
-                 (-> field
-                     (dissoc :label :keypath :value :errors)
-                     (assoc :wrapper-class wrapper-class)
-                     (assoc :wrapper-style {:grid-area id})))))
+              (plain-text-field
+               label keypath value (seq errors)
+               (-> field
+                   (dissoc :label :keypath :value :errors)
+                   (assoc :wrapper-style {:grid-area id}))))
             (for [{:keys [errors data-test error-style id]} fields]
               [:div {:style {:grid-area (str id "--error")}}
                (cond
@@ -606,10 +603,10 @@
                                                      :width  "20px"}))])
 
 (defn note-box [{:keys [color data-test]} contents]
-  [:div.border.rounded
+  [:div.border
    {:class (str "bg-" color " border-" color)
     :data-test data-test}
-   [:div.bg-lighten-4.rounded
+   [:div.bg-lighten-4
     contents]])
 
 (defn big-money [amount]
@@ -710,7 +707,7 @@
      :on-click (if disabled? utils/noop-callback on-click)}
     (when disabled?
       {:data-test-disabled "disabled"}))
-   [:div.absolute.overlay.rounded-0.border.border-gray]
+   [:div.absolute.overlay.border.border-gray]
    (for [[i c] (map-indexed vector content)]
      [:div {:key (str i)} c])])
 

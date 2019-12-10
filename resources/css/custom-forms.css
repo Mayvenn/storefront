@@ -39,7 +39,6 @@ select:focus,
 .glow {
   /* Start with spec, mostly for Firefox */
   outline: solid auto 2px;
-  -moz-outline-radius: var(--border-radius);
 
   /* Reset offset, selects and inputs differ */
   outline-offset: 0px;
@@ -76,8 +75,6 @@ input:focus {
 
 :root {
   --red: #FF0000;
-
-  --border-radius: 4px;
 
   --floating-label--input-text-height: 19px; /* height, not including padding */
   --floating-label--input-padding-x: 10px;
