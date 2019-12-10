@@ -349,10 +349,6 @@
 (defn ^:private form [data]
   [:div
    [:div.h6.mb2 "Type " [:pre.inline "wrong"] " in input field to show its failed validation state."]
-   (ui/text-input {:label   "Text Input"
-                   :id      "text-input"
-                   :keypath [:design-system :form :text-input]
-                   :value   (get-in data [:design-system :form :test-input])})
    (ui/text-field-group
     {:type    "text"
      :label   "First Name"
