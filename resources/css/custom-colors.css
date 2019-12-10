@@ -1,6 +1,6 @@
 .yellow         { color: var(--yellow); }
 .gray           { color: var(--gray); }
-.error          { color: var(--error); }
+.error          { color: var(--red); }
 .inherit-color  { color: inherit; }
 
 .placeholder-black::placeholder { color: var(--black); }
@@ -15,7 +15,6 @@
 .black       { color: var(--black); }
 
 :root {
-  --error:          #ff004f;
   --yellow:         #ffc520;
   --gray:           #B9B9B9;
 
