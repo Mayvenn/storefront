@@ -230,7 +230,7 @@
                                                                                 (boolean specialty-sew-in-360-frontal))
                                                 (stylist-cards/checks-or-x-atom "Frontal" (boolean specialty-sew-in-frontal))]
              :stylist-card.cta/id              (str "select-stylist-" store-slug)
-             :stylist-card.cta/label           "Select"
+             :stylist-card.cta/label           (str "Select " (-> stylist :address :firstname))
              :stylist-card.cta/target          [cta-event
                                                 {:servicing-stylist stylist
                                                  :card-index        idx}]
@@ -248,6 +248,8 @@
                                                                                             :query-params {:offset j}}]
                                                       :stylist-card.gallery-item/ucare-id ucare-img-url})
                                                    ucare-img-urls))
+             :stylist-card.salon-name/id        salon-name
+             :stylist-card.salon-name/value     salon-name
              :stylist-card.address-marker/id    (str "stylist-card-address-" store-slug)
              :stylist-card.address-marker/value (string/join " "
                                                              [(string/join ", "
