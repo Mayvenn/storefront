@@ -9,12 +9,13 @@
             [storefront.community :as community]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.marquee :as marquee]
-            [storefront.config :as config]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [ui.promo-banner :as promo-banner]))
+
+(def blog-url "https://shop.mayvenn.com/blog/")
 
 (def hamburger
   (component/html
@@ -186,13 +187,9 @@
     (header-menu-link (assoc (utils/route-to events/navigate-content-our-hair)
                              :on-mouse-enter close-header-menus)
                       "Our hair")
-    (if blog?
-      (header-menu-link {:href           config/new-blog-url
-                         :on-mouse-enter close-header-menus}
-                        "Blog")
-      (header-menu-link {:href           config/blog-url
-                         :on-mouse-enter close-header-menus}
-                        "Real Beautiful"))]))
+    (header-menu-link {:href           blog-url
+                       :on-mouse-enter close-header-menus}
+                      "Blog")]))
 
 (defn flyout-column [options col-count]
   {:pre [(zero? (mod 12 col-count))]}
@@ -358,7 +355,6 @@
      :show-bundle-sets-and-hide-deals? (or aladdin? shop?)
      :vouchers?                        (experiments/dashboard-with-vouchers? data)
      :show-freeinstall-link?           shop?
-     :blog?                            (experiments/blog? data)
      :site                             (determine-site data)}))
 
 (defn query [data]

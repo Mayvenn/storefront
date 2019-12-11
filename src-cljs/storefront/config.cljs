@@ -6,11 +6,6 @@
 
 (def freeinstall-subdomain "freeinstall")
 
-(def blog-url "https://blog.mayvenn.com")
-
-;; TODO: Make this the main blog-url when blog experiment is 100%
-(def new-blog-url "https://shop.mayvenn.com/blog/")
-
 (def feature-block-look-ids
   ;;NOTE edit the clj config too!
   ;;NOTE @Ryan, please only change the top map

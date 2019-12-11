@@ -5,7 +5,6 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
             [storefront.assets :as assets]
-            [storefront.config :as config]
             [storefront.community :as community]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.marquee :as marquee]
@@ -21,9 +20,12 @@
 (defn burger-header [cart]
   (component/html
    (header/mobile-nav-header
-    {:class "border-bottom border-gray bg-white black"}
+    {:class "border-bottom border-gray bg-white black"
+     :style {:height "70px"}}
     ;; HACKY(jeff): b/c of relative+absolute position of big-x, padding-left also increases y-offset, so we use negative margin to correct it
     [:div.mtn1.pl4
+     {:style {:width  "100%"
+              :height "100%"}}
      (ui/big-x {:data-test "close-slideout"
                 :attrs     {:on-click #(messages/handle-message events/control-menu-collapse-all)}})]
     (ui/clickable-logo {:event     events/navigate-home
@@ -203,20 +205,16 @@
    :data-test "menu-stylist-products"
    :content [[:span.medium.flex-auto "Stylist Exclusives"]]})
 
-(defn content-rows [{:keys [blog?]}]
+(defn content-rows [_]
   [{:link-attrs (utils/route-to events/navigate-content-guarantee)
     :data-test  "content-guarantee"
     :content    ["Our Guarantee"]}
    {:link-attrs (utils/route-to events/navigate-content-our-hair)
     :data-test  "content-our-hair"
     :content    ["Our Hair"]}
-   (if blog?
-     {:link-attrs {:href config/new-blog-url}
-      :data-test  "content-blog"
-      :content    ["Blog"]}
-     {:link-attrs {:href config/blog-url}
-      :data-test  "content-blog"
-      :content    ["Real Beautiful blog"]})
+   {:link-attrs {:href header/blog-url}
+    :data-test  "content-blog"
+    :content    ["Blog"]}
    {:link-attrs (utils/route-to events/navigate-content-about-us)
     :data-test  "content-about-us"
     :content    ["About Us"]}

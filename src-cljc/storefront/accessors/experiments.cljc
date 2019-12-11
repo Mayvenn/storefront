@@ -84,10 +84,6 @@
   [data]
   (display-feature? data "stylist-results-updated"))
 
-(defn blog?
-  [data]
-  (display-feature? data "blog"))
-
 (defn mayvenn-rating?
   [data]
   (display-feature? data "mayvenn-rating"))
