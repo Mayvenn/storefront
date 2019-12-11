@@ -517,7 +517,7 @@
                        {:class picture-classes}))
      [:source {:src-set (str retina-url " 2x," default-url " 1x")}]
      [:img (-> img-attrs
-               (dissoc :width :retina-quality :default-quality)
+               (dissoc :width :retina-quality :default-quality :picture-classses)
                (assoc :src default-url))]]))
 
 (defn circle-ucare-img
