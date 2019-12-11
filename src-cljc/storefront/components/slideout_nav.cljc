@@ -5,9 +5,11 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
             [storefront.assets :as assets]
+            [storefront.config :as config]
             [storefront.community :as community]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.marquee :as marquee]
+            [storefront.components.header :as header]
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
@@ -16,27 +18,20 @@
             [storefront.platform.messages :as messages]
             [ui.promo-banner :as promo-banner]))
 
-(def blog-url "https://blog.mayvenn.com")
-
-;; TODO: Make this the main blog-url when blog experiment is 100%
-(def new-blog-url "https://shop.mayvenn.com/blog/")
-
 (defn burger-header [cart]
   (component/html
-   [:div.bg-white.flex.items-center.border-bottom.border-gray
-    [:div {:style {:height "55px"
-                   :width  "80px"}}
-     ;; HACKY(jeff): b/c of relative+absolute position of big-x, padding-left also increases y-offset, so we use negative margin to correct it
-     [:div.mtn1.pl4
-      (ui/big-x {:data-test "close-slideout"
-                 :attrs     {:on-click #(messages/handle-message events/control-menu-collapse-all)}})]]
-    [:div.py3.flex-auto
-     (ui/clickable-logo {:event     events/navigate-home
-                         :data-test "header-logo"
-                         :height    "29px"})]
+   (header/mobile-nav-header
+    {:class "border-bottom border-gray bg-white black"}
+    ;; HACKY(jeff): b/c of relative+absolute position of big-x, padding-left also increases y-offset, so we use negative margin to correct it
+    [:div.mtn1.pl4
+     (ui/big-x {:data-test "close-slideout"
+                :attrs     {:on-click #(messages/handle-message events/control-menu-collapse-all)}})]
+    (ui/clickable-logo {:event     events/navigate-home
+                        :data-test "header-logo"
+                        :height    "29px"})
     (ui/shopping-bag {:style     {:height "70px" :width "80px"}
                       :data-test "mobile-cart"}
-                     cart)]))
+                     cart))))
 
 (defn ^:private marquee-col [content]
   [:div.flex-auto
@@ -216,10 +211,10 @@
     :data-test  "content-our-hair"
     :content    ["Our Hair"]}
    (if blog?
-     {:link-attrs {:href new-blog-url}
+     {:link-attrs {:href config/new-blog-url}
       :data-test  "content-blog"
       :content    ["Blog"]}
-     {:link-attrs {:href blog-url}
+     {:link-attrs {:href config/blog-url}
       :data-test  "content-blog"
       :content    ["Real Beautiful blog"]})
    {:link-attrs (utils/route-to events/navigate-content-about-us)

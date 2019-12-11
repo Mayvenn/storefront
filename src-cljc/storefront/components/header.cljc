@@ -7,7 +7,7 @@
             [storefront.community :as community]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.marquee :as marquee]
-            [storefront.components.slideout-nav :as slideout-nav]
+            [storefront.config :as config]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -184,10 +184,10 @@
                              :on-mouse-enter close-header-menus)
                       "Our hair")
     (if blog?
-      (header-menu-link {:href           slideout-nav/new-blog-url
+      (header-menu-link {:href           config/new-blog-url
                          :on-mouse-enter close-header-menus}
                         "Blog")
-      (header-menu-link {:href           slideout-nav/blog-url
+      (header-menu-link {:href           config/blog-url
                          :on-mouse-enter close-header-menus}
                         "Real Beautiful"))]))
 
@@ -214,6 +214,16 @@
            [:div
             {:key (str "col-" ix)}
             (flyout-column items col-count)]))]])))
+
+;; Produces a mobile-nav layout (no styling)
+(defn mobile-nav-header [attrs left center right]
+  (let [size {:width "80px" :height "55px"}]
+    (component/html
+     [:div.flex.items-center
+      attrs
+      [:div.mx-auto.flex.items-center {:style size} left]
+      [:div.flex-auto.py3 center]
+      [:div.mx-auto.flex.items-center {:style size} right]])))
 
 (defcomponent component [{:as data :keys [store user cart signed-in vouchers?]} _ _]
   [:div
@@ -242,14 +252,16 @@
             (:shop-looks-menu/expanded? data))
     (flyout (:shop-bundle-sets-menu/columns data)
             (:shop-bundle-sets-menu/expanded? data))]
-   [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
+   (mobile-nav-header
+    {:class "border-bottom border-gray hide-on-tb-dt"
+     :style {:height "70px"}}
     hamburger
-    [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
-                                            :data-test "header-logo"
-                                            :height    "29px"})]
+    (ui/clickable-logo {:event     events/navigate-home
+                        :data-test "header-logo"
+                        :height    "29px"})
     (ui/shopping-bag {:style     {:height "70px" :width "80px"}
                       :data-test "mobile-cart"}
-                     cart)]])
+                     cart))])
 
 (defn minimal-component
   [logo-nav-event]

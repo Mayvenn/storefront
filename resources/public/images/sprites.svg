@@ -1,4 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="left-arrow" viewBox="0 0 18 17">
+   <path d="M7.086.535l3.129 2.577-3.117 3.499h9.361v3.778l-9.277-.001 3.033 3.406-3.129 2.577L.037 8.453 7.087.535z" fill="currentColor" fill-rule="evenodd"/>
+  </symbol>
   <symbol id="circled-check" viewBox="0 0 14 14">
     <g fill="none" stroke-linecap="round">
       <path d="M9.61 5.17L5.7 8.83 4.39 7.52"></path>

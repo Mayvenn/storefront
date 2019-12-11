@@ -48,6 +48,11 @@
    [:svg opts
     ^:inline (svg-xlink "thick-left-arrow")]))
 
+(defn left-arrow [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "left-arrow")]))
+
 ;; Stylist Dashboard
 
 (defn box-package [opts]

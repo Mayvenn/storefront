@@ -7,24 +7,20 @@
   [{:match-stylist.button/keys [id label target]}]
   (when id
     (component/html
-     (ui/button-large-secondary
-      (merge {:style     {:border-radius "3px"}
-              :class     "my1 col-12"
+     (ui/button-large-primary
+      (merge {:class     "col-12"
               :key       id
               :data-test id}
              (apply utils/route-to target))
-      [:div.flex.items-center.justify-between
-       [:div.col-2]
-       [:div.flex.items-center.justify-center.p3 label]
-       [:div.col-2.p2.right-align (ui/forward-caret {:width 16 :height 16 :color "gray"})]]))))
+      label))))
 
 (defn match-stylist-title-molecule
   [{:match-stylist.title/keys [id primary secondary]}]
   (when id
     (component/html
      [:div.center
-      [:div.h1.mb2.mt1.light primary]
-      [:div.h5.my2.light secondary]])))
+      [:div.title-1.canela.mb2.mt1 primary]
+      [:div.content-2.proxima.my2 secondary]])))
 
 (defcomponent organism
   [data _ _]
