@@ -362,7 +362,7 @@
      :site                             (determine-site data)}))
 
 (defn query [data]
-  (-> (slideout-nav/basic-query data)
+  (-> (basic-query data)
       (assoc-in [:user :expanded?] (get-in data keypaths/account-menu-expanded))
       (merge (shop-a-la-carte-flyout-query data))
       (merge (shop-looks-query data))
