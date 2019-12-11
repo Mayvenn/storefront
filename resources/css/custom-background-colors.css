@@ -6,6 +6,7 @@
 
 .bg-white                  { background-color: var(--white); }
 .bg-gray                   { background-color: var(--gray); }
+.bg-dark-gray              { background-color: var(--dark-gray); }
 .bg-black                  { background-color: var(--black); }
 .bg-clear                  { background-color: var(--clear); }
 .bg-lighten-5              { background-color: var(--lighten-5); }
@@ -13,7 +14,9 @@
 .bg-p-color     { background-color: var(--p-color); }
 .bg-s-color     { background-color: var(--s-color); }
 .bg-cool-gray   { background-color: var(--cool-gray); }
+.bg-warm-gray   { background-color: var(--warm-gray); }
 .bg-pale-purple { background-color: var(--pale-purple); }
+.bg-pink        { background-color: var(--pink); }
 
 :root {
     --gray:  #B9B9B9;
@@ -27,14 +30,17 @@
     --clear: rgba(0, 0, 0, 0);
 
     /* THESE ARE OUR NEW COLORS TODO: vet that these will be used for background*/
+    --dark-gray: #979797;
     --p-color:     #4427c1;
     --s-color:     #6bc8ad;
     --red:         #f94941;
+    --pink:        #f4c3d6;
     --light-red:   #fef7fa;
     --paypal:      #49bbf0;
     --pale-purple: #dedbe5;
     --white:       #ffffff;
     --cool-gray:   #eeefef;
+    --warm-gray:   #ece6e2;
     --black:       #000000;
 }
 
