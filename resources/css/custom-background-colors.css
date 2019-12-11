@@ -28,8 +28,6 @@
     --clear: rgba(0, 0, 0, 0);
 
     /* THESE ARE OUR NEW COLORS TODO: vet that these will be used for background*/
-    --gray:  #cccccc;
-    --dark-gray: #979797;
     --p-color:     #4427c1;
     --s-color:     #6bc8ad;
     --red:         #f94941;
@@ -38,6 +36,8 @@
     --paypal:      #49bbf0;
     --pale-purple: #dedbe5;
     --white:       #ffffff;
+    --gray:        #cccccc;
+    --dark-gray:   #979797;
     --cool-gray:   #eeefef;
     --warm-gray:   #ece6e2;
     --black:       #000000;

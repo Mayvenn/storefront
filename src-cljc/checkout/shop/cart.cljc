@@ -305,9 +305,6 @@
       (string/replace #"[0-9]" (comp spice/number->word int))
       string/lower-case
       (string/replace #"[^a-z]+" "-")))
-
-
-
 ;; TODO: suggestions should be paired with appropriate cart item here
 
 

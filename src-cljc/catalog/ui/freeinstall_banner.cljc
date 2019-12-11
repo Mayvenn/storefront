@@ -3,25 +3,15 @@
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]))
 
-;; MOLECULES
-
-;; ORGANISM
-
-
 (defcomponent organism
   [{:freeinstall-banner/keys [show? title subtitle image-ucare-id button-id button-copy nav-event]} _ _]
   (when show?
-    [:div.cursor.sticky.m3.black.pointer
-     (merge {:data-test button-id
-             :style {:height "245px"}}
+    [:div.cursor.m3
+     (merge {:data-test button-id}
             (apply utils/route-to nav-event))
-     [:div.flex.bg-white.rounded.absolute.bottom-0.left-0.right-0
-      {:style {:height "200px"}}
-      [:div.p4
-       [:div.bold.h3.col-6 title]
-       [:div.h7.col-6 subtitle]
-       [:div.h7.bold.my1.col-5
-        (ui/button-small-secondary {} button-copy)]]]
-     [:div.z5.absolute.bottom-0
-      {:style {:right "-15px"}}
-      (ui/ucare-img {:width "192"} image-ucare-id)]]))
+     [:div.flex.justify-center.bg-warm-gray
+      [:div.p6.center.col-12.flex.flex-column.items-center
+       [:div.title-2.canela.col-8.col-10-on-tb title]
+       [:div.mt2.content-3 subtitle]
+       [:div.mt4.col-6.col-8-on-tb
+        (ui/button-small-primary {} button-copy)]]]]))

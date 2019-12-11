@@ -441,7 +441,7 @@
                                     :stylist-exclusives-family (:stylist-exclusives/family product)
                                     :learn-more-nav-event      events/navigate-content-our-hair})
            #:freeinstall-banner {:title          "Buy 3 items and we'll pay for your hair install"
-                                 :subtitle       [:span "Choose any " [:span.bold "Mayvenn stylist"] " in your area"]
+                                 :subtitle       "Choose any Mayvenn stylist in your area"
                                  :button-copy    "browse stylists"
                                  :nav-event      [events/navigate-adventure-match-stylist]
                                  :image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
