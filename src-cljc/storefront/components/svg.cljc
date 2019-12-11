@@ -331,3 +331,8 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "quotation-mark")]))
+
+(defn shopping-bag [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "shopping-bag")]))
