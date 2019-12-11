@@ -450,39 +450,126 @@
                :class     "col-4"
                :disabled? true}})
    (ui/input-group
-    {:keypath     [:design-system :form :arrow]
+    {:keypath       [:design-system :form :arrow]
      :wrapper-class "col-11"
-     :name        "arrow"
-     :focused     (get-in data keypaths/ui-focus)
-     :placeholder "arrowed"
-     :value       (get-in data [:design-system :form :arrow])
-     :errors      (if (= (get-in data [:design-system :form :arrow]) "wrong")
-                    [{:long-message "wrong"}]
-                    [])}
+     :name          "arrow"
+     :focused       (get-in data keypaths/ui-focus)
+     :placeholder   "arrowed"
+     :value         (get-in data [:design-system :form :arrow])
+     :errors        (if (= (get-in data [:design-system :form :arrow]) "wrong")
+                      [{:long-message "wrong"}]
+                      [])}
     {:content (svg/forward-arrow {:width  "12px"
                                   :height "12px"})
      :args    {:data-test ""
-               :class "col-1"}})
+               :class     "col-1"}})
    (ui/input-group
-    {:keypath     [:design-system :form :disabled-arrow]
+    {:keypath       [:design-system :form :disabled-arrow]
      :wrapper-class "col-11"
-     :name        "disabled arrow"
-     :focused     (get-in data keypaths/ui-focus)
-     :placeholder "disabled arrowed"
-     :value       (get-in data [:design-system :form :disabled-arrow])
-     :errors      (if (= (get-in data [:design-system :form :disabled-arrow]) "wrong")
-                    [{:long-message "wrong"}]
-                    [])}
+     :name          "disabled arrow"
+     :id            "disabled arrow"
+     :focused       (get-in data keypaths/ui-focus)
+     :placeholder   "disabled arrowed"
+     :value         (get-in data [:design-system :form :disabled-arrow])
+     :errors        (if (= (get-in data [:design-system :form :disabled-arrow]) "wrong")
+                      [{:long-message "wrong"}]
+                      [])}
     {:content (svg/forward-arrow {:width  "12px"
                                   :height "12px"})
      :args    {:data-test ""
                :disabled? true
-               :class "col-1"}})])
+               :class     "col-1"}})
+   (let [keypath [:design-system :form :text-field-large]]
+     (ui/text-field-large
+      {:type    "text"
+       :label   "placeholder"
+       :keypath keypath
+       :focused (get-in data keypaths/ui-focus)
+       :value   (get-in data keypath)
+       :errors  (if (= "wrong" (get-in data keypath))
+                  [{:long-message "wrong"}]
+                  [])}))
+   (let [keypath [:design-system :form :large-input-group]
+         value   (get-in data keypath)]
+     (ui/input-group
+      {:keypath       keypath
+       :wrapper-class "col-10 content-1"
+       :large?        true
+       :name          "disabled arrow"
+       :focused       (get-in data keypaths/ui-focus)
+       :placeholder   "large input with button"
+       :value         (get-in data keypath)
+       :errors        (if (= value "wrong")
+                        [{:long-message "wrong"}]
+                        [])}
+      {:content "Apply"
+       :args    {:data-test ""
+                 :class     "border-black col-2"}})) ])
+
+(defn radio-buttons [data]
+  [:div.flex
+   (ui/radio-section
+    (merge {:key       "toggled-button"
+            :name      "items"
+            :id        "item-a"
+            :data-test "item-a"
+            :checked   "checked"})
+    "Selected")
+   (ui/radio-section
+    (merge {:key       "untoggled-button"
+            :name      "items"
+            :id        "item-b"
+            :data-test "item-b"})
+    "Unselected")
+   (ui/radio-section
+    (merge {:key       "disabled-button"
+            :name      "items"
+            :id        "item-c"
+            :disabled  true
+            :data-test "item-c"})
+    "Disabled")])
+
+(defn input-toggles [data]
+ [:div.flex
+    (ui/check-box
+     (let [keypath [:design-system :form :checkbox :checked-box]
+           value   (get-in data keypath)]
+       {:label         "Checked"
+        :data-test     "checked-box"
+        :errors        (if-not value [{:long-message "must be checked"}] [])
+        :keypath       keypath
+        :value         value
+        :label-classes {}
+        :disabled      false}))
+    (ui/check-box
+     (let [keypath [:design-system :form :checkbox :unchecked-box]
+           value   (get-in data keypath)]
+       {:label         "Unchecked"
+        :data-test     "unchecked-check-box"
+        :errors        (if value [{:long-message "Must be unchecked"}] [])
+        :keypath       keypath
+        :value         value
+        :label-classes {}
+        :disabled     false}))
+    (ui/check-box
+     (let [keypath [:design-system :form :checkbox :disabled]
+           value   (get-in data keypath)]
+       {:label         "Disabled"
+        :data-test     "disabled-check-box"
+        :errors        []
+        :keypath       keypath
+        :value         value
+        :label-classes {}
+        :disabled      true}))])
 
 (defn ^:private form-fields [data]
   [:section
    (header "Form Fields")
-   (form data)])
+   (form data)
+   (header "Input toggles")
+   (input-toggles data)
+   (radio-buttons data)])
+
 
 (defcomponent ^:private navigation [data _ _]
   [:section

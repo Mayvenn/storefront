@@ -105,6 +105,11 @@
     [:svg (maps/deep-merge {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}} opts)
      ^:inline (svg-xlink "counter-dec")])))
 
+(defn x-sharp [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "x-sharp")]))
+
 (defn close-x [{:keys [class]}]
   (component/html
    [:svg.rotate-45 {:class class :style {:width "1.2em" :height "1.2em"}}

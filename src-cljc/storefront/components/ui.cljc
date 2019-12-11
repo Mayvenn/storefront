@@ -176,9 +176,9 @@
 
 (defn field-error-message [error data-test]
   (when error
-    [:div.error.my1.h6.center.medium
+    [:div.error.my1.h6.medium
      {:data-test (str data-test "-error")}
-     (or (:long-message error) nbsp)]))
+     (or (some-> error :long-message string/capitalize) nbsp)]))
 
 (defn ^:private floating-label [label id {:keys [value?]}]
   (component/html
@@ -188,18 +188,24 @@
        value? (add-classes "has-value"))
      label]]))
 
-(defn ^:private field-wrapper-class [wrapper-class {:keys [error? focused?]}]
+(defn ^:private field-wrapper-class [{:as base :keys [wrapper-class large?]}
+                                     {:as status :keys [error? focused?]}]
   (cond-> {:class wrapper-class}
     :always      (add-classes "border x-group-item")
+    large?       (add-classes "border-black")
+    (not large?) (add-classes "border-gray")
     focused?     (add-classes "glow")
     ;; .z1.relative keeps border between adjacent fields red if one of them is in error
-    error?       (add-classes "bg-error z1 relative border-gray")
-    (not error?) (add-classes "border-gray")))
+    error?       (add-classes "bg-error z1 relative")))
 
-(defn ^:private field-class [{:as base :keys [label]} {:keys [error? value?]}]
+(defn ^:private field-class [{:as base :keys [label large?]}
+                             {:as status :keys [error? value?]}]
   (cond-> base
-    :always            (add-classes "bg-clear floating-label--input border-none")
-    (and value? label) (add-classes "has-value")))
+    :always            (add-classes "bg-clear border-none")
+    (and value? label) (add-classes "has-value")
+    (not large?)       (add-classes "floating-label--input")
+    large?             (add-classes "floating-label-large--input")
+    :always            (dissoc :large?)))
 
 (defn text-input [{:keys [id type label keypath value] :as input-attributes}]
   (component/html
@@ -222,17 +228,18 @@
                                                :value   (.. e -target -value)})))}
      (dissoc input-attributes :id :type :label :keypath :value))]))
 
-(defn plain-text-field
-  [label keypath value error? {:keys [wrapper-class wrapper-style id hint focused] :as input-attributes}]
+(defn ^:private plain-text-field
+  [label keypath value error? {:keys [wrapper-class wrapper-style id hint focused large?] :as input-attributes}]
   (component/html
-   (let [input-attributes (dissoc input-attributes :wrapper-class :hint :focused :wrapper-style)
+   (let [input-attributes (dissoc input-attributes :wrapper-class :hint :focused :wrapper-style :large?)
          hint?            (seq hint)
          focused?         (= focused keypath)
          status           {:error?   error?
                            :focused? focused?
                            :hint?    hint?
                            :value?   (seq value)}]
-     [:div (merge (field-wrapper-class wrapper-class status)
+     [:div (merge (field-wrapper-class {:wrapper-class wrapper-class
+                                        :large?        large?} status)
                   {:style wrapper-style})
       [:div.pp1.col-12
        (floating-label label id status)
@@ -241,7 +248,8 @@
          (field-class (merge {:key         id
                               :placeholder label
                               :label       label
-                              :value       (or value "")}
+                              :value       (or value "")
+                              :large?      large?}
                              #?(:cljs
                                 {:on-focus
                                  (fn [^js/Event e]
@@ -277,7 +285,21 @@
    (let [error (first errors)]
      [:div.mb2.stacking-context {:class class}
       (plain-text-field label keypath value (not (nil? error))
-                        (dissoc input-attributes :label :keypath :value :errors))
+                        (-> input-attributes
+                            (dissoc :label :keypath :value :errors)
+                            (assoc :wrapper-class "content-2")
+                            (assoc :large? false)))
+      (field-error-message error data-test)])))
+
+(defn text-field-large [{:keys [label keypath value errors data-test class] :as input-attributes :or {class "col-12"}}]
+  (component/html
+   (let [error (first errors)]
+     [:div.mb2.stacking-context {:class class}
+      (plain-text-field label keypath value (not (nil? error))
+                        (-> input-attributes
+                            (dissoc :label :keypath :value :errors)
+                            (assoc :wrapper-class "content-1")
+                            (assoc :large? true)))
       (field-error-message error data-test)])))
 
 (defn input-group [{:keys [label keypath value errors] :as text-input-attrs :or {class "col-12"}}
@@ -390,14 +412,12 @@
      (merge {:class label-classes}
             (when data-test
               {:data-test (str "label-" data-test)}))
-     ;; 15px svg + 2*2px padding + 2*1px border = 21px
      [:div.border.left.mr3.pp2
-      (when disabled
-        {:class "border-gray"})
+      (when disabled {:class "border-gray"})
       (if value
-        (svg/simple-x {:class        "block p-color"
-                       :width        "15px"
-                       :height       "15px"})
+        (svg/x-sharp {:class  "block fill-p-color"
+                      :width  "15px"
+                      :height "15px"})
         [:div {:style {:width "15px" :height "15px"}}])]
      [:input.hide
       (merge (utils/toggle-checkbox keypath value)
@@ -409,39 +429,22 @@
     (when-let [error (first errors)]
       (field-error-message error data-test))]))
 
-(defn radio-section [radio-attrs & content]
+(defn radio-section
+  [{:keys [checked key disabled] :as radio-attrs} & content]
   (component/html
-   (let [k (:key radio-attrs)
-         radio-attrs (dissoc radio-attrs :key)]
+   (let [radio-attrs (dissoc radio-attrs :key)]
      [:label.flex.items-center.col-12.py1
-      (when k {:key k})
-      [:input.mx2.h2
-       (merge {:type "radio"}
-              radio-attrs)]
-      (into [:div.clearfix.col-12]
-            content)])))
-
-(defn radio-group [{:keys [group-name keypath checked-value] :as attributes} options]
-  (component/html
-   [:div
-    (for [{:keys [id label value] :as option} options]
-      [:label
-       {:key (str group-name id)}
-       [:input.mx2.h2
-        (merge {:type         "radio"
-                :name         group-name
-                :data-test    group-name
-                :data-test-id id
-                :id           (str group-name id)
-                :on-change    #(handle-message events/control-change-state
-                                               {:keypath keypath
-                                                :value   value})}
-               (when (= checked-value value)
-                 {:checked (= checked-value value)})
-               (dissoc attributes
-                       :group-name :keypath :checked-value
-                       :id :checked :data-test-id))]
-       [:span label]])]))
+      (when key {:key key})
+      [:div.left.mr3.pp2
+       [:div.circle.bg-white.border.flex.items-center.justify-center
+        (merge {:style {:height "22px" :width "22px"}}
+         (when disabled {:class "bg-cool-gray border-gray"}))
+        (when checked
+          [:div.circle.bg-p-color
+           {:style {:height "10px" :width "10px"}}])]]
+      [:input.hide.mx2.h2
+       (merge {:type "radio"} radio-attrs)]
+      (into [:div.clearfix.col-12] content)])))
 
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
   (component/html
