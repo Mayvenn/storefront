@@ -30,6 +30,7 @@
                (component/create-ref! c "next-button")
                nil)
   (did-mount [this]
+             (safely-destroy (.-carousel this))
              (let [{:keys [settings]} (component/get-opts this)]
                (build-carousel this settings)))
   (will-unmount [this]
@@ -37,9 +38,8 @@
                 (safely-destroy (.-carousel this)))
   (render [this]
           (component/html
-           (let [;;{:keys [settings]}                     (component/get-props this)
-                 {:keys [settings slides]}              (component/get-opts this)
-                 {:keys [controls] :or {controls true}} settings]
+           (let [{:keys [slides]}                       (component/get-props this)
+                 {:keys [controls] :or {controls true}} (:settings (component/get-opts this))]
              [:div.relative
               (when controls
                 [:div.z2.carousel-prev {:style {:height "50px" :width "50px"}
