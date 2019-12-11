@@ -12,6 +12,14 @@
                        goog.events])
             [ui.molecules :as ui.M]))
 
+(defn ^:private vertical-squiggle
+  [top]
+  [:div.absolute.col-12.flex.justify-center
+   {:style {:top top}}
+   [:object {:style {:height "72px"}
+             :type  "image/svg+xml"
+             :data  "/images/vertical-squiggle.svg"}]])
+
 (defcomponent layer-hero
   [data _ opts]
   [:div.mx-auto.relative {:style {:min-height "300px"}}
@@ -295,16 +303,17 @@
   (let [quotation-mark (svg/quotation-mark
                         {:width  "21px"
                          :height "18px"})]
-    [:div.bg-calm-gray
-    [:div.flex.mx5.my10
-     [:div quotation-mark]
-     [:div.canela.title-2.center.pt2.pb4 text]
-     [:div.self-end.rotate-180 quotation-mark]]
-    [:div.relative
-     [:div.absolute.white.right-0.py8.px4.right-align
-      [:div.proxima.title-2.shout primary-attribution]
-      [:div secondary-attribution]]
-     (ui/ucare-img {:class "block col-12"} img)]]))
+    [:div.bg-calm-gray.relative
+     (vertical-squiggle "-72px")
+     [:div.flex.mx5.my10
+      [:div quotation-mark]
+      [:div.canela.title-2.center.pt2.pb4 text]
+      [:div.self-end.rotate-180 quotation-mark]]
+     [:div.relative
+      [:div.absolute.white.right-0.py8.px4.right-align
+       [:div.proxima.title-2.shout primary-attribution]
+       [:div secondary-attribution]]
+      (ui/ucare-img {:class "block col-12"} img)]]))
 
 (def sticky-footer
   #?(:clj (fn [_ _ _] (component/create "sticky-footer" [:div]))
@@ -386,17 +395,13 @@
    (when divider-img
      (divider divider-img))])
 
+
 (defcomponent shop-framed-checklist
   [{:keys [bullets divider-img] header-value :header/value} _ _]
   [:div
    [:div.relative
     {:style {:margin-top "60px"}}
-    [:div.absolute.col-12.flex.justify-center
-     {:style {:top "-50px"}}
-     [:object {:style {:height "67px"}
-               :type  "image/svg+xml"
-               :data  "/images/vertical-squiggle.svg"}]]
-
+    (vertical-squiggle "-50px")
     [:div.col-10.col-6-on-dt.mx-auto.border.border-dotted.flex.justify-center.mb8
      [:div.col-12.flex.flex-column.items-center.m5
       {:style {:width "max-content"}}
@@ -452,6 +457,49 @@
                   bullets)]
     ^:inline (shop-cta-with-img data)]])
 
+(defn ^:private shop-icon-step
+  [key-prefix
+   idx
+   {title :header/value
+    body  :body/value
+    icon  :icon/body
+    width :icon/width}]
+  (component/html
+   [:div.pb1.pt6
+    {:key (str key-prefix idx)}
+    [:div
+     {:width width}
+     icon]
+    [:div.title-2.proxima.py1.shout
+     title]
+    [:p.content-2.py1 body]
+    ^:inline (cta-with-chevron {})]))
+
+(defcomponent shop-iconed-list
+  [{:as            data
+    :keys          [bullets]
+    title-value    :title/value
+    subtitle-value :subtitle/value
+    layer-id       :layer/id}
+   owner
+   opts]
+  [:div.col-12.bg-cool-gray.center.flex.flex-column.items-center.py6
+   [:div.mt5.mb3
+    (when title-value
+      [:h2.title-1.proxima.shout.pb1
+       (interpose [:br] title-value)])
+    (when subtitle-value
+      [:div.title-1.canela.shout
+       (interpose [:br] subtitle-value)])]
+   [:div.col-8.flex.flex-column.items-center.hide-on-dt
+    (map-indexed (partial shop-icon-step (str layer-id "-mb-tb-"))
+                 bullets)
+    [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
+     (map-indexed (partial shop-icon-step (str layer-id "-dt-"))
+                  bullets)]
+    ^:inline (shop-cta-with-img data)]])
+
+
 (defcomponent shop-ugc
   [{title  :header/value
     images :images
@@ -477,22 +525,23 @@
      :shop-framed-checklist   shop-framed-checklist
      :shop-bulleted-explainer shop-bulleted-explainer
      :shop-ugc                shop-ugc
+     :shop-iconed-list        shop-iconed-list
      :shop-quote-img          shop-quote-img
-     :shop-contact                 shop-contact
+     :shop-contact            shop-contact
 
      ;; LEGACY
-     :image-block                     image-block
-     :hero                            layer-hero
-     :free-standard-shipping-bar      free-standard-shipping-bar
-     :text-block                      text-block
-     :checklist                       checklist
-     :video-overlay                   video-overlay
-     :video-block                     video-block
-     :find-out-more                   find-out-more
-     :bulleted-explainer              bulleted-explainer
-     :ugc                             ugc
-     :faq                             faq
-     :sticky-footer                   sticky-footer)
+     :image-block                image-block
+     :hero                       layer-hero
+     :free-standard-shipping-bar free-standard-shipping-bar
+     :text-block                 text-block
+     :checklist                  checklist
+     :video-overlay              video-overlay
+     :video-block                video-block
+     :find-out-more              find-out-more
+     :bulleted-explainer         bulleted-explainer
+     :ugc                        ugc
+     :faq                        faq
+     :sticky-footer              sticky-footer)
    view-data opts))
 
 (defcomponent component [{:keys [layers]} owner opts]

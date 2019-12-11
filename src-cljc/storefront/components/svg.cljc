@@ -341,3 +341,23 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "alert-icon")]))
+
+(defn heart [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "heart")]))
+
+(defn calendar [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "calendar")]))
+
+(defn worry-free [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "worry-free")]))
+
+(defn mirror [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "mirror")]))

@@ -101,26 +101,30 @@
        :cta/navigation-message [events/navigate-shop-by-look {:album-keyword :look}]}
       (merge {:layer/type :faq}
              (faq/free-install-query data))
-      {:layer/type      :bulleted-explainer
-       :layer/id        "more-than-a-hair-company"
-       :header/value    "Mayvenn is More than a Hair Company"
-       :subheader/value "It's a movement"
-       :bullets         [{:icon/uuid    "ab1d2ed4-ff93-40e6-978a-721133ca88a7"
-                          :icon/width   "29"
-                          :header/value "Top-Notch Customer Service"
-                          :body/value   "Our team is made up of hair experts ready to help you by phone, text, and email."}
-                         {:icon/uuid    "8787e30c-2879-4a43-8d01-9d6790575084"
-                          :icon/width   "52"
-                          :header/value "30 Day Guarantee"
-                          :body/value   "Wear it, dye it, even cut it! If you're not satisfied we'll exchange it within 30 days."}
-                         {:icon/uuid    "e02561dd-c294-43b7-bb33-c40bfabea518"
-                          :icon/width   "35"
-                          :header/value "100% Virgin Hair"
-                          :body/value   "Our hair is gently steam-processed and can last up to a year. Available in 8 textures and 5 shades."}
-                         {:icon/uuid    "5a04ea88-b0f8-416b-a380-1da0baa8a114"
-                          :icon/width   "35"
-                          :header/value "Certified Stylists"
-                          :body/value   "Our stylists are chosen because of their industry-leading standards. Both our hair and service are quality guaranteed."}]}
+      {:layer/type     :shop-iconed-list
+       :layer/id       "more-than-a-hair-company"
+       :title/value    [[:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "29px"}}]]
+       :subtitle/value ["guarantees"]
+       :bullets        [{:icon/body    (svg/heart {:class  "fill-p-color"
+                                                   :width  "32px"
+                                                   :height "29px"})
+                         :header/value "Top-Notch Customer Service"
+                         :body/value   "Our team is made up of hair experts ready to help you by phone, text, and email."}
+                        {:icon/body    (svg/calendar {:class  "fill-p-color"
+                                                      :width  "30px"
+                                                      :height "33px"})
+                         :header/value "30 Day Guarantee"
+                         :body/value   "Wear it, dye it, even cut it! If you're not satisfied we'll exchange it within 30 days."}
+                        {:icon/body    (svg/worry-free {:class  "fill-p-color"
+                                                        :width  "35px"
+                                                        :height "36px"})
+                         :header/value "100% Virgin Hair"
+                         :body/value   "Our hair is gently steam-processed and can last up to a year. Available in 8 textures and 5 shades."}
+                        {:icon/body    (svg/mirror {:class  "fill-p-color"
+                                                    :width  "30px"
+                                                    :height "34px"})
+                         :header/value "Certified Stylists"
+                         :body/value   "Our stylists are chosen because of their industry-leading standards. Both our hair and service are quality guaranteed."}]}
       {:layer/type                  :shop-quote-img
        :quote/img                   "befce648-98b6-45a2-90f0-6199119bfffb"
        :quote/text                  "You deserve quality extensions & exceptional service without the unreasonable price tag."
