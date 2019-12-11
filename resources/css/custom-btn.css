@@ -82,6 +82,9 @@
 .btn-paypal-color           { color: var(--white); }
 .btn-paypal-color.btn-large { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--paypal), stroke=none); }
 
+.btn-facebook-blue           { color: var(--white); }
+.btn-facebook-blue.btn-large { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--facebook-blue), stroke=none); }
+
 .btn-s-color { color: var(--white); background-color: var(--s-color); }
 
 /* Ordering matters here.  Gray has to beat the others. */
@@ -111,12 +114,13 @@
   --oct-button-large-svg: '../public/images/oct_button_large.svg';
   --oct-button-medium-svg: '../public/images/oct_button_medium.svg';
 
-  --darken-1: rgba(0, 0, 0, .075);
-  --darken-3: rgba(0, 0, 0, .375);
-  --p-color:   #4427C1;
-  --s-color:   #6bc8ad;
-  --cool-gray: #eeefef;
-  --paypal:    #49bbf0;
-  --gray:      #cccccc;
-  --white:     #ffffff;
+  --darken-1:      rgba(0, 0, 0, .075);
+  --darken-3:      rgba(0, 0, 0, .375);
+  --p-color:       #4427C1;
+  --s-color:       #6bc8ad;
+  --cool-gray:     #eeefef;
+  --paypal:        #49bbf0;
+  --facebook-blue: #3b5998;
+  --gray:          #cccccc;
+  --white:         #ffffff;
 }

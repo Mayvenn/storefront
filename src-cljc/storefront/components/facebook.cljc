@@ -5,7 +5,7 @@
 
 (defn narrow-sign-in-button [loaded?]
   (when loaded?
-    (ui/button-large-primary
+    (ui/button-large-facebook-blue
      {:on-click (utils/send-event-callback events/control-facebook-sign-in)
       :data-test "facebook-button"}
      [:div.mx-auto
@@ -15,7 +15,7 @@
 
 (defn- wide-button [loaded? click-event]
   (if loaded?
-    (ui/button-large-primary
+    (ui/button-large-facebook-blue
      {:on-click  (utils/send-event-callback click-event)
       :data-test "facebook-button"}
      [:div.flex.items-center.justify-center
