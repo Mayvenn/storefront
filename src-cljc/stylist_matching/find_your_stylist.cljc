@@ -47,12 +47,13 @@
 
 (defcomponent template
   [{:keys [flash header stylist-search spinner]} _ _]
-  [:div.bg-pale-purple.white.center.flex.flex-auto.flex-column
+  [:div.center.flex.flex-auto.flex-column
    (component/build header/organism header nil)
    (component/build flash/component flash nil)
    (if (seq spinner)
      (component/build spinner/organism spinner nil)
-     (component/build stylist-search/organism stylist-search nil))])
+     [:div.px2.mt8.pt4
+      (component/build stylist-search/organism stylist-search nil)])])
 
 (defn page
   [app-state]

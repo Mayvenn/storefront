@@ -570,7 +570,6 @@
    (input-toggles data)
    (radio-buttons data)])
 
-
 (defcomponent ^:private navigation [data _ _]
   [:section
    (header "Navigation")

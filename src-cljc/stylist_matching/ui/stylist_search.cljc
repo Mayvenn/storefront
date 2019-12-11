@@ -20,24 +20,23 @@
   (when id
     (component/html
      (let [handler (partial change-state clear?)]
-       [:div
-        [:input.col-12.h4.rounded.border.border-white.p3
-         {:style       {:margin-right 10}
-          :value       value
+       [:div.bg-white
+        (ui/text-field-large
+         {:value       value
           :id          id
           :data-test   id
           :autoFocus   true
+          :focused     false
           :placeholder placeholder
           :on-submit   handler
-          :on-change   handler}]]))))
+          :on-change   handler})]))))
 
 (defn stylist-search-button
   [{:stylist-search.button/keys [id disabled? target label]}]
   (when id
     (component/html
-     (ui/button-large-primary (merge {:disabled?      disabled?
-                                      :disabled-class "bg-cool-gray gray"
-                                      :data-test      "stylist-match-address-submit"}
+     (ui/button-large-primary (merge {:disabled? disabled?
+                                      :data-test "stylist-match-address-submit"}
                                      (apply utils/fake-href target))
                               label))))
 
@@ -46,7 +45,7 @@
   (when id
     (component/html
      [:div.left-align
-      [:div.h1.my2.light primary]
+      [:div.title-2.canela.my2.light primary]
       [:div.h5.my2.light secondary]])))
 
 (defdynamic-component organism
@@ -60,7 +59,7 @@
              [:div.m5
               [:div.mb4
                (stylist-search-title-molecule data)]
-              [:div.mb3
+              [:div.mb4
                (stylist-search-location-search-box data)]
               [:div
                (stylist-search-button data)]]))))
