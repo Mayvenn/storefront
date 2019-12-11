@@ -301,55 +301,21 @@
      "Email Us"
      "help@mayvenn.com")]])
 
-(defcomponent homepage-were-changing-the-game
-  [{:cta/keys [navigation-message] :as data} _ _]
-  (let [we-are-mayvenn-link (apply utils/route-to navigation-message)
-        diishan-image       "e2186583-def8-4f97-95bc-180234b5d7f8"
-        mikka-image         "838e25f5-cd4b-4e15-bfd9-8bdb4b2ac341"
-        stylist-image       "6735b4d5-9b65-4fa9-96cd-871141b28672"
-        diishan-image-2     "ec9e0533-9eee-41ae-a61b-8dc22f045cb5"]
-    [:div.pt10.px4.pb8
-     [:div.h2.center "We're Changing The Game"]
-     [:h6.center.mb2 "Founded in Oakland, CA • 2013"]
-
-     [:div
-      [:div.hide-on-tb-dt
-       [:div.flex.flex-wrap
-        [:a.block.col-6.p1
-         we-are-mayvenn-link
-         [:div.relative
-          (ui/defer-ucare-img {:class "col-12"} diishan-image)
-          [:div.absolute.bg-darken-3.overlay.flex.items-center.justify-center
-           p-color-play-video-mobile]]]
-        [:a.col-6.px2
-         we-are-mayvenn-link
-         [:h4.my1.medium "Our Story"]
-         [:div.h6.p-color.flex.items-center.medium.shout
-          "Watch Now"]]
-        [:div.col-6.p1 (ui/defer-ucare-img {:class "col-12"} mikka-image)]
-        [:div.col-6.p1 (ui/defer-ucare-img {:class "col-12"} stylist-image)]
-        [:div.col-6.px2
-         [:h4.my2.line-height-1 "“You deserve quality extensions and exceptional service without the unreasonable price tag.“"]
-         [:h6.medium.line-height-1 "- Diishan Imira"]
-         [:h6 "CEO of Mayvenn"]]
-        [:div.col-6.p1 (ui/defer-ucare-img {:class "col-12"} diishan-image-2)]]]
-
-      [:div.hide-on-mb.pb4
-       [:div.col-8.flex.flex-wrap.mx-auto
-        [:div.col-6.flex.flex-wrap.items-center
-         [:div.col-6.p1 (ui/defer-ucare-img {:class "col-12"} mikka-image)]
-         [:div.col-6.p1 (ui/defer-ucare-img {:class "col-12"} stylist-image)]
-         [:div.col-6.px1.pb1.flex.justify-start.flex-column
-          [:div.h3.line-height-3.col-11
-           "“You deserve quality extensions and exceptional service without the unreasonable price tag.“"]
-          [:h6.medium.line-height-1.mt2 "- Diishan Imira"]
-          [:h6.ml1 "CEO of Mayvenn"]]
-         [:div.col-6.p1.flex (ui/defer-ucare-img {:class "col-12"} diishan-image-2)]]
-        [:a.relative.col-6.p1
-         we-are-mayvenn-link
-         [:div.relative (ui/defer-ucare-img {:class "col-12"} diishan-image)
-          [:div.absolute.overlay.flex.items-center.justify-center.bg-darken-3
-           p-color-play-video-desktop]]]]]]]))
+(defcomponent shop-quote-img
+  [{:quote/keys [img text primary-attribution secondary-attribution] :as data} _ _]
+  (let [quotation-mark (svg/quotation-mark
+                        {:width  "21px"
+                         :height "18px"})]
+    [:div.bg-calm-gray
+    [:div.flex.mx5.my10
+     [:div quotation-mark]
+     [:div.canela.title-2.center.pt2.pb4 text]
+     [:div.self-end.rotate-180 quotation-mark]]
+    [:div.relative
+     [:div.absolute.white.right-0.py8.px4.right-align
+      [:div.proxima.title-2.shout primary-attribution]
+      [:div secondary-attribution]]
+     (ui/ucare-img {:class "block col-12"} img)]]))
 
 (def sticky-footer
   #?(:clj (fn [_ _ _] (component/create "sticky-footer" [:div]))
@@ -522,6 +488,7 @@
      :shop-framed-checklist   shop-framed-checklist
      :shop-bulleted-explainer shop-bulleted-explainer
      :shop-ugc                shop-ugc
+     :shop-quote-img          shop-quote-img
 
      ;; LEGACY
      :image-block                     image-block
@@ -536,7 +503,6 @@
      :ugc                             ugc
      :faq                             faq
      :contact                         contact
-     :homepage-were-changing-the-game homepage-were-changing-the-game
      :sticky-footer                   sticky-footer)
    view-data opts))
 

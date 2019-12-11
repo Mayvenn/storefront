@@ -120,9 +120,11 @@
                           :icon/width   "35"
                           :header/value "Certified Stylists"
                           :body/value   "Our stylists are chosen because of their industry-leading standards. Both our hair and service are quality guaranteed."}]}
-      {:layer/type             :homepage-were-changing-the-game
-       :cta/navigation-message [events/navigate-home
-                                {:query-params {:video "we-are-mayvenn"}}]}
+      {:layer/type                  :shop-quote-img
+       :quote/img                   "befce648-98b6-45a2-90f0-6199119bfffb"
+       :quote/text                  "You deserve quality extensions & exceptional service without the unreasonable price tag."
+       :quote/primary-attribution   "— Diishan Imira"
+       :quote/secondary-attribution "CEO of Mayvenn"}
       {:layer/type :contact}
       {:layer/type             :sticky-footer
        :cta/navigation-message [events/navigate-adventure-match-stylist]}]}))
