@@ -415,11 +415,15 @@
       (field-error-message error data-test))]))
 
 (defn radio-section
-  [{:keys [checked key disabled] :as radio-attrs} & content]
+  [{:keys [checked key disabled data-test-id] :as radio-attrs} & content]
   (component/html
-   (let [radio-attrs (dissoc radio-attrs :key)]
+   (let [radio-attrs (dissoc radio-attrs :key :data-test-id)]
      [:label.flex.items-center.col-12.py1
-      (when key {:key key})
+      (cond-> {}
+        key
+        (assoc :key key)
+        data-test-id
+        (assoc :data-test-id data-test-id))
       [:div.left.mr3.pp2
        [:div.circle.bg-white.border.flex.items-center.justify-center
         (merge {:style {:height "22px" :width "22px"}}
