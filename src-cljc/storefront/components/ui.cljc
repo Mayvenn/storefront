@@ -629,10 +629,9 @@
     (merge (utils/route-to events/navigate-cart)
            opts)
     [:div.relative.container-size.flex.items-center.justify-center
-     [:div.absolute.rotate-45.border.border-width-2
-      {:style {:height "24.75px"
-               :width  "24.75px"}}]
-     [:div.absolute.bold.flex.items-center.justify-center.content-3
+     (svg/shopping-bag {:width  "33px"
+                        :height "44px"})
+     [:div.absolute.bold.flex.items-center.justify-center.content-3.mtp4
       {:style {:font "900 14px/17px 'Proxima Nova'"}}
       quantity]]]))
 
