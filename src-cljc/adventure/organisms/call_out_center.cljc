@@ -19,18 +19,12 @@
   [:div.p8
    (merge
     (when react-key {:key react-key})
-    (when bg-class  {:class bg-class})
-    (when bg-ucare-id
-      (let [bg-image-url (str "url('//ucarecdn.com/" bg-ucare-id "/-/format/auto/')")]
-        {:style {:background-position "right center"
-                 :background-repeat   "no-repeat"
-                 :background-size     "contain"
-                 :background-image    bg-image-url}})))
+    (when bg-class  {:class bg-class}))
    [:div.center.col-12
     (when title
-      [:div.h1.white title])
+      [:div.h1.canela.title-1 title])
     (when subtitle
-      [:div.p3.white subtitle])]
+      [:div.p3.proxima.content-2 subtitle])]
    [:div.col-9.mx-auto
     (cta-molecule query)]])
 
