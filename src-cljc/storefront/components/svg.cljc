@@ -336,3 +336,8 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "shopping-bag")]))
+
+(defn alert-icon [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "alert-icon")]))

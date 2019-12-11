@@ -1,5 +1,6 @@
 (ns stylist-matching.ui.shopping-method-choice
   (:require [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]))
 
@@ -29,9 +30,10 @@
   [{:shopping-method-choice.error-title/keys [id primary secondary]}]
   (when id
     (component/html
-     [:div.center.flex.flex-column.items-center
-      [:div.h2.my2.light.col-10.p-color primary]
-      [:div.h5.my2.light.col-10 secondary]])))
+     [:div.center.flex.flex-column.items-center.col-11.mx-auto
+      [:div (svg/alert-icon {:height "47px" :width "47px"})]
+      [:div.shout.my2.title-2.proxima.bold primary]
+      [:div.h5.mb4.light secondary]])))
 
 (defn shopping-method-choice-title-molecule
   [{:shopping-method-choice.title/keys [id primary secondary]}]
