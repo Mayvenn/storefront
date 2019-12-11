@@ -128,21 +128,6 @@
 (defn button-small-secondary  [attrs & content] (button "btn-small btn-ghost button-font-3 shout" attrs content))
 (defn button-pill             [attrs & content] (button "btn-pill btn-s-color button-font-2 shout" attrs content))
 
-;; GROT
-(defn ^:private button-colors [color-kw]
-  (let [color (color-kw {:color/p-color       "btn-primary bg-p-color white"
-                         :color/aqua          "btn-primary bg-aqua white"
-                         :color/white         "btn-primary btn-primary-teal-hover bg-white border-cool-gray black"
-                         :color/ghost         "btn-outline border-gray black"
-                         :color/light-ghost   "btn-outline cool-gray border-white white"
-                         :color/p-color-ghost "btn-outline border-p-color p-color"
-                         :color/facebook      "btn-primary bg-fb-blue white"
-                         :color/black         "btn-primary bg-black white"
-                         :color/quadpay       "btn-primary bg-quadpay-blue white"})]
-    (assert color (str "Button color " color-kw " has not been defined."))
-    color))
-
-
 (defn submit-button
   ([title] (submit-button title {}))
   ([title {:keys [spinning? disabled? data-test]
