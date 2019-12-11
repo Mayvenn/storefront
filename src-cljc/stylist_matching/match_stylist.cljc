@@ -36,10 +36,9 @@
      (svg/left-arrow {:width  "20"
                       :height "20"})]
     [:div.content-1.proxima.medium (:header/title logo-header)]
-    [:div.mr2
-     (ui/shopping-bag {:style     {:height "60px" :width "60px"}
-                       :data-test "mobile-cart"}
-                      cart)])
+    (ui/shopping-bag {:style     {:height "60px" :width "60px"}
+                      :data-test "mobile-cart"}
+                     cart))
 
    (component/build match-stylist/organism match-stylist nil)])
 
