@@ -454,11 +454,11 @@
      (svg/straight-line {:width  "1px"
                          :height "42px"})]
     (map-indexed (partial shop-step (str layer-id "-mb-tb-"))
-                 bullets)
-    [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
-     (map-indexed (partial shop-step (str layer-id "-dt-"))
-                  bullets)]
-    ^:inline (shop-cta-with-img data)]])
+                 bullets)]
+   [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
+    (map-indexed (partial shop-step (str layer-id "-dt-"))
+                 bullets)]
+   ^:inline (shop-cta-with-img data)])
 
 (defn ^:private shop-icon-step
   [key-prefix
@@ -496,11 +496,10 @@
        (interpose [:br] subtitle-value)])]
    [:div.col-8.flex.flex-column.items-center.hide-on-dt
     (map-indexed (partial shop-icon-step (str layer-id "-mb-tb-"))
-                 bullets)
-    [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
-     (map-indexed (partial shop-icon-step (str layer-id "-dt-"))
-                  bullets)]
-    ^:inline (shop-cta-with-img data)]])
+                 bullets)]
+   [:div.col-11.flex.justify-between.hide-on-mb-tb
+    (map-indexed (partial shop-icon-step (str layer-id "-dt-")) bullets)]
+   ^:inline (shop-cta-with-img data)])
 
 
 (defcomponent shop-ugc
