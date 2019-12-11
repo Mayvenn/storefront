@@ -19,8 +19,6 @@
 .bg-pink        { background-color: var(--pink); }
 
 :root {
-    --gray:  #B9B9B9;
-
     --facebook-blue:          #3b5998;
     --quadpay-blue:           #1d73ec;
     --twitter-blue:           #00aced;
@@ -30,6 +28,7 @@
     --clear: rgba(0, 0, 0, 0);
 
     /* THESE ARE OUR NEW COLORS TODO: vet that these will be used for background*/
+    --gray:  #cccccc;
     --dark-gray: #979797;
     --p-color:     #4427c1;
     --s-color:     #6bc8ad;

@@ -20,9 +20,9 @@
 
 :root {
   --yellow:         #ffc520;
-  --gray:           #B9B9B9;
 
   /* THESE ARE OUR NEW COLORS */
+  --gray:        #cccccc;
   --dark-gray:   #979797;
   --p-color:     #4427c1;
   --s-color:     #6bc8ad;

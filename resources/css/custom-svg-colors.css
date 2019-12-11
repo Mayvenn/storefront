@@ -23,7 +23,6 @@
   --twitter-blue:   #00aced;
   --aqua:         #49BBF0;
 
-  --gray:         #B9B9B9;
 
   /* THESE ARE OUR NEW COLORS */
   --p-color:     #4427c1;
@@ -32,6 +31,7 @@
   --paypal:      #49bbf0;
   --pale-purple: #dedbe5;
   --white:       #ffffff;
+  --gray:        #cccccc;
   --cool-gray:   #eeefef;
   --black:       #000000;
 }

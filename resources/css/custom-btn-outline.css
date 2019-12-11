@@ -21,7 +21,7 @@
 :root {
   --button-border-radius: 50px;
 
-  --gray:       #B9B9B9;
+  --gray:       #cccccc;
   --cool-gray:  #EEEFEF;
   --darken-1: rgba(0, 0, 0, .075);
   --darken-3: rgba(0, 0, 0, .375);

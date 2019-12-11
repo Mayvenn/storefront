@@ -31,7 +31,6 @@
     --error:          #ff004f;
     --yellow:         #ffc520;
     --white:          #ffffff;
-    --gray:           #B9B9B9;
     --black:          #000000;
 
     --p-color:     #4427c1;
@@ -40,6 +39,7 @@
     --paypal:      #49bbf0;
     --pale-purple: #dedbe5;
     --white:       #ffffff;
+    --gray:        #cccccc;
     --cool-gray:   #eeefef;
     --black:       #000000;
 }
