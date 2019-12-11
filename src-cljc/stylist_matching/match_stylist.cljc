@@ -28,17 +28,7 @@
   [:div.bg-white.black.center.flex.flex-column
    stylist-matching.A/woman-in-yellow-background
 
-   (header/mobile-nav-header
-    {:class "border-bottom border-gray bg-white black"
-     :style {:height "70px"}}
-    [:a.block.black.ml2.p2.flex.justify-center.items-center
-     (apply utils/route-to (:header.left/target logo-header))
-     (svg/left-arrow {:width  "20"
-                      :height "20"})]
-    [:div.content-1.proxima.medium (:header/title logo-header)]
-    (ui/shopping-bag {:style     {:height "60px" :width "60px"}
-                      :data-test "mobile-cart"}
-                     cart))
+   (header/adventure-header (:header.left/target logo-header) (:header/title logo-header) cart)
 
    (component/build match-stylist/organism match-stylist nil)])
 

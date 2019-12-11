@@ -1,10 +1,14 @@
 (ns stylist-matching.find-your-stylist
-  (:require [storefront.component :as component :refer [defcomponent]]
+  (:require [storefront.accessors.orders :as orders]
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.header :as header]
+            [storefront.components.ui :as ui]
+            [storefront.components.svg :as svg]
             [storefront.events :as events]
+            [storefront.platform.component-utils :as utils]
             adventure.keypaths
             storefront.keypaths
             api.orders
-            [stylist-matching.ui.header :as header]
             [stylist-matching.ui.stylist-search :as stylist-search]
             [stylist-matching.ui.spinner :as spinner]
             [storefront.components.flash :as flash]))
@@ -46,9 +50,10 @@
    :header.back-navigation/target [events/navigate-adventure-match-stylist]})
 
 (defcomponent template
-  [{:keys [flash header stylist-search spinner]} _ _]
+  [{:keys [flash header stylist-search spinner cart]} _ _]
   [:div.center.flex.flex-auto.flex-column
-   (component/build header/organism header nil)
+
+   (header/adventure-header (:header.back-navigation/target header) (:header.title/primary header) cart)
    (component/build flash/component flash nil)
    (if (seq spinner)
      (component/build spinner/organism spinner nil)
@@ -62,4 +67,5 @@
                      {:stylist-search (stylist-search-query app-state)
                       :flash          (flash/query app-state)
                       :spinner        (spinner-query app-state)
-                      :header         (header-query current-order)})))
+                      :header         (header-query current-order)
+                      :cart           {:quantity (orders/product-quantity (get-in app-state storefront.keypaths/order))}})))
