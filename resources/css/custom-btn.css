@@ -75,8 +75,8 @@
 .btn-p-color.btn-small  { background-color: var(--p-color); }
 
 .btn-ghost            { color: var(--p-color); }
-.btn-ghost.btn-large  { border-image-source: svg-load(var(--oct-button-large-svg), fill=none, stroke=var(--s-color), vector-effect="non-scaling-stroke"); }
-.btn-ghost.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=none, stroke=var(--s-color), vector-effect="non-scaling-stroke"); }
+.btn-ghost.btn-large  { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--white), stroke=var(--s-color), vector-effect="non-scaling-stroke"); }
+.btn-ghost.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--white), stroke=var(--s-color), vector-effect="non-scaling-stroke"); }
 .btn-ghost.btn-small  { border: solid 1px var(--s-color); }
 
 .btn-paypal-color           { color: var(--white); }

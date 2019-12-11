@@ -125,7 +125,7 @@
 (defn button-medium-primary   [attrs & content] (button "btn-medium btn-p-color button-font-1 shout" attrs content))
 (defn button-medium-secondary [attrs & content] (button "btn-medium btn-ghost button-font-1 shout" attrs content))
 (defn button-small-primary    [attrs & content] (button "btn-small btn-p-color button-font-3 shout" attrs content))
-(defn button-small-secondary  [attrs & content] (button "btn-small btn-ghost button-font-3 shout" attrs content))
+(defn button-small-secondary  [attrs & content] (button "btn-small btn-ghost bg-white button-font-3 shout" attrs content))
 (defn button-pill             [attrs & content] (button "btn-pill btn-s-color button-font-2 shout" attrs content))
 
 (defn submit-button
