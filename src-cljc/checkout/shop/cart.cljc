@@ -171,7 +171,7 @@
       #?@(:cljs
           [(component/build quadpay/component queried-data nil)])
 
-      [:div.bg-cool-gray.p2
+      [:div.p2
        (when checkout-caption-copy
          [:div.flex.h6.pt1.pr3.pb2
           {:data-test "checkout-caption"}
