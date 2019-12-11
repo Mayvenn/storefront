@@ -289,7 +289,7 @@
 (defn picker-dialog
   "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
   [{:keys [title items cell-component-fn product-alternative]}]
-  [:div.hide-on-tb-dt.z4.fixed.overlay.overflow-auto.bg-cool-gray
+  [:div.hide-on-tb-dt.z6.fixed.overlay.overflow-auto.bg-cool-gray
    {:key (str "picker-dialog-" title) :data-test "picker-dialog"}
    [:div.p3.h5.bg-white.relative.border-bottom.border-gray
     {:style {:min-height "3em"}}
