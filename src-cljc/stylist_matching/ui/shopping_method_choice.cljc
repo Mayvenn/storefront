@@ -7,16 +7,15 @@
   [{:shopping-method-choice.button/keys [id target ucare-id label]}]
   (when id
     (component/html
-     (ui/button-large-secondary
-      (merge {:style     {:border-radius "3px"}
-              :class     "my1 px3"
+     [:div.point.flex.items-center.justify-between.border.border-cool-gray.border-width-2
+      (merge {:class     "my1 p2"
               :key       id
               :data-test id}
              (apply utils/route-to target))
-      [:div.flex.items-center.justify-between
-       (ui/ucare-img {:width 60} ucare-id)
-       [:div.flex-auto.left-align.p3 label]
-       [:div.flex.p2 (ui/forward-caret {:width 16 :height 16 :color "gray"})]]))))
+      (ui/ucare-img {:width 60
+                     :picture-classes "flex items-center"} ucare-id)
+      [:div.flex-auto.left-align.p3 label]
+      [:div.flex (ui/forward-caret {:width 14 :height 14 :color "black"})]])))
 
 (defn buttons-list-molecule
   [{:list/keys [buttons]}]
@@ -39,12 +38,12 @@
   (when id
     (component/html
      [:div.left-align
-      [:div.h1.my2.light primary]
-      [:div.h5.my2.light secondary]])))
+      [:div.title-1.canela.my2.light primary]
+      [:div.h5.my4.light secondary]])))
 
 (defcomponent organism
   [data _ _]
-  [:div.m5
+  [:div.m5.pt4.px1
    (shopping-method-choice-title-molecule data)
    (shopping-method-choice-error-title-molecule data)
    (buttons-list-molecule data)])

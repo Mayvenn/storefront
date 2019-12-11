@@ -133,8 +133,8 @@
   [servicing-stylist {:order/keys [submitted?]}]
   (when-not submitted?
     {:shopping-method-choice.title/id        "stylist-matching-shopping-method-choice"
-     :shopping-method-choice.title/primary   [:div "Congrats on matching with "
-                                              [:span.bold (stylists/->display-name servicing-stylist)]
+     :shopping-method-choice.title/primary   [:div "Congratulations on matching with "
+                                              (stylists/->display-name servicing-stylist)
                                               "!"]
      :shopping-method-choice.title/secondary [:div
                                               [:div "Now for the fun part!"]
@@ -163,7 +163,7 @@
 
 (defcomponent template
   [{:keys [header shopping-method-choice matched-stylist]} _ _]
-  [:div.bg-pale-purple.white.center.flex.flex-auto.flex-column
+  [:div.center.flex.flex-auto.flex-column
    stylist-matching.A/bottom-right-party-background
    (component/build header/organism header nil)
    (component/build shopping-method-choice/organism shopping-method-choice nil)

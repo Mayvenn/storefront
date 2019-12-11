@@ -497,7 +497,7 @@
 
 (defn ucare-img
   [{:as   img-attrs
-    :keys [width retina-quality default-quality]
+    :keys [width retina-quality default-quality picture-classes]
     :or   {retina-quality  "lightest"
            default-quality "normal"}}
    image-id]
@@ -508,9 +508,10 @@
                       width (str "-/resize/" (* 2 width) "x/"))
         default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" default-quality "/")
                       width (str "-/resize/" width "x/"))]
-    [:picture {:key image-id}
-     [:source {:src-set (str retina-url " 2x,"
-                             default-url " 1x")}]
+    [:picture (merge {:key image-id}
+                     (when picture-classes
+                       {:class picture-classes}))
+     [:source {:src-set (str retina-url " 2x," default-url " 1x")}]
      [:img (-> img-attrs
                (dissoc :width :retina-quality :default-quality)
                (assoc :src default-url))]]))
