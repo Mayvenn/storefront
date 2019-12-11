@@ -1,6 +1,7 @@
 (ns adventure.shop-home
   (:require [adventure.components.layered :as layered]
             [storefront.components.ui :as ui]
+            [storefront.components.svg :as svg]
             adventure.handlers ;; Needed for its defmethods
             [storefront.accessors.contentful :as contentful]
             [storefront.keypaths :as storefront.keypaths]
@@ -125,7 +126,26 @@
        :quote/text                  "You deserve quality extensions & exceptional service without the unreasonable price tag."
        :quote/primary-attribution   "— Diishan Imira"
        :quote/secondary-attribution "CEO of Mayvenn"}
-      {:layer/type :contact}
+      {:layer/type         :shop-contact
+       :title/value        "Contact Us"
+       :sub-subtitle/value "We're here to help"
+       :subtitle/value     "Have Questions?"
+       :contact-us-blocks  [{:url   (ui/sms-url "346-49")
+                             :svg   (svg/icon-sms {:height 51
+                                                   :width  56})
+                             :title "Live Chat"
+                             :copy  "Text: 346-49"}
+                            {:url   (ui/phone-url "1 (888) 562-7952")
+                             :svg   (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
+                                                    :height 57
+                                                    :width  57})
+                             :title "Call Us"
+                             :copy  "1 (888) 562-7952"}
+                            {:url   (ui/email-url "help@mayvenn.com")
+                             :svg   (svg/icon-email {:height 39
+                                                     :width  56})
+                             :title "Email Us"
+                             :copy  "help@mayvenn.com"}]}
       {:layer/type             :sticky-footer
        :cta/navigation-message [events/navigate-adventure-match-stylist]}]}))
 

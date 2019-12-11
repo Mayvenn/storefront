@@ -265,41 +265,30 @@
                         sections)}
     {:opts {:section-click-event events/faq-section-selected}})])
 
-(defn ^:private contact-us-block [url svg title copy]
-  [:a.block.py3.col-12.col-4-on-tb-dt
-   {:href url}
+(defn ^:private contact-us-block [idx {:keys [url svg title copy]}]
+  [:a.block.py3.col-12.col-4-on-tb-dt.black
+   {:href url
+    :key idx}
    svg
-   [:div.h6.p-color.bold.titlize title]
-   [:div.col-8.mx-auto.h6.black copy]])
+   [:div.proxima.title-2.mt1 title]
+   [:div.col-8.mx-auto.p-color.content-2 copy]])
 
-(defcomponent contact
-  [_ _ _]
-  [:div.bg-pale-purple.center.py8
-   [:h5.mt6.p-color.letter-spacing-3.shout.bold "Contact Us"]
-   [:h1.black.titleize "Have Questions?"]
-   [:h5 "We're here to help"]
-   [:div.py2.mx-auto.p-color.border-bottom.border-width-2.mb2-on-tb-dt
-    {:style {:width "30px"}}]
-   [:div.flex.flex-wrap.items-baseline.justify-center.col-12.col-8-on-tb-dt.mx-auto
-    (contact-us-block
-     (ui/sms-url "346-49")
-     (svg/icon-sms {:height 51
-                    :width  56})
-     "Live Chat"
-     "Text: 346-49")
-    (contact-us-block
-     (ui/phone-url "1 (888) 562-7952")
-     (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
-                     :height 57
-                     :width  57})
-     "Call Us"
-     "1 (888) 562-7952")
-    (contact-us-block
-     (ui/email-url "help@mayvenn.com")
-     (svg/icon-email {:height 39
-                      :width  56})
-     "Email Us"
-     "help@mayvenn.com")]])
+(defcomponent shop-contact
+  [{title-value        :title/value
+    subtitle-value     :subtitle/value
+    sub-subtitle-value :sub-subtitle/value
+    contact-us-blocks  :contact-us-blocks} _ _]
+  [:div
+   [:div.bg-warm-gray.center.py8
+    [:h5.mt6.proxima.shout.title-2 title-value]
+    [:h1.canela.title-1.pb1 subtitle-value]
+    [:h5.proxima.content-2 sub-subtitle-value]
+    [:div.stroke-s-color.pt4
+     (svg/straight-line {:width  "1px"
+                         :height "42px"})]
+    [:div.flex.flex-wrap.items-baseline.justify-center.col-12.col-8-on-tb-dt.mx-auto
+     (map-indexed (partial contact-us-block) contact-us-blocks)]]
+   [:div.bg-p-color.pt1]])
 
 (defcomponent shop-quote-img
   [{:quote/keys [img text primary-attribution secondary-attribution] :as data} _ _]
@@ -489,6 +478,7 @@
      :shop-bulleted-explainer shop-bulleted-explainer
      :shop-ugc                shop-ugc
      :shop-quote-img          shop-quote-img
+     :shop-contact                 shop-contact
 
      ;; LEGACY
      :image-block                     image-block
@@ -502,7 +492,6 @@
      :bulleted-explainer              bulleted-explainer
      :ugc                             ugc
      :faq                             faq
-     :contact                         contact
      :sticky-footer                   sticky-footer)
    view-data opts))
 
