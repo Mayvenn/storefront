@@ -1,8 +1,10 @@
 (ns storefront.components.header
   (:require [clojure.string :as string]
             [storefront.accessors.auth :as auth]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.stylists :as stylists]
             [storefront.assets :as assets]
             [storefront.community :as community]
             [storefront.component :as component :refer [defcomponent]]
@@ -11,7 +13,8 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [ui.promo-banner :as promo-banner]))
 
 (def hamburger
   (component/html
@@ -339,6 +342,24 @@
     (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
     (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
     (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
+
+(defn basic-query [data]
+  (let [{:keys [match-eligible] :as store} (marquee/query data)
+        shop?                              (= "shop" (get-in data keypaths/store-slug))
+        aladdin?                           (experiments/aladdin-experience? data)]
+    {:signed-in                        (auth/signed-in data)
+     :on-taxon?                        (get-in data keypaths/current-traverse-nav)
+     :promo-banner                     (promo-banner/query data)
+     :user                             {:stylist-portrait (get-in data keypaths/user-stylist-portrait)
+                                        :email            (get-in data keypaths/user-email)}
+     :store                            store
+     :show-community?                  (and (not match-eligible)
+                                            (stylists/own-store? data))
+     :show-bundle-sets-and-hide-deals? (or aladdin? shop?)
+     :vouchers?                        (experiments/dashboard-with-vouchers? data)
+     :show-freeinstall-link?           shop?
+     :blog?                            (experiments/blog? data)
+     :site                             (determine-site data)}))
 
 (defn query [data]
   (-> (slideout-nav/basic-query data)

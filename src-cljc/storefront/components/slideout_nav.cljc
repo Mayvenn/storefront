@@ -284,26 +284,8 @@
     (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
     (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
 
-(defn basic-query [data]
-  (let [{:keys [match-eligible] :as store} (marquee/query data)
-        shop?                              (= "shop" (get-in data keypaths/store-slug))
-        aladdin?                           (experiments/aladdin-experience? data)]
-    {:signed-in                        (auth/signed-in data)
-     :on-taxon?                        (get-in data keypaths/current-traverse-nav)
-     :promo-banner                     (promo-banner/query data)
-     :user                             {:stylist-portrait (get-in data keypaths/user-stylist-portrait)
-                                        :email            (get-in data keypaths/user-email)}
-     :store                            store
-     :show-community?                  (and (not match-eligible)
-                                            (stylists/own-store? data))
-     :show-bundle-sets-and-hide-deals? (or aladdin? shop?)
-     :vouchers?                        (experiments/dashboard-with-vouchers? data)
-     :show-freeinstall-link?           shop?
-     :blog?                            (experiments/blog? data)
-     :site                             (determine-site data)}))
-
 (defn query [data]
-  (-> (basic-query data)
+  (-> (header/basic-query data)
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
       (assoc-in [:cart :quantity]  (orders/product-quantity (get-in data keypaths/order)))
       (assoc-in [:menu-data] (case (get-in data keypaths/current-traverse-nav-menu-type)
