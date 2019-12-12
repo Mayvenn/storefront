@@ -1,10 +1,12 @@
 (ns adventure.informational.how-it-works
-  (:require storefront.keypaths
-            [storefront.accessors.contentful :as contentful]
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.events :as events]
+  (:require [adventure.components.layered :as layered]
             [adventure.faq :as faq]
-            [adventure.components.layered :as layered]))
+            [storefront.accessors.contentful :as contentful]
+            [storefront.component :as component]
+            [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
+            [storefront.events :as events]
+            storefront.keypaths))
 
 (defn query
   [data]
@@ -18,7 +20,7 @@
              :body/value             "We know that quality bundles can be expensive. That’s why when you buy our hair, we’re paying for your install appointment."
              :cta/value              "Get started"
              :cta/navigation-message [events/navigate-adventure-match-stylist nil]}
-            {:layer/type      :bulleted-explainer
+            {:layer/type      :shop-bulleted-explainer
              :header/value    "How it Works"
              :subheader/value "In 3 easy steps"
              :bullets         [{:icon/uuid              "3d2b326c-7773-4672-827e-f13dedfae15a"
@@ -45,9 +47,31 @@
                                                                           :free-install-mayvenn)}
             (merge {:layer/type :faq}
                    (faq/free-install-query data))
-            {:layer/type :contact}
+            {:layer/type         :shop-contact
+             :title/value        "Contact Us"
+             :sub-subtitle/value "We're here to help"
+             :subtitle/value     "Have Questions?"
+             :contact-us-blocks  [{:url   (ui/sms-url "346-49")
+                                   :svg   (svg/icon-sms {:height 51
+                                                         :width  56})
+                                   :title "Live Chat"
+                                   :copy  "Text: 346-49"}
+                                  {:url   (ui/phone-url "1 (888) 562-7952")
+                                   :svg   (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
+                                                          :height 57
+                                                          :width  57})
+                                   :title "Call Us"
+                                   :copy  "1 (888) 562-7952"}
+                                  {:url   (ui/email-url "help@mayvenn.com")
+                                   :svg   (svg/icon-email {:height 39
+                                                           :width  56})
+                                   :title "Email Us"
+                                   :copy  "help@mayvenn.com"}]}
             {:layer/type             :sticky-footer
-             :cta/navigation-message [events/navigate-adventure-match-stylist nil]}]})
+             :layer/id               "sticky-footer-get-started"
+             :sticky/content         "It’s true, we are paying for your install! "
+             :cta/label              "Get started"
+             :cta/navigation-message [events/navigate-adventure-match-stylist]}]})
 
 (defn built-component
   [data opts]
