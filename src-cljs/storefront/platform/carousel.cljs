@@ -56,11 +56,15 @@
 (defcomponent component [{:keys [slides] :as data} _ _]
   (component/build inner-component
                    {:slides slides}
-                   {:opts (cond-> (assoc-in data [:settings :autoplay] false)
+                   (let [opts (cond-> (assoc-in data [:settings :autoplay] false)
 
-                            (= (count slides) 1)
-                            (update-in [:settings] merge {:arrows    false
-                                                          :nav       false
-                                                          :touch     false
-                                                          :controls  false
-                                                          :mouseDrag false}))}))
+                                (= (count slides) 1)
+                                (update-in [:settings] merge {:arrows    false
+                                                              :nav       false
+                                                              :touch     false
+                                                              :controls  false
+                                                              :mouseDrag false}))]
+                     {:opts opts
+                      :key  (->> [slides opts]
+                                 hash
+                                 (str "product-carousel-inner-"))})))

@@ -207,12 +207,7 @@
   (component/build carousel/component
                    {:slides   (mapv #(image-body %) images)
                     :settings {:edgePadding 0
-                               :items       1}}
-                   {:key (->> images
-                              (mapv #(or (:large_url %)
-                                         (:url %)))
-                              hash
-                              (str "product-carousel-"))}))
+                               :items       1}}))
 
 (defn reviews-summary [reviews opts]
   [:div.h6
