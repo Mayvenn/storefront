@@ -1,30 +1,22 @@
 (ns adventure.shop-home
-  (:require [adventure.components.layered :as layered]
-            [storefront.components.ui :as ui]
-            [storefront.components.svg :as svg]
-            adventure.handlers ;; Needed for its defmethods
-            [storefront.accessors.contentful :as contentful]
-            [storefront.keypaths :as storefront.keypaths]
-            [adventure.keypaths :as keypaths]
+  (:require adventure.handlers ;; Needed for its defmethods
+            [adventure.components.layered :as layered]
             [adventure.faq :as faq]
-            #?@(:cljs [goog.dom
-                       goog.style
-                       goog.events
-                       [storefront.browser.scroll :as scroll]])
-            [storefront.component :as component :refer [defcomponent]]
+            [storefront.accessors.contentful :as contentful]
+            [storefront.component :as component]
+            [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
             [storefront.events :as events]
-            [storefront.platform.messages :as messages]
-            [storefront.routes :as routes]
-            [storefront.events :as events]
-            [storefront.effects :as effects]))
+            [storefront.keypaths :as storefront.keypaths]
+            [storefront.routes :as routes]))
 
 (defn query
   [data]
-  (let [shop?                                          (= "shop" (get-in data storefront.keypaths/store-slug))
-        cms-homepage-hero                              (some-> data (get-in storefront.keypaths/cms-homepage) :shop :hero)
-        cms-ugc-collection                             (get-in data storefront.keypaths/cms-ugc-collection)
-        current-nav-event                              (get-in data storefront.keypaths/navigation-event)
-        [cms-hero-event cms-hero-args :as routed-path] (-> cms-homepage-hero :path (routes/navigation-message-for nil (when shop? "shop")))]
+  (let [shop?                              (= "shop" (get-in data storefront.keypaths/store-slug))
+        cms-homepage-hero                  (some-> data (get-in storefront.keypaths/cms-homepage) :shop :hero)
+        cms-ugc-collection                 (get-in data storefront.keypaths/cms-ugc-collection)
+        current-nav-event                  (get-in data storefront.keypaths/navigation-event)
+        [cms-hero-event _ :as routed-path] (-> cms-homepage-hero :path (routes/navigation-message-for nil (when shop? "shop")))]
     {:layers
      [(merge {:layer/type      :hero
               :photo/file-name "free-install-hero"}
@@ -126,7 +118,8 @@
                          :header/value "Certified Stylists"
                          :body/value   "Our stylists are chosen because of their industry-leading standards. Both our hair and service are quality guaranteed."}]}
       {:layer/type                  :shop-quote-img
-       :quote/img                   "befce648-98b6-45a2-90f0-6199119bfffb"
+       :quote/dsk-ucare-id          "3208fac6-c974-4c80-8e88-3244ee50226b"
+       :quote/mob-ucare-id          "befce648-98b6-45a2-90f0-6199119bfffb"
        :quote/text                  "You deserve quality extensions & exceptional service without the unreasonable price tag."
        :quote/primary-attribution   "— Diishan Imira"
        :quote/secondary-attribution "CEO of Mayvenn"}

@@ -368,3 +368,8 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "check-mark")]))
+
+(defn mayvenn-logo [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "mayvenn-logo")]))

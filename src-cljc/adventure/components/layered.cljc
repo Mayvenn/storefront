@@ -299,21 +299,42 @@
    [:div.bg-p-color.pt1]])
 
 (defcomponent shop-quote-img
-  [{:quote/keys [img text primary-attribution secondary-attribution] :as data} _ _]
-  (let [quotation-mark (svg/quotation-mark
-                        {:width  "21px"
-                         :height "18px"})]
-    [:div.bg-calm-gray.relative
-     (vertical-squiggle "-72px")
-     [:div.flex.mx5.my10
-      [:div quotation-mark]
-      [:div.canela.title-2.center.pt2.pb4 text]
-      [:div.self-end.rotate-180 quotation-mark]]
-     [:div.relative
-      [:div.absolute.white.right-0.py8.px4.right-align
-       [:div.proxima.title-2.shout primary-attribution]
-       [:div secondary-attribution]]
-      (ui/ucare-img {:class "block col-12"} img)]]))
+  [{:quote/keys [dsk-ucare-id mob-ucare-id text primary-attribution secondary-attribution] :as data} _ _]
+  (let [dsk-quotation-mark (svg/quotation-mark
+                            {:width  "35px"
+                             :height "30px"})
+        mob-quotation-mark (svg/quotation-mark
+                            {:width  "21px"
+                             :height "18px"})]
+    [:div ;; TB DT
+     [:div.hide-on-mb.flex
+      [:div.mx5.col-6.flex.items-center
+       [:div
+        [:div.flex.justify-center
+         (svg/mayvenn-logo {:width "52px" :height "30px"})]
+        [:div.flex.justify-center
+         [:div dsk-quotation-mark]
+         [:div.canela.title-1.center.mt2.mb4.col-7-on-dt.col-9-on-tb text]
+         [:div.self-end.rotate-180 dsk-quotation-mark]]]]
+      [:div.relative.col-6
+       [:div.absolute.white.right-0.py6.px4.right-align
+        [:div.proxima.title-1.shout primary-attribution]
+        [:div secondary-attribution]]
+       (ui/ucare-img {:class "block col-12"
+                      :width "1000"} dsk-ucare-id)]]
+
+     [:div.relative.hide-on-tb-dt ;; MB
+      (vertical-squiggle "-72px")
+      [:div.flex.mx5.my10
+       [:div mob-quotation-mark]
+       [:div.canela.title-2.center.pt2.pb4 text]
+       [:div.self-end.rotate-180 mob-quotation-mark]]
+      [:div.relative
+       [:div.absolute.white.right-0.py8.px4.right-align
+        [:div.proxima.title-2.shout primary-attribution]
+        [:div secondary-attribution]]
+       (ui/ucare-img {:class "block col-12"
+                      :width "600"} mob-ucare-id)]]]))
 
 (def sticky-footer
   #?(:clj (fn [_ _ _] (component/create "sticky-footer" [:div]))
