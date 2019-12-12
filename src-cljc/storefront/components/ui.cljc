@@ -119,6 +119,7 @@
      content]))
 
 (def ^:private button-large-primary-classes "btn-large btn-p-color button-font-1 shout")
+(def ^:private disabled-button-large-primary-classes "btn-large btn-gray button-font-1 shout btn-disabled")
 (defn button-large-primary       [attrs & content] (button button-large-primary-classes attrs content))
 (defn button-large-secondary     [attrs & content] (button "btn-large btn-ghost button-font-1 shout" attrs content))
 (defn button-large-paypal        [attrs & content] (button "btn-large btn-paypal-color button-font-1 shout" attrs content))
@@ -137,7 +138,7 @@
      (button-large-primary attrs)
      [:input.col-12.bg-clear
       {:type      "submit"
-       :class     button-large-primary-classes
+       :class     (if disabled? disabled-button-large-primary-classes button-large-primary-classes)
        :data-test data-test
        :value     title
        :disabled  (boolean disabled?)}])))
@@ -280,7 +281,7 @@
 (defn text-field-large [{:keys [label keypath value errors data-test class] :as input-attributes :or {class "col-12"}}]
   (component/html
    (let [error (first errors)]
-     [:div.mb2.stacking-context {:class class}
+     [:div.mb2.stacking-context.bg-white {:class class}
       (plain-text-field label keypath value (not (nil? error))
                         (-> input-attributes
                             (dissoc :label :keypath :value :errors)

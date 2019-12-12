@@ -7,6 +7,7 @@
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.popup :as popup]
             [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.frontend-trackings :as frontend-trackings]
@@ -29,23 +30,21 @@
         errors (get-in data storefront.keypaths/field-errors)]
     {:input-data           {:value             email
                             :id                "email"
-                            :label             "Your Email Address"
+                            :label             "Enter your email address"
                             :type              "email"
                             :on-change-keypath storefront.keypaths/captured-email
                             :disabled?         (invalid-email? email)}
      :errors               errors
-     :prompt-image         "https://ucarecdn.com/374049b5-d6ad-4938-ab98-771bb7287e68/-/format/auto/"
-     :prompt-desktop-image "https://ucarecdn.com/7ca22134-eaa6-4144-b660-faa0db211515/-/format/auto/"
-     :prompt               [:div.italic
-                            [:span.bold.inline.mr2 "Welcome!"]
-                            [:span.light "We can't wait for you to get a free install."]]
+     :prompt               [:div
+                            "Welcome!" [:br]
+                            "We can't wait for you to get a free install"]
      :title-image-uuid     "57fde383-01eb-494f-96e1-7070b8fc434d"
      :title-image-alt      "Mayvenn"
      :header-data          {:right-corner {:id    "dismiss-email-capture"
                                            :opts  (utils/fake-href events/control-pick-a-stylist-email-capture-dismiss)
-                                           :value (svg/simple-x {:class "white"
-                                                                 :style {:width  "20px"
-                                                                         :height "20px"
+                                           :value (svg/x-sharp {:class "black"
+                                                                 :style {:width  "18px"
+                                                                         :height "18px"
                                                                          :fill   "currentColor"}})}}
      :on-submit            [events/control-pick-a-stylist-email-capture-submit {:email email}]}))
 
