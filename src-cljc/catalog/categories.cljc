@@ -8,7 +8,7 @@
   ;; [<facet-slug> <option-slug>]
   #{[:hair/family "ready-wigs"]})
 
-(def new-category? #{"wigs"})
+(def new-category? #{})
 
 (defn copy [& sentences]
   (string/join " " sentences))

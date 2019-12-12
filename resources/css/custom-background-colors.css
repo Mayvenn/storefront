@@ -10,6 +10,7 @@
 .bg-black                  { background-color: var(--black); }
 .bg-clear                  { background-color: var(--clear); }
 .bg-lighten-5              { background-color: var(--lighten-5); }
+.bg-gray-mask              { background-color: var(--gray-mask); }
 
 .bg-p-color     { background-color: var(--p-color); }
 .bg-s-color     { background-color: var(--s-color); }
@@ -36,6 +37,7 @@
     --paypal:      #49bbf0;
     --pale-purple: #dedbe5;
     --white:       #ffffff;
+    --gray-mask:   rgba(204, 204, 204, 0.1);
     --gray:        #cccccc;
     --dark-gray:   #979797;
     --cool-gray:   #eeefef;
