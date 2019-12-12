@@ -230,7 +230,7 @@
                                                                                 (boolean specialty-sew-in-360-frontal))
                                                 (stylist-cards/checks-or-x-atom "Frontal" (boolean specialty-sew-in-frontal))]
              :stylist-card.cta/id              (str "select-stylist-" store-slug)
-             :stylist-card.cta/label           (str "Select " (-> stylist :address :firstname))
+             :stylist-card.cta/label           (str "Select " store-slug)
              :stylist-card.cta/target          [cta-event
                                                 {:servicing-stylist stylist
                                                  :card-index        idx}]
