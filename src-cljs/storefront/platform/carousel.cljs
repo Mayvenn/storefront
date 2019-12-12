@@ -22,7 +22,6 @@
                                     settings)))]
       (set! (.-carousel this) carousel))))
 
-;; TODO: Make this work nicely when the slides change
 (defdynamic-component inner-component
   (constructor [c _]
                (component/create-ref! c "container")
@@ -30,12 +29,11 @@
                (component/create-ref! c "next-button")
                nil)
   (did-mount [this]
-             (safely-destroy (.-carousel this))
              (let [{:keys [settings]} (component/get-opts this)]
                (build-carousel this settings)))
   (will-unmount [this]
-                (set! (.-indexChanged this) nil)
-                (safely-destroy (.-carousel this)))
+                (safely-destroy (.-carousel this))
+                (set! (.-carousel this) nil))
   (render [this]
           (component/html
            (let [{:keys [slides]}                       (component/get-props this)
@@ -53,15 +51,16 @@
                  ;; click handlers without overwriting ours
                  [:div {:key idx} slide])]]))))
 
-(defcomponent component [{:keys [slides] :as data} owner _]
+;; Important note: carousels should be provided a react key, otherwise we'll get strange behavior
+;; from dirty state when going between pages containing different carousels.
+(defcomponent component [{:keys [slides] :as data} _ _]
   (component/build inner-component
                    {:slides slides}
-                   {:opts
-                    (cond-> (assoc-in data [:settings :autoplay] false)
+                   {:opts (cond-> (assoc-in data [:settings :autoplay] false)
 
-                      (= (count slides) 1)
-                      (update-in [:settings] merge {:arrows    false
-                                                    :nav       false
-                                                    :touch     false
-                                                    :controls  false
-                                                    :mouseDrag false}))}))
+                            (= (count slides) 1)
+                            (update-in [:settings] merge {:arrows    false
+                                                          :nav       false
+                                                          :touch     false
+                                                          :controls  false
+                                                          :mouseDrag false}))}))

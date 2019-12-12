@@ -203,16 +203,16 @@
     {:src (str url "-/format/auto/-/resize/640x/" filename)
      :alt alt}]))
 
-(defn carousel [images {:keys [slug]}]
-  (let [items (mapv (fn [image]
-                      {:id   (str (hash (or (:large_url image)
-                                            (:url image))))
-                       :body (image-body image)})
-                    images)]
-    (component/build carousel/component
-                     {:slides   (map :body items)
-                      :settings {:edgePadding 0
-                                 :items       1}})))
+(defn carousel [images _]
+  (component/build carousel/component
+                   {:slides   (mapv #(image-body %) images)
+                    :settings {:edgePadding 0
+                               :items       1}}
+                   {:key (->> images
+                              (mapv #(or (:large_url %)
+                                         (:url %)))
+                              hash
+                              (str "product-carousel-"))}))
 
 (defn reviews-summary [reviews opts]
   [:div.h6
