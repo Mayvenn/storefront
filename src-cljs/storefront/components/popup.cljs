@@ -107,4 +107,5 @@
 
 (defmethod effects/perform-effects events/popup-show
   [_ _ _ _ _]
-  (scroll/disable-body-scrolling))
+  (scroll/disable-body-scrolling)
+  (messages/handle-message events/control-menu-collapse-all))

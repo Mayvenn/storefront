@@ -435,6 +435,13 @@
 (defpath popup-show)
 (defpath popup-show-email-capture)
 (defpath popup-show-free-install)
+(defpath popup-show-v2-homepage)
+(defpath control-v2-homepage-popup-dismiss)
+(defpath popup-show-adventure-free-install)
+(defpath popup-show-pick-a-stylist-email-capture)
+(defpath control-adventure-free-install-dismiss)
+(defpath popup-show-consolidated-cart-free-install)
+(defpath control-consolidated-cart-free-install-dismiss)
 
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)
@@ -454,13 +461,8 @@
 (defpath browser-fullscreen-enter)
 (defpath browser-fullscreen-exit)
 
-;;SECTION v2
-
-;;SECTION v2 popup
-(defpath popup-show-v2-homepage)
 
 ;;SECTION v2 Control
-(defpath control-v2-homepage-popup-dismiss)
 (defpath control-v2-stylist-dashboard-section-toggle)
 (defpath control-v2-stylist-dashboard-sales-load-more)
 (defpath control-v2-stylist-dashboard-balance-transfers-load-more)
@@ -532,13 +534,6 @@
 (defpath clear-selected-location)
 (defpath control-adventure-location-submit)
 
-(defpath popup-show-adventure-free-install)
-
-(defpath popup-show-pick-a-stylist-email-capture)
-(defpath control-adventure-free-install-dismiss)
-
-(defpath popup-show-consolidated-cart-free-install)
-(defpath control-consolidated-cart-free-install-dismiss)
 (defpath control-toggle-promo-code-entry)
 
 (defpath api-success-fetch-matched-stylist)
