@@ -78,12 +78,6 @@
    :optional-keys []
    :required-keys ["AuthenticatedUser"]})
 
-(def from-shop-to-freeinstall
-  {:domain        (root-domain)
-   :max-age       one-day
-   :optional-keys []
-   :required-keys [:from-shop-to-freeinstall]})
-
 (def affiliate-stylist-id
   {:domain        (root-domain)
    :max-age       four-weeks
@@ -147,8 +141,6 @@
   (comp :dismissed-pick-a-stylist-email-capture
         (partial retrieve dismissed-pick-a-stylist-email-capture)))
 
-(def retrieve-from-shop-to-freeinstall (partial retrieve from-shop-to-freeinstall))
-
 (def ^:private session-id-length 24)
 
 (defn- must-generate-session-id? [existing-session-id]
@@ -204,10 +196,6 @@
   (save-cookie pending-promo cookie {:pending-promo-code promo-code}))
 
 (def save-utm-params (partial save-cookie utm-params))
-
-(defn save-from-shop-to-freeinstall
-  [cookie]
-  (save-cookie from-shop-to-freeinstall cookie {:from-shop-to-freeinstall 1}))
 
 (defn save-telligent-cookie [cookie contents max-age]
   (save-cookie (assoc telligent-session :max-age max-age) cookie {"AuthenticatedUser" contents}))
