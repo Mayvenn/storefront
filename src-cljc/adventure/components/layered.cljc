@@ -344,33 +344,36 @@
       (will-unmount [this]
                     (goog.events/unlisten js/window EventType/SCROLL (.-handle-scroll this)))
       (render [this]
-              (let [{:keys [show? content-height]}        (component/get-state this)
-                    data                                  (component/get-props this)
-                    {:cta/keys [href navigation-message]} data
-                    content-height-ref                    (component/use-ref this "content-height")]
-                (component/html
-                 [:div.hide-on-dt
-                  [:div.fixed.z4.bottom-0.left-0.right-0
-                   {:style {:margin-bottom (str "-" content-height "px")}}
-                   ;; Using a separate element with reverse margin to prevent the
-                   ;; sticky component from initially appearing on the page and then
-                   ;; animate hiding.
-                   [:div.transition-2
-                    (if show?
-                      {:style {:margin-bottom (str content-height "px")}}
-                      {:style {:margin-bottom "0"}})
-                    [:div {:ref content-height-ref}
-                     [:div
-                      [:div.h6.white.bg-black.medium.px3.py4.flex.items-center
-                       [:div.col-7 "We can't wait to pay for your install!"]
-                       [:div.col-1]
-                       [:div.col-4
-                        (ui/button-medium-primary (merge
+              (let [{:keys [show? content-height]} (component/get-state this)
+                    data                           (component/get-props this)
+                    {:cta/keys [href navigation-message label]
+                     content   :sticky/content
+                     id        :layer/id}          data
+                    content-height-ref             (component/use-ref this "content-height")]
+                (when id
+                  (component/html
+                  [:div.hide-on-dt
+                   [:div.fixed.z4.bottom-0.left-0.right-0
+                    {:style {:margin-bottom (str "-" content-height "px")}}
+                    ;; Using a separate element with reverse margin to prevent the
+                    ;; sticky component from initially appearing on the page and then
+                    ;; animate hiding.
+                    [:div.transition-2
+                     (if show?
+                       {:style {:margin-bottom (str content-height "px")}}
+                       {:style {:margin-bottom "0"}})
+                     [:div {:ref content-height-ref}
+                      [:div
+                       [:div.h6.bg-white.medium.p3.flex.items-center.canela.content-3
+                        [:div.col-7 content]
+                        [:div.col-1]
+                        [:div.col-4
+                         (ui/button-small-primary (merge
                                                    (when navigation-message
                                                      (apply utils/route-to navigation-message))
-                                                   {:data-test    "sticky-footer-get-started"
-                                                    :href         href})
-                                                  [:div.h7 "Get started"])]]]]]]]))))))
+                                                   {:data-test id
+                                                    :href      href})
+                                                  [:div.h7 label])]]]]]]])))))))
 
 (defcomponent shop-text-block
   [{anchor-name :anchor/name
