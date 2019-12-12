@@ -409,16 +409,6 @@
                 (is (= "/adv/find-your-stylist?error=stylist-not-found"
                        (get-in resp [:headers "Location"])))))))))))
 
-(defn is-redirected-from-freeinstall-to-shop [source-path dest-path]
-  (with-handler handler
-    (let [source-path source-path
-          resp        (handler (mock/request :get (str "https://freeinstall.mayvenn.com" source-path)))
-          dest-path   dest-path]
-      (testing (format "should redirect from freeinstall %s to shop %s" source-path dest-path)
-        (is (= 301 (:status resp)))
-        (is (= (str "https://shop.mayvenn.com" dest-path)
-               (-> resp :headers (get "Location"))))))))
-
 (deftest redirects-inconsistent-subdomain-bundle-sets
   (testing "When a request comes for an invalid combination of subdomain and bundle set"
     (let [[_ storeback-handler]
@@ -429,7 +419,17 @@
             (is (= 302 (:status resp)) (pr-str resp))
             (is (= "/shop/all-bundle-sets" (get-in resp [:headers "Location"])))))))))
 
-(deftest freeinstall-redirects
+(defn is-redirected-from-freeinstall-to-shop [source-path dest-path]
+  (with-handler handler
+    (let [source-path source-path
+          resp        (handler (mock/request :get (str "https://freeinstall.mayvenn.com" source-path)))
+          dest-path   dest-path]
+      (testing (format "should redirect from freeinstall %s to shop %s" source-path dest-path)
+        (is (= 301 (:status resp)))
+        (is (= (str "https://shop.mayvenn.com" dest-path)
+               (-> resp :headers (get "Location"))))))))
+
+(deftest legacy-freeinstall-redirects
   (is-redirected-from-freeinstall-to-shop "/" "/")
   (is-redirected-from-freeinstall-to-shop "/adv/match-stylist" "/adv/match-stylist")
   (is-redirected-from-freeinstall-to-shop "/adv/find-your-stylist" "/adv/find-your-stylist")
