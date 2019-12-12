@@ -222,23 +222,22 @@
     (component/html
      [:div.flex.items-center
       attrs
-      [:div.mx-auto.flex.items-center {:style size} left]
+      [:div.mx-auto.flex.items-center.justify-around {:style size} left]
       [:div.flex-auto.py3 center]
-      [:div.mx-auto.flex.items-center {:style size} right]])))
+      [:div.mx-auto.flex.items-center.justify-around {:style size} right]])))
 
 (defn adventure-header [left-target title cart-data]
   (mobile-nav-header
    {:class "border-bottom border-gray bg-white black"
     :style {:height "70px"}}
    (if left-target
-     [:a.block.black.ml2.p2.flex.justify-center.items-center
+     [:a.block.black.p2.flex.justify-center.items-center
       (apply utils/route-to left-target)
       (svg/left-arrow {:width  "20"
                        :height "20"})]
      [:div])
-   [:div.content-2.proxima.medium title]
-   (ui/shopping-bag {:style     {:height "60px" :width "60px"}
-                     :data-test "mobile-cart"}
+   [:div.content-1.proxima.center title]
+   (ui/shopping-bag {:data-test "mobile-cart"}
                     cart-data)))
 
 (defcomponent component [{:as data :keys [store user cart signed-in vouchers?]} _ _]

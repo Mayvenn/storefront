@@ -14,6 +14,7 @@
             [storefront.components.formatters :as formatters]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.components.header :as components.header]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.platform.carousel :as carousel]
@@ -103,7 +104,7 @@
                                        "diva-acceptance")]
     (when stylist
       (cond-> {:header-data (cond-> {:header.title/id               "adventure-title"
-                                     :header.title/primary          (str "More about " stylist-name)
+                                     :header.title/primary          "Meet Your Stylist"
                                      :header.back-navigation/id     "adventure-back"
                                      :header.back-navigation/back   (first undo-history)
                                      :header.back-navigation/target [events/navigate-adventure-find-your-stylist]}
@@ -250,10 +251,12 @@
 
 (defcomponent component
   [{:keys [header-data footer-data google-map-data] :as query} owner opts]
-  [:div.col-12.bg-white.mb6 {:style {:min-height    "100vh"
-                                     :margin-bottom "-1px"}}
-   [:div.white (component/build header-org/organism header-data nil)]
+  [:div.bg-white.mb6 {:style {:min-height    "100vh"
+                              :margin-bottom "-1px"}}
    [:main
+    (components.header/adventure-header (:header.back-navigation/target header-data)
+                                        (:header.title/primary header-data)
+                                        {:quantity (:header.cart/value header-data)})
     [:div (component/build stylist-profile-card-component query nil)]
 
     #?(:cljs (component/build maps/component google-map-data))

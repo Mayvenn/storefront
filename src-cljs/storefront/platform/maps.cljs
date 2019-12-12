@@ -44,6 +44,6 @@
                                               :width  "10px"})]
        [:div.h6.self-center
         (string/join ", " (filter identity [address-1 address-2 city state zipcode]))]]
-      [:a.self-center.inherit-color.h6.medium
+      [:a.self-center.h6.medium.underline.p-color.bold
        {:href (str "https://www.google.com/maps/dir/?api=1&destination=" latitude "," longitude)}
        "DIRECTIONS"]])])

@@ -12,6 +12,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.stylists :as stylists]
             [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.header :as components.header]
             [storefront.events :as events]
             [stylist-matching.ui.header :as header]
             [stylist-matching.ui.stylist-cards :as stylist-cards]
@@ -185,7 +186,7 @@
   [{:order.items/keys [quantity]}
    back post-purchase?]
   (cond-> {:header.title/id               "adventure-title"
-           :header.title/primary          "Meet Your Certified Stylist"
+           :header.title/primary          "Meet Your Stylist"
            :header.back-navigation/id     "adventure-back"
            :header.back-navigation/back   back
            :header.back-navigation/target [events/navigate-adventure-find-your-stylist]}
@@ -300,7 +301,9 @@
   [{:keys [gallery-modal header list/results]} _ _]
   [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
    (component/build gallery-modal/organism gallery-modal nil)
-   (component/build header/organism header nil)
+   (components.header/adventure-header (:header.back-navigation/target header)
+                                       (:header.title/primary header)
+                                       {:quantity (:header.cart/value header)})
    [:div
     (display-list {:call-out     call-out-center/organism
                    :stylist-card stylist-cards/organism}
