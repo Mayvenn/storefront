@@ -6,13 +6,13 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.formatters :as formatters]
+            [storefront.components.header :as header]
             [storefront.effects :as effects]
             [storefront.events :as events]
             storefront.keypaths
             [storefront.transitions :as transitions]
             [stylist-directory.stylists :as stylists]
             [stylist-matching.ui.atoms :as stylist-matching.A]
-            [stylist-matching.ui.header :as header]
             [stylist-matching.ui.matched-stylist :as matched-stylist]
             [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]
             [stylist-matching.ui.stylist-cards :as stylist-cards]))
@@ -54,7 +54,7 @@
     :order/keys       [submitted?]}
    browser-history]
   (cond-> {:header.title/id           "adventure-title"
-           :header.title/primary      "Meet Your Certified Stylist"
+           :header.title/primary      "Meet Your Stylist"
            :header.back-navigation/id "adventure-back"}
 
     (seq browser-history)
@@ -165,7 +165,9 @@
   [{:keys [header shopping-method-choice matched-stylist]} _ _]
   [:div.center.flex.flex-auto.flex-column
    stylist-matching.A/bottom-right-party-background
-   (component/build header/organism header nil)
+   (header/adventure-header (:header.back-navigation/target header)
+                            (:header.title/primary header)
+                            {:quantity (:header.cart/value header)})
    (component/build shopping-method-choice/organism shopping-method-choice nil)
    (component/build matched-stylist/organism matched-stylist nil)])
 

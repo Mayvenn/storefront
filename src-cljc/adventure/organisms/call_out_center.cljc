@@ -25,7 +25,7 @@
       [:div.h1.canela.title-1 title])
     (when subtitle
       [:div.p3.proxima.content-2 subtitle])]
-   [:div.col-9.mx-auto
+   [:div.col-10-on-tb-dt.mx-auto
     (cta-molecule query)]])
 
 (comment

@@ -1,8 +1,8 @@
 (ns stylist-matching.out-of-area
   (:require [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.header :as header]
             [storefront.events :as events]
             api.orders
-            [stylist-matching.ui.header :as header]
             [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]))
 
 (defn header-query
@@ -11,7 +11,7 @@
    :header.cart/value             quantity
    :header.cart/color             "white"
    :header.title/id               "adventure-title"
-   :header.title/primary          "Meet Your Certified Stylist"
+   :header.title/primary          "Meet Your Stylist"
    :header.back-navigation/id     "adventure-back"
    :header.back-navigation/target [events/navigate-adventure-find-your-stylist]})
 
@@ -42,7 +42,9 @@
 (defcomponent template
   [{:keys [header shopping-method-choice]} _ _]
   [:div.bg-white.center.flex.flex-auto.flex-column
-   (component/build header/organism header nil)
+   (header/adventure-header (:header.back-navigation/target header)
+                            (:header.title/primary header)
+                            {:quantity (:header.cart/value header)})
    (component/build shopping-method-choice/organism shopping-method-choice nil)])
 
 (defn page
