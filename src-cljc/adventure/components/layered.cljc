@@ -427,8 +427,8 @@
    [:div.relative
     {:style {:margin-top "60px"}}
     (vertical-squiggle "-50px")
-    [:div.col-10.col-6-on-dt.mx-auto.border.border-dotted.flex.justify-center.mb8
-     [:div.col-12.flex.flex-column.items-center.m5
+    [:div.col-10.col-6-on-dt.mx-auto.border.border-framed.flex.justify-center.mb8
+     [:div.col-12.flex.flex-column.items-center.m5.py4
       {:style {:width "max-content"}}
       (when header-value
         [:div.proxima.title-2.shout.py1

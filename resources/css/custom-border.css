@@ -70,6 +70,12 @@
     border-radius: 0 calc(var(--border-radius-max) - 1px) calc(var(--border-radius-max) - 1px) 0;
 }
 
+.border-framed {
+	  border-image-slice: 25%;
+    border-image-width: 25px;
+    border-image-source: svg-load(var(--frame-svg));
+}
+
 .capped { border-radius: 1000px; }
 .rounded-0            { border-radius: var(--border-radius-0); }
 .rounded-top-left     { border-top-left-radius:     var(--border-radius); }
@@ -83,12 +89,13 @@
 .rounded-bottom-1, .rounded-right-1, .rounded-bottom-right-1 { border-bottom-right-radius: var(--border-radius-1); }
 
 :root {
-  --border-width: 1px;
-  --border-width-1: 1px;
-  --border-width-2: 2px;
-  --border-width-3: 3px;
-  --border-radius: 3px;
-  --border-radius-0: 3px;
-  --border-radius-1: 6px;
+  --frame-svg:         '../public/images/frame.svg';
+  --border-width:      1px;
+  --border-width-1:    1px;
+  --border-width-2:    2px;
+  --border-width-3:    3px;
+  --border-radius:     3px;
+  --border-radius-0:   3px;
+  --border-radius-1:   6px;
   --border-radius-max: 9000px;
 }
