@@ -1,5 +1,6 @@
 (ns adventure.shop-home
   (:require adventure.handlers ;; Needed for its defmethods
+            adventure.keypaths
             [adventure.components.layered :as layered]
             [adventure.faq :as faq]
             [storefront.accessors.contentful :as contentful]
@@ -43,6 +44,8 @@
                       "Sew-in and style"
                       "Paid for by Mayvenn"]
        :divider-img  "url('//ucarecdn.com/2d3a98e3-b49a-4f0f-9340-828d12865315/-/resize/x24/')"}
+      {:layer/type :video-overlay
+       :video      (get-in data adventure.keypaths/adventure-home-video)}
       {:layer/type             :shop-bulleted-explainer
        :layer/id               "heres-how-it-works"
        :title/value            ["You buy the hair,"

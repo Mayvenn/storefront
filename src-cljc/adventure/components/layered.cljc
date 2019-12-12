@@ -552,6 +552,7 @@
      :shop-iconed-list        shop-iconed-list
      :shop-quote-img          shop-quote-img
      :shop-contact            shop-contact
+     :video-overlay           video-overlay
 
      ;; LEGACY
      :image-block                image-block
@@ -559,7 +560,6 @@
      :free-standard-shipping-bar free-standard-shipping-bar
      :text-block                 text-block
      :checklist                  checklist
-     :video-overlay              video-overlay
      :video-block                video-block
      :find-out-more              find-out-more
      :bulleted-explainer         bulleted-explainer
