@@ -91,7 +91,7 @@
 
 (defn divider
   [divider-img]
-  [:div {:style {:background-image   divider-img
+  [:div {:style {:background-image    divider-img
                  :background-position "center"
                  :background-repeat   "repeat-x"
                  :height              "24px"}}])
@@ -405,7 +405,7 @@
     :as data}
    _
    _]
-  [:div 
+  [:div
    [:div.pt10.pb2.px6.center.col-6-on-dt.mx-auto
     (when anchor-name
       [:a {:name anchor-name}])
