@@ -96,16 +96,6 @@
                  :background-repeat   "repeat-x"
                  :height              "24px"}}])
 
-(defcomponent text-block
-  [data _ _]
-  [:div.pt10.pb2.px6.center.col-6-on-dt.mx-auto
-   (when-let [n (:anchor/name data)]
-     [:a {:name n}])
-   (when-let [v (:header/value data)]
-     [:div.h2 v])
-   [:div.h5.mt3 (:body/value data)]
-   ^:inline (shop-cta-with-img data)])
-
 (defcomponent hero-image-component [{:screen/keys [seen?] :as data} owner opts]
   [:div (component/build ui.M/hero (merge data {:off-screen? (not seen?)}) nil)])
 
@@ -122,18 +112,6 @@
      :file-name   file-name
      :alt         alt}
     nil)])
-
-(defcomponent checklist
-  [data _ _]
-  [:div.pb10.px6.center.col-6-on-dt.mx-auto
-   (when-let [v (:header/value data)]
-     [:div.h2 v])
-   (when-let [v (:subheader/value data)]
-     [:div.h5.mt6.mb4 v])
-   [:ul.h6.list-img-purple-checkmark.left-align.mx-auto
-    {:style {:width "max-content"}}
-    (for [[i b] (map-indexed vector (:bullets data))]
-      [:li.mb1.pl1 {:key (str i)} b])]])
 
 (def p-color-play-video-mobile
   (svg/white-play-video {:class  "mr1 fill-p-color"
@@ -158,36 +136,6 @@
                        (utils/route-to events/navigate-home
                                        {:query-params {:video "0"}})}})))
 
-(defcomponent video-block
-  [data _ _]
-  (let [video-link (apply utils/route-to (:cta/navigation-message data))]
-    [:div.col-11.mx-auto
-     [:div.hide-on-mb-tb.flex.justify-center.my3
-      [:a.block.relative
-       video-link
-       (ui/ucare-img {:alt "" :width "212"}
-                     "c487eeef-0f84-4378-a9be-13dc7c311e23")
-       [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
-        p-color-play-video-desktop]]
-      [:a.block.ml4.black
-       video-link
-       [:div.h4.bold (:header/value data)]
-       [:div.h4.my2 (:body/value data)]
-       [:div.h5.p-color.flex.items-center.medium.shout (:cta/value data)]]]
-     [:div.hide-on-dt.flex.justify-center.pb10.px4
-      [:a.block.relative
-       video-link
-       (ui/defer-ucare-img {:alt "" :width "152"}
-         "1b58b859-842a-44b1-885c-eac965eeaa0f")
-       [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
-        p-color-play-video-mobile]]
-      [:a.block.ml2.black
-       video-link
-       [:h6.bold.mbnp6 (:header/value data)]
-       [:p.pt2.h7 (:body/value data)]
-       [:h6.p-color.flex.items-center.medium.shout
-        (:cta/value data)]]]]))
-
 (defcomponent find-out-more
   [data owner opts]
   [:div.col-12.bg-white.py8.flex.flex-column.items-center.justify-center.center
@@ -199,41 +147,6 @@
      (when value
        [:div.col-10.my2.h5 value]))
    (cta-with-chevron data)])
-
-(defn ^:private step
-  [layer-id
-   width-class
-   {:as point
-    :keys [icon/uuid icon/width]}
-   idx]
-  (component/html
-   [:div.mt2.center.px1
-    {:class width-class
-     :key (str layer-id "-" idx "-" width-class)
-     }
-    [:div.flex.justify-center.items-end.my2
-     {:style {:height "39px"}}
-     (ui/defer-ucare-img {:alt (:header/value point) :width width} uuid)]
-    [:div.h5.medium (:header/value point)]
-    [:p.h6.mx-auto.black (:body/value point)]
-    ^:inline (cta-with-chevron point)]))
-
-(defcomponent bulleted-explainer
-  [{:keys    [bullets]
-    :as      data
-    layer-id :layer/id} owner opts]
-  [:div.col-12.py10.bg-cool-gray
-   [:div.mt2.flex.flex-column.items-center
-    (let [{:header/keys [value]} data]
-      [:h2.center value])
-    (let [{:subheader/keys [value]} data]
-      [:div.h6.black value])]
-   [:div.col-12.flex.flex-column.items-center.hide-on-dt
-    (map-indexed (partial step layer-id "col-10") bullets)]
-   [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
-    (map-indexed (partial step layer-id "col-3") bullets)]
-   [:div.center.pt3
-    ^:inline (cta-with-chevron data)]])
 
 (defcomponent ^:private ugc-image [{:screen/keys [seen?] :keys [image-url]} owner opts]
   (ui/aspect-ratio
@@ -558,11 +471,7 @@
      :image-block                image-block
      :hero                       layer-hero
      :free-standard-shipping-bar free-standard-shipping-bar
-     :text-block                 text-block
-     :checklist                  checklist
-     :video-block                video-block
      :find-out-more              find-out-more
-     :bulleted-explainer         bulleted-explainer
      :ugc                        ugc
      :faq                        faq
      :sticky-footer              sticky-footer)
