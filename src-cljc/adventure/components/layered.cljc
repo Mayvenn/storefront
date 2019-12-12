@@ -375,7 +375,8 @@
                   (component/html
                   [:div.hide-on-dt
                    [:div.fixed.z4.bottom-0.left-0.right-0
-                    {:style {:margin-bottom (str "-" content-height "px")}}
+                    {:style {:margin-bottom (str "-" content-height "px")
+                             :box-shadow "0 -6px 6px rgba(0,0,0,0.06)"}}
                     ;; Using a separate element with reverse margin to prevent the
                     ;; sticky component from initially appearing on the page and then
                     ;; animate hiding.
