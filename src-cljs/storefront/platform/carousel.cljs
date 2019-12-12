@@ -33,7 +33,7 @@
                (build-carousel this settings)))
   (will-unmount [this]
                 (safely-destroy (.-carousel this))
-                (set! (.-carousel this) nil))
+                (js-delete (.-carousel this) nil))
   (render [this]
           (component/html
            (let [{:keys [slides]}                       (component/get-props this)
