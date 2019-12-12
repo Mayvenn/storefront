@@ -463,7 +463,7 @@
     layer-id       :layer/id}
    owner
    opts]
-  [:div.col-12.bg-cool-gray.center.flex.flex-column.items-center.my2
+  [:div.col-12.bg-cool-gray.center.flex.flex-column.items-center.py2
    [:div.mt2
     (when title-value
       [:h2.title-1.canela
