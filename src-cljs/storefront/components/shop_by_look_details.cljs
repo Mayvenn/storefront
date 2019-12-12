@@ -175,11 +175,6 @@
      (ui-molecules/return-link queried-data)]]
    (look-details-body queried-data)])
 
-(defcomponent adventure-component
-  [look-details owner opts]
-  [:div.container.mb4
-   (look-details-body look-details)])
-
 (defn put-skus-on-shared-cart [shared-cart skus]
   (let [shared-cart-variant-ids (into #{}
                                       (map :legacy/variant-id)
