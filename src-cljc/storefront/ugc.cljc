@@ -4,7 +4,7 @@
             [storefront.keypaths :as keypaths]))
 
 (def ^:private shop-by-look-default
-  {:title             "shop by look"
+  {:title             "Shop by Look"
    :description       (str "Get inspiration for your next hairstyle and "
                            "shop your favorite looks from the #MayvennMade community.")
    :back-copy         "back to shop by look"
@@ -15,7 +15,7 @@
 
 ;; Looking for adventure? See adventure.select-new-look/album-keyword->prompt-image
 (def album-copy
-  {:deals                {:title             "shop deals"
+  {:deals                {:title             "Shop Deals"
                           :description       (str "Save more when you bundle up! "
                                                   "We wrapped our most popular textures into "
                                                   "packaged bundle deals so you can shop with ease.")

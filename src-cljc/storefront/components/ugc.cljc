@@ -55,8 +55,8 @@
    owner
    {:keys [copy]}]
   (let [cta-button-fn (case button-type
-                        :p-color-button      ui/button-large-primary
-                        :underline-button ui/button-large-secondary)]
+                        :p-color-button   ui/button-large-primary
+                        :underline-button ui/button-medium-secondary)]
     [:div.pb2.px1-on-tb-dt.col-12
      (merge {:key (str "small-" id)}
             (when desktop-aware?
@@ -86,7 +86,7 @@
          [:div.flex.flex-column
           [:div.h3 title]
           [:div.regular description]]]
-        [:div.m1.self-start {:style {:width "21px"
+        [:div.m1.self-start {:style {:width  "21px"
                                      :height "21px"}}
          ^:inline (svg/instagram)]]]
       (when nav-event
