@@ -243,17 +243,16 @@
       :else
       (h req))))
 
-(defn wrap-set-preferred-store [handler environment]
+(defn wrap-set-preferred-store
+  [handler environment]
   (fn [{:keys [server-name store] :as req}]
     (when-let [resp (handler req)]
-      (let [store-slug (:store-slug store)]
-        (cond-> resp
-          (not= config/freeinstall-subdomain store-slug)
-          (cookies/set environment
-                       "preferred-store-slug" store-slug
-                       {:http-only true
-                        :max-age   (cookies/days 365)
-                        :domain    (cookie-root-domain server-name)}))))))
+      (cookies/set environment
+                   "preferred-store-slug"
+                   (:store-slug store)
+                   {:http-only true
+                    :max-age   (cookies/days 365)
+                    :domain    (cookie-root-domain server-name)}))))
 
 (defn ^:private assoc-in-req-state [req keypath value]
   (update req :state assoc-in keypath value))
