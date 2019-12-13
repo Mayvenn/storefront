@@ -199,7 +199,7 @@
   [post-purchase?
    mayvenn-rating?
    idx
-   {:keys [salon service-menu gallery-images store-slug stylist-id external-rating mayvenn-rating] :as stylist}]
+   {:keys [salon service-menu gallery-images store-slug store-nickname stylist-id external-rating mayvenn-rating] :as stylist}]
   (let [{salon-name :name :keys [address-1 address-2 city state zipcode]} salon
 
         {:keys [specialty-sew-in-leave-out
@@ -231,7 +231,7 @@
                                                                                 (boolean specialty-sew-in-360-frontal))
                                                 (stylist-cards/checks-or-x-atom "Frontal" (boolean specialty-sew-in-frontal))]
              :stylist-card.cta/id              (str "select-stylist-" store-slug)
-             :stylist-card.cta/label           (str "Select " store-slug)
+             :stylist-card.cta/label           (str "Select " store-nickname)
              :stylist-card.cta/target          [cta-event
                                                 {:servicing-stylist stylist
                                                  :card-index        idx}]
