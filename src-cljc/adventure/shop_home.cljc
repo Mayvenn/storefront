@@ -75,15 +75,16 @@
        :photo/dsk-uuid  "f2d82c41-2051-47d8-86c5-1c82568e324d"
        :photo/file-name "who-shop-hair"}
       {:layer/type   :shop-text-block
-       :header/value [:div.title-1.proxima.py1.shout
-                      "Hold your hair" [:br]
-                      ;; TODO this is a design exception
-                      [:span.title-1.shout.canela "high"]]
-       :body/value   "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
-       :cta/id       "info-about-our-hair"
-       :cta/value    "shop hair"
-       :cta/target   [events/navigate-info-about-our-hair]
-       :divider-img  "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"}
+       ;; TODO this is a design exception
+       :header/value [:div.py1.shout
+                      [:div.title-1.proxima {:style {:font-size "19px"}} "Hold your hair"]
+                      [:div.canela.mt2.mb4 {:style {:font-size "72px"}} "high"]]
+       :body/value  "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
+       :cta/id      "info-about-our-hair"
+       :cta/value   "shop hair"
+       :cta/target  [events/navigate-category {:page/slug           "mayvenn-install"
+                                               :catalog/category-id "23"}]
+       :divider-img "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"}
       {:layer/type   :shop-ugc
        :header/value "#MayvennFreeInstall"
        :images       (->> cms-ugc-collection
