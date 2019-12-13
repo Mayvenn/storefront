@@ -689,15 +689,7 @@
    events/navigate-mayvenn-made              generic-server-render})
 
 (defn robots [{:keys [subdomains]}]
-  (string/join "\n" (if (= "freeinstall" (last subdomains))
-                      ["User-agent: *"
-                       "Disallow: /"
-                       "Allow: /$"
-                       "Allow: /how-it-works"
-                       "Allow: /certified-stylists"
-                       "Allow: /about-our-hair"
-                       "Sitemap: https://shop.mayvenn.com/sitemap.xml"]
-                      user-specific-disalloweds)))
+  (string/join "\n" user-specific-disalloweds))
 
 (defn sitemap [{:keys [storeback-config]} {:keys [subdomains] :as req}]
   (if (seq subdomains)
