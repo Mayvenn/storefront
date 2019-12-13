@@ -74,7 +74,7 @@
     (merge
      mayvenn-install
      {:waiter/order         waiter-order
-      :order/dtc?           (contains? #{"shop" "freeinstall"} store-slug)
+      :order/dtc?           (= "shop" store-slug)
       :order/submitted?     (= "submitted" (:state order))
       :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
       :order.items/quantity (orders/product-quantity waiter-order)})))
