@@ -6,7 +6,7 @@
 (defcomponent component
   [{:keys [call-number]} owner opts]
   [:div.center.px3.py2.bg-cool-gray
-   [:div.title-2.proxima.my1.caps "Need Help?"]
+   [:div.title-2.proxima.my1.shout "Need Help?"]
    [:div.content-3.proxima
     [:span.hide-on-tb-dt
      (ui/link :link/phone :a.inherit-color {} call-number)]
