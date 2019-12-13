@@ -24,15 +24,16 @@
                      {:title      "What if I want to get my hair done by another stylist? Can I still get the Mayvenn Install?"
                       :paragraphs ["You must get your hair done from a Certified Stylist in order to get your hair installed for free."]}]}))
 
-(defn component [{:keys [expanded-index sections modal?]}]
-  [:div.px6.mx-auto
-   {:style {:class (if modal? "col-12" "col-6-on-dt")}}
-   [:h1.center "Frequently Asked Questions"]
+(defn component [{:keys [expanded-index sections modal? background-color]}]
+  [:div.px6.mx-auto.col-6-on-dt.py6
+   {:class background-color}
+   [:div.canela.title-1.center.my7 "Frequently Asked Questions"]
    (component/build
     accordion/component
     {:expanded-indices #{expanded-index}
-     :sections         (map (fn [{:keys [title paragraphs]}]
-                              (accordion/section [:h6 title] paragraphs))
-                            sections)}
+     :sections         (map
+                        (fn [{:keys [title paragraphs]}]
+                          {:title [:content-1 title]
+                           :paragraphs paragraphs})
+                        sections)}
     {:opts {:section-click-event events/faq-section-selected}})])
-

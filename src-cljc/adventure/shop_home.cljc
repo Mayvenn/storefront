@@ -97,7 +97,7 @@
        :cta/id       "see-more-looks"
        :cta/value    "see more looks"
        :cta/target   [events/navigate-shop-by-look {:album-keyword :look}]}
-      (merge {:layer/type :faq} (faq/free-install-query data))
+      (merge {:layer/type :faq} (faq/free-install-query data) {:background-color "bg-pale-purple"})
       {:layer/type     :shop-iconed-list
        :layer/id       "more-than-a-hair-company"
        :title/value    [[:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "29px"}}]]

@@ -11,7 +11,6 @@
             [storefront.platform.component-utils :as utils]
             [storefront.transitions :as transitions]
             [storefront.browser.scroll :as scroll]
-            [storefront.accessors.experiments :as experiments]
             [adventure.organisms.call-out-center :as call-out-center]))
 
 (def get-a-free-install
@@ -125,114 +124,141 @@
 (defmethod transitions/transition-state events/popup-show-adventure-free-install [_ event args app-state]
   (assoc-in app-state keypaths/popup :adventure-free-install))
 
-(def get-a-mayvenn-install
-  (let [step (fn [{:keys        [icon/uuid icon/width]
-                   header-value :header/value
-                   body-value   :body/value}]
-               [:div.col-12.mt2.center
-                [:div.flex.justify-center.items-end.mb2
-                 {:style {:height "39px"}}
-                 (ui/ucare-img {:alt header-value :width width} uuid)]
-                [:div.h5.medium header-value]
-                [:p.h6.col-8.col-9-on-dt.mx-auto
-                 body-value]])]
+(defn ^:private shop-step
+  [key-prefix
+   idx
+   {title :title/value
+    body  :body/value}]
+  (component/html
+   [:div.p1
+    {:key (str key-prefix idx)}
+    [:div.title-2.canela.py1
+     (str "0" (inc idx))]
+    [:div.title-2.proxima.py1.shout
+     title]
+    [:div.content-2.proxima
+     body]]))
 
-    [:div.col-12
-     [:div.mt2.flex.flex-column.items-center
-      [:h1 "Get a FREE Install"]
-      [:div.h5 "In three easy steps"]]
+(def you-buy-the-hair
+  (let [bullets [{:title/value "Pick Your Dream Look"
+                   :body/value  "Have a vision in mind? We’ve got the hair for it. Otherwise, peruse our site for inspiration to find your next look."}
+                  {:title/value ["Select A Mayvenn" ui/hyphen "Certified Stylist"]
+                   :body/value  "We’ve hand-picked thousands of talented stylists around the country. We’ll cover the cost of your salon appointment with them when you buy 3 or more bundles."}
+                  {:title/value "Schedule Your Appointment"
+                   :body/value  "We’ll connect you with your stylist to set up your install. Then, we’ll send you a prepaid voucher to cover the cost of service."}]]
 
-     [:div.col-8-on-dt.mx-auto.flex.flex-wrap
-      (map step
-           [{:icon/uuid    "3d2b326c-7773-4672-827e-f13dedfae15a"
-             :icon/width   "22"
-             :header/value "1. Choose a Mayvenn Certified Stylist"
-             :body/value   "We’ve partnered with thousands of top stylists around the nation. Choose one in your local area and we’ll pay the stylist to do your install."}
-            {:icon/uuid    "08e9d3d8-6f3d-4b3c-bc46-3590175a9a4d"
-             :icon/width   "24"
-             :header/value "2. Buy Any 3 Items or More"
-             :body/value   "Purchase 3 or more bundles, closures or frontals. Rest easy - your 100% virgin hair purchase is backed by our 30 day guarantee."}
-            {:icon/uuid    "3fb9c2bf-c30e-4bee-957c-f273b1b5a233"
-             :icon/width   "27"
-             :header/value "3. Schedule Your Appointment"
-             :body/value   "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."}])]]))
+    [:div.col-12.bg-cool-gray.center.flex.flex-column.items-center.py2
+     [:div.mt2
+      [:h2.title-1.canela
+       "You buy the hair, we cover the service."]
+      [:div.title-1.proxima.shout.sub
+       "Here's how it works."]]
 
-(def mayvenn-is-more-than-a-hair-company
-  (let [entry (fn [{:keys [icon-uuid icon-width title description]}]
-                [:div.col-12.my2.flex.flex-column.items-center.items-end
-                 [:div.flex.justify-center.items-end.mb1
-                  {:style {:height "35px"}}
-                  (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
-                 [:div.h5.medium.my2 title]
-                 [:p.h6.col-8.center.black description]])]
+     [:div.col-10.flex.flex-column.items-center
+      [:div.stroke-s-color
+       (svg/straight-line {:width  "1px"
+                           :height "42px"})]
+      (map-indexed (partial shop-step (str #_layer-id "-mb-tb-"))
+                   bullets)]
+     [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
+      (map-indexed (partial shop-step (str #_layer-id "-dt-"))
+                   bullets)]
+     [:a.mt8
+      (apply utils/route-to [events/navigate-home {:query-params {:video "free-install"}}])
+      (svg/play-video {:width  "30px"
+                       :height "30px"})
+      [:div.underline.block.content-3.bold.p-color.shout
+       "Watch Video"]]]))
 
-    [:div.col-12.bg-pale-purple.mt3.py8.px4
-     [:div.col-11-on-dt.justify-center.flex.flex-wrap.mx-auto.pb2
+(def mayvenn-guarantees
+  [:div.col-12.center.flex.flex-column.items-center.py6
+   [:div.mt5.mb3
+    [:h2.title-1.proxima.shout.pb1
+     [:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "29px"}}]]
+    [:div.title-1.canela.shout
+     "guarantees"]]
+   [:div.col-8.flex.flex-column.items-center.hide-on-dt
+    [:div.pb1.pt6.col-6-on-tb-dt
+     [:div
+      {:width "32px"}
+      (svg/heart {:class  "fill-p-color"
+                  :width  "32px"
+                  :height "29px"})]
+     [:div.title-2.proxima.py1.shout
+      "Top-Notch Customer Service"]
+     [:p.content-2.py1.col-10-on-tb-dt.mx-auto
+      "Our team is made up of hair experts ready to help you by phone, text, and email."]]
 
-      [:div.my2.flex.flex-column.items-center.col-12
-       [:h1.titleize.center "Mayvenn is more than a hair company"]
-       [:div.h5.mt2.black "It's a movement"]]
+    [:div.pb1.pt6.col-6-on-tb-dt
+     [:div
+      {:width "30px"}
+      (svg/calendar {:class  "fill-p-color"
+                     :width  "30px"
+                     :height "33px"})]
+     [:div.title-2.proxima.py1.shout
+      "30 Day Guarantee"]
+     [:p.content-2.py1.col-10-on-tb-dt.mx-auto
+      "Wear it, dye it, even cut it! If you're not satisfied we'll exchange it within 30 days."]]
 
-      (entry {:icon-uuid   "ab1d2ed4-ff93-40e6-978a-721133ca88a7"
-              :icon-width  "21"
-              :title       "Top Notch Customer Service"
-              :description "Our team is made up of hair experts ready to help you by phone, text, and email."})
-      (entry {:icon-uuid   "8787e30c-2879-4a43-8d01-9d6790575084"
-              :icon-width  "41"
-              :title       "30 Day Guarantee"
-              :description "Wear it, dye it, even cut it! If you're not satisfied we'll exchange it within 30 days."})
-      (entry {:icon-uuid   "e02561dd-c294-43b7-bb33-c40bfabea518"
-              :icon-width  "30"
-              :title       "100% Virgin Hair"
-              :description "Our hair is gently steam processed and can last up to a year. Available in 8 textures and 8 shades."})
-      (entry {:icon-uuid   "6f63157c-dc3a-4bbb-abcf-e03b08d6e102"
-              :icon-width  "31"
-              :title       "Certified Stylists"
-              :description "Our stylists are chosen because of their industry-leading standards. Both our hair and service are quality guaranteed."})]]))
+    [:div.pb1.pt6.col-6-on-tb-dt
+     [:div
+      {:width "35px"}
+      (svg/worry-free {:class  "fill-p-color"
+                       :width  "35px"
+                       :height "36px"})]
+     [:div.title-2.proxima.py1.shout
+      "100% Virgin Hair"]
+     [:p.content-2.py1.col-10-on-tb-dt.mx-auto
+      "Our hair is gently steam-processed and can last up to a year. Available in 8 textures and 5 shades."]]
 
-(defn ^:private cta-molecule
-  [{:cta/keys [id label target]}]
-  (when (and id label target)
-    (-> (merge {:data-test id} (apply utils/route-to target))
-        (ui/button-large-primary [:div.flex.items-center.justify-center.inherit-color label]))))
+    [:div.pb1.pt6.col-6-on-tb-dt
+     [:div
+      {:width "30px"}
+      (svg/mirror {:class  "fill-p-color"
+                   :width  "30px"
+                   :height "34px"})]
+     [:div.title-2.proxima.py1.shout
+      "Certified Stylists"]
+     [:p.content-2.py1.col-10-on-tb-dt.mx-auto
+      "Our stylists are chosen because of their industry-leading standards. Both our hair and service are quality guaranteed."]]]])
+
+(defn ^:private vertical-squiggle
+  [top]
+  [:div.absolute.col-12.flex.justify-center
+   {:style {:top top}}
+   (svg/vertical-squiggle {:style {:height "72px"}})])
 
 (defmethod popup/component :consolidated-cart-free-install
-  [{:keys [footer-data faq-data] :as queried-data} owner _]
+  [{:keys [faq-data call-out-data] :as queried-data} owner _]
   (ui/modal {:col-class   "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
              :close-attrs (utils/fake-href events/control-consolidated-cart-free-install-dismiss)
              :bg-class    "bg-darken-4"}
-            [:div.bg-white
+            [:div.bg-cool-gray
              {:style {:max-width "400px"}}
-             [:div.col-12.clearfix.pt1.pk2.bg-pale-purple.white
+             [:div.col-12.clearfix.pt1.pk2
               [:div.right.pt2.pr2.pointer
-               (svg/simple-x
+               (svg/x-sharp
                 (merge (utils/fake-href events/control-consolidated-cart-free-install-dismiss)
                        {:data-test "consolidated-cart-free-install-popup-dismiss"
                         :height    "20px"
-                        :width     "20px"
-                        :class     "white"}))]
-
-              [:div.py2.center.col-8.bold.mx-auto
-               "Buy 3 items and receive your free Mayvenn Install"]]
+                        :width     "20px"}))]]
 
              [:div.flex.flex-column
-              [:div.mt10.mb6
-               get-a-mayvenn-install
+              [:div.my10.mb10
+               you-buy-the-hair]
 
-               [:div.col-8.mx-auto.mt5
-                (cta-molecule queried-data)]]
+              [:div.pb6.bg-white mayvenn-guarantees]
 
-              mayvenn-is-more-than-a-hair-company
-              [:div.my8
+              [:div.bg-white.relative (vertical-squiggle "-50px")]
+
+              [:div.bg-warm-gray
                (faq/component (assoc faq-data :modal? true))]
 
-              (component/build call-out-center/organism queried-data nil)
-
-              [:div.hide-on-tb-dt ;; Footer
-               (component/build footer-modal/component footer-data nil)]]]))
+              (component/build call-out-center/organism call-out-data nil)]]))
 
 (defmethod transitions/transition-state events/popup-show-consolidated-cart-free-install
   [_ event args app-state]
+  (prn "thios should kjasbkwqefbwek")
   (assoc-in app-state keypaths/popup :consolidated-cart-free-install))
 
 (defmethod transitions/transition-state events/control-consolidated-cart-free-install-dismiss
@@ -245,13 +271,12 @@
 
 (defmethod popup/query :consolidated-cart-free-install
   [data]
-  {:faq-data                    (faq/free-install-query data)
-   :footer-data                 (footer-modal/query data)
-   :call-out-center/bg-class    "bg-pale-purple"
-   :call-out-center/bg-ucare-id "6a221a42-9a1f-4443-8ecc-595af233ab42"
-   :call-out-center/title       "We can't wait to pay for your install!"
-   :call-out-center/subtitle    "" ;; For spacing
-   :cta/id                      "browse-stylists"
-   :cta/target                  [events/navigate-adventure-find-your-stylist]
-   :cta/label                   "Browse Stylists"
-   :react/key                   "browse-stylists"})
+  {:faq-data      (faq/free-install-query data)
+   :call-out-data {:call-out-center/bg-class "bg-white"
+                   :call-out-center/title    "Want to book with your own stylist?"
+                   :call-out-center/subtitle "Recommend them to become Mayvenn Certified"
+                   :cta/id                   "recommend-stylist"
+                   :cta/target               [events/external-redirect-typeform-recommend-stylist]
+                   :cta/label                "Submit Your Stylist"
+                   :element/type             :call-out
+                   :react/key                :recommend-stylist}})
