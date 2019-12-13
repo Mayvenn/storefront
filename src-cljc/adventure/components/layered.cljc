@@ -70,18 +70,19 @@
          {:data-test id}))
       value))))
 
-(defn ^:private shop-cta-with-img
-  [{:cta/keys [navigation-message href img value id]}]
+(defn ^:private shop-cta
+  [{:cta/keys [target value id]}]
   (component/html
-   (when (or navigation-message href)
+   (when id
+     (ui/button-large-primary
+      (assoc (apply utils/route-to target) :data-test id) value))))
+
+(defn ^:private shop-cta-with-img
+  [{:cta/keys [target img value id]}]
+  (component/html
+   (when id
      [:a.my2
-      (merge
-       (when href
-         {:href href})
-       (when navigation-message
-         (apply utils/route-to navigation-message))
-       (when id
-         {:data-test id}))
+      (assoc (apply utils/route-to target) :data-test id)
       (when img
         [:img {:width "30px"
                :height "30px"
@@ -237,7 +238,7 @@
                       :width "1000"} dsk-ucare-id)]]
 
      [:div.relative.hide-on-tb-dt ;; MB
-      (vertical-squiggle "-72px")
+      (vertical-squiggle "-86px")
       [:div.flex.mx5.my10
        [:div mob-quotation-mark]
        [:div.canela.title-2.center.pt2.pb4 text]
@@ -315,7 +316,8 @@
     title       :header/value
     body        :body/value
     divider-img :divider-img
-    :as data}
+    button?     :cta/button?
+    :as         data}
    _
    _]
   [:div
@@ -329,7 +331,9 @@
       [:div.title-2.canela body])
     ^:inline
     [:div.pt3
-     (shop-cta-with-img data)]]
+     (if button?
+       (shop-cta data)
+       (shop-cta-with-img data))]]
    (when divider-img
      (divider divider-img))])
 
@@ -339,7 +343,7 @@
   [:div
    [:div.relative
     {:style {:margin-top "60px"}}
-    (vertical-squiggle "-50px")
+    (vertical-squiggle "-46px")
     [:div.col-10.col-6-on-dt.mx-auto.border.border-framed.flex.justify-center.mb8
      [:div.col-12.flex.flex-column.items-center.m5.py4
       {:style {:width "max-content"}}
@@ -393,7 +397,7 @@
    [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
     (map-indexed (partial shop-step (str layer-id "-dt-"))
                  bullets)]
-   ^:inline (shop-cta-with-img data)])
+   (shop-cta-with-img data)])
 
 (defn ^:private shop-icon-step
   [key-prefix
@@ -434,7 +438,7 @@
                  bullets)]
    [:div.col-11.flex.justify-between.hide-on-mb-tb
     (map-indexed (partial shop-icon-step (str layer-id "-dt-")) bullets)]
-   ^:inline (shop-cta-with-img data)])
+   (shop-cta-with-img data)])
 
 
 (defcomponent shop-ugc
@@ -452,7 +456,7 @@
         ugc-image
         {:image-url image-url}
         nil)])]
-   ^:inline (shop-cta-with-img data)])
+   (shop-cta-with-img data)])
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (component/build
