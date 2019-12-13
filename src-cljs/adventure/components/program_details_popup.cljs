@@ -256,7 +256,6 @@
 
 (defmethod transitions/transition-state events/popup-show-consolidated-cart-free-install
   [_ event args app-state]
-  (prn "thios should kjasbkwqefbwek")
   (assoc-in app-state keypaths/popup :consolidated-cart-free-install))
 
 (defmethod transitions/transition-state events/control-consolidated-cart-free-install-dismiss
