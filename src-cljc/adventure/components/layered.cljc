@@ -392,14 +392,15 @@
     icon  :icon/body
     width :icon/width}]
   (component/html
-   [:div.pb1.pt6
+   [:div.pb1.pt6.col-6-on-tb-dt
     {:key (str key-prefix idx)}
     [:div
      {:width width}
      icon]
     [:div.title-2.proxima.py1.shout
      title]
-    [:p.content-2.py1 body]
+    [:p.content-2.py1.col-10-on-tb-dt.mx-auto
+     body]
     ^:inline (cta-with-chevron {})]))
 
 (defcomponent shop-iconed-list
@@ -421,7 +422,7 @@
    [:div.col-8.flex.flex-column.items-center.hide-on-dt
     (map-indexed (partial shop-icon-step (str layer-id "-mb-tb-"))
                  bullets)]
-   [:div.col-11.flex.justify-between.hide-on-mb-tb
+   [:div.col-7.flex.flex-wrap.justify-between.hide-on-mb-tb
     (map-indexed (partial shop-icon-step (str layer-id "-dt-")) bullets)]
    (shop-cta-with-icon data)])
 
