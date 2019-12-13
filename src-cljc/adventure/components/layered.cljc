@@ -16,9 +16,7 @@
   [top]
   [:div.absolute.col-12.flex.justify-center
    {:style {:top top}}
-   [:object {:style {:height "72px"}
-             :type  "image/svg+xml"
-             :data  "/images/vertical-squiggle.svg"}]])
+   (svg/vertical-squiggle {:style {:height "72px"}})])
 
 (defcomponent layer-hero
   [data _ opts]
@@ -77,16 +75,14 @@
      (ui/button-large-primary
       (assoc (apply utils/route-to target) :data-test id) value))))
 
-(defn ^:private shop-cta-with-img
-  [{:cta/keys [target img value id]}]
+(defn ^:private shop-cta-with-icon
+  [{:cta/keys [target icon value id]}]
   (component/html
    (when id
      [:a.my2
       (assoc (apply utils/route-to target) :data-test id)
-      (when img
-        [:img {:width "30px"
-               :height "30px"
-               :src img}])
+      (when icon
+        icon)
       [:div.underline.block.content-3.bold.p-color.shout.pb6
        value]])))
 
@@ -113,16 +109,6 @@
      :file-name   file-name
      :alt         alt}
     nil)])
-
-(def p-color-play-video-mobile
-  (svg/white-play-video {:class  "mr1 fill-p-color"
-                         :height "30px"
-                         :width  "30px"}))
-
-(def p-color-play-video-desktop
-  (svg/white-play-video {:class  "mr1 fill-p-color"
-                         :height "41px"
-                         :width  "41px"}))
 
 (defcomponent video-overlay
   [data _ _]
@@ -333,7 +319,7 @@
     [:div.pt3
      (if button?
        (shop-cta data)
-       (shop-cta-with-img data))]]
+       (shop-cta-with-icon data))]]
    (when divider-img
      (divider divider-img))])
 
@@ -397,7 +383,7 @@
    [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
     (map-indexed (partial shop-step (str layer-id "-dt-"))
                  bullets)]
-   (shop-cta-with-img data)])
+   (shop-cta-with-icon data)])
 
 (defn ^:private shop-icon-step
   [key-prefix
@@ -438,7 +424,7 @@
                  bullets)]
    [:div.col-11.flex.justify-between.hide-on-mb-tb
     (map-indexed (partial shop-icon-step (str layer-id "-dt-")) bullets)]
-   (shop-cta-with-img data)])
+   (shop-cta-with-icon data)])
 
 
 (defcomponent shop-ugc
@@ -456,7 +442,7 @@
         ugc-image
         {:image-url image-url}
         nil)])]
-   (shop-cta-with-img data)])
+   (shop-cta-with-icon data)])
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (component/build

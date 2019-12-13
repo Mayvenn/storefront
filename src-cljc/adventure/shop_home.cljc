@@ -59,7 +59,8 @@
                          :body/value  "We’ll connect you with your stylist to set up your install. Then, we’ll send you a prepaid voucher to cover the cost of service."}]
        :cta/id         "watch-video"
        :cta/value      "Watch Video"
-       :cta/img        "/images/play-video.svg"
+       :cta/icon       (svg/play-video {:width  "30px"
+                                        :height "30px"})
        :cta/target     [events/navigate-home {:query-params {:video "free-install"}}]}
       {:layer/type   :shop-text-block
        :header/value [:div.title-1.proxima.py1.shout
@@ -79,12 +80,12 @@
        :header/value [:div.py1.shout
                       [:div.title-1.proxima {:style {:font-size "19px"}} "Hold your hair"]
                       [:div.canela.mt2.mb4 {:style {:font-size "72px"}} "high"]]
-       :body/value  "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
-       :cta/id      "info-about-our-hair"
-       :cta/value   "shop hair"
-       :cta/target  [events/navigate-category {:page/slug           "mayvenn-install"
-                                               :catalog/category-id "23"}]
-       :divider-img "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"}
+       :body/value   "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
+       :cta/id       "info-about-our-hair"
+       :cta/value    "shop hair"
+       :cta/target   [events/navigate-category {:page/slug           "mayvenn-install"
+                                                :catalog/category-id "23"}]
+       :divider-img  "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"}
       {:layer/type   :shop-ugc
        :header/value "#MayvennFreeInstall"
        :images       (->> cms-ugc-collection

@@ -193,8 +193,6 @@
 (defn mayvenn-on-pinterest []
   (mayvenn-on-social "Follow Mayvenn on Pinterest" "pinterest"))
 
-;;
-
 (defn missing-portrait [svg-options]
   (component/html
    [:svg svg-options
@@ -202,7 +200,7 @@
 
 (defn white-play-video [opts]
   (component/html
-   [:svg opts ^:inline (svg-xlink "play-video")]))
+   [:svg opts ^:inline (svg-xlink "white-play-video")]))
 
 (defn minus-sign [opts]
   (component/html
@@ -378,3 +376,13 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "mayvenn-text-logo")]))
+
+(defn play-video [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "play-video")]))
+
+(defn vertical-squiggle [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "vertical-squiggle")]))
