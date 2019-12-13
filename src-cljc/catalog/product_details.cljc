@@ -56,14 +56,6 @@
   ;; on mobile.
   [:div.hide-on-tb-dt.mxn2 body])
 
-;; GROT: UNUSED
-(defn quantity-and-price-structure [quantity price]
-  [:div
-   [:div.right-align.black.h6 "PRICE"]
-   [:div.flex.h2 {:style {:min-height "1.5em"}} ; prevent slight changes to size depending on content of counter
-    [:div.flex-auto quantity]
-    [:div price]]])
-
 (defn counter-or-out-of-stock [can-supply? quantity]
   (if can-supply?
     [:div
@@ -161,27 +153,6 @@
     {:data-test "cart-button"
      :data-ref "cart-button"}
     (ui/button-large-primary (utils/route-to events/navigate-cart) "Check out")]))
-
-(defn- hacky-fix-of-bad-slugs-on-facets [slug]
-  (string/replace (str slug) #"#" ""))
-
-; TODO: GROT UNUSED
-(defn summary-structure [desc quantity-and-price]
-  [:div
-   (when (seq desc)
-     [:div
-      [:h2.h3.light "Summary"]
-      [:div desc]])
-   quantity-and-price])
-
-; TODO: GROT UNUSED
-(defn sku-summary [{:keys [sku sku-quantity]}]
-  (let [{:keys [inventory/in-stock? sku/price]} sku]
-    (summary-structure
-     (some-> sku :sku/title string/upper-case)
-     (quantity-and-price-structure
-      (counter-or-out-of-stock in-stock? sku-quantity)
-      (item-price price)))))
 
 (def triple-bundle-upsell
   [:p.center.h6.flex.items-center.justify-center
