@@ -43,7 +43,7 @@
 }
 
 .btn-large {
-	  border-image-slice: 21 fill;
+    border-image-slice: 21 fill;
     border-image-width: 21px;
     padding: 26px;
     border-image-repeat: space;
