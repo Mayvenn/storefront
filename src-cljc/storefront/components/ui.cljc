@@ -618,7 +618,7 @@
    TODO(corey,stella) fix colors after colors land"
   [opts {:keys [quantity]}]
   (component/html
-   [:a.relative.pointer.block.p-color
+   [:a.relative.pointer.block.p-color.mtn1
     (merge (utils/route-to events/navigate-cart)
            opts)
     [:div.relative.container-size.flex.items-center.justify-center
