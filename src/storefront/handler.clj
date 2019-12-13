@@ -938,6 +938,8 @@
                (GET "/sitemap.xml" req (sitemap ctx req))
                (GET "/blog" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/blog/"))))
                (GET "/blog/" req (util.response/redirect (store-url "shop" environment req)))
+               (GET "/install" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/"))))
+               (GET "/adv/home" req (util.response/redirect (store-url "shop" environment req) :moved-permanently))
                (GET "/stylist/edit" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/account" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/commissions" [] (util.response/redirect "/stylist/earnings" :moved-permanently))
@@ -946,8 +948,6 @@
                (GET "/products" req (redirect-to-home environment req))
                (GET "/products/" req (redirect-to-home environment req))
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
-               (GET "/install" req (util.response/redirect (store-homepage "freeinstall" environment req)))
-               (GET "/adv/home" req (util.response/redirect (store-homepage "freeinstall" environment req) :moved-permanently))
                (GET "/cms/*" {uri :uri}
                  (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
                    (-> (contentful/read-cache contentful)

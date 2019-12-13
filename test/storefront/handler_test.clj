@@ -106,12 +106,12 @@
           (let [resp (handler (mock/request :get (str "https://phil.mayvenn.com" path)))]
             (is (= 200 (:status resp)))))))))
 
-(deftest install-path-redirects-to-freeinstall
+(deftest install-path-redirects-to-shop
   (with-services
     (with-handler handler
       (let [resp (handler (mock/request :get "https://bob.mayvenn.com/install"))]
-        (testing "It redirects to the freeinstall subdomain"
-          (is-redirected-to resp "freeinstall" "/"))))))
+        (testing "It redirects to the shop subdomain"
+          (is-redirected-to resp "shop" "/"))))))
 
 (deftest peakmill-subdomain-redirects-to-shop-and-preserves-path
   (with-services
