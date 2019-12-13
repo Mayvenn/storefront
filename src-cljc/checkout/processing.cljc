@@ -23,7 +23,8 @@
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
 
-(defn place-order [app-state]
+(defn place-order
+  [app-state]
   #?(:cljs
      (api/place-order (get-in app-state keypaths/session-id)
                       (get-in app-state keypaths/order)
@@ -41,7 +42,7 @@
                                                                      {:query-params {:error error-code}})))})))
 
 (defn get-order-status
-  [{:keys [number token]} freeinstall-domain? confirm-order-fn times-attempted]
+  [{:keys [number token]} confirm-order-fn times-attempted]
   #?(:cljs
      (api/poll-order number token
                      (fn [{:keys [state] :as order'}]
@@ -49,15 +50,16 @@
                          (if (< times-attempted 5)
                            (case state
                              "cart"
-                             (js/setTimeout #(get-order-status order' freeinstall-domain? confirm-order-fn (inc times-attempted))
+                             (js/setTimeout #(get-order-status order' confirm-order-fn (inc times-attempted))
                                             3000)
 
                              "submitted"
                              (messages/handle-message events/api-success-update-order-place-order {:order order'}))
                            (confirm-order-fn)))))))
 
-(defn quadpay-confirm-order [app-state freeinstall-domain?]
-  ;; tell waiter to hurry up, otherwise just poll for status (webhook should update us)
+(defn quadpay-confirm-order
+  "Tell waiter to hurry up, otherwise just poll for status (webhook should update us)"
+  [app-state]
   #?(:cljs
      (let [order (get-in app-state keypaths/order)]
        (api/confirm-order-was-placed
@@ -65,7 +67,7 @@
         order
         (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
         (fn success-handler [& _]
-          (get-order-status order freeinstall-domain? (partial quadpay-confirm-order app-state freeinstall-domain?) 0))
+          (get-order-status order (partial quadpay-confirm-order app-state) 0))
         (fn failure-handler [response]
           (let [response-body (get-in response [:response :body])]
             (if (api/waiter-style? response-body)
@@ -73,20 +75,15 @@
                 (history/enqueue-navigate events/navigate-cart {:query-params {:error (:error-code response-body)}})
                 (messages/handle-later events/flash-show-failure {:message (:error-message response-body)}))
 
-              (get-order-status order freeinstall-domain? (partial quadpay-confirm-order app-state freeinstall-domain?) 0))))))))
+              (get-order-status order (partial quadpay-confirm-order app-state) 0))))))))
 
 (defmethod effects/perform-effects events/navigate-checkout-processing
-  [dispatch event args _ app-state]
+  [_ _ _ _ app-state]
   #?(:cljs
-     (let [order                                (get-in app-state keypaths/order)
-           {:keys [state number cart-payments]} order
-
-           ;; TODO: Is freeinstall-domain? actually used, or just threaded through?
-           freeinstall-domain?                  (= "freeinstall"
-                                                   (get-in app-state keypaths/store-slug))]
+     (let [{:as order :keys [state number cart-payments]} (get-in app-state keypaths/order)]
        (cond
          (seq (:quadpay cart-payments))
-         (quadpay-confirm-order app-state freeinstall-domain?)
+         (quadpay-confirm-order app-state)
 
          (= "cart" state)
          (place-order app-state)
