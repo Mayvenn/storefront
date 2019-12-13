@@ -29,8 +29,8 @@
 (defn transposed-title-molecule
   [{:transposed-title/keys [id primary secondary]}]
   [:div {:data-test id}
-   [:div.medium secondary]
-   [:div.h3.black.medium primary]])
+   [:div.content-2.proxima secondary]
+   [:div.title-2.proxima.shout primary]])
 
 (defn stars-rating-molecule
   [{rating :rating/value}]
@@ -45,12 +45,12 @@
   [{:phone-link/keys [target phone-number]}]
   (when (and target phone-number)
     (ui/link :link/phone
-             :a.inherit-color
+             :a.inherit-color.proxima.content-2
              {:data-test "stylist-phone"
               :class     "block mt1 flex items-center"
               :on-click  (apply utils/send-event-callback target)}
-             (svg/phone {:style {:width  "7px"
-                                 :height "13px"}
+             (svg/phone {:style {:width  "15px"
+                                 :height "15px"}
                          :class "mr1"}) phone-number)))
 
 (defn circle-portrait-molecule  [{:circle-portrait/keys [portrait-url]}]
@@ -63,10 +63,9 @@
 
 (defcomponent stylist-profile-card-component
   [query _ _]
-  [:div.flex.bg-white.rounded.py3
-    ;; TODO: image-url should be format/auto?
+  [:div.flex.bg-white.rounded.p2
    (circle-portrait-molecule query)
-   [:div.flex-grow-1.left-align.h6.line-height-2
+   [:div.flex-grow-1.left-align.ml2
     (transposed-title-molecule query)
     (stars-rating-molecule query)
     (stylist-phone-molecule query)]
@@ -74,11 +73,14 @@
 
 (defn checks-or-x
   [specialty specialize?]
-  [:div.h6.flex.items-center
+  [:div.h6.flex.items-center.content-2
    (if specialize?
-     [:span.mr1 (ui/ucare-img {:width "12"} "2560cee9-9ac7-4706-ade4-2f92d127b565")]
-     (svg/simple-x {:class "mr1"
-                    :style {:width "12px" :height "12px"}}))
+     (svg/check-mark {:class "black mr2"
+                      :style {:width  12
+                              :height 12}})
+     (svg/x-sharp {:class "black mr2"
+                   :style {:width  12 
+                           :height 12}}))
    specialty])
 
 (def post-purchase? #{events/navigate-adventure-stylist-profile-post-purchase})
@@ -189,7 +191,7 @@
                         (ui/aspect-ratio
                          1 1
                          [:img {:src   (str ucare-img-url "-/scale_crop/204x204/-/format/auto/")
-                                :class "rounded col-12"}])])
+                                :class "col-12"}])])
                      items)
       :settings {:controls true
                  :nav      false
@@ -208,13 +210,14 @@
 
 (defn section-details-molecule
   [{:section-details/keys [title content]}]
-  [:div.medium.h5.py3
+  [:div.py3
    {:key title}
-   title
-   [:div.mt1.h6.regular
+   [:div.title-3.proxima.shout
+    title]
+   [:div.content-2
     (if (string? content)
       content
-      [:div.mt1.col-12.col.regular
+      [:div.mt1.col-12.col
        [:div.col-4.col
         (checks-or-x "Leave Out" (:specialty-sew-in-leave-out content))
         (checks-or-x "360" (:specialty-sew-in-360-frontal content))]

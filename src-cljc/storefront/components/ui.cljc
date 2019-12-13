@@ -801,14 +801,12 @@
 (defn ^:private star [type index]
   [:span.mrp1
    {:key (str (name type) "-" index)}
-   (ucare-img
-    {:width "13"}
-    (case type
-      :whole         "6eaf883d-2cc7-4f52-aee7-292330944c67"
-      :three-quarter "e7b3d754-a0c4-4ff2-969d-6eac684ce16f"
-      :half          "44815567-e66c-4375-a46b-e5624a122646"
-      :empty         "9f04c257-1b27-4039-8d53-1dd63c44653c"
-      nil))])
+   (case type
+     :whole         (svg/whole-star {:height "13px" :width "13px"})
+     :three-quarter (svg/three-quarter-star {:height "13px" :width "13px"})
+     :half          (svg/half-star {:height "13px" :width "13px"})
+     :empty         (svg/empty-star {:height "13px" :width "13px"})
+     nil)])
 
 (defn rating->stars [rating]
   (let [remainder-rating (mod rating 1)

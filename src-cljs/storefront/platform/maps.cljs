@@ -40,10 +40,10 @@
    (let [{:keys [address-1 address-2 city state zipcode latitude longitude]} salon]
      [:div.bg-cool-gray.p2.flex.justify-between
       [:div.flex.justfy-start.mr2
-       [:div.line-height-3.pr1 (svg/position {:height "13px"
-                                              :width  "10px"})]
-       [:div.h6.self-center
+       [:div.line-height-3.pr1 (svg/position {:height "18px"
+                                              :width  "18px"})]
+       [:div.content-3.self-center
         (string/join ", " (filter identity [address-1 address-2 city state zipcode]))]]
-      [:a.self-center.h6.medium.underline.p-color.bold
+      [:a.self-center.underline.button-font-2.p-color
        {:href (str "https://www.google.com/maps/dir/?api=1&destination=" latitude "," longitude)}
        "DIRECTIONS"]])])
