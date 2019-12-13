@@ -160,9 +160,7 @@
                            :height "42px"})]
       (map-indexed (partial shop-step (str #_layer-id "-mb-tb-"))
                    bullets)]
-     [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
-      (map-indexed (partial shop-step (str #_layer-id "-dt-"))
-                   bullets)]
+
      [:a.mt8
       (apply utils/route-to [events/navigate-home {:query-params {:video "free-install"}}])
       (svg/play-video {:width  "30px"
@@ -177,8 +175,8 @@
      [:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "29px"}}]]
     [:div.title-1.canela.shout
      "guarantees"]]
-   [:div.col-8.flex.flex-column.items-center.hide-on-dt
-    [:div.pb1.pt6.col-6-on-tb-dt
+   [:div.col-8.flex.flex-column.items-center
+    [:div.pb1.pt6
      [:div
       {:width "32px"}
       (svg/heart {:class  "fill-p-color"
@@ -186,10 +184,10 @@
                   :height "29px"})]
      [:div.title-2.proxima.py1.shout
       "Top-Notch Customer Service"]
-     [:p.content-2.py1.col-10-on-tb-dt.mx-auto
+     [:p.content-2.py1.mx-auto
       "Our team is made up of hair experts ready to help you by phone, text, and email."]]
 
-    [:div.pb1.pt6.col-6-on-tb-dt
+    [:div.pb1.pt6
      [:div
       {:width "30px"}
       (svg/calendar {:class  "fill-p-color"
@@ -197,10 +195,10 @@
                      :height "33px"})]
      [:div.title-2.proxima.py1.shout
       "30 Day Guarantee"]
-     [:p.content-2.py1.col-10-on-tb-dt.mx-auto
+     [:p.content-2.py1.mx-auto
       "Wear it, dye it, even cut it! If you're not satisfied we'll exchange it within 30 days."]]
 
-    [:div.pb1.pt6.col-6-on-tb-dt
+    [:div.pb1.pt6
      [:div
       {:width "35px"}
       (svg/worry-free {:class  "fill-p-color"
@@ -208,10 +206,10 @@
                        :height "36px"})]
      [:div.title-2.proxima.py1.shout
       "100% Virgin Hair"]
-     [:p.content-2.py1.col-10-on-tb-dt.mx-auto
+     [:p.content-2.py1.mx-auto
       "Our hair is gently steam-processed and can last up to a year. Available in 8 textures and 5 shades."]]
 
-    [:div.pb1.pt6.col-6-on-tb-dt
+    [:div.pb1.pt6
      [:div
       {:width "30px"}
       (svg/mirror {:class  "fill-p-color"
@@ -219,7 +217,7 @@
                    :height "34px"})]
      [:div.title-2.proxima.py1.shout
       "Certified Stylists"]
-     [:p.content-2.py1.col-10-on-tb-dt.mx-auto
+     [:p.content-2.py1.mx-auto
       "Our stylists are chosen because of their industry-leading standards. Both our hair and service are quality guaranteed."]]]])
 
 (defn ^:private vertical-squiggle
