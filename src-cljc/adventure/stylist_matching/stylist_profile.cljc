@@ -254,7 +254,7 @@
 
 (defcomponent component
   [{:keys [header-data footer-data google-map-data] :as query} owner opts]
-  [:div.bg-white.mb6 {:style {:min-height    "100vh"
+  [:div.bg-white.col-12.mb6 {:style {:min-height    "100vh"
                               :margin-bottom "-1px"}}
    [:main
     (components.header/adventure-header (:header.back-navigation/target header-data)
