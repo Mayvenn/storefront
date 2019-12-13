@@ -235,8 +235,7 @@
 
 (defmethod effects/perform-effects events/navigate
   [_ event {:keys [navigate/caused-by query-params nav-stack-item]} prev-app-state app-state]
-  (let [freeinstall?      (= "freeinstall" (get-in app-state keypaths/store-slug))
-        new-nav-event?    (not= (get-in prev-app-state keypaths/navigation-event)
+  (let [new-nav-event?    (not= (get-in prev-app-state keypaths/navigation-event)
                                 (get-in app-state keypaths/navigation-event))
         new-query-params? (not= (not-empty (dissoc (get-in prev-app-state keypaths/navigation-args) :query-params))
                                 (not-empty (dissoc (get-in app-state keypaths/navigation-args) :query-params)))
@@ -264,12 +263,10 @@
           ;; Otherwise give the screen some time to render before trying to restore scroll
           (messages/handle-later events/snap {:top restore-scroll-top} 300))))
 
-    ;; TODO: Possibly remove post cart consolidation
-    (when-not freeinstall?
-      (when-let [pending-promo-code (:sha query-params)]
-        (cookie-jar/save-pending-promo-code
-         (get-in app-state keypaths/cookie)
-         pending-promo-code)))
+    (when-let [pending-promo-code (:sha query-params)]
+      (cookie-jar/save-pending-promo-code
+       (get-in app-state keypaths/cookie)
+       pending-promo-code))
 
     (when-let [affiliate-stylist-id (:affiliate_stylist_id query-params)]
       (cookie-jar/save-affiliate-stylist-id (get-in app-state keypaths/cookie)
