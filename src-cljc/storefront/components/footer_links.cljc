@@ -18,41 +18,55 @@
     [:div {:style {:width width :height height}}
      ^:inline icon]]))
 
+(defn- minimal-footer-link [opts label]
+  [:a.inherit-color opts label])
+
 (defcomponent component [{:keys [minimal?]} owner opts]
-  [:div.flex-column.content-3.white.bg-black.pt6
-   [:div.px3.container
-    [:div.flex.justify-between
-     (svg/mayvenn-text-logo {:height "29px"
-                             :width  "115px"
-                             :class  "fill-white"})
-     [:div.flex.items-center
-      (social-link {:height "24px" :width "24px"} "https://twitter.com/MayvennHair" (svg/mayvenn-on-twitter))
-      (social-link "http://instagram.com/mayvennhair" (svg/mayvenn-on-instagram))
-      (social-link "https://www.facebook.com/MayvennHair" (svg/mayvenn-on-facebook))
-      (social-link "http://www.pinterest.com/mayvennhair/" (svg/mayvenn-on-pinterest))]]
-    [:div.flex.mt4.mb3.col-5-on-dt
-     (when-not minimal?
+  (if minimal?
+    [:div.content-3.proxima.center
+     (minimal-footer-link (assoc (utils/route-to events/navigate-content-privacy)
+                                 :data-test "content-privacy") "Privacy")
+     " - "
+     (minimal-footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#ca-privacy-rights")}
+                          "CA Privacy Rights")
+     " - "
+     (minimal-footer-link (assoc (utils/route-to events/navigate-content-tos)
+                                 :data-test "content-tos") "Terms")
+     " - "
+     ;; use traditional page load so anchors work
+     (minimal-footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")} "Our Ads")]
+    [:div.flex-column.content-3.white.bg-black.pt6
+     [:div.px3.container
+      [:div.flex.justify-between
+       (svg/mayvenn-text-logo {:height "29px"
+                               :width  "115px"
+                               :class  "fill-white"})
+       [:div.flex.items-center
+        (social-link {:height "24px" :width "24px"} "https://twitter.com/MayvennHair" (svg/mayvenn-on-twitter))
+        (social-link "http://instagram.com/mayvennhair" (svg/mayvenn-on-instagram))
+        (social-link "https://www.facebook.com/MayvennHair" (svg/mayvenn-on-facebook))
+        (social-link "http://www.pinterest.com/mayvennhair/" (svg/mayvenn-on-pinterest))]]
+      [:div.flex.mt4.mb3.col-5-on-dt
        [:div.col-4 {:key "full"}
         (footer-link (utils/route-to events/navigate-content-about-us) "About")
         (footer-link {:href "https://jobs.mayvenn.com"} "Careers")
-        (footer-link (utils/route-to events/navigate-content-help) "Contact")])
-     [:div.col-4 {:key "standard"}
-      (footer-link (assoc (utils/route-to events/navigate-content-privacy)
-                          :data-test "content-privacy") "Privacy")
-      (footer-link (assoc (utils/route-to events/navigate-content-tos)
-                          :data-test "content-tos") "Terms")
+        (footer-link (utils/route-to events/navigate-content-help) "Contact")]
+       [:div.col-4 {:key "standard"}
+        (footer-link (assoc (utils/route-to events/navigate-content-privacy)
+                            :data-test "content-privacy") "Privacy")
+        (footer-link (assoc (utils/route-to events/navigate-content-tos)
+                            :data-test "content-tos") "Terms")
 
-      ;; use traditional page load so anchors work
-      (footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")} "Our Ads")]
-     [:div.col-4
-      ;; use traditional page load so anchors work
-      (footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#ca-privacy-rights")}
-                   "CA Privacy Rights")]]]
-   (when-not minimal?
+        ;; use traditional page load so anchors work
+        (footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")} "Our Ads")]
+       [:div.col-4
+        ;; use traditional page load so anchors work
+        (footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#ca-privacy-rights")}
+                     "CA Privacy Rights")]]]
      [:div.bg-gray-mask
       [:div.px3.container
        [:span.py2.flex.items-center.gray {:key "minimal"}
-        "©" (date/year (date/now)) " " "Mayvenn"]]])])
+        "©" (date/year (date/now)) " " "Mayvenn"]]]]))
 
 (defn query
   [data]

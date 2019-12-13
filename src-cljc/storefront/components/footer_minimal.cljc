@@ -5,18 +5,15 @@
 
 (defcomponent component
   [{:keys [call-number]} owner opts]
-  [:div.border-top.border-gray.bg-white
-   [:div.container
-    [:div.center.px3.my2
-     [:div.my1.medium "Need Help?"]
-     [:div.light.h5
-      [:span.hide-on-tb-dt
-       (ui/link :link/phone :a.inherit-color {} call-number)]
-      [:span.hide-on-mb
-       (ui/link :link/phone :a.inherit-color {} call-number)]
-      " | 8am-5pm PST M-F"]
-     [:div.my1.cool-gray.h6
-      (component/build footer-links/component {:minimal? true} nil)]]]])
+  [:div.center.px3.py2.bg-cool-gray
+   [:div.title-2.proxima.my1.caps "Need Help?"]
+   [:div.content-3.proxima
+    [:span.hide-on-tb-dt
+     (ui/link :link/phone :a.inherit-color {} call-number)]
+    [:span.hide-on-mb
+     (ui/link :link/phone :a.inherit-color {} call-number)]
+    " | 8am-5pm PST M-F"]
+   (component/build footer-links/component {:minimal? true} nil)])
 
 (defn query
   [data]
