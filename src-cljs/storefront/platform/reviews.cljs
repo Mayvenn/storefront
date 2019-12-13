@@ -28,10 +28,9 @@
   (render [this]
           (let [{:keys [yotpo-data-attributes]} (component/get-props this)]
             (component/html
-             [:div
-              [:div.px3.clearfix.pyp3
-               [:div.yotpo.bottomLine.mr2 yotpo-data-attributes]
-               [:div.yotpo.QABottomLine yotpo-data-attributes]]]))))
+             [:div.clearfix
+              [:div.yotpo.bottomLine.mr2 yotpo-data-attributes]
+              [:div.yotpo.QABottomLine yotpo-data-attributes]]))))
 
 (defcomponent reviews-summary-component
   "Yotpo summary reviews component"

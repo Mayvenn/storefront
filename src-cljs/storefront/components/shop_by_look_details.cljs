@@ -66,41 +66,27 @@
   (cons [:img.col-12 {:src (str (:image-url look)) :alt ""}]
         (distinct-product-imgs shared-cart)))
 
-(defn display-line-item
-  "Storeback now returns shared-cart line-items as a v2 Sku + item/quantity, aka
-  'line-item-skuer' This component is also used to display line items that are
-  coming off of a waiter order which is a 'variant' with a :quantity
-  Until waiter is updated to return 'line-item-skuers', this function must handle
-  the two different types of input"
-  [line-item {:keys [catalog/sku-id] :as sku} thumbnail quantity-line]
+(defn ^:private display-line-item
+  [line-item {:keys [catalog/sku-id] :as sku} thumbnail quantity]
   (let [legacy-variant-id (or (:legacy/variant-id line-item) (:id line-item))
         price             (or (:sku/price line-item)         (:unit-price line-item))
         title             (or (:sku/title line-item)         (products/product-title line-item))]
     [:div.clearfix.py3 {:key legacy-variant-id}
      [:a.left.mr1
-      [:img.block.border.border-gray.rounded.hide-on-mb
-       (assoc thumbnail :style {:width  "117px"
-                                :height "117px"})]
-      [:img.block.border.border-gray.rounded.hide-on-tb-dt
-       (assoc thumbnail :style {:width  "132px"
-                                :height "132px"})]]
+      [:img.block
+       (assoc thumbnail :style {:width  "69px"
+                                :height "68px"})]]
      [:div.overflow-hidden
-      [:div.ml1
-       [:a.medium.titleize.h5
+      [:div.ml1.content-2.proxima
+       [:a.medium.titleize
         {:data-test (str "line-item-title-" sku-id)}
         title]
-       [:div.h6.mt1.line-height-1
-        (when-let [length (:hair/length sku)]
-          ;; TODO use facets once it's not painful to do so
-          [:div.pyp2
-           {:data-test (str "line-item-length-" sku-id)}
-           "Length: " length "\""])
-        [:div.pyp2
-         {:data-test (str "line-item-price-ea-" sku-id)}
-         "Price Each: " (mf/as-money-without-cents price)]
-        quantity-line]]]]))
+       [:div.mt1.line-height-1.flex.justify-between
+        [:div "qty:" quantity]
+        [:div {:data-test (str "line-item-price-ea-" sku-id)}
+         (mf/as-money price)]]]]]))
 
-(defn display-line-items [line-items skus]
+(defn ^:private display-line-items [line-items skus]
   (for [line-item line-items]
     (let [sku-id   (or (:catalog/sku-id line-item) (:sku line-item))
           sku      (get skus sku-id)
@@ -108,7 +94,7 @@
       (display-line-item line-item
                          sku
                          (images/cart-image sku)
-                         [:div.pyp2 "Quantity: " quantity]))))
+                         quantity))))
 
 (defn look-details-body
   [{:keys [creating-order? sold-out? look shared-cart skus fetching-shared-cart?
@@ -116,22 +102,22 @@
            discount-text desktop-two-column? yotpo-data-attributes]}]
   [:div.clearfix
    (when look
-     [:div
+     [:div.bg-cool-gray
       (when desktop-two-column?
         {:class "col-on-tb-dt col-6-on-tb-dt px3-on-tb-dt"})
       (when shared-cart
         (carousel (imgs look shared-cart)))
-      [:div.px3.pt2.bg-white
+      [:div.px3.pb3.pt1
        [:div.flex.items-center
-        [:div.flex-auto.medium {:style {:word-break "break-all"}}
+        [:div.flex-auto.content-1.proxima {:style {:word-break "break-all"}}
          (:title look)]
         [:div.ml1.line-height-1 {:style {:width  "21px"
                                          :height "21px"}}
-         ^:inline (svg/instagram)]]]
-      (when yotpo-data-attributes
-        [:div (component/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil)])
-      (when-not (str/blank? (:description look))
-        [:p.h7.px3.pb1.bg-white.clearfix (:description look)])])
+         ^:inline (svg/instagram)]]
+       (when yotpo-data-attributes
+         (component/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil))
+       (when-not (str/blank? (:description look))
+                 [:p.mt1.content-4.proxima.dark-gray (:description look)])]])
    (if fetching-shared-cart?
      [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
      (when shared-cart
@@ -142,23 +128,21 @@
            (if desktop-two-column?
              "col-on-tb-dt col-6-on-tb-dt px3-on-tb-dt"
              [:mt3])}
-          [:div.border-top.border-cool-gray.mt2.mxn2
-           (when desktop-two-column? {:class "hide-on-tb-dt"})]
-          [:div.h4.medium.pt2
+          [:div.pt2.proxima.title-2.shout
            {:data-test "item-quantity-in-look"}
            (str item-count " items in this " shared-cart-type-copy)]
           (display-line-items line-items skus)
-          [:div.border-top.border-cool-gray.mxn2]
-          [:div.center.pt2.mb3
+          [:div.border-top.border-cool-gray.mxn2.mt3]
+          [:div.center.pt4
            (when discount-text
-             [:p.center.h5.flex.items-center.justify-center.bold
-              (svg/discount-tag {:height "40px"
-                                 :width  "40px"})
+             [:div.center.flex.items-center.justify-center.title-2.bold
+              (svg/discount-tag {:height "28px"
+                                 :width  "28px"})
               discount-text])
            (when-not (= discounted-price base-price)
-             [:div.strike.h6 (mf/as-money base-price)])
-           [:div.h2.bold (mf/as-money discounted-price)]]
-          [:div.mt2.col-11.mx-auto
+             [:div.strike.content-3.proxima.mt2 (mf/as-money base-price)])
+           [:div.title-1.proxima.bold (mf/as-money discounted-price)]]
+          [:div.col-11.mx-auto
            (add-to-cart-button sold-out? creating-order? look shared-cart)]
           (component/build quadpay/component
                            {:quadpay/show?       quadpay-loaded?
@@ -170,9 +154,6 @@
 (defcomponent component
   [queried-data owner opts]
   [:div.container.mb4
-   [:div.clearfix
-    [:div.col-6-on-tb-dt.p2
-     (ui-molecules/return-link queried-data)]]
    (look-details-body queried-data)])
 
 (defn put-skus-on-shared-cart [shared-cart skus]
@@ -250,7 +231,6 @@
             :desktop-two-column?   true
             :discount-text         (:discount-text discount)
 
-            :return-link/copy          (:back-copy album-copy)
             :return-link/event-message (if (and (not back) back-event)
                                          [back-event]
                                          [events/navigate-shop-by-look {:album-keyword album-keyword}])

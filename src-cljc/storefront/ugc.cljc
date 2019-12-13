@@ -7,7 +7,6 @@
   {:title             "Shop by Look"
    :description       (str "Get inspiration for your next hairstyle and "
                            "shop your favorite looks from the #MayvennMade community.")
-   :back-copy         "back to shop by look"
    :button-copy       "Shop Look"
    :short-name        "look"
    :seo-title         "Shop by Look | Mayvenn"
@@ -20,7 +19,6 @@
                                                   "We wrapped our most popular textures into "
                                                   "packaged bundle deals so you can shop with ease.")
                           :button-copy       "View this deal"
-                          :back-copy         "back to deals"
                           :short-name        "deal"
                           :seo-title         "Shop Deals | Mayvenn"
                           :og-title          (str "Shop Deals - "
@@ -28,10 +26,8 @@
    :look                 shop-by-look-default
    :aladdin-free-install shop-by-look-default ; TODO Rename aladdin-free-install album
    :sleek-and-straight   (assoc shop-by-look-default ; TODO Get proper copy
-                                :back-copy          "back"
                                 :default-back-event events/navigate-home)
    :waves-and-curly      (assoc shop-by-look-default ; TODO Get proper copy
-                                :back-copy          "back"
                                 :default-back-event events/navigate-home)
    :email-deals          (assoc shop-by-look-default
                                 :description (str "Grab the latest bundle deal! "
@@ -40,7 +36,6 @@
    :wavy-curly-looks {:title             "Choose from these Wavy and Curly looks"
                       :description       (str "We have an amazing selection of inspo to choose from.")
                       :button-copy       "View this look"
-                      :back-copy         "back to looks"
                       :short-name        "look"
                       :seo-title         "Shop Wavy and Curly Looks | Mayvenn"
                       :og-title          (str "Shop Wavy and Curly Looks - "
@@ -49,7 +44,6 @@
    :straight-looks {:title             "Choose from these Straight looks"
                     :description       (str "We have an amazing selection of inspo to choose from.")
                     :button-copy       "View this look"
-                    :back-copy         "back to looks"
                     :short-name        "look"
                     :seo-title         "Shop Straight Looks | Mayvenn"
                     :og-title          (str "Shop Straight Looks - "
@@ -58,7 +52,6 @@
    :straight-bundle-sets {:title             "Our fave Straight Bundle Sets"
                           :description       "The best combinations, period"
                           :button-copy       "View this Bundle Set"
-                          :back-copy         "back to bundle sets"
                           :short-name        "bundle set"
                           :seo-title         "Shop Straight Bundle Sets | Mayvenn"
                           :og-title          (str "Shop Straight Bundle Sets - "
@@ -67,7 +60,6 @@
    :wavy-curly-bundle-sets {:title             "Our fave Wavy and Curly Bundle Sets"
                             :description       "The best combinations, period"
                             :button-copy       "View this Bundle Set"
-                            :back-copy         "back to bundle sets"
                             :short-name        "bundle set"
                             :seo-title         "Shop Wavy and Curly Bundle Sets | Mayvenn"
                             :og-title          (str "Shop Wavy and Curly Bundle Sets - "
@@ -76,7 +68,6 @@
    :all-bundle-sets {:title             "Our fave Bundle Sets"
                      :description       "The best combinations, period"
                      :button-copy       "View this Bundle Set"
-                     :back-copy         "back to bundle sets"
                      :short-name        "bundle set"
                      :seo-title         "Shop Wavy and Curly Bundle Sets | Mayvenn"
                      :og-title          (str "Shop Wavy and Curly Bundle Sets - "
