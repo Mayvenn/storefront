@@ -4,8 +4,6 @@
 
 (def welcome-subdomain "welcome")
 
-(def freeinstall-subdomain "freeinstall")
-
 (def feature-block-look-ids
   ;;NOTE edit the clj config too!
   ;;NOTE @Ryan, please only change the top map

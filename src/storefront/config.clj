@@ -8,8 +8,6 @@
 
 (def welcome-subdomain "welcome")
 
-(def freeinstall-subdomain "freeinstall")
-
 (defn define-frontend-modules []
   ;; all module names must be cljs mangled (aka - hyphens get converted to underscore)
   ;; See implementation of cljs.loader: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/loader.cljs#L15-L46
