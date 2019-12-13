@@ -247,7 +247,8 @@
   [handler environment]
   (fn [{:keys [server-name store] :as req}]
     (when-let [resp (handler req)]
-      (cookies/set environment
+      (cookies/set resp
+                   environment
                    "preferred-store-slug"
                    (:store-slug store)
                    {:http-only true
