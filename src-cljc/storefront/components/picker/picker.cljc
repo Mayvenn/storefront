@@ -367,10 +367,7 @@
         product-skus      (products/extract-product-skus data (products/current-product data))
         product-sold-out? (every? (comp not :inventory/in-stock?) product-skus)
         facets            (facets/by-slug data)
-        selections        (get-in data catalog.keypaths/detailed-product-selections)
-        navigation-event  (if (= "freeinstall" (get-in data keypaths/store-slug))
-                            events/navigate-adventure-product-details
-                            events/navigate-product-details)]
+        selections        (get-in data catalog.keypaths/detailed-product-selections)]
     {:selected-picker        selected-picker
      :facets                 facets
      :selections             (get-in data catalog.keypaths/detailed-product-selections)
@@ -380,7 +377,6 @@
      :product-sold-out-style (when product-sold-out? {:class "gray"})
      :sku-quantity           (get-in data keypaths/browse-sku-quantity 1)
      :product-alternative    (when (and
-                                    (not= "freeinstall" (get-in data keypaths/store-slug))
                                     (= 1 (count (:hair/color options)))
                                     (= selected-picker :hair/color)
                                     (some family ["frontals" "bundles" "closures" "360-frontals"]))
@@ -389,4 +385,4 @@
                                 :link-attrs (utils/route-to events/navigate-category
                                                             {:page/slug           "dyed-virgin-hair"
                                                              :catalog/category-id "16"})})
-     :navigation-event       navigation-event}))
+     :navigation-event       events/navigate-product-details}))
