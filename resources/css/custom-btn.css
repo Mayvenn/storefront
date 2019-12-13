@@ -74,10 +74,10 @@
 .btn-p-color.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--p-color), stroke=none); }
 .btn-p-color.btn-small  { background-color: var(--p-color); }
 
-.btn-ghost            { color: var(--p-color); }
-.btn-ghost.btn-large  { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--white), stroke=var(--s-color), vector-effect="non-scaling-stroke"); }
-.btn-ghost.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--white), stroke=var(--s-color), vector-effect="non-scaling-stroke"); }
-.btn-ghost.btn-small  { border: solid 1px var(--s-color); }
+.btn-outline            { color: var(--p-color); }
+.btn-outline.btn-large  { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--white), stroke=var(--s-color), vector-effect="non-scaling-stroke"); }
+.btn-outline.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--white), stroke=var(--s-color), vector-effect="non-scaling-stroke"); }
+.btn-outline.btn-small  { border: solid 1px var(--s-color); }
 
 .btn-paypal-color           { color: var(--white); }
 .btn-paypal-color.btn-large { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--paypal), stroke=none); }

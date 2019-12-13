@@ -121,13 +121,13 @@
 (def ^:private button-large-primary-classes "btn-large btn-p-color button-font-1 shout")
 (def ^:private disabled-button-large-primary-classes "btn-large btn-gray button-font-1 shout btn-disabled")
 (defn button-large-primary       [attrs & content] (button button-large-primary-classes attrs content))
-(defn button-large-secondary     [attrs & content] (button "btn-large btn-ghost button-font-1 shout" attrs content))
+(defn button-large-secondary     [attrs & content] (button "btn-large btn-outline button-font-1 shout" attrs content))
 (defn button-large-paypal        [attrs & content] (button "btn-large btn-paypal-color button-font-1 shout" attrs content))
 (defn button-large-facebook-blue [attrs & content] (button "btn-large btn-facebook-blue button-font-1 shout" attrs content))
 (defn button-medium-primary      [attrs & content] (button "btn-medium btn-p-color button-font-1 shout" attrs content))
-(defn button-medium-secondary    [attrs & content] (button "btn-medium btn-ghost button-font-1 shout" attrs content))
+(defn button-medium-secondary    [attrs & content] (button "btn-medium btn-outline button-font-1 shout" attrs content))
 (defn button-small-primary       [attrs & content] (button "btn-small btn-p-color button-font-3 shout" attrs content))
-(defn button-small-secondary     [attrs & content] (button "btn-small btn-ghost bg-white button-font-3 shout" attrs content))
+(defn button-small-secondary     [attrs & content] (button "btn-small btn-outline bg-white button-font-3 shout" attrs content))
 (defn button-pill                [attrs & content] (button "btn-pill btn-s-color button-font-2 shout" attrs content))
 
 (defn submit-button
