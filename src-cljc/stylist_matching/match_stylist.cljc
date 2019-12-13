@@ -17,7 +17,7 @@
 
 (def match-stylist-query
   {:match-stylist.title/id        "stylist-matching-match-stylist"
-   :match-stylist.title/primary   "Welcome! Let’s match you with a top stylist."
+   :match-stylist.title/primary   "Let’s match you with a top stylist."
    :match-stylist.title/secondary "If you don't love the install, we'll pay for your 2nd install. It's a win-win!"
    :match-stylist.button/id       "adventure-find-your-stylist"
    :match-stylist.button/label    "Next"
