@@ -63,10 +63,10 @@
                                         :height "30px"})
        :cta/target     [events/navigate-home {:query-params {:video "free-install"}}]}
       {:layer/type   :shop-text-block
-       :header/value [:div.title-1.proxima.py1.shout
-                      "Sit back and" [:br]
-                      ;; TODO this is a design exception
-                      [:span.title-1.shout.canela "relax"]]
+       :header/value [:div.py1.shout
+                      ;; NOTE: this is a design exception
+                      [:div.title-1.proxima {:style {:font-size "34px"}} "Sit back and"]
+                      [:div.light.canela.mt2.mb4 {:style {:font-size "54px"}} "relax"]]
        :body/value   "We’ve rounded up the best stylists in the country so you can be sure your hair is in really, really good hands."
        :cta/value    "Learn more"
        :cta/id       "info-certified-stylists"
@@ -76,8 +76,8 @@
        :photo/dsk-uuid  "f2d82c41-2051-47d8-86c5-1c82568e324d"
        :photo/file-name "who-shop-hair"}
       {:layer/type   :shop-text-block
-       ;; TODO this is a design exception
        :header/value [:div.py1.shout
+                      ;; NOTE: this is a design exception
                       [:div.title-1.proxima {:style {:font-size "19px"}} "Hold your hair"]
                       [:div.canela.mt2.mb4 {:style {:font-size "72px"}} "high"]]
        :body/value   "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
