@@ -238,10 +238,12 @@
     {:class "border-bottom border-gray bg-white black"
      :style {:height "70px"}}
     (if target
-      [:a.block.black.p2.flex.justify-center.items-center
-       (apply utils/route-back-or-to back target)
-       (svg/left-arrow {:width  "20"
-                        :height "20"})]
+      [:div
+       {:data-test "header-back"}
+       [:a.block.black.p2.flex.justify-center.items-center
+        (apply utils/route-back-or-to back target)
+        (svg/left-arrow {:width  "20"
+                         :height "20"})]]
       [:div])
     [:div.content-1.proxima.center primary]
     (ui/shopping-bag {:data-test "mobile-cart"}
