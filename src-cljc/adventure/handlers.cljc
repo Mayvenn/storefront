@@ -17,9 +17,6 @@
             [catalog.products :as products]
             [storefront.accessors.orders :as orders]))
 
-(def default-adventure-hair-family
-  #{"bundles" "closures" "frontals" "360-frontals"})
-
 (def events-not-to-direct-load
   #{events/navigate-adventure-out-of-area
     events/navigate-adventure-match-success-pre-purchase})
@@ -97,38 +94,6 @@
 (def ^:private slug->video
   {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}
    "free-install"   {:youtube-id "oR1keQ-31yc"}})
-
-(defn ^:private adventure-choices->criteria
-  [choices]
-  ;; Always return bundles for a la carte
-  {:hair/family  default-adventure-hair-family
-   :hair/texture (:texture choices)})
-
-(defmethod effects/perform-effects events/adventure-fetch-matched-skus
-  [_ _ {:keys [criteria] :or {criteria [:hair/family]}} _ app-state]
-  #?(:cljs (api/get-skus (get-in app-state storefront.keypaths/api-cache)
-                         (-> (get-in app-state keypaths/adventure-choices)
-                             adventure-choices->criteria
-                             (select-keys criteria)
-                             (update :hair/family disj nil)
-                             (assoc :catalog/department    "hair"
-                                    :catalog/discontinued? "false"))
-                         #(messages/handle-message events/api-success-adventure-fetch-skus %))))
-
-(defmethod transitions/transition-state events/api-success-adventure-fetch-skus
-  [_ event {:keys [skus]} app-state]
-  (-> app-state
-      (assoc-in storefront.keypaths/v2-skus (products/index-skus skus))))
-
-(defmethod effects/perform-effects events/adventure-fetch-matched-products
-  [_ _ {:keys [criteria] :or {criteria [:hair/family]}} _ app-state]
-  #?(:cljs (api/get-products (get-in app-state storefront.keypaths/api-cache)
-                             (-> (get-in app-state keypaths/adventure-choices)
-                                 adventure-choices->criteria
-                                 (select-keys criteria)
-                                 (update :hair/family disj nil)
-                                 (assoc :catalog/department "hair"))
-                             #(messages/handle-message events/api-success-v2-products %))))
 
 (defmethod transitions/transition-state events/api-success-remove-servicing-stylist [_ _ {:keys [order]} app-state]
   (-> app-state

@@ -64,7 +64,6 @@
     (let [[nav-event nav-args]           (get-in app-state keypaths/navigation-message)
           [prev-nav-event prev-nav-args] prev-nav-message]
       (and (or
-            (= nav-event prev-nav-event events/navigate-adventure-product-details)
             (= nav-event prev-nav-event events/navigate-product-details))
            (= (:catalog/product-id nav-args) (:catalog/product-id prev-nav-args))))))
 

@@ -675,7 +675,6 @@
    events/navigate-legacy-ugc-named-search   redirect-named-search
    events/navigate-legacy-product-page       redirect-legacy-product-page
    events/navigate-product-details           render-product-details
-   events/navigate-adventure-product-details render-product-details
    events/navigate-content-help              generic-server-render
    events/navigate-content-about-us          generic-server-render
    events/navigate-content-privacy           generic-server-render

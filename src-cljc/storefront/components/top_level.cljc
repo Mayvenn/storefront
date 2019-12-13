@@ -114,8 +114,6 @@
    events/navigate-info-about-our-hair     (constantly adventure.informational.about-our-hair/built-component)
    events/navigate-info-how-it-works       (constantly adventure.informational.how-it-works/built-component)
 
-   events/navigate-adventure-product-details                     #(ui/lazy-load-component :catalog 'adventure.a-la-carte.product-details/built-component events/navigate-adventure-product-details)
-
    events/navigate-adventure-match-stylist                       (constantly stylist-matching.match-stylist/page)
    events/navigate-adventure-find-your-stylist                   (constantly stylist-matching.find-your-stylist/page)
    events/navigate-adventure-matching-stylist-wait-post-purchase (constantly adventure.stylist-matching.matching-stylist-wait/built-component)

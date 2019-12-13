@@ -498,10 +498,6 @@
 (defpath navigate-adventure-shop-hair)
 (defpath navigate-adventure-how-shop-hair)
 (defpath navigate-adventure-hair-texture)
-(defpath navigate-adventure-bundlesets-hair-texture)
-(defpath navigate-adventure-a-la-carte-hair-texture)
-(defpath navigate-adventure-a-la-carte-hair-color)
-(defpath navigate-adventure-a-la-carte-product-list)
 (defpath navigate-adventure-select-new-look)
 (defpath navigate-adventure-look-detail)
 (defpath navigate-adventure-matching-stylist-wait)
@@ -515,8 +511,6 @@
 (defpath navigate-adventure-match-success-post-purchase)
 (defpath navigate-adventure-stylist-profile)
 (defpath navigate-adventure-stylist-profile-post-purchase)
-
-(defpath navigate-adventure-product-details)
 
 (defpath control-adventure)
 (defpath control-adventure-choice)
@@ -548,11 +542,6 @@
 
 (defpath visitor-identified)
 (defpath adventure-visitor-identified)
-
-(defpath adventure-fetch-matched-skus)
-(defpath api-success-adventure-fetch-skus)
-(defpath adventure-fetch-matched-products)
-(defpath api-success-adventure-fetch-products)
 
 (defpath api-success-remove-servicing-stylist)
 
