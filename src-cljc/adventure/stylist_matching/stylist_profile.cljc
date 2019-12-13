@@ -79,7 +79,7 @@
                       :style {:width  12
                               :height 12}})
      (svg/x-sharp {:class "black mr2"
-                   :style {:width  12 
+                   :style {:width  12
                            :height 12}}))
    specialty])
 

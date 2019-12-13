@@ -429,7 +429,7 @@
       [:div.left.mr3.pp2
        [:div.circle.bg-white.border.flex.items-center.justify-center
         (merge {:style {:height "22px" :width "22px"}}
-         (when disabled {:class "bg-cool-gray border-gray"}))
+               (when disabled {:class "bg-cool-gray border-gray"}))
         (when checked
           [:div.circle.bg-p-color
            {:style {:height "10px" :width "10px"}}])]]

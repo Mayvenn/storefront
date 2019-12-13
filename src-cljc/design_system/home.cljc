@@ -504,7 +504,7 @@
                         [])}
       {:content "Apply"
        :args    {:data-test ""
-                 :class     "border-black col-2"}})) ])
+                 :class     "border-black col-2"}}))])
 
 (defn radio-buttons [data]
   [:div.flex
@@ -530,37 +530,37 @@
     "Disabled")])
 
 (defn input-toggles [data]
- [:div.flex
-    (ui/check-box
-     (let [keypath [:design-system :form :checkbox :checked-box]
-           value   (get-in data keypath)]
-       {:label         "Checked"
-        :data-test     "checked-box"
-        :errors        (if-not value [{:long-message "must be checked"}] [])
-        :keypath       keypath
-        :value         value
-        :label-classes {}
-        :disabled      false}))
-    (ui/check-box
-     (let [keypath [:design-system :form :checkbox :unchecked-box]
-           value   (get-in data keypath)]
-       {:label         "Unchecked"
-        :data-test     "unchecked-check-box"
-        :errors        (if value [{:long-message "Must be unchecked"}] [])
-        :keypath       keypath
-        :value         value
-        :label-classes {}
-        :disabled     false}))
-    (ui/check-box
-     (let [keypath [:design-system :form :checkbox :disabled]
-           value   (get-in data keypath)]
-       {:label         "Disabled"
-        :data-test     "disabled-check-box"
-        :errors        []
-        :keypath       keypath
-        :value         value
-        :label-classes {}
-        :disabled      true}))])
+  [:div.flex
+   (ui/check-box
+    (let [keypath [:design-system :form :checkbox :checked-box]
+          value   (get-in data keypath)]
+      {:label         "Checked"
+       :data-test     "checked-box"
+       :errors        (if-not value [{:long-message "must be checked"}] [])
+       :keypath       keypath
+       :value         value
+       :label-classes {}
+       :disabled      false}))
+   (ui/check-box
+    (let [keypath [:design-system :form :checkbox :unchecked-box]
+          value   (get-in data keypath)]
+      {:label         "Unchecked"
+       :data-test     "unchecked-check-box"
+       :errors        (if value [{:long-message "Must be unchecked"}] [])
+       :keypath       keypath
+       :value         value
+       :label-classes {}
+       :disabled     false}))
+   (ui/check-box
+    (let [keypath [:design-system :form :checkbox :disabled]
+          value   (get-in data keypath)]
+      {:label         "Disabled"
+       :data-test     "disabled-check-box"
+       :errors        []
+       :keypath       keypath
+       :value         value
+       :label-classes {}
+       :disabled      true}))])
 
 (defn ^:private form-fields [data]
   [:section

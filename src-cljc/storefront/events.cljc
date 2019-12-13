@@ -463,6 +463,8 @@
 
 
 ;;SECTION v2 Control
+
+
 (defpath control-v2-stylist-dashboard-section-toggle)
 (defpath control-v2-stylist-dashboard-sales-load-more)
 (defpath control-v2-stylist-dashboard-balance-transfers-load-more)

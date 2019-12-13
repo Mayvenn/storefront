@@ -14,11 +14,11 @@
      [:div.center.py6
       [:h1.title-1.canela.py3 (:title copy)]
       #_[:div.bg-no-repeat.bg-contain.mx-auto
-       (if deals?
-         {:class "img-shop-by-bundle-deal-icon"
-          :style {:width "110px" :height "110px"}}
-         {:class "img-shop-by-look-icon my2"
-          :style {:width "101px" :height "85px"}})]
+         (if deals?
+           {:class "img-shop-by-bundle-deal-icon"
+            :style {:width "110px" :height "110px"}}
+           {:class "img-shop-by-look-icon my2"
+            :style {:width "101px" :height "85px"}})]
       [:p.col-10.col-6-on-tb-dt.mx-auto.proxima.content-2 (:description copy)]]
      [:div.flex.flex-wrap.mbn2.justify-center.justify-start-on-tb-dt.bg-cool-gray.py2-on-tb-dt.px1-on-tb-dt
       (for [look looks]

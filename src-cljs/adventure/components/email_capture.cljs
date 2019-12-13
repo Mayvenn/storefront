@@ -43,9 +43,9 @@
      :header-data          {:right-corner {:id    "dismiss-email-capture"
                                            :opts  (utils/fake-href events/control-pick-a-stylist-email-capture-dismiss)
                                            :value (svg/x-sharp {:class "black"
-                                                                 :style {:width  "18px"
-                                                                         :height "18px"
-                                                                         :fill   "currentColor"}})}}
+                                                                :style {:width  "18px"
+                                                                        :height "18px"
+                                                                        :fill   "currentColor"}})}}
      :on-submit            [events/control-pick-a-stylist-email-capture-submit {:email email}]}))
 
 (defmethod popup/component :pick-a-stylist-email-capture

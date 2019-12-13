@@ -48,7 +48,6 @@
 (defmethod effects/perform-effects events/api-success-assign-servicing-stylist-post-purchase [_ _ _ _ app-state]
   #?(:cljs (history/enqueue-navigate events/navigate-adventure-match-success-post-purchase)))
 
-
 (defn header-query
   [{:order.items/keys [quantity]
     :order/keys       [submitted?]}
@@ -103,7 +102,7 @@
              :stylist-card.address-marker/value (string/join " "
                                                              [(string/join ", "
                                                                            [address-1 address-2 city state])
-                                                              zipcode]) }
+                                                              zipcode])}
 
       (and mayvenn-rating? (:mayvenn-rating stylist))
       (merge {:rating/value (:mayvenn-rating stylist)}))))

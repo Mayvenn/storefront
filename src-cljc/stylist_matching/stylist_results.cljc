@@ -181,7 +181,6 @@
                               :radius             radius
                               :current_step       3}))))
 
-
 (defn header-query
   [{:order.items/keys [quantity]}
    back post-purchase?]

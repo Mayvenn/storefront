@@ -149,7 +149,7 @@
    [:div.hide-on-dt {:style {:margin-bottom "90px"}}
     (component/build footer-links/component {:minimal? false} nil)]
    [:div.hide-on-mb-tb
-    (component/build footer-links/component {:minimal? false} nil)] ])
+    (component/build footer-links/component {:minimal? false} nil)]])
 
 (defn built-component
   [data opts]

@@ -273,29 +273,29 @@
                     content-height-ref             (component/use-ref this "content-height")]
                 (when id
                   (component/html
-                  [:div.hide-on-dt
-                   [:div.fixed.z4.bottom-0.left-0.right-0
-                    {:style {:margin-bottom (str "-" content-height "px")
-                             :box-shadow "0 -6px 6px rgba(0,0,0,0.06)"}}
+                   [:div.hide-on-dt
+                    [:div.fixed.z4.bottom-0.left-0.right-0
+                     {:style {:margin-bottom (str "-" content-height "px")
+                              :box-shadow "0 -6px 6px rgba(0,0,0,0.06)"}}
                     ;; Using a separate element with reverse margin to prevent the
                     ;; sticky component from initially appearing on the page and then
                     ;; animate hiding.
-                    [:div.transition-2
-                     (if show?
-                       {:style {:margin-bottom (str content-height "px")}}
-                       {:style {:margin-bottom "0"}})
-                     [:div {:ref content-height-ref}
-                      [:div
-                       [:div.h6.bg-white.medium.p3.flex.items-center.canela.content-3
-                        [:div.col-7 content]
-                        [:div.col-1]
-                        [:div.col-4
-                         (ui/button-small-primary (merge
-                                                   (when navigation-message
-                                                     (apply utils/route-to navigation-message))
-                                                   {:data-test id
-                                                    :href      href})
-                                                  [:div.h7 label])]]]]]]])))))))
+                     [:div.transition-2
+                      (if show?
+                        {:style {:margin-bottom (str content-height "px")}}
+                        {:style {:margin-bottom "0"}})
+                      [:div {:ref content-height-ref}
+                       [:div
+                        [:div.h6.bg-white.medium.p3.flex.items-center.canela.content-3
+                         [:div.col-7 content]
+                         [:div.col-1]
+                         [:div.col-4
+                          (ui/button-small-primary (merge
+                                                    (when navigation-message
+                                                      (apply utils/route-to navigation-message))
+                                                    {:data-test id
+                                                     :href      href})
+                                                   [:div.h7 label])]]]]]]])))))))
 
 (defcomponent shop-text-block
   [{anchor-name :anchor/name
@@ -322,7 +322,6 @@
        (shop-cta-with-icon data))]]
    (when divider-img
      (divider divider-img))])
-
 
 (defcomponent shop-framed-checklist
   [{:keys [bullets divider-img] header-value :header/value} _ _]
@@ -425,7 +424,6 @@
    [:div.col-11.flex.justify-between.hide-on-mb-tb
     (map-indexed (partial shop-icon-step (str layer-id "-dt-")) bullets)]
    (shop-cta-with-icon data)])
-
 
 (defcomponent shop-ugc
   [{title  :header/value
