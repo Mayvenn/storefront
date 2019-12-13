@@ -940,7 +940,7 @@
                (GET "/blog" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/blog/"))))
                (GET "/blog/" req (util.response/redirect (store-url "shop" environment req)))
                (GET "/install" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/"))))
-               (GET "/adv/home" req (util.response/redirect (store-url "shop" environment req) :moved-permanently))
+               (GET "/adv/home" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/")) :moved-permanently))
                (GET "/stylist/edit" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/account" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/commissions" [] (util.response/redirect "/stylist/earnings" :moved-permanently))
