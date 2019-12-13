@@ -293,8 +293,7 @@
                           (ui/button-small-primary (merge
                                                     (when navigation-message
                                                       (apply utils/route-to navigation-message))
-                                                    {:data-test id
-                                                     :href      href})
+                                                    {:data-test id})
                                                    [:div.h7 label])]]]]]]])))))))
 
 (defcomponent shop-text-block

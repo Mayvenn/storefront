@@ -148,11 +148,11 @@
                                                      :width  56})
                              :title "Email Us"
                              :copy  "help@mayvenn.com"}]}
-      {:layer/type     :sticky-footer
-       :layer/id       "sticky-footer-get-started"
-       :sticky/content "It’s true, we are paying for your install! "
-       :cta/label      "Get started"
-       :cta/target     [events/navigate-adventure-match-stylist]}]}))
+      {:layer/type             :sticky-footer
+       :layer/id               "sticky-footer-get-started"
+       :sticky/content         "It’s true, we are paying for your install! "
+       :cta/label              "Get started"
+       :cta/navigation-message [events/navigate-adventure-match-stylist]}]}))
 
 (defn built-component
   [data opts]
