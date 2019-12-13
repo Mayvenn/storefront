@@ -226,19 +226,26 @@
       [:div.flex-auto.py3 center]
       [:div.mx-auto.flex.items-center.justify-around {:style size} right]])))
 
-(defn adventure-header [left-target title cart-data]
-  (mobile-nav-header
-   {:class "border-bottom border-gray bg-white black"
-    :style {:height "70px"}}
-   (if left-target
-     [:a.block.black.p2.flex.justify-center.items-center
-      (apply utils/route-to left-target)
-      (svg/left-arrow {:width  "20"
-                       :height "20"})]
-     [:div])
-   [:div.content-1.proxima.center title]
-   (ui/shopping-bag {:data-test "mobile-cart"}
-                    cart-data)))
+(defn adventure-header
+  ([left-target title cart-data]
+   (adventure-header {:header.back-navigation/target left-target
+                      :header.title/primary          title
+                      :header.cart/value             (:quantity cart-data)}))
+  ([{:header.back-navigation/keys [target back]
+     :header.cart/keys            [value]
+     :header.title/keys           [primary]}]
+   (mobile-nav-header
+    {:class "border-bottom border-gray bg-white black"
+     :style {:height "70px"}}
+    (if target
+      [:a.block.black.p2.flex.justify-center.items-center
+       (apply utils/route-back-or-to back target)
+       (svg/left-arrow {:width  "20"
+                        :height "20"})]
+      [:div])
+    [:div.content-1.proxima.center primary]
+    (ui/shopping-bag {:data-test "mobile-cart"}
+                     {:quantity value}))))
 
 (defcomponent component [{:as data :keys [store user cart signed-in vouchers?]} _ _]
   [:div

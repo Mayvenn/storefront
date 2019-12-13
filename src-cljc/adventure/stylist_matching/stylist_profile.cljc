@@ -257,9 +257,7 @@
   [:div.bg-white.col-12.mb6 {:style {:min-height    "100vh"
                               :margin-bottom "-1px"}}
    [:main
-    (components.header/adventure-header (:header.back-navigation/target header-data)
-                                        (:header.title/primary header-data)
-                                        {:quantity (:header.cart/value header-data)})
+    (components.header/adventure-header header-data)
     [:div (component/build stylist-profile-card-component query nil)]
 
     #?(:cljs (component/build maps/component google-map-data))
