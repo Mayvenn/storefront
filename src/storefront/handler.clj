@@ -232,7 +232,7 @@
       (util.response/redirect "https://community.mayvenn.com" 301)
 
       (= "ambassador" (first subdomains))
-      (util.response/redirect (store-url "freeinstall" environment (update req :query-params merge {:redirect (last subdomains)})) 302)
+      (util.response/redirect (store-url "shop" environment (update req :query-params merge {:redirect (last subdomains)})) 302)
 
       (#{[] ["www"] ["internal"]} subdomains)
       (util.response/redirect (store-url "shop" environment req) 301)
