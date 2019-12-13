@@ -129,6 +129,7 @@
 (defn button-small-primary       [attrs & content] (button "btn-small btn-p-color button-font-3 shout" attrs content))
 (defn button-small-secondary     [attrs & content] (button "btn-small btn-outline bg-white button-font-3 shout" attrs content))
 (defn button-pill                [attrs & content] (button "btn-pill btn-s-color button-font-2 shout" attrs content))
+(defn button-small-underline     [attrs & content] (button "btn-small s-color button-font-2 shout" attrs [:span.border-bottom.border-width-2.border-s-color content]))
 
 (defn submit-button
   ([title] (submit-button title {}))

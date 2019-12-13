@@ -190,8 +190,17 @@
                                 "Check out")
 
        (when locked?
-         [:div.error.h7.center.medium.py1
-          (str "Add " quantity-remaining (ui/pluralize quantity-remaining " more item"))])
+         [:div
+          [:div.content-3.proxima.center.py1.mt2
+           (str "Add " quantity-remaining (ui/pluralize quantity-remaining " more item"))]
+          [:div.h5.py1.flex.items-center
+           [:div.flex-grow-1.border-bottom.border-gray]
+           [:div.content-3.proxima.mx2 "or"]
+           [:div.flex-grow-1.border-bottom.border-gray]]
+          [:div.mb2.center
+           (ui/button-small-underline (apply utils/fake-href remove-freeinstall-event)
+                                      "Checkout without Free Install")]])
+
 
        (when-not locked?
          [:div
@@ -209,12 +218,6 @@
                                     "Check out with "
                                     [:span.medium.italic "PayPal™"]])]])
        #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])]]
-
-     (when entered?
-       [:div.my4.center
-        [:a.h5.p-color.medium
-         (apply utils/fake-href remove-freeinstall-event)
-         "Checkout without a free Mayvenn Install"]])
 
      (when share-carts?
        [:div.py2

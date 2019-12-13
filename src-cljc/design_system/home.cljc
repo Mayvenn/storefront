@@ -191,6 +191,8 @@
       [:div.col-4
        [:div.p1 (ui/button-small-primary button-attrs "primary small")]
        [:div.p1 (ui/button-small-secondary button-attrs "secondary small")]]
+      [:div.col-4
+       [:div.p1 (ui/button-small-underline button-attrs "underline small")]]
       [:div.col.col-12.p1 (ui/button-large-primary button-attrs
                                                    [:div "col-12 with styled "
                                                     [:span.medium.italic.underline "SPAN™"]
