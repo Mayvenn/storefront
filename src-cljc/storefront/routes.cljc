@@ -42,8 +42,6 @@
    "/_style/adventure"       (edn->bidi events/navigate-design-system-adventure)
    "/_style/ui"              (edn->bidi events/navigate-design-system-ui)})
 
-(def freeinstall? (partial contains? #{"freeinstall"}))
-
 (def stylist-matching-routes
   {"/adv/match-stylist"                                                (edn->bidi events/navigate-adventure-match-stylist)
    "/adv/find-your-stylist"                                            (edn->bidi events/navigate-adventure-find-your-stylist)

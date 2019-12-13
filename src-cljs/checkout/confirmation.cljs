@@ -83,8 +83,7 @@
               :token         order-token
               :cart-payments {:quadpay
                               {:status-url (str config/api-base-url "/hooks/quadpay_notifications"
-                                                (when (and affiliate-stylist-id
-                                                           (contains? #{"shop" "freeinstall"} store-slug))
+                                                (when (and affiliate-stylist-id (= "shop" store-slug))
                                                   (str "?affiliate-stylist-id=" affiliate-stylist-id)))
                                :return-url
                                (str (assoc current-uri
