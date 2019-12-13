@@ -1,6 +1,5 @@
 (ns storefront.components.checkout-returning-or-guest
-  (:require [adventure.checkout.returning-or-guest :as adventure-returning-or-guest]
-            [storefront.component :as component :refer [defcomponent]]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.facebook :as facebook]
             [storefront.components.checkout-address :as checkout-address]
             [storefront.components.ui :as ui]
@@ -42,12 +41,12 @@
    :address          (-> (checkout-address/query data)
                          (assoc-in [:shipping-address-data :become-guest?] true))})
 
-(defn ^:export built-component [data opts]
-  (if (= "freeinstall" (get-in data keypaths/store-slug))
-    (adventure-returning-or-guest/built-component data opts)
-    (component/build component (query data) opts)))
+(defn ^:export built-component
+  [data opts]
+  (component/build component (query data) opts))
 
-(defn requires-sign-in-or-initiated-guest-checkout [authorized-component data opts]
+(defn requires-sign-in-or-initiated-guest-checkout
+  [authorized-component data opts]
   (if (auth/signed-in-or-initiated-guest-checkout? data)
     (authorized-component data nil)
     ;; rely on redirects to get you to the right page... if they misfire, user will be stuck on this page.
