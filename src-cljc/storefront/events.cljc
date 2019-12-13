@@ -13,7 +13,6 @@
 (defpath order-remove-freeinstall-line-item)
 
 (defpath external-redirect-welcome)
-(defpath external-redirect-freeinstall)
 (defpath external-redirect-sms)
 (defpath external-redirect-paypal-setup)
 (defpath external-redirect-telligent)
