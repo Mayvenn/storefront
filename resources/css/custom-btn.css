@@ -46,14 +46,14 @@
     border-image-slice: 21 fill;
     border-image-width: 21px;
     padding: 26px;
-    border-image-repeat: space;
+    border-image-repeat: stretch;
 }
 
 .btn-medium {
 	  border-image-slice: 15 fill;
     border-image-width: 15px;
     padding: 15px;
-    border-image-repeat: space;
+    border-image-repeat: stretch;
 }
 
 .btn-small {
