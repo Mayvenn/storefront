@@ -44,6 +44,7 @@
                                               :width  "18px"})]
        [:div.content-3.self-center
         (string/join ", " (filter identity [address-1 address-2 city state zipcode]))]]
-      [:a.self-center.underline.button-font-2.p-color
-       {:href (str "https://www.google.com/maps/dir/?api=1&destination=" latitude "," longitude)}
-       "DIRECTIONS"]])])
+      (ui/button-small-underline-primary
+       {:class "self-center"
+        :href  (str "https://www.google.com/maps/dir/?api=1&destination=" latitude "," longitude)}
+       "DIRECTIONS")])])

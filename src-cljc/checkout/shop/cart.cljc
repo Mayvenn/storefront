@@ -198,8 +198,8 @@
            [:div.content-3.proxima.mx2 "or"]
            [:div.flex-grow-1.border-bottom.border-gray]]
           [:div.mb2.center
-           (ui/button-small-underline (apply utils/fake-href remove-freeinstall-event)
-                                      "Checkout without Free Install")]])
+           (ui/button-small-underline-secondary (apply utils/fake-href remove-freeinstall-event)
+                                                "Checkout without Free Install")]])
 
 
        (when-not locked?

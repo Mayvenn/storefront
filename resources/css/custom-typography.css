@@ -72,10 +72,14 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: 0.92px;
 }
 .button-font-2 {
+    font: 900 14px/17px var(--font-family-proxima);
+    letter-spacing: 0.86px;
+}
+.button-font-3 {
     font: 900 12px/15px var(--font-family-proxima);
     letter-spacing: 0.74px;
 }
-.button-font-3 {
+.button-font-4 {
     font: 900 11px/13px var(--font-family-proxima);
     letter-spacing: 0.68px;
 }

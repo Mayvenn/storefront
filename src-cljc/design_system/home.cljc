@@ -168,13 +168,12 @@
         ":spinner? "
         (if (get-in data [:design-system :buttons :spinning?]) "true" "false")]
        [:br]
-       (if (get-in data [:design-system :buttons :spinning?]) "true" "false")]
-      [:label
-       [:input.mr1.ml2 {:type      "checkbox"
-                        :checked   (get-in data [:design-system :buttons :disabled?])
-                        :on-change (partial toggle-state [:design-system :buttons :disabled?])}]
-       ":disabled? "
-       (if (get-in data [:design-system :buttons :disabled?]) "true" "false")]
+       [:label
+        [:input.mr1.ml2 {:type      "checkbox"
+                         :checked   (get-in data [:design-system :buttons :disabled?])
+                         :on-change (partial toggle-state [:design-system :buttons :disabled?])}]
+        ":disabled? "
+        (if (get-in data [:design-system :buttons :disabled?]) "true" "false")]]
       "}"]
      [:div.h6
       "Not every button state is used everywhere (eg - spinners are only used if the action may take some time and we would like feedback. Eg - a button to an external site will not spin)"]
@@ -191,8 +190,14 @@
       [:div.col-4
        [:div.p1 (ui/button-small-primary button-attrs "primary small")]
        [:div.p1 (ui/button-small-secondary button-attrs "secondary small")]]
+      [:div.col-5
+       [:div.p1 (ui/button-medium-underline-primary button-attrs "primary underline medium")]
+       [:div.p1 (ui/button-medium-underline-secondary button-attrs "secondary underline medium")]
+       [:div.p1 (ui/button-medium-underline-black button-attrs "black underline medium")]]
       [:div.col-4
-       [:div.p1 (ui/button-small-underline button-attrs "underline small")]]
+       [:div.p1 (ui/button-small-underline-primary button-attrs "primary underline small")]
+       [:div.p1 (ui/button-small-underline-secondary button-attrs "secondary underline small")]
+       [:div.p1 (ui/button-small-underline-black button-attrs "black underline small")]]
       [:div.col.col-12.p1 (ui/button-large-primary button-attrs
                                                    [:div "col-12 with styled "
                                                     [:span.medium.italic.underline "SPAN™"]

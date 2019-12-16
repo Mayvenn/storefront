@@ -238,12 +238,12 @@
     :cta/target}]
   (when id
     [:div.col-7.mx-auto
-     (ui/button-medium-secondary
+     (ui/button-medium-underline-primary
       (merge {:data-test id}
              (if (= :navigate (first event))
                (apply utils/route-to target)
                (apply utils/fake-href target)))
-      [:span.medium.border-bottom.border-p-color label])]))
+      label)]))
 
 (defcomponent footer [data _ _]
   (when (seq data)
