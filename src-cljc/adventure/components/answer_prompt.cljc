@@ -35,10 +35,11 @@
                              :value     value
                              :type      type
                              :required  true
+                             :data-test (str id desktop-header-dt)
                              :autoFocus true})]
       [:div.pt1.mx-auto
        (ui/submit-button "Next"
-                         {:data-test          (str id "-input-submit" desktop-header-dt)
+                         {:data-test          (str id "-submit" desktop-header-dt)
                           :navigation-message on-submit
                           :disabled?          disabled?})]])])
 

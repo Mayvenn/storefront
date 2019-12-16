@@ -28,25 +28,28 @@
   [data]
   (let [email  (get-in data storefront.keypaths/captured-email)
         errors (get-in data storefront.keypaths/field-errors)]
-    {:input-data           {:value             email
-                            :id                "email"
-                            :label             "Enter your email address"
-                            :type              "email"
-                            :on-change-keypath storefront.keypaths/captured-email
-                            :disabled?         (invalid-email? email)}
-     :errors               errors
-     :prompt               [:div
-                            "Welcome!" [:br]
-                            "We can't wait for you to get a free install"]
-     :title-image-uuid     "57fde383-01eb-494f-96e1-7070b8fc434d"
-     :title-image-alt      "Mayvenn"
-     :header-data          {:right-corner {:id    "dismiss-email-capture"
-                                           :opts  (utils/fake-href events/control-pick-a-stylist-email-capture-dismiss)
-                                           :value (svg/x-sharp {:class "black"
-                                                                :style {:width  "18px"
-                                                                        :height "18px"
-                                                                        :fill   "currentColor"}})}}
-     :on-submit            [events/control-pick-a-stylist-email-capture-submit {:email email}]}))
+    {:input-data       {:value             email
+                        :name              email
+                        :id                "email-input"
+                        :label             "Enter your email address"
+                        :type              "email"
+                        :data-test         "email-input"
+                        :on-change-keypath storefront.keypaths/captured-email
+                        :desktop-header-dt "-desktop"
+                        :disabled?         (invalid-email? email)}
+     :errors           errors
+     :prompt           [:div
+                        "Welcome!" [:br]
+                        "We can't wait for you to get a free install"]
+     :title-image-uuid "57fde383-01eb-494f-96e1-7070b8fc434d"
+     :title-image-alt  "Mayvenn"
+     :header-data      {:right-corner {:id    "dismiss-email-capture"
+                                       :opts  (utils/fake-href events/control-pick-a-stylist-email-capture-dismiss)
+                                       :value (svg/x-sharp {:class "black"
+                                                            :style {:width  "18px"
+                                                                    :height "18px"
+                                                                    :fill   "currentColor"}})}}
+     :on-submit        [events/control-pick-a-stylist-email-capture-submit {:email email}]}))
 
 (defmethod popup/component :pick-a-stylist-email-capture
   [queried-data owner _]

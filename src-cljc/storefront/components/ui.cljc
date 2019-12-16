@@ -217,7 +217,7 @@
      (dissoc input-attributes :id :type :label :keypath :value))]))
 
 (defn ^:private plain-text-field
-  [label keypath value error? {:keys [wrapper-class wrapper-style id hint focused large?] :as input-attributes}]
+  [label keypath value error? {:keys [type data-test wrapper-class wrapper-style id hint focused large?] :as input-attributes}]
   (component/html
    (let [input-attributes (dissoc input-attributes :wrapper-class :hint :focused :wrapper-style :large?)
          hint?            (seq hint)
@@ -235,7 +235,10 @@
         [:input.col-12.line-height-1
          (field-class (merge {:key         id
                               :placeholder label
+                              :data-test   data-test
+                              :type        (or type "text")
                               :label       label
+                              :name        id
                               :value       (or value "")
                               :large?      large?}
                              #?(:cljs
