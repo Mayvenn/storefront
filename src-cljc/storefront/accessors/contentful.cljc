@@ -42,13 +42,11 @@
     {:keys [photo-url
             color
             :content/id
-            texture
             description
             social-media-platform]}]
    (let [color-detail (get color-details (color-name->color-slug color))]
      {:id                     id
       :image-url              photo-url
-      :overlay                texture
       :description            description
       :desktop-aware?         true
       :social-service         social-media-platform

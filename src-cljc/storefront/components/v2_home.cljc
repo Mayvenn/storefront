@@ -75,7 +75,6 @@
   [{:as   social-card
     :keys [image-url
            description
-           overlay
            cta/navigation-message]}]
   [:div
    [:a.block.relative.m1
@@ -84,15 +83,7 @@
     (ui/aspect-ratio
      1 1
      [:img {:class "col-12"
-            :src   image-url}])
-    (when overlay
-      [:div.absolute.flex.justify-end.bottom-0.right-0.mb2
-       [:div {:style {:width       "0"
-                      :height      "0"
-                      :border-top  "28px solid rgba(159, 229, 213, 0.8)"
-                      :border-left "21px solid transparent"}}]
-       [:div.flex.items-center.px2.medium.h6.bg-pale-purple
-        overlay]])]
+            :src   image-url}])]
    [:div.h6.mx1.mt1.medium description]])
 
 (defn ^:private shop-button [album-keyword link-text]
