@@ -24,10 +24,10 @@
   [:div])
 
 (defmethod component :adventure-freeinstall/applied adventure-freeinstall-applied
-  [_ _ _]
+  [_ _ {hide-dt? :hide-dt?}]
   [:a.white.center.p2.bg-p-color.mbnp5.h6.bold.flex.items-center.justify-center
    {:on-click  (utils/send-event-callback events/popup-show-adventure-free-install)
-    :data-test "adventure-promo-banner"}
+    :data-test (when-not hide-dt? "adventure-promo-banner")}
    (svg/celebration-horn {:height "1.6em"
                           :width  "1.6em"
                           :class  "mr1 fill-white stroke-white"})
@@ -35,17 +35,17 @@
     [:span.underline "More info"]]])
 
 (defmethod component :v2-freeinstall/eligible v2-freeinstall-eligible
-  [_ _ _]
+  [_ _ {hide-dt? :hide-dt?}]
   [:a {:on-click  (utils/send-event-callback events/popup-show-v2-homepage)
-       :data-test "v2-free-install-promo-banner"}
+       :data-test (when-not hide-dt? "v2-free-install-promo-banner")}
    [:div.white.center.pp5.bg-p-color.h5.bold.pointer
     "Mayvenn will pay for your install! " [:span.underline "Learn more"]]])
 
 (defmethod component :v2-freeinstall/applied v2-freeinstall-applied
-  [_ _ _]
+  [_ _ {hide-dt? :hide-dt?}]
   [:a.white.center.p2.bg-p-color.mbnp5.h6.bold.flex.items-center.justify-center
    {:on-click  (utils/send-event-callback events/popup-show-v2-homepage)
-    :data-test "v2-free-install-promo-banner"}
+    :data-test (when-not hide-dt? "v2-free-install-promo-banner")}
    (svg/celebration-horn {:height "1.6em"
                           :width  "1.6em"
                           :class  "mr1 fill-white stroke-white"})
@@ -53,10 +53,10 @@
     [:span.underline "More info"]]])
 
 (defmethod component :shop/freeinstall shop-freeinstall
-  [_ _ _]
+  [_ _ {hide-dt? :hide-dt?}]
   [:a.block.white.p2.bg-p-color.flex.justify-center.items-center
    {:on-click  (utils/send-event-callback events/popup-show-consolidated-cart-free-install)
-    :data-test "shop-freeinstall-promo-banner"}
+    :data-test (when-not hide-dt? "shop-freeinstall-promo-banner")}
    (svg/info {:height "14px"
               :width  "14px"
               :class  "mr1"})
@@ -65,9 +65,9 @@
      "Mayvenn" ui/nbsp "Install"]]])
 
 (defmethod component :basic basic
-  [{:keys [promo]} _ _]
+  [{:keys [promo]} _ {hide-dt? :hide-dt?}]
   [:div.white.center.pp5.bg-p-color.h5.bold
-   {:data-test "promo-banner"}
+   {:data-test (when-not hide-dt? "promo-banner")}
    (:description promo)])
 
 (defn ^:private promotion-to-advertise
@@ -197,6 +197,6 @@
   (component/html
    [:div
     [:div.invisible {:key "promo-filler"} ;; provides height spacing for layout
-     (component (query app-state) nil opts)]
+     (component (query app-state) nil (assoc opts :hide-dt? true))] ; Hide redundant data-test for Heat
     [:div.fixed.z5.top-0.left-0.right-0 {:key "promo"}
      (component (query app-state) nil opts)]]))
