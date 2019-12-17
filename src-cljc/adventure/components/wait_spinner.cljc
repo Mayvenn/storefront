@@ -5,12 +5,10 @@
 (defcomponent component
   [{:keys [] :as data} _ _]
   [:div.absolute.overlay.border.border-framed.m4.py6.px2
-   {:style {:overflow-y "scroll"}}
+   {:style {:overflow "hidden"}}
    [:div.flex.flex-column.items-center.m2
     [:div {:style {:margin-top "44px"}}
-     ;;(ui/ucare-gif2video {} "ec0b7765-5c30-4edf-abf5-7cca7bb28a0c")
      (ui/ucare-gif2video {:width 72} "17ea60bf-fddb-4838-b132-3d076a257703")]
-
     [:h1.title-2.canela.center.mt8.mb6 "Matching you" [:wbr] " with a" [:br] " Mayvenn Certified Stylist..."]
     [:ul.list-purple-diamond
      [:li.my2 "Licensed Salon Stylist"]
