@@ -531,6 +531,20 @@
                (dissoc :width :retina-quality :default-quality :picture-classses)
                (assoc :src default-url))]]))
 
+(defn ucare-gif2video
+  [{:as   attrs
+    :keys [width]}
+   uuid]
+  {:pre [(or (spice.core/parse-int width) (nil? width))]}
+  [:video (merge {:autoPlay           true
+                  :loop               true
+                  :muted              true
+                  :webkitplaysinline  "true"
+                  :playsInline        true} attrs)
+   (for [format ["mp4", "webm"]]
+     [:source {:src  (str "https://ucarecdn.com/" uuid "/gif2video/-/format/" format "/")
+               :type (str "video/" format)}])])
+
 (defn circle-ucare-img
   [{:keys [width] :as attrs :or {width "4em"}} image-id]
   (let [width (spice/parse-int width)
