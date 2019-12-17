@@ -7,12 +7,14 @@
 (defn return-link
   [{:return-link/keys [copy id back]
     [event & args]    :return-link/event-message}]
-  [:div.h6.medium.black
+  [:div.proxima.title-3.shout.bold
    (when id {:data-test id})
    [:a.inherit-color (if (= :navigate (first event))
                        (apply utils/route-back-or-to back event args)
                        (apply utils/fake-href event args))
-    (ui/back-caret copy "12px")]])
+    [:div.flex.flex-row
+     (ui/back-caret {})
+     [:span.ml1.border-bottom.border-black.border-width-3.line-height-0 copy]]]])
 
 (defn stars-rating-molecule
   [{rating :rating/value}]

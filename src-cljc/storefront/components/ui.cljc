@@ -35,14 +35,11 @@
                        :width  width
                        :style  {:transform "rotate(-90deg)"}}))
 
-(defn back-caret
-  [back-copy width]
-  (component/html
-   [:div.flex.items-center.stroke-black
-    ^:inline
-    (svg/left-caret {:width  width
-                     :height width})
-    [:div back-copy]]))
+(defn back-caret [opts]
+  (svg/dropdown-arrow (merge {:height 14
+                              :width  14
+                              :style  {:transform "rotate(90deg)"}}
+                             opts)))
 
 (def spinner
   "Spinner that fills line, assuming line-height is 1.5em"

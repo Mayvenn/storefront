@@ -146,7 +146,8 @@
    (component/build call-out/component call-out nil)
 
    [:div.clearfix.mxn3
-    [:div.px4.my2 (ui-molecules/return-link queried-data)]
+    [:div.border-bottom.border-gray.border-width-2
+     [:div.px2.my2 (ui-molecules/return-link queried-data)]]
 
     (servicing-stylist-banner-component queried-data)
     [:div.col-on-tb-dt.col-6-on-tb-dt.px3.border-top.border-gray
@@ -242,18 +243,16 @@
 (defn empty-cart-body-molecule
   [{:empty-cart-body/keys [id primary secondary image-id]}]
   (when id
-    [:div
-     [:div.col-12.flex.justify-center
-      (ui/ucare-img {:width "185"} image-id)]
-
-     [:p.m2.h2.light primary]
-     [:div.col-10.mx-auto.m2.mb3.h5 secondary]]))
+    [:div {:style {:margin-top "70px"}}
+     [:h1.canela.title-1.mb4 primary]
+     [:div.col-8.mx-auto.mt2.mb6 secondary]]))
 
 (defcomponent empty-component [queried-data _ _]
   (ui/narrow-container
    [:div
     [:div.center {:data-test "empty-cart"}
-     [:div.px4.my2 (ui-molecules/return-link queried-data)]
+     [:div.border-bottom.border-gray.border-width-2
+      [:div.px2.my2 (ui-molecules/return-link queried-data)]]
 
      [:div.col-12.border-bottom.border-cool-gray.mb4]
 
@@ -271,10 +270,10 @@
                                 :page/slug           "mayvenn-install"}]
 
    :cta/id                    "browse-stylists"
-   :cta/label                 "Browse Mayvenn Stylists"
+   :cta/label                 "Browse Stylists"
    :cta/target                [events/navigate-adventure-match-stylist]
    :empty-cart-body/id        "empty-cart-body"
-   :empty-cart-body/primary   "Your cart is empty"
+   :empty-cart-body/primary   "Your Cart is Empty"
    :empty-cart-body/secondary (str "Did you know that you'd qualify for a free"
                                    " Mayvenn Install when you purchase 3 or more items?")
    :empty-cart-body/image-id  "6146f2fe-27ed-4278-87b0-7dc46f344c8c"})
