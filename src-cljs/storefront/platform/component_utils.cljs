@@ -61,6 +61,7 @@
   (send-event-callback events/control-menu-collapse-all {:menus menus}))
 
 (defn fake-href
+  "You probably want to use a link with route-to instead of this, as fake-href hides the url"
   ([event] (fake-href event nil))
   ([event args]
    {:href "#"
