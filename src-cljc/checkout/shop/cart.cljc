@@ -272,7 +272,7 @@
 
    :cta/id                    "browse-stylists"
    :cta/label                 "Browse Mayvenn Stylists"
-   :cta/target                [events/navigate-adventure-find-your-stylist]
+   :cta/target                [events/navigate-adventure-match-stylist]
    :empty-cart-body/id        "empty-cart-body"
    :empty-cart-body/primary   "Your cart is empty"
    :empty-cart-body/secondary (str "Did you know that you'd qualify for a free"
