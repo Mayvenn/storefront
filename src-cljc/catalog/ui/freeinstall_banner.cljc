@@ -9,9 +9,9 @@
     [:div.cursor.m3
      (merge {:data-test button-id}
             (apply utils/route-to nav-event))
-     [:div.flex.justify-center.bg-warm-gray
-      [:div.p6.center.col-12.flex.flex-column.items-center
-       [:div.title-2.canela.col-8.col-10-on-tb title]
+     [:div.flex.justify-center.bg-pale-purple
+      [:div.p5.center.col-12.flex.flex-column.items-center
+       [:div.title-2.canela title]
        [:div.mt2.content-3 subtitle]
-       [:div.mt4.col-6.col-8-on-tb
-        (ui/button-small-primary {} button-copy)]]]]))
+       [:div.mt4.col-10.col-8-on-tb
+        (ui/button-medium-primary {} button-copy)]]]]))

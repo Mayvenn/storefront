@@ -386,3 +386,4 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "vertical-squiggle")]))
+

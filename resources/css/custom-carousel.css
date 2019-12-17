@@ -14,12 +14,17 @@
     height: 9px;
     padding: 0;
     margin: 0 5px;
-    border-radius: 50%;
+    transform: rotate(-45deg);
     background: var(--cool-gray);
-    border: 0;
+    display: table-cell;
+    border: 1px solid var(--gray);
 }
 .tns-nav>.tns-nav-active {
-    background: var(--s-color);
+    background: var(--p-color);
+    border: 1px solid var(--black);
+}
+.tns-nav>.tns-nav-active:focus {
+    outline: var(--p-color) auto 1px;
 }
 
 /* Carousel Arrows */
@@ -140,7 +145,8 @@
 
 :root {
     --white:       #FFFFFF;
-    --s-color:     #6bc8ad;
+    --black:       #000000;
     --gray:        #cccccc;
+    --p-color:     #4427C1;
     --cool-gray:   #eeefef;
 }

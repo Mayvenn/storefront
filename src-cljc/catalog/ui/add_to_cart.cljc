@@ -7,30 +7,29 @@
 (defn cta-molecule
   [{:cta/keys [id label target spinning? disabled?]}]
   (when (and id label target)
-    (ui/button-large-primary
-     (merge
-      {:data-test id
-       :spinning? (boolean spinning?)
-       :disabled? (boolean disabled?)}
-      #?(:clj {:disabled? true})
-      (apply utils/fake-href target))
-     [:div.flex.items-center.justify-center.inherit-color label])))
+    [:div.my1
+     (ui/button-large-primary
+      (merge
+       {:data-test id
+        :spinning? (boolean spinning?)
+        :disabled? (boolean disabled?)}
+       #?(:clj {:disabled? true})
+       (apply utils/fake-href target))
+      [:div.flex.items-center.justify-center.inherit-color label])]))
 
 (defn add-to-cart-incentive-block-molecule
-  [{:add-to-cart.incentive-block/keys [id message link-label link-target footnote icon]}]
+  [{:add-to-cart.incentive-block/keys [id message link-label link-target footnote]}]
   (when id
     (component/html
      [:div.flex.pb1
-      [:div.px3.flex.justify-center.pt1
-       (ui/ucare-img {:width "18"} icon)]
       [:div.flex.flex-column
-       [:div.h7
-        [:span.mr1 message]
-        [:a.inherit-color.underline.pointer
+       [:div.proxima.content-3
+        message
+        (ui/button-small-underline-primary
          {:data-test "freeinstall-add-to-cart-info-link"
           :on-click  (apply utils/send-event-callback link-target)}
-         link-label]]
-       [:div.h8 footnote]]])))
+         link-label)]
+       [:div.h8.dark-gray footnote]]])))
 
 (defn add-to-cart-background-atom
   [color]

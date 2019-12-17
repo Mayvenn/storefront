@@ -44,25 +44,28 @@
   [{{:keys [social-cards product-id page-slug sku-id destination-event]} :carousel-data} owner opts]
   (when (seq social-cards)
     [:div.center.mt4
-     [:div.h2.medium.crush.m2 "#MayvennMade"]
+     [:div.proxima.title-2.m2.shout "#MayvennMade"]
      (component/build
       carousel/component
       {:slides   (map-indexed
                   (partial carousel-slide destination-event product-id page-slug sku-id "mayvenn-made-slide-")
                   social-cards)
-       :settings {:nav        false
+       :settings {:nav         false
+                  :startIndex  1
+                  :edgePadding 50
                   ;; setting this to true causes some of our event listeners to
                   ;; get dropped by tiny-slider.
-                  :loop       false
+                  :loop        false
                   ;; The breakpoints are mobile-first. That is, the
                   ;; default values apply to the smallest screens, and
                   ;; 1000 means 1000 and above.
-                  :items      2
-                  :responsive {1000 {:items 3}}}}
+                  :items       2
+                  :responsive  {1000 {:items 3}}}}
       opts)
-     [:p.center.m2
+     [:p.center.m2.content-2.proxima
       "Want to show up on our homepage? "
-      "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]]))
+      "Tag your best pictures wearing Mayvenn with "]
+     [:div.block.shout.proxima.title-3 "#MayvennMade"]]))
 
 (defcomponent popup-component [{:keys [carousel-data offset close-message]} owner opts]
   (let [close-attrs (apply util/route-to close-message)]

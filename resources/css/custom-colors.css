@@ -18,6 +18,8 @@
 .gray        { color: var(--gray); }
 .dark-gray   { color: var(--dark-gray); }
 
+:focus { outline: var(--p-color) auto 5px }
+
 :root {
   --yellow:         #ffc520;
 

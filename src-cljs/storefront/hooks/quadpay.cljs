@@ -38,7 +38,7 @@
                     [:quadpay-widget {:amount full-amount}]))))
 
 (defcomponent component [{:quadpay/keys [show? order-total directive]} owner opts]
-  [:div.bg-white
+  [:div.bg-white.proxima.content-3
    (when show?
      (let [qp-logo            ^:inline (svg/quadpay-logo {:class "mbnp3"
                                                           :style {:width "70px" :height "14px"}})
@@ -46,16 +46,17 @@
                                 :just-select   [:span [:br] "Just select " qp-logo " at check out."]
                                 :continue-with [:span [:br] "Continue with " qp-logo " below."]}
                                directive)]
-       [:div.border.border-blue.rounded.my2.p2.h6.center.medium
+       [:div.border.border-blue.my2.p2.center
         (when order-total
-          [:span
+          [:span.mb2
            "4 interest free payments of $" [:span {:data-test "quadpay-payment-amount"}
                                             (calc-installment-amount order-total)]])
-        expanded-directive
-        [:a.blue.mx1 {:href      "#"
-                      :data-test "quadpay-learn-more"
-                      :on-click  (fn [e]
-                                   (.preventDefault e)
-                                   (show-modal))}
-         "Learn more."]
+        [:div.block.mtn2
+         expanded-directive
+         [:a.blue.mx1 {:href      "#"
+                       :data-test "quadpay-learn-more"
+                       :on-click  (fn [e]
+                                    (.preventDefault e)
+                                    (show-modal))}
+          "Learn more."]]
         [:div.hide (component/build widget-component {:full-amount order-total} nil)]]))])

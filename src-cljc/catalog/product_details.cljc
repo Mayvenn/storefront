@@ -176,7 +176,7 @@
 
 (defn carousel [images _]
   (component/build carousel/component
-                   {:slides   (mapv #(image-body %) images)
+                   {:slides   (mapv image-body images)
                     :settings {:edgePadding 0
                                :items       1}}))
 
@@ -198,10 +198,10 @@
   "Product Details organism"
   [data _ _]
   [:div.mt3.mx3
-   (catalog.M/product-title data)
-   [:div.flex.justify-between
-    (catalog.M/yotpo-reviews-summary data)
-    (catalog.M/price-block data)]])
+   [:div.flex.items-center
+    (catalog.M/product-title data)
+    [:div.col-4 (catalog.M/price-block data)]]
+   (catalog.M/yotpo-reviews-summary data)])
 
 (defcomponent component
   [{:keys [adding-to-bag?
@@ -358,10 +358,10 @@
       (merge {:add-to-cart.background/color            "bg-cool-gray"
               :add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
               :add-to-cart.incentive-block/footnote    "*Mayvenn Install cannot be combined with other promo codes."
-              :add-to-cart.incentive-block/icon        "d7fbb4a1-6ad7-4122-b737-ade7dec8dfd3"
               :add-to-cart.incentive-block/link-label  "Learn more"
               :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
-              :add-to-cart.incentive-block/message     "Save 10% & get a free Mayvenn Install when you purchase 3 bundles, closure, or frontals.* "}))))
+              :add-to-cart.incentive-block/message    [:span "Save 10% & get a free Mayvenn Install when you " [:br]
+                                                       "purchase 3 bundles, closure, or frontals.* "]}))))
 
 (defn query [data]
   (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
@@ -380,7 +380,7 @@
             :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
             :title/primary                      (:copy/title product)
             :price-block/primary                sku-price
-            :price-block/secondary              "per item"
+            :price-block/secondary              "each"
             :ugc                                ugc
             :aladdin?                           (experiments/aladdin-experience? data)
             :fetching-product?                  (utils/requesting? data (conj request-keys/get-products

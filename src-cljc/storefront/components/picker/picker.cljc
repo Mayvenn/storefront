@@ -35,30 +35,55 @@
     [:div {:style {:width "1em"}}]]
    content])
 
-(defn mobile-dropdown [label-html selected-value-html]
-  [:div.flex.items-center.medium.h5.flex-auto
+(def picker-chevron
+  (svg/dropdown-arrow {:height "13px"
+                       :width  "13px"}) )
+
+(defn color-mobile-dropdown [label-html selected-value-html selected-color]
+  [:div.flex.items-center.flex-auto
    {:style {:height "100%"}}
    label-html
+   [:img.border.border-gray.ml4.mr1
+    {:height "20px"
+     :width  "21px"
+     :src    selected-color}]
    [:div.ml2.flex-auto selected-value-html]
-   [:div.self-center ^:inline (svg/dropdown-arrow {:height ".575em"
-                                                   :width  ".575em"
-                                                   :class  "fill-p-color"})]])
+   [:div.self-center ^:inline picker-chevron]])
+
+(defn color-desktop-dropdown [label-html selected-value-html select-html selected-color]
+  [:div.flex.flex-column.relative.flex-auto {:style {:height "100%"}}
+   [:div.flex.items-center
+    {:style {:height "100%"}}
+    label-html
+    [:img.border.border-gray.ml4.mr1
+     {:height "20px"
+      :width  "21px"
+      :src    selected-color}]
+    [:div.ml2.flex-auto selected-value-html]
+    [:div.self-center ^:inline picker-chevron]]
+   select-html])
+
+(defn mobile-dropdown [label-html selected-value-html]
+  [:div.flex.items-center.flex-auto
+   {:style {:height "100%"}}
+   label-html
+
+   [:div.ml2.flex-auto selected-value-html]
+   [:div.self-center ^:inline picker-chevron]])
 
 (defn desktop-dropdown [label-html selected-value-html select-html]
   [:div.flex.flex-column.relative.flex-auto {:style {:height "100%"}}
-   [:div.flex.items-center.medium.h5
+   [:div.flex.items-center
     {:style {:height "100%"}}
     label-html
     [:div.ml2.flex-auto selected-value-html]
-    [:div.self-center ^:inline (svg/dropdown-arrow {:height ".575em"
-                                                    :width  ".575em"
-                                                    :class  "fill-p-color"})]]
+    [:div.self-center ^:inline picker-chevron]]
    select-html])
 
 (defn field
   ([html-widget] (field nil html-widget))
   ([attrs html-widget]
-   [:div.border-bottom.border-cool-gray.border-width-2.px4.flex.items-center
+   [:div.flex.items-center
     (merge {:style {:height "75px"}}
            attrs)
     html-widget]))
@@ -77,13 +102,16 @@
 (defn- hacky-fix-of-bad-slugs-on-facets [slug]
   (string/replace (str slug) #"#" ""))
 
+(def vertical-border
+  [:div.border-right.border-cool-gray.mx3 {:style {:height "45px"}}])
+
 (defn desktop-length-and-quantity-picker-rows
   [{:keys [product-sold-out-style selected-length selections options sku-quantity navigation-event]}]
-  [:div.flex.hide-on-mb
+  [:div.flex.hide-on-mb.items-center.border-top.border-cool-gray.border-width-2
    (field
-    {:class "border-right flex-grow-5"}
+    {:class "col-7"}
     (desktop-dropdown
-     [:div.h8 "Length:"]
+     [:div.proxima.title-3.shout "Length"]
      [:span.medium
       product-sold-out-style
       (:option/name selected-length)]
@@ -98,10 +126,11 @@
                                    :key   (str "length-" (:option/slug option))}
                           (:option/name option)])
                        (:hair/length options))})))
+   vertical-border
    [:div.flex-auto
     (field
      (desktop-dropdown
-      [:div.h8 "Qty:"]
+      [:div.proxima.title-3.shout "Qty"]
       [:span.medium product-sold-out-style sku-quantity]
       (invisible-select
        {:on-change #(messages/handle-message events/control-product-detail-picker-option-quantity-select
@@ -115,25 +144,26 @@
 
 (defn mobile-length-and-quantity-picker-rows
   [{:keys [selected-length product-sold-out-style sku-quantity]}]
-  [:div.flex.hide-on-tb-dt
+  [:div.flex.hide-on-tb-dt.items-center.border-top.border-cool-gray.border-width-2
    (field
     (merge
-     {:class     "border-right flex-grow-5"
+     {:class     " col-7 py2"
       :data-test "picker-length"}
      (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/length}))
     (mobile-dropdown
-     [:div.h8 "Length:"]
-     [:span.medium
+     [:div.h8.proxima.title-3.shout "Length"]
+     [:span.medium.canela.content-2
       (merge
        {:data-test (str "picker-selected-length-" (:option/slug selected-length))}
        product-sold-out-style)
       (:option/name selected-length)]))
+   vertical-border
    [:div.flex-auto
     (field
      (merge {:data-test "picker-quantity"}
             (utils/fake-href events/control-product-detail-picker-open {:facet-slug :item/quantity}))
      (mobile-dropdown
-      [:div.h8 "Qty:"]
+      [:div.h8.proxima.title-3.shout "Qty"]
       [:span.medium
        (merge
         {:data-test (str "picker-selected-quantity-" sku-quantity)}
@@ -142,13 +172,11 @@
 
 (defn desktop-color-picker-row
   [{:keys [navigation-event selected-color selections options product-sold-out-style]}]
-  [:div.hide-on-mb
+  [:div.hide-on-mb.border-top.border-cool-gray.border-width-2
    (field
-    (desktop-dropdown
-     [:img.border.border-gray.rounded-0
-      {:height "33px"
-       :width  "65px"
-       :src    (:option/rectangle-swatch selected-color)}]
+    (color-desktop-dropdown
+     [:span.proxima.title-3.shout
+      "Color"]
      [:span product-sold-out-style (:option/name selected-color)]
      (invisible-select
       {:value     (:hair/color selections)
@@ -159,31 +187,32 @@
                          [:option {:value (:option/slug option)
                                    :key   (str "color-" (:option/slug option))}
                           (:option/name option)])
-                       (:hair/color options))})))])
+                       (:hair/color options))})
+     (:option/rectangle-swatch selected-color)))])
 
-(defn mobile-color-picker-row [{:keys [selected-color product-sold-out-style]}]
-  [:div.hide-on-tb-dt
+(defn mobile-color-picker-row
+  [{:keys [selected-color product-sold-out-style]}]
+  [:div.hide-on-tb-dt.border-top.border-cool-gray.border-width-2
    (field
     (merge {:data-test "picker-color"}
            (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/color}))
-    (mobile-dropdown
-     [:img.border.border-gray.rounded-0
-      {:height "33px"
-       :width  "65px"
-       :src    (:option/rectangle-swatch selected-color)}]
+    (color-mobile-dropdown
+     [:span.proxima.title-3.shout
+      "Color"]
      [:span (merge
              {:data-test (str "picker-selected-color-" (hacky-fix-of-bad-slugs-on-facets (:option/slug selected-color)))}
              product-sold-out-style)
-      (:option/name selected-color)]))])
+      (:option/name selected-color)]
+     (:option/rectangle-swatch selected-color)))])
 
 (defn picker-rows
   "individual elements as in: https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b21aa0352b1d5e31a32ac53"
   [data]
   [:div.mxn2
-   [:div
+   [:div.px3
     (mobile-color-picker-row data)
     (desktop-color-picker-row data)]
-   [:div
+   [:div.px3
     (desktop-length-and-quantity-picker-rows data)
     (mobile-length-and-quantity-picker-rows data)]])
 
