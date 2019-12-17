@@ -254,8 +254,6 @@
      [:div.border-bottom.border-gray.border-width-2
       [:div.px2.my2 (ui-molecules/return-link queried-data)]]
 
-     [:div.col-12.border-bottom.border-cool-gray.mb4]
-
      (empty-cart-body-molecule queried-data)
 
      [:div.col-9.mx-auto
