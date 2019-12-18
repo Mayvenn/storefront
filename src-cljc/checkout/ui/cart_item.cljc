@@ -185,7 +185,7 @@
   [{:keys [cart-item suggestions]} _ _]
   [:div
    (when-let [react-key (:react/key cart-item)]
-     [:div.pt1.pb2.ml2.flex
+     [:div.pt1.pb2.m1.flex
       {:key react-key}
        ;; image group
       [:div.relative.pt3
