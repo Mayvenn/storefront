@@ -147,9 +147,9 @@
             (for [n js-files]
               [:link {:rel "preload" :as "script" :href (assets/path (str "/js/out/" n))}]))
 
-          [:link {:rel "preload" :as "font" :href (assets/path "/fonts/Canela-Light-Web.woff2")}]
-          [:link {:rel "preload" :as "font" :href (assets/path "/fonts/Proxima-Nova.woff")}]
-          [:link {:rel "preload" :as "font" :href (assets/path "/fonts/Proxima-Nova-Black.woff")}]
+          [:link {:rel "preload" :as "font" :href (assets/path "/fonts/Canela-Light-Web.woff2") :crossorigin "anonymous"}]
+          [:link {:rel "preload" :as "font" :href (assets/path "/fonts/Proxima-Nova.woff") :crossorigin "anonymous"}]
+          [:link {:rel "preload" :as "font" :href (assets/path "/fonts/Proxima-Nova-Black.woff") :crossorigin "anonymous"}]
 
           [:script {:type "text/javascript"} (raw prefetch-script)]
 
