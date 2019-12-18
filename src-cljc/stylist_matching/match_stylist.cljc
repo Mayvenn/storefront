@@ -26,8 +26,6 @@
 (defcomponent template
   [{:keys [logo-header match-stylist cart]} _ _]
   [:div.bg-white.black.center.flex.flex-column
-   stylist-matching.A/woman-in-yellow-background
-
    (header/adventure-header (:header.left/target logo-header) (:header/title logo-header) cart)
 
    (component/build match-stylist/organism match-stylist nil)])

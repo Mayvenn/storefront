@@ -20,11 +20,11 @@
     (component/html
      [:div.center
       [:div.title-1.canela.mb2.mt1 primary]
-      [:div.content-2.proxima.my2 secondary]])))
+      [:div.content-2.proxima.my5 secondary]])))
 
 (defcomponent organism
   [data _ _]
-  [:div.m5.flex.flex-column.flex-auto.items-center.justify-between.mt6
+  [:div.m5.flex.flex-column.flex-auto.items-center.mt6
    [:div.col-10
     (match-stylist-title-molecule data)]
    [:div.col-12
