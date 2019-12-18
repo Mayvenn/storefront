@@ -12,20 +12,22 @@
    (close-x close-event nil))
   ([close-event opts]
    [:div.flex.justify-end.mt2.mr1
-    (svg/simple-x (merge (utils/fake-href close-event)
-                         {:style {:width  "18px"
-                                  :height "18px"}}
-                         opts))]))
+    (svg/x-sharp (merge (utils/fake-href close-event)
+                        {:style {:width  "20px"
+                                 :height "20px"}}
+                        opts))]))
 
 (defn monstrous-title
   [{:monstrous-title/keys [copy]}]
-  [:div.h0.line-height-1.pt3
+  [:div.pt3.title-1.canela
+   {:style {:font-size   "60px"
+            :line-height "62px"}}
    (for [line (cond-> copy string? vec)]
      [:div line])])
 
 (defn subtitle
   [{:subtitle/keys [copy]}]
-  [:div.flex.my4.h2
+  [:div.flex.mt4.mb2.h2
    (for [span (cond-> copy string? vec)]
      span)])
 
@@ -37,10 +39,10 @@
    [:form.col-12.flex.flex-column.items-center
     {:on-submit (utils/send-event-callback callback)}
     [:div.col-12.mx-auto
-     (ui/text-field (merge {:required  true
-                            :class     "h6 bg-cool-gray"}
-                           field-data))
-     (ui/submit-button (:title button-data) (merge {:class "h3 bold mt1"} button-data))]]])
+     [:div.mb3
+      (ui/text-field-large (merge {:required true}
+                                  field-data))]
+     (ui/submit-button (:title button-data) button-data)]]])
 
 ;; ORGANISM
 
@@ -53,7 +55,7 @@
    (ui/modal
     {:close-attrs (utils/fake-href modal-close-event)
      :col-class   "col-11 col-5-on-tb col-4-on-dt flex justify-center"}
-    [:div.flex.flex-column.bg-cover.bg-top.bg-white.p2.rounded.col-12
+    [:div.flex.flex-column.bg-cover.bg-top.bg-white.p2.col-12
      {:style {:max-width "345px"}}
      (close-x modal-close-event
               {:data-test "dismiss-email-capture"})
@@ -62,5 +64,4 @@
       (monstrous-title query)
       (subtitle query)
       description-copy]
-     [:div {:style {:height "30px"}}]
      (single-field-form query)])])

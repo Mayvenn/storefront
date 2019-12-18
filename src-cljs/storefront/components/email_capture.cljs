@@ -73,24 +73,20 @@
         focused (get-in app-state keypaths/ui-focus)
         email   (get-in app-state keypaths/captured-email)]
     {:modal-close/event                  events/control-email-captured-dismiss
-     :pre-title/content                  (ui/ucare-img {:width "24px"} ;; Mayvenn logo
-                                                       "6620eab6-ca9b-4400-b8e5-d6ec00654dd3")
      :monstrous-title/copy               ["Buy Now," "Pay Later."]
-     :subtitle/copy                      [[:div.mtb1 "with"]
-                                          [:div.ml2.mtp6 {:style {:width  "124px"
+     :subtitle/copy                      [[:div.content-1.light.mtb1 "with"]
+                                          [:div.ml1.mtp6 {:style {:width  "124px"
                                                                   :height "23px"}}
                                            ^:inline (svg/quadpay-logo)]]
-     :description/copy                   [:div.mt1
-                                          "Buy hair with "
-                                          [:span.p-color "0%"]
-                                          " interest over "
-                                          [:div [:span.p-color "4"]
-                                           " installments."]]
+     :description/copy                   [:div.content-1.light.mt1
+                                          "Buy hair with 0% interest"
+                                          [:div
+                                           "over 4 installments."]]
      :single-field-form/callback         events/control-email-captured-submit
      :single-field-form/field-data       {:errors    (get errors ["email"])
                                           :keypath   keypaths/captured-email
                                           :focused   focused
-                                          :label     "Your E-Mail Address"
+                                          :label     "Your Email Address"
                                           :name      "email"
                                           :type      "email"
                                           :value     email
