@@ -81,11 +81,9 @@
             :rel   "icon"}]
     [:link {:rel "manifest" :href "/web_app_manifest.json"}]
     ; TODO: Keep this teal for the favicon until new asset?
-    [:link {:color "#40cbac",
-            :href  "/safari-pinned-tab.svg",
-            :rel   "mask-icon"}]
+    [:link {:href  "/safari-pinned-tab.svg"}]
     [:link {:href "/favicon.ico", :rel "shortcut icon"}]
-    [:meta {:content "#000000", :name "msapplication-TileColor"}]))
+    [:meta {:content "#FFF", :name "msapplication-TileColor"}]))
 
 (defn data->transit [data]
   (let [sanitized-data (-> data
