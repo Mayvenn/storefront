@@ -62,19 +62,16 @@
   [:div.flex.py2
    "✋"
    [:div.flex.flex-column.pl1
-    [:div.p-color.h5.medium
-     "Don't miss out on "
-     [:span.bold
-      "free Mayvenn Install"]]
-    [:div.h6
+    [:div.proxima.content-2.line-height-1.bold
+     "Don't miss out on free Mayvenn Install"]
+    [:div.content-3.proxima
      "Save 10% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below."]
     [:div.flex.justify-left.py1
-     [:div (ui/button-small-primary {:class        "bold"
-                                     :data-test    "add-freeinstall-coupon"
-                                     :on-click     (utils/send-event-callback events/control-cart-add-freeinstall-coupon)} "Add Mayvenn Install")]
-     [:div.p-color.h7.flex.items-center.px2
+     [:div (ui/button-small-primary {:data-test "add-freeinstall-coupon"
+                                     :on-click  (utils/send-event-callback events/control-cart-add-freeinstall-coupon)} "Add Mayvenn Install")]
+     [:div.s-color.flex.items-center.px2.button-font-3.shout
       {:data-test "cart-learn-more"}
-      [:a {:class    "inherit-color"
+      [:a {:class    "inherit-color border-bottom border-width-2"
            :on-click (utils/send-event-callback events/popup-show-consolidated-cart-free-install)} "learn more"]]]
-    [:div.h8
+    [:div.content-4.dark-gray
      "*Mayvenn Install cannot be combined with other promo codes."]]])
