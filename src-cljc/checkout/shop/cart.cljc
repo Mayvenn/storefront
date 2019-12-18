@@ -135,7 +135,6 @@
     :as   queried-data}
    _ _]
   [:div.container.px2
-
    (when (:confetti-spout/id queried-data)
      ;; Moving this check to the inside of the component breaks lifecycle
      ;; methods
@@ -146,9 +145,6 @@
    (component/build call-out/component call-out nil)
 
    [:div.clearfix.mxn3
-    [:div.border-bottom.border-gray.border-width-2
-     [:div.px2.my2 (ui-molecules/return-link queried-data)]]
-
     (servicing-stylist-banner-component queried-data)
     [:div.col-on-tb-dt.col-6-on-tb-dt.px3.border-top.border-gray
      {:data-test "cart-line-items"}
@@ -251,11 +247,7 @@
   (ui/narrow-container
    [:div
     [:div.center {:data-test "empty-cart"}
-     [:div.border-bottom.border-gray.border-width-2
-      [:div.px2.my2 (ui-molecules/return-link queried-data)]]
-
      (empty-cart-body-molecule queried-data)
-
      [:div.col-9.mx-auto
       (empty-cta-molecule queried-data)]]]))
 
@@ -629,11 +621,18 @@
            full-cart]} owner opts]
   (if fetching-order?
     [:div.py3.h2 ui/spinner]
-    [:div.col-7-on-dt.mx-auto
-     (if (and (zero? item-count)
-              (not (:entered? full-cart)))
-       (component/build empty-component empty-cart opts)
-       (component/build full-component full-cart opts))]))
+    (let [empty?    (and (zero? item-count)
+                         (not (:entered? full-cart)))
+          cart-data (if empty?
+                      empty-cart
+                      full-cart)]
+      [:div
+       [:div.border-bottom.border-gray.border-width-1
+        [:div.px2.my2 (ui-molecules/return-link cart-data)]]
+       [:div.col-7-on-dt.mx-auto
+        (component/build (if empty?
+                           empty-component
+                           full-component) cart-data opts)]])))
 
 (defn query [data]
   {:fetching-order? (utils/requesting? data request-keys/get-order)

@@ -34,7 +34,7 @@
     [:div
      (desktop-header desktop-header-data)
      (storefront-header/mobile-nav-header
-      {:class "border-bottom border-gray border-width-2"}
+      {:class "border-bottom border-gray border-width-1"}
 
       (when-not hide-back-to-shopping-link?
         [:a.pointer.inherit-color.flex.items-center.ml1.content-3.proxima close-cart-route
