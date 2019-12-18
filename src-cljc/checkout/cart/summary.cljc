@@ -96,7 +96,7 @@
         (summary-row {:class "black"} "Shipping" shipping-cost))
 
       (when (orders/no-applied-promo? order)
-        [:tr.h5
+        [:tr
          [:td
           {:col-span "2"}
           (promo-entry promo-data)]])

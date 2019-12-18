@@ -2,7 +2,6 @@
 
 .btn-outline {
   border-color: currentcolor;
-  border-radius: var(--button-border-radius);
 }
 
 .btn-outline.is-active,
@@ -19,8 +18,6 @@
 }
 
 :root {
-  --button-border-radius: 50px;
-
   --gray:       #cccccc;
   --cool-gray:  #EEEFEF;
   --darken-1: rgba(0, 0, 0, .075);

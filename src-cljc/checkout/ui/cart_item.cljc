@@ -12,7 +12,7 @@
 (defn cart-item-floating-box-molecule
   [{:cart-item-floating-box/keys [id value]}]
   (when id
-    [:div.right.right-align.medium.h6
+    [:div.right.right-align.proxima.content-2
      {:key       id
       :data-test id
       :style     {:height "100%"}}
@@ -27,10 +27,10 @@
   [{:cart-item-title/keys [id primary secondary]}]
   (when (and id primary)
     [:div
-     [:div.medium.titleize.h5
+     [:div.proxima.content-2
       {:data-test id}
       primary]
-     [:div.h6 secondary]]))
+     [:div.dark-gray secondary]]))
 
 (defn completed-progress-circle-atom
   [i _]
@@ -80,19 +80,20 @@
   (when id
     (let [sticker-id (str "line-item-length-" sku-id)]
       [:div.relative
-       {:style {:height "49px"
-                :width  "52px"}}
+       {:style {:height "45px"
+                :width  "48px"}}
        (when sticker-label
-         [:div.absolute.z1.circle.border.border-white.medium.h6.bg-cool-gray
+         [:div.absolute.z1.circle.border.border-white.bg-warm-gray.proxima.title-3.flex.items-center.justify-center
           (css-transitions/background-fade
            highlighted?
            {:key       sticker-id
             :data-test sticker-id
-            :style     {:right -12
-                        :top   -12}})
-          [:div.flex.items-center.justify-center
-           sticker-label]])
-       [:div.flex.items-center.justify-center.rounded
+            :style     {:height "26px"
+                        :width "26px"
+                        :right -10
+                        :top   -10}})
+          sticker-label])
+       [:div.flex.items-center.justify-center
         (css-transitions/background-fade
          highlighted?
          {:style     {:height "45px"
@@ -100,7 +101,7 @@
           :key       (str "cart-item-square-thumbnail-" sku-id)
           :data-test (str "line-item-img-" sku-id)})
         (ui/ucare-img {:width 48
-                       :class "block rounded border border-cool-gray"}
+                       :class "block border border-cool-gray"}
                       ucare-id)]])))
 
 (defn confetti-handler
@@ -146,8 +147,8 @@
        [:a.gray.medium.m1
         (merge {:data-test (str "line-item-remove-" id)}
                (apply utils/fake-href target))
-        (svg/consolidated-trash-can {:width  "16px"
-                                     :height "17px"})]])))
+        (svg/consolidated-trash-can {:width  "14px"
+                                     :height "16px"})]])))
 
 (defn cart-item-swap-action-molecule
   [{:cart-item-swap-action/keys [target]}]
@@ -188,7 +189,7 @@
       {:key react-key}
        ;; image group
       [:div.relative.pt3
-       {:style {:min-width "78px"}}
+       {:style {:min-width "70px"}}
        (cart-item-square-thumbnail-molecule cart-item)
        (cart-item-service-thumbnail-molecule cart-item)]
 
@@ -205,7 +206,7 @@
           (cart-item-pick-stylist-molecule cart-item)]]
 
          ;; price group
-        [:div.right.right-align.h6.pt1.flex.flex-column.items-end
+        [:div.right.right-align.pt1.flex.flex-column.items-end
          {:style {:min-width "67px"}}
          (cart-item-remove-action-molecule cart-item)
          (cart-item-swap-action-molecule cart-item)

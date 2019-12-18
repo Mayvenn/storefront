@@ -111,12 +111,12 @@
   #?(:clj
      [:div]
      :cljs
-     [:div.pr1.pt2
+     [:div.pr1.pt1
       (when-not sticker-label
         {:class "pr3"})
       (when sticker-label
         ;; TODO: highlighting does not work as before
-        [:div.right.z1.circle.stacking-context.border.border-white.flex.items-center.justify-center.medium.h6.bg-cool-gray
+        [:div.right.z1.circle.stacking-context.border.border-white.flex.items-center.justify-center.bg-warm-gray.proxima.title-3
          {:key       sticker-id
           :data-test sticker-id
           :style     {:margin-left left-margin
@@ -125,30 +125,29 @@
                       :height      sticker-size}}
          sticker-label])
 
-      [:div.flex.items-center.justify-center.p1.rounded
+      [:div.flex.items-center.justify-center.p1
        (css-transitions/background-fade
         highlighted?
         {:key       (str "thumbnail-" sku-id)
          :data-test (str "line-item-img-" sku-id)})
        (ui/ucare-img {:width image-width
-                      :class "rounded border border-cool-gray"} ucare-id)]]))
+                      :class "border border-cool-gray"} ucare-id)]]))
 
 (defn ->consolidated-suggested-bundles
   "TODO Heat needs to be updated to use new dt"
   [{:suggested-bundles/keys [id images-with-stickers label target cta-id disabled? spinning?]}]
-  [:div.bg-cool-gray.mt1.rounded
+  [:div.bg-cool-gray.mt1
    {:data-test id :key id}
    [:div.flex.justify-between.items-center.px2
     (let [[first-image second-image] images-with-stickers]
       [:div.flex.items-center
        (image-with-sticker first-image)
-       [:span.pr2 "+"]
+       [:span.pr2.proxima.title-2 "+"]
        (image-with-sticker second-image)])
     [:div.my1.col-5
-     (ui/button-small-secondary {:class        "bg-white"
-                               ;; we don't want to draw attention to the disabling of the other 'Add' button,
-                               ;; but we do want to prevent people from clicking both.
-                               ;; :disabled? (and (not this-is-adding-to-bag?) any-adding-to-bag?)
+     (ui/button-small-secondary {;; we don't want to draw attention to the disabling of the other 'Add' button,
+                                 ;; but we do want to prevent people from clicking both.
+                                 ;; :disabled? (and (not this-is-adding-to-bag?) any-adding-to-bag?)
                                  :on-click     (if disabled?
                                                  utils/noop-callback
                                                  (apply utils/send-event-callback target))
@@ -163,7 +162,7 @@
      [:div.flex.items-center
       ^:inline (svg/angle-arrow {:style {:width  "13px"
                                          :height "13px"}})
-      [:div.h6.pl1 "Bundles often bought together"]]
+      [:div.proxima.content-2.pl1 "Bundles often bought together"]]
      (map ->consolidated-suggested-bundles suggestions)]))
 
 (defn consolidated-query

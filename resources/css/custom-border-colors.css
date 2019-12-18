@@ -2,8 +2,9 @@
 .border-gray          { border-color: var(--gray); }
 .border-black         { border-color: var(--black); }
 
-.border-p-color   { border-color: var(--p-color); }
-.border-cool-gray { border-color: var(--cool-gray); }
+.border-p-color     { border-color: var(--p-color); }
+.border-cool-gray   { border-color: var(--cool-gray); }
+.border-pale-purple { border-color: var(--pale-purple); }
 
 .debug * { outline: 1px solid gold; }
 
@@ -14,4 +15,5 @@
 
   --p-color:   #4427c1;
   --cool-gray: #eeefef;
+  --pale-purple: #dedbe5;
 }

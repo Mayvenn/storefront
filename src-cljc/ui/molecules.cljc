@@ -130,7 +130,7 @@
   [{:submit-button/keys [target disabled?] :as data}]
   [:div
    (field-reveal-molecule data)
-   [:form.bg-white.border.border-cool-gray.rounded.overflow-hidden.table.flex.col-12
+   [:form.border.border-gray.overflow-hidden.table.flex.col-12
     (when-not disabled?
       {:on-submit (utils/send-event-callback target)})
     (labeled-input-molecule data)

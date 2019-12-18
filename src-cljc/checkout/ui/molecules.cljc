@@ -32,7 +32,7 @@
   [{:cart-summary-line/keys
     [id label sublabel icon value action-id action-target action-icon class]}]
   (when id
-    [:tr.h6.medium
+    [:tr.proxima.content-2
      {:data-test (str "cart-summary-line-" id)
       :key       (str "cart-summary-line-" id)}
      [:td.pyp1.flex.items-center.align-middle
@@ -53,9 +53,9 @@
 (defn cart-summary-total-line
   [{:cart-summary-total-line/keys [id label value]}]
   (when id
-    [:div.flex.medium.h5 {:data-test id}
-     [:div.flex-auto label]
-     [:div.right-align value]]))
+    [:div.flex {:data-test id}
+     [:div.flex-auto.content-1.proxima label]
+     [:div.right-align.title-2.proxima value]]))
 
 (defn freeinstall-informational
   []

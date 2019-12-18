@@ -328,10 +328,9 @@
                                                                           (:product-name line-item))
                       :cart-item-title/secondary                      (:color-name line-item)
                       :cart-item-floating-box/id                      (str "line-item-price-ea-with-label-" sku-id)
-                      :cart-item-floating-box/value                   [:div.gray
-                                                                       [:div.medium.black {:data-test (str "line-item-price-ea-" sku-id)}
-                                                                        (mf/as-money price)]
-                                                                       " each"]
+                      :cart-item-floating-box/value                   [:div {:data-test (str "line-item-price-ea-" sku-id)}
+                                                                       (mf/as-money price)
+                                                                       [:div.proxima.content-4 " each"]]
                       :cart-item-square-thumbnail/id                sku-id
                       :cart-item-square-thumbnail/sku-id            sku-id
                       :cart-item-square-thumbnail/highlighted?      just-added-to-order?
