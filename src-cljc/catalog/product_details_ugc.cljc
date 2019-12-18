@@ -62,7 +62,7 @@
                   :items       2
                   :responsive  {1000 {:items 3}}}}
       opts)
-     [:p.center.m2.content-2.proxima
+     [:p.center.px6.mb2.mt4.content-2.proxima
       "Want to show up on our homepage? "
       "Tag your best pictures wearing Mayvenn with "]
      [:div.block.shout.proxima.title-3 "#MayvennMade"]]))
