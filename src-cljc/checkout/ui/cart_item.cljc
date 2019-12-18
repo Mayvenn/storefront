@@ -74,8 +74,8 @@
                                           :data-test id)
                                    action-label)])])))
 
-(defn cart-item-squircle-thumbnail-molecule
-  [{:cart-item-squircle-thumbnail/keys
+(defn cart-item-square-thumbnail-molecule
+  [{:cart-item-square-thumbnail/keys
     [id ucare-id sku-id sticker-label highlighted?]}]
   (when id
     (let [sticker-id (str "line-item-length-" sku-id)]
@@ -95,9 +95,9 @@
        [:div.flex.items-center.justify-center.rounded
         (css-transitions/background-fade
          highlighted?
-         {:style     {:height "50px"
-                      :width  "54px"}
-          :key       (str "cart-item-squircle-thumbnail-" sku-id)
+         {:style     {:height "45px"
+                      :width  "48px"}
+          :key       (str "cart-item-square-thumbnail-" sku-id)
           :data-test (str "line-item-img-" sku-id)})
         (ui/ucare-img {:width 48
                        :class "block rounded border border-cool-gray"}
@@ -189,7 +189,7 @@
        ;; image group
       [:div.relative.pt3
        {:style {:min-width "78px"}}
-       (cart-item-squircle-thumbnail-molecule cart-item)
+       (cart-item-square-thumbnail-molecule cart-item)
        (cart-item-service-thumbnail-molecule cart-item)]
 
        ;; info group
