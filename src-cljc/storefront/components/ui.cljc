@@ -29,11 +29,11 @@
                                                 v])
                                              content)])))
 
-(defn forward-caret [{:keys [height width color]}]
-  (svg/dropdown-arrow {:class  (if color (str "fill-" color) "fill-black")
-                       :height height
-                       :width  width
-                       :style  {:transform "rotate(-90deg)"}}))
+(defn forward-caret [opts]
+  (svg/dropdown-arrow (merge {:height 14
+                              :width  14
+                              :style  {:transform "rotate(-90deg)"}}
+                             opts)))
 
 (defn back-caret [opts]
   (svg/dropdown-arrow (merge {:height 14

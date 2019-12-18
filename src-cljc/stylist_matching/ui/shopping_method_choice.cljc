@@ -16,7 +16,7 @@
       (ui/ucare-img {:width 60
                      :picture-classes "flex items-center"} ucare-id)
       [:div.flex-auto.left-align.p3 label]
-      [:div.flex (ui/forward-caret {:width 14 :height 14 :color "black"})]])))
+      [:div.flex (ui/forward-caret {})]])))
 
 (defn buttons-list-molecule
   [{:list/keys [buttons]}]

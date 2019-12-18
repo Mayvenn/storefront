@@ -134,7 +134,9 @@
 
 (defn shopping-rows
   [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals? site]}]
-  (let [^:inline caret (ui/forward-caret {:width 16 :height 16 :color "gray"})]
+  (let [^:inline caret (ui/forward-caret {:width  16
+                                          :height 16
+                                          :class  "fill-gray"})]
     (concat
      (when show-freeinstall-link?
        [{:link-attrs (utils/route-to events/navigate-adventure-match-stylist)
