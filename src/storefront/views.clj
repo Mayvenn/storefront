@@ -80,7 +80,6 @@
             :type  "image/png",
             :rel   "icon"}]
     [:link {:rel "manifest" :href "/web_app_manifest.json"}]
-    ; TODO: Keep this teal for the favicon until new asset?
     [:link {:href  "/safari-pinned-tab.svg"}]
     [:link {:href "/favicon.ico", :rel "shortcut icon"}]
     [:meta {:content "#FFF", :name "msapplication-TileColor"}]))
