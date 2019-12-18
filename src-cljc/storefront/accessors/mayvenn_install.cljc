@@ -41,8 +41,7 @@
                                                              vouchers/product-items->highest-value-service)))
                                          first
                                          :service/diva-advertised-type)
-        service-menu                (or (:service-menu servicing-stylist)
-                                        service-menu/default-service-menu)]
+        service-menu                service-menu/default-service-menu]
     {:mayvenn-install/entered?           freeinstall-entered?
      :mayvenn-install/locked?            (and freeinstall-entered?
                                               (pos? items-remaining-for-install))
