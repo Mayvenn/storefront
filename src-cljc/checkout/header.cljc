@@ -37,7 +37,7 @@
       {:class "border-bottom border-gray border-width-2"}
 
       (when-not hide-back-to-shopping-link?
-        [:a.pointer.inherit-color.flex.justify-start.items-center close-cart-route
+        [:a.pointer.inherit-color.flex.items-center.ml1.content-3.proxima close-cart-route
          [:div (ui/back-caret {:width 16 :height 16})]
          [:div "Back to Shopping"]])
 
