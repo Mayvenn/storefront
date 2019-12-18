@@ -25,7 +25,7 @@
                       :paragraphs ["You must get your hair done from a Certified Stylist in order to get your hair installed for free."]}]}))
 
 (defn component [{:keys [expanded-index sections modal? background-color]}]
-  [:div.px6.mx-auto.col-6-on-dt.py6
+  [:div.px6.mx-auto.col-10-on-dt.py6
    {:class background-color}
    [:div.canela.title-1.center.my7 "Frequently Asked Questions"]
    (component/build
