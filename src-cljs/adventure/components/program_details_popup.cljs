@@ -228,7 +228,7 @@
 
 (defmethod popup/component :consolidated-cart-free-install
   [{:keys [faq-data call-out-data] :as queried-data} owner _]
-  (ui/modal {:col-class   "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
+  (ui/modal {:col-class   "col-12 col-10-on-tb col-10-on-dt my8-on-tb-dt flex justify-center"
              :close-attrs (utils/fake-href events/control-consolidated-cart-free-install-dismiss)
              :bg-class    "bg-darken-4"}
             [:div.bg-cool-gray
