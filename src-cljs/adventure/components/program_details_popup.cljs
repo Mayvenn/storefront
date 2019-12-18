@@ -147,7 +147,7 @@
                   {:title/value "Schedule Your Appointment"
                    :body/value  "We’ll connect you with your stylist to set up your install. Then, we’ll send you a prepaid voucher to cover the cost of service."}]]
 
-    [:div.col-12.bg-cool-gray.center.flex.flex-column.items-center.py2
+    [:div.col-12.bg-cool-gray.center.flex.flex-column.items-center.p2
      [:div.mt2
       [:h2.title-1.canela
        "You buy the hair, we cover the service."]
