@@ -47,32 +47,33 @@
    (marquee-col right-content)])
 
 (defn ^:private stylist-portrait [{:keys [stylist-portrait]}]
-  (let [header-image-size 36
+  (let [header-image-size 40
         portrait-status   (:status stylist-portrait)]
-    [:div.h6.flex.items-center.left.mr2
-     (if (#{"approved" "pending"} portrait-status)
-       (ui/circle-picture {:class "mx-auto"
-                           :width (str header-image-size "px")}
-                          (ui/square-image stylist-portrait header-image-size))
-       [:a (utils/route-to events/navigate-stylist-account-profile)
-        [:img {:width (str header-image-size "px")
-               :src   "//ucarecdn.com/81bd063f-56ba-4e9c-9aef-19a1207fd422/-/format/auto/stylist-bug-no-pic-fallback"}]])]))
+    (if (#{"approved" "pending"} portrait-status)
+      (ui/circle-picture {:class "mx-auto"
+                          :width (str header-image-size "px")}
+                         (ui/square-image stylist-portrait header-image-size))
+      [:a.mr2.flex.items-center (utils/route-to events/navigate-stylist-account-profile)
+       (ui/ucare-img {:width           header-image-size
+                      :picture-classes "flex"}
+                     "81bd063f-56ba-4e9c-9aef-19a1207fd422")])))
 
 (defn ^:private account-info-marquee [signed-in {:keys [email store-credit]}]
   (when (-> signed-in ::auth/at-all)
-    [:div.my3
-     [:div.h8.medium "Signed in with:"]
-     [:a.p-color.h5.bold
-      (merge
-       {:data-test "signed-in-as"}
-       (utils/route-to (if (-> signed-in ::auth/as (= :stylist))
-                         events/navigate-stylist-account-profile
-                         events/navigate-account-manage)))
-      email]
-     (when (pos? store-credit)
-       [:div
-        [:div.h8.medium "Store credit:"]
-        [:div.p-color.h5.bold (as-money store-credit)]])]))
+    [:div.my3.flex.flex-wrap
+     (when false #_(pos? store-credit)
+       [:div.mr4.mb2
+        [:div.title-3.proxima.shout "Credit"]
+        [:div.content-2.proxima (as-money store-credit)]])
+     [:div
+      [:div.title-3.proxima.shout "Signed in with"]
+      [:a.inherit-color.content-2.proxima
+       (merge
+        {:data-test "signed-in-as"}
+        (utils/route-to (if (-> signed-in ::auth/as (= :stylist))
+                          events/navigate-stylist-account-profile
+                          events/navigate-account-manage)))
+       email]]]))
 
 (defn ^:private stylist-actions
   [vouchers? show-community?]
@@ -80,23 +81,25 @@
    [:div
     (when vouchers?
       (ui/button-medium-primary (assoc (utils/route-to events/navigate-voucher-redeem)
-                                       :data-test    "redeem-voucher")
+                                       :data-test    "redeem-voucher"
+                                       :class "mb2")
                                 "Redeem Client Voucher"))
-    [:div
-     (marquee-row
-      (ui/button-large-secondary (assoc (utils/route-to events/navigate-stylist-account-profile)
-                                        :data-test "account-settings")
-                                 "Settings")
-      (ui/button-large-secondary (assoc (utils/route-to events/navigate-stylist-share-your-store)
-                                        :data-test "share-your-store")
-                                 "Share your store"))
-     (marquee-row
-      (ui/button-large-secondary (assoc (utils/route-to events/navigate-v2-stylist-dashboard-orders)
-                                        :data-test "dashboard")
-                                 "Dashboard")
-      (when show-community?
-        (ui/button-large-secondary community/community-url
-                                   "Community")))]]))
+    [:div.flex.flex-wrap
+     (ui/button-small-secondary (assoc (utils/route-to events/navigate-stylist-account-profile)
+                                       :data-test "account-settings"
+                                       :class "mr2 mt2")
+                                "Settings")
+     (ui/button-small-secondary (assoc (utils/route-to events/navigate-stylist-share-your-store)
+                                       :data-test "share-your-store"
+                                       :class "mr2 mt2")
+                                "Share your store")
+     (ui/button-small-secondary (assoc (utils/route-to events/navigate-v2-stylist-dashboard-orders)
+                                       :data-test "dashboard"
+                                       :class "mr2 mt2")
+                                "Dashboard")
+     (when show-community?
+       (ui/button-small-secondary community/community-url
+                                  "Community"))]]))
 
 (def ^:private user-actions
   (component/html
@@ -138,7 +141,7 @@
 (defn ^:private content-row [{:keys [link-attrs data-test content]}]
   [:li {:key data-test}
    [:div.py3
-    (into [:a.block.inherit-color.flex.items-center.content-3.proxima
+    (into [:a.block.inherit-color.flex.items-center.content-2.proxima
            (assoc link-attrs :data-test data-test)
            [:span.col-2]]
           content)]])
@@ -260,20 +263,20 @@
 
 (def ^:private gallery-link
   (component/html
-   [:a.inherit-color.h6.underline
+   (ui/button-small-underline-primary
     (utils/route-to events/navigate-gallery-edit)
-    "Edit Gallery"]))
+    "Edit Gallery")))
 
 (defcomponent ^:private root-menu
   [{:keys [user signed-in show-community? vouchers?] :as data} owner opts]
   [:div
-   [:div.px3.border-bottom.border-gray.bg-cool-gray.pt3
+   [:div.bg-cool-gray.p4
     (when (auth/stylist? signed-in)
       [:div.flex.items-center (stylist-portrait user) gallery-link])
     (account-info-marquee signed-in user)
     [:div.my3
      (actions-marquee signed-in vouchers? show-community?)]]
-   [:div.px6
+   [:div.px3
     (menu-area data)]
    (when (-> signed-in ::auth/at-all)
      [:div.px6.border-top.border-gray
