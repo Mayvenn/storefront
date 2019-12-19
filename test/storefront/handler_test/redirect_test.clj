@@ -214,14 +214,14 @@
     (with-handler handler
       (testing "http"
         (let [resp (handler (mock/request :get "http://classes.mayvenn.com"))]
-          (is (= 302 (:status resp)))
-          (is (= "https://shop.mayvenn.com/?redirect=classes"
+          (is (= 301 (:status resp)))
+          (is (= "https://shop.mayvenn.com/"
                  (get-in resp [:headers "Location"])))))
 
       (testing "https"
         (let [resp (handler (mock/request :get "https://classes.mayvenn.com"))]
-          (is (= 302 (:status resp)))
-          (is (= "https://shop.mayvenn.com/?redirect=classes"
+          (is (= 301 (:status resp)))
+          (is (= "https://shop.mayvenn.com/"
                  (get-in resp [:headers "Location"]))))))))
 
 (deftest redirects-vistaprint
@@ -229,14 +229,14 @@
     (with-handler handler
       (testing "http"
         (let [resp (handler (mock/request :get "http://vistaprint.mayvenn.com"))]
-          (is (= 302 (:status resp)))
-          (is (= "https://shop.mayvenn.com/?redirect=vistaprint"
+          (is (= 301 (:status resp)))
+          (is (= "https://shop.mayvenn.com/"
                  (get-in resp [:headers "Location"])))))
 
       (testing "https"
         (let [resp (handler (mock/request :get "https://vistaprint.mayvenn.com"))]
-          (is (= 302 (:status resp)))
-          (is (= "https://shop.mayvenn.com/?redirect=vistaprint"
+          (is (= 301 (:status resp)))
+          (is (= "https://shop.mayvenn.com/"
                  (get-in resp [:headers "Location"]))))))))
 
 (deftest redirects-the-literal-stylist-subdomain
@@ -244,14 +244,14 @@
     (with-handler handler
       (testing "http"
         (let [resp (handler (mock/request :get "http://stylist.mayvenn.com"))]
-          (is (= 302 (:status resp)))
-          (is (= "https://shop.mayvenn.com/?redirect=stylist"
+          (is (= 301 (:status resp)))
+          (is (= "https://shop.mayvenn.com/"
                  (get-in resp [:headers "Location"])))))
 
       (testing "https"
         (let [resp (handler (mock/request :get "https://stylist.mayvenn.com"))]
-          (is (= 302 (:status resp)))
-          (is (= "https://shop.mayvenn.com/?redirect=stylist"
+          (is (= 301 (:status resp)))
+          (is (= "https://shop.mayvenn.com/"
                  (get-in resp [:headers "Location"]))))))))
 
 (deftest redirects-community
@@ -259,14 +259,14 @@
     (with-handler handler
       (testing "http"
         (let [resp (handler (mock/request :get "http://community.mayvenn.com"))]
-          (is (= 302 (:status resp)))
-          (is (= "https://shop.mayvenn.com/?redirect=community"
+          (is (= 301 (:status resp)))
+          (is (= "https://shop.mayvenn.com/"
                  (get-in resp [:headers "Location"])))))
 
       (testing "https"
         (let [resp (handler (mock/request :get "https://community.mayvenn.com"))]
-          (is (= 302 (:status resp)))
-          (is (= "https://shop.mayvenn.com/?redirect=community"
+          (is (= 301 (:status resp)))
+          (is (= "https://shop.mayvenn.com/"
                  (get-in resp [:headers "Location"]))))))))
 
 (deftest create-shared-cart-from-url-redirects-to-cart-preserving-query-params

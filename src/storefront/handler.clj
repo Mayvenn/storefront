@@ -221,10 +221,7 @@
 (defn wrap-known-subdomains-redirect [h environment]
   (fn [{:keys [subdomains] :as req}]
     (cond
-      (contains? #{"ambassador" "vistaprint" "classes" "stylist" "community"} (first subdomains))
-      (util.response/redirect (store-url "shop" environment (update req :query-params merge {:redirect (last subdomains)})) 302)
-
-      (#{[] ["www"] ["internal"]} subdomains)
+      (#{[] ["ambassador"] ["www"] ["internal"] ["vistaprint"] ["classes"] ["stylist"] ["community"]} subdomains)
       (util.response/redirect (store-url "shop" environment req) 301)
 
       (#{["peakmill"]} subdomains)
