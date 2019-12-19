@@ -130,7 +130,7 @@
 (defn ^:private menu-row [{:keys [link-attrs data-test new-content content]}]
   [:li {:key data-test}
    [:div.py3
-    (into [:a.block.inherit-color.flex.items-center.content-2.proxima
+    (into [:a.block.inherit-color.flex.items-center.content-1.proxima
            (assoc link-attrs :data-test data-test)
            [:span.col-2.title-3.proxima.center (when-let [c new-content] c)]]
           content)]])
@@ -143,76 +143,73 @@
            [:span.col-2]]
           content)]])
 
+(defn ^:private caretize-content
+  [content]
+  [:div.col-8.flex.justify-between.items-center
+   [:span.medium.flex-auto content]
+   ^:inline (ui/forward-caret {:width  16
+                               :height 16})])
+
 (defn shopping-rows
   [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals? site]}]
-  (let [^:inline caret (ui/forward-caret {:width  16
-                                          :height 16})]
-    (concat
-     (when show-freeinstall-link?
-       [{:link-attrs  (utils/route-to events/navigate-adventure-match-stylist)
-         :data-test   "menu-shop-freeinstall"
-         :new-content "NEW"
-         :content     [[:span.medium "Get a Mayvenn Install"]]}])
-
-     (when-not show-bundle-sets-and-hide-deals?
-       [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
-         :data-test  "menu-shop-by-deals"
-         :content    [[:span.medium "Deals"]]}])
-
-     (if (= :classic site)
-       [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-         :data-test  "menu-shop-by-look"
-         :content    [[:span.medium "Shop Looks"]]}]
-       [{:link-attrs (utils/fake-href events/menu-list
-                                      {:menu-type :shop-looks})
-         :data-test  "menu-shop-by-look"
-         :content    [[:div.col-8.flex.justify-between
-                       [:span.medium.flex-auto "Shop Looks"]
-                       caret]]}])
-
-     (when show-bundle-sets-and-hide-deals?
-       [{:link-attrs (utils/fake-href events/menu-list {:menu-type :shop-bundle-sets})
-         :data-test  "menu-shop-by-bundle-sets"
-         :content    [[:div.col-8.flex.justify-between
-                       [:span.medium.flex-auto "Shop Bundle Sets"]
-                       caret]]}])
-
-     [{:link-attrs (utils/fake-href events/menu-list
-                                    {:page/slug           "virgin-hair"
-                                     :catalog/category-id "15"})
-       :data-test  "menu-shop-virgin-hair"
-       :content    [[:div.col-8.flex.justify-between
-                     [:span.medium.flex-auto "Virgin Hair"]
-                     caret]]}
-
-      {:link-attrs (utils/route-to events/navigate-category
-                                   {:page/slug           "dyed-virgin-hair"
-                                    :catalog/category-id "16"})
-       :data-test  "menu-shop-dyed-virgin-hair"
-       :content    [[:span.medium.flex-auto "Dyed Virgin Hair"]]}
-      {:link-attrs (utils/fake-href events/menu-list
-                                    {:page/slug           "closures-and-frontals"
-                                     :catalog/category-id "12"})
-       :data-test  "menu-shop-closures"
-       :content    [[:div.col-8.flex.justify-between
-                     [:span.medium.flex-auto "Closures & Frontals"]
-                     caret]]}
-      {:link-attrs (utils/route-to events/navigate-category
-                                   {:page/slug           "wigs"
-                                    :catalog/category-id "13"})
-       :data-test  "menu-shop-wigs"
+  (concat
+   (when show-freeinstall-link?
+     [{:link-attrs  (utils/route-to events/navigate-adventure-match-stylist)
+       :data-test   "menu-shop-freeinstall"
        :new-content "NEW"
-       :content    [[:span.medium.flex-auto "Wigs"]]}
-      {:link-attrs (utils/route-to events/navigate-category
-                                   {:page/slug           "seamless-clip-ins"
-                                    :catalog/category-id "21"})
-       :data-test  "menu-shop-seamless-clip-ins"
-       :content    [[:span.medium.flex-auto "Clip-Ins"]]}
-      {:link-attrs (utils/route-to events/navigate-product-details
-                                   {:page/slug          "50g-straight-tape-ins"
-                                    :catalog/product-id "111"})
-       :data-test  "menu-shop-tape-ins"
-       :content    [[:span.medium.flex-auto "Tape-Ins"]]}])))
+       :content     [[:span.medium "Get a Mayvenn Install"]]}])
+
+   (when-not show-bundle-sets-and-hide-deals?
+     [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
+       :data-test  "menu-shop-by-deals"
+       :content    [[:span.medium "Deals"]]}])
+
+   (if (= :classic site)
+     [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+       :data-test  "menu-shop-by-look"
+       :content    [[:span.medium "Shop Looks"]]}]
+     [{:link-attrs (utils/fake-href events/menu-list
+                                    {:menu-type :shop-looks})
+       :data-test  "menu-shop-by-look"
+       :content    [(caretize-content "Shop Looks")]}])
+
+   (when show-bundle-sets-and-hide-deals?
+     [{:link-attrs (utils/fake-href events/menu-list {:menu-type :shop-bundle-sets})
+       :data-test  "menu-shop-by-bundle-sets"
+       :content    [(caretize-content "Shop Bundle Sets")]}])
+
+   [{:link-attrs (utils/fake-href events/menu-list
+                                  {:page/slug           "virgin-hair"
+                                   :catalog/category-id "15"})
+     :data-test  "menu-shop-virgin-hair"
+     :content    [(caretize-content "Virgin Hair")]}
+
+    {:link-attrs (utils/route-to events/navigate-category
+                                 {:page/slug           "dyed-virgin-hair"
+                                  :catalog/category-id "16"})
+     :data-test  "menu-shop-dyed-virgin-hair"
+     :content    [[:span.medium.flex-auto "Dyed Virgin Hair"]]}
+    {:link-attrs (utils/fake-href events/menu-list
+                                  {:page/slug           "closures-and-frontals"
+                                   :catalog/category-id "12"})
+     :data-test  "menu-shop-closures"
+     :content    [(caretize-content "Closures & Frontals")]}
+    {:link-attrs (utils/route-to events/navigate-category
+                                 {:page/slug           "wigs"
+                                  :catalog/category-id "13"})
+     :data-test  "menu-shop-wigs"
+     :new-content "NEW"
+     :content    [[:span.medium.flex-auto "Wigs"]]}
+    {:link-attrs (utils/route-to events/navigate-category
+                                 {:page/slug           "seamless-clip-ins"
+                                  :catalog/category-id "21"})
+     :data-test  "menu-shop-seamless-clip-ins"
+     :content    [[:span.medium.flex-auto "Clip-Ins"]]}
+    {:link-attrs (utils/route-to events/navigate-product-details
+                                 {:page/slug          "50g-straight-tape-ins"
+                                  :catalog/product-id "111"})
+     :data-test  "menu-shop-tape-ins"
+     :content    [[:span.medium.flex-auto "Tape-Ins"]]}]))
 
 (def stylist-exclusive-row
   {:link-attrs (utils/route-to events/navigate-product-details
