@@ -109,16 +109,16 @@
 
 (def ^:private guest-actions
   (component/html
-   (marquee-row
-    (ui/button-large-secondary (assoc (utils/route-to events/navigate-sign-in)
-                                      :data-test "sign-in")
-                               "Sign in")
-    [:div.h6.col-12.center
-     [:div "No account?"]
-     [:a.inherit-color.underline
+   [:div.flex.items-center.justify-between
+    [:div.col-3
+     (ui/button-small-secondary (assoc (utils/route-to events/navigate-sign-in)
+                                       :data-test "sign-in")
+                                "Sign in")]
+    [:div.col-8
+     (ui/button-small-underline-primary
       (assoc (utils/route-to events/navigate-sign-up)
              :data-test "sign-up")
-      "Sign up now, get offers!"]])))
+      "Or sign up now, get offers!")]]))
 
 (defn ^:private actions-marquee
   [signed-in vouchers? show-community?]
@@ -127,22 +127,32 @@
     :user    user-actions
     :guest   guest-actions))
 
-(defn ^:private menu-row [{:keys [link-attrs data-test content]}]
+(defn ^:private menu-row [{:keys [link-attrs data-test new-content content]}]
   [:li {:key data-test}
-   [:div.h4.border-bottom.border-gray.py3
-    (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
+   [:div.py3
+    (into [:a.block.inherit-color.flex.items-center.content-2.proxima
+           (assoc link-attrs :data-test data-test)
+           [:span.col-2.title-3.proxima.center (when-let [c new-content] c)]]
+          content)]])
+
+(defn ^:private content-row [{:keys [link-attrs data-test content]}]
+  [:li {:key data-test}
+   [:div.py3
+    (into [:a.block.inherit-color.flex.items-center.content-3.proxima
+           (assoc link-attrs :data-test data-test)
+           [:span.col-2]]
+          content)]])
 
 (defn shopping-rows
   [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals? site]}]
   (let [^:inline caret (ui/forward-caret {:width  16
-                                          :height 16
-                                          :class  "fill-gray"})]
+                                          :height 16})]
     (concat
      (when show-freeinstall-link?
-       [{:link-attrs (utils/route-to events/navigate-adventure-match-stylist)
-         :data-test  "menu-shop-freeinstall"
-         :content    [[:span.p-color.pr1 "NEW"]
-                      [:span.medium "Get a Mayvenn Install"]]}])
+       [{:link-attrs  (utils/route-to events/navigate-adventure-match-stylist)
+         :data-test   "menu-shop-freeinstall"
+         :new-content "NEW"
+         :content     [[:span.medium "Get a Mayvenn Install"]]}])
 
      (when-not show-bundle-sets-and-hide-deals?
        [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
@@ -156,21 +166,24 @@
        [{:link-attrs (utils/fake-href events/menu-list
                                       {:menu-type :shop-looks})
          :data-test  "menu-shop-by-look"
-         :content    [[:span.medium.flex-auto "Shop Looks"]
-                      caret]}])
+         :content    [[:div.col-8.flex.justify-between
+                       [:span.medium.flex-auto "Shop Looks"]
+                       caret]]}])
 
      (when show-bundle-sets-and-hide-deals?
        [{:link-attrs (utils/fake-href events/menu-list {:menu-type :shop-bundle-sets})
          :data-test  "menu-shop-by-bundle-sets"
-         :content    [[:span.medium.flex-auto "Shop Bundle Sets"]
-                      caret]}])
+         :content    [[:div.col-8.flex.justify-between
+                       [:span.medium.flex-auto "Shop Bundle Sets"]
+                       caret]]}])
 
      [{:link-attrs (utils/fake-href events/menu-list
                                     {:page/slug           "virgin-hair"
                                      :catalog/category-id "15"})
        :data-test  "menu-shop-virgin-hair"
-       :content    [[:span.medium.flex-auto "Virgin Hair"]
-                    caret]}
+       :content    [[:div.col-8.flex.justify-between
+                     [:span.medium.flex-auto "Virgin Hair"]
+                     caret]]}
 
       {:link-attrs (utils/route-to events/navigate-category
                                    {:page/slug           "dyed-virgin-hair"
@@ -180,25 +193,26 @@
       {:link-attrs (utils/fake-href events/menu-list
                                     {:page/slug           "closures-and-frontals"
                                      :catalog/category-id "12"})
-       :data-test "menu-shop-closures"
-       :content [[:span.medium.flex-auto "Closures & Frontals"]
-                 caret]}
+       :data-test  "menu-shop-closures"
+       :content    [[:div.col-8.flex.justify-between
+                     [:span.medium.flex-auto "Closures & Frontals"]
+                     caret]]}
       {:link-attrs (utils/route-to events/navigate-category
                                    {:page/slug           "wigs"
                                     :catalog/category-id "13"})
-       :data-test "menu-shop-wigs"
-       :content [[:span.p-color.pr1 "NEW"]
-                 [:span.medium.flex-auto "Wigs"]]}
+       :data-test  "menu-shop-wigs"
+       :new-content "NEW"
+       :content    [[:span.medium.flex-auto "Wigs"]]}
       {:link-attrs (utils/route-to events/navigate-category
                                    {:page/slug           "seamless-clip-ins"
                                     :catalog/category-id "21"})
-       :data-test "menu-shop-seamless-clip-ins"
-       :content [[:span.medium.flex-auto "Clip-Ins"]]}
+       :data-test  "menu-shop-seamless-clip-ins"
+       :content    [[:span.medium.flex-auto "Clip-Ins"]]}
       {:link-attrs (utils/route-to events/navigate-product-details
                                    {:page/slug          "50g-straight-tape-ins"
                                     :catalog/product-id "111"})
-       :data-test "menu-shop-tape-ins"
-       :content [[:span.medium.flex-auto "Tape-Ins"]]}])))
+       :data-test  "menu-shop-tape-ins"
+       :content    [[:span.medium.flex-auto "Tape-Ins"]]}])))
 
 (def stylist-exclusive-row
   {:link-attrs (utils/route-to events/navigate-product-details
@@ -228,13 +242,16 @@
     :content    ["Contact Us"]}])
 
 (defn ^:private menu-area [{:keys [signed-in] :as data}]
-  [:ul.list-reset.mb3
+  [:ul.list-reset.mb3.mt5
    (for [row (shopping-rows data)]
      (menu-row row))
    (when (-> signed-in ::auth/as (= :stylist))
      (menu-row stylist-exclusive-row))
-   (for [row (content-rows data)]
-     (menu-row row))])
+   [:div.mt5
+    (interpose
+     [:div.border-bottom.border-cool-gray.col-8.m-auto]
+     (for [row (content-rows data)]
+       (content-row row)))]])
 
 (def ^:private sign-out-area
   (component/html
@@ -253,7 +270,7 @@
 (defcomponent ^:private root-menu
   [{:keys [user signed-in show-community? vouchers?] :as data} owner opts]
   [:div
-   [:div.px6.border-bottom.border-gray.bg-cool-gray.pt3
+   [:div.px3.border-bottom.border-gray.bg-cool-gray.pt3
     (when (auth/stylist? signed-in)
       [:div.flex.items-center (stylist-portrait user) gallery-link])
     (account-info-marquee signed-in user)
