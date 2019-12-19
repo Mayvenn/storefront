@@ -170,11 +170,11 @@
    (if (= :classic site)
      [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
        :data-test  "menu-shop-by-look"
-       :content    [[:span.medium "Shop Looks"]]}]
+       :content    [[:span.medium "Shop By Looks"]]}]
      [{:link-attrs (utils/fake-href events/menu-list
                                     {:menu-type :shop-looks})
        :data-test  "menu-shop-by-look"
-       :content    [(caretize-content "Shop Looks")]}])
+       :content    [(caretize-content "Shop By Looks")]}])
 
    (when show-bundle-sets-and-hide-deals?
      [{:link-attrs (utils/fake-href events/menu-list {:menu-type :shop-bundle-sets})

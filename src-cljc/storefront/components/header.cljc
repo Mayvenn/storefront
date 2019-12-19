@@ -169,10 +169,10 @@
     (if (= :classic site)
       (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
                                :on-mouse-enter close-header-menus)
-                        "Shop looks")
+                        "Shop by looks")
       (header-menu-link (merge (utils/route-to events/navigate-home)
                                (->flyout-handlers keypaths/shop-looks-menu-expanded))
-                        "Shop looks"))
+                        "Shop by looks"))
 
     (when show-bundle-sets-and-hide-deals?
       (header-menu-link (merge (utils/route-to events/navigate-home)
