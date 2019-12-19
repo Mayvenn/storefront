@@ -68,8 +68,7 @@
        :value         code
        :errors        (get field-errors ["voucher-code"])
        :data-ref      "voucher-code"}
-      {:ui-element ui/button-medium-primary
-       :content    "Redeem"
+      {:content    "Redeem"
        :args       {:class        "flex justify-center items-center circled-item"
                     :on-click     (utils/send-event-callback events/control-voucher-redeem {:code code})
                     :spinning?    redeeming-voucher?
