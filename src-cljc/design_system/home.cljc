@@ -466,7 +466,8 @@
      :errors        (if (= (get-in data [:design-system :form :arrow]) "wrong")
                       [{:long-message "wrong"}]
                       [])}
-    {:content (svg/forward-arrow {:width  "12px"
+    {:content (svg/forward-arrow {:class "fill-white"
+                                  :width  "12px"
                                   :height "12px"})
      :args    {:data-test ""
                :class     "col-1"}})
@@ -481,7 +482,8 @@
      :errors        (if (= (get-in data [:design-system :form :disabled-arrow]) "wrong")
                       [{:long-message "wrong"}]
                       [])}
-    {:content (svg/forward-arrow {:width  "12px"
+    {:content (svg/forward-arrow {:class "fill-white"
+                                  :width  "12px"
                                   :height "12px"})
      :args    {:data-test ""
                :disabled? true
