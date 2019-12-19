@@ -16,7 +16,7 @@
 
 (defn major-menu-row [& content]
   [:div.py3
-   (into [:a.block.inherit-color.flex.items-center] content)])
+   (into [:a.block.inherit-color.flex.items-center.content-1.proxima] content)])
 
 (defcomponent component
   [{:menu/keys [title options] :as queried-data}
