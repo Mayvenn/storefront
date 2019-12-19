@@ -7,14 +7,16 @@
 (defn return-link
   [{:return-link/keys [copy id back]
     [event & args]    :return-link/event-message}]
-  [:div.proxima.title-3.shout.bold.flex
-   (when id {:data-test id})
-   [:a.inherit-color (if (= :navigate (first event))
-                       (apply utils/route-back-or-to back event args)
-                       (apply utils/fake-href event args))
-    [:div.flex.line-height-1
-     (ui/back-caret {})
-     [:span.ml1.border-bottom.border-black.border-width-3 copy]]]])
+  (when id
+    [:div.proxima.title-3.shout.bold.flex
+    [:a.inherit-color
+     (merge {:data-test id}
+            (if (= :navigate (first event))
+              (apply utils/route-back-or-to back event args)
+              (apply utils/fake-href event args)))
+     [:div.flex.line-height-1
+      (ui/back-caret {})
+      [:span.ml1.border-bottom.border-black.border-width-3 copy]]]]))
 
 (defn stars-rating-molecule
   [{rating :rating/value}]
