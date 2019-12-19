@@ -15,7 +15,7 @@
 
 
 (defn major-menu-row [& content]
-  [:div.h4.border-bottom.border-gray.py3
+  [:div.py3
    (into [:a.block.inherit-color.flex.items-center] content)])
 
 (defcomponent component
@@ -23,13 +23,13 @@
    owner
    opts]
   [:div
-   [:div.ml2.pl4.pt3 (ui-molecules/return-link queried-data)]
-   [:div.px6
+   [:div.px2.py3.bg-cool-gray (ui-molecules/return-link queried-data)]
+   [:div.col-8.mx-auto.pt8
     (major-menu-row
-     [:div.h2.flex-auto.center "Shop " title])
+     [:div.h2.flex-auto.title-2.proxima.shout.pb2 "Shop " title])
     [:ul.list-reset
      (for [{:keys [key nav-message new? copy]} options]
-       [:li {:key key}
+       [:li.mb2 {:key key}
         (major-menu-row
          (assoc (apply utils/route-to nav-message)
                 :data-test (str "menu-step-" key))
@@ -42,6 +42,7 @@
   (let [{:keys [selector/essentials] :as nav-root} (categories/current-traverse-nav data)]
     {:return-link/event-message [events/menu-home]
      :return-link/copy          "Back"
+     :return-link/id            "back-from-category"
      :menu/title                (:copy/title nav-root)
      :menu/options              (->> categories/menu-categories
                                      (selector/match-all {:selector/strict? true}
@@ -55,6 +56,7 @@
 (defn shop-looks-query [data]
   {:return-link/event-message [events/menu-home]
    :return-link/copy          "Back"
+   :return-link/id            "back-from-shop-looks"
    :menu/title                "By Look"
    :menu/options              [{:key "all"
                                 :nav-message [events/navigate-shop-by-look {:album-keyword :look}]
@@ -72,6 +74,7 @@
 (defn shop-bundle-sets-query [data]
   {:return-link/event-message [events/menu-home]
    :return-link/copy          "Back"
+   :return-link/id            "back-from-shop-bundle-sets"
    :menu/title                "By Bundle Sets"
    :menu/options              [{:key "all"
                                 :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]
