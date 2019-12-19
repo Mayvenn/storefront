@@ -501,34 +501,43 @@
   (when (and (orders/no-applied-promo? order) (not entered?))
     (let [keypath                keypaths/cart-coupon-code
           value                  (get-in data keypath)
-          promo-code-entry-open? (get-in data keypaths/promo-code-entry-open?)
           promo-link?            (experiments/promo-link? data)
-          input-form-data        {:labeled-input/label     "enter promocode"
-                                  :labeled-input/id        "promo-code"
-                                  :labeled-input/value     value
-                                  :labeled-input/on-change #?(:clj (fn [_e] nil)
-                                                              :cljs (fn [^js/Event e]
-                                                                      (messages/handle-message events/control-change-state
-                                                                                               {:keypath keypath
-                                                                                                :value   (.. e -target -value)})))
-                                  :submit-button/disabled? (or (update-pending? data) (empty? value))
-                                  :submit-button/id        "cart-apply-promo"
-                                  :submit-button/target    events/control-cart-update-coupon}]
+          show-promo-code-field? (or (not promo-link?)
+                                     (get-in data keypaths/promo-code-entry-open?))
+          disabled?              (or (update-pending? data)
+                                     (empty? value))
+          input-group-attrs      {:text-input-attrs
+                                  {:errors        nil
+                                   :value         (or value "")
+                                   :keypath       keypath
+                                   :label         "enter promocode"
+                                   :data-test     "promo-code"
+                                   :id            "promo-code"
+                                   :wrapper-class "col-12 bg-white"
+                                   :type          "text"}
+                                  :button-attrs
+                                  {:args    {:data-test "cart-apply-promo"
+                                             :disabled? disabled?
+                                             :on-click  (utils/send-event-callback events/control-cart-update-coupon)
+                                             :style     {:width   "42px"
+                                                         :padding "0"}}
+                                   :content (svg/forward-arrow {:class (if disabled?
+                                                                         "fill-gray"
+                                                                         "fill-white")
+                                                                :style {:width  "14px"
+                                                                        :height "14px"}})}}]
       (cond-> {}
 
-        (not promo-link?)
-        (merge input-form-data)
+        show-promo-code-field?
+        (merge input-group-attrs)
 
         promo-link?
         (merge
          {:field-reveal/id     "reveal-promo-entry"
-          :field-reveal/target [events/control-toggle-promo-code-entry]})
-
-        promo-code-entry-open?
-        (merge input-form-data {:field-reveal/label "Hide promo code"})
-
-        (not promo-code-entry-open?)
-        (merge {:field-reveal/label "Add promo code"})))))
+          :field-reveal/target [events/control-toggle-promo-code-entry]
+          :field-reveal/label  (if show-promo-code-field?
+                                 "Hide promo code"
+                                 "Add promo code")})))))
 
 (defn full-cart-query [data]
   (let [order                                (get-in data keypaths/order)

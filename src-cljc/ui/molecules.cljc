@@ -90,53 +90,12 @@
                ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
                :else       (image-hero mob-url dsk-url alt))]))
 
-(defn labeled-input-molecule
-  [{:labeled-input/keys [id label value on-change]}]
-  (when id
-    [:input.h5.border-none.px2.bg-white.placeholder-black.flex-grow-1
-     {:key         id
-      :data-test   id
-      :name        id
-      :id          id
-      :type        "text"
-      :value       (or value "")
-      :label       label
-      :placeholder label
-      :on-submit   on-change
-      :on-change   on-change}]))
-
-(defn submit-button-molecule
-  [{:submit-button/keys [id contents target classes disabled?]}]
-  (when id
-    (ui/button-large-primary
-     (merge {:style          {:width   "40px"
-                              :height  "40px"
-                              :padding "0"}
-             :width          :small
-             :disabled?      disabled?
-             :disabled-class "bg-cool-gray gray"
-             :data-test      id
-             :class          "flex medium not-rounded items-center justify-center"}
-            (utils/fake-href target))
-     (svg/forward-arrow {:style {:width  "14px"
-                                 :height "14px"}}))))
-
 (defn field-reveal-molecule
   [{:field-reveal/keys [id label target]}]
   (when id
-    [:a.mlp3.h6 (merge {:data-test id}
-                       (apply utils/fake-href target))
+    [:a.mlp3.content-3 (merge {:data-test id}
+                              (apply utils/fake-href target))
      label]))
-
-(defn input-group-field-and-button-molecule
-  [{:submit-button/keys [target disabled?] :as data}]
-  [:div
-   (field-reveal-molecule data)
-   [:form.border.border-gray.overflow-hidden.table.flex.col-12
-    (when-not disabled?
-      {:on-submit (utils/send-event-callback target)})
-    (labeled-input-molecule data)
-    (submit-button-molecule data)]])
 
 (defn ^:private star [index type]
   [:span.mrp1

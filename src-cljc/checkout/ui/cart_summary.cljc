@@ -1,6 +1,9 @@
 (ns checkout.ui.cart-summary
   (:require [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.ui :as ui]
             [checkout.ui.molecules :as checkout.M]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
             [ui.molecules :as ui.M]))
 
 (defcomponent organism
@@ -14,9 +17,11 @@
       (for [line lines]
         (checkout.M/cart-summary-line-molecule line))]]
 
-    (when promo-field-data
+    (when-let [{:keys [text-input-attrs button-attrs]} promo-field-data]
       [:div.my2
-       (ui.M/input-group-field-and-button-molecule promo-field-data)])
+       (ui.M/field-reveal-molecule promo-field-data)
+       (when (and text-input-attrs button-attrs)
+         (ui/input-group text-input-attrs button-attrs))])
 
     (when (:freeinstall-informational/value query)
       (checkout.M/freeinstall-informational))]
