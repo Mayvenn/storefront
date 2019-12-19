@@ -14,7 +14,7 @@
    owner {:keys [desktop-header-dt]}]
   [:div
    (when header-data
-     [:div.mx-auto {:style {:height "100px"}}
+     [:div.mx-auto.fixed.z5.top-0.left-0.right-0
       (cond-> header-data
         desktop-header-dt
         (update-in [:right-corner :id] str desktop-header-dt)
@@ -22,8 +22,9 @@
         :always
         (header/built-component nil))])
    [:div.p5
+    {:style {:margin-top "100px"}}
     (svg/mayvenn-logo {:width "44px" :height "26px"})]
-   [:div.mb4.col-9-on-tb-dt.mx-auto.canela.title-1.col-11
+   [:div.mb4.col-9-on-tb-dt.mx-auto.canela.title-1.col-10
     prompt]
    (let [{:keys [value id label type on-change-keypath disabled?]} input-data]
      [:form.block.mx-auto.p4.col-7-on-tb-dt
@@ -52,5 +53,5 @@
                      {:opts {:text-style "48px"
                              :desktop-header-dt "-desktop"}})]
 
-   [:div.z5.bg-pale-purple.center.absolute.overflow-scroll.overflow-auto.overlay.bg-contain.bg-no-repeat.max-580.mx-auto.hide-on-tb-dt.pb3
+   [:div.z5.bg-pale-purple.center.absolute.overflow-auto.overlay.bg-contain.bg-no-repeat.max-580.mx-auto.hide-on-tb-dt.pb3
     (component/build content-component data nil)]])
