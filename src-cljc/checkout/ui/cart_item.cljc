@@ -21,7 +21,7 @@
 (defn cart-item-copy-molecule
   [{:cart-item-copy/keys [id value]}]
   (when value
-    [:div.h7 {:data-test id} value]))
+    [:div.content-3.proxima {:data-test id} value]))
 
 (defn cart-item-title-molecule
   [{:cart-item-title/keys [id primary secondary]}]
@@ -34,16 +34,18 @@
 
 (defn completed-progress-circle-atom
   [i _]
-  [:div.bg-p-color.flex.justify-center.items-center.white.bold.h5
+  [:div.bg-s-color.flex.justify-center.items-center
    {:key (str "complete-" i)
     :style {:height 21
             :width  21
             :border-radius "50%"}}
-   "✓"])
+   (svg/check-mark {:class "fill-white"
+                    :style {:width "11px"
+                            :height "11px"}})])
 
 (defn incomplete-progress-circle-atom
   [i content]
-  [:div.bg-gray.flex.justify-center.items-center.bold.h6
+  [:div.bg-cool-gray.flex.justify-center.items-center.proxima.button-font-2
    {:key (str "incomplete-" i)
     :style {:height 21
             :width  21

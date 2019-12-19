@@ -78,11 +78,11 @@
 (defn ^:private servicing-stylist-banner-component
   [{:servicing-stylist-banner/keys [id name image-url rating stylist-id]}]
   (when id
-    [:div.flex.bg-white.pl5.pr3.py2.items-center {:data-test id}
+    [:div.flex.bg-cool-gray.pl5.pr3.py2.items-center {:data-test id}
      (ui/circle-picture {:width 50} (ui/square-image {:resizable-url image-url} 50))
-     [:div.flex-grow-1.ml5.line-height-1.medium
-      [:div.h7 "Your Certified Mayvenn Stylist"]
-      [:div name]
+     [:div.flex-grow-1.ml5
+      [:div.content-3.proxima "Your Certified Mayvenn Stylist"]
+      [:div.content-1.proxima name]
       [:div.mt1 (ui.molecules/stars-rating-molecule rating)]]
      [:a.block.gray.medium.m1
       (merge {:data-test "stylist-swap"
@@ -194,9 +194,9 @@
            [:div.flex-grow-1.border-bottom.border-gray]
            [:div.content-3.proxima.mx2 "or"]
            [:div.flex-grow-1.border-bottom.border-gray]]
-          [:div.mb2.center
-           (ui/button-small-underline-secondary (apply utils/fake-href remove-freeinstall-event)
-                                                "Checkout without Free Install")]])
+          [:div.mb2.center.content-2.proxima.s-color
+           [:a.inherit-color.pointer (apply utils/fake-href remove-freeinstall-event)]
+           "Checkout without a free Mayvenn Install"]])
 
 
        (when-not locked?
