@@ -221,17 +221,7 @@
 (defn wrap-known-subdomains-redirect [h environment]
   (fn [{:keys [subdomains] :as req}]
     (cond
-      (= "classes" (first subdomains))
-      (util.response/redirect "https://docs.google.com/a/mayvenn.com/forms/d/e/1FAIpQLSdpA5Kvl8hhI5TkPRGwWLyFcWLtUpRyQksrbA-cikQvTXekwQ/viewform")
-
-      (= "vistaprint" (first subdomains))
-      (util.response/redirect "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262")
-
-      ;; Old stylist resource page has moved into the community, Aug-2017
-      (= "stylist" (first subdomains))
-      (util.response/redirect "https://community.mayvenn.com" 301)
-
-      (= "ambassador" (first subdomains))
+      (contains? #{"ambassador" "vistaprint" "classes" "stylist" "community"} (first subdomains))
       (util.response/redirect (store-url "shop" environment (update req :query-params merge {:redirect (last subdomains)})) 302)
 
       (#{[] ["www"] ["internal"]} subdomains)

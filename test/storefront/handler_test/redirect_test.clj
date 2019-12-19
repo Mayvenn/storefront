@@ -215,13 +215,13 @@
       (testing "http"
         (let [resp (handler (mock/request :get "http://classes.mayvenn.com"))]
           (is (= 302 (:status resp)))
-          (is (= "https://docs.google.com/a/mayvenn.com/forms/d/e/1FAIpQLSdpA5Kvl8hhI5TkPRGwWLyFcWLtUpRyQksrbA-cikQvTXekwQ/viewform"
+          (is (= "https://shop.mayvenn.com/?redirect=classes"
                  (get-in resp [:headers "Location"])))))
 
       (testing "https"
         (let [resp (handler (mock/request :get "https://classes.mayvenn.com"))]
           (is (= 302 (:status resp)))
-          (is (= "https://docs.google.com/a/mayvenn.com/forms/d/e/1FAIpQLSdpA5Kvl8hhI5TkPRGwWLyFcWLtUpRyQksrbA-cikQvTXekwQ/viewform"
+          (is (= "https://shop.mayvenn.com/?redirect=classes"
                  (get-in resp [:headers "Location"]))))))))
 
 (deftest redirects-vistaprint
@@ -230,28 +230,43 @@
       (testing "http"
         (let [resp (handler (mock/request :get "http://vistaprint.mayvenn.com"))]
           (is (= 302 (:status resp)))
-          (is (= "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262"
+          (is (= "https://shop.mayvenn.com/?redirect=vistaprint"
                  (get-in resp [:headers "Location"])))))
 
       (testing "https"
         (let [resp (handler (mock/request :get "https://vistaprint.mayvenn.com"))]
           (is (= 302 (:status resp)))
-          (is (= "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262"
+          (is (= "https://shop.mayvenn.com/?redirect=vistaprint"
                  (get-in resp [:headers "Location"]))))))))
 
-(deftest redirects-the-literal-stylist-subdomain-to-community
+(deftest redirects-the-literal-stylist-subdomain
   (with-services {}
     (with-handler handler
       (testing "http"
         (let [resp (handler (mock/request :get "http://stylist.mayvenn.com"))]
-          (is (= 301 (:status resp)))
-          (is (= "https://community.mayvenn.com"
+          (is (= 302 (:status resp)))
+          (is (= "https://shop.mayvenn.com/?redirect=stylist"
                  (get-in resp [:headers "Location"])))))
 
       (testing "https"
         (let [resp (handler (mock/request :get "https://stylist.mayvenn.com"))]
-          (is (= 301 (:status resp)))
-          (is (= "https://community.mayvenn.com"
+          (is (= 302 (:status resp)))
+          (is (= "https://shop.mayvenn.com/?redirect=stylist"
+                 (get-in resp [:headers "Location"]))))))))
+
+(deftest redirects-community
+  (with-services {}
+    (with-handler handler
+      (testing "http"
+        (let [resp (handler (mock/request :get "http://community.mayvenn.com"))]
+          (is (= 302 (:status resp)))
+          (is (= "https://shop.mayvenn.com/?redirect=community"
+                 (get-in resp [:headers "Location"])))))
+
+      (testing "https"
+        (let [resp (handler (mock/request :get "https://community.mayvenn.com"))]
+          (is (= 302 (:status resp)))
+          (is (= "https://shop.mayvenn.com/?redirect=community"
                  (get-in resp [:headers "Location"]))))))))
 
 (deftest create-shared-cart-from-url-redirects-to-cart-preserving-query-params
