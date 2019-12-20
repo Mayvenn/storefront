@@ -80,7 +80,9 @@
   (component/html
    (when id
      [:a.my2
-      (assoc (apply utils/route-to target) :data-test id)
+      (assoc (apply utils/route-to target)
+             :data-test id
+             :data-ref id)
       (when icon
         icon)
       [:div.underline.block.content-3.bold.p-color.shout.pb6

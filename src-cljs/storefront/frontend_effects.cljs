@@ -304,7 +304,7 @@
     (popup/touch-email-capture-session app-state)))
 
 (defmethod effects/perform-effects events/navigate-home
-  [_ _ _ _ app-state]
+  [_ _ {:keys [query-params]} _ app-state]
   (let [keypaths (into [[:advertisedPromo]
                         [:homepage]]
                        (case (determine-site app-state)
@@ -314,7 +314,9 @@
                                    [:ugc-collection :free-install-mayvenn]]
                          nil))]
     (doseq [keypath keypaths]
-      (effects/fetch-cms-keypath app-state keypath))))
+      (effects/fetch-cms-keypath app-state keypath))
+    (when (= (:video query-params) "0")
+      (scroll/scroll-selector-to-top "[data-ref=watch-video]" -370)))) ;; NOTE: -370 is a Magic number to of pixels to scroll aesthetically after closing the video
 
 (defmethod effects/perform-effects events/navigate-content
   [_ [_ _ & static-content-id :as event] _ _ app-state]

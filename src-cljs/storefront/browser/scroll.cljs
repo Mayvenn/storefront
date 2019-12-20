@@ -65,14 +65,21 @@
     (when (> el-bottom window-height)
       (scroll-to (- (+ scroll-top el-bottom scroll-padding)
                     window-height)))))
-(defn scroll-elem-to-top [el]
-  (let [el-top (object/get (.getBoundingClientRect el) "top")
-        scroll-top     (.. (scroll-target) -scrollTop)]
-    (scroll-to (+ scroll-top el-top (- scroll-padding)))))
 
-(defn scroll-selector-to-top [selector]
-  (when-let [el (.querySelector js/document selector)]
-    (scroll-elem-to-top el)))
+(defn scroll-elem-to-top
+  ([el]
+   (scroll-elem-to-top el 0))
+  ([el y]
+   (let [el-top (object/get (.getBoundingClientRect el) "top")
+         scroll-top     (.. (scroll-target) -scrollTop)]
+     (scroll-to (+ scroll-top el-top (- scroll-padding) y)))))
+
+(defn scroll-selector-to-top
+  ([selector]
+   (scroll-selector-to-top selector 0))
+  ([selector y]
+   (when-let [el (.querySelector js/document selector)]
+     (scroll-elem-to-top el y))))
 
 (defn scroll-to-selector
   [selector]
