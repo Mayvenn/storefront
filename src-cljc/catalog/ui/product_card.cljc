@@ -86,15 +86,24 @@
                                              (str shortest " - " longest)))
                                       (if (= 1 (count product-colors))
                                         (:option/name (first product-colors))
-                                        (for [{option-slug  :option/slug
-                                               :option/keys [circle-swatch]} product-colors]
-                                          [:img.mx1.border-cool-gray
-                                           {:key    (str "product-card-details-" product-slug "-" option-slug)
-                                            :width  10
-                                            :height 10
-                                            :src    circle-swatch}]))
-                                      [:div.black
-                                       (str "Starting at $" (:sku/price cheapest-sku))]])
+                                        [:div.flex.col-10.mx-auto.justify-center
+                                         (for [{option-slug  :option/slug
+                                                :option/keys [rectangle-swatch]} product-colors]
+                                           [:div.mx1.overflow-hidden
+                                            {:style {:transform "rotate(45deg)"
+                                                     :width     "9px"
+                                                     :height    "9px"
+                                                     :padding   "0"}}
+                                            [:img
+                                             {:key   (str "product-card-details-" product-slug "-" option-slug)
+                                              :style {:transform "rotate(-45deg) translateY(-3px)"
+                                                      ;; :margin     "5px 5px"
+                                                      :width     "13px"
+                                                      :height    "13px"}
+                                              :src   rectangle-swatch}]])])
+                                      [:span.black
+                                       "Starting at "
+                                       [:span.content-2.proxima (mf/as-money-without-cents (:sku/price cheapest-sku))]]])
      :card-image/src               (str (:url image) "-/format/auto/" (:filename image))
      :card-image/alt               (:alt image)}))
 
@@ -126,15 +135,15 @@
   [{:product-card-title/keys [id primary]}]
   (when id
     (component/html
-     [:h2.h5.mt3.mb1.mx1.medium
+     [:h2.mt3.mx1.content-2.proxima
       primary])))
 
 (defn product-card-details-molecule
   [{:product-card-details/keys [id content]}]
   (when id
-    [:div.h6.mb4
+    [:div.mb4.content-3.proxima
      (for [[idx item] (map-indexed vector content)]
-       [:div {:key (str id "-" idx)}
+       [:div.py1 {:key (str id "-" idx)}
         item])]))
 
 (defn organism
