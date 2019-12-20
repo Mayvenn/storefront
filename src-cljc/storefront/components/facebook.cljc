@@ -6,11 +6,12 @@
 (defn narrow-sign-in-button [loaded?]
   (when loaded?
     (ui/button-large-facebook-blue
-     {:on-click (utils/send-event-callback events/control-facebook-sign-in)
+     {:on-click  (utils/send-event-callback events/control-facebook-sign-in)
       :data-test "facebook-button"}
      [:div.mx-auto
       [:div.flex.items-center.justify-center
-       (ui/ucare-img {:width 20} "975698f3-3eda-411c-83ad-6a2750e0e59d")
+       (ui/ucare-img {:width  14
+                      :height 14} "975698f3-3eda-411c-83ad-6a2750e0e59d")
        [:span.ml1 "Sign in"]]])))
 
 (defn- wide-button [loaded? click-event]
@@ -20,8 +21,9 @@
       :data-test "facebook-button"}
      [:div.flex.items-center.justify-center
       [:span "Sign in with Facebook"]
-      (ui/ucare-img {:width 20
-                     :class "ml2"} "975698f3-3eda-411c-83ad-6a2750e0e59d")])
+      (ui/ucare-img {:width  16
+                     :height 16
+                     :class  "ml2"} "975698f3-3eda-411c-83ad-6a2750e0e59d")])
     [:div {:style {:height "2.6666em"}}]))
 
 (defn sign-in-button [loaded?]
