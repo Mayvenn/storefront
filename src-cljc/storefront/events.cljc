@@ -15,7 +15,6 @@
 (defpath external-redirect-welcome)
 (defpath external-redirect-sms)
 (defpath external-redirect-paypal-setup)
-(defpath external-redirect-telligent)
 (defpath external-redirect-quadpay-checkout)
 (defpath external-redirect-google-maps)
 (defpath external-redirect-phone)
@@ -170,7 +169,6 @@
 (defpath control-install-landing-page-toggle-accordion)
 (defpath control-install-consult-stylist-sms)
 
-(defpath control-stylist-community)
 (defpath poll-stylist-portrait)
 (defpath poll-gallery)
 (defpath control-cancel-editing-gallery)
@@ -354,8 +352,6 @@
 (defpath api-success-shipping-methods)
 
 (defpath api-success-get-static-content)
-
-(defpath api-success-telligent-login)
 
 (defpath api-success-voucher-redemption)
 

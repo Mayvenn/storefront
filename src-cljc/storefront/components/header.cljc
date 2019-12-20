@@ -6,7 +6,6 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
             [storefront.assets :as assets]
-            [storefront.community :as community]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.marquee :as marquee]
             [storefront.components.ui :as ui]
@@ -124,9 +123,6 @@
      (drop-down-row (utils/route-to events/navigate-stylist-share-your-store) "Share Your store")]
     [:div.border-top.border-gray
      (drop-down-row (utils/route-to events/navigate-gallery-edit) "Edit Gallery")]
-    (when-not (:match-eligible store)
-      [:div.border-top.border-gray
-       (drop-down-row community/community-url "Community")])
     [:div.border-top.border-gray
      (drop-down-row (utils/route-to events/navigate-stylist-account-profile) "Account Settings")]
     [:div.border-top.border-gray
@@ -374,8 +370,6 @@
      :user                             {:stylist-portrait (get-in data keypaths/user-stylist-portrait)
                                         :email            (get-in data keypaths/user-email)}
      :store                            store
-     :show-community?                  (and (not match-eligible)
-                                            (stylists/own-store? data))
      :show-bundle-sets-and-hide-deals? (or aladdin? shop?)
      :vouchers?                        (experiments/dashboard-with-vouchers? data)
      :show-freeinstall-link?           shop?

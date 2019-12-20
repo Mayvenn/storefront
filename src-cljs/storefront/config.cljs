@@ -25,18 +25,11 @@
 (def enable-design-system?
   (not= "production" js/environment))
 
-(def telligent-community-secured?
-  (= "production" js/environment))
-
 (def api-base-url js/apiUrl)
 
 (def review-tag-url (case js/environment
                       "production" "//staticw2.yotpo.com/ZmvkoIuVo61VsbHVPaqDPZpkfGm6Ce2kjVmSqFw9/widget.js"
                       "//staticw2.yotpo.com/2UyuTzecYoIe4JECHCuqP6ClAOzjnodSFMc7GEuT/widget.js"))
-
-(def telligent-community-url (case js/environment
-                               "production" "https://community.mayvenn.com"
-                               "https://community.diva-acceptance.com"))
 
 (def talkable-script
   (case js/environment
