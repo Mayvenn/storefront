@@ -225,7 +225,8 @@
                                         :alt         "Virgin Straight"}
                                  :home {:filename "StraightExtensionsMayvenn.jpg",
                                         :url      "//ucarecdn.com/f4addde0-3c0e-40f8-85b0-fe2e2e96a7b5/",
-                                        :alt      "Straight Hair Extensions Mayvenn"}}
+                                        :alt      "Straight Hair Extensions Mayvenn"}
+                                 :icon {:url "/images/categories/straight-icon.svg"}}
            :home/order          0
            :footer/order        0
            :dtc-footer/order    0
@@ -261,7 +262,8 @@
                                         :alt         "Virgin Yaki Straight"}
                                  :home {:filename "YakiStraightExtensionsMayvenn.jpg",
                                         :url      "//ucarecdn.com/d4b4aa87-fd32-4ff3-b60a-fd1118beab05/",
-                                        :alt      "Yaki Straight Hair Extensions Mayvenn"}}
+                                        :alt      "Yaki Straight Hair Extensions Mayvenn"}
+                                 :icon {:url "/images/categories/yaki-straight-icon.svg"}}
            :home/order          4
            :footer/order        1
            :header/order        1
@@ -290,7 +292,8 @@
            :images                   {:hero {:filename    "VirginKinkyStraight.jpg",
                                              :desktop-url "//ucarecdn.com/92530f8d-0ff0-4705-bfd9-94b75fbbacca/",
                                              :mobile-url  "//ucarecdn.com/8c996c90-9db1-4a45-b6bf-1c242b708583/",
-                                             :alt         "Virgin Kinky Straight"}}
+                                             :alt         "Virgin Kinky Straight"}
+                                      :icon {:url "/images/categories/kinky-straight-icon.svg"}}
            :footer/order             2
            :header/order             2
            :header/group             0}
@@ -318,7 +321,8 @@
                                              :alt         "Virgin Body Wave"}
                                       :home {:filename "BodyWaveExtensionsMayvenn.jpg",
                                              :url      "//ucarecdn.com/cbf5424f-3bab-4c6b-9fd1-328e9d94e564/",
-                                             :alt      "Body Wave Hair Extensions Mayvenn"}}
+                                             :alt      "Body Wave Hair Extensions Mayvenn"}
+                                      :icon {:url "/images/categories/body-wave-icon.svg"}}
            :home/order               1
            :footer/order             3
            :dtc-footer/order         1
@@ -350,7 +354,8 @@
                                              :alt         "Virgin Loose Wave"}
                                       :home {:filename "LooseWaveExtensionsMayvenn.jpg",
                                              :url      "//ucarecdn.com/c935b035-3b7d-4262-a750-a5fa3b559721/",
-                                             :alt      "Loose Wave Hair Extensions Mayvenn"}}
+                                             :alt      "Loose Wave Hair Extensions Mayvenn"}
+                                      :icon {:url "/images/categories/loose-wave-icon.svg"}}
            :home/order               2
            :footer/order             4
            :dtc-footer/order         2
@@ -380,7 +385,8 @@
            :images                   {:hero {:filename    "VirginWaterWave.jpg",
                                              :desktop-url "//ucarecdn.com/8600cff0-4402-43f7-9cff-8314ce0bb197/",
                                              :mobile-url  "//ucarecdn.com/5a015964-8ca9-4d65-80ec-ab0703cc5d97/",
-                                             :alt         "Virgin Water Wave"}}
+                                             :alt         "Virgin Water Wave"}
+                                      :icon {:url "/images/categories/water-wave-icon.svg"}}
            :footer/order             5
            :header/order             5
            :header/group             0}
@@ -410,7 +416,8 @@
                                              :alt         "Virgin Deep Wave"}
                                       :home {:filename "DeepWaveExtensionsMayvenn.jpg",
                                              :url      "//ucarecdn.com/2574ca60-0336-4c42-9087-159740bafdd2/",
-                                             :alt      "Deep Wave Hair Extensions Mayvenn"}}
+                                             :alt      "Deep Wave Hair Extensions Mayvenn"}
+                                      :icon {:url "/images/categories/deep-wave-icon.svg"}}
            :home/order               3
            :footer/order             6
            :dtc-footer/order         3
@@ -437,7 +444,8 @@
            :images                   {:hero {:filename    "VirginCurly.jpg",
                                              :desktop-url "//ucarecdn.com/e6cdfaeb-b98b-4b98-878e-fc2b2936995d/",
                                              :mobile-url  "//ucarecdn.com/17c827ca-e4df-4427-bdf8-c3426ff8d750/",
-                                             :alt         "Virgin Curly"}}
+                                             :alt         "Virgin Curly"}
+                                      :icon {:url "/images/categories/curly-icon.svg"}}
            :footer/order             7
            :header/order             7
            :header/group             0}
@@ -670,7 +678,8 @@
            :images              {:hero {:filename    "DyedVirginHair.jpg"
                                         :desktop-url "//ucarecdn.com/e3f9b527-4f74-46e6-ba91-2802092c1abe/"
                                         :mobile-url  "//ucarecdn.com/43f356cb-6489-40a9-aa44-f9d763a1753b/"
-                                        :alt         "Dyed Virgin Hair"}}
+                                        :alt         "Dyed Virgin Hair"}
+                                 :icon {:url "/images/categories/dyed-icon.svg"}}
            :copy/description    (copy "When natural brown isn’t cutting it,"
                                       "find your true color match with our Dyed Virgin Hair."
                                       "Save time and skip the hassle of fussing with toner and"

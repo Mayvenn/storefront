@@ -7,6 +7,7 @@
               [storefront.history :as history]])
    [storefront.component :as component :refer [defcomponent]]
    [catalog.categories :as categories]
+   [storefront.assets :as assets]
    [storefront.components.ui :as ui]
    [storefront.events :as events]
    [storefront.transitions :as transitions]
@@ -138,33 +139,22 @@
              {:data-test "filters-done"})
       "Done")]]])
 
-(defn hero-section
+(defn ^:private category-header
   [category]
   (component/html
-   [:h1 {:style {:min-height "180px"}} ; To aid scroll-to estimation
-    (let [{:keys [mobile-url file-name desktop-url alt]} (-> category :images :hero)]
-      (when (and mobile-url desktop-url)
-        [:picture
-         [:source {:media   "(min-width: 750px)"
-                   :src-set (str desktop-url "-/format/auto/" file-name " 1x")}]
-         [:img.block.col-12 {:src   (str mobile-url "-/format/auto/" file-name)
-                             :alt   alt}]]))]))
-
-(defn copy-section
-  [category]
-  (component/html
-   [:div.center.mx2.pt6
-    (when (:category/show-title? category)
-      [:div
-       (when (:category/new? category)
-         [:div.p-color.h7.medium.mbn1 "NEW!"])
-       [:div.h1 (:copy/title category)]])
-    [:div.h5.light.my2.mx6-on-mb.col-8-on-tb-dt.mx-auto-on-tb-dt
+   [:div.center.px2.py10.bg-warm-gray.max-960.mx-auto
+    (when (:category/new? category)
+          [:div.s-color.title-3.proxima.bold.shout "New"])
+    [:div.h1.title-1.canela (:copy/title category)]
+    (when-let [icon-url (-> category :images :icon :url)]
+      [:div.mt4 [:img {:src   (assets/path icon-url)
+                       :style {:width "54px"}}]])
+    [:div.my3.mx6-on-mb.col-8-on-tb-dt.mx-auto-on-tb-dt
      (:copy/description category)
      (when-let [learn-more-event (:copy/learn-more category)]
-       [:a.p-color.h6.medium
-        {:on-click (apply utils/send-event-callback learn-more-event)}
-        "learn" ui/nbsp "more"])]]))
+       [:div.mt3
+        (ui/button-small-underline-black {:on-click (apply utils/send-event-callback learn-more-event)}
+                                         "Learn more")])]]))
 
 (defn product-cards-empty-state [loading?]
   (component/html
@@ -238,9 +228,8 @@
            all-product-cards
            subsections]} owner opts]
   [:div
-   (hero-section category)
+   (category-header category)
    [:div.max-960.col-12.mx-auto.px2-on-mb.px2-on-tb
-    (copy-section category)
     [:div.bg-white.sticky.z1
       ;; The -5px prevents a sliver of the background from being visible above the filters
       ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
