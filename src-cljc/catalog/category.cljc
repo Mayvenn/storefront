@@ -67,74 +67,78 @@
         selections-count (->> (apply dissoc selections essentials)
                               (map (comp count val))
                               (apply +))]
-    [:div.py4.mxn2.px2.bg-white
+    [:div.p2.pt3.mxn2.bg-white
+     (when (not open-panel)
+       {:class "border-black border-bottom"})
      (when (seq electives)
        [:div
-        [:div.pb1.flex.justify-between
-         [:p.h6 (case selections-count
-                  0 "Filter by:"
-                  1 "1 filter applied:"
-                  (str selections-count " filters applied:"))]
-         [:p.h6 (str product-count " Item" (when (not= 1 product-count) "s"))]]
-        (into [:div.border.h6.border-p-color.rounded.flex.center]
-              (map-indexed
-               (fn [idx elective]
-                 (let [facet (elective facets)
+        [:div.flex.justify-between.items-baseline
+         [:div.title-3.proxima.shout.bold
+          (case selections-count
+            0 "Filter by:"
+            1 "1 filter applied:"
+            (str selections-count " filters applied:"))]
+         [:p.content-3 (str product-count " item" (when (not= 1 product-count) "s"))]]
+        (into [:div.content-2.flex.center]
+              (map
+               (fn [elective]
+                 (let [facet     (elective facets)
                        selected? (= open-panel elective)
-                       title (:facet/name facet)]
-                   [:a.flex-auto.x-group-item.rounded-item
-                    (assoc
+                       title     (:facet/name facet)]
+                   [:a.flex-auto.x-group-item.border.border-black.py1.whisper.black
+                    (merge
                      (if selected?
                        (utils/fake-href events/control-category-panel-close)
                        (utils/fake-href events/control-category-panel-open {:selected elective}))
-                     :data-test (str "filter-" (name elective))
-                     :key elective
-                     :class (if selected? "bg-p-color white" "black"))
-                    [:div.border-p-color.my1
-                     {:class (when-not (zero? idx) "border-left")}
-                     title]]))
+                     {:data-test (str "filter-" (name elective))
+                      :key       elective
+                      :style     (when selected? {:background "linear-gradient(to bottom, #4427c1 4px, #ffffff 4px)"})
+                      :class     (when open-panel "bg-cool-gray")})
+                    ;; This extra div is for pixel-pushing
+                    [:div.pyp2 title]]))
                electives))])]))
 
 (defn filter-panel [facets represented-options selections open-panel]
-  [:div.px1
-   (for [[i options] (->> facets
-                          open-panel
-                          :facet/options
-                          (sort-by :option/order)
-                          (partition-all 4)
-                          (map-indexed vector))]
-     [:div.flex-on-dt.justify-around
-      {:key (str "filter-panel-" i)}
-      (for [option options]
-        (let [selected?    (contains? (open-panel selections)
-                                      (:option/slug option))
-              slug         (:option/slug option)
-              represented? (contains? (open-panel represented-options) slug)]
-          ;;{:keys [slug label represented? selected?]}
-          [:div.py1.mr4
-           {:key       (str "filter-option-" slug)
-            :data-test (str "filter-option-" slug)
-            :disabled  (not represented?)}
-           (ui/check-box {:label     [:span
-                                      (when (categories/new-facet? [open-panel slug])
-                                        [:span.mr1.p-color "NEW"])
-                                      (:option/name option)]
-                          :value     selected?
-                          :disabled  (not represented?)
-                          :on-change #(let [event-handler (if selected?
-                                                            events/control-category-option-unselect
-                                                            events/control-category-option-select)]
-                                        (messages/handle-message event-handler
-                                                                 {:facet  open-panel
-                                                                  :option slug}))})]))])
-   [:div.clearfix.mxn3.px1.py4.hide-on-dt
-    [:div.col.col-6.px3
-     (ui/button-large-secondary
+  [:div
+   [:div.content-1.proxima.py6.pl10.pr1
+    (for [[i options] (->> facets
+                           open-panel
+                           :facet/options
+                           (sort-by :option/order)
+                           (partition-all 4)
+                           (map-indexed vector))]
+      [:div.flex-on-dt.justify-around
+       {:key (str "filter-panel-" i)}
+       (for [option options]
+         (let [selected?    (contains? (open-panel selections)
+                                       (:option/slug option))
+               slug         (:option/slug option)
+               represented? (contains? (open-panel represented-options) slug)]
+           ;;{:keys [slug label represented? selected?]}
+           [:div.py1.mr4
+            {:key       (str "filter-option-" slug)
+             :data-test (str "filter-option-" slug)
+             :disabled  (not represented?)}
+            (ui/check-box {:label     [:span
+                                       (when (categories/new-facet? [open-panel slug])
+                                         [:span.mr1.p-color "NEW"])
+                                       (:option/name option)]
+                           :value     selected?
+                           :disabled  (not represented?)
+                           :on-change #(let [event-handler (if selected?
+                                                             events/control-category-option-unselect
+                                                             events/control-category-option-select)]
+                                         (messages/handle-message event-handler
+                                                                  {:facet  open-panel
+                                                                   :option slug}))})]))])]
+   [:div.clearfix.mxn3.mb2.hide-on-dt.flex.justify-around.items-center
+    [:div.col-6.center.px5
+     (ui/button-medium-underline-primary
       (merge (utils/fake-href events/control-category-option-clear)
              {:data-test "filters-clear-all"})
-      "Clear all")]
-    [:div.col.col-6.px3
-     (ui/button-large-primary
+      "reset")]
+    [:div.col-6.px5
+     (ui/button-medium-primary
       (merge (utils/fake-href events/control-category-panel-close)
              {:data-test "filters-done"})
       "Done")]]])
