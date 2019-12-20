@@ -50,7 +50,7 @@
   (let [header-image-size 40
         portrait-status   (:status stylist-portrait)]
     (if (#{"approved" "pending"} portrait-status)
-      (ui/circle-picture {:class "mx-auto"
+      (ui/circle-picture {:class "mr2 flex items-center"
                           :width (str header-image-size "px")}
                          (ui/square-image stylist-portrait header-image-size))
       [:a.mr2.flex.items-center (utils/route-to events/navigate-stylist-account-profile)
