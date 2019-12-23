@@ -131,12 +131,6 @@
   (doto ((nav-table nav-event (constantly home/built-component)))
     (assert (str "Expected main-component to return a component, but did not: " (pr-str nav-event)))))
 
-(defn sticky-promo-bar
-  [data]
-  (component/html
-   (when-not (= events/navigate-category (get-in data keypaths/navigation-event))
-     (component/build promo-banner/sticky-organism (promo-banner/query data) nil))))
-
 (defn main-layout
   [data nav-event]
   (component/html
