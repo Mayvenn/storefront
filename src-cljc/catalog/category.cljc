@@ -249,7 +249,7 @@
        [:div
         [:div.hide-on-dt
          (filter-tabs category facets all-product-cards selections open-panel)]
-        [:div.hide-on-mb-tb.pb6
+        [:div.hide-on-mb-tb
          (filter-tabs category facets all-product-cards selections open-panel)]])]
     [:div
      (if (empty? all-product-cards)
