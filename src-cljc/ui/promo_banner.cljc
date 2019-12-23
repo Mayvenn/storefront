@@ -137,10 +137,10 @@
         nav-event         (get-in data keypaths/navigation-event)
         promo-type        (promo-type* data)
         show?             (contains? (nav-whitelist-for no-applied-promo? on-shop? promo-type) nav-event)
-        hide-on-mb?       (boolean (get-in data catalog.keypaths/category-panel))]
+        hide-on-mb-tb?    (boolean (get-in data catalog.keypaths/category-panel))]
     (cond-> {:promo (promotion-to-advertise data)}
-      show?       (assoc :promo/type promo-type)
-      hide-on-mb? (assoc :hide-on-mb? true))))
+      show?          (assoc :promo/type promo-type)
+      hide-on-mb-tb? (assoc :hide-on-mb-tb? true))))
 
 (defn static-organism
   [data owner opts]
@@ -196,9 +196,9 @@
 ;; page-top-most sticky promo bar
 (defn built-static-sticky-organism
   [app-state opts]
-  (let [{:as data :keys [hide-on-mb?]} (query app-state)]
+  (let [{:as data :keys [hide-on-mb-tb?]} (query app-state)]
     (component/html
-     [:div {:class (when hide-on-mb? "hide-on-mb")}
+     [:div {:class (when hide-on-mb-tb? "hide-on-mb-tb")}
       [:div.invisible {:key "promo-filler"} ;; provides height spacing for layout
        (component data nil (assoc opts :hide-dt? true))] ; Hide redundant data-test for Heat
       [:div.fixed.z5.top-0.left-0.right-0 {:key "promo"}
