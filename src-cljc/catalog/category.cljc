@@ -1,11 +1,15 @@
 (ns catalog.category
   (:require
-   #?@(:cljs [[storefront.browser.scroll :as scroll]
+   #?@(:cljs [[goog.dom]
+              [goog.events]
+              [goog.events.EventType :as EventType]
+              [goog.object :as object]
+              [storefront.browser.scroll :as scroll]
               [storefront.api :as api]
               [storefront.effects :as effects]
               [storefront.accessors.auth :as auth]
               [storefront.history :as history]])
-   [storefront.component :as component :refer [defcomponent]]
+   [storefront.component :as component :refer [defcomponent defdynamic-component]]
    [catalog.categories :as categories]
    [storefront.assets :as assets]
    [storefront.components.ui :as ui]
@@ -58,45 +62,67 @@
 (def allowed-query-params
   (vals facet-slugs->query-params))
 
-(defn filter-tabs [{:keys [selector/essentials selector/electives]}
-                   facets
-                   all-product-cards
-                   selections
-                   open-panel]
-  (let [product-count    (count all-product-cards)
-        selections-count (->> (apply dissoc selections essentials)
-                              (map (comp count val))
-                              (apply +))]
-    [:div.p2.pt3.mxn2.bg-white
-     (when (not open-panel)
-       {:class "border-black border-bottom"})
-     (when (seq electives)
-       [:div
-        [:div.flex.justify-between.items-baseline
-         [:div.title-3.proxima.shout.bold
-          (case selections-count
-            0 "Filter by:"
-            1 "1 filter applied:"
-            (str selections-count " filters applied:"))]
-         [:p.content-3 (str product-count " item" (when (not= 1 product-count) "s"))]]
-        (into [:div.content-2.flex.center]
-              (map
-               (fn [elective]
-                 (let [facet     (elective facets)
-                       selected? (= open-panel elective)
-                       title     (:facet/name facet)]
-                   [:a.flex-auto.x-group-item.border.border-black.py1.whisper.black
-                    (merge
-                     (if selected?
-                       (utils/fake-href events/control-category-panel-close)
-                       (utils/fake-href events/control-category-panel-open {:selected elective}))
-                     {:data-test (str "filter-" (name elective))
-                      :key       elective
-                      :style     (when selected? {:background "linear-gradient(to bottom, #4427c1 4px, #ffffff 4px)"})
-                      :class     (when open-panel "bg-cool-gray")})
-                    ;; This extra div is for pixel-pushing
-                    [:div.pyp2 title]]))
-               electives))])]))
+(defn ^:private handle-scroll [_]
+  #?(:cljs (this-as this
+             (component/set-state! this :stuck? (-> (component/get-ref this "filter-tabs")
+                                                    .getBoundingClientRect
+                                                    (object/get "top")
+                                                    (<= 0))))))
+
+(defdynamic-component ^:private filter-tabs-component
+  (constructor [this props]
+               (component/create-ref! this "filter-tabs")
+               (set! (.-handle-scroll this) (.bind handle-scroll this))
+               {:stuck? false})
+  (did-mount [this]
+   #?(:cljs (goog.events/listen js/window EventType/SCROLL (.-handle-scroll this))))
+  (will-unmount [this]
+   #?(:cljs (goog.events/unlisten js/window EventType/SCROLL (.-handle-scroll this))))
+  (render
+   [this]
+   (let [{:keys [stuck?]}     (component/get-state this)
+         {:keys [essentials
+                 electives
+                 facets
+                 all-product-cards
+                 selections
+                 open-panel]} (component/get-props this)
+         product-count        (count all-product-cards)
+         selections-count     (->> (apply dissoc selections essentials)
+                                   (map (comp count val))
+                                   (apply +))]
+     (component/html
+      [:div.p2.pt3.mxn2.bg-white
+       (merge {:ref (component/use-ref this "filter-tabs")}
+              (when (and (not open-panel) stuck?)
+                {:class "border-black border-bottom top-lit"}))
+       (when (seq electives)
+         [:div
+          [:div.flex.justify-between.items-baseline
+           [:div.title-3.proxima.shout.bold
+            (case selections-count
+              0 "Filter by:"
+              1 "1 filter applied:"
+              (str selections-count " filters applied:"))]
+           [:p.content-3 (str product-count " item" (when (not= 1 product-count) "s"))]]
+          (into [:div.content-2.flex.center]
+                (map
+                 (fn [elective]
+                   (let [facet     (elective facets)
+                         selected? (= open-panel elective)
+                         title     (:facet/name facet)]
+                     [:a.flex-auto.x-group-item.border.border-black.py1.whisper.black
+                      (merge
+                       (if selected?
+                         (utils/fake-href events/control-category-panel-close)
+                         (utils/fake-href events/control-category-panel-open {:selected elective}))
+                       {:data-test (str "filter-" (name elective))
+                        :key       elective
+                        :style     (when selected? {:background "linear-gradient(to bottom, #4427c1 4px, #ffffff 4px)"})
+                        :class     (when open-panel "bg-cool-gray")})
+                      ;; This extra div is for pixel-pushing
+                      [:div.pyp2 title]]))
+                 electives))])]))))
 
 (defn filter-panel [facets represented-options selections open-panel]
   [:div
@@ -114,7 +140,6 @@
                                        (:option/slug option))
                slug         (:option/slug option)
                represented? (contains? (open-panel represented-options) slug)]
-           ;;{:keys [slug label represented? selected?]}
            [:div.py1.mr4
             {:key       (str "filter-option-" slug)
              :data-test (str "filter-option-" slug)
@@ -238,19 +263,20 @@
       ;; The -5px prevents a sliver of the background from being visible above the filters
       ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
      {:style {:top "-5px"}}
-     (if open-panel
-       [:div
-        [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
-         (filter-tabs category facets all-product-cards selections open-panel)
-         (filter-panel facets represented-options selections open-panel)]
-        [:div.hide-on-mb-tb
-         (filter-tabs category facets all-product-cards selections open-panel)
-         (filter-panel facets represented-options selections open-panel)]]
-       [:div
-        [:div.hide-on-dt
-         (filter-tabs category facets all-product-cards selections open-panel)]
-        [:div.hide-on-mb-tb
-         (filter-tabs category facets all-product-cards selections open-panel)]])]
+     (let [tabs  (component/build filter-tabs-component ; TODO: clean up to query
+                                  {:essentials        (:selector/essentials category)
+                                   :electives         (:selector/electives category)
+                                   :facets            facets
+                                   :all-product-cards all-product-cards
+                                   :selections        selections
+                                   :open-panel        open-panel} opts)]
+       (if open-panel
+         [:div
+          [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white tabs (filter-panel facets represented-options selections open-panel)]
+          [:div.hide-on-mb-tb tabs (filter-panel facets represented-options selections open-panel)]]
+         [:div
+          [:div.hide-on-dt tabs]
+          [:div.hide-on-mb-tb tabs]]))]
     [:div
      (if (empty? all-product-cards)
        (product-cards-empty-state loading-products?)
@@ -276,6 +302,7 @@
 (defn ^:private query
   [data]
   (let [category                   (categories/current-category data)
+        tabs-stuck?                true
         selections                 (get-in data catalog.keypaths/category-selections)
         products-matching-category (selector/match-all {:selector/strict? true}
                                                        (skuers/essentials category)
@@ -302,6 +329,7 @@
      :all-product-cards   product-cards
      :subsections         subsections
      :open-panel          (get-in data catalog.keypaths/category-panel)
+     :tabs-stuck? tabs-stuck?
      :loading-products?   (utils/requesting? data (conj request-keys/get-products
                                                         (skuers/essentials category)))}))
 
