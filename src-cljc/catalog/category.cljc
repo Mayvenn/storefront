@@ -69,7 +69,7 @@
                                                     (object/get "top")
                                                     (<= 0))))))
 
-(defdynamic-component ^:private filter-tabs-component
+(defdynamic-component ^:private filter-tabs
   (constructor [this props]
                (component/create-ref! this "filter-tabs")
                (set! (.-handle-scroll this) (.bind handle-scroll this))
@@ -81,16 +81,11 @@
   (render
    [this]
    (let [{:keys [stuck?]}     (component/get-state this)
-         {:keys [essentials
+         {:keys [open-panel
                  electives
-                 facets
-                 all-product-cards
-                 selections
-                 open-panel]} (component/get-props this)
-         product-count        (count all-product-cards)
-         selections-count     (->> (apply dissoc selections essentials)
-                                   (map (comp count val))
-                                   (apply +))]
+                 selections-count
+                 product-count
+                 facets]} (component/get-props this)]
      (component/html
       [:div.p2.pt3.mxn2.bg-white
        (merge {:ref (component/use-ref this "filter-tabs")}
@@ -255,7 +250,8 @@
            represented-options
            open-panel
            all-product-cards
-           subsections]} owner opts]
+           subsections
+           filter-tabs-data]} owner opts]
   [:div
    (category-header category)
    [:div.max-960.col-12.mx-auto.px2-on-mb.px2-on-tb
@@ -263,13 +259,7 @@
       ;; The -5px prevents a sliver of the background from being visible above the filters
       ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
      {:style {:top "-5px"}}
-     (let [tabs  (component/build filter-tabs-component ; TODO: clean up to query
-                                  {:essentials        (:selector/essentials category)
-                                   :electives         (:selector/electives category)
-                                   :facets            facets
-                                   :all-product-cards all-product-cards
-                                   :selections        selections
-                                   :open-panel        open-panel} opts)]
+     (let [tabs  (component/build filter-tabs filter-tabs-data opts)]
        (if open-panel
          [:div
           [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white tabs (filter-panel facets represented-options selections open-panel)]
@@ -302,7 +292,6 @@
 (defn ^:private query
   [data]
   (let [category                   (categories/current-category data)
-        tabs-stuck?                true
         selections                 (get-in data catalog.keypaths/category-selections)
         products-matching-category (selector/match-all {:selector/strict? true}
                                                        (skuers/essentials category)
@@ -315,7 +304,9 @@
         subsections                (subsections-query category
                                                       products-matching-criteria
                                                       data)
-        product-cards (mapcat :product-cards subsections)]
+        product-cards              (mapcat :product-cards subsections)
+        facets                     (maps/index-by :facet/slug (get-in data keypaths/v2-facets))
+        open-panel                 (get-in data catalog.keypaths/category-panel)]
     {:category            category
      :represented-options (->> products-matching-category
                                (map (fn [product]
@@ -324,12 +315,18 @@
                                                                 (:selector/electives category)))
                                            (maps/map-values set))))
                                (reduce (partial merge-with set/union) {}))
-     :facets              (maps/index-by :facet/slug (get-in data keypaths/v2-facets))
+     :facets              facets
      :selections          selections
      :all-product-cards   product-cards
      :subsections         subsections
-     :open-panel          (get-in data catalog.keypaths/category-panel)
-     :tabs-stuck? tabs-stuck?
+     :open-panel          open-panel
+     :filter-tabs-data    {:open-panel       open-panel
+                           :electives        (:selector/electives category)
+                           :product-count    (count product-cards)
+                           :selections-count (->> (apply dissoc selections (:selector/essentials category))
+                                                  (map (comp count val))
+                                                  (apply +))
+                           :facets           facets}
      :loading-products?   (utils/requesting? data (conj request-keys/get-products
                                                         (skuers/essentials category)))}))
 
