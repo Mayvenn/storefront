@@ -62,17 +62,15 @@
 (def allowed-query-params
   (vals facet-slugs->query-params))
 
-(defn ^:private handle-scroll [_]
-  #?(:cljs (this-as this
-             (component/set-state! this :stuck? (-> (component/get-ref this "filter-tabs")
-                                                    .getBoundingClientRect
-                                                    (object/get "top")
-                                                    (<= 0))))))
-
 (defdynamic-component ^:private filter-tabs
   (constructor [this props]
                (component/create-ref! this "filter-tabs")
-               (set! (.-handle-scroll this) (.bind handle-scroll this))
+               #?(:cljs
+                  (set! (.-handle-scroll this)
+                        (fn [e] (component/set-state! this :stuck? (-> (component/get-ref this "filter-tabs")
+                                                                       .getBoundingClientRect
+                                                                       (object/get "top")
+                                                                       (<= 0))))))
                {:stuck? false})
   (did-mount [this]
    #?(:cljs (goog.events/listen js/window EventType/SCROLL (.-handle-scroll this))))
