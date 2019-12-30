@@ -25,13 +25,11 @@
    [storefront.accessors.stylists :as stylists]
    [storefront.component :as component :refer [defcomponent defdynamic-component]]
    [storefront.components.checkout-delivery :as checkout-delivery]
-   [storefront.transitions :as transitions]
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
    [storefront.components.money-formatters :as mf]
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
-   [storefront.effects :as effects]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
@@ -39,35 +37,6 @@
    [storefront.routes :as routes]
    [ui.molecules :as ui-molecules]
    [ui.promo-banner :as promo-banner]))
-
-(defmethod effects/perform-effects events/control-cart-add-freeinstall-coupon
-  [_ _ _ _ app-state]
-  #?(:cljs
-     (api/add-sku-to-bag (get-in app-state keypaths/session-id)
-                         {:token      (get-in app-state keypaths/order-token)
-                          :number     (get-in app-state keypaths/order-number)
-                          :stylist-id (get-in app-state keypaths/store-stylist-id)
-                          :user-id    (get-in app-state keypaths/user-id)
-                          :user-token (get-in app-state keypaths/user-token)
-                          ;; Not necessarily an actual leave-out service, just need to use any install service
-                          ;; line item.  The actual SKU will be calculated by waiter on every cart modification.
-                          :sku        {:catalog/sku-id "SRV-LBI-000"}
-                          :quantity   1}
-                         #(messages/handle-message events/api-success-update-order-add-service-line-item
-                                                   {:order %
-                                                    :shop? (get-in app-state keypaths/store-slug)}))))
-
-(defmethod effects/perform-effects events/control-pick-stylist-button
-  [_ _ _ _ _]
-  #?(:cljs (history/enqueue-navigate events/navigate-adventure-match-stylist)))
-
-(defmethod effects/perform-effects events/control-change-stylist
-  [_ _ _ _ _]
-  #?(:cljs (history/enqueue-navigate events/navigate-adventure-find-your-stylist)))
-
-(defmethod transitions/transition-state events/control-toggle-promo-code-entry
-  [_ _ _ app-state]
-  (update-in app-state keypaths/promo-code-entry-open? not))
 
 (def or-separator
   [:div.h5.black.py1.flex.items-center

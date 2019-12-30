@@ -33,6 +33,7 @@
             [storefront.components.ui :as ui]
             [mayvenn-made.home :as mayvenn-made.home]
             checkout.classic-cart
+            checkout.cart
             [storefront.accessors.experiments :as experiments]
             [storefront.components.content :as content]
             [storefront.components.flash :as flash]

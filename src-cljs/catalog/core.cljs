@@ -5,6 +5,7 @@
             storefront.components.shop-by-look-details
             storefront.components.shared-cart
             checkout.processing
+            checkout.cart
             checkout.classic-cart
             adventure.handlers ;; TODO, wherever these go, maybe they shouldn't be here
             [storefront.loader :as loader]))
