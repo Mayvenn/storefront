@@ -1,5 +1,5 @@
 (ns storefront.components.stylist.balance-transfer-details
-  (:require [checkout.cart :as cart]
+  (:require checkout.classic-cart
             [ui.molecules :as ui-molecules]
             [storefront.accessors.adjustments :as adjustments]
             [storefront.accessors.orders :as orders]
@@ -253,7 +253,7 @@
        (let [line-items (->> (:order (:data balance-transfer))
                              orders/first-commissioned-shipment
                              orders/product-items-for-shipment)]
-         {:line-items (mapv (partial cart/add-product-title-and-color-to-line-item
+         {:line-items (mapv (partial checkout.classic-cart/add-product-title-and-color-to-line-item
                                      (get-in data keypaths/v2-products)
                                      (get-in data keypaths/v2-facets))
                             line-items)})))))

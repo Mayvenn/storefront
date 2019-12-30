@@ -32,7 +32,7 @@
 
             [storefront.components.ui :as ui]
             [mayvenn-made.home :as mayvenn-made.home]
-            [checkout.cart :as cart]
+            checkout.classic-cart
             [storefront.accessors.experiments :as experiments]
             [storefront.components.content :as content]
             [storefront.components.flash :as flash]
@@ -91,7 +91,7 @@
    events/navigate-product-details         #(ui/lazy-load-component :catalog 'catalog.product-details/built-component events/navigate-product-details)
    events/navigate-shared-cart             #(ui/lazy-load-component :catalog 'storefront.components.shared-cart/built-component events/navigate-shared-cart)
    events/navigate-checkout-processing     #(ui/lazy-load-component :checkout 'checkout.processing/built-component events/navigate-checkout-processing)
-   events/navigate-cart                    #(ui/lazy-load-component :catalog 'checkout.cart/built-component events/navigate-cart)
+   events/navigate-cart                    #(ui/lazy-load-component :catalog 'checkout.classic-cart/built-component events/navigate-cart)
    events/navigate-voucher-redeem          #(ui/lazy-load-component :redeem 'voucher.redeem/built-component events/navigate-voucher-redeem)
    events/navigate-voucher-redeemed        #(ui/lazy-load-component :redeem 'voucher.redeemed/built-component events/navigate-voucher-redeemed)
    events/navigate-mayvenn-made            (constantly mayvenn-made.home/built-component)
@@ -172,7 +172,7 @@
       (slideout-nav/built-component data nil)
 
       (routes/sub-page? [nav-event] [events/navigate-cart]) ; Cart pages
-      (cart/layout data nav-event)
+      (checkout.classic-cart/layout data nav-event)
 
       :else
       (main-layout data nav-event))))
@@ -185,7 +185,7 @@
       (slideout-nav/built-component data nil)
 
       (routes/sub-page? [nav-event] [events/navigate-cart]) ; Cart pages
-      (cart/layout data nav-event)
+      (checkout.classic-cart/layout data nav-event)
 
       :else
       (main-layout data nav-event))))

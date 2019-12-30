@@ -1,4 +1,4 @@
-(ns checkout.cart
+(ns checkout.classic-cart
   (:require
    #?@(:cljs [[storefront.components.popup :as popup]
               [storefront.components.payment-request-button :as payment-request-button]

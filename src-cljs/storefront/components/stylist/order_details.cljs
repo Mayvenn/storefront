@@ -1,5 +1,5 @@
 (ns storefront.components.stylist.order-details
-  (:require [checkout.cart :as cart]
+  (:require checkout.classic-cart
             [storefront.accessors.orders :as orders]
             [storefront.accessors.sales :as sales]
             [storefront.accessors.shipping :as shipping]
@@ -211,7 +211,7 @@
                                  (dissoc :voucher))
         shipments-enriched     (for [shipment (-> sale :order :shipments)]
                                  (let [product-line-items          (remove (comp #{"waiter"} :source) (:line-items shipment))
-                                       enriched-product-line-items (mapv (partial cart/add-product-title-and-color-to-line-item
+                                       enriched-product-line-items (mapv (partial checkout.classic-cart/add-product-title-and-color-to-line-item
                                                                                   (get-in app-state keypaths/v2-products)
                                                                                   (get-in app-state keypaths/v2-facets))
                                                                          product-line-items)]
