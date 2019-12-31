@@ -9,7 +9,6 @@
               [storefront.platform.messages :as messages]])
    [catalog.facets :as facets]
    [catalog.images :as catalog-images]
-   [checkout.call-out :as call-out]
    [checkout.header :as header]
    [checkout.suggestions :as suggestions]
    [checkout.ui.cart-item :as cart-item]
@@ -110,8 +109,6 @@
      (component/build confetti-spout queried-data nil))
 
    (component/build promo-banner/sticky-organism promo-banner nil)
-
-   (component/build call-out/component call-out nil)
 
    [:div.clearfix.mxn3
     (servicing-stylist-banner-component queried-data)
@@ -540,7 +537,6 @@
              :products                           products
              :promo-banner                       (when (zero? (orders/product-quantity order))
                                                    (promo-banner/query data))
-             :call-out                           (call-out/query data)
              :checkout-disabled?                 (or freeinstall-entered-cart-incomplete?
                                                      (update-pending? data))
              :redirecting-to-paypal?             (get-in data keypaths/cart-paypal-redirect)
