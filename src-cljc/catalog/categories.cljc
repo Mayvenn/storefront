@@ -496,27 +496,12 @@
                                         "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                         "your unique look using the built-in combs and adjustable strap.")
            :image-url             "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"
-           :subsections           {"360-wigs"        {:image/mob-url "//ucarecdn.com/08d4158d-633d-4ddd-ab90-7e7f03655998/"
-                                                      :image/dsk-url "//ucarecdn.com/4f310c6c-b8a8-46cb-9940-290f57920922/"
-                                                      :order         2
-                                                      :title/side    "bottom"
-                                                      :copy          (copy "Complete with a lace perimeter and made from 100% virgin hair,"
-                                                                           "our 360 wigs are fully customizable to fit your unique look.")}
-                                   "lace-front-wigs" {:image/mob-url "//ucarecdn.com/3d906164-8a1e-413e-9e10-dd5b35d6532e/"
-                                                      :image/dsk-url "//ucarecdn.com/203051d7-0138-4276-8e1b-310d4ee84254/"
-                                                      :order         1
-                                                      :title/side    "bottom"
-                                                      :copy          (copy "Crafted with 13x4 inches of frontal parting space,"
-                                                                           "these 100% virgin hair units offer the perfect balance"
-                                                                           "between natural density and style versatility.")}
-                                   "ready-wigs"      {:image/mob-url "//ucarecdn.com/56063a5e-7b29-43c8-9a2c-5d9d97682f11/"
-                                                      :image/dsk-url "//ucarecdn.com/00b52b51-897d-4aa9-a35f-07cf59e919fc/"
-                                                      :order         0
-                                                      :title/side    "bottom"
-                                                      :copy          (copy "Available in a variety of styles,"
-                                                                           "these 100% human hair units will be"
-                                                                           "your favorite option for a quick,"
-                                                                           "convenient switch-up on the go.")}}}
+           :subsections           {"360-wigs"        {:order         2
+                                                      :title/primary "360 Wigs"}
+                                   "lace-front-wigs" {:order         1
+                                                      :title/primary "Lace Front Wigs"}
+                                   "ready-wigs"      {:order         0
+                                                      :title/primary "Ready to Wear Wigs"}}}
           ;; TODO: commented out the template because wigs presented a special challenge because their selected-facet-string
           ;; contained the word "wigs" so the titles/descriptions kept showing redundant.  Revisit this once the wigs category
           ;; page gets rebuilt.
@@ -549,69 +534,22 @@
                                           "Free 30 day returns. Made with 100% virgin human hair.")
     :selector/electives             [:hair/texture :hair/family :hair/origin :hair/color]
     :selector/essentials            [:catalog/department :promo.mayvenn-install/eligible]
-    :subsections                    {"straight"
-                                     {:image/mob-url "//ucarecdn.com/805e1245-96b4-4a02-9103-ff907d745019/"
-                                      :image/dsk-url "//ucarecdn.com/be427d17-7fd6-4786-83a4-ec3656fef5f9/"
-                                      :title/primary "Straight"
-                                      :title/side    "right"
-                                      :order         1
-                                      :copy          "Your go-to for a sleek look with minimal effort."}
-
-                                     "yaki-straight"
-                                     {:image/mob-url "//ucarecdn.com/ce1dec79-1974-4837-9d5a-af2b0c64bd19/"
-                                      :image/dsk-url "//ucarecdn.com/acda1e7b-c8a4-46e0-a258-cd6a89456c39/"
-                                      :title/primary "Yaki Straight"
-                                      :title/side    "left"
-                                      :order         2
-                                      :copy          "The perfect textured straight look; Yaki Straight hair mimics a fresh press."}
-
-                                     "kinky-straight"
-                                     {:image/mob-url "//ucarecdn.com/a336ed7d-9bd6-40b8-af2d-ba031312dd7c/"
-                                      :image/dsk-url "//ucarecdn.com/eee21775-1a1a-46e3-b6a6-e843d4ebd269/"
-                                      :title/primary "Kinky Straight"
-                                      :title/side    "right"
-                                      :order         3
-                                      :copy          "A full-bodied blow out that blends beautifully with natural strands."}
-
-                                     "body-wave"
-                                     {:image/mob-url "//ucarecdn.com/40076225-9170-4fa5-a97e-6c4a6d694454/"
-                                      :image/dsk-url "//ucarecdn.com/ead939bc-f926-4369-9831-7216a3237e22/"
-                                      :title/primary "Body Wave"
-                                      :title/side    "left"
-                                      :order         4
-                                      :copy          "Glamorous S-shaped waves that can be straightened or curled with ease."}
-
-                                     "loose-wave"
-                                     {:image/mob-url "//ucarecdn.com/25949b33-7b36-473a-9af6-9f6288c9de7e/"
-                                      :image/dsk-url "//ucarecdn.com/ecdb2f1b-3010-475e-a938-eaaeef79b491/"
-                                      :title/primary "Loose Wave"
-                                      :title/side    "right"
-                                      :order         5
-                                      :copy          "Flirty waves that can be worn naturally, straightened, or curled."}
-
-                                     "water-wave"
-                                     {:image/mob-url "//ucarecdn.com/80acc6c7-d118-4ede-8db7-0109c5a3c843/"
-                                      :image/dsk-url "//ucarecdn.com/7a74fc25-e832-48aa-9b89-0c0d2fcd95f9/"
-                                      :title/primary "Water Wave"
-                                      :title/side    "left"
-                                      :order         6
-                                      :copy          "The quintessential carefree curl, Water Wave hair flows from the beach to the office."}
-
-                                     "deep-wave"
-                                     {:image/mob-url "//ucarecdn.com/3c5c15e5-008e-4fd5-bd38-69813a3ceb2c/"
-                                      :image/dsk-url "//ucarecdn.com/eb2bddd9-4398-4934-9ca8-e929d19b129c/"
-                                      :title/primary "Deep Wave"
-                                      :title/side    "right"
-                                      :order         7
-                                      :copy          "Soft, spiral waves that are full of body and bounce."}
-
-                                     "curly"
-                                     {:image/mob-url "//ucarecdn.com/bd929423-7f3a-46a0-bb13-8d86993e835a/"
-                                      :image/dsk-url "//ucarecdn.com/53d20ad6-cb28-446f-9623-45ec76e64b71/"
-                                      :title/primary "Curly"
-                                      :title/side    "left"
-                                      :order         8
-                                      :copy          "Kinky, coily curls that blend with natural 3C-4A textures."}}}])
+    :subsections                    {"straight"       {:title/primary "Straight"
+                                                       :order         1}
+                                     "yaki-straight"  {:title/primary "Yaki Straight"
+                                                       :order         2}
+                                     "kinky-straight" {:title/primary "Kinky Straight"
+                                                       :order         3}
+                                     "body-wave"      {:title/primary "Body Wave"
+                                                       :order         4}
+                                     "loose-wave"     {:title/primary "Loose Wave"
+                                                       :order         5}
+                                     "water-wave"     {:title/primary "Water Wave"
+                                                       :order         6}
+                                     "deep-wave"      {:title/primary "Deep Wave"
+                                                       :order         7}
+                                     "curly"          {:title/primary "Curly"
+                                                       :order         8}}}])
 
 (def stylist-exclusives
   [(merge {:catalog/category-id       "14"
