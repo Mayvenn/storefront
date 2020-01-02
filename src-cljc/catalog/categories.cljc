@@ -86,7 +86,7 @@
    (merge {:catalog/category-id      "10"
            :copy/title               "Virgin 360 Frontals"
            :page/slug                "virgin-360-frontals"
-           :seo/title                "Virgin 360 Frontals"
+           :seo/title                "Virgin 360 Hair Frontals"
            :legacy/named-search-slug "360-frontals"
 
            :catalog/department  #{"hair"}
@@ -117,7 +117,7 @@
    (merge {:catalog/category-id      "1"
            :copy/title               "Virgin Frontals"
            :page/slug                "virgin-frontals"
-           :seo/title                "Virgin Frontals"
+           :seo/title                "Virgin Hair Frontals"
            :legacy/named-search-slug "frontals"
 
            :catalog/department  #{"hair"}
