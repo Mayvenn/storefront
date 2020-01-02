@@ -136,8 +136,8 @@
   [data nav-event]
   (component/html
    (let [gray-background? (#{events/navigate-voucher-redeem events/navigate-voucher-redeemed} nav-event)
-         v2-home?           (and (experiments/v2-homepage? data)
-                                 (#{events/navigate-home} nav-event))]
+         v2-home?         (and (experiments/v2-homepage? data)
+                               (#{events/navigate-home} nav-event))]
      [:div.flex.flex-column {:style {:min-height    "100vh"
                                      :margin-bottom "-1px"}}
       [:div {:key "popup"}
@@ -145,7 +145,9 @@
 
       (when-not v2-home?
         [:div {:key "promo"}
-         ^:inline (promo-banner/built-static-sticky-organism data nil)])
+         ^:inline (if (= nav-event events/navigate-category)
+                    (promo-banner/built-static-organism data nil)
+                    (promo-banner/built-static-sticky-organism data nil))])
 
       ^:inline (header/built-component data nil)
 
