@@ -568,7 +568,7 @@
               :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})
 
       (and entered? servicing-stylist)
-      (merge {:checkout-caption-copy               (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
+      (merge {:checkout-caption-copy               (str "After you place your order, please contact " (stylists/->display-name servicing-stylist) " to make your Mayvenn free install appointment.")
               :servicing-stylist-banner/id         "servicing-stylist-banner"
               :servicing-stylist-banner/name       (stylists/->display-name servicing-stylist)
               :servicing-stylist-banner/rating     {:rating/value (:rating servicing-stylist)}
