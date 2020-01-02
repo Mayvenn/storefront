@@ -94,8 +94,7 @@
                                (<= (count selected-options) 3))
         can-use-seo-template? (and (:page/title-template category)
                                    (:page.meta/description-template category))
-        selected-facet-string (when (and indexable?
-                                         (seq selected-options))
+        selected-facet-string (when (and indexable? (seq selected-options))
                                 (->> selected-options
                                      (mapv (partial facet-option->option-name facets))
                                      (string/join " ")))
@@ -103,12 +102,12 @@
         {seo-title :seo/title
          :keys     [page/title-template
                     page.meta/description-template]} category
-        page-title                                   (if can-use-seo-template?
-                                                       (format-with-nil-protection title-template selected-facet-string seo-title)
-                                                       (:page/title category))
-        page-meta-description                        (if can-use-seo-template?
-                                                       (format-with-nil-protection description-template selected-facet-string seo-title)
-                                                       (:page.meta/description category))]
+        page-title            (if (and can-use-seo-template? selected-facet-string)
+                                (format-with-nil-protection title-template selected-facet-string seo-title)
+                                (:page/title category))
+        page-meta-description (if (and can-use-seo-template? selected-facet-string)
+                                (format-with-nil-protection description-template selected-facet-string seo-title)
+                                (:page.meta/description category))]
     (cond-> [[:title {} page-title]
              [:meta {:name "description" :content page-meta-description}]
              [:meta {:property "og:title" :content (:opengraph/title category)}]
