@@ -235,11 +235,12 @@
 
 (defmethod effects/perform-effects events/navigate
   [_ event {:keys [navigate/caused-by query-params nav-stack-item]} prev-app-state app-state]
-  (let [new-nav-event?    (not= (get-in prev-app-state keypaths/navigation-event)
-                                (get-in app-state keypaths/navigation-event))
-        new-query-params? (not= (not-empty (dissoc (get-in prev-app-state keypaths/navigation-args) :query-params))
-                                (not-empty (dissoc (get-in app-state keypaths/navigation-args) :query-params)))
-        module-load?      (= caused-by :module-load)]
+  (let [new-nav-event?     (not= (get-in prev-app-state keypaths/navigation-event)
+                                 (get-in app-state keypaths/navigation-event))
+        new-query-params?  (not= (not-empty (dissoc (get-in prev-app-state keypaths/navigation-args) :query-params))
+                                 (not-empty (dissoc (get-in app-state keypaths/navigation-args) :query-params)))
+        video-query-param? (:video query-params)
+        module-load?       (= caused-by :module-load)]
 
     (messages/handle-message events/control-menu-collapse-all)
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})
@@ -255,7 +256,8 @@
                            (get-in app-state keypaths/pending-promo-code))))
 
     (seo/set-tags app-state)
-    (when (or new-nav-event? new-query-params?)
+    (when (and (not video-query-param?)
+               (or new-nav-event? new-query-params?))
       (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
         (if (zero? restore-scroll-top)
           ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
@@ -304,7 +306,7 @@
     (popup/touch-email-capture-session app-state)))
 
 (defmethod effects/perform-effects events/navigate-home
-  [_ _ {:keys [query-params]} _ app-state]
+  [_ _ _ _ app-state]
   (let [keypaths (into [[:advertisedPromo]
                         [:homepage]]
                        (case (determine-site app-state)
@@ -314,9 +316,7 @@
                                    [:ugc-collection :free-install-mayvenn]]
                          nil))]
     (doseq [keypath keypaths]
-      (effects/fetch-cms-keypath app-state keypath))
-    (when (= (:video query-params) "0")
-      (scroll/scroll-selector-to-top "[data-ref=watch-video]" -370)))) ;; NOTE: -370 is a Magic number to of pixels to scroll aesthetically after closing the video
+      (effects/fetch-cms-keypath app-state keypath))))
 
 (defmethod effects/perform-effects events/navigate-content
   [_ [_ _ & static-content-id :as event] _ _ app-state]
