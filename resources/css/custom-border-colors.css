@@ -3,17 +3,18 @@
 .border-black         { border-color: var(--black); }
 
 .border-p-color     { border-color: var(--p-color); }
+.border-s-color     { border-color: var(--s-color); }
 .border-cool-gray   { border-color: var(--cool-gray); }
 .border-pale-purple { border-color: var(--pale-purple); }
 
 .debug * { outline: 1px solid gold; }
 
 :root {
-  --white:         #ffffff;
-  --gray:          #cccccc;
-  --black:         #000000;
-
-  --p-color:   #4427c1;
-  --cool-gray: #eeefef;
+  --white:       #ffffff;
+  --gray:        #cccccc;
+  --black:       #000000;
+  --p-color:     #4427c1;
+  --s-color:     #6bc8ad;
+  --cool-gray:   #eeefef;
   --pale-purple: #dedbe5;
 }

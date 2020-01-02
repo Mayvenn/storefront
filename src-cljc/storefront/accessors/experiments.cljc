@@ -91,3 +91,7 @@
 (defn promo-link?
   [data]
   (display-feature? data "promo-link"))
+
+(defn color-picker-redesign?
+  [data]
+  (display-feature? data "color-picker-redesign"))
