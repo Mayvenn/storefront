@@ -459,7 +459,7 @@
            (assoc-in-req-state keypaths/user-id (str->int (cookies/get req "id")))
            (assoc-in-req-state keypaths/user-token (cookies/get req "user-token"))
            (assoc-in-req-state keypaths/user-store-slug (cookies/get req "store-slug"))
-           (assoc-in-req-state keypaths/user-store-id (cookies/get req "store-id"))
+           (assoc-in-req-state keypaths/user-store-id (str->int (cookies/get req "store-id")))
            (assoc-in-req-state keypaths/user-stylist-experience (cookies/get req "stylist-experience"))
            (assoc-in-req-state keypaths/user-email (cookies/get-and-attempt-parsing-poorly-encoded req "email"))))))
 
