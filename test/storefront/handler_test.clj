@@ -557,11 +557,12 @@
          (parse-meta-tag-content (:body resp) "description"))))
 
 (def default-closure-title
-  "Dyed Virgin Hair Closures | Mayvenn")
+  "Dyed Virgin Closures: Human Hair Closures | Mayvenn")
 
 (def default-closure-description
-  (str "Mayvenn's Dyed Virgin Hair Closures are beautifully crafted and "
-       "provide a realistic part to close off any unit or install."))
+  (str "Mayvenn’s dyed virgin hair closures allow you to "
+       "close off any unit or install and come in a variety of "
+       "different combinations. Shop now to create your look."))
 
 (def dyed-virgin-closure-category-url
   "https://shop.mayvenn.com/categories/17-dyed-virgin-closures")
