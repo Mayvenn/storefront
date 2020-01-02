@@ -23,12 +23,12 @@
                      :type      "email"
                      :value     email})
 
-     [:div.col-12.col-6-on-tb-dt.mx-auto
+     [:div.col-12.col-8-on-tb-dt.mx-auto
       (ui/submit-button "Reset my password" {:data-test "forgot-password-submit"})]]
 
     [:div.h5.center.light.my2 "OR"]
 
-    [:div.col-12.col-6-on-tb-dt.mx-auto
+    [:div.col-12.col-8-on-tb-dt.mx-auto
      (facebook/sign-in-button facebook-loaded?)]]))
 
 (defn query [data]

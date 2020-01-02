@@ -23,7 +23,7 @@
          [:br]
          "You’ll have an opportunity to create an account after placing your order."]]
 
-       [:div.my2.mx-auto.col-12.col-6-on-tb-dt
+       [:div.my2.mx-auto.col-12.col-8-on-tb-dt
         [:div.clearfix.mxn1
          [:div.col.col-6.p1
           (ui/button-large-primary (assoc (utils/route-to events/navigate-checkout-sign-in)

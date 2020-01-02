@@ -45,7 +45,7 @@
      [:a (merge {:data-test "forgot-password"}
                 (utils/route-to events/navigate-forgot-password))
       "Forgot Password?"]]]
-   [:div.col-12.col-6-on-tb-dt
+   [:div.col-12.col-8-on-tb-dt
     (ui/submit-button "Sign In"
                       {:data-test "user-submit"})]])
 
@@ -53,7 +53,7 @@
   [{:keys [facebook-loaded?] :as data} _ _]
   [:div.flex.flex-column.items-center.col-12.mt1
 
-   [:div.col-12.col-6-on-tb-dt (facebook/sign-in-button facebook-loaded?)]
+   [:div.col-12.col-8-on-tb-dt (facebook/sign-in-button facebook-loaded?)]
    [:div.h5.light.my2 "OR"]
 
    (component/build password-component data nil)

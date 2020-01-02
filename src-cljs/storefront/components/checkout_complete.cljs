@@ -45,7 +45,7 @@
 
         [:p.h5.py2
          "Sign in with Facebook to link your account."]
-        [:div.col-12.col-6-on-tb-dt.mx-auto
+        [:div.col-12.col-8-on-tb-dt.mx-auto
          (facebook/narrow-sign-in-button (:facebook-loaded? sign-up-data))]
 
         [:p.h5.py4

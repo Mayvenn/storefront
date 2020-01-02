@@ -42,7 +42,7 @@
                    :keypath keypaths/account-show-password?
                    :value   show-password?})]
 
-   [:div.col-12.col-6-on-tb-dt
+   [:div.col-12.col-8-on-tb-dt
     (ui/submit-button sign-up-text
                       {:data-test "user-submit"})]])
 
@@ -52,7 +52,7 @@
     [:h1.h2.center.mt2.mb3 "Sign up for an account"]
 
     [:div
-     [:div.col-12.col-6-on-tb-dt.mx-auto
+     [:div.col-12.col-8-on-tb-dt.mx-auto
       (facebook/sign-in-button facebook-loaded?)]
 
      [:div.h5.center.light.my2 "OR"]
