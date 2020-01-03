@@ -14,27 +14,23 @@
             [storefront.routes :as routes]
             [storefront.transitions :as transitions]))
 
-(def title
-  [:div.p2.center
-   (ui/ucare-img {:style {:height "50px"}}  "4a0e6e66-c448-47e0-8341-bc92b91138ef")
-   [:h1 "Your Gallery"]
-   [:p "Show off your best work to your clients by uploading images of your #MayvennMade hairstyles."]])
-
 (defn manage-section [gallery-images editing? adding-photo?]
-  [:div.p2.center.bg-gray
-   [:h1 "Manage your gallery"]
-   [:div.p1 "Here you can upload images, edit posts and manage your gallery settings."]
+  [:div.p2.center.bg-warm-gray
+   [:h1.mt6.mb3.title-1.canela "Your Gallery"]
+   [:p.mb2.content-2.proxima "Show off your best work to your clients by uploading images of your #MayvennMade hairstyles."]
    (ui/narrow-container
     [:div
-     [:div.p1 (ui/button-large-primary (merge (utils/route-to events/navigate-gallery-image-picker)
-                                              {:data-test "add-to-gallery-link"
-                                               :spinning?  adding-photo?})
-                                       "Choose an image to upload")]
+     [:div.p1.shout.col-9.mx-auto
+      (ui/button-medium-primary
+       (merge (utils/route-to events/navigate-gallery-image-picker)
+              {:data-test "add-to-gallery-link"
+               :spinning? adding-photo?})
+                                "Upload Photos")]
      (when (seq gallery-images)
-       [:div.p1
+       [:div.p1.mb4
         (if editing?
           (ui/button-large-primary (utils/fake-href events/control-cancel-editing-gallery) "Finish editing")
-          (ui/button-large-secondary (utils/fake-href events/control-edit-gallery) "Edit your gallery"))])])])
+          (ui/button-small-underline-primary (utils/fake-href events/control-edit-gallery) "Edit Gallery"))])])])
 
 (def pending-approval
   (component/html
@@ -44,7 +40,7 @@
 (defn images [editing? gallery-images]
   (into [:div.clearfix.mxn1]
         (for [{:keys [status resizable-url]} gallery-images]
-          [:div.col.col-12.col-4-on-tb-dt.px1.pb2
+          [:div.col.col-12.col-4-on-tb-dt.px1
            {:key resizable-url}
            [:div
             (when editing?
@@ -60,7 +56,6 @@
 
 (defcomponent component [{:keys [editing? adding-photo? gallery]} owner opts]
   [:div.container
-   title
    (manage-section gallery editing? adding-photo?)
    (images editing? gallery)])
 
