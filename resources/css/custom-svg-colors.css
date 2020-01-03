@@ -14,10 +14,11 @@
 .stroke-white   { stroke: var(--white); }
 .stroke-black   { stroke: var(--black); }
 
-.fill-p-color { fill: var(--p-color); }
-.fill-s-color { fill: var(--s-color); }
-.fill-white   { fill: var(--white); }
-.fill-black   { fill: var(--black); }
+.fill-p-color   { fill: var(--p-color); }
+.fill-s-color   { fill: var(--s-color); }
+.fill-white     { fill: var(--white); }
+.fill-dark-gray { fill: var(--gray); }
+.fill-black     { fill: var(--black); }
 
 :root { /* Compare to app.css :( */
   --twitter-blue:   #00aced;
@@ -32,6 +33,7 @@
   --pale-purple: #dedbe5;
   --white:       #ffffff;
   --gray:        #cccccc;
+  --dark-gray:   #979797;
   --cool-gray:   #eeefef;
   --black:       #000000;
 }

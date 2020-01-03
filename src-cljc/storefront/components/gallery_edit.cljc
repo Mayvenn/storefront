@@ -34,7 +34,7 @@
 
 (def pending-approval
   (component/html
-   [:div.container-size.bg-gray.white.medium.flex.items-center.center.p2
+   [:div.container-size.bg-gray.flex.items-center.center.p2.proxima.content-2
     "Your image has been successfully submitted and is pending approval. Check back here to be updated on its status."]))
 
 (defn images [editing? gallery-images]
@@ -44,7 +44,7 @@
            {:key resizable-url}
            [:div
             (when editing?
-              [:div.bg-black.white.p2.flex.h6.medium
+              [:div.bg-black.white.p2.flex.proxima.content-3.items-center
                [:span.flex-auto.right-align.mr2 "Delete this post"]
                (ui/modal-close {:close-attrs (merge
                                               (utils/fake-href events/control-delete-gallery-image {:image-url resizable-url})

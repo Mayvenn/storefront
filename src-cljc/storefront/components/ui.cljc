@@ -483,8 +483,10 @@
   (component/html
    [:div.clearfix
     {:data-scrollable "not-a-modal"}
-    [:a.h3.right (merge {:data-test data-test :title "Close"} close-attrs)
-     (svg/close-x {:class (or class "stroke-white fill-gray")})]]))
+    [:a.right (merge {:data-test data-test :title "Close"} close-attrs)
+     (svg/x-sharp {:class (or class "block fill-dark-gray")
+                   :width "15px"
+                   :height "15px"})]]))
 
 (defn big-x [{:keys [data-test attrs]}]
   (component/html
