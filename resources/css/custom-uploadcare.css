@@ -11,7 +11,8 @@
 
 .uploadcare-dialog-panel {
     padding-left: 0;
-    margin: 0 20px 20px;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
 }
 
 .uploadcare-dialog-tabs {
@@ -127,6 +128,16 @@
 
     background: none;
     background-image: none;
+}
+
+.source-facebook, .source-instagram {
+    background-color: var(--warm-gray);
+}
+
+
+.source-instagram .big-button,
+.source-instagram:hover .big-button:hover {
+    background: none;
 }
 
 .uploadcare-dialog-title {
