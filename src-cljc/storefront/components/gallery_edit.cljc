@@ -29,7 +29,7 @@
      (when (seq gallery-images)
        [:div.p1.mb4
         (if editing?
-          (ui/button-large-primary (utils/fake-href events/control-cancel-editing-gallery) "Finish editing")
+          (ui/button-small-underline-primary (utils/fake-href events/control-cancel-editing-gallery) "Finish editing")
           (ui/button-small-underline-primary (utils/fake-href events/control-edit-gallery) "Edit Gallery"))])])])
 
 (def pending-approval
