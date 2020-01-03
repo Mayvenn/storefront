@@ -222,8 +222,8 @@
        [:div.absolute.white.right-0.py6.px4.right-align
         [:div.proxima.title-1.shout primary-attribution]
         [:div secondary-attribution]]
-       (ui/ucare-img {:class "block col-12"
-                      :width "1000"} dsk-ucare-id)]]
+       (ui/defer-ucare-img {:class "block col-12"
+                            :width "1000"} dsk-ucare-id)]]
 
      [:div.relative.hide-on-tb-dt ;; MB
       (vertical-squiggle "-86px")
@@ -235,8 +235,8 @@
        [:div.absolute.white.right-0.py8.px4.right-align
         [:div.proxima.title-2.shout primary-attribution]
         [:div secondary-attribution]]
-       (ui/ucare-img {:class "block col-12"
-                      :width "600"} mob-ucare-id)]]]))
+       (ui/defer-ucare-img {:class "block col-12"
+                            :width "600"} mob-ucare-id)]]]))
 
 (def sticky-footer
   #?(:clj (fn [_ _ _] (component/create "sticky-footer" [:div]))
