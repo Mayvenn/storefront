@@ -14,26 +14,24 @@
             [storefront.platform.messages :as messages]
             [storefront.accessors.experiments :as experiments]))
 
+(def checkmark-circle
+  [:div.circle.bg-s-color.flex.items-center.justify-center
+   {:style {:height "24px" :width "24px"}}
+   (svg/check-mark {:height "12px" :width "16px" :class "fill-white"})])
+
 (defn simple-selected-layer []
-  [:div.absolute.border.border-width-3.rounded-0.border-cool-gray.overlay.flex
-   [:div.self-center.flex.items-center
-    [:div {:style {:width "1em"}}]
-    (ui/ucare-img {:width           "30"
-                   :retina-quality  "better"
-                   :default-quality "better"}
-                  "ae0e9566-f688-4a6d-a0a9-378138308e48")]])
+  [:div.absolute.border.border-width-3.border-s-color.overlay.flex
+   [:div.flex.items-center.justify-end.pr4.col-12
+    checkmark-circle]])
 
 (defn simple-sold-out-layer [text]
-  [:div.bg-darken-1.absolute.border.border-cool-gray.rounded-0.overlay.flex.justify-end
+  [:div.bg-darken-1.absolute.overlay.flex.justify-end
    [:div.self-center.flex.items-center.mr4
     text]])
 
 (defn simple-content-layer [content]
-  [:div.flex.p4.rounded-0.absolute.overlay.bg-white.border.border-gray
-   [:div.self-center.flex.items-center
-    {:style {:margin-left "1.5em"}}
-    [:div {:style {:width "1em"}}]]
-   content])
+  [:div.flex.items-center.p4.absolute.overlay.bg-white
+   [:div.ml1 content]])
 
 (def picker-chevron
   (svg/dropdown-arrow {:height "13px"
@@ -242,31 +240,27 @@
 
 (defn length-option
   [{:keys [item key primary-label secondary-label checked? selected-picker navigation-event]}]
-  (let [label-style (cond
-                      checked?  "medium"
-                      :else     nil)]
-    [:div {:key       key
-           :data-test (str "picker-length-" (:option/slug item))}
-     (ui/option {:height   "4em"
-                 :key      (str key "-option")
-                 :href     "#"
-                 :on-click #(select-and-close
-                             events/control-product-detail-picker-option-select
-                             {:selection        selected-picker
-                              :navigation-event navigation-event
-                              :value            (:option/slug item)})}
-                (simple-content-layer
-                 (list
-                  [:div.col-2
-                   {:key "primary-label"
-                    :class (str label-style)}
-                   primary-label]
-                  [:div.gray.flex-auto
-                   {:key "secondary-label"}
-                   secondary-label]))
-                [:div
-                 (when checked?
-                   (simple-selected-layer))])]))
+  [:div {:key       key
+         :data-test (str "picker-length-" (:option/slug item))}
+   (ui/option {:height   "4em"
+               :key      (str key "-option")
+               :href     "#"
+               :on-click #(select-and-close
+                           events/control-product-detail-picker-option-select
+                           {:selection        selected-picker
+                            :navigation-event navigation-event
+                            :value            (:option/slug item)})}
+              (simple-content-layer
+               (list
+                [:div.col-2
+                 {:key "primary-label"}
+                 primary-label]
+                [:div.gray.flex-auto
+                 {:key "secondary-label"}
+                 secondary-label]))
+              [:div
+               (when checked?
+                 (simple-selected-layer))])])
 
 (defn swatch-content-layer [{:option/keys [name rectangle-swatch]} sku-img checked?]
   [:div.flex.flex-column.bg-white
@@ -335,9 +329,7 @@
                (when checked?
                  [:div.absolute.border.border-width-3.border-s-color.overlay.flex
                   [:div.col-12.flex.justify-end.m2
-                   [:div.circle.bg-s-color.flex.items-center.justify-center  ; checkmark circle
-                    {:style {:height "24px" :width "24px"}}
-                    (svg/check-mark {:height "12px" :width "16px" :class "fill-white"})]]])])])
+                   checkmark-circle]])])])
 
 (defn- slide-animate [content]
   (css-transitions/transition-group
@@ -352,16 +344,17 @@
   [{:keys [title items cell-component-fn product-alternative wrap?]}]
   [:div.hide-on-tb-dt.z6.fixed.overlay.overflow-auto.bg-cool-gray
    {:key (str "picker-dialog-" title) :data-test "picker-dialog"}
-   [:div.p3.h5.bg-white.relative.border-bottom.border-gray
-    {:style {:min-height "3em"}}
+   [:div.p3.content-1.proxima.bg-white.relative.border-bottom.border-gray
+    {:style {:height "70px"}}
     [:div.absolute.overlay.flex.items-center.justify-center
      title]
 
     [:div.absolute.overlay.flex.items-center.justify-end
-     [:a.p-color.medium.p3
-      (merge {:data-test "picker-close"}
+     [:a.flex.items-center.justify-center.medium.p3
+      (merge {:style     {:height "70px" :width "70px"}
+              :data-test "picker-close"}
              (utils/fake-href events/control-product-detail-picker-close))
-      "Done"]]]
+      (svg/x-sharp {:height "14px" :width "14px"})]]]
    [:div.py3.px1 ;; body
     (when wrap?
       {:class "flex flex-wrap"})
