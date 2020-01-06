@@ -28,16 +28,18 @@
 (defcomponent component
   [{:keys [desktop-header-data
            item-count
-           hide-back-to-shopping-link?
+           back-to-shopping-link?
            back]} _ _]
-  (let [close-cart-route (utils/route-back-or-to back events/navigate-home)]
+  (let [close-cart-route (utils/route-back-or-to back
+                                                 events/navigate-home)]
     [:div
      (desktop-header desktop-header-data)
      (storefront-header/mobile-nav-header
       {:class "border-bottom border-gray border-width-1"}
 
-      (when-not hide-back-to-shopping-link?
-        [:a.pointer.inherit-color.flex.items-center.ml1.content-3.proxima close-cart-route
+      (when back-to-shopping-link?
+        [:a.pointer.inherit-color.flex.items-center.ml1.content-3.proxima
+         close-cart-route
          [:div (ui/back-caret {:width 16 :height 16})]
          [:div "Back to Shopping"]])
 
@@ -45,17 +47,28 @@
        {:data-test "mobile-cart"}
        "Shopping Cart ( " [:span.bold item-count] " )"]
 
-      [:a.flex.pointer (merge close-cart-route
-                         {:data-test "cart-close" :title "Close"})
+      [:a.flex.pointer
+       (merge close-cart-route
+              {:data-test "cart-close"
+               :title     "Close"})
        (svg/x-sharp {:style {:width  "18px"
                              :height "18px"}})])]))
 
-(defn query [data]
-  (let [shop? (= "shop" (get-in data keypaths/store-slug))]
-    {:item-count                  (orders/product-quantity (get-in data keypaths/order))
-     :back                        (first (get-in data keypaths/navigation-undo-stack))
-     :desktop-header-data         (storefront-header/query data)
-     :hide-back-to-shopping-link? shop?}))
+(defn determine-site
+  [app-state]
+  (cond
+    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
+    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
+    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
+
+(defn query
+  [data]
+  (cond-> {:item-count          (orders/product-quantity (get-in data keypaths/order))
+           :back                (first (get-in data keypaths/navigation-undo-stack))
+           :desktop-header-data (storefront-header/query data)}
+
+    (= :classic (determine-site data))
+    (merge {:back-to-shopping-link? true})))
 
 (defn built-component [data opts]
   (component/build component (query data) nil))

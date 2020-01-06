@@ -45,7 +45,7 @@
    [:div.flex-grow-1.border-bottom.border-gray]])
 
 (defn ^:private servicing-stylist-banner-component
-  [{:servicing-stylist-banner/keys [id name image-url rating stylist-id]}]
+  [{:servicing-stylist-banner/keys [id name image-url rating action-id target]}]
   (when id
     [:div.flex.bg-cool-gray.pl5.pr3.py2.items-center {:data-test id}
      (ui/circle-picture {:width 50} (ui/square-image {:resizable-url image-url} 50))
@@ -53,12 +53,13 @@
       [:div.content-3.proxima "Your Certified Mayvenn Stylist"]
       [:div.content-1.proxima name]
       [:div.mt1 (ui.molecules/stars-rating-molecule rating)]]
-     [:a.block.gray.medium.m1
-      (merge {:data-test "stylist-swap"
-              :href (routes/path-for events/navigate-adventure-find-your-stylist)
-              :on-click (utils/send-event-callback events/control-change-stylist {:stylist-id stylist-id})})
-      (svg/swap-person {:width  "20px"
-                        :height "21px"})]]))
+     (when action-id
+       [:a.block.gray.medium.m1
+        (merge {:data-test action-id
+                :href (routes/path-for events/navigate-adventure-find-your-stylist)
+                :on-click (apply utils/send-event-callback target)})
+        (svg/swap-person {:width  "20px"
+                          :height "21px"})])]))
 
 (defdynamic-component ^:private confetti-spout
   (constructor [this props]
@@ -509,7 +510,8 @@
                                  "Add promo code")})))))
 
 (defn full-cart-query [data]
-  (let [order                                (get-in data keypaths/order)
+  (let [shop?                                (#{"shop"} (get-in data keypaths/store-slug))
+        order                                (get-in data keypaths/order)
         products                             (get-in data keypaths/v2-products)
         facets                               (get-in data keypaths/v2-facets)
         line-items                           (map (partial add-product-title-and-color-to-line-item products facets)
@@ -572,13 +574,17 @@
               :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})
 
       (and entered? servicing-stylist)
-      (merge {:checkout-caption-copy               (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
-              :servicing-stylist-banner/id         "servicing-stylist-banner"
-              :servicing-stylist-banner/name       (stylists/->display-name servicing-stylist)
-              :servicing-stylist-banner/rating     {:rating/value (:rating servicing-stylist)}
-              :servicing-stylist-banner/image-url  (some-> servicing-stylist :portrait :resizable-url)
-              :servicing-stylist-banner/stylist-id (:stylist-id servicing-stylist)
-              :servicing-stylist-portrait-url      (-> servicing-stylist :portrait :resizable-url)})
+      (merge {:checkout-caption-copy              (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
+              :servicing-stylist-banner/id        "servicing-stylist-banner"
+              :servicing-stylist-banner/name      (stylists/->display-name servicing-stylist)
+              :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)}
+              :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)
+              :servicing-stylist-banner/target    [events/control-change-stylist {:stylist-id (:stylist-id servicing-stylist)}]
+              :servicing-stylist-banner/action-id "stylist-swap"
+              :servicing-stylist-portrait-url     (-> servicing-stylist :portrait :resizable-url)})
+
+      (and entered? servicing-stylist (not shop?))
+      (merge {:servicing-stylist-banner/action-id nil})
 
       (and (experiments/mayvenn-rating? data)
            entered?

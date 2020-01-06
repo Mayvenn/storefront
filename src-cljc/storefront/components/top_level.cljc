@@ -188,7 +188,7 @@
       (slideout-nav/built-component data nil)
 
       (routes/sub-page? [nav-event] [events/navigate-cart]) ; Cart pages
-      (checkout.classic-cart/layout data nav-event)
+      (shop-cart/page data nav-event)
 
       :else
       (main-layout data nav-event))))
