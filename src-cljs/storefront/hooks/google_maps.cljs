@@ -101,34 +101,46 @@
      :elementType "all",
      :stylers     [{:visibility "off"}]}
     {:featureType "road",
-     :elementType "all",
-     :stylers
-     [{:saturation -100} {:lightness 45}]}
-    {:featureType "road",
      :elementType "geometry.fill",
-     :stylers     [{:color "#F1F0F2"}]}
+     :stylers     [{:color "#eeeeee"}]}
+    {:featureType "road",
+     :elementType "geometry.stroke",
+     :stylers
+     [{:visibility "on"} {:color "#dedbe5"}]}
     {:featureType "road",
      :elementType "labels.text.fill",
-     :stylers     [{:color "#999999"}]}
+     :stylers     [{:color "#8b8b8b"}]}
     {:featureType "road",
      :elementType "labels.text.stroke",
      :stylers     [{:color "#ffffff"}]}
     {:featureType "road.highway",
-     :elementType "all",
-     :stylers     [{:visibility "simplified"}]}
+     :elementType "geometry.stroke",
+     :stylers     [{:visibility "off"}]}
+    {:featureType "road.arterial",
+     :elementType "geometry.stroke",
+     :stylers     [{:visibility "off"}]}
     {:featureType "road.arterial",
      :elementType "labels.icon",
      :stylers     [{:visibility "off"}]}
+    {:featureType "road.local",
+     :elementType "geometry.stroke",
+     :stylers     [{:visibility "off"}]}
     {:featureType "transit",
      :elementType "all",
-     :stylers     [{:visibility "off"}]}
+     :stylers     [{:visibility "simplified"}]}
+    {:featureType "transit",
+     :elementType "labels",
+     :stylers
+     [{:visibility "simplified"}
+      {:saturation "-100"}
+      {:lightness "-5"}]}
     {:featureType "water",
      :elementType "all",
      :stylers
      [{:color "#46bcec"} {:visibility "on"}]}
     {:featureType "water",
      :elementType "geometry.fill",
-     :stylers     [{:color "#e4e1e9"}]}
+     :stylers     [{:color "#dedbe5"}]}
     {:featureType "water",
      :elementType "labels.text.fill",
      :stylers     [{:color "#070707"}]}
