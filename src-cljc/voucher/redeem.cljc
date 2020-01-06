@@ -61,7 +61,7 @@
      {:on-submit (utils/send-event-callback events/control-voucher-redeem {:code code})}
      (ui/input-group
       {:keypath       voucher-keypaths/eight-digit-code
-       :wrapper-class "col-8 pl3 bg-white circled-item"
+       :wrapper-class "col-12 pl3 bg-white circled-item"
        :data-test     "voucher-code"
        :focused       true
        :placeholder   "xxxxxxxx"
