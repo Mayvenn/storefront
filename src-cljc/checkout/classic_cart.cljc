@@ -5,6 +5,7 @@
               [storefront.hooks.browser-pay :as browser-pay]
               [storefront.hooks.quadpay :as quadpay]])
    [catalog.images :as catalog-images]
+   [checkout.call-out :as call-out]
    [checkout.cart.items :as cart-items]
    [checkout.cart.summary :as cart-summary]
    [checkout.header :as header]
@@ -150,6 +151,8 @@
   [:div.container.p2
    (component/build promo-banner/sticky-organism promo-banner nil)
 
+   (component/build call-out/component call-out nil)
+
    [:div.clearfix.mxn3
     [:div.col-on-tb-dt.col-6-on-tb-dt.px3
      {:data-test "cart-line-items"}
@@ -264,6 +267,7 @@
      :products                   products
      :promo-banner               (when (zero? (orders/product-quantity order))
                                    (promo-banner/query data))
+     :call-out                   (call-out/query data)
      :updating?                  (update-pending? data)
      :redirecting-to-paypal?     (get-in data keypaths/cart-paypal-redirect)
      :share-carts?               (stylists/own-store? data)
