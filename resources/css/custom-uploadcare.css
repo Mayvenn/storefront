@@ -89,6 +89,18 @@
     display: none;
 }
 
+@media (--on-mobile) {
+    .uploadcare-dialog-tabs-panel {
+        height: 318px;
+    }
+}
+
+@media (--on-tablet-and-desktop) {
+    .uploadcare-dialog-tabs-panel {
+        height: 425px;
+    }
+}
+
 .uploadcare-dialog-big-button,
 .uploadcare-dialog-big-button:hover,
 .uploadcare-dialog-big-button:focus,
@@ -181,6 +193,9 @@
     /* The uploadcare logo */
     display: none;
 }
+
+@custom-media --on-mobile             (max-width: 749px);
+@custom-media --on-tablet-and-desktop (min-width: 750px);
 
 :root {
     --button-border-radius: var(--border-radius);
