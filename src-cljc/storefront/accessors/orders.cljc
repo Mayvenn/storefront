@@ -195,11 +195,11 @@
                                                  prev-line-item-tuples)
         prev-sku-id->quantity (into {} prev-line-item-tuples)
         get-sku first]
-    (->> changed-line-item-tuples
-         (remove (fn [[sku quantity]]
-                   (< quantity (prev-sku-id->quantity sku 0))))
-         (map get-sku)
-         set)))
+    (into #{}
+          (comp (remove (fn [[sku quantity]]
+                          (< quantity (prev-sku-id->quantity sku 0))))
+                (map get-sku))
+          changed-line-item-tuples)))
 
 (defn first-name-plus-last-name-initial [{:as order :keys [billing-address shipping-address]}]
   (when (seq order)
