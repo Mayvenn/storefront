@@ -221,22 +221,37 @@
      [:div.col-9.mx-auto
       (empty-cta-molecule queried-data)]]]))
 
+(defn determine-site
+  [app-state]
+  (cond
+    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
+    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
+    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
+
 (defn empty-cart-query
   [data]
-  {:return-link/id            "start-shopping"
-   :return-link/copy          "Start Shopping"
-   :return-link/event-message [events/navigate-category
-                               {:catalog/category-id "23"
-                                :page/slug           "mayvenn-install"}]
+  (let [nav-to-mayvenn-install [events/navigate-category
+                                {:catalog/category-id "23"
+                                 :page/slug           "mayvenn-install"}]]
+    (cond->
+        {:return-link/id            "start-shopping"
+         :return-link/copy          "Start Shopping"
+         :return-link/event-message nav-to-mayvenn-install
 
-   :cta/id                    "browse-stylists"
-   :cta/label                 "Browse Stylists"
-   :cta/target                [events/navigate-adventure-match-stylist]
-   :empty-cart-body/id        "empty-cart-body"
-   :empty-cart-body/primary   "Your Cart is Empty"
-   :empty-cart-body/secondary (str "Did you know that you'd qualify for a free"
-                                   " Mayvenn Install when you purchase 3 or more items?")
-   :empty-cart-body/image-id  "6146f2fe-27ed-4278-87b0-7dc46f344c8c"})
+         :empty-cart-body/id        "empty-cart-body"
+         :empty-cart-body/primary   "Your Cart is Empty"
+         :empty-cart-body/secondary (str "Did you know that you'd qualify for a free"
+                                         " Mayvenn Install when you purchase 3 or more items?")
+         :empty-cart-body/image-id  "6146f2fe-27ed-4278-87b0-7dc46f344c8c"
+         :cta/id                    "browse-stylists"
+         :cta/label                 "Browse Stylists"
+         :cta/target                [events/navigate-adventure-match-stylist]}
+
+      (= :aladdin (determine-site data))
+      (merge
+       {:cta/id     "start-shopping"
+        :cta/label  "Start Shopping"
+        :cta/target nav-to-mayvenn-install}))))
 
 (defn ^:private variants-requests [data request-key variant-ids]
   (->> variant-ids
