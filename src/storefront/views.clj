@@ -179,7 +179,6 @@
                      "var clientVersion=\"" client-version "\";"
                      "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
 
-          #_
           (when-not (config/development? environment)
             (for [n js-files]
               [:script {:src   (assets/path (str "/js/out/" n))
@@ -235,10 +234,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             ;; additionally, we want developers to see the server side render, so we don't want
             ;; to put this tag in <head> and be synchronous
             (for [n js-files]
-              [:script {:src (str "/js/out/" n)}]))
-          (when-not (config/development? environment)
-            (for [n js-files]
-              [:script {:src   (assets/path (str "/js/out/" n))}]))]))
+              [:script {:src (str "/js/out/" n)}]))]))
 
 (defn index [render-ctx data]
   (layout render-ctx data spinner-content))
