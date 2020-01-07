@@ -127,6 +127,7 @@
            delivery
            free-install-applied?
            items
+           site
            order
            loaded-quadpay?
            payment
@@ -176,9 +177,18 @@
                          nil)
         (when free-install-applied?
           [:div.h5.my4.center.col-10.mx-auto.line-height-3
-           (if-let [servicing-stylist-name (stylists/->display-name servicing-stylist)]
-             (str "After your order ships, you’ll be connected with " servicing-stylist-name " over SMS to make an appointment.")
-             "You’ll be able to select your Certified Mayvenn Stylist after checkout.")])
+           (let [servicing-stylist-name (stylists/->display-name servicing-stylist)]
+             (cond
+               (= :aladdin site)
+               (str "After you place your order, please contact "
+                    (stylists/->display-name servicing-stylist)
+                    " to make your Mayvenn free install appointment.")
+               servicing-stylist
+               (str "After your order ships, you’ll be connected with "
+                    (stylists/->display-name servicing-stylist)
+                    " over SMS to make an appointment.")
+               :else
+               "You’ll be able to select your Certified Mayvenn Stylist after checkout."))])
         [:div.col-12.mx-auto.mt4
          (checkout-button selected-quadpay? checkout-button-data)]]]]
      [:div.py6.h2
@@ -307,6 +317,13 @@
                                      :cart-summary-line/class "p-color"
                                      :cart-summary-line/value (mf/as-money (- (min available-store-credit total)))}]))}))
 
+(defn determine-site
+  [app-state]
+  (cond
+    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
+    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
+    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
+
 (defn query
   [data]
   (let [order                                   (get-in data keypaths/order)
@@ -319,6 +336,7 @@
     (cond->
      {:order                        order
       :store-slug                   (get-in data keypaths/store-slug)
+      :site                         (determine-site data)
       :requires-additional-payment? (requires-additional-payment? data)
       :promo-banner                 (promo-banner/query data)
       :checkout-steps               (checkout-steps/query data)
