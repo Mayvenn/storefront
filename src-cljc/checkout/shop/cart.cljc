@@ -164,9 +164,10 @@
            [:div.flex-grow-1.border-bottom.border-gray]
            [:div.content-3.proxima.mx2 "or"]
            [:div.flex-grow-1.border-bottom.border-gray]]
-          [:div.mb2.center.content-2.proxima.s-color
-           [:a.inherit-color.pointer (apply utils/fake-href remove-freeinstall-event)]
-           "Checkout without a free Mayvenn Install"]])
+          [:div.mb4.mt3
+           (ui/button-small-underline-secondary
+            (apply utils/fake-href remove-freeinstall-event)
+            "Checkout without a free Mayvenn Install")]])
 
 
        (when-not locked?
