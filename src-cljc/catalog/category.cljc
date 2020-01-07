@@ -94,9 +94,9 @@
           [:div.flex.justify-between.items-baseline
            [:div.title-3.proxima.shout.bold
             (case selections-count
-              0 "Filter by:"
-              1 "1 filter applied:"
-              (str selections-count " filters applied:"))]
+              0 "Filter by"
+              1 "1 filter applied"
+              (str selections-count " filters applied"))]
            [:p.content-3 (str product-count " item" (when (not= 1 product-count) "s"))]]
           (into [:div.content-2.flex.center]
                 (map
