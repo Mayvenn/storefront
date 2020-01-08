@@ -43,7 +43,7 @@
 (defn ^:private cta-with-chevron
   [{:cta/keys [navigation-message href value id]}]
   (component/html
-   (when (or navigation-message href)
+   (if (or navigation-message href)
      (ui/button-large-primary
       (merge
        (when href
@@ -52,19 +52,21 @@
          (apply utils/route-to navigation-message))
        (when id
          {:data-test id}))
-      value))))
+      value)
+     [:span])))
 
 (defn ^:private shop-cta
   [{:cta/keys [target value id]}]
   (component/html
-   (when id
+   (if id
      (ui/button-large-primary
-      (assoc (apply utils/route-to target) :data-test id) value))))
+      (assoc (apply utils/route-to target) :data-test id) value)
+     [:span])))
 
 (defn ^:private shop-cta-with-icon
   [{:cta/keys [target icon value id]}]
   (component/html
-   (when id
+   (if id
      [:a.my2
       (assoc (apply utils/route-to target)
              :data-test id
@@ -72,7 +74,8 @@
       (when icon
         icon)
       [:div.underline.block.content-3.bold.p-color.shout.pb6
-       value]])))
+       value]]
+     [:span])))
 
 (defn divider
   [divider-img]

@@ -337,7 +337,7 @@
     :key        "picker"
     :in         (boolean (not-empty content))
     :timeout    250}
-   (component/html content)))
+   (component/html (or content [:div]))))
 
 (defn picker-dialog
   "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"

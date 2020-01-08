@@ -69,10 +69,11 @@
   "We want ucare-ids here but we do not have them"
   [{:stylist-card.thumbnail/keys [id ucare-id]}]
   (component/html
-   (when id
-     (ui/circle-picture
-      {:width "72px"}
-      (ui/square-image {:resizable-url ucare-id} 72)))))
+   [:div
+    (when id
+      (ui/circle-picture
+       {:width "72px"}
+       (ui/square-image {:resizable-url ucare-id} 72)))]))
 
 (defn servicing-stylist-phone-molecule
   [{:phone-link/keys [phone-number]}]
