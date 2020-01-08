@@ -3,6 +3,7 @@
             [storefront.accessors.contentful :as contentful]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.marquee :as marquee]
+            [storefront.components.homepage-hero :as homepage-hero]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.components.video :as video]
@@ -332,10 +333,9 @@
      :free-install-mayvenn-ugc {:images        (contentful/album-kw->homepage-social-cards cms-ugc-collection current-nav-event :free-install-mayvenn)
                                 :album-keyword :free-install-mayvenn}
      :stylist-gallery-open?    (get-in data keypaths/carousel-stylist-gallery-open?)
-     :hero-data                {:opts    (utils/scroll-href "mayvenn-free-install-video")
-                                :alt     (-> cms-homepage-hero :alt)
-                                :mob-url (-> cms-homepage-hero :mobile :file :url)
-                                :dsk-url (-> cms-homepage-hero :desktop :file :url)}}))
+     :hero-data                (merge (homepage-hero/query cms-homepage-hero)
+                                      (when cms-homepage-hero
+                                       {:opts (utils/scroll-href "mayvenn-free-install-video")}))}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

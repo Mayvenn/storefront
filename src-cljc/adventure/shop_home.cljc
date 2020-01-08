@@ -1,35 +1,25 @@
 (ns adventure.shop-home
-  (:require adventure.handlers ;; Needed for its defmethods
-            adventure.keypaths
-            [adventure.components.layered :as layered]
+  (:require [adventure.components.layered :as layered]
             [adventure.faq :as faq]
+            adventure.handlers
+            adventure.keypaths
             [storefront.accessors.contentful :as contentful]
             [storefront.component :as component]
+            [storefront.components.homepage-hero :as homepage-hero]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
-            [storefront.keypaths :as storefront.keypaths]
-            [storefront.routes :as routes]))
+            [storefront.keypaths :as storefront.keypaths]))
 
 (defn query
   [data]
-  (let [shop?                              (= "shop" (get-in data storefront.keypaths/store-slug))
-        cms-homepage-hero                  (some-> data (get-in storefront.keypaths/cms-homepage) :shop :hero)
-        cms-ugc-collection                 (get-in data storefront.keypaths/cms-ugc-collection)
-        current-nav-event                  (get-in data storefront.keypaths/navigation-event)
-        [cms-hero-event _ :as routed-path] (-> cms-homepage-hero :path (routes/navigation-message-for nil (when shop? "shop")))]
+  (let [cms-homepage-hero  (some-> data (get-in storefront.keypaths/cms-homepage) :shop :hero)
+        cms-ugc-collection (get-in data storefront.keypaths/cms-ugc-collection)
+        current-nav-event  (get-in data storefront.keypaths/navigation-event)]
     {:layers
-     [(merge {:layer/type      :hero
-              :photo/file-name "free-install-hero"}
-             {:photo/alt         (-> cms-homepage-hero :alt)
-              :photo/mob-url     (-> cms-homepage-hero :mobile :file :url)
-              :photo/dsk-url     (-> cms-homepage-hero :desktop :file :url)
-              :photo/cta-message (-> cms-homepage-hero :path)}
-             (if (or (nil? cms-hero-event) (= events/navigate-not-found cms-hero-event))
-               {:buttons [[{:navigation-message [events/navigate-adventure-match-stylist]
-                            :data-test          "adventure-home-choice-get-started"}
-                           "Browse Stylists"]]}
-               {:photo/navigation-message routed-path}))
+     [(merge {:layer/type :hero}
+             (assoc (homepage-hero/query cms-homepage-hero)
+                    :file-name "free-install-hero"))
       {:layer/type :free-standard-shipping-bar}
       {:layer/type   :shop-text-block
        :header/value "Buy 3 bundles and we’ll pay for your service"

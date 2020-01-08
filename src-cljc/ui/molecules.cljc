@@ -82,13 +82,20 @@
                        :alt alt}]])
 
 (defcomponent hero
-  [{:keys [dsk-uuid dsk-url mob-uuid mob-url file-name alt opts off-screen?]
+  [{:keys [opts
+           dsk-uuid
+           mob-uuid
+           dsk-url
+           mob-url
+           file-name
+           alt
+           ucare?
+           off-screen?]
     :or   {file-name "hero-image"}} _ _]
-  (let [ucare? (boolean mob-uuid)]
-    [:a opts (cond
-               off-screen? [:div.col-12]
-               ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
-               :else       (image-hero mob-url dsk-url alt))]))
+  [:a opts (cond
+             off-screen? [:div.col-12]
+             ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
+             :else       (image-hero mob-url dsk-url alt))])
 
 (defn field-reveal-molecule
   [{:field-reveal/keys [id label target]}]

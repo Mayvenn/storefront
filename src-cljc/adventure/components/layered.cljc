@@ -21,25 +21,11 @@
 (defcomponent layer-hero
   [data _ opts]
   [:div.mx-auto.relative {:style {:min-height "300px"}}
-   (let [{:photo/keys [mob-uuid mob-url dsk-uuid dsk-url file-name alt navigation-message]} data]
-     (component/build ui.M/hero
-                      {:mob-uuid  mob-uuid
-                       :mob-url   mob-url
-                       :dsk-uuid  dsk-uuid
-                       :dsk-url   dsk-url
-                       :file-name file-name
-                       :alt       alt
-                       :opts      (merge {:class     "block"
-                                          :style     {:min-height "300px"}}
-                                         (when navigation-message {:data-test "hero-link"})
-                                         (when navigation-message (apply utils/route-to navigation-message)))}))
-   (when-let [buttons (:buttons data)]
-     [:div.relative.flex.justify-center
-      [:div.absolute.bottom-0.col-6-on-tb-dt.col-12.pb2.mb3-on-dt
-       [:div.col.col-12.flex.justify-center
-        (let [num-buttons (count buttons)]
-          (for [button buttons]
-            [:div.px2 {:class (str "col-" (if (= num-buttons 1) 9 6))} (apply ui/button-large-primary button)]))]]])])
+   (let [{:keys [opts]} data]
+     (component/build ui.M/hero (merge data
+                                       {:opts (merge opts {:class     "block"
+                                                           :style     {:min-height "300px"}
+                                                           :data-test "hero-link"})})))])
 
 (defcomponent free-standard-shipping-bar
   [_ _ _]

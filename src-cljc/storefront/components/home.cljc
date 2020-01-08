@@ -6,6 +6,7 @@
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.marquee :as marquee]
             [storefront.components.v2-home :as v2-home]
+            [storefront.components.homepage-hero :as homepage-hero]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -70,49 +71,6 @@
                     [:h3.h2.hide-on-mb
                      [:div "Need inspiration?"]
                      [:div "Try shop by look."]]]])]]))
-
-(defn hero
-  [hero-data]
-  (when hero-data
-    (let [{:keys [mobile desktop alt path]} hero-data
-          mobile-url                        (-> mobile :file :url)
-          desktop-url                       (-> desktop :file :url)
-          [event args :as routed-path]      (routes/navigation-message-for path)]
-      [:h1.h2
-       [:a (assoc (if-not (= events/navigate-not-found event)
-                    (apply utils/route-to routed-path)
-                    {:href path})
-                  :data-test "home-banner")
-        [:picture
-         ;; Tablet/Desktop
-         (for [img-type ["webp" "jpg"]]
-           [(ui/source desktop-url
-                       {:media   "(min-width: 750px)"
-                        :src-set {"1x" {:w "1600"
-                                        :q "75"}}
-                        :type    img-type})
-            (ui/source mobile-url
-                       {:media   "(min-width: 426px)"
-                        :src-set {"1x" {:w "750"
-                                        :q "75"}
-                                  "2x" {:w "1500"
-                                        :q "50"}}
-                        :type    img-type})
-            (ui/source mobile-url
-                       {:media   "(min-width: 321px)"
-                        :src-set {"1x" {:w "425"
-                                        :q "75"}
-                                  "2x" {:w "850"
-                                        :q "50"}}
-                        :type    img-type})
-            (ui/source mobile-url
-                       {:src-set {"1x" {:w "320"
-                                        :q "75"}
-                                  "2x" {:w "640"
-                                        :q "50"}}
-                        :type    img-type})])
-         [:img.block.col-12 {:src mobile-url
-                             :alt alt}]]]])))
 
 (def free-installation-hero-data
   {:route-to-fn  (utils/route-to events/navigate-shop-by-look
@@ -327,11 +285,11 @@
                        :alt     alt}]])
 
 (defcomponent component
-  [{:component/keys [hero-cms-data features]
+  [{:component/keys [features hero-data]
     :keys           [signed-in store categories] :as data} _ _]
   [:div.m-auto
-   (when hero-cms-data
-     [:section (hero hero-cms-data)])
+   [:section
+    [:h1.h2 (component/build ui.molecules/hero hero-data)]]
    [:section.hide-on-tb-dt (store-info signed-in store)]
    (feature-blocks features)
    [:section (popular-grid categories)]
@@ -349,16 +307,14 @@
 
 (defn query
   [data]
-  (when-let [homepage (some-> data
-                              (get-in keypaths/cms-homepage)
-                              :classic)]
-    {:store                   (marquee/query data)
-     :signed-in               (auth/signed-in data)
-     :categories              (->> (get-in data keypaths/categories)
-                                   (filter :home/order)
-                                   (sort-by :home/order))
-     :component/hero-cms-data (:hero homepage)
-     :component/features      (select-keys homepage [:feature-1 :feature-2 :feature-3])}))
+  (let [homepage-cms (some-> data (get-in keypaths/cms-homepage) :classic)]
+    {:store               (marquee/query data)
+     :signed-in           (auth/signed-in data)
+     :categories          (->> (get-in data keypaths/categories)
+                               (filter :home/order)
+                               (sort-by :home/order))
+     :component/hero-data (homepage-hero/query (:hero homepage-cms))
+     :component/features  (select-keys homepage-cms [:feature-1 :feature-2 :feature-3])}))
 
 (defn built-component [data opts]
   (cond
