@@ -378,10 +378,10 @@
     [:div.stroke-s-color
      (svg/straight-line {:width  "1px"
                          :height "42px"})]
-    (map-indexed (partial shop-step (str layer-id "-mb-tb-"))
+    (map-indexed (partial shop-step "mb-tb-")
                  bullets)]
    [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
-    (map-indexed (partial shop-step (str layer-id "-dt-"))
+    (map-indexed (partial shop-step "dt-")
                  bullets)]
    (shop-cta-with-icon data)])
 

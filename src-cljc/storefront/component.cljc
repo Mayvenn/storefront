@@ -191,16 +191,9 @@
                      methods)))))
 
 (defmacro html [content]
-  `(if-cljs
-    (let [c# (sablono.core/html (or ~content [:span]))]
-      (when ^boolean goog/DEBUG
-        (assert (js/React.isValidElement c#)
-                (str "Did not receive a valid element "
-                     ~(:file (meta &form))
-                     ":"
-                     ~(:line (meta &form)))))
-      c#)
-    ~content))
+  (if (cljs-env? &env)
+    `(sablono.core/html ~(or content [:span]))
+    content))
 
 (defmacro create
   "Creates a React.PureComponent (on the client) / simple html rendering (on the server)

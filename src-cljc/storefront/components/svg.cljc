@@ -22,7 +22,7 @@
 
 (defn svg-xlink
   ([id] (svg-xlink {} id))
-  ([opts id] (component/html [:g {:dangerouslySetInnerHTML {:__html (str "<use xlink:href=\"#" id "\"></use>")}}])))
+  ([opts id] (component/html [:g [:use {:xlinkHref (str "#" id)}]])))
 
 (defn error [opts]
   (component/html
