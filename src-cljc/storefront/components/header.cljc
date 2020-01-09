@@ -73,18 +73,20 @@
        [:span.ml1 (ui/expand-icon expanded?)])]]))
 
 (defn store-info [signed-in {:keys [expanded?] :as store}]
-  (when (-> signed-in ::auth/to #{:marketplace :own-store})
-    (let [rows (marquee/actions store gallery-link instagram-link styleseat-link)]
-      (if-not (boolean (seq rows))
-        (store-welcome signed-in store false)
-        (ui/drop-down
-         expanded?
-         keypaths/store-info-expanded
-         [:div (store-welcome signed-in store true)]
-         [:div.bg-white.absolute.left-0.top-lit
-          (for [[idx row] (map-indexed vector rows)]
-            [:div.border-gray {:key   idx
-                               :class (when-not (zero? idx) "border-top")} row])])))))
+  (component/html
+   (if (-> signed-in ::auth/to #{:marketplace :own-store})
+     (let [rows (marquee/actions store gallery-link instagram-link styleseat-link)]
+       (if (pos? (count rows))
+         ^:inline (ui/drop-down
+                   expanded?
+                   keypaths/store-info-expanded
+                   [:div ^:inline (store-welcome signed-in store true)]
+                   [:div.bg-white.absolute.left-0.top-lit
+                    (for [[idx row] (map-indexed vector rows)]
+                      [:div.border-gray {:key   idx
+                                         :class (when-not (zero? idx) "border-top")} row])])
+         ^:inline (store-welcome signed-in store false)))
+     [:div])))
 
 (defmulti account-info (fn [signed-in _ _ _] (::auth/as signed-in)))
 

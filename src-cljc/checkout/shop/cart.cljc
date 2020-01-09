@@ -182,9 +182,10 @@
                                     :spinning? redirecting-to-paypal?
                                     :disabled? checkout-disabled?
                                     :data-test "paypal-checkout"}
-                                   [:div
-                                    "Check out with "
-                                    [:span.medium.italic "PayPal™"]])]])
+                                   (component/html
+                                    [:div
+                                     "Check out with "
+                                     [:span.medium.italic "PayPal™"]]))]])
        #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])]]
 
      (when share-carts?

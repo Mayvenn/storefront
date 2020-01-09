@@ -28,49 +28,53 @@
 
 (defn category-image
   [{:keys [url filename alt]}]
-  ;; Assumptions: 2 up on mobile, 3 up on tablet/desktop, within a .container. Does not account for 1px border.
-  [:img.block.col-12 {:src     (str url "-/format/auto/-/resize/750x/-/quality/lightest/" filename)
-                      :src-set (str url "-/format/auto/-/resize/750x/-/quality/lightest/" filename " 750w, "
-                                    url "-/format/auto/-/resize/640x/-/quality/lightest/" filename " 640w")
-                      :sizes   (str "(min-width: 1000px) 320px, "
-                                    "(min-width: 750px) 240px, "
-                                    "50vw")
-                      :alt     alt}])
+  (component/html
+   ;; Assumptions: 2 up on mobile, 3 up on tablet/desktop, within a .container. Does not account for 1px border.
+   [:img.block.col-12 {:src     (str url "-/format/auto/-/resize/750x/-/quality/lightest/" filename)
+                       :src-set (str url "-/format/auto/-/resize/750x/-/quality/lightest/" filename " 750w, "
+                                     url "-/format/auto/-/resize/640x/-/quality/lightest/" filename " 640w")
+                       :sizes   (str "(min-width: 1000px) 320px, "
+                                     "(min-width: 750px) 240px, "
+                                     "50vw")
+                       :alt     alt}]))
 (defn popular-grid [categories]
-  (let [grid-block (fn [key content]
-                     [:div.col.col-6.col-4-on-tb-dt.border.border-white {:key key}
-                      (ui/aspect-ratio 4 3 content)])]
-    [:div.container.center.pb4
-     [:div.flex.flex-column.py4
-      [:h1.h4.order-2.px2
-       "Human hair extensions, free shipping, free returns, and a 30 day guarantee"]
-      [:h2.h1.order-1 "Shop Popular Styles"]]
-     [:div
-      (for [{:keys [page/slug images copy/title] :as category} categories]
-        (grid-block slug
-                    [:a.absolute.overlay.overflow-hidden
-                     (merge {:data-test (str "category-" slug)}
-                            (utils/route-to events/navigate-category category))
-                     (category-image (:home images))
-                     [:h3.h2.white.absolute.col-12.titleize.mt1
-                      {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
-                               :transform "translateY(-75%)"
-                               :top "75%"}}
-                      (let [[first-word & last-words] (string/split title #" ")]
-                        [:div
-                         [:div first-word]
-                         [:div (string/join " " last-words)]])]]))
-      (grid-block "spare-block"
-                  [:a.bg-cool-gray.white.absolute.overlay
-                   (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                          :data-test "nav-shop-look")
-                   [:div.flex.container-size.justify-center.items-center
-                    [:h3.hide-on-tb-dt
-                     [:div "Need inspiration?"]
-                     [:div "Try shop by look."]]
-                    [:h3.h2.hide-on-mb
-                     [:div "Need inspiration?"]
-                     [:div "Try shop by look."]]]])]]))
+  (component/html
+   (let [grid-block (fn [key content]
+                      (component/html
+                       [:div.col.col-6.col-4-on-tb-dt.border.border-white {:key key}
+                        ^:inline (ui/aspect-ratio 4 3 content)]))]
+     [:div.container.center.pb4
+      [:div.flex.flex-column.py4
+       [:h1.h4.order-2.px2
+        "Human hair extensions, free shipping, free returns, and a 30 day guarantee"]
+       [:h2.h1.order-1 "Shop Popular Styles"]]
+      [:div
+       (for [{:keys [page/slug images copy/title] :as category} categories]
+         ^:inline
+         (grid-block slug
+                     [:a.absolute.overlay.overflow-hidden
+                      ^:attrs (merge {:data-test (str "category-" slug)}
+                                     (utils/route-to events/navigate-category category))
+                      ^:inline (category-image (:home images))
+                      [:h3.h2.white.absolute.col-12.titleize.mt1
+                       {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
+                                :transform "translateY(-75%)"
+                                :top "75%"}}
+                       (let [[first-word & last-words] (string/split title #" ")]
+                         [:div
+                          [:div first-word]
+                          [:div (string/join " " last-words)]])]]))
+       ^:inline (grid-block "spare-block"
+                   [:a.bg-cool-gray.white.absolute.overlay
+                    ^:attrs (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+                                   :data-test "nav-shop-look")
+                    [:div.flex.container-size.justify-center.items-center
+                     [:h3.hide-on-tb-dt
+                      [:div "Need inspiration?"]
+                      [:div "Try shop by look."]]
+                     [:h3.h2.hide-on-mb
+                      [:div "Need inspiration?"]
+                      [:div "Try shop by look."]]]])]])))
 
 (def free-installation-hero-data
   {:route-to-fn  (utils/route-to events/navigate-shop-by-look
@@ -87,19 +91,20 @@
   ;; Desktop  480px
   ;; Tablet   360px
   ;; Mobile   375px
-  [:picture
-   ;; Desktop
-   [:source {:media   "(min-width: 1000px)"
-             :src-set (str desktop-url "-/format/auto/-/resize/480x/" file-name " 1x, "
-                           desktop-url "-/format/auto/-/resize/960x/-/quality/lightest/" file-name " 2x")}]
-   ;; Tablet
-   [:source {:media   "(min-width: 750px)"
-             :src-set (str desktop-url "-/format/auto/-/resize/360x/" file-name " 1x, "
-                           desktop-url "-/format/auto/-/resize/720x/-/quality/lightest/" file-name " 2x")}]
-   ;; Mobile
-   [:img.block.col-12 {:src     (str mobile-url "-/format/auto/-/resize/375x/" file-name)
-                       :src-set (str mobile-url "-/format/auto/-/resize/750x/-/quality/lightest/" file-name " 2x")
-                       :alt     alt}]])
+  (component/html
+   [:picture
+    ;; Desktop
+    [:source {:media   "(min-width: 1000px)"
+              :src-set (str desktop-url "-/format/auto/-/resize/480x/" file-name " 1x, "
+                            desktop-url "-/format/auto/-/resize/960x/-/quality/lightest/" file-name " 2x")}]
+    ;; Tablet
+    [:source {:media   "(min-width: 750px)"
+              :src-set (str desktop-url "-/format/auto/-/resize/360x/" file-name " 1x, "
+                            desktop-url "-/format/auto/-/resize/720x/-/quality/lightest/" file-name " 2x")}]
+    ;; Mobile
+    [:img.block.col-12 {:src     (str mobile-url "-/format/auto/-/resize/375x/" file-name)
+                        :src-set (str mobile-url "-/format/auto/-/resize/750x/-/quality/lightest/" file-name " 2x")
+                        :alt     alt}]]))
 
 (defn feature-block [{:keys [desktop mobile alt path]}]
   ;; Assumptions: 2 up, within a .container. Does not account for 1px border.
@@ -111,48 +116,52 @@
   (let [mobile-url  (-> mobile :file :url)
         desktop-url (-> desktop :file :url)
         tablet-url  (-> desktop :file :url)]
-    [:div.col.col-12.col-4-on-tb-dt.border.border-white
-     [:a (apply utils/route-to (routes/navigation-message-for path))
-      [:picture
-       (for [img-type ["webp" "jpg"]]
-         [(ui/source desktop-url
-                     {:media   "(min-width: 1000px)"
-                      :type    img-type
-                      :src-set {"1x" {:w "625"}}})
-          (ui/source tablet-url
-                     {:media   "(min-width: 750px)"
-                      :type    img-type
-                      :src-set {"1x" {:w "625"
-                                      :q "75"}
-                                "2x" {:w "720"
-                                      :q "75"}}})
-          (ui/source mobile-url
-                     {:media   "(min-width: 376px)"
-                      :type    img-type
-                      :src-set {"1x" {:w "750"
-                                      :q "75"}
-                                "2x" {:w "1500"
-                                      :q "50"}}})
-          (ui/source mobile-url
-                     {:type    img-type
-                      :src-set {"1x" {:w "375"
-                                      :q "75"}
-                                "2x" {:w "750"
-                                      :q "50"}}})])
-       ;; Fallback
-       [:img.block.col-12 {:src (str mobile-url "?w=625&fm=jpg")
-                           :alt alt}]]]]))
+    (component/html
+     [:div.col.col-12.col-4-on-tb-dt.border.border-white
+      [:a ^:attrs (apply utils/route-to (routes/navigation-message-for path))
+       [:picture
+        (for [img-type ["webp" "jpg"]
+              src      [(ui/source desktop-url
+                                   {:media   "(min-width: 1000px)"
+                                    :type    img-type
+                                    :src-set {"1x" {:w "625"}}})
+                        (ui/source tablet-url
+                                   {:media   "(min-width: 750px)"
+                                    :type    img-type
+                                    :src-set {"1x" {:w "625"
+                                                    :q "75"}
+                                              "2x" {:w "720"
+                                                    :q "75"}}})
+                        (ui/source mobile-url
+                                   {:media   "(min-width: 376px)"
+                                    :type    img-type
+                                    :src-set {"1x" {:w "750"
+                                                    :q "75"}
+                                              "2x" {:w "1500"
+                                                    :q "50"}}})
+                        (ui/source mobile-url
+                                   {:type    img-type
+                                    :src-set {"1x" {:w "375"
+                                                    :q "75"}
+                                              "2x" {:w "750"
+                                                    :q "50"}}})]]
+          ^:inline src)
+        ;; Fallback
+        [:img.block.col-12 {:src (str mobile-url "?w=625&fm=jpg")
+                            :alt alt}]]]])))
 
 (defn feature-blocks
   [{:as features :keys [feature-1 feature-2 feature-3]}]
-  (when (seq features)
-    (let [{:keys [feature-1 feature-2 feature-3]} features]
-      [:section
-       [:div.container.border-top.border-white
-        [:div.col.col-12.my4 [:h1.center "Shop What's New"]]
-        (feature-block feature-1)
-        (feature-block feature-2)
-        (feature-block feature-3)]])))
+  (component/html
+   (if (seq features)
+     (let [{:keys [feature-1 feature-2 feature-3]} features]
+       [:section
+        [:div.container.border-top.border-white
+         [:div.col.col-12.my4 [:h1.center "Shop What's New"]]
+         ^:inline (feature-block feature-1)
+         ^:inline (feature-block feature-2)
+         ^:inline (feature-block feature-3)]])
+     [:section])))
 
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
@@ -289,21 +298,21 @@
     :keys           [signed-in store categories] :as data} _ _]
   [:div.m-auto
    [:section
-    [:h1.h2 (component/build ui.molecules/hero hero-data)]]
+    [:h1.h2 ^:inline (component/build ui.molecules/hero hero-data)]]
    [:section.hide-on-tb-dt (store-info signed-in store)]
-   (feature-blocks features)
-   [:section (popular-grid categories)]
+   ^:inline (feature-blocks features)
+   [:section ^:inline (popular-grid categories)]
    [:section ^:inline (video-autoplay)]
    [:section ^:inline (about-mayvenn)]
-   [:section (component/build ui.M/hero
-                              {:mob-uuid  "762369fb-6680-4e0a-bf99-4e6317f03f1d"
-                               :dsk-uuid  "b11d90d3-ed57-4c18-a61b-d91b68e1cccb"
-                               :file-name "talkable_banner_25.jpg"
-                               :alt       "refer friends, earn rewards, get 25% off"
-                               :opts      (utils/route-to events/navigate-friend-referrals
-                                                          {:query-params {:campaign_tags  "25-off"
-                                                                          :traffic_source "homepageBanner"}})}
-                              nil)]])
+   [:section ^:inline (component/build ui.M/hero
+                                       {:mob-uuid  "762369fb-6680-4e0a-bf99-4e6317f03f1d"
+                                        :dsk-uuid  "b11d90d3-ed57-4c18-a61b-d91b68e1cccb"
+                                        :file-name "talkable_banner_25.jpg"
+                                        :alt       "refer friends, earn rewards, get 25% off"
+                                        :opts      (utils/route-to events/navigate-friend-referrals
+                                                                   {:query-params {:campaign_tags  "25-off"
+                                                                                   :traffic_source "homepageBanner"}})}
+                                       nil)]])
 
 (defn query
   [data]

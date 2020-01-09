@@ -65,9 +65,9 @@
    [:div.container
     [:div.col-12.clearfix.px3
      [:div.col-on-tb-dt.col-6-on-tb-dt.mt6
-      ^:inline (shop-section {:partition-count 10 :categories categories})]
+      (shop-section {:partition-count 10 :categories categories})]
      [:div.col-on-tb-dt.col-6-on-tb-dt.mt6
-      ^:inline (component/build contacts-section contacts)]
+      (component/build contacts-section contacts)]
      (when essence-copy
        [:div.col-on-tb-dt.col-6-on-tb-dt.pb2.content-4.dark-gray
         essence-copy])]]
@@ -127,10 +127,12 @@
         (assoc (utils/route-to events/navigate-adventure-match-stylist)
                :data-test "freeinstall-footer-link")
         "Mayvenn Install"]
-       (map dtc-link column-1-links)]
+       (for [link column-1-links]
+         (dtc-link link))]
       (for [link-column (partition-all partition-count rest-of-links)]
         [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :slug))}
-         (map dtc-link link-column)])]]))
+         (for [link link-column]
+           (dtc-link link))])]]))
 
 (defcomponent dtc-full-component
   [{:keys [contacts categories essence-copy]} owner opts]
@@ -138,10 +140,10 @@
    [:div.container
     [:div.col-12.clearfix.px3
      [:div.col-on-tb-dt.col-6-on-tb-dt.mt6
-      ^:inline (component/build dtc-shop-section {:categories      categories
+      (component/build dtc-shop-section {:categories      categories
                                                   :partition-count 5})]
      [:div.col-on-tb-dt.col-6-on-tb-dt.mt6
-      ^:inline (component/build contacts-section contacts)]
+      (component/build contacts-section contacts)]
      (when essence-copy
        [:div.col-on-tb-dt.col-6-on-tb-dt.pb2.content-4.dark-gray
         essence-copy])]]

@@ -15,7 +15,7 @@
         :disabled? (boolean disabled?)}
        #?(:clj {:disabled? true})
        (apply utils/fake-href target))
-      [:div.flex.items-center.justify-center.inherit-color label])]))
+      (component/html [:div.flex.items-center.justify-center.inherit-color label]))]))
 
 (defn add-to-cart-incentive-block-molecule
   [{:add-to-cart.incentive-block/keys [id message link-label link-target footnote]}]

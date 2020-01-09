@@ -14,9 +14,10 @@
 
 (defn ^:private vertical-squiggle
   [top]
-  [:div.absolute.col-12.flex.justify-center
-   {:style {:top top}}
-   (svg/vertical-squiggle {:style {:height "72px"}})])
+  (component/html
+   [:div.absolute.col-12.flex.justify-center
+    {:style {:top top}}
+    ^:inline (svg/vertical-squiggle {:style {:height "72px"}})]))
 
 (defcomponent layer-hero
   [data _ opts]
@@ -79,10 +80,11 @@
 
 (defn divider
   [divider-img]
-  [:div {:style {:background-image    divider-img
-                 :background-position "center"
-                 :background-repeat   "repeat-x"
-                 :height              "24px"}}])
+  (component/html
+   [:div {:style {:background-image    divider-img
+                  :background-position "center"
+                  :background-repeat   "repeat-x"
+                  :height              "24px"}}]))
 
 (defcomponent hero-image-component [{:screen/keys [seen?] :as data} owner opts]
   [:div (component/build ui.M/hero (merge data {:off-screen? (not seen?)}) nil)])
@@ -179,12 +181,12 @@
     contact-us-blocks  :contact-us-blocks} _ _]
   [:div
    [:div.bg-warm-gray.center.py8
-    [:h5.mt6.proxima.shout.title-2 title-value]
-    [:h1.canela.title-1.pb1 subtitle-value]
-    [:h5.proxima.content-2 sub-subtitle-value]
+    [:h5.mt6.proxima.shout.title-2 ^String title-value]
+    [:h1.canela.title-1.pb1 ^String subtitle-value]
+    [:h5.proxima.content-2 ^String sub-subtitle-value]
     [:div.stroke-s-color.pt4
-     (svg/straight-line {:width  "1px"
-                         :height "42px"})]
+     ^:inline (svg/straight-line {:width  "1px"
+                                  :height "42px"})]
     [:div.flex.flex-wrap.items-baseline.justify-center.col-12.col-8-on-tb-dt.mx-auto
      (map-indexed (partial contact-us-block) contact-us-blocks)]]
    [:div.bg-p-color.pt1]])
@@ -202,30 +204,30 @@
       [:div.mx5.col-6.flex.items-center
        [:div
         [:div.flex.justify-center
-         (svg/mayvenn-logo {:width "52px" :height "30px"})]
+         ^:inline (svg/mayvenn-logo {:width "52px" :height "30px"})]
         [:div.flex.justify-center
-         [:div dsk-quotation-mark]
+         [:div ^:inline dsk-quotation-mark]
          [:div.canela.title-1.center.mt2.mb4.col-7-on-dt.col-9-on-tb text]
-         [:div.self-end.rotate-180 dsk-quotation-mark]]]]
+         [:div.self-end.rotate-180 ^:inline dsk-quotation-mark]]]]
       [:div.relative.col-6
        [:div.absolute.white.right-0.py6.px4.right-align
-        [:div.proxima.title-1.shout primary-attribution]
-        [:div secondary-attribution]]
-       (ui/defer-ucare-img {:class "block col-12"
-                            :width "1000"} dsk-ucare-id)]]
+        [:div.proxima.title-1.shout ^String primary-attribution]
+        [:div ^String secondary-attribution]]
+       ^:inline (ui/defer-ucare-img {:class "block col-12"
+                                     :width "1000"} dsk-ucare-id)]]
 
      [:div.relative.hide-on-tb-dt ;; MB
-      (vertical-squiggle "-86px")
+      ^:inline (vertical-squiggle "-86px")
       [:div.flex.mx5.my10
-       [:div mob-quotation-mark]
-       [:div.canela.title-2.center.pt2.pb4 text]
-       [:div.self-end.rotate-180 mob-quotation-mark]]
+       [:div ^:inline mob-quotation-mark]
+       [:div.canela.title-2.center.pt2.pb4 ^String text]
+       [:div.self-end.rotate-180 ^:inline mob-quotation-mark]]
       [:div.relative
        [:div.absolute.white.right-0.py8.px4.right-align
-        [:div.proxima.title-2.shout primary-attribution]
-        [:div secondary-attribution]]
-       (ui/defer-ucare-img {:class "block col-12"
-                            :width "600"} mob-ucare-id)]]]))
+        [:div.proxima.title-2.shout ^String primary-attribution]
+        [:div ^String secondary-attribution]]
+       ^:inline (ui/defer-ucare-img {:class "block col-12"
+                                     :width "600"} mob-ucare-id)]]]))
 
 (def sticky-footer
   #?(:clj (fn [_ _ _] (component/create "sticky-footer" [:div]))
@@ -262,15 +264,15 @@
                      content   :sticky/content
                      id        :layer/id}          data
                     content-height-ref             (component/use-ref this "content-height")]
-                (when id
-                  (component/html
+                (component/html
+                 (if id
                    [:div.hide-on-dt
                     [:div.fixed.z4.bottom-0.left-0.right-0
                      {:style {:margin-bottom (str "-" content-height "px")
                               :box-shadow "0 -6px 6px rgba(0,0,0,0.06)"}}
-                    ;; Using a separate element with reverse margin to prevent the
-                    ;; sticky component from initially appearing on the page and then
-                    ;; animate hiding.
+                     ;; Using a separate element with reverse margin to prevent the
+                     ;; sticky component from initially appearing on the page and then
+                     ;; animate hiding.
                      [:div.transition-2
                       (if show?
                         {:style {:margin-bottom (str content-height "px")}}
@@ -285,7 +287,8 @@
                                                     (when navigation-message
                                                       (apply utils/route-to navigation-message))
                                                     {:data-test id})
-                                                   [:div.h7 label])]]]]]]])))))))
+                                                   (component/html [:div.h7 label]))]]]]]]]
+                   [:div])))))))
 
 (defcomponent shop-text-block
   [{anchor-name :anchor/name
@@ -305,13 +308,12 @@
        title])
     (when body
       [:div.title-2.canela body])
-    ^:inline
     [:div.pt3
      (if button?
-       (shop-cta data)
-       (shop-cta-with-icon data))]]
+       ^:inline (shop-cta data)
+       ^:inline (shop-cta-with-icon data))]]
    (when divider-img
-     (divider divider-img))])
+     ^:inline (divider divider-img))])
 
 (defcomponent shop-framed-checklist
   [{:keys [bullets divider-img] header-value :header/value} _ _]
@@ -330,7 +332,7 @@
        (for [[i b] (map-indexed vector bullets)]
          [:li.py1 {:key (str i)} b])]]]]
    (when divider-img
-     (divider divider-img))])
+     ^:inline (divider divider-img))])
 
 (defn ^:private shop-step
   [key-prefix
@@ -367,12 +369,12 @@
     [:div.stroke-s-color
      (svg/straight-line {:width  "1px"
                          :height "42px"})]
-    (map-indexed (partial shop-step "mb-tb-")
-                 bullets)]
+    (for [[i bullet] (map-indexed vector bullets)]
+      ^:inline (shop-step "mb-tb-" i bullet))]
    [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
-    (map-indexed (partial shop-step "dt-")
-                 bullets)]
-   (shop-cta-with-icon data)])
+    (for [[i bullet] (map-indexed vector bullets)]
+      ^:inline (shop-step "dt-" i bullet))]
+   ^:inline (shop-cta-with-icon data)])
 
 (defn ^:private shop-icon-step
   [key-prefix
@@ -410,11 +412,12 @@
       [:div.title-1.canela.shout
        (interpose [:br] subtitle-value)])]
    [:div.col-8.flex.flex-column.items-center.hide-on-dt
-    (map-indexed (partial shop-icon-step (str layer-id "-mb-tb-"))
-                 bullets)]
+    (for [[i bullet] (map-indexed vector bullets)]
+      ^:inline (shop-icon-step (str layer-id "-mb-tb-") i bullet))]
    [:div.col-7.flex.flex-wrap.justify-between.hide-on-mb-tb
-    (map-indexed (partial shop-icon-step (str layer-id "-dt-")) bullets)]
-   (shop-cta-with-icon data)])
+    (for [[i bullet] (map-indexed vector bullets)]
+      ^:inline (shop-icon-step (str layer-id "-dt-") i bullet))]
+   ^:inline (shop-cta-with-icon data)])
 
 (defcomponent shop-ugc
   [{title  :header/value
@@ -458,8 +461,6 @@
 
 (defcomponent component [{:keys [layers]} owner opts]
   [:div
-   (map-indexed (fn [i layer-data]
-                  (component/html
-                   [:section {:key (str "section-" i)}
-                    (layer-view layer-data opts)]))
-                layers)])
+   (for [[i layer-data] (map-indexed vector layers)]
+     [:section {:key (str "section-" i)}
+      ^:inline (layer-view layer-data opts)])])

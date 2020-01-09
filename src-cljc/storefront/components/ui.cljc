@@ -88,32 +88,38 @@
 (defn aspect-ratio
   "Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/. This is a slight modification, adapted from the wistia player."
   ([x y content]
-   [:div.relative.overflow-hidden
-    {:style {:padding-top (-> y (/ x) (* 100) float (str "%"))}}
-    [:div.absolute.overlay content]])
+   (component/html
+    [:div.relative.overflow-hidden
+     {:style {:padding-top (-> y (/ x) (* 100) float (str "%"))}}
+     [:div.absolute.overlay content]]))
   ([x y attrs content]
-   [:div.relative.overflow-hidden
-    {:style {:padding-top (-> y (/ x) (* 100) float (str "%"))}}
-    [:div.absolute.overlay attrs content]]))
+   (component/html
+    [:div.relative.overflow-hidden
+     {:style {:padding-top (-> y (/ x) (* 100) float (str "%"))}}
+     [:div.absolute.overlay attrs content]])))
 
 (defn button
   [additional-classes
    {:keys [disabled? disabled-class spinning? navigation-message href]
     :as   opts}
    content]
-  (let [shref   (str href)
-        attrs   (cond-> opts
-                  :always                                                   (dissoc :spinning? :disabled? :disabled-class :navigation-message)
-                  navigation-message                                        (merge (apply utils/route-to navigation-message))
-                  (and (string/starts-with? shref "#") (> (count shref) 1)) (merge (utils/scroll-href (subs href 1)))
-                  (or disabled? spinning?)                                  (assoc :on-click utils/noop-callback)
-                  disabled?                                                 (assoc :data-test-disabled "yes")
-                  spinning?                                                 (assoc :data-test-spinning "yes")
-                  :always                                                   (update :class str " " additional-classes)
-                  disabled?                                                 (update :class str (str " btn-gray btn-disabled " (or disabled-class "is-disabled"))))
-        content (if spinning? [spinner] content)]
-    [:a (merge {:href "#"} attrs)
-     content]))
+  (component/html
+   (let [shref   (str href)
+         attrs   (cond-> opts
+                   :always                                                   (dissoc :spinning? :disabled? :disabled-class :navigation-message)
+                   navigation-message                                        (merge (apply utils/route-to navigation-message))
+                   (and (string/starts-with? shref "#") (> (count shref) 1)) (merge (utils/scroll-href (subs href 1)))
+                   (or disabled? spinning?)                                  (assoc :on-click utils/noop-callback)
+                   disabled?                                                 (assoc :data-test-disabled "yes")
+                   spinning?                                                 (assoc :data-test-spinning "yes")
+                   :always                                                   (update :class str " " additional-classes)
+                   disabled?                                                 (update :class str (str " btn-gray btn-disabled " (or disabled-class "is-disabled"))))
+         content (if spinning? [spinner] content)]
+     [:a (merge {:href "#"} attrs)
+      ;; FIXME: the button helper functions with & content force us to do this for consistency
+      (if (seq? content)
+        (into [:span] content)
+        content)])))
 
 (def ^:private button-large-primary-classes "btn-large btn-p-color button-font-1 shout")
 (def ^:private disabled-button-large-primary-classes "btn-large btn-gray button-font-1 shout btn-disabled")
@@ -137,14 +143,15 @@
   ([title] (submit-button title {}))
   ([title {:keys [spinning? disabled? data-test]
            :as   attrs}]
-   (if spinning?
-     (button-large-primary attrs)
-     [:input.col-12.bg-clear
-      {:type      "submit"
-       :class     (if disabled? disabled-button-large-primary-classes button-large-primary-classes)
-       :data-test data-test
-       :value     title
-       :disabled  (boolean disabled?)}])))
+   (component/html
+    (if spinning?
+      (button-large-primary attrs)
+      [:input.col-12.bg-clear
+       {:type      "submit"
+        :class     (if disabled? disabled-button-large-primary-classes button-large-primary-classes)
+        :data-test data-test
+        :value     title
+        :disabled  (boolean disabled?)}]))))
 
 (def hyphen "‐") ; &hyphen;
 (def shy (component/html [:span {:dangerouslySetInnerHTML {:__html "&shy;"}}]))
@@ -200,6 +207,7 @@
 (defn text-input [{:keys [id type label keypath value] :as input-attributes}]
   (component/html
    [:input.h5.border-none.px2.bg-white.col-12
+    ^:attrs
     (merge
      {:style       {:height    "56px"
                     :font-size "16px"}
@@ -228,21 +236,21 @@
                            :focused? focused?
                            :hint?    hint?
                            :value?   (seq value)}]
-     [:div (merge (field-wrapper-class {:wrapper-class wrapper-class
-                                        :large?        large?} status)
-                  {:style wrapper-style})
+     [:div ^:attrs (merge (field-wrapper-class {:wrapper-class wrapper-class
+                                                :large?                large?} status)
+                          {:style wrapper-style})
       [:div.pp1.col-12
-       (floating-label label id status)
+       ^:inline (floating-label label id status)
        [:label
         [:input.col-12.line-height-1
-         (field-class (merge {:key         id
-                              :placeholder label
-                              :data-test   data-test
-                              :type        (or type "text")
-                              :label       label
-                              :name        id
-                              :value       (or value "")
-                              :large?      large?}
+         ^:attrs (field-class (merge {:key id
+                                      :placeholder label
+                                      :data-test   data-test
+                                      :type        (or type "text")
+                                      :label       label
+                                      :name        id
+                                      :value       (or value "")
+                                      :large?      large?}
                              #?(:cljs
                                 {:on-focus
                                  (fn [^js/Event e]
@@ -321,38 +329,39 @@
   [& fields]
   {:pre [(zero? (rem 12 (count fields)))
          (every? (comp string? :id) fields)]}
-  (let [areas        (map :id fields)
-        columns      (map (fn [field] (get field :column-size "1fr")) fields)
-        some-errors? (some (comp seq :errors) fields)]
-    [:div.mb2
-     (into [:div.clearfix.stacking-context
-            {:style {:display               :grid
-                     :grid-template-columns (string/join " " columns)
-                     :grid-template-areas   (str "'"
-                                                 (string/join " " areas)
-                                                 "' '"
-                                                 (string/join " " (map (fn [c] (str c "--error")) areas))
-                                                 "'")}}]
-           (concat
-            (for [[idx {:keys [label keypath value errors id] :as field}]
-                  (map-indexed vector fields)]
-              (plain-text-field
-               label keypath value (seq errors)
-               (-> field
-                   (dissoc :label :keypath :value :errors)
-                   (assoc :wrapper-style {:grid-area id}))))
-            (for [{:keys [errors data-test error-style id]} fields]
-              [:div {:style {:grid-area (str id "--error")}}
-               (cond
-                 (seq errors) (field-error-message (first errors) data-test)
-                 some-errors? nbsp
-                 :else        nil)])))]))
+  (component/html
+   (let [areas        (map :id fields)
+         columns      (map (fn [field] (get field :column-size "1fr")) fields)
+         some-errors? (some (comp seq :errors) fields)]
+     [:div.mb2
+      (into [:div.clearfix.stacking-context
+             {:style {:display               :grid
+                      :grid-template-columns (string/join " " columns)
+                      :grid-template-areas   (str "'"
+                                                  (string/join " " areas)
+                                                  "' '"
+                                                  (string/join " " (map (fn [c] (str c "--error")) areas))
+                                                  "'")}}]
+            (concat
+             (for [[idx {:keys [label keypath value errors id] :as field}]
+                   (map-indexed vector fields)]
+               (plain-text-field
+                label keypath value (seq errors)
+                (-> field
+                    (dissoc :label :keypath :value :errors)
+                    (assoc :wrapper-style {:grid-area id}))))
+             (for [{:keys [errors data-test error-style id]} fields]
+               [:div {:style {:grid-area (str id "--error")}}
+                (cond
+                  (seq errors) (field-error-message (first errors) data-test)
+                  some-errors? nbsp
+                  :else        nil)])))])))
 
 (def ^:private custom-select-dropdown
   (component/html
    [:div.absolute.floating-label--icon
-    ^:inline (svg/dropdown-arrow {:class "fill-gray"
-                                  :style {:width "1.2em" :height "1em"}})]))
+    (svg/dropdown-arrow {:class "fill-gray"
+                         :style {:width "1.2em" :height "1em"}})]))
 
 (defn ^:private plain-select-field
   [label keypath value options error? {:keys [id placeholder] :as select-attributes}]
@@ -393,18 +402,18 @@
    (when (seq options) ;; Hacky fix to get around React not invalidating the element if only options change
      (let [error (first errors)]
        [:div.col-12.mb2.stacking-context
-        div-attrs
+        ^:attrs div-attrs
         (plain-select-field label keypath value options (not (nil? error))
-                            (dissoc select-attributes :label :keypath :value :options :errors :div-attrs))
+                                     (dissoc select-attributes :label :keypath :value :options :errors :div-attrs))
         (field-error-message error data-test)]))))
 
 (defn check-box [{:keys [label data-test errors keypath value label-classes disabled] :as attributes}]
   (component/html
    [:div.col-12.mb2
     [:label.flex.items-center
-     (merge {:class label-classes}
-            (when data-test
-              {:data-test (str "label-" data-test)}))
+     ^:attrs (merge {:class label-classes}
+                    (when data-test
+                      {:data-test (str "label-" data-test)}))
      [:div.border.left.mr3.pp2
       (when disabled {:class "border-gray"})
       (if value
@@ -413,9 +422,9 @@
                       :height "15px"})
         [:div {:style {:width "15px" :height "15px"}}])]
      [:input.hide
-      (merge (utils/toggle-checkbox keypath value)
-             (dissoc attributes :label :keypath :value :label-classes)
-             {:type "checkbox"})]
+      ^:attrs (merge (utils/toggle-checkbox keypath value)
+                     (dissoc attributes :label :keypath :value :label-classes)
+                     {:type "checkbox"})]
      [:span
       (when disabled {:class "gray"})
       label]]
@@ -427,20 +436,20 @@
   (component/html
    (let [radio-attrs (dissoc radio-attrs :key :data-test-id)]
      [:label.flex.items-center.col-12.py1
-      (cond-> {}
-        key
-        (assoc :key key)
-        data-test-id
-        (assoc :data-test-id data-test-id))
+      ^:attrs (cond-> {}
+                key
+                (assoc :key key)
+                data-test-id
+                (assoc :data-test-id data-test-id))
       [:div.left.mr3.pp2
        [:div.circle.bg-white.border.flex.items-center.justify-center
-        (merge {:style {:height "22px" :width "22px"}}
-               (when disabled {:class "bg-cool-gray border-gray"}))
+        ^:attrs (merge {:style {:height "22px" :width "22px"}}
+                       (when disabled {:class "bg-cool-gray border-gray"}))
         (when checked
           [:div.circle.bg-p-color
            {:style {:height "10px" :width "10px"}}])]]
       [:input.hide.mx2.h2
-       (merge {:type "radio"} radio-attrs)]
+       ^:attrs (merge {:type "radio"} radio-attrs)]
       (into [:div.clearfix.col-12] content)])))
 
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
@@ -491,9 +500,9 @@
 (defn big-x [{:keys [data-test attrs]}]
   (component/html
    [:div.relative.rotate-45.p2
-    (merge  attrs
-            {:style     {:height "40px"}
-             :data-test data-test})
+    ^:attrs (merge  attrs
+                    {:style     {:height "40px"}
+                     :data-test data-test})
     [:div.absolute.border-right
      {:style {:width "25px" :height "50px"
               :border-width "2px"}}]
@@ -516,57 +525,61 @@
            default-quality "normal"}}
    image-id]
   {:pre [(or (spice.core/parse-int width) (nil? width))]}
-  (let [width       (spice/parse-int width)
-        image-id    (ucare-img-id image-id)
-        retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" retina-quality "/")
-                      width (str "-/resize/" (* 2 width) "x/"))
-        default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" default-quality "/")
-                      width (str "-/resize/" width "x/"))]
-    [:picture (merge {:key image-id}
-                     (when picture-classes
-                       {:class picture-classes}))
-     [:source {:src-set (str retina-url " 2x," default-url " 1x")}]
-     [:img (-> img-attrs
-               (dissoc :width :retina-quality :default-quality :picture-classses)
-               (assoc :src default-url))]]))
+  (component/html
+   (let [width       (spice/parse-int width)
+         image-id    (ucare-img-id image-id)
+         retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" retina-quality "/")
+                       width (str "-/resize/" (* 2 width) "x/"))
+         default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" default-quality "/")
+                       width (str "-/resize/" width "x/"))]
+     [:picture ^:attrs (merge {:key image-id}
+                              (when picture-classes
+                                {:class picture-classes}))
+      [:source {:src-set (str retina-url " 2x," default-url " 1x")}]
+      [:img ^:attrs (-> img-attrs
+                        (dissoc :width :retina-quality :default-quality :picture-classses)
+                        (assoc :src default-url))]])))
 
 (defn ucare-gif2video
   [{:as   attrs
     :keys [width]}
    uuid]
   {:pre [(or (spice.core/parse-int width) (nil? width))]}
-  [:video (merge {:autoPlay           true
-                  :loop               true
-                  :muted              true
-                  :webkitplaysinline  "true"
-                  :playsInline        true} attrs)
-   (for [format ["mp4", "webm"]]
-     [:source {:src  (str "https://ucarecdn.com/" uuid "/gif2video/-/format/" format "/")
-               :type (str "video/" format)}])])
+  (component/html
+   [:video ^:attrs (merge {:autoPlay           true
+                           :loop               true
+                           :muted              true
+                           :webkitplaysinline  "true"
+                           :playsInline        true} attrs)
+    (for [format ["mp4", "webm"]]
+      [:source {:src  (str "https://ucarecdn.com/" uuid "/gif2video/-/format/" format "/")
+                :type (str "video/" format)}])]))
 
 (defn circle-ucare-img
   [{:keys [width] :as attrs :or {width "4em"}} image-id]
-  (let [width (spice/parse-int width)
-        size {:style {:height (str width "px") :width (str width "px")}}]
-    [:div.circle.bg-cool-gray.overflow-hidden.relative
-     (merge size
-            (dissoc attrs :width))
-     (if image-id
-       (ucare-img attrs image-id)
-       (svg/missing-portrait size))]))
+  (component/html
+   (let [width (spice/parse-int width)
+         size {:style {:height (str width "px") :width (str width "px")}}]
+     [:div.circle.bg-cool-gray.overflow-hidden.relative
+      ^:attrs (merge size
+                     (dissoc attrs :width))
+      (if image-id
+        (ucare-img attrs image-id)
+        (svg/missing-portrait size))])))
 
 (defn circle-picture
   ([src] (circle-picture {} src))
   ([{:keys [width overlay-copy] :as attrs :or {width "4em"}} src]
-   [:div.circle.bg-cool-gray.overflow-hidden.relative
-    (merge {:style {:width width :height width}}
-           (dissoc attrs :width :overlay-copy))
-    (if src
-      [:img {:style {:width width :height width} :src src}]
-      ^:inline (svg/missing-portrait {:width width :height width}))
-    (when overlay-copy
-      [:div.absolute.overlay.bg-darken-2
-       [:div.absolute.m-auto.overlay {:style {:height "50%"}} overlay-copy]])]))
+   (component/html
+    [:div.circle.bg-cool-gray.overflow-hidden.relative
+     ^:attrs (merge {:style {:width width :height width}}
+                    (dissoc attrs :width :overlay-copy))
+     (if src
+       [:img {:style {:width width :height width} :src src}]
+       (svg/missing-portrait {:width width :height width}))
+     (when overlay-copy
+       [:div.absolute.overlay.bg-darken-2
+        [:div.absolute.m-auto.overlay {:style {:height "50%"}} overlay-copy]])])))
 
 (defn img-attrs [img size]
   {:src (get img (keyword (str (name size) "_url")))
@@ -574,62 +587,69 @@
 
 ;; GROT: Will be rendered useless post consolidated-cart
 (defn ^:private counter-button [spinning? data-test f content]
-  [:a.col.inherit-color
-   {:href "#"
-    :data-test data-test
-    :style {:border-color "gray"}
-    :disabled spinning?
-    :on-click (if spinning? utils/noop-callback f)}
-   content])
+  (component/html
+   [:a.col.inherit-color
+    {:href "#"
+     :data-test data-test
+     :style {:border-color "gray"}
+     :disabled spinning?
+     :on-click (if spinning? utils/noop-callback f)}
+    content]))
 
 (defn ^:private counter-value [spinning? value]
-  [:div.left.center.mx1.proxima.title-2 {:style     {:width "1.2em"}
-                                         :data-test "line-item-quantity"}
-   (if spinning? spinner value)])
+  (component/html
+   [:div.left.center.mx1.proxima.title-2 {:style     {:width "1.2em"}
+                                          :data-test "line-item-quantity"}
+    (if spinning? spinner value)]))
 
 (defn counter [{:keys [data-test spinning?]} value dec-fn inc-fn]
-  [:div
-   (counter-button spinning? (str "quantity-dec-" data-test) dec-fn (svg/counter-dec {:title "Decrement cart item count"}))
-   (counter-value spinning? value)
-   (counter-button spinning? (str "quantity-inc-" data-test) inc-fn (svg/counter-inc {:title "Increment cart item count"}))])
+  (component/html
+   [:div
+    (counter-button spinning? (str "quantity-dec-" data-test) dec-fn (svg/counter-dec {:title "Decrement cart item count"}))
+    (counter-value spinning? value)
+    (counter-button spinning? (str "quantity-inc-" data-test) inc-fn (svg/counter-inc {:title "Increment cart item count"}))]))
 
 ;; GROT: Will be rendered useless post consolidated-cart
 (defn auto-complete-counter [{:keys [data-test spinning?]} value dec-fn inc-fn]
-  [:div
-   (counter-button spinning? (str "quantity-dec-" data-test) dec-fn
-                   (svg/minus-sign {:height "18px"
-                                    :width  "18px"}))
-   (counter-value spinning? value)
-   (counter-button spinning? (str "quantity-inc-" data-test) inc-fn
-                   (svg/plus-sign {:height "18px"
-                                   :width  "18px"}))])
+  (component/html
+   [:div
+    (counter-button spinning? (str "quantity-dec-" data-test) dec-fn
+                    (svg/minus-sign {:height "18px"
+                                     :width  "18px"}))
+    (counter-value spinning? value)
+    (counter-button spinning? (str "quantity-inc-" data-test) inc-fn
+                    (svg/plus-sign {:height "18px"
+                                    :width  "18px"}))]))
 
 (defn ^:private consolidated-cart-counter-button [spinning? data-test f content]
-  [:a.inherit-color.flex.items-center
-   {:href "#"
-    :data-test data-test
-    :disabled spinning?
-    :on-click (if spinning? utils/noop-callback f)}
-   content])
+  (component/html
+   [:a.inherit-color.flex.items-center
+    {:href "#"
+     :data-test data-test
+     :disabled spinning?
+     :on-click (if spinning? utils/noop-callback f)}
+    content]))
 
 (defn consolidated-cart-auto-complete-counter [{:keys [data-test spinning?]} value dec-fn inc-fn]
-  [:div.medium.flex.items-center
-   [:div.border.border-pale-purple
-    (consolidated-cart-counter-button spinning? (str "quantity-dec-" data-test) dec-fn
-                                      (svg/minus-sign {:height "18px"
-                                                       :width  "18px"}))]
-   (counter-value spinning? value)
-   [:div.border.border-pale-purple
-    (consolidated-cart-counter-button spinning? (str "quantity-inc-" data-test) inc-fn
-                                      (svg/plus-sign {:height "18px"
-                                                      :width  "18px"}))]])
+  (component/html
+   [:div.medium.flex.items-center
+    [:div.border.border-pale-purple
+     (consolidated-cart-counter-button spinning? (str "quantity-dec-" data-test) dec-fn
+                                       (svg/minus-sign {:height "18px"
+                                                        :width  "18px"}))]
+    (counter-value spinning? value)
+    [:div.border.border-pale-purple
+     (consolidated-cart-counter-button spinning? (str "quantity-inc-" data-test) inc-fn
+                                       (svg/plus-sign {:height "18px"
+                                                       :width  "18px"}))]]))
 
 (defn note-box [{:keys [color data-test]} contents]
-  [:div.border
-   {:class (str "bg-" color " border-" color)
-    :data-test data-test}
-   [:div.bg-lighten-4
-    contents]])
+  (component/html
+   [:div.border
+    {:class (str "bg-" color " border-" color)
+     :data-test data-test}
+    [:div.bg-lighten-4
+     contents]]))
 
 (defn big-money [amount]
   (component/html
@@ -643,8 +663,8 @@
   [opts {:keys [quantity]}]
   (component/html
    [:a.relative.pointer.block.p-color.mtn1
-    (merge (utils/route-to events/navigate-cart)
-           opts)
+    ^:attrs (merge (utils/route-to events/navigate-cart)
+                   opts)
     [:div.relative.container-size.flex.items-center.justify-center
      (svg/shopping-bag {:width  "33px"
                         :height "44px"})
@@ -679,18 +699,19 @@
   image operations. The `resizable-filename` will be appended to all image URLs,
   for SEO. And the `alt` will be put on all img tags."
   [lq-width lq-height image]
-  (let [{:keys [resizable-url resizable-filename alt]} image
+  (component/html
+   (let [{:keys [resizable-url resizable-filename alt]} image
 
-        lq-url (str resizable-url "-/resize/" lq-width "x" lq-height "/-/quality/lighter/" resizable-filename)
-        hq-url (str resizable-url resizable-filename)]
-    [:picture.overflow-hidden.bg-cover.block.relative
-     {:style {:background-image (assets/css-url lq-url)
-              :padding-top      (-> lq-height (/ lq-width) (* 100) float (str "%"))}}
-     [:img.col-12.absolute.overlay {:src   lq-url
-                                    :alt   alt
-                                    :style {:filter "blur(10px)"}}]
-     (images/platform-hq-image {:src hq-url :alt alt})
-     [:noscript [:img.col-12.absolute.overlay {:src hq-url :alt alt}]]]))
+         lq-url (str resizable-url "-/resize/" lq-width "x" lq-height "/-/quality/lighter/" resizable-filename)
+         hq-url (str resizable-url resizable-filename)]
+     [:picture.overflow-hidden.bg-cover.block.relative
+      {:style {:background-image (assets/css-url lq-url)
+               :padding-top      (-> lq-height (/ lq-width) (* 100) float (str "%"))}}
+      [:img.col-12.absolute.overlay {:src   lq-url
+                                     :alt   alt
+                                     :style {:filter "blur(10px)"}}]
+      (images/platform-hq-image {:src hq-url :alt alt})
+      [:noscript [:img.col-12.absolute.overlay {:src hq-url :alt alt}]]])))
 
 (def ^:private contentful-type->mime
   {"jpg" "image/jpeg"
@@ -714,23 +735,24 @@
           (str "[ui/source] Invalid contentful format:" type
                "; must be one of:" (keys contentful-type->mime)))
   (component/html
-   [:source (merge attrs
-                   {:key     (str media ":" url ":" type)
-                    :src-set (build-src-set url type src-set)
-                    :type    (contentful-type->mime type)})]))
+   [:source ^:attrs (merge attrs
+                           {:key     (str media ":" url ":" type)
+                            :src-set (build-src-set url type src-set)
+                            :type    (contentful-type->mime type)})]))
 
 (defn option
   [{:keys [key disabled? height on-click]} & content]
-  [:a.block.relative.my1.mx2
-   (merge
-    {:key      key
-     :style    {:height height}
-     :on-click (if disabled? utils/noop-callback on-click)}
-    (when disabled?
-      {:data-test-disabled "disabled"}))
-   [:div.absolute.overlay.border.border-gray]
-   (for [[i c] (map-indexed vector content)]
-     [:div {:key (str i)} c])])
+  (component/html
+   [:a.block.relative.my1.mx2
+    ^:attrs (merge
+             {:key      key
+              :style    {:height height}
+              :on-click (if disabled? utils/noop-callback on-click)}
+             (when disabled?
+               {:data-test-disabled "disabled"}))
+    [:div.absolute.overlay.border.border-gray]
+    (for [[i c] (map-indexed vector content)]
+      [:div {:key (str i)} c])]))
 
 (def header-image-size 36)
 
@@ -750,10 +772,11 @@
   "e4a70b53-905f-449b-86f1-e8d5c327a6df")
 
 (defn dark-back-arrow [attrs]
-  [:div.rotate-180
-   (ucare-img (merge {:width "24"}
-                     attrs)
-              dark-forward-arrow-uuid)])
+  (component/html
+   [:div.rotate-180
+    (ucare-img (merge {:width "24"}
+                      attrs)
+               dark-forward-arrow-uuid)]))
 
 (def light-forward-arrow-uuid
   "f6d9ea1b-5a27-4582-a422-f25a1e5ba22e")
@@ -824,14 +847,15 @@
   (apply sms-link tag attrs body))
 
 (defn ^:private star [type index]
-  [:span.mrp1
-   {:key (str (name type) "-" index)}
-   (case type
-     :whole         (svg/whole-star {:height "13px" :width "13px"})
-     :three-quarter (svg/three-quarter-star {:height "13px" :width "13px"})
-     :half          (svg/half-star {:height "13px" :width "13px"})
-     :empty         (svg/empty-star {:height "13px" :width "13px"})
-     nil)])
+  (component/html
+   [:span.mrp1
+    {:key (str (name type) "-" index)}
+    (case type
+      :whole         (svg/whole-star {:height "13px" :width "13px"})
+      :three-quarter (svg/three-quarter-star {:height "13px" :width "13px"})
+      :half          (svg/half-star {:height "13px" :width "13px"})
+      :empty         (svg/empty-star {:height "13px" :width "13px"})
+      nil)]))
 
 (defn rating->stars [rating]
   (let [remainder-rating (mod rating 1)
@@ -861,12 +885,13 @@
 
 (defn star-rating
   [rating]
-  (let [{:keys [whole-stars partial-star empty-stars]} (rating->stars rating)]
-    [:div.flex.items-center
-     whole-stars
-     partial-star
-     empty-stars
-     [:span.mlp2 rating]]))
+  (component/html
+   (let [{:keys [whole-stars partial-star empty-stars]} (rating->stars rating)]
+     [:div.flex.items-center
+      whole-stars
+      partial-star
+      empty-stars
+      [:span.mlp2 rating]])))
 
 (def ^:private screen-aware-component
   #?(:clj (fn [data owner {:keys [embed opts]}]
