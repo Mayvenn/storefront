@@ -190,9 +190,13 @@
                       "shouldComponentUpdate" should-update}
                      methods)))))
 
+;; for a 50% runtime performance improvement, this macro no longer attempts nil
+;; values to allow sablono's precompilation to work.
 (defmacro html [content]
   (if (cljs-env? &env)
-    `(sablono.core/html ~(or content [:span]))
+    ;; Note: changing this form can have unintended consequences for compile-time optimizations.
+    ;; For example, doing `(sablono.core/html (or ~content [:div])) will prevent sablono from optimizing this form...
+    `(sablono.core/html ~content)
     content))
 
 (defmacro create

@@ -21,25 +21,11 @@
 (defcomponent layer-hero
   [data _ opts]
   [:div.mx-auto.relative {:style {:min-height "300px"}}
-   (let [{:photo/keys [mob-uuid mob-url dsk-uuid dsk-url file-name alt navigation-message]} data]
-     (component/build ui.M/hero
-                      {:mob-uuid  mob-uuid
-                       :mob-url   mob-url
-                       :dsk-uuid  dsk-uuid
-                       :dsk-url   dsk-url
-                       :file-name file-name
-                       :alt       alt
-                       :opts      (merge {:class     "block"
-                                          :style     {:min-height "300px"}}
-                                         (when navigation-message {:data-test "hero-link"})
-                                         (when navigation-message (apply utils/route-to navigation-message)))}))
-   (when-let [buttons (:buttons data)]
-     [:div.relative.flex.justify-center
-      [:div.absolute.bottom-0.col-6-on-tb-dt.col-12.pb2.mb3-on-dt
-       [:div.col.col-12.flex.justify-center
-        (let [num-buttons (count buttons)]
-          (for [button buttons]
-            [:div.px2 {:class (str "col-" (if (= num-buttons 1) 9 6))} (apply ui/button-large-primary button)]))]]])])
+   (let [{:keys [opts]} data]
+     (component/build ui.M/hero (merge data
+                                       {:opts (merge opts {:class     "block"
+                                                           :style     {:min-height "300px"}
+                                                           :data-test "hero-link"})})))])
 
 (defcomponent free-standard-shipping-bar
   [_ _ _]
@@ -57,7 +43,7 @@
 (defn ^:private cta-with-chevron
   [{:cta/keys [navigation-message href value id]}]
   (component/html
-   (when (or navigation-message href)
+   (if (or navigation-message href)
      (ui/button-large-primary
       (merge
        (when href
@@ -66,19 +52,21 @@
          (apply utils/route-to navigation-message))
        (when id
          {:data-test id}))
-      value))))
+      value)
+     [:span])))
 
 (defn ^:private shop-cta
   [{:cta/keys [target value id]}]
   (component/html
-   (when id
+   (if id
      (ui/button-large-primary
-      (assoc (apply utils/route-to target) :data-test id) value))))
+      (assoc (apply utils/route-to target) :data-test id) value)
+     [:span])))
 
 (defn ^:private shop-cta-with-icon
   [{:cta/keys [target icon value id]}]
   (component/html
-   (when id
+   (if id
      [:a.my2
       (assoc (apply utils/route-to target)
              :data-test id
@@ -86,7 +74,8 @@
       (when icon
         icon)
       [:div.underline.block.content-3.bold.p-color.shout.pb6
-       value]])))
+       value]]
+     [:span])))
 
 (defn divider
   [divider-img]
@@ -378,10 +367,10 @@
     [:div.stroke-s-color
      (svg/straight-line {:width  "1px"
                          :height "42px"})]
-    (map-indexed (partial shop-step "mb-tb-")
+    (map-indexed (partial shop-step (str layer-id "-mb-tb-"))
                  bullets)]
    [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
-    (map-indexed (partial shop-step "dt-")
+    (map-indexed (partial shop-step (str layer-id "-dt-"))
                  bullets)]
    (shop-cta-with-icon data)])
 
