@@ -1,6 +1,5 @@
 (ns checkout.cart.summary
-  (:require [checkout.cart.items :as cart-items]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
             [spice.core :as spice]
             [storefront.accessors.adjustments :as adjustments]
             [storefront.accessors.orders :as orders]
@@ -55,31 +54,15 @@
                   :disabled?   updating?
                   :spinning?   applying?}})])
 
-(defn order-total-title [freeinstall-line-item-data]
-  (if freeinstall-line-item-data
-    "Hair + Install Total"
-    "Total"))
-
-(defn summary-total-section [{:keys [freeinstall-line-item-data order]}]
+(defn summary-total-section [{:keys [order]}]
   [:div.py2.h2
    [:div.flex
-    [:div.flex-auto.light (order-total-title freeinstall-line-item-data)]
+    [:div.flex-auto.light "Total"]
     [:div.right-align.medium
-     (some-> order :total mf/as-money)]]
-   (when freeinstall-line-item-data
-     [:div
-      [:div.flex.justify-end
-       [:div.h6.bg-p-color.white.px1.nowrap.medium.mb1
-        "Includes Free Install"]]
-      [:div.flex.justify-end
-       [:div.h6.light.px1.nowrap.italic
-        "You've saved "
-        [:span.bold {:data-test "total-savings"}
-         (mf/as-money (:total-savings freeinstall-line-item-data))]]]])])
+     (some-> order :total mf/as-money)]]])
 
 (defcomponent component
-  [{:keys [freeinstall-line-item-data
-           order
+  [{:keys [order
            store-credit
            shipping-cost
            adjustments-including-tax
@@ -102,49 +85,36 @@
           (promo-entry promo-data)]])
 
       (for [[i {:keys [name price coupon-code] :as adjustment}] (map-indexed vector adjustments-including-tax)]
-        (let [freeinstall-adjustment? (orders/freeinstall-promotion? adjustment)]
-          (when (adjustments/non-zero-adjustment? adjustment)
-            (summary-row
-             {:key       (str i "-" name)
-              :data-test (text->data-test-name name)}
-             [:div.flex.items-center.align-middle
-              (when (= "Bundle Discount" name)
-                (svg/discount-tag {:class  "mxnp6"
-                                   :height "2em" :width "2em"}))
-              (orders/display-adjustment-name name)
-              (when coupon-code
-                [:a.ml1.h6.gray.flex.items-center
-                 (merge {:data-test "cart-remove-promo"}
-                        (utils/fake-href events/control-checkout-remove-promotion
-                                         {:code coupon-code}))
-                 (svg/close-x {:class "stroke-white fill-gray"})])
-              (when (and freeinstall-adjustment? (empty? coupon-code))
-                [:a.ml1.h6.gray.flex.items-center
-                 (merge {:data-test "cart-remove-promo"}
-                        (utils/fake-href events/control-checkout-remove-promotion
-                                         {:code "freeinstall"}))
-                 (svg/close-x {:class "stroke-white fill-gray"})])]
-             (if (and freeinstall-line-item-data freeinstall-adjustment?)
-               (- 0 (:price freeinstall-line-item-data))
-               price)))))
+        (when (adjustments/non-zero-adjustment? adjustment)
+          (summary-row
+           {:key       (str i "-" name)
+            :data-test (text->data-test-name name)}
+           [:div.flex.items-center.align-middle
+            (when (= "Bundle Discount" name)
+              (svg/discount-tag {:class  "mxnp6"
+                                 :height "2em" :width "2em"}))
+            (orders/display-adjustment-name name)
+            (when coupon-code
+              [:a.ml1.h6.gray.flex.items-center
+               (merge {:data-test "cart-remove-promo"}
+                      (utils/fake-href events/control-checkout-remove-promotion
+                                       {:code coupon-code}))
+               (svg/close-x {:class "stroke-white fill-gray"})])]
+           price)))
 
       (when (pos? store-credit)
         (summary-row "Store Credit" (- store-credit)))]]]
    (summary-total-section data)])
 
 (defn query [data]
-  (let [order                      (get-in data keypaths/order)
-        shipping-item              (orders/shipping-item order)
-        freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)]
-    {:freeinstall-line-item-data freeinstall-line-item-data
-     :order                      order
-     :shipping-cost              (* (:quantity shipping-item) (:unit-price shipping-item))
-     :adjustments-including-tax  (orders/all-order-adjustments order)
-     :promo-data                 {:coupon-code   (get-in data keypaths/cart-coupon-code)
-                                  :applying?     (utils/requesting? data request-keys/add-promotion-code)
-                                  :focused       (get-in data keypaths/ui-focus)
-                                  :error-message (get-in data keypaths/error-message)
-                                  :field-errors  (get-in data keypaths/field-errors)}
-     :subtotal                   (cond-> (orders/products-subtotal order)
-                                   freeinstall-line-item-data
-                                   (+ (spice/parse-double (:price freeinstall-line-item-data))))}))
+  (let [order         (get-in data keypaths/order)
+        shipping-item (orders/shipping-item order)]
+    {:order                     order
+     :shipping-cost             (* (:quantity shipping-item) (:unit-price shipping-item))
+     :adjustments-including-tax (orders/all-order-adjustments order)
+     :promo-data                {:coupon-code   (get-in data keypaths/cart-coupon-code)
+                                 :applying?     (utils/requesting? data request-keys/add-promotion-code)
+                                 :focused       (get-in data keypaths/ui-focus)
+                                 :error-message (get-in data keypaths/error-message)
+                                 :field-errors  (get-in data keypaths/field-errors)}
+     :subtotal                  (orders/products-subtotal order)}))

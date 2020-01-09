@@ -5,13 +5,11 @@
               [storefront.hooks.browser-pay :as browser-pay]
               [storefront.hooks.quadpay :as quadpay]])
    [catalog.images :as catalog-images]
-   [checkout.cart.items :as cart-items]
    [checkout.cart.summary :as cart-summary]
    [checkout.header :as header]
    [checkout.suggestions :as suggestions]
    [storefront.accessors.experiments :as experiments]
    [catalog.facets :as facets]
-   [storefront.accessors.images :as images]
    [storefront.accessors.line-items :as line-items]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.products :as products]
@@ -100,35 +98,6 @@
                                                               {:variant line-item}))]
         [:div.h5.right {:data-test (str "line-item-price-ea-" sku-id)} (money-formatter price) " each"]]]]]))
 
-(defn ^:private non-adjustable-line-item
-  [freeinstall-just-added? {:keys [removing? id title detail price remove-event thumbnail-image-fn]}]
-  [:div.pt1.pb2.clearfix
-   [:div.left.ml1.pr3
-    [:div.flex.justify-center.items-center
-     (css-transitions/background-fade
-      freeinstall-just-added?
-      {:style {:height "79px"
-               :width  "79px"}})
-     (thumbnail-image-fn 75)]]
-   [:div
-    [:a.medium.titleize.h5
-     {:data-test (str "line-item-title-" id)}
-     title]
-    [:div.h6
-     [:div.flex.justify-between.mt1
-      [:div {:data-test (str "line-item-detail-" id)}
-       detail]
-      [:div.flex.items-center.justify-between
-       (if removing?
-         [:div.h3 {:style {:width "1.2em"}} ui/spinner]
-         [:a.gray.medium
-          (merge {:data-test (str "line-item-remove-" id)}
-                 (apply utils/fake-href remove-event))
-          ^:inline (svg/trash-can {:height "1.1em"
-                                   :width  "1.1em"
-                                   :class  "stroke-black"})])]]
-     [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]]]])
-
 (defcomponent full-component [{:keys [order
                                       skus
                                       promo-banner
@@ -142,7 +111,6 @@
                                       show-browser-pay?
                                       recently-added-skus
                                       delete-line-item-requests
-                                      freeinstall-line-item-data
                                       freeinstall-just-added?
                                       loaded-quadpay?
                                       cart-summary]} owner _]
@@ -157,9 +125,6 @@
                                     skus
                                     update-line-item-requests
                                     delete-line-item-requests)
-     (when freeinstall-line-item-data
-       (non-adjustable-line-item freeinstall-just-added? freeinstall-line-item-data))
-
      (component/build suggestions/component suggestions nil)]
 
     [:div.col-on-tb-dt.col-6-on-tb-dt.px3
@@ -207,7 +172,7 @@
                                                       :height "24px"})
                                     "Share your bag"])])]]])
 
-(defcomponent empty-component [{:keys [promotions aladdin?]} owner _]
+(defcomponent empty-component [{:keys [promotions]} owner _]
   (ui/narrow-container
    [:div.p2
     [:.center {:data-test "empty-cart"}
@@ -217,10 +182,9 @@
      [:p.m2.h2.light "Your bag is empty."]
 
      [:div.m2
-      (let [promo (promos/default-advertised-promotion promotions)]
-        (cond aladdin? promos/freeinstall-description
-              promo    (:description promo)
-              :else    promos/bundle-discount-description))]]
+      (if-let [promo (promos/default-advertised-promotion promotions)]
+        (:description promo)
+        promos/bundle-discount-description)]]
 
     (ui/button-large-primary (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
                              "Shop Our Looks")]))
@@ -278,15 +242,11 @@
                                   (variants-requests data request-keys/update-line-item (map :sku line-items)))
      :cart-summary               (cart-summary/query data)
      :delete-line-item-requests  (variants-requests data request-keys/delete-line-item variant-ids)
-     :recently-added-skus        (get-in data keypaths/cart-recently-added-skus)
-     :freeinstall-just-added?    (get-in data keypaths/cart-freeinstall-just-added?)
-     :stylist-service-menu       (get-in data keypaths/stylist-service-menu)
-     :freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)}))
+     :recently-added-skus        (get-in data keypaths/cart-recently-added-skus)}))
 
 (defn empty-cart-query
   [data]
-  {:promotions (get-in data keypaths/promotions)
-   :aladdin?   (experiments/aladdin-experience? data)})
+  {:promotions (get-in data keypaths/promotions)})
 
 (defcomponent component
   [{:keys [fetching-order?

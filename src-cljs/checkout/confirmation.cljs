@@ -228,19 +228,6 @@
                        :detail-bottom-left/value  (str "Qty " (:quantity line-item))}))
                   (orders/product-items order))}))
 
-(defn ^:private freeinstall-line-item-data->item-card
-  [{:keys [id title detail thumbnail-image price]}]
-  {:react/key              (str "freeinstall-line-item-" id)
-   :title/value            title
-   :title/id               "line-item-title-freeinstall"
-   :detail-top-left/id     "freeinstall-details"
-   :detail-top-left/value  detail
-   :image/id               "freeinstall-needle-thread"
-   :image/value            thumbnail-image
-   :detail-top-right/id    (str "line-item-price-freeinstall")
-   :detail-top-right/opts  {:class "flex items-end justify-end"}
-   :detail-top-right/value (mf/as-money-without-cents price)})
-
 (defn ^:private text->data-test-name [name]
   (-> name
       (string/replace #"[0-9]" (comp spice/number->word int))
