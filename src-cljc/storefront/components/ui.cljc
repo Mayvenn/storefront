@@ -146,7 +146,7 @@
        :value     title
        :disabled  (boolean disabled?)}])))
 
-(def hyphen (component/html [:span {:dangerouslySetInnerHTML {:__html "&hyphen;"}}]))
+(def hyphen "‐") ; &hyphen;
 (def shy (component/html [:span {:dangerouslySetInnerHTML {:__html "&shy;"}}]))
 (def wbr (component/html [:wbr]))
 

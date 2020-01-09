@@ -4,7 +4,7 @@
             [storefront.state :as state]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.history :as history]
             [storefront.hooks.exception-handler :as exception-handler]
@@ -27,7 +27,7 @@
 (when config/enable-console-print?
   (enable-console-print!))
 
-(defn- transition [app-state [event args]]
+(defn- transition [app-state [event args] event-reductions]
   (reduce (fn [app-state dispatch]
             (try
               (or (transition-state dispatch event args app-state)
@@ -37,16 +37,16 @@
                                                         :event event
                                                         :args args}}))))
           app-state
-          (reductions conj [] event)))
+          event-reductions))
 
-(defn- effects [app-state-before-transition app-state-after-transition [event args]]
-  (doseq [event-fragment (reductions conj [] event)
+(defn- effects [app-state-before-transition app-state-after-transition [event args] event-reductions]
+  (doseq [event-fragment event-reductions
           :when (pos? (count event-fragment))]
     (perform-effects event-fragment event args app-state-before-transition app-state-after-transition)))
 
-(defn- track [app-state [event args]]
-  (doseq [event-fragment (reductions conj [] event)
-          :when (pos? (count event-fragment))]
+(defn- track [app-state [event args] event-reductions]
+  (doseq [event-fragment event-reductions
+          :when          (pos? (count event-fragment))]
     (perform-track event-fragment event args app-state)))
 
 (defn- log-deltas [old-app-state new-app-state [event args]]
@@ -60,8 +60,8 @@
     (js/console.groupEnd))
   new-app-state)
 
-(defn- transition-log [app-state message]
-  (log-deltas app-state (transition app-state message) message))
+(defn- transition-log [app-state message event-reductions]
+  (log-deltas app-state (transition app-state message event-reductions) message))
 
 (def msg-transition
   transition)
@@ -69,12 +69,13 @@
 (defn handle-message
   ([app-state event] (handle-message app-state event nil))
   ([app-state event args]
-   (let [message [event args]]
+   (let [message          [event args]
+         event-reductions (reductions conj [] event)]
      (try
-       (let [app-state-before @app-state]
-         (swap! app-state #(msg-transition % message))
-         (effects app-state-before @app-state message))
-       (track @app-state message)
+       (let [app-state-before @app-state
+             app-state-after  (swap! app-state #(msg-transition % message event-reductions))]
+         (effects app-state-before app-state-after message event-reductions)
+         (track app-state-after message event-reductions))
        (catch :default e
          (let [state @app-state]
            (exception-handler/report e {:ex-data                    (ex-data e)
@@ -100,16 +101,19 @@
     (f)
     (.addEventListener js/document "DOMContentLoaded" f)))
 
+(defdynamic-component app-reactor
+  (did-mount [this]
+             (let [app-state (:atom (component/get-opts this))]
+               (add-watch app-state :renderer (fn [key ref old-value new-value]
+                                                (when (not= old-value new-value)
+                                                  (component/set-state! this :app-state new-value))))))
+  (render [this]
+          (let [app-state (:app-state (component/get-state this))]
+            (component/build top-level-component app-state))))
+
 (defn- app-template [app-state]
-  ;; NOTE: this function is not affected by figwheel's reload
-  (let [tup             (react/useState #js{:state @app-state})
-        app-state-value (gobj/get (aget tup 0) "state")
-        setter          (aget tup 1)
-        template        (component/build top-level-component app-state-value)]
-    (add-watch app-state :renderer (fn [key ref old-value new-value]
-                                     (when (not= old-value new-value)
-                                       (setter #js{:state new-value}))))
-    template))
+  ;; NOTE: app-reactor is not affected by figwheel's reload
+  (component/build app-reactor nil {:opts {:atom app-state}}))
 
 (defn main- [app-state]
   (set! messages/handle-message (partial handle-message app-state))
@@ -129,7 +133,6 @@
     (set! (.-data js/window) js/undefined)
     pre-data))
 
-(defonce main (memoize main-))
 (defonce app-state (atom (deep-merge (state/initial-state)
                                      (consume-preloaded-data))))
 
@@ -164,4 +167,4 @@
                     (js->clj args :keywordize-keys true))))
 
 (loader/set-loaded! :main)
-(dom-ready #(main app-state))
+(dom-ready #(main- app-state))
