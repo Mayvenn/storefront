@@ -11,6 +11,13 @@
   [{:keys [source]}]
   (= "spree" source))
 
+(defn customizable-wig?
+  [line-item]
+  (-> line-item :variant-attrs :hair/family #{"360-wigs" "lace-front-wigs"}))
+
+(defn sew-in-eligible? [sku-catalog line-item]
+  (->> line-item :sku (get sku-catalog) :promo.mayvenn-install/eligible first))
+
 (defn service-line-item-price
   "Might be nil"
   [{:keys [quantity unit-price] :as service-line-item}]

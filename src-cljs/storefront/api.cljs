@@ -693,10 +693,11 @@
    handler))
 
 (def freeinstall-line-item-name->variant-id
-  {"leave-out"   1036
-   "closure"     1037
-   "frontal"     1038
-   "three-sixty" 1039})
+  {"leave-out"         1036
+   "closure"           1037
+   "frontal"           1038
+   "three-sixty"       1039
+   "wig-customization" 1040})
 
 (defn remove-freeinstall-line-item
   ([session-id order]
