@@ -250,9 +250,8 @@
                                     (checkout-delivery/enrich-shipping-method (date/now))
                                     :copy/timeframe)
 
-        adjustment (->> order :adjustments (map :price) (reduce + 0))
-
-        total-savings (- (+ adjustment service-discount))]
+        adjustment    (->> order :adjustments (map :price) (reduce + 0))
+        total-savings (- adjustment)]
     {:cart-summary/id               "cart-summary"
      :cart-summary-total-line/id    "total"
      :cart-summary-total-line/label (if applied? "Hair + Install Total" "Total")

@@ -218,17 +218,6 @@
        (reduce (fn [acc {:keys [id quantity]}]
                  (update acc id (fnil + 0) quantity)) {})))
 
-(defn total-savings
-  "Takes `order` and amount that stylist charges for a service and
-  calculates total savings based on promotions, discounts and other
-  `adjustments`"
-  [order service-price]
-  (->> order
-       :adjustments
-       (map (comp numbers/abs :price))
-       (reduce + 0)
-       ((fnil + 0) (numbers/abs (spice/parse-double service-price)))))
-
 (defn TEMP-pretend-service-items-do-not-exist [order]
   (utils/?update order :shipments
                  (partial map

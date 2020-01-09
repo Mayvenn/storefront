@@ -398,8 +398,7 @@
                                     :copy/timeframe)
 
         adjustment (->> order :adjustments (map :price) (reduce + 0))
-
-        total-savings (- (+ adjustment service-discount))]
+        total-savings (- adjustment)]
     {:cart-summary/id                 "cart-summary"
      :freeinstall-informational/value (not entered?)
      :cart-summary-total-line/id      "total"
