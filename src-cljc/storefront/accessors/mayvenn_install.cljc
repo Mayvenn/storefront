@@ -51,7 +51,7 @@
         servicing-stylist           (if (= "aladdin" (get-in app-state storefront.keypaths/store-experience))
                                       (get-in app-state storefront.keypaths/store)
                                       (get-in app-state adventure-keypaths/adventure-servicing-stylist))]
-    {:mayvenn-install/wig-customization? true
+    {:mayvenn-install/wig-customization? wig-customization?
      :mayvenn-install/entered?           freeinstall-entered?
      :mayvenn-install/locked?            (and freeinstall-entered? (pos? items-remaining-for-install))
      :mayvenn-install/applied?           (orders/freeinstall-applied? order)
