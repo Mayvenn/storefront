@@ -546,11 +546,12 @@
    uuid]
   {:pre [(or (spice.core/parse-int width) (nil? width))]}
   (component/html
-   [:video ^:attrs (merge {:autoPlay           true
-                           :loop               true
-                           :muted              true
-                           :webkitplaysinline  "true"
-                           :playsInline        true} attrs)
+   [:video ^:attrs (merge {:autoPlay              true
+                           :loop                  true
+                           :muted                 true
+                           :disableremoteplayback true ;; hides the chromecast button
+                           :webkitplaysinline     "true"
+                           :playsInline           true} attrs)
     (for [format ["mp4", "webm"]]
       [:source {:src  (str "https://ucarecdn.com/" uuid "/gif2video/-/format/" format "/")
                 :type (str "video/" format)}])]))
