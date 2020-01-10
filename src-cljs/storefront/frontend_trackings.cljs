@@ -1,6 +1,6 @@
 (ns storefront.frontend-trackings
-  (:require-macros [storefront.macros :refer [compile-get-in]])
   (:require [clojure.string :as string]
+            [clojure.set :as set]
             [spice.maps :as maps]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.videos :as videos]
@@ -9,13 +9,13 @@
             [storefront.hooks.convert :as convert]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.google-tag-manager :as google-tag-manager]
-            [storefront.hooks.pinterest :as pinterest]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.stringer :as stringer]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.trackings :refer [perform-track]]
-            [storefront.accessors.images :as images]))
+            [storefront.accessors.images :as images])
+  (:require-macros [storefront.macros :refer [compile-get-in]]))
 
 (defn ^:private convert-revenue [{:keys [number total] :as order}]
   {:order-number   number
@@ -72,7 +72,6 @@
   (when (not (#{:module-load} caused-by))
     (let [path (routes/current-path app-state)]
       (when (not (nav-was-selecting-bundle-option? app-state))
-        (pinterest/track-page)
         (riskified/track-page path)
         (stringer/track-page (compile-get-in app-state keypaths/store-experience))
         (facebook-analytics/track-page path)))))
@@ -113,39 +112,18 @@
 (defmethod perform-track events/control-add-sku-to-bag [_ event {:keys [sku quantity]} app-state]
   (facebook-analytics/track-event "AddToCart" {:content_type "product"
                                                :content_ids  [(:catalog/sku-id sku)]
-                                               :num_items    quantity})
-  (let [order      (compile-get-in app-state keypaths/order)
-        store-slug (compile-get-in app-state keypaths/store-slug)]
-    (pinterest/track-event "AddToCart" {:product_id       (:legacy/variant-id sku)
-                                        :sku              (:catalog/sku-id sku)
-                                        :value            (:sku/price sku)
-                                        :order_quantity   (->> (:shipments order) (mapcat :line-items) orders/line-item-quantity)
-                                        :currency         "USD"
-                                        :department       (-> sku :catalog/department first)
-                                        :product_name     (:sku/title sku)
-                                        :quantity         quantity
-                                        :category         (-> sku :hair/family first)
-                                        :origin           (-> sku :hair/origin first)
-                                        :style            (-> sku :hair/texture first)
-                                        :color            (-> sku :hair/color first)
-                                        :material         (-> sku :hair/material first)
-                                        :grade            (-> sku :hair/grade first)
-                                        :length           (-> sku :hair/length first)
-                                        :store_slug       store-slug
-                                        :is_stylist_store (not (#{"store" "shop" "internal"} store-slug))})))
+                                               :num_items    quantity}))
 
 (defmethod perform-track events/api-success-add-sku-to-bag
   [_ _ {:keys [quantity sku order] :as args} app-state]
   (when sku
-    (google-tag-manager/track-add-to-cart {:number           (:number order)
-                                           :line-item-skuers [{:catalog/sku-id (:catalog/sku-id sku)
-                                                               :item/quantity  quantity
-                                                               :sku/price      (:sku/price sku)}]})
     (let [line-item-skuers (waiter-line-items->line-item-skuer
                             (compile-get-in app-state keypaths/v2-skus)
                             (orders/product-items order))
 
-          cart-items (mapv line-item-skuer->stringer-cart-item line-item-skuers)]
+          cart-items (mapv line-item-skuer->stringer-cart-item line-item-skuers)
+          store-slug (compile-get-in app-state keypaths/store-slug)]
+
       (stringer/track-event "add_to_cart" (merge (line-item-skuer->stringer-cart-item sku)
                                                  {:order_number     (:number order)
                                                   :order_total      (:total order)
@@ -153,7 +131,13 @@
                                                   :store_experience (compile-get-in app-state keypaths/store-experience)
                                                   :variant_quantity quantity
                                                   :quantity         quantity
-                                                  :context          {:cart-items cart-items}})))))
+                                                  :context          {:cart-items cart-items}}))
+      (prn (orders/all-product-items order))
+      (google-tag-manager/track-add-to-cart {:number           (:number order)
+                                             :store-slug       store-slug
+                                             :store-is-stylist (not (#{"store" "shop" "internal"} store-slug))
+                                             :order-quantity   (->> order orders/all-product-items orders/line-item-quantity)
+                                             :line-item-skuers [(assoc sku :item/quantity quantity)]}))))
 
 (defmethod perform-track events/api-success-shared-cart-create [_ _ {:keys [cart]} app-state]
   (let [all-skus                 (vals (compile-get-in app-state keypaths/v2-skus))
@@ -226,30 +210,12 @@
      :promo_codes             (->> promotion-codes (string/join ","))
      :total_quantity          (orders/product-quantity order)}))
 
-(defn- line-item-skuer->pinterest-line-item
-  "Pinterest representation of a line item skuer.
-
-  A Line Item Skuer is expected to be a Sku with an :item/quantity."
-  [skuer]
-  {:product_id       (:legacy/product-id skuer)
-   :sku              (:catalog/sku-id skuer)
-   :product_price    (:sku/price skuer)
-   :product_quantity (:item/quantity skuer)
-   :product_name     (or (:legacy/product-name skuer)
-                         (:sku/title skuer))
-   :category         (-> skuer :catalog/department first)
-   :origin           (-> skuer :hair/origin first)
-   :style            (-> skuer :hair/texture first)
-   :color            (-> skuer :hair/color first)
-   :length           (-> skuer :hair/length first)
-   :material         (-> skuer :hair/base-material first)})
-
 (defmethod perform-track events/order-placed [_ event order app-state]
   (stringer/identify {:id    (-> order :user :id)
                       :email (-> order :user :email)}
                      events/visitor-identified)
   (stringer/track-event "checkout-complete" (stringer-order-completed order))
-  (let [order-total      (:total order)
+  (let [order-total (:total order)
 
         line-item-skuers (waiter-line-items->line-item-skuer (compile-get-in app-state keypaths/v2-skus)
                                                              (orders/product-items order))
@@ -278,17 +244,18 @@
                                                        :content_type "product"
                                                        :num_items    order-quantity}))
 
-    (pinterest/track-event "checkout" (merge shared-fields
-                                             {:value          order-total ;; Pinterest wants a number
-                                              :order_id       (:number order)
-                                              :order_quantity order-quantity
-                                              :line_items     (mapv line-item-skuer->pinterest-line-item line-item-skuers)}))
-
     (convert/track-conversion "place-order")
     (convert/track-revenue (convert-revenue order))
-    (google-tag-manager/track-placed-order {:total            (:total order)
-                                            :number           (:number order)
-                                            :line-item-skuers line-item-skuers})))
+    (google-tag-manager/track-placed-order (merge (set/rename-keys shared-fields {:buyer_type            :buyer-type
+                                                                                  :is_stylist_store      :is-stylist-store
+                                                                                  :shipping_method_name  :shipping-method-name
+                                                                                  :shipping_method_price :shipping-method-price
+                                                                                  :shipping_method_sku   :shipping-method-sku
+                                                                                  :store_slug            :store-slug
+                                                                                  :used_promotion_codes  :used-promotion-codes})
+                                                  {:total            (:total order)
+                                                   :number           (:number order)
+                                                   :line-item-skuers line-item-skuers}))))
 
 (defmethod perform-track events/api-success-auth [_ event args app-state]
   (stringer/identify (compile-get-in app-state keypaths/user)
@@ -316,8 +283,7 @@
                          :test-variations  (compile-get-in app-state keypaths/features)
                          :store-slug       (compile-get-in app-state keypaths/store-slug)
                          :store-experience (compile-get-in app-state keypaths/store-experience)})
-  (google-tag-manager/track-email-capture-capture {:email email})
-  (pinterest/track-event "Signup"))
+  (google-tag-manager/track-email-capture-capture {:email email}))
 
 (defmethod perform-track events/control-email-captured-submit [_ event _ app-state]
   (when (empty? (compile-get-in app-state keypaths/errors))

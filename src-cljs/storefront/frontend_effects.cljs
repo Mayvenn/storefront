@@ -26,7 +26,6 @@
             [storefront.hooks.facebook :as facebook]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.lucky-orange :as lucky-orange]
-            [storefront.hooks.pinterest :as pinterest]
             [storefront.hooks.pixlee :as pixlee]
             [storefront.hooks.google-maps :as google-maps]
             [storefront.hooks.reviews :as reviews]
@@ -113,12 +112,9 @@
     (messages/handle-message events/control-adventure-choice {:choice {:value choices}}))
   (quadpay/insert)
   (svg/insert-sprite)
-  #_(google-analytics/insert-tracking)
   (convert/insert-tracking)
   (riskified/insert-tracking (compile-get-in app-state keypaths/session-id))
   (stringer/fetch-browser-id)
-  #_(facebook-analytics/insert-tracking)
-  #_(pinterest/insert-tracking)
   (refresh-account app-state)
   (browser-events/attach-global-listeners)
   (browser-events/attach-esc-key-listener)
@@ -132,7 +128,6 @@
   (convert/remove-tracking)
   (riskified/remove-tracking)
   (facebook-analytics/remove-tracking)
-  (pinterest/remove-tracking)
   (lucky-orange/remove-tracking)
   (pixlee/remove-tracking)
   (browser-events/unattach-capture-late-readystatechange-callbacks)
