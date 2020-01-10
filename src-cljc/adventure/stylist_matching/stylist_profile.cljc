@@ -170,8 +170,9 @@
                                                                               (when (:licensed stylist)
                                                                                 "licensed")]))}
                          (when (-> stylist :service-menu :specialty-sew-in-leave-out)
-                           {:section-details/title   "Specialties"
-                            :section-details/content (:service-menu stylist)})]}
+                           {:section-details/title              "Specialties"
+                            :section-details/content            (:service-menu stylist)
+                            :section-details/wig-customization? (experiments/wig-customization? data)})]}
         (and (experiments/mayvenn-rating? data)
              (:mayvenn-rating stylist))
         (merge
@@ -209,7 +210,7 @@
      [:div.flex.items-center.justify-center.inherit-color label])))
 
 (defn section-details-molecule
-  [{:section-details/keys [title content]}]
+  [{:section-details/keys [title content wig-customization?]}]
   [:div.py3
    {:key title}
    [:div.title-3.proxima.shout
@@ -218,10 +219,12 @@
     (if (string? content)
       content
       [:div.mt1.col-12.col
-       [:div.col-4.col
+       [:div.col-6.col
         (checks-or-x "Leave Out" (:specialty-sew-in-leave-out content))
-        (checks-or-x "360" (:specialty-sew-in-360-frontal content))]
-       [:div.col-4.col
+        (checks-or-x "360" (:specialty-sew-in-360-frontal content))
+        (when wig-customization?
+          (checks-or-x "Wig Customization" (:specialty-wig-customization content)))]
+       [:div.col-6.col
         (checks-or-x "Closure" (:specialty-sew-in-closure content))
         (checks-or-x "Frontal" (:specialty-sew-in-frontal content))]])]])
 

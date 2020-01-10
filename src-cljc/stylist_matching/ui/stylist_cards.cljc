@@ -36,7 +36,7 @@
 (defn checks-or-x-atom
   [label value?]
   [:div.inline-block.content-3.proxima
-   [:div.mr5.flex.items-center
+   [:div.mr2.flex.items-center
     [:span.mr1
      (if value?
        (svg/check-mark {:class "black"

@@ -197,6 +197,7 @@
 (defn stylist-card-query
   [post-purchase?
    mayvenn-rating?
+   wig-customization?
    idx
    {:keys [salon service-menu gallery-images store-slug store-nickname stylist-id external-rating mayvenn-rating] :as stylist}]
   (let [{salon-name :name :keys [address-1 address-2 city state zipcode]} salon
@@ -204,10 +205,11 @@
         {:keys [specialty-sew-in-leave-out
                 specialty-sew-in-closure
                 specialty-sew-in-360-frontal
-                specialty-sew-in-frontal]} service-menu
-        cta-event                          (if post-purchase?
-                                             events/control-adventure-select-stylist-post-purchase
-                                             events/control-adventure-select-stylist-pre-purchase)]
+                specialty-sew-in-frontal
+                specialty-wig-customization]} service-menu
+        cta-event                             (if post-purchase?
+                                                events/control-adventure-select-stylist-post-purchase
+                                                events/control-adventure-select-stylist-pre-purchase)]
     (cond-> {:react/key                       (str "stylist-card-" store-slug)
              :stylist-card/target             (if post-purchase?
                                                 [events/navigate-adventure-stylist-profile-post-purchase {:stylist-id stylist-id
@@ -226,9 +228,11 @@
                                                                                 (boolean specialty-sew-in-leave-out))
                                                 (stylist-cards/checks-or-x-atom "Closure"
                                                                                 (boolean specialty-sew-in-closure))
+                                                (stylist-cards/checks-or-x-atom "Frontal" (boolean specialty-sew-in-frontal))
                                                 (stylist-cards/checks-or-x-atom "360° Frontal"
                                                                                 (boolean specialty-sew-in-360-frontal))
-                                                (stylist-cards/checks-or-x-atom "Frontal" (boolean specialty-sew-in-frontal))]
+                                                (when wig-customization?
+                                                    (stylist-cards/checks-or-x-atom "Wig Customization" (boolean specialty-wig-customization)))]
              :stylist-card.cta/id              (str "select-stylist-" store-slug)
              :stylist-card.cta/label           (str "Select " store-nickname)
              :stylist-card.cta/target          [cta-event
@@ -260,8 +264,8 @@
       (merge {:rating/value mayvenn-rating}))))
 
 (defn stylist-cards-query
-  [post-purchase? mayvenn-rating? stylists]
-  (map-indexed (partial stylist-card-query post-purchase? mayvenn-rating?) stylists))
+  [post-purchase? mayvenn-rating? wig-customization? stylists]
+  (map-indexed (partial stylist-card-query post-purchase? mayvenn-rating? wig-customization?) stylists))
 
 (def call-out-query
   {:call-out-center/bg-class    "bg-cool-gray"
@@ -327,4 +331,5 @@
                                                       call-out-query
                                                       (stylist-cards-query post-purchase?
                                                                            (experiments/mayvenn-rating? app-state)
+                                                                           (experiments/wig-customization? app-state)
                                                                            stylist-search-results))}))))
