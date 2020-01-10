@@ -64,3 +64,7 @@
 .picker-leave.picker-leave-active {
     transition: top 0.25s cubic-bezier(0.55, 0.085, 0.68, 0.53);
 }
+
+video.hide-chromecast-icon::-internal-media-controls-overlay-cast-button {
+    display: none;
+}
