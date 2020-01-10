@@ -1,5 +1,6 @@
 (ns storefront.accessors.mayvenn-install
   (:require [adventure.keypaths :as adventure-keypaths]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
             storefront.keypaths))
@@ -33,6 +34,14 @@
   [app-state]
   (let [order                       (get-in app-state storefront.keypaths/order)
         shipment                    (-> order :shipments first)
+        wig-customization?          (experiments/wig-customization? app-state)
+        any-wig?                    (and
+                                     wig-customization?
+                                     (->> shipment
+                                         :line-items
+                                         (filter line-items/any-wig?)
+                                         count
+                                         pos?))
         service-line-item           (first (orders/service-line-items order))
         sku-catalog                 (get-in app-state storefront.keypaths/v2-skus)
         wig-customization?          (= "SRV-WGC-000" (:sku service-line-item))
@@ -62,3 +71,4 @@
      :mayvenn-install/service-discount   (- (line-items/service-line-item-price service-line-item))
      :mayvenn-install/service-type       (product-line-items->service-type
                                           (orders/product-items-for-shipment shipment))}))
+     :mayvenn-install/any-wig?           any-wig?

@@ -11,6 +11,10 @@
   [{:keys [source]}]
   (= "spree" source))
 
+(defn any-wig?
+  [line-item]
+  (-> line-item :variant-attrs :hair/family #{"ready-wigs" "360-wigs" "lace-front-wigs"}))
+
 (defn customizable-wig?
   [line-item]
   (-> line-item :variant-attrs :hair/family #{"360-wigs" "lace-front-wigs"}))

@@ -95,3 +95,7 @@
 (defn color-picker-redesign?
   [data]
   (display-feature? data "color-picker-redesign"))
+
+(defn wig-customization?
+  [data]
+  (display-feature? data "wig-customization"))

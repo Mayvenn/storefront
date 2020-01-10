@@ -290,11 +290,12 @@
 (defn cart-items-query
   [app-state
    {:mayvenn-install/keys
-    [entered? locked? applied? stylist service-discount quantity-remaining quantity-required quantity-added]}
+    [service-type entered? locked? applied? stylist service-discount quantity-remaining quantity-required quantity-added]}
    line-items
    skus
    add-items-action]
-  (let [update-line-item-requests (merge-with
+  (let [wig-customization?        (= service-type :wig-customization)
+        update-line-item-requests (merge-with
                                    #(or %1 %2)
                                    (variants-requests app-state request-keys/add-to-bag (map :sku line-items))
                                    (variants-requests app-state request-keys/update-line-item (map :sku line-items)))
@@ -318,12 +319,12 @@
                       :cart-item-floating-box/value                   [:div {:data-test (str "line-item-price-ea-" sku-id)}
                                                                        (mf/as-money price)
                                                                        [:div.proxima.content-4 " each"]]
-                      :cart-item-square-thumbnail/id                sku-id
-                      :cart-item-square-thumbnail/sku-id            sku-id
-                      :cart-item-square-thumbnail/highlighted?      just-added-to-order?
-                      :cart-item-square-thumbnail/sticker-label     (when-let [length-circle-value (-> sku :hair/length first)]
+                      :cart-item-square-thumbnail/id                  sku-id
+                      :cart-item-square-thumbnail/sku-id              sku-id
+                      :cart-item-square-thumbnail/highlighted?        just-added-to-order?
+                      :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
                                                                         (str length-circle-value "”"))
-                      :cart-item-square-thumbnail/ucare-id          (->> sku (catalog-images/image "cart") :ucare/id)
+                      :cart-item-square-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)
                       :cart-item-adjustable-quantity/id               (str "line-item-quantity-" sku-id)
                       :cart-item-adjustable-quantity/spinning?        updating?
                       :cart-item-adjustable-quantity/value            (:quantity line-item)
@@ -371,12 +372,19 @@
                   :cart-item-pick-stylist/content "pick stylist"})
 
           applied?
-          (merge {:cart-item-title/primary "Mayvenn Install"
-                  :cart-item-copy/value    "Congratulations! You're all set for your Mayvenn Install. Click the button below to pick your stylist."
-                  :cart-item-copy/id       "congratulations"})
+          (merge (if wig-customization?
+                   {:cart-item-title/primary "Wig Customization"
+                    :cart-item-copy/value    "Congratulations! You're all set for your Wig Customization. Click the button below to pick your stylist."
+                    :cart-item-copy/id       "congratulations"}
+                   {:cart-item-title/primary "Mayvenn Install"
+                    :cart-item-copy/value    "Congratulations! You're all set for your Mayvenn Install. Click the button below to pick your stylist."
+                    :cart-item-copy/id       "congratulations"}))
 
           (and applied? matched?)
-          (merge {:cart-item-copy/value "Congratulations! You're all set for your Mayvenn Install."}))]))))
+          (merge
+           (if wig-customization?
+             {:cart-item-copy/value "Congratulations! You're all set for your Wig Customization"}
+             {:cart-item-copy/value "Congratulations! You're all set for your Mayvenn Install."})))]))))
 
 (defn coupon-code->remove-promo-action [coupon-code]
   {:cart-summary-line/action-id     "cart-remove-promo"
@@ -385,7 +393,7 @@
 
 (defn cart-summary-query
   [{:as order :keys [adjustments]}
-   {:mayvenn-install/keys [service-type entered? locked? applied? service-discount quantity-remaining]}]
+   {:mayvenn-install/keys [any-wig? service-type entered? locked? applied? service-discount quantity-remaining]}]
   (let [total              (:total order)
         tax                (:tax-total order)
         subtotal           (orders/products-subtotal order)
@@ -490,7 +498,7 @@
                   :freeinstall-informational/fine-print "*Mayvenn Install cannot be combined with other promo codes."
                   :freeinstall-informational/id         "freeinstall-informational"}
 
-               (= :wig-customization service-type)
+               any-wig?
                (merge
                 {:freeinstall-informational/primary    "Don't miss out on free Wig Customization"
                  :freeinstall-informational/secondary  "Get a free customization by a licensed stylist when you add a Wig Customization to your cart below."
