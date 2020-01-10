@@ -374,44 +374,50 @@
         ugc             (ugc-query product selected-sku data)
         sku-price       (:sku/price selected-sku)
         review-data     (review-component/query data)]
-    (merge {:reviews                            review-data
-            :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
-            :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
-            :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
-            :title/primary                      (:copy/title product)
-            :price-block/primary                sku-price
-            :price-block/secondary              "each"
-            :ugc                                ugc
-            :aladdin?                           (experiments/aladdin-experience? data)
-            :fetching-product?                  (utils/requesting? data (conj request-keys/get-products
-                                                                              (:catalog/product-id product)))
-            :adding-to-bag?                     (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-            :sku-quantity                       (get-in data keypaths/browse-sku-quantity 1)
-            :options                            options
-            :product                            product
-            :selections                         selections
-            :selected-options                   (get-selected-options selections options)
-            :selected-sku                       selected-sku
-            :facets                             facets
-            :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
-            :picker-data                        (picker/query data)
-            :carousel-images                    carousel-images}
-           (add-to-cart-query data selected-sku sku-price)
-           (let [{:keys [copy/description copy/colors copy/weights copy/materials copy/summary hair/family]} product]
-             #:product-description {:summary                   summary
-                                    :hair-family               family
-                                    :description               description,
-                                    :materials                 materials
-                                    :colors                    colors
-                                    :weights                   weights
-                                    :stylist-exclusives-family (:stylist-exclusives/family product)
-                                    :learn-more-nav-event      events/navigate-content-our-hair})
-           #:freeinstall-banner {:title          "Buy 3 items and we'll pay for your hair install"
-                                 :subtitle       "Choose any Mayvenn stylist in your area"
-                                 :button-copy    "browse stylists"
-                                 :nav-event      [events/navigate-adventure-match-stylist]
-                                 :image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
-                                 :show?          (= "shop" (get-in data keypaths/store-slug))})))
+    (cond->
+         (merge
+          {:reviews                            review-data
+         :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
+         :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
+         :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
+         :title/primary                      (:copy/title product)
+         :price-block/primary                sku-price
+         :price-block/secondary              "each"
+         :ugc                                ugc
+         :aladdin?                           (experiments/aladdin-experience? data)
+         :fetching-product?                  (utils/requesting? data (conj request-keys/get-products
+                                                                           (:catalog/product-id product)))
+         :adding-to-bag?                     (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+         :sku-quantity                       (get-in data keypaths/browse-sku-quantity 1)
+         :options                            options
+         :product                            product
+         :selections                         selections
+         :selected-options                   (get-selected-options selections options)
+         :selected-sku                       selected-sku
+         :facets                             facets
+         :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
+         :picker-data                        (picker/query data)
+         :carousel-images                    carousel-images}
+       (add-to-cart-query data selected-sku sku-price)
+       (let [{:keys [copy/description copy/colors copy/weights copy/materials copy/summary hair/family]} product]
+         #:product-description {:summary                   summary
+                                :hair-family               family
+                                :description               description,
+                                :materials                 materials
+                                :colors                    colors
+                                :weights                   weights
+                                :stylist-exclusives-family (:stylist-exclusives/family product)
+                                :learn-more-nav-event      events/navigate-content-our-hair})
+       #:freeinstall-banner {:title          "Buy 3 items and we'll pay for your hair install"
+                             :subtitle       "Choose any Mayvenn stylist in your area"
+                             :button-copy    "browse stylists"
+                             :nav-event      [events/navigate-adventure-match-stylist]
+                             :image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
+                             :show?          (= "shop" (get-in data keypaths/store-slug))})
+
+      (and (experiments/wig-customization? data)
+           (#{"360-wigs" "ready-wigs" "lace-front-wigs"} (-> product :hair/family first)))
+      (merge {:freeinstall-banner/title "Buy any Lace Front or 360 Wig and we'll pay for your wig customization"}))))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
