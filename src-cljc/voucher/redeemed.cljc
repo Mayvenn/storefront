@@ -12,17 +12,26 @@
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]))
 
-(def unit-type->menu-kw-suffix
-  {"with Closure" "sew-in-closure"
-   "with 360"     "sew-in-360-frontal"
-   "with Frontal" "sew-in-frontal"
-   "Leave Out"    "sew-in-leave-out"})
+(def unit-type->menu-kw-payout
+  {"Free Install (with Closure)" "install-sew-in-closure"
+   "Free Install (with 360)"     "install-sew-in-360-frontal"
+   "Free Install (with Frontal)" "install-sew-in-frontal"
+   "Free Install (Leave Out)"    "install-sew-in-leave-out"
+   "Wig Customization"           "wig-customization"})
+
+(def unit-type->menu-kw-advertised
+  {"Free Install (with Closure)" "advertised-sew-in-closure"
+   "Free Install (with 360)"     "advertised-sew-in-360-frontal"
+   "Free Install (with Frontal)" "advertised-sew-in-frontal"
+   "Free Install (Leave Out)"    "advertised-sew-in-leave-out"
+   "Wig Customization"           "advertised-wig-customization"})
 
 (def unit-type->display-name
-  {"with Closure" "Closure Install"
-   "with 360"     "360 Frontal Install"
-   "with Frontal" "Frontal Install"
-   "Leave Out"    "Leave Out Install"})
+  {"Free Install (with Closure)" "Closure Install"
+   "Free Install (with 360)"     "360 Frontal Install"
+   "Free Install (with Frontal)" "Frontal Install"
+   "Free Install (Leave Out)"    "Leave Out Install"
+   "Wig Customization"           "Wig Customization"})
 
 (defn fine-print-molecule
   [{:fine-print/keys [id copy]}]
@@ -99,15 +108,14 @@
 (defn ^:private query [app-state]
   (let [voucher                   (get-in app-state voucher-keypaths/voucher-response)
         service-menu              (get-in app-state keypaths/user-stylist-service-menu)
-        parsed-install-type       (-> voucher :discount :unit_type service-menu/parse-type)
-        kw-suffix                 (get unit-type->menu-kw-suffix parsed-install-type)
+        install-type              (-> voucher :discount :unit_type)
         payout-amount             (-> service-menu
-                                      (get (keyword (str "install-" kw-suffix)))
+                                      (get (keyword (get unit-type->menu-kw-payout install-type)))
                                       mf/as-money-without-cents)
         advertised-amount         (-> service-menu
-                                      (get (keyword (str "advertised-" kw-suffix)))
+                                      (get (keyword (get unit-type->menu-kw-advertised install-type)))
                                       mf/as-money-without-cents)
-        install-type-display-name (get unit-type->display-name parsed-install-type)
+        install-type-display-name (get unit-type->display-name install-type)
         payout-equals-advertised? (= payout-amount advertised-amount)]
     (cond->
      {:spinning?                (utils/requesting? app-state request-keys/fetch-user-stylist-service-menu)
