@@ -212,12 +212,8 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 
           ;;;;;;;;;;;;
 
-
-
           ;; inline styles in production because our css file is so small and it avoids another round
           ;; trip request. At time of writing this greatly includes our pagespeed score
-
-
           (if (#{"development" "test"} environment)
             (page/include-css (assets/path "/css/app.css"))
             [:style (raw (css-styles))])]
