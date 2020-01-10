@@ -23,8 +23,7 @@
        (when (and text-input-attrs button-attrs)
          (ui/input-group text-input-attrs button-attrs))])
 
-    (when (:freeinstall-informational/value query)
-      (checkout.M/freeinstall-informational))]
+    (checkout.M/freeinstall-informational query)]
 
    [:div.pt2.px4
     (checkout.M/cart-summary-total-line query)]])

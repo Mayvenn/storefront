@@ -385,7 +385,7 @@
 
 (defn cart-summary-query
   [{:as order :keys [adjustments]}
-   {:mayvenn-install/keys [entered? locked? applied? service-discount quantity-remaining]}]
+   {:mayvenn-install/keys [service-type entered? locked? applied? service-discount quantity-remaining]}]
   (let [total              (:total order)
         tax                (:tax-total order)
         subtotal           (orders/products-subtotal order)
@@ -398,89 +398,104 @@
                                     (checkout-delivery/enrich-shipping-method (date/now))
                                     :copy/timeframe)
 
-        adjustment (->> order :adjustments (map :price) (reduce + 0))
+        adjustment    (->> order :adjustments (map :price) (reduce + 0))
         total-savings (- adjustment)]
-    {:cart-summary/id                 "cart-summary"
-     :freeinstall-informational/value (not entered?)
-     :cart-summary-total-line/id      "total"
-     :cart-summary-total-line/label   (if applied? "Hair + Install Total" "Total")
-     :cart-summary-total-line/value   (cond
-                                        applied?
-                                        [:div
-                                         [:div.bold.h2
-                                          (some-> total mf/as-money)]
-                                         [:div.h6.bg-p-color.white.px2.nowrap.mb1
-                                          "Includes Mayvenn Install"]
-                                         (when (pos? total-savings)
-                                           [:div.h6.light.pxp1.nowrap.italic
-                                            "You've saved "
-                                            [:span.bold.p-color {:data-test "total-savings"}
-                                             (mf/as-money total-savings)]])]
+    (cond->
+        {:cart-summary/id                 "cart-summary"
+         :cart-summary-total-line/id      "total"
+         :cart-summary-total-line/label   (if applied? "Hair + Install Total" "Total")
+         :cart-summary-total-line/value   (cond
+                                            applied?
+                                            [:div
+                                             [:div.bold.h2
+                                              (some-> total mf/as-money)]
+                                             [:div.h6.bg-p-color.white.px2.nowrap.mb1
+                                              "Includes Mayvenn Install"]
+                                             (when (pos? total-savings)
+                                               [:div.h6.light.pxp1.nowrap.italic
+                                                "You've saved "
+                                                [:span.bold.p-color {:data-test "total-savings"}
+                                                 (mf/as-money total-savings)]])]
 
-                                        locked?
-                                        [:div.h7.light
-                                         "Add " quantity-remaining
-                                         " more " (ui/pluralize quantity-remaining "item")
-                                         " to "
-                                         [:br]
-                                         " calculate total price"]
+                                            locked?
+                                            [:div.h7.light
+                                             "Add " quantity-remaining
+                                             " more " (ui/pluralize quantity-remaining "item")
+                                             " to "
+                                             [:br]
+                                             " calculate total price"]
 
-                                        :else
-                                        [:div (some-> total mf/as-money)])
-     :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
-                                   :cart-summary-line/label "Subtotal"
-                                   :cart-summary-line/value (mf/as-money (cond-> subtotal
-                                                                           (or locked? applied?)
-                                                                           ;; Add the service discount to the subtotal
-                                                                           (- service-discount)))}]
+                                            :else
+                                            [:div (some-> total mf/as-money)])
+         :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
+                                       :cart-summary-line/label "Subtotal"
+                                       :cart-summary-line/value (mf/as-money (cond-> subtotal
+                                                                               (or locked? applied?)
+                                                                               ;; Add the service discount to the subtotal
+                                                                               (- service-discount)))}]
 
-                                 (when shipping
-                                   [{:cart-summary-line/id       "shipping"
-                                     :cart-summary-line/label    "Shipping"
-                                     :cart-summary-line/sublabel shipping-timeframe
-                                     :cart-summary-line/value    (mf/as-money-or-free shipping-cost)}])
+                                     (when shipping
+                                       [{:cart-summary-line/id       "shipping"
+                                         :cart-summary-line/label    "Shipping"
+                                         :cart-summary-line/sublabel shipping-timeframe
+                                         :cart-summary-line/value    (mf/as-money-or-free shipping-cost)}])
 
-                                 (when locked?
-                                   ;; When FREEINSTALL is merely locked (and so not yet an adjustment) we must special case it, so:
-                                   [(merge
-                                     {:cart-summary-line/id    "freeinstall-locked"
-                                      :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
-                                                                                  :height "2em" :width "2em"})
-                                      :cart-summary-line/label "Free Mayvenn Install"
-                                      :cart-summary-line/value (mf/as-money-or-free service-discount)
-                                      :cart-summary-line/class "p-color"}
-                                     (coupon-code->remove-promo-action "freeinstall"))
+                                     (when locked?
+                                       ;; When FREEINSTALL is merely locked (and so not yet an adjustment) we must special case it, so:
+                                       [(merge
+                                         {:cart-summary-line/id    "freeinstall-locked"
+                                          :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
+                                                                                      :height "2em" :width "2em"})
+                                          :cart-summary-line/label "Free Mayvenn Install"
+                                          :cart-summary-line/value (mf/as-money-or-free service-discount)
+                                          :cart-summary-line/class "p-color"}
+                                         (coupon-code->remove-promo-action "freeinstall"))
 
-                                    {:cart-summary-line/action-id     "cart-remove-promo"
-                                     :cart-summary-line/action-icon   (svg/close-x {:class "stroke-white fill-gray"})
-                                     :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code "freeinstall"}]}])
+                                        {:cart-summary-line/action-id     "cart-remove-promo"
+                                         :cart-summary-line/action-icon   (svg/close-x {:class "stroke-white fill-gray"})
+                                         :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code "freeinstall"}]}])
 
-                                 (for [{:keys [name price coupon-code] :as adjustment}
-                                       (filter adjustments/non-zero-adjustment? adjustments)
-                                       :let [install-summary-line? (orders/freeinstall-promotion? adjustment)]]
-                                   (cond-> {:cart-summary-line/id    (text->data-test-name name)
-                                            :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
-                                                                                        :height "2em" :width "2em"})
-                                            :cart-summary-line/label (orders/display-adjustment-name name)
-                                            :cart-summary-line/class "p-color"
-                                            :cart-summary-line/value (mf/as-money-or-free price)}
+                                     (for [{:keys [name price coupon-code] :as adjustment}
+                                           (filter adjustments/non-zero-adjustment? adjustments)
+                                           :let [install-summary-line? (orders/freeinstall-promotion? adjustment)]]
+                                       (cond-> {:cart-summary-line/id    (text->data-test-name name)
+                                                :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
+                                                                                            :height "2em" :width "2em"})
+                                                :cart-summary-line/label (orders/display-adjustment-name name)
+                                                :cart-summary-line/class "p-color"
+                                                :cart-summary-line/value (mf/as-money-or-free price)}
 
-                                     (and install-summary-line?
-                                          (empty? coupon-code))
-                                     (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
-                                             :cart-summary-line/class "p-color"}
-                                            (coupon-code->remove-promo-action "freeinstall"))
+                                         (and install-summary-line?
+                                              (empty? coupon-code))
+                                         (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
+                                                 :cart-summary-line/class "p-color"}
+                                                (coupon-code->remove-promo-action "freeinstall"))
 
-                                     install-summary-line?
-                                     (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
-                                             :cart-summary-line/class "p-color"})
-                                     coupon-code
-                                     (merge (coupon-code->remove-promo-action coupon-code))))
+                                         install-summary-line?
+                                         (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
+                                                 :cart-summary-line/class "p-color"})
+                                         coupon-code
+                                         (merge (coupon-code->remove-promo-action coupon-code))))
 
-                                 (when (pos? tax)
-                                   [{:cart-summary-line/id    "tax"
-                                     :cart-summary-line/label "Tax"
-                                     :cart-summary-line/value (mf/as-money tax)}]))}))
+                                     (when (pos? tax)
+                                       [{:cart-summary-line/id    "tax"
+                                         :cart-summary-line/label "Tax"
+                                         :cart-summary-line/value (mf/as-money tax)}]))}
+
+      (not entered?)
+      (merge (cond->
+                 {:freeinstall-informational/primary    "Don't miss out on free Mayvenn Install"
+                  :freeinstall-informational/secondary  "Save 10% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below."
+                  :freeinstall-informational/cta-label  "Add Mayvenn Install"
+                  :freeinstall-informational/fine-print "*Mayvenn Install cannot be combined with other promo codes."
+                  :freeinstall-informational/id         "freeinstall-informational"}
+
+               (= :wig-customization service-type)
+               (merge
+                {:freeinstall-informational/primary    "Don't miss out on free Wig Customization"
+                 :freeinstall-informational/secondary  "Get a free customization by a licensed stylist when you add a Wig Customization to your cart below."
+                 :freeinstall-informational/cta-label  "Add Wig Customization"
+                 :freeinstall-informational/fine-print "*Wig Customization cannot be combined with other promo codes, and excludes Ready to Wear Wigs"}))))))
 
 (defn promo-input-query
   [data order entered?]
