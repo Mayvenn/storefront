@@ -8,7 +8,7 @@
   (let [path                    (or (:path cms-hero-data) "/shop/look")
         [event :as routed-path] (routes/navigation-message-for path)
         link-options            (assoc (if-not (= events/navigate-not-found event)
-                                         (apply utils/route-to routed-path)
+                                         {:navigation-message routed-path}
                                          {:href path}) :data-test "home-banner")]
     (cond->
         {:opts      link-options

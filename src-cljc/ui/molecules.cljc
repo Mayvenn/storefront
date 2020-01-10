@@ -92,10 +92,13 @@
            ucare?
            off-screen?]
     :or   {file-name "hero-image"}} _ _]
-  [:a opts (cond
-             off-screen? [:div.col-12]
-             ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
-             :else       (image-hero mob-url dsk-url alt))])
+  [:a (cond-> opts
+        (:navigation-message opts) (merge (apply utils/route-to (:navigation-message opts)))
+        (:navigation-message opts) (dissoc :navigation-message))
+   (cond
+     off-screen? [:div.col-12]
+     ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
+     :else       (image-hero mob-url dsk-url alt))])
 
 (defn field-reveal-molecule
   [{:field-reveal/keys [id label target]}]
