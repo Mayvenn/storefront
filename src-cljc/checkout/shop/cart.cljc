@@ -406,8 +406,9 @@
                                     (checkout-delivery/enrich-shipping-method (date/now))
                                     :copy/timeframe)
 
-        adjustment    (->> order :adjustments (map :price) (reduce + 0))
-        total-savings (- adjustment)]
+        adjustment         (->> order :adjustments (map :price) (reduce + 0))
+        total-savings      (- adjustment)
+        wig-customization? (= :wig-customization service-type)]
     (cond->
         {:cart-summary/id                 "cart-summary"
          :cart-summary-total-line/id      "total"
@@ -418,7 +419,9 @@
                                              [:div.bold.h2
                                               (some-> total mf/as-money)]
                                              [:div.h6.bg-p-color.white.px2.nowrap.mb1
-                                              "Includes Mayvenn Install"]
+                                              (if wig-customization?
+                                                "Includes Wig Customization"
+                                                "Includes Mayvenn Install")]
                                              (when (pos? total-savings)
                                                [:div.h6.light.pxp1.nowrap.italic
                                                 "You've saved "
@@ -454,7 +457,9 @@
                                          {:cart-summary-line/id    "freeinstall-locked"
                                           :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
                                                                                       :height "2em" :width "2em"})
-                                          :cart-summary-line/label "Free Mayvenn Install"
+                                          :cart-summary-line/label (if wig-customization?
+                                                                     "Free Wig Customization"
+                                                                     "Free Mayvenn Install")
                                           :cart-summary-line/value (mf/as-money-or-free service-discount)
                                           :cart-summary-line/class "p-color"}
                                          (coupon-code->remove-promo-action "freeinstall"))
@@ -469,19 +474,16 @@
                                        (cond-> {:cart-summary-line/id    (text->data-test-name name)
                                                 :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
                                                                                             :height "2em" :width "2em"})
-                                                :cart-summary-line/label (orders/display-adjustment-name name)
+                                                :cart-summary-line/label (adjustments/display-adjustment-name adjustment)
                                                 :cart-summary-line/class "p-color"
                                                 :cart-summary-line/value (mf/as-money-or-free price)}
 
-                                         (and install-summary-line?
-                                              (empty? coupon-code))
+                                         install-summary-line?
                                          (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
+                                                 :cart-summary-line/label (adjustments/display-service-line-item-adjustment-name adjustment service-type)
                                                  :cart-summary-line/class "p-color"}
                                                 (coupon-code->remove-promo-action "freeinstall"))
 
-                                         install-summary-line?
-                                         (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
-                                                 :cart-summary-line/class "p-color"})
                                          coupon-code
                                          (merge (coupon-code->remove-promo-action coupon-code))))
 
