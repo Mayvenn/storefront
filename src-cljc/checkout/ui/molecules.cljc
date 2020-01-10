@@ -57,6 +57,12 @@
      [:div.flex-auto.content-1.proxima label]
      [:div.right-align.title-2.proxima value]]))
 
+(defn cart-summary-total-incentive
+  [{:cart-summary-total-incentive/keys [id label value]}]
+  (when id
+    [:div.flex.justify-end {:data-test id}
+     [:div.right-align.title-2.proxima value]]))
+
 (defn freeinstall-informational
   [{:freeinstall-informational/keys [id primary secondary cta-label fine-print]}]
   (when id

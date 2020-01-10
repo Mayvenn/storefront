@@ -26,4 +26,5 @@
     (checkout.M/freeinstall-informational query)]
 
    [:div.pt2.px4
-    (checkout.M/cart-summary-total-line query)]])
+    (checkout.M/cart-summary-total-line query)
+    (checkout.M/cart-summary-total-incentive query)]])
