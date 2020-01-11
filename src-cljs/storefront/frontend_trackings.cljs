@@ -132,7 +132,6 @@
                                                   :variant_quantity quantity
                                                   :quantity         quantity
                                                   :context          {:cart-items cart-items}}))
-      (prn (orders/all-product-items order))
       (google-tag-manager/track-add-to-cart {:number           (:number order)
                                              :store-slug       store-slug
                                              :store-is-stylist (not (#{"store" "shop" "internal"} store-slug))
