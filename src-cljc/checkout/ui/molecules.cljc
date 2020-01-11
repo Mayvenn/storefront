@@ -64,7 +64,9 @@
      [:div.right-align.title-2.proxima value]]))
 
 (defn freeinstall-informational
-  [{:freeinstall-informational/keys [id primary secondary cta-label fine-print]}]
+  [{:freeinstall-informational/keys
+    [id primary secondary cta-label cta-target fine-print
+     secondary-link-id secondary-link-label secondary-link-target]}]
   (when id
     [:div.flex.py2 {:data-test id}
      "✋"
@@ -75,12 +77,15 @@
        secondary]
       [:div.flex.justify-left.py1
        (ui/button-small-primary
-        {:data-test "add-freeinstall-coupon"
-         :on-click  (utils/send-event-callback events/control-cart-add-freeinstall-coupon)}
+        (assoc (apply utils/fake-href cta-target) :data-test "add-freeinstall-coupon")
         cta-label)
-       [:div.s-color.flex.items-center.px2.button-font-3.shout
-        {:data-test "cart-learn-more"}
-        [:a {:class    "inherit-color border-bottom border-width-2"
-             :on-click (utils/send-event-callback events/popup-show-consolidated-cart-free-install)} "learn more"]]]
+       (when secondary-link-id
+         [:div.s-color.flex.items-center.px2.button-font-3.shout
+          [:a
+           (merge
+            (apply utils/fake-href secondary-link-target)
+            {:class     "inherit-color border-bottom border-width-2"
+             :data-test secondary-link-id})
+           secondary-link-label]])]
       [:div.content-4.dark-gray
        fine-print]]]))

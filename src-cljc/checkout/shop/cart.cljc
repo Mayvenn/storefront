@@ -513,15 +513,21 @@
                  {:freeinstall-informational/primary    "Don't miss out on free Mayvenn Install"
                   :freeinstall-informational/secondary  "Save 10% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below."
                   :freeinstall-informational/cta-label  "Add Mayvenn Install"
+                  :freeinstall-informational/cta-target [events/control-cart-add-freeinstall-coupon]
                   :freeinstall-informational/fine-print "*Mayvenn Install cannot be combined with other promo codes."
-                  :freeinstall-informational/id         "freeinstall-informational"}
+                  :freeinstall-informational/id                   "freeinstall-informational"
+
+                  :freeinstall-informational/secondary-link-id    "cart-learn-more"
+                  :freeinstall-informational/secondary-link-target     [events/popup-show-consolidated-cart-free-install]
+                  :freeinstall-informational/secondary-link-label "learn more"}
 
                any-wig?
                (merge
-                {:freeinstall-informational/primary    "Don't miss out on free Wig Customization"
-                 :freeinstall-informational/secondary  "Get a free customization by a licensed stylist when you add a Wig Customization to your cart below."
-                 :freeinstall-informational/cta-label  "Add Wig Customization"
-                 :freeinstall-informational/fine-print "*Wig Customization cannot be combined with other promo codes, and excludes Ready to Wear Wigs"}))))))
+                {:freeinstall-informational/secondary-link-id nil
+                 :freeinstall-informational/primary           "Don't miss out on free Wig Customization"
+                 :freeinstall-informational/secondary         "Get a free customization by a licensed stylist when you add a Wig Customization to your cart below."
+                 :freeinstall-informational/cta-label         "Add Wig Customization"
+                 :freeinstall-informational/fine-print        "*Wig Customization cannot be combined with other promo codes, and excludes Ready to Wear Wigs"}))))))
 
 (defn promo-input-query
   [data order entered?]
