@@ -1,5 +1,4 @@
 (ns storefront.frontend-transitions
-  (:require-macros [storefront.macros :refer [compile-get-in]])
   (:require [adventure.keypaths :as adventure.keypaths]
             [cemerick.url :as url]
             [clojure.string :as string]
@@ -38,7 +37,7 @@
   (assoc-in app-state keypaths/errors {}))
 
 (defmethod transition-state events/control-account-profile-submit [_ event args app-state]
-  (let [password              (compile-get-in app-state keypaths/manage-account-password)
+  (let [password              (get-in app-state keypaths/manage-account-password)
         field-errors          (cond-> {}
                                 (> 6 (count password))
                                 (merge (group-by :path [{:path ["password"] :long-message "New password must be at least 6 characters"}])))]
@@ -53,7 +52,7 @@
       (assoc-in keypaths/flash-now-failure nil)))
 
 (defn add-return-event [app-state]
-  (let [[return-event return-args] (compile-get-in app-state keypaths/navigation-message)]
+  (let [[return-event return-args] (get-in app-state keypaths/navigation-message)]
     (if (nav/return-blacklisted? return-event)
       app-state
       (assoc-in app-state keypaths/return-navigation-message [return-event return-args]))))
@@ -71,7 +70,7 @@
     app-state))
 
 (defn default-credit-card-name [app-state {:keys [first-name last-name]}]
-  (if-not (string/blank? (compile-get-in app-state keypaths/checkout-credit-card-name))
+  (if-not (string/blank? (get-in app-state keypaths/checkout-credit-card-name))
     app-state
     (let [default (->> [first-name last-name]
                        (remove string/blank?)
@@ -86,7 +85,7 @@
 (def max-nav-stack-depth 5)
 
 (defn push-nav-stack [app-state stack-keypath stack-item]
-  (let [leaving-nav (compile-get-in app-state keypaths/navigation-message)
+  (let [leaving-nav (get-in app-state keypaths/navigation-message)
         item        (merge {:navigation-message leaving-nav} stack-item)
         nav-stack   (get-in app-state stack-keypath nil)]
     (->> (conj nav-stack item) (take max-nav-stack-depth))))
@@ -124,14 +123,14 @@
 
 (defn clear-completed-order [app-state]
   (cond-> app-state
-    (nav/auth-events (compile-get-in app-state keypaths/navigation-event))
+    (nav/auth-events (get-in app-state keypaths/navigation-event))
     (assoc-in keypaths/completed-order nil)))
 
 (defn prefill-guest-email-address [app-state]
   (update-in app-state keypaths/checkout-guest-email
              #(or (not-empty %1) %2 %3)
-             (compile-get-in app-state keypaths/order-user-email)
-             (compile-get-in app-state keypaths/captured-email)))
+             (get-in app-state keypaths/order-user-email)
+             (get-in app-state keypaths/captured-email)))
 
 (defn clear-recently-added-skus [app-state nav-event]
   (if (not= nav-event events/navigate-cart)
@@ -153,7 +152,7 @@
 
 (defmethod transition-state events/navigate-home
   [_ event {:keys [query-params]} app-state]
-  (if (= "shop" (compile-get-in app-state keypaths/store-slug))
+  (if (= "shop" (get-in app-state keypaths/store-slug))
     (assoc-in app-state adventure.keypaths/adventure-home-video (adventure-slug->video (:video query-params)))
     (assoc-in app-state keypaths/v2-ui-home-video (v2-slug->video (:video query-params)))))
 
@@ -169,8 +168,8 @@
         clear-completed-order
         (clear-recently-added-skus event)
         (clear-freeinstall-just-added event)
-        (assoc-in keypaths/flash-now-success (compile-get-in app-state keypaths/flash-later-success))
-        (assoc-in keypaths/flash-now-failure (compile-get-in app-state keypaths/flash-later-failure))
+        (assoc-in keypaths/flash-now-success (get-in app-state keypaths/flash-later-success))
+        (assoc-in keypaths/flash-now-failure (get-in app-state keypaths/flash-later-failure))
         (assoc-in keypaths/flash-later-success nil)
         (assoc-in keypaths/flash-later-failure nil)
         (update-in keypaths/ui dissoc :navigation-stashed-stack-item)
@@ -214,14 +213,14 @@
 (defmethod transition-state events/navigate-account-manage [_ event args app-state]
   (assoc-in app-state
             keypaths/manage-account-email
-            (compile-get-in app-state keypaths/user-email)))
+            (get-in app-state keypaths/user-email)))
 
 (defmethod transition-state events/control-commission-order-expand [_ _ {:keys [number]} app-state]
   (assoc-in app-state keypaths/expanded-commission-order-id #{number}))
 
 (defn ensure-direct-load-of-checkout-auth-advances-to-checkout-flow [app-state]
   (let [direct-load? (= [events/navigate-home {}]
-                        (compile-get-in app-state keypaths/return-navigation-message))]
+                        (get-in app-state keypaths/return-navigation-message))]
     (when direct-load?
       (assoc-in app-state keypaths/return-navigation-message
                 [events/navigate-checkout-address {}]))))
@@ -233,9 +232,9 @@
   (ensure-direct-load-of-checkout-auth-advances-to-checkout-flow app-state))
 
 (defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
-  (let [order                    (compile-get-in app-state keypaths/order)
+  (let [order                    (get-in app-state keypaths/order)
         billing-address          (get-in app-state (conj keypaths/order :billing-address))
-        user                     (compile-get-in app-state keypaths/user)
+        user                     (get-in app-state keypaths/user)
         covered-by-store-credit? (orders/fully-covered-by-store-credit? order user)]
     (assoc-in (default-credit-card-name app-state billing-address)
               keypaths/checkout-selected-payment-methods
@@ -247,7 +246,7 @@
 (defn ensure-cart-has-shipping-method [app-state]
   (-> app-state
       (assoc-in keypaths/checkout-selected-shipping-method
-                (merge (first (compile-get-in app-state keypaths/shipping-methods))
+                (merge (first (get-in app-state keypaths/shipping-methods))
                        (orders/shipping-item (:order app-state))))))
 
 (defmethod transition-state events/navigate-checkout-address [_ event args app-state]
@@ -259,12 +258,12 @@
       (update-in keypaths/checkout-credit-card-existing-cards empty)))
 
 (defmethod transition-state events/navigate-order-complete [_ event args app-state]
-  (when-not (compile-get-in app-state keypaths/user-id)
+  (when-not (get-in app-state keypaths/user-id)
     (add-return-event app-state)))
 
 ;; Duplicated from above
 (defmethod transition-state events/navigate-need-match-order-complete [_ event args app-state]
-  (when-not (compile-get-in app-state keypaths/user-id)
+  (when-not (get-in app-state keypaths/user-id)
     (add-return-event app-state)))
 
 (defmethod transition-state events/navigate-gallery-edit [_ event args app-state]
@@ -338,7 +337,7 @@
       :start
       (assoc-in keypaths/checkout-credit-card-existing-cards cards)
 
-      (not (valid-id? (compile-get-in app-state keypaths/checkout-credit-card-selected-id)))
+      (not (valid-id? (get-in app-state keypaths/checkout-credit-card-selected-id)))
       (assoc-in keypaths/checkout-credit-card-selected-id nil)
 
       :finally
@@ -370,12 +369,12 @@
 
 (defmethod transition-state events/save-order [_ event {:keys [order]} app-state]
   (if (orders/incomplete? order)
-    (let [previous-order          (compile-get-in app-state keypaths/order)
+    (let [previous-order          (get-in app-state keypaths/order)
           newly-added-sku-ids     (if (= order previous-order)
-                                    (compile-get-in app-state keypaths/cart-recently-added-skus)
+                                    (get-in app-state keypaths/cart-recently-added-skus)
                                     (orders/newly-added-sku-ids previous-order order))
           freeinstall-just-added? (if (= order previous-order)
-                                    (compile-get-in app-state keypaths/cart-freeinstall-just-added?)
+                                    (get-in app-state keypaths/cart-freeinstall-just-added?)
                                     (and (not (orders/freeinstall-entered? previous-order))
                                          (orders/freeinstall-entered? order)))
           no-servicing-stylist?   (nil? (:servicing-stylist-id order))]
@@ -387,7 +386,7 @@
                   (update-in keypaths/checkout-billing-address merge (:billing-address order))
                   (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
                   (assoc-in keypaths/checkout-selected-shipping-method
-                            (merge (first (compile-get-in app-state keypaths/shipping-methods))
+                            (merge (first (get-in app-state keypaths/shipping-methods))
                                    (orders/shipping-item order)))
                   prefill-guest-email-address)
         no-servicing-stylist?
@@ -406,7 +405,7 @@
                                               keypaths/sign-in-password
                                               keypaths/reset-password-password
                                               keypaths/reset-password-token))
-        opted-in?           (= "opted-in" (compile-get-in signed-in-app-state keypaths/email-capture-session))]
+        opted-in?           (= "opted-in" (get-in signed-in-app-state keypaths/email-capture-session))]
     (cond-> signed-in-app-state
       (not opted-in?)
       (assoc-in keypaths/email-capture-session "signed-in"))))
@@ -434,7 +433,7 @@
 
 (defmethod transition-state events/api-success-fetch-cms-keypath
   [_ event more-cms-data app-state]
-  (let [existing-cms-data (compile-get-in app-state keypaths/cms)
+  (let [existing-cms-data (get-in app-state keypaths/cms)
         combined-cms-data (maps/deep-merge existing-cms-data more-cms-data)]
     (assoc-in app-state
               keypaths/cms
@@ -502,13 +501,13 @@
   (assoc-in app-state keypaths/sms-number (:number args)))
 
 (defmethod transition-state events/api-success-update-order [_ event {:keys [order]} app-state]
-  (let [previous-order (compile-get-in app-state keypaths/order)]
+  (let [previous-order (get-in app-state keypaths/order)]
     (-> app-state
         (assoc-in keypaths/cart-recently-added-skus (orders/newly-added-sku-ids previous-order order)))))
 
 (defmethod transition-state events/order-completed [_ event order app-state]
   (-> app-state
-      (assoc-in keypaths/sign-up-email (compile-get-in app-state keypaths/checkout-guest-email))
+      (assoc-in keypaths/sign-up-email (get-in app-state keypaths/checkout-guest-email))
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/cart state/initial-cart-state)
       (assoc-in keypaths/completed-order order)
@@ -531,7 +530,7 @@
       (assoc-in keypaths/errors (update errors :field-errors (partial group-by :path)))))
 
 (defmethod transition-state events/api-failure-order-not-created-from-shared-cart [_ event args app-state]
-  (when-let [error-message (compile-get-in app-state keypaths/error-message)]
+  (when-let [error-message (get-in app-state keypaths/error-message)]
     (assoc-in app-state keypaths/flash-later-failure {:message error-message})))
 
 (defmethod transition-state events/api-failure-pending-promo-code [_ event args app-state]
@@ -614,7 +613,7 @@
   (assoc-in app-state keypaths/popup nil))
 
 (defmethod transition-state events/control-email-captured-submit [_ event args app-state]
-  (let [email (compile-get-in app-state keypaths/captured-email)]
+  (let [email (get-in app-state keypaths/captured-email)]
     (if (or (> 3 (count email)) (not (string/includes? email "@")))
       (assoc-in app-state keypaths/errors {:field-errors  {["email"] [{:path ["email"] :long-message "Email is invalid"}]}
                                            :error-code    "invalid-input"
@@ -646,7 +645,7 @@
                :error-message message})))
 
 (defmethod transitions/transition-state events/faq-section-selected [_ _ {:keys [index]} app-state]
-  (let [expanded-index (compile-get-in app-state keypaths/faq-expanded-section)]
+  (let [expanded-index (get-in app-state keypaths/faq-expanded-section)]
     (if (= index expanded-index)
       (assoc-in app-state keypaths/faq-expanded-section nil)
       (assoc-in app-state keypaths/faq-expanded-section index))))

@@ -56,13 +56,13 @@
      :variant_image    (update image :src (partial str "https:"))}))
 
 (defmethod perform-track events/app-start [_ event args app-state]
-  (when (compile-get-in app-state keypaths/user-id)
-    (stringer/identify (compile-get-in app-state keypaths/user)
+  (when (get-in app-state keypaths/user-id)
+    (stringer/identify (get-in app-state keypaths/user)
                        events/visitor-identified)))
 
 (defn- nav-was-selecting-bundle-option? [app-state]
-  (when-let [prev-nav-message (:navigation-message (first (compile-get-in app-state keypaths/navigation-undo-stack)))]
-    (let [[nav-event nav-args]           (compile-get-in app-state keypaths/navigation-message)
+  (when-let [prev-nav-message (:navigation-message (first (get-in app-state keypaths/navigation-undo-stack)))]
+    (let [[nav-event nav-args]           (get-in app-state keypaths/navigation-message)
           [prev-nav-event prev-nav-args] prev-nav-message]
       (and (or
             (= nav-event prev-nav-event events/navigate-product-details))
@@ -73,7 +73,7 @@
     (let [path (routes/current-path app-state)]
       (when (not (nav-was-selecting-bundle-option? app-state))
         (riskified/track-page path)
-        (stringer/track-page (compile-get-in app-state keypaths/store-experience))
+        (stringer/track-page (get-in app-state keypaths/store-experience))
         (facebook-analytics/track-page path)))))
 
 (defmethod perform-track events/control-category-panel-open
@@ -101,7 +101,7 @@
   (track-select-bundle-option selection value))
 
 (defmethod perform-track events/api-success-suggested-add-to-bag [_ event {:keys [order sku-id->quantity initial-sku]} app-state]
-  (let [line-item-skuers (sku-id->quantity-to-line-item-skuer (compile-get-in app-state keypaths/v2-skus) sku-id->quantity)
+  (let [line-item-skuers (sku-id->quantity-to-line-item-skuer (get-in app-state keypaths/v2-skus) sku-id->quantity)
         added-skus       (mapv line-item-skuer->stringer-cart-item line-item-skuers)]
     (stringer/track-event "suggested_line_item_added" {:added_skus   added-skus
                                                        :initial_sku  (dissoc (line-item-skuer->stringer-cart-item initial-sku)
@@ -118,7 +118,7 @@
   [_ _ {:keys [quantity sku order] :as args} app-state]
   (when sku
     (let [line-item-skuers (waiter-line-items->line-item-skuer
-                            (compile-get-in app-state keypaths/v2-skus)
+                            (get-in app-state keypaths/v2-skus)
                             (orders/product-items order))
 
           cart-items (mapv line-item-skuer->stringer-cart-item line-item-skuers)
@@ -128,7 +128,7 @@
                                                  {:order_number     (:number order)
                                                   :order_total      (:total order)
                                                   :order_quantity   (orders/product-quantity order)
-                                                  :store_experience (compile-get-in app-state keypaths/store-experience)
+                                                  :store_experience (get-in app-state keypaths/store-experience)
                                                   :variant_quantity quantity
                                                   :quantity         quantity
                                                   :context          {:cart-items cart-items}}))
@@ -139,7 +139,7 @@
                                              :line-item-skuers [(assoc sku :item/quantity quantity)]}))))
 
 (defmethod perform-track events/api-success-shared-cart-create [_ _ {:keys [cart]} app-state]
-  (let [all-skus                 (vals (compile-get-in app-state keypaths/v2-skus))
+  (let [all-skus                 (vals (get-in app-state keypaths/v2-skus))
         sku-by-legacy-variant-id (fn [variant-id]
                                    (->> all-skus
                                         (filter #(= (:legacy/variant-id %)
@@ -161,7 +161,7 @@
 (defmethod perform-track events/api-success-update-order-from-shared-cart
   [_ _ {:keys [look-id order shared-cart-id]} app-state]
   (let [line-item-skuers (waiter-line-items->line-item-skuer
-                          (compile-get-in app-state keypaths/v2-skus)
+                          (get-in app-state keypaths/v2-skus)
                           (orders/product-items order))
 
         cart-items (mapv line-item-skuer->stringer-cart-item line-item-skuers)]
@@ -171,7 +171,7 @@
     (google-tag-manager/track-add-to-cart {:number           (:number order)
                                            :line-item-skuers line-item-skuers})
     (stringer/track-event "bulk_add_to_cart" (merge {:shared_cart_id shared-cart-id
-                                                     :store_experience (compile-get-in app-state keypaths/store-experience)
+                                                     :store_experience (get-in app-state keypaths/store-experience)
                                                      :order_number   (:number order)
                                                      :order_total    (:total order)
                                                      :order_quantity (orders/product-quantity order)
@@ -216,12 +216,12 @@
   (stringer/track-event "checkout-complete" (stringer-order-completed order))
   (let [order-total (:total order)
 
-        line-item-skuers (waiter-line-items->line-item-skuer (compile-get-in app-state keypaths/v2-skus)
+        line-item-skuers (waiter-line-items->line-item-skuer (get-in app-state keypaths/v2-skus)
                                                              (orders/product-items order))
 
-        store-slug (compile-get-in app-state keypaths/store-slug)
+        store-slug (get-in app-state keypaths/store-slug)
         shipping   (orders/shipping-item order)
-        user       (compile-get-in app-state keypaths/user)
+        user       (get-in app-state keypaths/user)
 
         order-quantity (->> line-item-skuers (map :item/quantity) (reduce + 0))
 
@@ -257,7 +257,7 @@
                                                    :line-item-skuers line-item-skuers}))))
 
 (defmethod perform-track events/api-success-auth [_ event args app-state]
-  (stringer/identify (compile-get-in app-state keypaths/user)
+  (stringer/identify (get-in app-state keypaths/user)
                      events/visitor-identified))
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow user] :as args} app-state]
@@ -279,15 +279,15 @@
                      events/visitor-identified)
   (stringer/track-event "email_capture-capture"
                         {:email            email
-                         :test-variations  (compile-get-in app-state keypaths/features)
-                         :store-slug       (compile-get-in app-state keypaths/store-slug)
-                         :store-experience (compile-get-in app-state keypaths/store-experience)})
+                         :test-variations  (get-in app-state keypaths/features)
+                         :store-slug       (get-in app-state keypaths/store-slug)
+                         :store-experience (get-in app-state keypaths/store-experience)})
   (google-tag-manager/track-email-capture-capture {:email email}))
 
 (defmethod perform-track events/control-email-captured-submit [_ event _ app-state]
-  (when (empty? (compile-get-in app-state keypaths/errors))
+  (when (empty? (get-in app-state keypaths/errors))
     (facebook-analytics/subscribe)
-    (let [captured-email (compile-get-in app-state keypaths/captured-email)]
+    (let [captured-email (get-in app-state keypaths/captured-email)]
       (track-email-capture-capture app-state {:email captured-email}))))
 
 (defn track-email-capture-deploy []
@@ -300,7 +300,7 @@
   (stringer/track-event "email_capture-dismiss" {}))
 
 (defn- checkout-initiate [app-state flow]
-  (let [order-number (compile-get-in app-state keypaths/order-number)]
+  (let [order-number (get-in app-state keypaths/order-number)]
     (stringer/track-event "checkout-initiate" {:flow flow
                                                :order_number order-number})
     (google-tag-manager/track-checkout-initiate {:number order-number})
@@ -333,7 +333,7 @@
 (defmethod perform-track events/api-success-update-order-update-shipping-method [_ events {:keys [order]} app-state]
   (stringer/track-event "checkout-shipping_method_change"
                         {:order_number (:number order)
-                         :shipping_method (compile-get-in app-state keypaths/checkout-selected-shipping-method-name)}))
+                         :shipping_method (get-in app-state keypaths/checkout-selected-shipping-method-name)}))
 
 (defmethod perform-track events/api-success-forgot-password [_ events {email :email} app-state]
   (stringer/track-event "request_reset_password" {:email email}))
@@ -374,7 +374,7 @@
 
 (defmethod perform-track events/control-stylist-dashboard-cash-out-begin
   [_ _ {:keys [amount payout-method-name]} app-state]
-  (let [stylist-id (compile-get-in app-state keypaths/user-store-id)]
+  (let [stylist-id (get-in app-state keypaths/user-store-id)]
     (stringer/track-event "dashboard_cash_out_begin_button_pressed"
                           {:stylist_id         stylist-id
                            :amount             amount
@@ -382,9 +382,9 @@
 
 (defmethod perform-track events/control-stylist-dashboard-cash-out-commit
   [_ _ _ app-state]
-  (let [stylist-id                     (compile-get-in app-state keypaths/user-store-id)
-        store-slug                     (compile-get-in app-state keypaths/user-store-slug)
-        {:keys [amount payout-method]} (compile-get-in app-state keypaths/stylist-payout-stats-next-payout)]
+  (let [stylist-id                     (get-in app-state keypaths/user-store-id)
+        store-slug                     (get-in app-state keypaths/user-store-slug)
+        {:keys [amount payout-method]} (get-in app-state keypaths/stylist-payout-stats-next-payout)]
     (stringer/track-event "cash_out_commit_button_pressed"
                           {:stylist_id stylist-id
                            :store_slug store-slug
@@ -393,8 +393,8 @@
 
 (defmethod perform-track events/api-success-cash-out-complete
   [_ _ {:keys [amount payout-method] :as cash-out-status} app-state]
-  (let [stylist-id (compile-get-in app-state keypaths/user-store-id)
-        store-slug (compile-get-in app-state keypaths/user-store-slug)]
+  (let [stylist-id (get-in app-state keypaths/user-store-id)
+        store-slug (get-in app-state keypaths/user-store-slug)]
     (stringer/track-event "cash_out_succeeded"
                           {:stylist_id stylist-id
                            :store_slug store-slug
@@ -403,8 +403,8 @@
 
 (defmethod perform-track events/api-success-cash-out-failed
   [_ _ {:keys [amount payout-method] :as cash-out-status} app-state]
-  (let [stylist-id (compile-get-in app-state keypaths/user-store-id)
-        store-slug (compile-get-in app-state keypaths/user-store-slug)]
+  (let [stylist-id (get-in app-state keypaths/user-store-id)
+        store-slug (get-in app-state keypaths/user-store-slug)]
     (stringer/track-event "cash_out_failed"
                           {:stylist_id stylist-id
                            :store_slug store-slug
