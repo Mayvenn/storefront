@@ -14,8 +14,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.trackings :refer [perform-track]]
-            [storefront.accessors.images :as images])
-  (:require-macros [storefront.macros :refer [compile-get-in]]))
+            [storefront.accessors.images :as images]))
 
 (defn ^:private convert-revenue [{:keys [number total] :as order}]
   {:order-number   number
@@ -122,7 +121,7 @@
                             (orders/product-items order))
 
           cart-items (mapv line-item-skuer->stringer-cart-item line-item-skuers)
-          store-slug (compile-get-in app-state keypaths/store-slug)]
+          store-slug (get-in app-state keypaths/store-slug)]
 
       (stringer/track-event "add_to_cart" (merge (line-item-skuer->stringer-cart-item sku)
                                                  {:order_number     (:number order)
