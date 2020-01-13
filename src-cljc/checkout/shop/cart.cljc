@@ -391,9 +391,77 @@
    :cart-summary-line/action-icon   (svg/close-x {:class "stroke-white fill-gray"})
    :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code coupon-code}]})
 
-(defn cart-summary-query
+;; TODO (corey) any-wig? should be in the order....
+
+(defn regular-cart-summary-query
+  "This is for cart's that haven't entered an upsell (free install, wig customization, etc)"
+  [{:as order :keys [adjustments tax-total total]} {:mayvenn-install/keys [any-wig?]}]
+  (let [subtotal           (orders/products-subtotal order)
+        shipping           (orders/shipping-item order)
+        shipping-cost      (some->> shipping
+                                    vector
+                                    (apply (juxt :quantity :unit-price))
+                                    (reduce *))
+        shipping-timeframe (some->> shipping
+                                    (checkout-delivery/enrich-shipping-method (date/now))
+                                    :copy/timeframe)]
+    (cond->
+        {:cart-summary-total-line/id    "total"
+         :cart-summary-total-line/label "Total"
+         :cart-summary-total-line/value [:div (some-> total mf/as-money)]
+
+         :cart-summary/id    "cart-summary"
+         :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
+                                       :cart-summary-line/label "Subtotal"
+                                       :cart-summary-line/value (mf/as-money subtotal)}]
+
+                                     (when shipping
+                                       [{:cart-summary-line/id       "shipping"
+                                         :cart-summary-line/label    "Shipping"
+                                         :cart-summary-line/sublabel shipping-timeframe
+                                         :cart-summary-line/value    (mf/as-money-or-free shipping-cost)}])
+
+                                     (for [{:keys [name price coupon-code] :as adjustment}
+                                           (filter adjustments/non-zero-adjustment? adjustments)]
+                                       (cond-> {:cart-summary-line/id    (text->data-test-name name)
+                                                :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
+                                                                                            :height "2em" :width "2em"})
+                                                :cart-summary-line/label (adjustments/display-adjustment-name adjustment)
+                                                :cart-summary-line/class "p-color"
+                                                :cart-summary-line/value (mf/as-money-or-free price)}
+
+                                         coupon-code
+                                         (merge (coupon-code->remove-promo-action coupon-code))))
+
+                                     (when (pos? tax-total)
+                                       [{:cart-summary-line/id    "tax"
+                                         :cart-summary-line/label "Tax"
+                                         :cart-summary-line/value (mf/as-money tax-total)}]))
+
+         :freeinstall-informational/primary               "Don't miss out on free Mayvenn Install"
+         :freeinstall-informational/secondary             "Save 10% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below."
+         :freeinstall-informational/cta-label             "Add Mayvenn Install"
+         :freeinstall-informational/cta-target            [events/control-cart-add-freeinstall-coupon]
+         :freeinstall-informational/fine-print            "*Mayvenn Install cannot be combined with other promo codes."
+         :freeinstall-informational/id                    "freeinstall-informational"
+         :freeinstall-informational/secondary-link-id     "cart-learn-more"
+         :freeinstall-informational/secondary-link-target [events/popup-show-consolidated-cart-free-install]
+         :freeinstall-informational/secondary-link-label  "learn more"}
+
+      any-wig?
+      (merge {:freeinstall-informational/primary           "Don't miss out on free Wig Customization"
+              :freeinstall-informational/secondary         "Get a free customization by a licensed stylist when you add a Wig Customization to your cart below."
+              :freeinstall-informational/cta-label         "Add Wig Customization"
+              :freeinstall-informational/secondary-link-id nil
+              :freeinstall-informational/fine-print        "*Wig Customization cannot be combined with other promo codes, and excludes Ready to Wear Wigs"
+
+              :cart-summary-total-line/value [:div.h7.light "Add a Lace Front or 360 Wig"
+                                              [:br] "to calculate total price"]}))))
+
+(defn upsold-cart-summary-query
+  "The cart has an upsell 'entered' because the customer has requested a service discount"
   [{:as order :keys [adjustments]}
-   {:mayvenn-install/keys [any-wig? service-type entered? locked? applied? service-discount quantity-remaining]}]
+   {:as install :mayvenn-install/keys [any-wig? service-type entered? locked? applied? service-discount quantity-remaining]}] 
   (let [total              (:total order)
         tax                (:tax-total order)
         subtotal           (orders/products-subtotal order)
@@ -412,7 +480,6 @@
     (cond->
         {:cart-summary/id                 "cart-summary"
          :cart-summary-total-line/id      "total"
-
          :cart-summary-total-line/label   "Total"
          :cart-summary-total-line/value   (cond
                                             applied?
@@ -482,8 +549,18 @@
                                          :cart-summary-line/label "Tax"
                                          :cart-summary-line/value (mf/as-money tax)}]))}
 
+
+      locked?
+      (merge {:cart-summary-total-line/value [:div.h7.light
+                                              "Add " quantity-remaining
+                                              " more " (ui/pluralize quantity-remaining "item")
+                                              " to "
+                                              [:br]
+                                              " calculate total price"]})
+
       applied?
-      (merge {:cart-summary-total-incentive/id    "mayvenn-install"
+      (merge {:cart-summary-total-line/label      "Hair + Install Total"
+              :cart-summary-total-incentive/id    "mayvenn-install"
               :cart-summary-total-incentive/value [:div
                                                    [:div.h6.bg-p-color.white.px2.nowrap.mb1
                                                     "Includes Mayvenn Install"]
@@ -494,7 +571,8 @@
                                                        (mf/as-money total-savings)]])]})
 
       (and applied? wig-customization?)
-      (merge {:cart-summary-total-incentive/id    "wig-customization"
+      (merge {:cart-summary-total-line/label      "Hair + Wig Customization Total"
+              :cart-summary-total-incentive/id    "wig-customization"
               :cart-summary-total-incentive/value [:div
                                                    [:div.h6.bg-p-color.white.px2.nowrap.mb1
                                                     "Includes Wig Customization"]
@@ -502,28 +580,13 @@
                                                      [:div.h6.light.pxp1.nowrap.italic
                                                       "You've saved "
                                                       [:span.bold.p-color {:data-test "total-savings"}
-                                                       (mf/as-money total-savings)]])]})
+                                                       (mf/as-money total-savings)]])]}))))
 
-      (not entered?)
-      (merge (cond->
-                 {:freeinstall-informational/primary    "Don't miss out on free Mayvenn Install"
-                  :freeinstall-informational/secondary  "Save 10% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below."
-                  :freeinstall-informational/cta-label  "Add Mayvenn Install"
-                  :freeinstall-informational/cta-target [events/control-cart-add-freeinstall-coupon]
-                  :freeinstall-informational/fine-print "*Mayvenn Install cannot be combined with other promo codes."
-                  :freeinstall-informational/id                   "freeinstall-informational"
-
-                  :freeinstall-informational/secondary-link-id    "cart-learn-more"
-                  :freeinstall-informational/secondary-link-target     [events/popup-show-consolidated-cart-free-install]
-                  :freeinstall-informational/secondary-link-label "learn more"}
-
-               any-wig?
-               (merge
-                {:freeinstall-informational/secondary-link-id nil
-                 :freeinstall-informational/primary           "Don't miss out on free Wig Customization"
-                 :freeinstall-informational/secondary         "Get a free customization by a licensed stylist when you add a Wig Customization to your cart below."
-                 :freeinstall-informational/cta-label         "Add Wig Customization"
-                 :freeinstall-informational/fine-print        "*Wig Customization cannot be combined with other promo codes, and excludes Ready to Wear Wigs"}))))))
+(defn cart-summary-query
+  [order install]
+  (if (:mayvenn-install/entered? install)
+    (upsold-cart-summary-query order install)
+    (regular-cart-summary-query order install)))
 
 (defn promo-input-query
   [data order entered?]
