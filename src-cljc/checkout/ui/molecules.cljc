@@ -77,7 +77,7 @@
        secondary]
       [:div.flex.justify-left.py1
        (ui/button-small-primary
-        (assoc (apply utils/fake-href cta-target) :data-test "add-freeinstall-coupon")
+        (assoc (apply utils/fake-href cta-target) :data-test "add-mayvenn-install")
         cta-label)
        (when secondary-link-id
          [:div.s-color.flex.items-center.px2.button-font-3.shout

@@ -346,7 +346,7 @@
       entered?
       (concat
        [(cond-> {:react/key                                "freeinstall-line-item-freeinstall"
-                 :cart-item-title/id                       "line-item-title-freeinstall"
+                 :cart-item-title/id                       "line-item-title-upsell-free-service"
                  :cart-item-floating-box/id                "line-item-freeinstall-price"
                  :cart-item-floating-box/value             (some-> service-discount - mf/as-money)
                  :cart-item-remove-action/id               "line-item-remove-freeinstall"
@@ -362,6 +362,7 @@
           locked?
           (merge  (if any-wig?
                     {:cart-item-title/primary                   "Wig Customization (locked)"
+                     :cart-item-title/id                        "line-item-title-locked-wig-customization"
                      :cart-item-copy/value                      "Add a Virgin Lace Front or a Virgin 360 Wig to unlock this service"
                      :cart-item-steps-to-complete/action-target add-items-action
                      :cart-item-floating-box/value              (some-> 75.0 - mf/as-money)
@@ -371,6 +372,7 @@
                      :cart-item-steps-to-complete/current-step  0
                      :cart-item-service-thumbnail/locked?       true}
                     {:cart-item-title/primary                   "Mayvenn Install (locked)"
+                     :cart-item-title/id                        "line-item-title-locked-mayvenn-install"
                      :cart-item-copy/value                      (str "Add " quantity-remaining
                                                                      " or more items to receive your free Mayvenn Install")
                      :cart-item-steps-to-complete/action-target add-items-action
@@ -389,10 +391,12 @@
 
           applied?
           (merge (if wig-customization?
-                   {:cart-item-title/primary "Wig Customization"
+                   {:cart-item-title/id      "line-item-title-applied-wig-customization"
+                    :cart-item-title/primary "Wig Customization"
                     :cart-item-copy/value    "Congratulations! You're all set for your Wig Customization. Click the button below to pick your stylist."
                     :cart-item-copy/id       "congratulations"}
-                   {:cart-item-title/primary "Mayvenn Install"
+                   {:cart-item-title/id      "line-item-title-applied-mayvenn-install"
+                    :cart-item-title/primary "Mayvenn Install"
                     :cart-item-copy/value    "Congratulations! You're all set for your Mayvenn Install. Click the button below to pick your stylist."
                     :cart-item-copy/id       "congratulations"}))
 
