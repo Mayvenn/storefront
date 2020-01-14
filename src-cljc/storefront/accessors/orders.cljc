@@ -174,16 +174,6 @@
           (> order-total store-credit-used)) (assoc :stripe {})
       (can-use-store-credit? order user)     (assoc :store-credit {}))))
 
-(defn display-adjustment-name [name]
-  (cond
-    (= name "Bundle Discount")
-    "10% Bundle Discount"
-
-    (#{"Free Install" "FREEINSTALL"} name)
-    "Free Mayvenn Install"
-
-    :else name))
-
 (defn- line-item-tuples [order]
   (->> (product-items order)
        (map (juxt :sku :quantity))))

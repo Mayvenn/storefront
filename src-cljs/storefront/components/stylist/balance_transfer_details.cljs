@@ -64,7 +64,7 @@
 
      (for [{:keys [name price coupon-code]} adjustments]
        (when (adjustments/non-zero-adjustment? coupon-code)
-         (summary-row {:key name} [:div (orders/display-adjustment-name name)] price)))
+         (summary-row {:key name} [:div (adjustments/display-adjustment-name name)] price)))
 
      (when (pos? store-credit-used)
        (summary-row "Store Credit" (- store-credit-used)))
