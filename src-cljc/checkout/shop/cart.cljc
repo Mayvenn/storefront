@@ -469,10 +469,7 @@
               :freeinstall-informational/secondary         "Get a free customization by a licensed stylist when you add a Wig Customization to your cart below."
               :freeinstall-informational/cta-label         "Add Wig Customization"
               :freeinstall-informational/secondary-link-id nil
-              :freeinstall-informational/fine-print        "*Wig Customization cannot be combined with other promo codes, and excludes Ready to Wear Wigs"
-
-              :cart-summary-total-line/value [:div.h7.light "Add a Lace Front or 360 Wig"
-                                              [:br] "to calculate total price"]}))))
+              :freeinstall-informational/fine-print        "*Wig Customization cannot be combined with other promo codes, and excludes Ready to Wear Wigs"}))))
 
 (defn upsold-cart-summary-query
   "The cart has an upsell 'entered' because the customer has requested a service discount"
@@ -497,20 +494,7 @@
         {:cart-summary/id                 "cart-summary"
          :cart-summary-total-line/id      "total"
          :cart-summary-total-line/label   "Total"
-         :cart-summary-total-line/value   (cond
-                                            applied?
-                                            [:div.h2 (some-> total mf/as-money)]
-
-                                            locked?
-                                            [:div.h7.light
-                                             "Add " quantity-remaining
-                                             " more " (ui/pluralize quantity-remaining "item")
-                                             " to "
-                                             [:br]
-                                             " calculate total price"]
-
-                                            :else
-                                            [:div (some-> total mf/as-money)])
+         :cart-summary-total-line/value   [:div (some-> total mf/as-money)]
          :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
                                        :cart-summary-line/label "Subtotal"
                                        :cart-summary-line/value (mf/as-money (cond-> subtotal
