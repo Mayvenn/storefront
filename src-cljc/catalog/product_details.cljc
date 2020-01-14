@@ -343,7 +343,10 @@
 
 (defn add-to-cart-query
   [data selected-sku sku-price]
-  (let [shop? (= "shop" (get-in data keypaths/store-slug))]
+  (let [shop?                 (= "shop" (get-in data keypaths/store-slug))
+        sku-family            (-> selected-sku :hair/family first)
+        show-incentive-block? (and shop?
+                                   (not= "ready-wigs" sku-family))]
     (cond-> {:cta/id          "add-to-cart"
              :cta/label       "Add to Cart"
              :cta/target      [events/control-add-sku-to-bag
@@ -354,14 +357,14 @@
              :quadpay/loaded? (get-in data keypaths/loaded-quadpay)
              :quadpay/price   sku-price}
 
-      shop?
+      show-incentive-block?
       (merge {:add-to-cart.background/color            "bg-cool-gray"
               :add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
               :add-to-cart.incentive-block/footnote    "*Mayvenn Install cannot be combined with other promo codes."
               :add-to-cart.incentive-block/link-label  "Learn more"
               :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
-              :add-to-cart.incentive-block/message    [:span "Save 10% & get a free Mayvenn Install when you " [:br]
-                                                       "purchase 3 bundles, closure, or frontals.* "]}))))
+              :add-to-cart.incentive-block/message     [:span "Save 10% & get a free Mayvenn Install when you " [:br]
+                                                        "purchase 3 bundles, closure, or frontals.* "]}))))
 
 (defn query [data]
   (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
