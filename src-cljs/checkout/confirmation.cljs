@@ -238,79 +238,80 @@
   [{:as order :keys [adjustments]}
    {:mayvenn-install/keys [locked? applied? service-discount service-type]}
    available-store-credit]
-  (let [total              (-> order :total)
-        tax                (:tax-total order)
-        subtotal           (orders/products-subtotal order)
-        shipping           (orders/shipping-item order)
-        shipping-cost      (some->> shipping
-                                    vector
-                                    (apply (juxt :quantity :unit-price))
-                                    (reduce *))
-        shipping-timeframe (some->> shipping
-                                    (checkout-delivery/enrich-shipping-method (date/now))
-                                    :copy/timeframe)
+  (when (seq order)
+    (let [total              (-> order :total)
+          tax                (:tax-total order)
+          subtotal           (orders/products-subtotal order)
+          shipping           (orders/shipping-item order)
+          shipping-cost      (some->> shipping
+                                      vector
+                                      (apply (juxt :quantity :unit-price))
+                                      (reduce *))
+          shipping-timeframe (some->> shipping
+                                      (checkout-delivery/enrich-shipping-method (date/now))
+                                      :copy/timeframe)
 
-        adjustment         (->> order :adjustments (map :price) (reduce + 0))
-        total-savings      (- adjustment)
-        wig-customization? (= :wig-customization service-type)]
-    (cond-> {:cart-summary/id               "cart-summary"
-             :cart-summary-total-line/id    "total"
-             :cart-summary-total-line/label "Total"
-             :cart-summary-total-line/value [:div (some-> total (- available-store-credit) (max 0) mf/as-money)]
-             :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
-                                           :cart-summary-line/label "Subtotal"
-                                           :cart-summary-line/value (mf/as-money (cond-> subtotal
-                                                                                   (or locked? applied?)
-                                                                                   ;; Add the service discount to the subtotal
-                                                                                   (- service-discount)))}
-                                          {:cart-summary-line/id       "shipping"
-                                           :cart-summary-line/label    "Shipping"
-                                           :cart-summary-line/sublabel shipping-timeframe
-                                           :cart-summary-line/value    (mf/as-money-or-free shipping-cost)}]
-                                         (for [{:keys [name price] :as adjustment}
-                                               (filter adjustments/non-zero-adjustment? adjustments)
-                                               :let [install-summary-line? (orders/freeinstall-promotion? adjustment)]]
-                                           (cond-> {:cart-summary-line/id    (text->data-test-name name)
-                                                    :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
-                                                                                                :height "2em" :width "2em"})
-                                                    :cart-summary-line/label (adjustments/display-service-line-item-adjustment-name adjustment service-type)
-                                                    :cart-summary-line/class "p-color"
-                                                    :cart-summary-line/value (mf/as-money-or-free price)}
+          adjustment         (->> order :adjustments (map :price) (reduce + 0))
+          total-savings      (- adjustment)
+          wig-customization? (= :wig-customization service-type)]
+      (cond-> {:cart-summary/id               "cart-summary"
+               :cart-summary-total-line/id    "total"
+               :cart-summary-total-line/label "Total"
+               :cart-summary-total-line/value [:div (some-> total (- available-store-credit) (max 0) mf/as-money)]
+               :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
+                                             :cart-summary-line/label "Subtotal"
+                                             :cart-summary-line/value (mf/as-money (cond-> subtotal
+                                                                                     (or locked? applied?)
+                                                                                     ;; Add the service discount to the subtotal
+                                                                                     (- service-discount)))}
+                                            {:cart-summary-line/id       "shipping"
+                                             :cart-summary-line/label    "Shipping"
+                                             :cart-summary-line/sublabel shipping-timeframe
+                                             :cart-summary-line/value    (mf/as-money-or-free shipping-cost)}]
+                                           (for [{:keys [name price] :as adjustment}
+                                                 (filter adjustments/non-zero-adjustment? adjustments)
+                                                 :let [install-summary-line? (orders/freeinstall-promotion? adjustment)]]
+                                             (cond-> {:cart-summary-line/id    (text->data-test-name name)
+                                                      :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
+                                                                                                  :height "2em" :width "2em"})
+                                                      :cart-summary-line/label (adjustments/display-service-line-item-adjustment-name adjustment service-type)
+                                                      :cart-summary-line/class "p-color"
+                                                      :cart-summary-line/value (mf/as-money-or-free price)}
 
-                                             install-summary-line?
-                                             (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
-                                                     :cart-summary-line/class "p-color"})))
-                                         (when (pos? tax)
-                                           [{:cart-summary-line/id       "tax"
-                                             :cart-summary-line/label    "Tax"
-                                             :cart-summary-line/value    (mf/as-money tax)}])
-                                         (when (pos? available-store-credit)
-                                           [{:cart-summary-line/id    "store-credit"
-                                             :cart-summary-line/label "Store Credit"
-                                             :cart-summary-line/class "p-color"
-                                             :cart-summary-line/value (mf/as-money (- (min available-store-credit total)))}]))}
+                                               install-summary-line?
+                                               (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
+                                                       :cart-summary-line/class "p-color"})))
+                                           (when (pos? tax)
+                                             [{:cart-summary-line/id       "tax"
+                                               :cart-summary-line/label    "Tax"
+                                               :cart-summary-line/value    (mf/as-money tax)}])
+                                           (when (pos? available-store-credit)
+                                             [{:cart-summary-line/id    "store-credit"
+                                               :cart-summary-line/label "Store Credit"
+                                               :cart-summary-line/class "p-color"
+                                               :cart-summary-line/value (mf/as-money (- (min available-store-credit total)))}]))}
 
-      applied?
-      (merge {:cart-summary-total-incentive/id    "mayvenn-install"
-              :cart-summary-total-incentive/value [:div
-                                                   [:div.h6.bg-p-color.white.px2.nowrap.mb1
-                                                    "Includes Mayvenn Install"]
-                                                   (when (pos? total-savings)
-                                                     [:div.h6.light.pxp1.nowrap.italic
-                                                      "You've saved "
-                                                      [:span.bold.p-color {:data-test "total-savings"}
-                                                       (mf/as-money total-savings)]])]})
+        applied?
+        (merge {:cart-summary-total-incentive/id    "mayvenn-install"
+                :cart-summary-total-incentive/value [:div
+                                                     [:div.h6.bg-p-color.white.px2.nowrap.mb1
+                                                      "Includes Mayvenn Install"]
+                                                     (when (pos? total-savings)
+                                                       [:div.h6.light.pxp1.nowrap.italic
+                                                        "You've saved "
+                                                        [:span.bold.p-color {:data-test "total-savings"}
+                                                         (mf/as-money total-savings)]])]})
 
-      (and applied? wig-customization?)
-      (merge {:cart-summary-total-incentive/id    "wig-customization"
-              :cart-summary-total-incentive/value [:div
-                                                   [:div.h6.bg-p-color.white.px2.nowrap.mb1
-                                                    "Includes Wig Customization"]
-                                                   (when (pos? total-savings)
-                                                     [:div.h6.light.pxp1.nowrap.italic
-                                                      "You've saved "
-                                                      [:span.bold.p-color {:data-test "total-savings"}
-                                                       (mf/as-money total-savings)]])]}))))
+        (and applied? wig-customization?)
+        (merge {:cart-summary-total-incentive/id    "wig-customization"
+                :cart-summary-total-incentive/value [:div
+                                                     [:div.h6.bg-p-color.white.px2.nowrap.mb1
+                                                      "Includes Wig Customization"]
+                                                     (when (pos? total-savings)
+                                                       [:div.h6.light.pxp1.nowrap.italic
+                                                        "You've saved "
+                                                        [:span.bold.p-color {:data-test "total-savings"}
+                                                         (mf/as-money total-savings)]])]})))))
 
 (defn determine-site
   [app-state]
