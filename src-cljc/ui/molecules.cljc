@@ -54,32 +54,27 @@
   (component/html
    [:picture
     ;; Tablet/Desktop
-    (for [img-type ["webp" "jpg"]]
-      [(ui/source dsk-url
-                  {:media   "(min-width: 750px)"
-                   :src-set {"1x" {:w "1600"
-                                   :q "75"}}
-                   :type    img-type})
-       (ui/source mob-url
-                  {:media   "(min-width: 426px)"
-                   :src-set {"1x" {:w "750"
-                                   :q "75"}
-                             "2x" {:w "1500"
-                                   :q "50"}}
-                   :type    img-type})
-       (ui/source mob-url
-                  {:media   "(min-width: 321px)"
-                   :src-set {"1x" {:w "425"
-                                   :q "75"}
-                             "2x" {:w "850"
-                                   :q "50"}}
-                   :type    img-type})
-       (ui/source mob-url
-                  {:src-set {"1x" {:w "320"
-                                   :q "75"}
-                             "2x" {:w "640"
-                                   :q "50"}}
-                   :type    img-type})])
+    (for [img-type                      ["webp" "jpg"]
+          [media-query img-url src-set] [["(min-width: 750px)" dsk-url {"1x" {:w "1600"
+                                                                              :q "75"}}]
+                                         ["(min-width: 426px)" mob-url {"1x" {:w "750"
+                                                                              :q "75"}
+                                                                        "2x" {:w "1500"
+                                                                              :q "50"}}]
+                                         ["(min-width: 321px)" mob-url {"1x" {:w "425"
+                                                                              :q "75"}
+                                                                        "2x" {:w "850"
+                                                                              :q "50"}}]
+                                         [nil mob-url {:src-set {"1x" {:w "320"
+                                                                       :q "75"}
+                                                                 "2x" {:w "640"
+                                                                       :q "50"}}
+                                                       :type    img-type}]]]
+      (ui/source img-url
+                 {:media   media-query
+                  :src-set {"1x" {:w "1600"
+                                  :q "75"}}
+                  :type    img-type}))
     [:img.block.col-12 {:src mob-url
                         :alt alt}]]))
 
