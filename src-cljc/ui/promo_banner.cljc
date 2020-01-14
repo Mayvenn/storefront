@@ -4,8 +4,10 @@
                        [goog.events.EventType :as EventType]
                        [goog.style]
                        ["react" :as react]])
+            [catalog.products :as products]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.products :as accessors.products]
             [storefront.accessors.promos :as promos]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.svg :as svg]
@@ -116,9 +118,17 @@
   "Determine what type of promotion behavior we are under
    experiment for"
   [data]
-  (let [shop?              (= "shop" (get-in data keypaths/store-slug))
-        aladdin?           (experiments/aladdin-experience? data)]
+  (let [shop?             (= "shop" (get-in data keypaths/store-slug))
+        aladdin?          (experiments/aladdin-experience? data)
+        [navigation-event
+         navigation-args] (get-in data keypaths/navigation-message)]
     (cond
+      (or (and (= events/navigate-product-details navigation-event)
+               (accessors.products/wig-product? (products/current-product data)))
+          (and (= events/navigate-category navigation-event)
+               (= "13" (:catalog/category-id navigation-args))))
+      nil
+
       shop?
       :shop/freeinstall
 

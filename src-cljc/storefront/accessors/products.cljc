@@ -15,5 +15,11 @@
                             line-item-sku)))
        first))
 
+(def wig-families #{"ready-wigs" "360-wigs" "lace-front-wigs"})
 
+(defn wig-product? [product]
+  (-> product
+      :hair/family
+      first
+      wig-families))
 
