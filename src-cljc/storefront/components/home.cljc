@@ -163,12 +163,13 @@
          ^:inline (feature-block feature-3)]])
      [:section])))
 
-(defn drop-down-row [opts & content]
-  (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
-         (-> opts
-             (assoc-in [:style :min-width] "200px")
-             (assoc-in [:style :height] "39px"))]
-        content))
+(defn drop-down-row [opts text icon]
+  [:a.inherit-color.block.center.h5.flex.items-center.justify-center
+   (-> opts
+       (assoc-in [:style :min-width] "200px")
+       (assoc-in [:style :height] "39px"))
+   ^:inline text
+   ^:inline icon])
 
 (defn social-icon [ucare-uuid]
   (ui/ucare-img {:class "ml2"
@@ -212,11 +213,14 @@
         (store-welcome signed-in store false)
         (ui/drop-down
          expanded?
-         keypaths/store-info-expanded
-         [:div (store-welcome signed-in store true)]
-         [:div.bg-white.absolute.left-0.right-0
-          (for [[index row] (map-indexed vector rows)]
-            [:div.border-gray.border-bottom {:key (str "action-row-" index)} row])])))))
+         (component/html
+          [:div
+           ^:attrs (utils/fake-href events/control-menu-expand {:keypath keypaths/store-info-expanded})
+           ^:inline (store-welcome signed-in store true)])
+         (component/html
+          [:div.bg-white.absolute.left-0.right-0
+           (for [[index row] (map-indexed vector rows)]
+             [:div.border-gray.border-bottom {:key (str "action-row-" index)} row])]))))))
 
 (defn about-mayvenn []
   (component/html

@@ -9,60 +9,61 @@
             [storefront.routes :as routes]))
 
 (defn- footer-link [opts label]
-  [:a.block.inherit-color.my2 opts label])
+  (component/html [:a.block.inherit-color.my2 opts label]))
 
 (defn- social-link
   ([uri icon] (social-link {:height "18px" :width "18px"} uri icon))
   ([{:keys [height width]} uri icon]
-   [:a.block.px1.mx1.flex.items-center {:href uri}
-    [:div {:style {:width width :height height}}
-     ^:inline icon]]))
+   (component/html
+    [:a.block.px1.mx1.flex.items-center {:href uri}
+     [:div {:style {:width width :height height}}
+      ^:inline icon]])))
 
 (defn- minimal-footer-link [opts label]
-  [:a.inherit-color opts label])
+  (component/html [:a.inherit-color ^:attrs opts ^:inline label]))
 
 (defcomponent component [{:keys [minimal?]} owner opts]
   (if minimal?
     [:div.content-3.proxima.center
-     (minimal-footer-link (assoc (utils/route-to events/navigate-content-privacy)
-                                 :data-test "content-privacy") "Privacy")
+     ^:inline (minimal-footer-link (assoc (utils/route-to events/navigate-content-privacy)
+                                          :data-test "content-privacy") "Privacy")
      " - "
-     (minimal-footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#ca-privacy-rights")}
-                          "CA Privacy Rights")
+     ^:inline (minimal-footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#ca-privacy-rights")}
+                                   "CA Privacy Rights")
      " - "
-     (minimal-footer-link (assoc (utils/route-to events/navigate-content-tos)
-                                 :data-test "content-tos") "Terms")
+     ^:inline (minimal-footer-link (assoc (utils/route-to events/navigate-content-tos)
+                                          :data-test "content-tos") "Terms")
      " - "
      ;; use traditional page load so anchors work
-     (minimal-footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")} "Our Ads")]
+     ^:inline (minimal-footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")} "Our Ads")]
     [:div.flex-column.content-3.white.bg-black.pt6
      [:div.px3.container
       [:div.flex.justify-between
-       (svg/mayvenn-text-logo {:height "29px"
-                               :width  "115px"
-                               :class  "fill-white"})
+       ^:inline (svg/mayvenn-text-logo {:height "29px"
+                                        :width  "115px"
+                                        :class  "fill-white"})
        [:div.flex.items-center
-        (social-link {:height "24px" :width "24px"} "https://twitter.com/MayvennHair" (svg/mayvenn-on-twitter))
-        (social-link "http://instagram.com/mayvennhair" (svg/mayvenn-on-instagram))
-        (social-link "https://www.facebook.com/MayvennHair" (svg/mayvenn-on-facebook))
-        (social-link "http://www.pinterest.com/mayvennhair/" (svg/mayvenn-on-pinterest))]]
+        ^:inline (social-link {:height "24px" :width "24px"} "https://twitter.com/MayvennHair" (svg/mayvenn-on-twitter))
+        ^:inline (social-link "http://instagram.com/mayvennhair" (svg/mayvenn-on-instagram))
+        ^:inline (social-link "https://www.facebook.com/MayvennHair" (svg/mayvenn-on-facebook))
+        ^:inline (social-link "http://www.pinterest.com/mayvennhair/" (svg/mayvenn-on-pinterest))]]
       [:div.flex.mt4.mb3.col-5-on-dt
        [:div.col-4 {:key "full"}
-        (footer-link (utils/route-to events/navigate-content-about-us) "About")
-        (footer-link {:href "https://jobs.mayvenn.com"} "Careers")
-        (footer-link (utils/route-to events/navigate-content-help) "Contact")]
+        ^:inline (footer-link (utils/route-to events/navigate-content-about-us) "About")
+        ^:inline (footer-link {:href "https://jobs.mayvenn.com"} "Careers")
+        ^:inline (footer-link (utils/route-to events/navigate-content-help) "Contact")]
        [:div.col-4 {:key "standard"}
-        (footer-link (assoc (utils/route-to events/navigate-content-privacy)
-                            :data-test "content-privacy") "Privacy")
-        (footer-link (assoc (utils/route-to events/navigate-content-tos)
-                            :data-test "content-tos") "Terms")
+        ^:inline (footer-link (assoc (utils/route-to events/navigate-content-privacy)
+                                     :data-test "content-privacy") "Privacy")
+        ^:inline (footer-link (assoc (utils/route-to events/navigate-content-tos)
+                                     :data-test "content-tos") "Terms")
 
         ;; use traditional page load so anchors work
-        (footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")} "Our Ads")]
+        ^:inline (footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")} "Our Ads")]
        [:div.col-4
         ;; use traditional page load so anchors work
-        (footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#ca-privacy-rights")}
-                     "CA Privacy Rights")]]]
+        ^:inline (footer-link {:href (str (routes/path-for events/navigate-content-privacy) "#ca-privacy-rights")}
+                              "CA Privacy Rights")]]]
      [:div.bg-gray-mask
       [:div.px3.container
        [:span.py2.flex.items-center.gray {:key "minimal"}

@@ -452,12 +452,13 @@
        ^:attrs (merge {:type "radio"} radio-attrs)]
       (into [:div.clearfix.col-12] content)])))
 
-(defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
+(defn drop-down
+  ;; NOTE: for performance, callers are now responsible for attaching the following to the drop-down link-element:
+  ;;       (utils/fake-href events/control-menu-expand {:keypath <menu-keypath>})]
+  [expanded? link-element menu]
   (component/html
    [:div.pointer
-    (into [link-tag
-           (utils/fake-href events/control-menu-expand {:keypath menu-keypath})]
-          link-contents)
+    ^:inline link-element
     (when expanded?
       [:div.relative.z4
        {:on-click #(handle-message events/control-menu-collapse-all)}
@@ -790,11 +791,12 @@
                light-forward-arrow-uuid)))
 
 (defn clickable-logo [{:as attrs :keys [height event]}]
-  [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.p-color
-   (merge {:style     {:height height}
-           :title     "Mayvenn"}
-          (when event (utils/route-to event))
-          (dissoc attrs :height :event))])
+  (component/html
+   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.p-color
+    (merge {:style     {:height height}
+            :title     "Mayvenn"}
+           (when event (utils/route-to event))
+           (dissoc attrs :height :event))]))
 
 (defn pluralize-with-amount
   ([cnt singular] (pluralize-with-amount cnt singular (str singular "s")))

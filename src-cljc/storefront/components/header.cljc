@@ -31,23 +31,41 @@
               :border-width "2px"}}
      [:span.hide "MENU"]]]))
 
-(defn drop-down-row [opts & content]
-  (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
-         (-> opts
-             (assoc-in [:style :min-width] "200px")
-             (assoc-in [:style :height] "39px"))]
-        content))
+(defn drop-down-row
+  ([opts content]
+   (component/html
+    [:a.inherit-color.block.center.h5.flex.items-center.justify-center
+     ^:attrs (-> opts
+                 (assoc-in [:style :min-width] "200px")
+                 (assoc-in [:style :height] "39px"))
+     ^:inline content]))
+  ([opts content1 content2]
+   (component/html
+    [:a.inherit-color.block.center.h5.flex.items-center.justify-center
+     ^:attrs (-> opts
+                 (assoc-in [:style :min-width] "200px")
+                 (assoc-in [:style :height] "39px"))
+     ^:inline content1
+     ^:inline content2]))
+  ([opts content1 content2 content3]
+   (component/html
+    [:a.inherit-color.block.center.h5.flex.items-center.justify-center
+     ^:attrs (-> opts
+                 (assoc-in [:style :min-width] "200px")
+                 (assoc-in [:style :height] "39px"))
+     ^:inline content1
+     ^:inline content2
+     ^:inline content3])))
 
 (defn social-icon [ucare-uuid]
   (ui/ucare-img {:class "ml2"
                  :style {:height "20px"}} ucare-uuid))
 
 (def ^:private gallery-link
-  (component/html
-   (drop-down-row
-    (utils/route-to events/navigate-store-gallery)
-    "View gallery"
-    (social-icon "fa4eefff-7856-4a1b-8cdb-c8b228b62967"))))
+  (drop-down-row
+   (utils/route-to events/navigate-store-gallery)
+   "View gallery"
+   (social-icon "fa4eefff-7856-4a1b-8cdb-c8b228b62967")))
 
 (defn ^:private instagram-link [instagram-account]
   (drop-down-row
@@ -65,12 +83,12 @@
   (component/html
    [:div.h6.flex.items-center.mt2
     (case (marquee/portrait-status (auth/stylist-on-own-store? signed-in) portrait)
-      ::marquee/show-what-we-have [:div.left.pr2 (marquee/stylist-portrait portrait)]
-      ::marquee/ask-for-portrait  [:div.left.pr2 marquee/add-portrait-cta]
+      ::marquee/show-what-we-have [:div.left.pr2 ^:inline (marquee/stylist-portrait portrait)]
+      ::marquee/ask-for-portrait  [:div.left.pr2 ^:inline marquee/add-portrait-cta]
       ::marquee/show-nothing      [:div.left {:style {:height (str ui/header-image-size "px")}}])
     [:div "Welcome to " [:span.black.medium {:data-test "nickname"} store-nickname "'s"] " shop"
      (when expandable?
-       [:span.ml1 (ui/expand-icon expanded?)])]]))
+       [:span.ml1 ^:inline (ui/expand-icon expanded?)])]]))
 
 (defn store-info [signed-in {:keys [expanded?] :as store}]
   (component/html
@@ -79,67 +97,76 @@
        (if (pos? (count rows))
          ^:inline (ui/drop-down
                    expanded?
-                   keypaths/store-info-expanded
-                   [:div ^:inline (store-welcome signed-in store true)]
-                   [:div.bg-white.absolute.left-0.top-lit
-                    (for [[idx row] (map-indexed vector rows)]
-                      [:div.border-gray {:key   idx
-                                         :class (when-not (zero? idx) "border-top")} row])])
+                   (component/html
+                    [:div
+                     ^:attrs (utils/fake-href events/control-menu-expand {:keypath keypaths/store-info-expanded})
+                     ^:inline (store-welcome signed-in store true)])
+                   (component/html
+                    [:div.bg-white.absolute.left-0.top-lit
+                     (for [[idx row] (map-indexed vector rows)]
+                       [:div.border-gray {:key   idx
+                                          :class (when-not (zero? idx) "border-top")} row])]))
          ^:inline (store-welcome signed-in store false)))
      [:div])))
 
-(defmulti account-info (fn [signed-in _ _ _] (::auth/as signed-in)))
+(defn account-info
+  ;; TODO(jeff): is this overload an error? this fn used to be a multimethod. And JS
+  ;;             implicitly allows calling a fn with less args than specified.
+  ([signed-in user vouchers?] (account-info signed-in user vouchers? nil))
+  ([signed-in {:keys [email expanded?]} vouchers? store]
+   (component/html
+    (case (::auth/as signed-in)
 
-(defmethod account-info nil [_ _ _ _] [:div])
+      :user    (ui/drop-down
+                expanded?
+                (component/html
+                 [:a.inherit-color.h6
+                  ^:attrs (utils/fake-href events/control-menu-expand {:keypath keypaths/account-menu-expanded})
+                  "Signed in with: " [:span.p-color email]
+                  " | Account" [:span.ml1 ^:inline (ui/expand-icon expanded?)]])
+                (component/html
+                 [:div.bg-white.absolute.right-0.top-lit
+                  [:div
+                   ^:inline (drop-down-row (utils/route-to events/navigate-account-manage) "Account")]
+                  [:div.border-top.border-gray
+                   ^:inline (drop-down-row (utils/route-to events/navigate-account-referrals) "Refer a friend")]
+                  [:div.border-top.border-gray
+                   ^:inline (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]])) 
 
-(defmethod account-info :user [_ {:keys [email expanded?]} _ _]
-  (ui/drop-down
-   expanded?
-   keypaths/account-menu-expanded
-   [:a.inherit-color.h6
-    "Signed in with: " [:span.p-color email]
-    " | Account" [:span.ml1 (ui/expand-icon expanded?)]]
-   [:div.bg-white.absolute.right-0.top-lit
-    [:div
-     (drop-down-row (utils/route-to events/navigate-account-manage) "Account")]
-    [:div.border-top.border-gray
-     (drop-down-row (utils/route-to events/navigate-account-referrals) "Refer a friend")]
-    [:div.border-top.border-gray
-     (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
+      :stylist (ui/drop-down
+                expanded?
+                (component/html
+                 [:a.inherit-color.h6
+                  ^:attrs (utils/fake-href events/control-menu-expand {:keypath keypaths/account-menu-expanded})
+                  "Signed in with: " [:span.p-color email]
+                  " | My dashboard" [:span.ml1 ^:inline (ui/expand-icon expanded?)]])
+                (component/html
+                 [:div.bg-white.absolute.right-0.border.border-gray.top-lit
+                  [:div
+                   ^:inline (drop-down-row (utils/route-to events/navigate-v2-stylist-dashboard-orders) "My Dashboard")]
 
-(defmethod account-info :stylist [_ {:keys [email expanded?]} vouchers? store]
-  (ui/drop-down
-   expanded?
-   keypaths/account-menu-expanded
-   [:a.inherit-color.h6
-    "Signed in with: " [:span.p-color email]
-    " | My dashboard" [:span.ml1 (ui/expand-icon expanded?)]]
-   [:div.bg-white.absolute.right-0.border.border-gray.top-lit
-    [:div
-     (drop-down-row (utils/route-to events/navigate-v2-stylist-dashboard-orders) "My Dashboard")]
+                  (when vouchers?
+                    [:div.border-top.border-gray
+                     ^:inline (drop-down-row (utils/route-to events/navigate-voucher-redeem) "Redeem Client Voucher")])
 
-    (when vouchers?
-      [:div.border-top.border-gray
-       (drop-down-row (utils/route-to events/navigate-voucher-redeem) "Redeem Client Voucher")])
+                  [:div.border-top.border-gray
+                   ^:inline (drop-down-row (utils/route-to events/navigate-stylist-share-your-store) "Share Your store")]
+                  [:div.border-top.border-gray
+                   ^:inline (drop-down-row (utils/route-to events/navigate-gallery-edit) "Edit Gallery")]
+                  (when-not (:match-eligible store)
+                    [:div.border-top.border-gray
+                     ^:inline (drop-down-row community/community-url "Community")])
+                  [:div.border-top.border-gray
+                   ^:inline (drop-down-row (utils/route-to events/navigate-stylist-account-profile) "Account Settings")]
+                  [:div.border-top.border-gray
+                   ^:inline (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-    [:div.border-top.border-gray
-     (drop-down-row (utils/route-to events/navigate-stylist-share-your-store) "Share Your store")]
-    [:div.border-top.border-gray
-     (drop-down-row (utils/route-to events/navigate-gallery-edit) "Edit Gallery")]
-    (when-not (:match-eligible store)
-      [:div.border-top.border-gray
-       (drop-down-row community/community-url "Community")])
-    [:div.border-top.border-gray
-     (drop-down-row (utils/route-to events/navigate-stylist-account-profile) "Account Settings")]
-    [:div.border-top.border-gray
-     (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
+      :guest [:div.h6
+              [:a.inherit-color ^:attrs (utils/route-to events/navigate-sign-in) "Sign in"]
+              " | "
+              [:a.inherit-color ^:attrs (utils/route-to events/navigate-sign-up) "No account? Sign up"]]
 
-(defmethod account-info :guest [_ _ _ _]
-  (component/html
-   [:div.h6
-    [:a.inherit-color (utils/route-to events/navigate-sign-in) "Sign in"]
-    " | "
-    [:a.inherit-color (utils/route-to events/navigate-sign-up) "No account? Sign up"]]))
+      [:div]))))
 
 (defn ->flyout-handlers [keypath]
   {:on-mouse-enter (utils/expand-menu-callback keypath)
@@ -150,7 +177,7 @@
 (defn header-menu-link [opts text]
   (component/html
    [:a.h5.medium.inherit-color.py2
-    (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
+    ^:attrs (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
     text]))
 
 (defn menu
@@ -158,41 +185,41 @@
   (component/html
    [:div.center
     (when show-freeinstall-link?
-      (header-menu-link
-       (assoc (utils/route-to events/navigate-adventure-match-stylist)
-              :on-mouse-enter close-header-menus)
-       [:span [:span.p-color.pr1 "NEW"] "Get a Mayvenn Install"]))
+      ^:inline (header-menu-link
+                (assoc (utils/route-to events/navigate-adventure-match-stylist)
+                       :on-mouse-enter close-header-menus)
+                (component/html [:span [:span.p-color.pr1 "NEW"] "Get a Mayvenn Install"])))
 
     (when-not show-bundle-sets-and-hide-deals?
-      (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
-                               :on-mouse-enter close-header-menus)
-                        "Deals"))
+      ^:inline (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
+                                        :on-mouse-enter close-header-menus)
+                                 "Deals"))
 
     (if (= :classic site)
-      (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                               :on-mouse-enter close-header-menus)
-                        "Shop by look")
-      (header-menu-link (merge (utils/route-to events/navigate-home)
-                               (->flyout-handlers keypaths/shop-looks-menu-expanded))
-                        "Shop by look"))
+      ^:inline (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+                                        :on-mouse-enter close-header-menus)
+                                 "Shop by look")
+      ^:inline (header-menu-link (merge (utils/route-to events/navigate-home)
+                                        (->flyout-handlers keypaths/shop-looks-menu-expanded))
+                                 "Shop by look"))
 
     (when show-bundle-sets-and-hide-deals?
-      (header-menu-link (merge (utils/route-to events/navigate-home)
-                               (->flyout-handlers keypaths/shop-bundle-sets-menu-expanded))
-                        "Shop bundle sets"))
+      ^:inline (header-menu-link (merge (utils/route-to events/navigate-home)
+                                        (->flyout-handlers keypaths/shop-bundle-sets-menu-expanded))
+                                 "Shop bundle sets"))
 
-    (header-menu-link (merge (utils/route-to events/navigate-home)
-                             (->flyout-handlers keypaths/shop-a-la-carte-menu-expanded))
-                      "Shop hair")
-    (header-menu-link (assoc (utils/route-to events/navigate-content-guarantee)
-                             :on-mouse-enter close-header-menus)
-                      "Our Guarantee")
-    (header-menu-link (assoc (utils/route-to events/navigate-content-our-hair)
-                             :on-mouse-enter close-header-menus)
-                      "Our hair")
-    (header-menu-link {:href           blog-url
-                       :on-mouse-enter close-header-menus}
-                      "Blog")]))
+    ^:inline (header-menu-link (merge (utils/route-to events/navigate-home)
+                                      (->flyout-handlers keypaths/shop-a-la-carte-menu-expanded))
+                               "Shop hair")
+    ^:inline (header-menu-link (assoc (utils/route-to events/navigate-content-guarantee)
+                                      :on-mouse-enter close-header-menus)
+                               "Our Guarantee")
+    ^:inline (header-menu-link (assoc (utils/route-to events/navigate-content-our-hair)
+                                      :on-mouse-enter close-header-menus)
+                               "Our hair")
+    ^:inline (header-menu-link {:href           blog-url
+                                :on-mouse-enter close-header-menus}
+                               "Blog")]))
 
 (defn flyout-column [options col-count]
   {:pre [(zero? (mod 12 col-count))]}
@@ -208,25 +235,26 @@
         (string/capitalize copy)]])]))
 
 (defn flyout [columns expanded?]
-  (when expanded?
-    (component/html
+  (component/html
+   (if expanded?
      [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
       [:div.mx-auto.clearfix.my6.col-10
        (let [col-count (count columns)]
          (for [[items ix] (map vector columns (range))]
            [:div
             {:key (str "col-" ix)}
-            (flyout-column items col-count)]))]])))
+            (flyout-column items col-count)]))]]
+     [:div])))
 
 ;; Produces a mobile-nav layout (no styling)
 (defn mobile-nav-header [attrs left center right]
   (let [size {:width "80px" :height "55px"}]
     (component/html
      [:div.flex.items-center
-      attrs
-      [:div.mx-auto.flex.items-center.justify-around {:style size} left]
-      [:div.flex-auto.py3 center]
-      [:div.mx-auto.flex.items-center.justify-around {:style size} right]])))
+      ^:attrs attrs
+      [:div.mx-auto.flex.items-center.justify-around {:style size} ^:inline left]
+      [:div.flex-auto.py3 ^:inline center]
+      [:div.mx-auto.flex.items-center.justify-around {:style size} ^:inline right]])))
 
 (defn adventure-header
   ([left-target title cart-data]
@@ -239,15 +267,16 @@
    (mobile-nav-header
     {:class "border-bottom border-gray bg-white black"
      :style {:height "70px"}}
-    (if target
-      [:div
-       {:data-test "header-back"}
-       [:a.block.black.p2.flex.justify-center.items-center
-        (apply utils/route-back-or-to back target)
-        (svg/left-arrow {:width  "20"
-                         :height "20"})]]
-      [:div])
-    [:div.content-1.proxima.center primary]
+    (component/html
+     (if target
+       [:div
+        {:data-test "header-back"}
+        [:a.block.black.p2.flex.justify-center.items-center
+         (apply utils/route-back-or-to back target)
+         (svg/left-arrow {:width  "20"
+                          :height "20"})]]
+       [:div]))
+    (component/html [:div.content-1.proxima.center primary])
     (ui/shopping-bag {:data-test "mobile-cart"}
                      {:quantity value}))))
 
@@ -257,27 +286,27 @@
     {:on-mouse-leave close-header-menus}
     [:div.relative.border-bottom.border-gray {:style {:height "180px"}}
      [:div.max-960.mx-auto
-      [:div.left {:key "store-info"} (store-info signed-in store)]
+      [:div.left {:key "store-info"} ^:inline (store-info signed-in store)]
       [:div.right {:key "account-info"}
        [:div.h6.my2.flex.items-center
-        (account-info signed-in user vouchers? store)
+        ^:inline (account-info signed-in user vouchers? store)
         [:div.pl2
-         (ui/shopping-bag {:style     {:height (str ui/header-image-size "px")
-                                       :width  "28px"}
-                           :data-test "desktop-cart"}
-                          cart)]]]
+         ^:inline (ui/shopping-bag {:style     {:height (str ui/header-image-size "px")
+                                                :width  "28px"}
+                                    :data-test "desktop-cart"}
+                                   cart)]]]
       [:div.absolute.bottom-0.left-0.right-0
        {:key "logo"}
-       [:div.mb4 (ui/clickable-logo {:event     events/navigate-home
-                                     :data-test "desktop-header-logo"
-                                     :height    "60px"})]
-       [:div.mb1 (menu data)]]]]
-    (flyout (:shop-a-la-carte-menu/columns data)
-            (:shop-a-la-carte-menu/expanded? data))
-    (flyout (:shop-looks-menu/columns data)
-            (:shop-looks-menu/expanded? data))
-    (flyout (:shop-bundle-sets-menu/columns data)
-            (:shop-bundle-sets-menu/expanded? data))]
+       [:div.mb4 ^:inline (ui/clickable-logo {:event     events/navigate-home
+                                              :data-test "desktop-header-logo"
+                                              :height    "60px"})]
+       [:div.mb1 ^:inline (menu data)]]]]
+    ^:inline (flyout (:shop-a-la-carte-menu/columns data)
+                     (:shop-a-la-carte-menu/expanded? data))
+    ^:inline (flyout (:shop-looks-menu/columns data)
+                     (:shop-looks-menu/expanded? data))
+    ^:inline (flyout (:shop-bundle-sets-menu/columns data)
+                     (:shop-bundle-sets-menu/expanded? data))]
    (mobile-nav-header
     {:class "border-bottom border-gray hide-on-tb-dt"
      :style {:height "70px"}}
@@ -294,11 +323,11 @@
   (component/html
    [:div.border-bottom.border-gray.flex.items-center
     [:div.flex-auto.py3
-     (ui/clickable-logo
-      (cond-> {:data-test "header-logo"
-               :height    "40px"}
-        logo-nav-event
-        (merge {:event logo-nav-event})))]]))
+     ^:inline (ui/clickable-logo
+               (cond-> {:data-test "header-logo"
+                        :height    "40px"}
+                 logo-nav-event
+                 (merge {:event logo-nav-event})))]]))
 
 (defn category->flyout-option [{:as category :keys [:page/slug copy/title category/new?]}]
   {:key         slug
@@ -399,5 +428,5 @@
       {:class "hide-on-mb-tb"})
     (let [nav-event (get-in data keypaths/navigation-event)]
       (if (nav/show-minimal-header? nav-event)
-        (minimal-component events/navigate-home)
-        (component/build component (query data) nil)))]))
+        ^:inline (minimal-component events/navigate-home)
+        ^:inline (component/build component (query data) nil)))]))

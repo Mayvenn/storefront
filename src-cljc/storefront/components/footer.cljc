@@ -103,15 +103,15 @@
 (defn dtc-link [{:keys [title new-category? nav-message slug]}]
   (component/html
    [:a.inherit-color.block.py2.light.titleize.pointer
-    (merge {:key (str "footer-link-" slug)}
-           ;; be super specific so we can utilize the routing fast path
-           (utils/route-to (first nav-message)
-                           (select-keys (second nav-message)
-                                        [:catalog/category-id
-                                         :page/slug
-                                         :catalog/product-id
-                                         :named-search-slug
-                                         :legacy/product-slug])))
+    ^:attrs (merge {:key (str "footer-link-" slug)}
+                   ;; be super specific so we can utilize the routing fast path
+                   (utils/route-to (first nav-message)
+                                   (select-keys (second nav-message)
+                                                [:catalog/category-id
+                                                 :page/slug
+                                                 :catalog/product-id
+                                                 :named-search-slug
+                                                 :legacy/product-slug])))
     (when new-category?
       [:span.p-color "NEW "])
     (str title)]))
@@ -124,15 +124,15 @@
      [:nav.black.clearfix {:aria-label "Shop Products"}
       [:div.col.col-6
        [:a.inherit-color.block.py2.light.titleize
-        (assoc (utils/route-to events/navigate-adventure-match-stylist)
-               :data-test "freeinstall-footer-link")
+        ^:attrs (assoc (utils/route-to events/navigate-adventure-match-stylist)
+                       :data-test "freeinstall-footer-link")
         "Mayvenn Install"]
        (for [link column-1-links]
-         (dtc-link link))]
+         ^:inline (dtc-link link))]
       (for [link-column (partition-all partition-count rest-of-links)]
         [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :slug))}
          (for [link link-column]
-           (dtc-link link))])]]))
+           ^:inline (dtc-link link))])]]))
 
 (defcomponent dtc-full-component
   [{:keys [contacts categories essence-copy]} owner opts]
