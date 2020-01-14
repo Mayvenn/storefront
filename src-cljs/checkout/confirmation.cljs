@@ -299,8 +299,7 @@
                                                      [:div.h6.light.pxp1.nowrap.italic
                                                       "You've saved "
                                                       [:span.bold.p-color {:data-test "total-savings"}
-                                                       (mf/as-money total-savings)]])]
-              :cart-summary-total-line/label      "Hair + Install"})
+                                                       (mf/as-money total-savings)]])]})
 
       (and applied? wig-customization?)
       (merge {:cart-summary-total-incentive/id    "wig-customization"
@@ -311,8 +310,7 @@
                                                      [:div.h6.light.pxp1.nowrap.italic
                                                       "You've saved "
                                                       [:span.bold.p-color {:data-test "total-savings"}
-                                                       (mf/as-money total-savings)]])]
-              :cart-summary-total-line/label      "Hair + Wig Customization Total"}))))
+                                                       (mf/as-money total-savings)]])]}))))
 
 (defn determine-site
   [app-state]

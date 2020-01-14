@@ -413,11 +413,7 @@
         {:cart-summary/id                 "cart-summary"
          :cart-summary-total-line/id      "total"
 
-         :cart-summary-total-line/label   (if applied?
-                                            (if wig-customization?
-                                              "Hair + Wig Customization Total"
-                                              "Hair + Install Total")
-                                            "Total")
+         :cart-summary-total-line/label   "Total"
          :cart-summary-total-line/value   (cond
                                             applied?
                                             [:div.h2 (some-> total mf/as-money)]
