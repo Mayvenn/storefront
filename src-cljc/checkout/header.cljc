@@ -10,20 +10,21 @@
             [storefront.platform.component-utils :as utils]))
 
 (defn desktop-header [{:keys [store user cart signed-in vouchers?]}]
-  [:div.hide-on-mb.relative
-   [:div.relative.border-bottom.border-cool-gray {:style {:height "125px"}}
-    [:div.max-960.mx-auto
-     [:div.left (storefront-header/store-info signed-in store)]
-     [:div.right
-      [:div.h6.my2.flex.items-center
-       (storefront-header/account-info signed-in user vouchers?)
-       [:div.pl2 (ui/shopping-bag {:style {:height (str ui/header-image-size "px") :width "28px"}
-                                   :data-test "desktop-cart"}
-                                  cart)]]]
-     [:div.absolute.bottom-0.left-0.right-0
-      [:div.mb4 (ui/clickable-logo {:event events/navigate-home
-                                    :data-test "desktop-header-logo"
-                                    :height "60px"})]]]]])
+  (component/html
+   [:div.hide-on-mb.relative
+    [:div.relative.border-bottom.border-cool-gray {:style {:height "125px"}}
+     [:div.max-960.mx-auto
+      [:div.left (storefront-header/store-info signed-in store)]
+      [:div.right
+       [:div.h6.my2.flex.items-center
+        (storefront-header/account-info signed-in user vouchers?)
+        [:div.pl2 (ui/shopping-bag {:style {:height (str ui/header-image-size "px") :width "28px"}
+                                    :data-test "desktop-cart"}
+                                   cart)]]]
+      [:div.absolute.bottom-0.left-0.right-0
+       [:div.mb4 (ui/clickable-logo {:event events/navigate-home
+                                     :data-test "desktop-header-logo"
+                                     :height "60px"})]]]]]))
 
 (defcomponent component
   [{:keys [desktop-header-data
@@ -38,21 +39,24 @@
       {:class "border-bottom border-gray border-width-1"}
 
       (when back-to-shopping-link?
-        [:a.pointer.inherit-color.flex.items-center.ml1.content-3.proxima
-         close-cart-route
-         [:div (ui/back-caret {:width 16 :height 16})]
-         [:div "Back to Shopping"]])
+        (component/html
+         [:a.pointer.inherit-color.flex.items-center.ml1.content-3.proxima
+          close-cart-route
+          [:div (ui/back-caret {:width 16 :height 16})]
+          [:div "Back to Shopping"]]))
 
-      [:div.content-1.proxima.center
-       {:data-test "mobile-cart"}
-       "Shopping Cart ( " [:span.bold item-count] " )"]
+      (component/html
+       [:div.content-1.proxima.center
+        {:data-test "mobile-cart"}
+        "Shopping Cart ( " [:span.bold item-count] " )"])
 
-      [:a.flex.pointer
-       (merge close-cart-route
-              {:data-test "cart-close"
-               :title     "Close"})
-       (svg/x-sharp {:style {:width  "18px"
-                             :height "18px"}})])]))
+      (component/html
+       [:a.flex.pointer
+        (merge close-cart-route
+               {:data-test "cart-close"
+                :title     "Close"})
+        (svg/x-sharp {:style {:width  "18px"
+                              :height "18px"}})]))]))
 
 (defn determine-site
   [app-state]
