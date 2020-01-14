@@ -2,6 +2,7 @@
   (:require #?@(:cljs [[storefront.history :as history]])
             adventure.keypaths
             api.orders
+            [catalog.category :as category]
             [clojure.string :as string]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
@@ -139,22 +140,33 @@
                                               [:div "Now for the fun part!"]
                                               [:div "How would you like to shop your hair?"]]
      :list/buttons
-     [{:shopping-method-choice.button/id       "button-looks"
-       :shopping-method-choice.button/label    "Shop by look"
-       :shopping-method-choice.button/target   [events/navigate-shop-by-look
-                                                {:album-keyword :look}]
-       :shopping-method-choice.button/ucare-id "a9009728-efd3-4917-9541-b4514b8e4776"}
-      {:shopping-method-choice.button/id       "button-bundle-sets"
-       :shopping-method-choice.button/label    "Pre-made bundle sets"
-       :shopping-method-choice.button/target   [events/navigate-shop-by-look
-                                                {:album-keyword :all-bundle-sets}]
-       :shopping-method-choice.button/ucare-id "87b46db7-4c70-4d3a-8fd0-6e99e78d3c96"}
-      {:shopping-method-choice.button/id       "button-a-la-carte"
-       :shopping-method-choice.button/label    "Choose individual bundles"
-       :shopping-method-choice.button/target   [events/navigate-category
-                                                {:page/slug           "mayvenn-install"
-                                                 :catalog/category-id "23"}]
-       :shopping-method-choice.button/ucare-id "6c39cd72-6fde-4ec2-823c-5e39412a6d54"}]}))
+     (cond-> [{:shopping-method-choice.button/id       "button-looks"
+               :shopping-method-choice.button/label    "Shop by look"
+               :shopping-method-choice.button/target   [events/navigate-shop-by-look
+                                                        {:album-keyword :look}]
+               :shopping-method-choice.button/ucare-id "a9009728-efd3-4917-9541-b4514b8e4776"}
+              {:shopping-method-choice.button/id       "button-bundle-sets"
+               :shopping-method-choice.button/label    "Pre-made bundle sets"
+               :shopping-method-choice.button/target   [events/navigate-shop-by-look
+                                                        {:album-keyword :all-bundle-sets}]
+               :shopping-method-choice.button/ucare-id "87b46db7-4c70-4d3a-8fd0-6e99e78d3c96"}
+              {:shopping-method-choice.button/id       "button-a-la-carte"
+               :shopping-method-choice.button/label    "Choose individual bundles"
+               :shopping-method-choice.button/target   [events/navigate-category
+                                                        {:page/slug           "mayvenn-install"
+                                                         :catalog/category-id "23"}]
+               :shopping-method-choice.button/ucare-id "6c39cd72-6fde-4ec2-823c-5e39412a6d54"}]
+
+       (-> servicing-stylist
+           :service-menu
+           :specialty-wig-customization)
+       (concat [{:shopping-method-choice.button/id       "button-shop-wigs"
+                 :shopping-method-choice.button/label    "Shop Virgin Wigs"
+                 :shopping-method-choice.button/target   [events/navigate-category
+                                                          {:page/slug           "wigs"
+                                                           :catalog/category-id "13"
+                                                           :query-params        {:family (str "lace-front-wigs" category/query-param-separator "360-wigs")}}]
+                 :shopping-method-choice.button/ucare-id "71dcdd17-f9cc-456f-b763-2c1c047c30b4"}]))}))
 
 (def pre-purchase? #{events/navigate-adventure-match-success-pre-purchase})
 
