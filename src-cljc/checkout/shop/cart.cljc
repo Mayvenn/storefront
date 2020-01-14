@@ -514,10 +514,12 @@
                                          {:cart-summary-line/id    "freeinstall-locked"
                                           :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
                                                                                       :height "2em" :width "2em"})
-                                          :cart-summary-line/label (if wig-customization?
+                                          :cart-summary-line/label (if any-wig?
                                                                      "Free Wig Customization"
                                                                      "Free Mayvenn Install")
-                                          :cart-summary-line/value (mf/as-money-or-free service-discount)
+                                          :cart-summary-line/value (if any-wig?
+                                                                     (mf/as-money-or-free 75.0)
+                                                                     (mf/as-money-or-free service-discount))
                                           :cart-summary-line/class "p-color"}
                                          (coupon-code->remove-promo-action "freeinstall"))
 
@@ -551,12 +553,16 @@
 
 
       locked?
-      (merge {:cart-summary-total-line/value [:div.h7.light
-                                              "Add " quantity-remaining
-                                              " more " (ui/pluralize quantity-remaining "item")
-                                              " to "
-                                              [:br]
-                                              " calculate total price"]})
+      (merge {:cart-summary-total-line/value (if any-wig?
+                                               [:div.h7.light
+                                                "Add a Lace Front or 360 Wig"
+                                                [:br] "to calculate total price"]
+                                               [:div.h7.light
+                                                "Add " quantity-remaining
+                                                " more " (ui/pluralize quantity-remaining "item")
+                                                " to "
+                                                [:br]
+                                                " calculate total price"])})
 
       applied?
       (merge {:cart-summary-total-line/label      "Hair + Install Total"
