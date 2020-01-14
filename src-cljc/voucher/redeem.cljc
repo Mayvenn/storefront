@@ -147,34 +147,14 @@
                       (get-in prev-app-state voucher-keypaths/scanned-code)))
        (api/voucher-redemption code (get-in app-state keypaths/user-store-id)))))
 
-(defn ^:private interpret-redemption-error
-  [voucherify-error-code]
-  (let [[error-message field-errors] (case voucherify-error-code
-                                       "quantity_exceeded"  ["This code has already been used and cannot be used again." nil]
-                                       "voucher_expired"    ["This voucher has expired." nil]
-                                       "resource_not_found" [(str "This is not a valid code. "
-                                                                  "Please try again or contact customer service.") nil]
-                                       "voucher_disabled"   [(str "There was an error in processing your code. "
-                                                                  "Please try again or contact customer service.") nil]
-                                       [nil [{:long-message (str "There was an error in processing your code. "
-                                                                 "Please try again or contact customer service.")
-                                              :path         ["voucher-code"]}]])]
-    {:field-errors  field-errors
-     :error-code    voucherify-error-code
-     :error-message error-message}))
-
-(defmethod effects/perform-effects events/voucherify-api-failure
-  [_ _ response _ _]
-  (if (>= (:status response) 500)
-    (messages/handle-message events/api-failure-bad-server-response response)
-    (let [redemption-error (interpret-redemption-error (-> response :response :body :key))]
-      #?(:cljs
-         (when-not (:error-message redemption-error)
-           (try
-             (exception-handler/report "voucherify-redemption-api-failure" redemption-error)
-             (catch :default e ;; ignore error so we don't double report
-               nil))))
-      (messages/handle-message events/api-failure-errors redemption-error))))
+(defmethod effects/perform-effects events/api-failure-voucher-redemption
+  [_ _ {:keys [response]} _ _]
+  (let [{:keys [error-code error]} (:body response)]
+    (if (nil? error-code)
+     (messages/handle-message events/api-failure-bad-server-response response)
+     (messages/handle-message events/api-failure-errors {:field-errors  nil
+                                                         :error-code    error-code
+                                                         :error-message error}))))
 
 (defmethod transitions/transition-state events/api-success-voucher-redemption
   [_ event {:keys [date id object result voucher] :as data} app-state]

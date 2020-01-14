@@ -369,6 +369,7 @@
 (defpath api-failure-pending-promo-code)
 (defpath api-failure-order-not-created-from-shared-cart)
 (defpath api-failure-shared-stylist)
+(defpath api-failure-voucher-redemption)
 
 (defpath flash)
 (defpath flash-show)
@@ -453,7 +454,6 @@
 
 (defpath faq-section-selected)
 
-(defpath voucherify-api-failure)
 
 (defpath voucher-camera-permission-denied)
 

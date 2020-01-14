@@ -1018,15 +1018,14 @@
     :handler #(messages/handle-message events/api-success-telligent-login (set/rename-keys % {:max_age :max-age}))}))
 
 (defn voucher-redemption [voucher-code stylist-id]
-  (let [{:keys [client-app-id client-app-token base-url]} config/voucherify]
-    (api-request POST (str base-url "/redeem?code=" voucher-code)
-                 request-keys/voucher-redemption
-                 {:handler         #(messages/handle-message events/api-success-voucher-redemption %)
-                  :error-handler   #(messages/handle-message events/voucherify-api-failure %)
-                  :response-format (json-response-format {:keywords? true})
-                  :headers         {"X-Client-Application-Id" client-app-id
-                                    "X-Client-Token"          client-app-token}
-                  :params          {:metadata {:stylist-id stylist-id}}})))
+  (storeback-api-req
+   POST
+   "/redeem-voucher"
+   request-keys/voucher-redemption
+   {:params  {:voucher-code voucher-code
+              :stylist-id   stylist-id}
+    :handler         #(messages/handle-message events/api-success-voucher-redemption %)
+    :error-handler   #(messages/handle-message events/api-failure-voucher-redemption %)}))
 
 (defn fetch-user-stylist-service-menu [cache {:as params :keys [user-id user-token stylist-id]}]
   (cache-req
