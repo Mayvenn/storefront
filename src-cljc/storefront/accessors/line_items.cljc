@@ -36,3 +36,9 @@
                                -)
         discount-per-item (/ total-amount-off quantity)]
     (- unit-price discount-per-item)))
+
+(defn fully-discounted?
+  [{:as   line-item
+    :keys [applied-promotions unit-price]}]
+  (when line-item
+    (= 0 (+ unit-price (->> applied-promotions (keep :amount) (reduce + 0))))))

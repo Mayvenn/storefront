@@ -50,10 +50,10 @@
         any-wig?                    (and
                                      wig-customization?
                                      (->> shipment
-                                         :line-items
-                                         (filter line-items/any-wig?)
-                                         count
-                                         pos?))
+                                          :line-items
+                                          (filter line-items/any-wig?)
+                                          count
+                                          pos?))
         service-type                (product-line-items->service-type
                                      wig-customization?
                                      (orders/product-items-for-shipment shipment))
@@ -76,7 +76,8 @@
                                       (get-in app-state storefront.keypaths/store)
                                       (get-in app-state adventure-keypaths/adventure-servicing-stylist))]
     {:mayvenn-install/entered?           freeinstall-entered?
-     :mayvenn-install/locked?            (and freeinstall-entered? (pos? items-remaining-for-install))
+     :mayvenn-install/locked?            (and service-line-item
+                                              (not (line-items/fully-discounted? service-line-item)))
      :mayvenn-install/applied?           (orders/freeinstall-applied? order)
      :mayvenn-install/quantity-required  install-items-required
      :mayvenn-install/quantity-remaining items-remaining-for-install
