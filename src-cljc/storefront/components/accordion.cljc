@@ -7,7 +7,7 @@
 (defn- slide-down [content]
   (css-transitions/transition-group
    {:classNames "slide-down"
-    :in         (not (empty? content))
+    :in         (boolean content)
     :timeout    300}
    (if content
      ^:inline content

@@ -156,12 +156,13 @@
   [{:keys [expanded-index sections]} owner opts]
   [:div.px6.mx-auto.col-6-on-dt.bg-pale-purple.py6
    [:div.canela.title-1.center.my7 "Frequently Asked Questions"]
+   ^:inline
    (component/build
     accordion/component
     {:expanded-indices #{expanded-index}
-     :sections         (map
+     :sections         (mapv
                         (fn [{:keys [title paragraphs]}]
-                          {:title [:content-1 title]
+                          {:title      [:content-1 title]
                            :paragraphs paragraphs})
                         sections)}
     {:opts {:section-click-event events/faq-section-selected}})])
