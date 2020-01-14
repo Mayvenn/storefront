@@ -101,7 +101,8 @@
            servicing-stylist-portrait-url
            share-carts?
            show-browser-pay?
-           suggestions]
+           suggestions
+           mayvenn-install]
     :as   queried-data}
    _ _]
   [:div.container.px2
@@ -157,17 +158,22 @@
                                 "Check out")
 
        (when locked?
-         [:div
-          [:div.content-3.proxima.center.py1.mt2
-           (str "Add " quantity-remaining (ui/pluralize quantity-remaining " more item"))]
-          [:div.h5.py1.flex.items-center
-           [:div.flex-grow-1.border-bottom.border-gray]
-           [:div.content-3.proxima.mx2 "or"]
-           [:div.flex-grow-1.border-bottom.border-gray]]
-          [:div.mb4.mt3
-           (ui/button-small-underline-secondary
-            (apply utils/fake-href remove-freeinstall-event)
-            "Checkout without a free Mayvenn Install")]])
+         (let [any-wig? (:mayvenn-install/any-wig? mayvenn-install)]
+           [:div
+            [:div.content-3.proxima.center.py1.mt2
+             (if any-wig?
+               (str "Add a Lace Front or 360 Wig to check out")
+               (str "Add " quantity-remaining (ui/pluralize quantity-remaining " more item")))]
+            [:div.h5.py1.flex.items-center
+             [:div.flex-grow-1.border-bottom.border-gray]
+             [:div.content-3.proxima.mx2 "or"]
+             [:div.flex-grow-1.border-bottom.border-gray]]
+            [:div.mb4.mt3
+             (ui/button-small-underline-secondary
+              (apply utils/fake-href remove-freeinstall-event)
+              (if any-wig?
+                "Checkout without a free Wig Customization"
+                "Checkout without a free Mayvenn Install"))]]))
 
 
        (when-not locked?
@@ -672,47 +678,48 @@
         add-items-action                     (if any-wig?
                                                [events/navigate-category
                                                 (merge
-                                                 {:page/slug "wigs"
+                                                 {:page/slug           "wigs"
                                                   :catalog/category-id "13"
-                                                  :query-params {:family "lace-front-wigs~360-wigs"}})]
+                                                  :query-params        {:family "lace-front-wigs~360-wigs"}})]
                                                [events/navigate-category
                                                 (merge
                                                  {:page/slug           "mayvenn-install"
                                                   :catalog/category-id "23"}
                                                  (when last-texture-added
                                                    {:query-params {:subsection last-texture-added}}))])]
-    (cond-> {:suggestions                        (suggestions/consolidated-query data)
-             :line-items                         line-items
-             :skus                               skus
-             :products                           products
-             :promo-banner                       (when (zero? (orders/product-quantity order))
-                                                   (promo-banner/query data))
-             :call-out                           (call-out/query data)
-             :checkout-disabled?                 (or freeinstall-entered-cart-incomplete?
-                                                     (update-pending? data))
-             :redirecting-to-paypal?             (get-in data keypaths/cart-paypal-redirect)
-             :share-carts?                       (stylists/own-store? data)
-             :requesting-shared-cart?            (utils/requesting? data request-keys/create-shared-cart)
-             :show-browser-pay?                  (and (get-in data keypaths/loaded-stripe)
-                                                      (experiments/browser-pay? data)
-                                                      (seq (get-in data keypaths/shipping-methods))
-                                                      (seq (get-in data keypaths/states)))
-             :recently-added-skus                recently-added-sku-ids
-             :return-link/id                     "continue-shopping"
-             :return-link/copy                   "Continue Shopping"
-             :return-link/event-message          add-items-action
-             :quantity-remaining                 (:mayvenn-install/quantity-remaining mayvenn-install)
-             :locked?                            locked?
-             :entered?                           entered?
-             :applied?                           (:mayvenn-install/applied? mayvenn-install)
-             :remove-freeinstall-event           [events/control-checkout-remove-promotion {:code "freeinstall"}]
-             :cart-summary                       (merge
-                                                  (cart-summary-query order mayvenn-install)
-                                                  {:promo-field-data (promo-input-query data order entered?)})
-             :cart-items                         (cart-items-query data mayvenn-install line-items skus add-items-action)
-             :quadpay/order-total                (when-not locked? (:total order))
-             :quadpay/show?                      (get-in data keypaths/loaded-quadpay)
-             :quadpay/directive                  (if locked? :no-total :just-select)}
+    (cond-> {:suggestions               (suggestions/consolidated-query data)
+             :line-items                line-items
+             :skus                      skus
+             :products                  products
+             :promo-banner              (when (zero? (orders/product-quantity order))
+                                          (promo-banner/query data))
+             :call-out                  (call-out/query data)
+             :checkout-disabled?        (or freeinstall-entered-cart-incomplete?
+                                            (update-pending? data))
+             :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
+             :share-carts?              (stylists/own-store? data)
+             :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
+             :show-browser-pay?         (and (get-in data keypaths/loaded-stripe)
+                                             (experiments/browser-pay? data)
+                                             (seq (get-in data keypaths/shipping-methods))
+                                             (seq (get-in data keypaths/states)))
+             :recently-added-skus       recently-added-sku-ids
+             :return-link/id            "continue-shopping"
+             :return-link/copy          "Continue Shopping"
+             :return-link/event-message add-items-action
+             :quantity-remaining        (:mayvenn-install/quantity-remaining mayvenn-install)
+             :locked?                   locked?
+             :entered?                  entered?
+             :applied?                  (:mayvenn-install/applied? mayvenn-install)
+             :remove-freeinstall-event  [events/control-checkout-remove-promotion {:code "freeinstall"}]
+             :cart-summary              (merge
+                                         (cart-summary-query order mayvenn-install)
+                                         {:promo-field-data (promo-input-query data order entered?)})
+             :cart-items                (cart-items-query data mayvenn-install line-items skus add-items-action)
+             :quadpay/order-total       (when-not locked? (:total order))
+             :quadpay/show?             (get-in data keypaths/loaded-quadpay)
+             :quadpay/directive         (if locked? :no-total :just-select)
+             :mayvenn-install           mayvenn-install}
 
       entered?
       (merge {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
