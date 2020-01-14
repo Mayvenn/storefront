@@ -290,7 +290,7 @@
 (defn cart-items-query
   [app-state
    {:mayvenn-install/keys
-    [service-type entered? locked? applied? stylist service-discount quantity-remaining quantity-required quantity-added]}
+    [service-type entered? locked? applied? stylist service-discount quantity-remaining quantity-required quantity-added any-wig?]}
    line-items
    skus
    add-items-action]
@@ -354,17 +354,27 @@
           ;; Locked basically means the freeinstall coupon code was entered, yet not all the requirements
           ;; of a free install order to generate a voucher have been satisfied.
           locked?
-          (merge  {:cart-item-title/primary                   "Mayvenn Install (locked)"
-                   :cart-item-copy/value                      (str "Add " quantity-remaining
-                                                                   " or more items to receive your free Mayvenn Install")
-                   :cart-item-steps-to-complete/action-target add-items-action
-                   :cart-item-steps-to-complete/action-label  "add items"
-                   :cart-item-steps-to-complete/id            "add-items"
-                   :cart-item-steps-to-complete/steps         (->> quantity-required
-                                                                   range
-                                                                   (map inc))
-                   :cart-item-steps-to-complete/current-step  quantity-added
-                   :cart-item-service-thumbnail/locked?       true})
+          (merge  (if any-wig?
+                    {:cart-item-title/primary                   "Wig Customization (locked)"
+                     :cart-item-copy/value                      "Add a Virgin Lace Front or a Virgin 360 Wig to unlock this service"
+                     :cart-item-steps-to-complete/action-target add-items-action
+                     :cart-item-floating-box/value              (some-> 75.0 - mf/as-money)
+                     :cart-item-steps-to-complete/action-label  "Add Wig"
+                     :cart-item-steps-to-complete/id            "add-wig"
+                     :cart-item-steps-to-complete/steps         {}
+                     :cart-item-steps-to-complete/current-step  0
+                     :cart-item-service-thumbnail/locked?       true}
+                    {:cart-item-title/primary                   "Mayvenn Install (locked)"
+                     :cart-item-copy/value                      (str "Add " quantity-remaining
+                                                                     " or more items to receive your free Mayvenn Install")
+                     :cart-item-steps-to-complete/action-target add-items-action
+                     :cart-item-steps-to-complete/action-label  "add items"
+                     :cart-item-steps-to-complete/id            "add-items"
+                     :cart-item-steps-to-complete/steps         (->> quantity-required
+                                                                     range
+                                                                     (map inc))
+                     :cart-item-steps-to-complete/current-step  quantity-added
+                     :cart-item-service-thumbnail/locked?       true}))
 
           (and applied? (not matched?))
           (merge {:cart-item-pick-stylist/id      "pick-a-stylist"
@@ -651,6 +661,7 @@
         applied?                             (:mayvenn-install/applied? mayvenn-install)
         servicing-stylist                    (:mayvenn-install/stylist mayvenn-install)
         locked?                              (:mayvenn-install/locked? mayvenn-install)
+        any-wig?                             (:mayvenn-install/any-wig? mayvenn-install)
         skus                                 (get-in data keypaths/v2-skus)
         recently-added-sku-ids               (get-in data keypaths/cart-recently-added-skus)
         last-texture-added                   (->> recently-added-sku-ids
@@ -658,12 +669,18 @@
                                                   (get skus)
                                                   :hair/texture
                                                   first)
-        add-items-action                     [events/navigate-category
-                                              (merge
-                                               {:page/slug           "mayvenn-install"
-                                                :catalog/category-id "23"}
-                                               (when last-texture-added
-                                                 {:query-params {:subsection last-texture-added}}))]]
+        add-items-action                     (if any-wig?
+                                               [events/navigate-category
+                                                (merge
+                                                 {:page/slug "wigs"
+                                                  :catalog/category-id "13"
+                                                  :query-params {:family "lace-front-wigs~360-wigs"}})]
+                                               [events/navigate-category
+                                                (merge
+                                                 {:page/slug           "mayvenn-install"
+                                                  :catalog/category-id "23"}
+                                                 (when last-texture-added
+                                                   {:query-params {:subsection last-texture-added}}))])]
     (cond-> {:suggestions                        (suggestions/consolidated-query data)
              :line-items                         line-items
              :skus                               skus

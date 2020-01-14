@@ -58,23 +58,24 @@
 (defn cart-item-steps-to-complete-molecule
   [{:cart-item-steps-to-complete/keys
     [steps current-step action-label action-target id]}]
-  (when (and steps current-step)
-    (let [[completed uncompleted] (split-at current-step steps)]
-      [:div.items-center.mr2.mt2.flex.flex-wrap
-       [:div.flex.items-center.mr3.mb2 ; margin bottom for 320px screens
-        (interpose (conj steps-hyphen-seperator-atom
-                         {:class "mx1"
-                          :style {:width "11px"}})
-                   (concat
-                    (map-indexed completed-progress-circle-atom
-                                 completed)
-                    (map-indexed incomplete-progress-circle-atom
-                                 uncompleted)))]
-       (when (and action-target action-label)
-         [:div.mb2 ; margin bottom for 320px screens
-          (ui/button-small-primary (assoc (apply utils/route-to action-target)
-                                          :data-test id)
-                                   action-label)])])))
+  (when id
+    [:div.items-center.mr2.mt2.flex.flex-wrap
+     (when (pos? (count steps))
+       (let [[completed uncompleted] (split-at current-step steps)]
+         [:div.flex.items-center.mr3.mb2 ; margin bottom for 320px screens
+          (interpose (conj steps-hyphen-seperator-atom
+                           {:class "mx1"
+                            :style {:width "11px"}})
+                     (concat
+                      (map-indexed completed-progress-circle-atom
+                                   completed)
+                      (map-indexed incomplete-progress-circle-atom
+                                   uncompleted)))]))
+     (when (and action-target action-label)
+       [:div.mb2 ; margin bottom for 320px screens
+        (ui/button-small-primary (assoc (apply utils/route-to action-target)
+                                        :data-test id)
+                                 action-label)])]))
 
 (defn cart-item-square-thumbnail-molecule
   [{:cart-item-square-thumbnail/keys
