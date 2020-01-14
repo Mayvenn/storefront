@@ -23,11 +23,12 @@
     {:class "border-bottom border-gray bg-white black"
      :style {:height "70px"}}
     ;; HACKY(jeff): b/c of relative+absolute position of big-x, padding-left also increases y-offset, so we use negative margin to correct it
-    [:div.mtn2.pl4
-     {:style {:width  "100%"
-              :height "100%"}}
-     (ui/big-x {:data-test "close-slideout"
-                :attrs     {:on-click #(messages/handle-message events/control-menu-collapse-all)}})]
+    (component/html
+     [:div.mtn2.pl4
+      {:style {:width  "100%"
+               :height "100%"}}
+      (ui/big-x {:data-test "close-slideout"
+                 :attrs     {:on-click #(messages/handle-message events/control-menu-collapse-all)}})])
     (ui/clickable-logo {:event     events/navigate-home
                         :data-test "header-logo"
                         :height    "29px"})

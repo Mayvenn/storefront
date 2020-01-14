@@ -62,16 +62,17 @@
      {:class "border-bottom border-gray bg-white black"
       :style {:height "70px"}}
      nil
-     [:div.h4.medium title]
-     (when close-id
-       [:div.ml-auto.flex.items-center.justify-around
-        (merge {:data-test close-id
-                :style     {:width  "70px"
-                            :height "70px"}}
-               close-route)
-        (svg/x-sharp {:class "black"
-                      :style {:width  "14px"
-                              :height "14px"}})]))]
+     (component/html [:div.h4.medium title])
+     (component/html
+      (when close-id
+        [:div.ml-auto.flex.items-center.justify-around
+         (merge {:data-test close-id
+                 :style     {:width  "70px"
+                             :height "70px"}}
+                close-route)
+         (svg/x-sharp {:class "black"
+                       :style {:width  "14px"
+                               :height "14px"}})])))]
    [:div {:style {:margin-top "70px"}}]])
 
 (defcomponent component
