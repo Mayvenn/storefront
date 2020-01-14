@@ -121,25 +121,21 @@
        :storefront/all-line-items
        (filter line-items/service?)))
 
-(defn freeinstall-promotion? [{:keys [name coupon-code]}]
+(defn freeinstall-promotion?
+  [{:keys [name]}]
   (boolean
-   (or (#{"FREEINSTALL"} name)
-       (#{"freeinstall"} coupon-code))))
+   (#{"FREEINSTALL" "Wig Customization"} name)))
 
 (defn freeinstall-applied?
   [order]
   (boolean
-   (or
-    (some (comp freeinstall-promotion? :promotion)
-          (mapcat :applied-promotions (service-line-items order)))
-    (contains? (all-applied-promo-codes order) "freeinstall"))))
+   (some (comp freeinstall-promotion? :promotion)
+         (mapcat :applied-promotions (service-line-items order)))))
 
 (defn freeinstall-entered?
-  [{:as order :keys [promotion-codes]}]
+  [order]
   (boolean
-   (or
-    (seq (service-line-items order))
-    (= #{"freeinstall"} (set promotion-codes)))))
+   (seq (service-line-items order))))
 
 (defn non-store-credit-payment-amount [order]
   (->> order
