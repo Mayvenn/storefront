@@ -457,6 +457,7 @@
                                          :cart-summary-line/label "Tax"
                                          :cart-summary-line/value (mf/as-money tax-total)}]))
 
+         :freeinstall-informational/button-id             "add-mayvenn-install"
          :freeinstall-informational/primary               "Don't miss out on free Mayvenn Install"
          :freeinstall-informational/secondary             "Save 10% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below."
          :freeinstall-informational/cta-label             "Add Mayvenn Install"
@@ -468,7 +469,8 @@
          :freeinstall-informational/secondary-link-label  "learn more"}
 
       any-wig?
-      (merge {:freeinstall-informational/primary           "Don't miss out on free Wig Customization"
+      (merge {:freeinstall-informational/button-id         "add-wig-customization"
+              :freeinstall-informational/primary           "Don't miss out on free Wig Customization"
               :freeinstall-informational/secondary         "Get a free customization by a licensed stylist when you add a Wig Customization to your cart below."
               :freeinstall-informational/cta-label         "Add Wig Customization"
               :freeinstall-informational/secondary-link-id nil

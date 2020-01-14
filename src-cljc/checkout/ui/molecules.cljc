@@ -66,7 +66,8 @@
 (defn freeinstall-informational
   [{:freeinstall-informational/keys
     [id primary secondary cta-label cta-target fine-print
-     secondary-link-id secondary-link-label secondary-link-target]}]
+     secondary-link-id secondary-link-label secondary-link-target
+     button-id]}]
   (when id
     [:div.flex.py2 {:data-test id}
      "✋"
@@ -77,7 +78,7 @@
        secondary]
       [:div.flex.justify-left.py1
        (ui/button-small-primary
-        (assoc (apply utils/fake-href cta-target) :data-test "add-mayvenn-install")
+        (assoc (apply utils/fake-href cta-target) :data-test button-id)
         cta-label)
        (when secondary-link-id
          [:div.s-color.flex.items-center.px2.button-font-3.shout
