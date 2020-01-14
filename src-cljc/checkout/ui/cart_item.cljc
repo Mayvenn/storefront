@@ -86,7 +86,7 @@
        {:style {:height "45px"
                 :width  "48px"}}
        (when sticker-label
-         [:div.absolute.z1.circle.border.border-white.bg-warm-gray.proxima.title-3.flex.items-center.justify-center
+         [:div.absolute.z1.circle.border.border-gray.bg-white.proxima.title-3.flex.items-center.justify-center
           (css-transitions/background-fade
            highlighted?
            {:key       sticker-id

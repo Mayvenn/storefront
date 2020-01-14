@@ -116,7 +116,7 @@
         {:class "pr3"})
       (when sticker-label
         ;; TODO: highlighting does not work as before
-        [:div.right.z1.circle.stacking-context.border.border-white.flex.items-center.justify-center.bg-warm-gray.proxima.title-3
+        [:div.right.z1.circle.stacking-context.border.border-gray.flex.items-center.justify-center.bg-white.proxima.title-3
          {:key       sticker-id
           :data-test sticker-id
           :style     {:margin-left left-margin
