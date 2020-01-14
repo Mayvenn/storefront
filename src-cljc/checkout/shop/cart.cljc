@@ -364,7 +364,7 @@
                      :cart-item-title/id                        "line-item-title-locked-wig-customization"
                      :cart-item-copy/value                      "Add a Virgin Lace Front or a Virgin 360 Wig to unlock this service"
                      :cart-item-steps-to-complete/action-target add-items-action
-                     :cart-item-floating-box/value              (some-> 75.0 - mf/as-money)
+                     :cart-item-floating-box/value              (mf/as-money 75)
                      :cart-item-steps-to-complete/action-label  "Add Wig"
                      :cart-item-steps-to-complete/id            "add-wig"
                      :cart-item-steps-to-complete/steps         {}
@@ -525,7 +525,7 @@
                                                                      "Free Wig Customization"
                                                                      "Free Mayvenn Install")
                                           :cart-summary-line/value (if any-wig?
-                                                                     (mf/as-money-or-free 75.0)
+                                                                     (mf/as-money-or-free -75.0)
                                                                      (mf/as-money-or-free service-discount))
                                           :cart-summary-line/class "p-color"}
                                          (coupon-code->remove-promo-action "freeinstall"))
