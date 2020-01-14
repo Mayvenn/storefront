@@ -168,12 +168,13 @@
     {:opts {:section-click-event events/faq-section-selected}})])
 
 (defn ^:private contact-us-block [idx {:keys [url svg title copy]}]
-  [:a.block.py3.col-12.col-4-on-tb-dt.black
-   {:href url
-    :key idx}
-   svg
-   [:div.proxima.title-2.mt1 title]
-   [:div.col-8.mx-auto.p-color.content-2 copy]])
+  (component/html
+   [:a.block.py3.col-12.col-4-on-tb-dt.black
+    {:href url
+     :key idx}
+    svg
+    [:div.proxima.title-2.mt1 title]
+    [:div.col-8.mx-auto.p-color.content-2 copy]]))
 
 (defcomponent shop-contact
   [{title-value        :title/value
@@ -189,7 +190,8 @@
      ^:inline (svg/straight-line {:width  "1px"
                                   :height "42px"})]
     [:div.flex.flex-wrap.items-baseline.justify-center.col-12.col-8-on-tb-dt.mx-auto
-     (map-indexed (partial contact-us-block) contact-us-blocks)]]
+     (for [[i block] (map-indexed vector contact-us-blocks)]
+       ^:inline (contact-us-block i block))]]
    [:div.bg-p-color.pt1]])
 
 (defcomponent shop-quote-img
@@ -408,10 +410,10 @@
    [:div.mt5.mb3
     (when title-value
       [:h2.title-1.proxima.shout.pb1
-       (interpose [:br] title-value)])
+       (interpose (component/html [:br]) title-value)])
     (when subtitle-value
       [:div.title-1.canela.shout
-       (interpose [:br] subtitle-value)])]
+       (interpose (component/html [:br]) subtitle-value)])]
    [:div.col-8.flex.flex-column.items-center.hide-on-dt
     (for [[i bullet] (map-indexed vector bullets)]
       ^:inline (shop-icon-step (str layer-id "-mb-tb-") i bullet))]
@@ -431,11 +433,11 @@
     (for [{:keys [image-url]} images]
       [:a.col-6.col-3-on-tb-dt.p1
        {:key (str image-url)}
-       (ui/screen-aware
-        ugc-image
-        {:image-url image-url}
-        nil)])]
-   (shop-cta-with-icon data)])
+       ^:inline (ui/screen-aware
+                 ugc-image
+                 {:image-url image-url}
+                 nil)])]
+   ^:inline (shop-cta-with-icon data)])
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (component/build
