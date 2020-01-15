@@ -361,7 +361,7 @@
           :cart-item-floating-box/value          [:div.flex.flex-column.justify-end
                                                   {:style {:height "100%"}}
                                                   (some-> service-discount - mf/as-money)]
-          :cart-item-title/id                    "line-item-title-freeinstall"
+          :cart-item-title/id                    "line-item-title-applied-mayvenn-install"
           :cart-item-title/primary               "Mayvenn Install"
           :cart-item-title/secondary             [:div.line-height-3
                                                   "Shampoo, condition, braid down, Sew-in and style included."]}}})
@@ -370,7 +370,8 @@
       (maps/deep-merge
        {:freeinstall-cart-item
         {:cart-item
-         {:cart-item-title/primary   "Wig Customization"
+         {:cart-item-title/id        "line-item-title-applied-wig-customization"
+          :cart-item-title/primary   "Wig Customization"
           :cart-item-title/secondary [:div.content-3
                                       "Hair line plucking, bleaching of knots, lace cut, and style included."]}}})
 
