@@ -666,18 +666,21 @@
                                                   (get skus)
                                                   :hair/texture
                                                   first)
+        mayvenn-install-shopping-action      [events/navigate-category
+                                              (merge
+                                               {:page/slug           "mayvenn-install"
+                                                :catalog/category-id "23"}
+                                               (when last-texture-added
+                                                 {:query-params {:subsection last-texture-added}}))]
+        continue-shopping-action             (if any-wig?
+                                               [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
+                                               mayvenn-install-shopping-action)
         add-items-action                     (if any-wig?
                                                [events/navigate-category
-                                                (merge
-                                                 {:page/slug           "wigs"
-                                                  :catalog/category-id "13"
-                                                  :query-params        {:family "lace-front-wigs~360-wigs"}})]
-                                               [events/navigate-category
-                                                (merge
-                                                 {:page/slug           "mayvenn-install"
-                                                  :catalog/category-id "23"}
-                                                 (when last-texture-added
-                                                   {:query-params {:subsection last-texture-added}}))])]
+                                                {:page/slug           "wigs"
+                                                 :catalog/category-id "13"
+                                                 :query-params        {:family "lace-front-wigs~360-wigs"}}]
+                                               mayvenn-install-shopping-action)]
     (cond-> {:suggestions               (suggestions/consolidated-query data)
              :line-items                line-items
              :skus                      skus
@@ -697,7 +700,7 @@
              :recently-added-skus       recently-added-sku-ids
              :return-link/id            "continue-shopping"
              :return-link/copy          "Continue Shopping"
-             :return-link/event-message add-items-action
+             :return-link/event-message continue-shopping-action
              :quantity-remaining        (:mayvenn-install/quantity-remaining mayvenn-install)
              :locked?                   locked?
              :entered?                  entered?
