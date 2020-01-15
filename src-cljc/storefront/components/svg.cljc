@@ -387,3 +387,7 @@
    [:svg opts
     ^:inline (svg-xlink "vertical-squiggle")]))
 
+(defn map-pin [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "map-pin")]))

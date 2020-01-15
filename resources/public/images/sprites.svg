@@ -276,4 +276,9 @@
   <symbol id="vertical-squiggle" viewBox="0 0 13 120">
     <path d="M11.91 0C11.91 12 1 12 1 24s10.91 12 10.91 24S1 60 1 72s10.91 12 10.91 24S1 108 1 120" fill="none" fill-rule="evenodd" stroke="#6bc8ad"/>
   </symbol>
+  <symbol id="map-pin" viewBox="0 0 12 12">
+    <g fill="none" fill-rule="evenodd">
+      <path d="M1.333 4.204c0 1.699 1.045 3.222 2.663 3.879a.432.432 0 01.245.252L5.667 12l1.34-3.646a.436.436 0 01.249-.243C8.923 7.472 10 5.939 10 4.204 10.001 1.886 8.057 0 5.667 0S1.333 1.885 1.333 4.204z" fill="#4427C1"/><path fill="#FFF" d="M5.666 1.977l2.357 2.356L5.666 6.69 3.31 4.333z"/>
+    </g>
+  </symbol>
 </svg>

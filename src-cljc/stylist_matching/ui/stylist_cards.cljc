@@ -38,7 +38,10 @@
   [{:stylist-card.address-marker/keys [id value]}]
   (when id
     (component/html
-     [:div.h7.col-12.flex.items-center
+     [:div.content-3.col-12.flex.items-center
+      (svg/map-pin {:class  "mrp3"
+                    :width  "14px"
+                    :height "14px"})
       [:span.overflow-hidden.nowrap
        {:style {:text-overflow "ellipsis"}}
        value]])))
