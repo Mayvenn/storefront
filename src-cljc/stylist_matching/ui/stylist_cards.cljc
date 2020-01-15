@@ -3,35 +3,8 @@
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.platform.carousel :as carousel]
-            [storefront.platform.component-utils :as utils]))
-
-(defn ^:private star [index type]
-  [:span.mrp1
-   {:key (str (name type) "-" index)}
-   (case type
-     :whole         (svg/whole-star {:height "13px" :width "13px"})
-     :three-quarter (svg/three-quarter-star {:height "13px" :width "13px"})
-     :half          (svg/half-star {:height "13px" :width "13px"})
-     :empty         (svg/empty-star {:height "13px" :width "13px"})
-     nil)])
-
-(defn rating->stars
-  "gets weird"
-  [rating full-rating]
-  (when (pos? full-rating)
-    (conj
-     (rating->stars (dec rating) (dec full-rating))
-     (condp <= rating
-       1    :whole
-       0.75 :three-quarter
-       0.50 :half-star
-       :empty))))
-
-(defn star-rating
-  [rating]
-  [:div.flex.items-center.mynp3
-   [:span.mrp4 rating]
-   (map-indexed star (rating->stars rating 5))])
+            [storefront.platform.component-utils :as utils]
+            [ui.molecules :as molecules]))
 
 (defn checks-or-x-atom
   [label value?]
@@ -69,12 +42,6 @@
       [:span.overflow-hidden.nowrap
        {:style {:text-overflow "ellipsis"}}
        value]])))
-
-(defn stylist-card-stars-rating-molecule
-  [{:rating/keys [value]}]
-  (component/html
-   [:div.proxima.title-3.s-color
-    (star-rating value)]))
 
 (defn stylist-card-title-molecule
   [{:stylist-card.title/keys [id primary]}]
@@ -140,7 +107,7 @@
       (stylist-card-thumbnail-molecule data)]
      [:div.col-9.medium.px3
       (stylist-card-title-molecule data)
-      (stylist-card-stars-rating-molecule data)
+      (molecules/stars-rating-molecule data)
       (stylist-card-salon-name-molecule data)
       (stylist-card-address-marker-molecule data)
       (stylist-card-services-list-molecule data)]]))

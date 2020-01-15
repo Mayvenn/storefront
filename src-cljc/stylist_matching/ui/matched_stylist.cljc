@@ -2,7 +2,7 @@
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
-            [stylist-matching.ui.stylist-cards :as stylist-cards]))
+            [ui.molecules :as molecules]))
 
 (defn matched-stylist-title-molecule
   [{:matched-stylist.title/keys [id primary secondary]}]
@@ -59,7 +59,7 @@
      [:div.medium.px2
       (stylist-card-title-molecule data)
       [:span.h7.flex.items-center.pyp2
-       (stylist-cards/stylist-card-stars-rating-molecule data)]
+       (molecules/svg-star-rating-molecule data)]
       (stylist-card-address-marker-molecule data)]]))
 
 (defcomponent organism
