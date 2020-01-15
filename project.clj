@@ -135,7 +135,7 @@
                         [nrepl "0.6.0"]]}
              :dev     {:source-paths ["dev/clj"]
                        :dependencies [[cider/piggieback "0.4.0"]
-                                      [com.bhauman/figwheel-main "0.2.1"]
+                                      [com.bhauman/figwheel-main "0.2.3"]
                                       [com.bhauman/rebel-readline-cljs "0.1.4"]
                                       [nrepl "0.6.0"]
                                       [binaryage/devtools "0.9.10"]
