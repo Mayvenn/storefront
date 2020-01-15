@@ -25,17 +25,6 @@
   [_ _ _]
   [:div])
 
-(defmethod component :adventure-freeinstall/applied adventure-freeinstall-applied
-  [_ _ {hide-dt? :hide-dt?}]
-  [:a.white.center.p2.bg-p-color.mbnp5.h6.bold.flex.items-center.justify-center
-   {:on-click  (utils/send-event-callback events/popup-show-adventure-free-install)
-    :data-test (when-not hide-dt? "adventure-promo-banner")}
-   (svg/celebration-horn {:height "1.6em"
-                          :width  "1.6em"
-                          :class  "mr1 fill-white stroke-white"})
-   [:div.pointer "CONGRATS — Your next install is FREE! "
-    [:span.underline "More info"]]])
-
 (defmethod component :v2-freeinstall/eligible v2-freeinstall-eligible
   [_ _ {hide-dt? :hide-dt?}]
   [:a {:on-click  (utils/send-event-callback events/popup-show-v2-homepage)
@@ -100,14 +89,6 @@
             events/navigate-shop-by-look-details
             events/navigate-category
             events/navigate-product-details}
-
-    ;; Incentivize checkout by reminding them they are saving
-    (#{:v2-freeinstall/applied
-       :adventure-freeinstall/applied} promo-type)
-    (conj events/navigate-checkout-returning-or-guest
-          events/navigate-checkout-address
-          events/navigate-checkout-payment
-          events/navigate-checkout-confirmation)
 
     ;; TODO SPEC classic or aladdin. Needs product verification
     (and (not no-applied-promos?)
