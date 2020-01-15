@@ -46,7 +46,7 @@
       (when-not length-circle-value
         {:class "pr3"})
       (when length-circle-value
-        [:div.right.z1.circle.stacking-context.border.border-cool-gray.flex.items-center.justify-center.medium.h5.bg-cool-gray
+        [:div.right.z1.circle.stacking-context.border.border-gray.flex.items-center.justify-center.medium.h5.bg-white
          (css-transitions/background-fade
           just-added-to-order?
           {:key       (str "length-circle-" sku-id)
