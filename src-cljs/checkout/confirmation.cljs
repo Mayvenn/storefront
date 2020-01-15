@@ -274,12 +274,13 @@
                                              (cond-> {:cart-summary-line/id    (text->data-test-name name)
                                                       :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
                                                                                                   :height "2em" :width "2em"})
-                                                      :cart-summary-line/label (adjustments/display-service-line-item-adjustment-name adjustment)
+                                                      :cart-summary-line/label (adjustments/display-adjustment-name adjustment)
                                                       :cart-summary-line/class "p-color"
                                                       :cart-summary-line/value (mf/as-money-or-free price)}
 
                                                install-summary-line?
                                                (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
+                                                       :cart-summary-line/label (adjustments/display-service-line-item-adjustment-name adjustment)
                                                        :cart-summary-line/class "p-color"})))
                                            (when (pos? tax)
                                              [{:cart-summary-line/id       "tax"

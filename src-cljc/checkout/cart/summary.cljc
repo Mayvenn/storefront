@@ -93,7 +93,7 @@
             (when (= "Bundle Discount" name)
               (svg/discount-tag {:class  "mxnp6"
                                  :height "2em" :width "2em"}))
-            (adjustments/display-adjustment-name name)
+            (adjustments/display-adjustment-name adjustment)
             (when coupon-code
               [:a.ml1.h6.gray.flex.items-center
                (merge {:data-test "cart-remove-promo"}
