@@ -181,11 +181,11 @@
              (cond
                (= :aladdin site)
                (str "After you place your order, please contact "
-                    (stylists/->display-name servicing-stylist)
-                    " to make your Mayvenn free install appointment.")
+                    servicing-stylist-name
+                    " to make your appointment.")
                servicing-stylist
                (str "After your order ships, you’ll be connected with "
-                    (stylists/->display-name servicing-stylist)
+                    servicing-stylist-name
                     " over SMS to make an appointment.")
                :else
                "You’ll be able to select your Certified Mayvenn Stylist after checkout."))])

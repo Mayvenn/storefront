@@ -730,9 +730,10 @@
               :servicing-stylist-portrait-url     (-> servicing-stylist :portrait :resizable-url)})
 
       (and entered? servicing-stylist (not shop?))
-      (merge {:checkout-caption-copy              (str "After you place your order, please contact "
-                                                       (stylists/->display-name servicing-stylist)
-                                                       " to make your Mayvenn free install appointment.")
+      (merge {:checkout-caption-copy (str "After you place your order, please contact "
+                                          (stylists/->display-name servicing-stylist)
+                                          " to make your appointment.")
+
               :servicing-stylist-banner/action-id nil})
 
       (and (experiments/mayvenn-rating? data)
