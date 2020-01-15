@@ -313,6 +313,10 @@
     (doseq [keypath keypaths]
       (effects/fetch-cms-keypath app-state keypath))))
 
+(defmethod effects/perform-effects events/navigate-info
+  [_ _ _ _ app-state]
+  (effects/fetch-cms-keypath app-state [:ugc-collection :free-install-mayvenn]))
+
 (defmethod effects/perform-effects events/navigate-content
   [_ [_ _ & static-content-id :as event] _ _ app-state]
   (when-not (= static-content-id

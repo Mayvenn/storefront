@@ -43,9 +43,10 @@
             {:layer/type      :ugc
              :header/value    "#MayvennFreeInstall"
              :subheader/value "Showcase your new look by tagging #MayvennFreeInstall"
-             :images          (contentful/album-kw->homepage-social-cards (get-in data storefront.keypaths/cms-ugc-collection)
-                                                                          (get-in data storefront.keypaths/navigation-event)
-                                                                          :free-install-mayvenn)}
+             :images          (contentful/album-kw->homepage-social-cards
+                               (get-in data storefront.keypaths/cms-ugc-collection)
+                               (get-in data storefront.keypaths/navigation-event)
+                               :free-install-mayvenn)}
             (merge {:layer/type :faq} (faq/free-install-query data))
             {:layer/type         :shop-contact
              :title/value        "Contact Us"

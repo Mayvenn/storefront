@@ -317,6 +317,12 @@
                                                                                      (get-in-req-state req)
                                                                                      keyword)])
                                               contentful/derive-all-looks)
+
+                                          (routes/sub-page? [nav-event] [events/navigate-info])
+                                          (-> {}
+                                              (update-data [:ugc-collection :free-install-mayvenn])
+                                              contentful/derive-all-looks)
+
                                           :else nil)
 
                                     aladdin?
