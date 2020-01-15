@@ -574,8 +574,7 @@
                                                 " calculate total price"])})
 
       applied?
-      (merge {:cart-summary-total-line/label      "Hair + Install Total"
-              :cart-summary-total-incentive/id    "mayvenn-install"
+      (merge {:cart-summary-total-incentive/id    "mayvenn-install"
               :cart-summary-total-incentive/value [:div
                                                    [:div.h6.bg-p-color.white.px2.nowrap.mb1
                                                     "Includes Mayvenn Install"]
@@ -586,8 +585,7 @@
                                                        (mf/as-money total-savings)]])]})
 
       (and applied? wig-customization?)
-      (merge {:cart-summary-total-line/label      "Hair + Wig Customization Total"
-              :cart-summary-total-incentive/id    "wig-customization"
+      (merge {:cart-summary-total-incentive/id    "wig-customization"
               :cart-summary-total-incentive/value [:div
                                                    [:div.h6.bg-p-color.white.px2.nowrap.mb1
                                                     "Includes Wig Customization"]
