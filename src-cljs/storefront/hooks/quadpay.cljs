@@ -42,16 +42,16 @@
    (when show?
      (let [qp-logo            ^:inline (svg/quadpay-logo {:class "mbnp3"
                                                           :style {:width "70px" :height "14px"}})
-           expanded-directive ({:no-total      [:span "Split payment into 4 interest free" [:br] "installments with " qp-logo]
-                                :just-select   [:span [:br] "Just select " qp-logo " at check out."]
-                                :continue-with [:span [:br] "Continue with " qp-logo " below."]}
+           expanded-directive ({:no-total      [:span "Split payment into 4 interest-free" [:br] "installments with " qp-logo]
+                                :just-select   [:span "Just select " qp-logo " at check out."]
+                                :continue-with [:span "Continue with " qp-logo " below."]}
                                directive)]
        [:div.border.border-blue.my2.p2.center
         (when order-total
           [:span.mb2
-           "4 interest free payments of $" [:span {:data-test "quadpay-payment-amount"}
+           "4 interest-free payments of $" [:span {:data-test "quadpay-payment-amount"}
                                             (calc-installment-amount order-total)]])
-        [:div.block.mtn2
+        [:div.block
          expanded-directive
          [:a.blue.mx1 {:href      "#"
                        :data-test "quadpay-learn-more"
