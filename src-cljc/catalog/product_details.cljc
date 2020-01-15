@@ -5,6 +5,7 @@
                        [goog.style]
                        [storefront.accessors.auth :as auth]
                        [storefront.api :as api]
+                       [storefront.hooks.seo :as seo]
                        [storefront.browser.scroll :as scroll]
                        [storefront.history :as history]
                        [storefront.hooks.reviews :as review-hooks]
@@ -626,6 +627,13 @@
         (assoc-in catalog.keypaths/detailed-product-product-skus product-skus)
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
         (assoc-in catalog.keypaths/detailed-product-options options))))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/api-success-v2-products-for-details
+     [_ event _ _ app-state]
+     ;; "Setting seo tags for the product detail page relies on the product
+     ;; being available"
+     (seo/set-tags app-state)))
 
 (defmethod effects/perform-effects events/control-add-sku-to-bag
   [dispatch event {:keys [sku quantity] :as args} _ app-state]
