@@ -58,10 +58,17 @@
      [:div.right-align.title-2.proxima value]]))
 
 (defn cart-summary-total-incentive
-  [{:cart-summary-total-incentive/keys [id label value]}]
+  [{:cart-summary-total-incentive/keys [id label savings]}]
   (when id
     [:div.flex.justify-end {:data-test id}
-     [:div.right-align.title-2.proxima value]]))
+     [:div.right-align.content-3
+      [:div.bg-warm-gray.px2.py1.nowrap.mb1
+       label]
+      (when savings
+        [:div.light.pxp1.nowrap.italic
+         "You've saved "
+         [:span.bold.p-color {:data-test "total-savings"}
+          savings]])]]))
 
 (defn freeinstall-informational
   [{:freeinstall-informational/keys

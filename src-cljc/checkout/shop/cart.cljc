@@ -574,26 +574,14 @@
                                                 " calculate total price"])})
 
       applied?
-      (merge {:cart-summary-total-incentive/id    "mayvenn-install"
-              :cart-summary-total-incentive/value [:div
-                                                   [:div.h6.bg-p-color.white.px2.nowrap.mb1
-                                                    "Includes Mayvenn Install"]
-                                                   (when (pos? total-savings)
-                                                     [:div.h6.light.pxp1.nowrap.italic
-                                                      "You've saved "
-                                                      [:span.bold.p-color {:data-test "total-savings"}
-                                                       (mf/as-money total-savings)]])]})
+      (merge {:cart-summary-total-incentive/id      "mayvenn-install"
+              :cart-summary-total-incentive/label   "Includes Mayvenn Install"
+              :cart-summary-total-incentive/savings (when (pos? total-savings)
+                                                      (mf/as-money total-savings))})
 
       (and applied? wig-customization?)
       (merge {:cart-summary-total-incentive/id    "wig-customization"
-              :cart-summary-total-incentive/value [:div
-                                                   [:div.h6.bg-p-color.white.px2.nowrap.mb1
-                                                    "Includes Wig Customization"]
-                                                   (when (pos? total-savings)
-                                                     [:div.h6.light.pxp1.nowrap.italic
-                                                      "You've saved "
-                                                      [:span.bold.p-color {:data-test "total-savings"}
-                                                       (mf/as-money total-savings)]])]}))))
+              :cart-summary-total-incentive/label "Includes Wig Customization"}))))
 
 (defn cart-summary-query
   [order install]
