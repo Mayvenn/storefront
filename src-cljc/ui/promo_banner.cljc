@@ -82,7 +82,7 @@
   "Promo code banner should only show on these nav-events
 
    Depending on experiments, this whitelist may be modified"
-  [no-applied-promos? on-shop? promo-type]
+  [no-applied-promos? on-shop?]
   (cond-> #{events/navigate-home
             events/navigate-cart
             events/navigate-shop-by-look
@@ -127,7 +127,7 @@
         on-shop?          (= "shop" (get-in data keypaths/store-slug))
         nav-event         (get-in data keypaths/navigation-event)
         promo-type        (promo-type* data)
-        show?             (contains? (nav-whitelist-for no-applied-promo? on-shop? promo-type) nav-event)
+        show?             (contains? (nav-whitelist-for no-applied-promo? on-shop?) nav-event)
         hide-on-mb-tb?    (boolean (get-in data catalog.keypaths/category-panel))]
     (cond-> {:promo (promotion-to-advertise data)}
       show?          (assoc :promo/type promo-type)
