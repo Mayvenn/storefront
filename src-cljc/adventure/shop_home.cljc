@@ -61,10 +61,11 @@
        :cta/value    "Learn more"
        :cta/id       "info-certified-stylists"
        :cta/target   [events/navigate-info-certified-stylists]}
-      {:layer/type      :image-block
-       :photo/mob-uuid  "a6a607e6-aeb4-4b61-8bc7-60fd17d15abe"
-       :photo/dsk-uuid  "f2d82c41-2051-47d8-86c5-1c82568e324d"
-       :photo/file-name "who-shop-hair"}
+      {:layer/type :image-block
+       :ucare?     true
+       :mob-uuid   "a6a607e6-aeb4-4b61-8bc7-60fd17d15abe"
+       :dsk-uuid   "f2d82c41-2051-47d8-86c5-1c82568e324d"
+       :file-name  "who-shop-hair"}
       {:layer/type   :shop-text-block
        :header/value [:div.py1.shout
                       ;; NOTE: this is a design exception

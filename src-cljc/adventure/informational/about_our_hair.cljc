@@ -10,10 +10,11 @@
 
 (defn query
   [data]
-  {:layers [{:layer/type      :hero
-             :photo/file-name "about-our-hair-hero"
-             :photo/mob-uuid  "74034b48-0fab-4e31-92b2-66db9136472a"
-             :photo/dsk-uuid  "1162a59d-162f-4c6b-bb8d-60cd7204644c"}
+  {:layers [{:layer/type :hero
+             :file-name  "about-our-hair-hero"
+             :ucare?     true
+             :mob-uuid   "74034b48-0fab-4e31-92b2-66db9136472a"
+             :dsk-uuid   "1162a59d-162f-4c6b-bb8d-60cd7204644c"}
             {:layer/type             :find-out-more
              :header/value           "We believe that quality should be accessible for all."
              :body/value             "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors. The best part? All of our products are quality-guaranteed."

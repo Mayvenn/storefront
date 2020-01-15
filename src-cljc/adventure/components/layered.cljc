@@ -90,18 +90,9 @@
   [:div (component/build ui.M/hero (merge data {:off-screen? (not seen?)}) nil)])
 
 (defcomponent image-block
-  [{:photo/keys [mob-uuid
-                 dsk-uuid
-                 file-name
-                 alt]} _ _]
-  [:div.center.mx-auto {:key (str mob-uuid)}
-   (ui/screen-aware
-    hero-image-component
-    {:mob-uuid    mob-uuid
-     :dsk-uuid    dsk-uuid
-     :file-name   file-name
-     :alt         alt}
-    nil)])
+  [data _ _]
+  [:div.center.mx-auto {:key (str (:mob-uuid data))}
+   (ui/screen-aware hero-image-component data nil)])
 
 (defcomponent video-overlay
   [data _ _]

@@ -10,10 +10,11 @@
 
 (defn query
   [data]
-  {:layers [{:layer/type      :hero
-             :photo/file-name "certified-stylists-hero"
-             :photo/mob-uuid  "0d06e8a8-123b-4265-b988-e7d55bddd7f0"
-             :photo/dsk-uuid  "3cd59dc1-8f94-4ee5-a62e-d91b5aa6c97b"}
+  {:layers [{:layer/type :hero
+             :file-name  "certified-stylists-hero"
+             :mob-uuid   "0d06e8a8-123b-4265-b988-e7d55bddd7f0"
+             :dsk-uuid   "3cd59dc1-8f94-4ee5-a62e-d91b5aa6c97b"
+             :ucare?     true}
             {:layer/type             :find-out-more
              :header/value           "Our Certified Stylists are the best of the best."
              :body/value             (str "Our Certified Stylists are the best in your area. "

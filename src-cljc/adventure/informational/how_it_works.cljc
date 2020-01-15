@@ -10,11 +10,12 @@
 
 (defn query
   [data]
-  {:layers [{:layer/type      :hero
-             :photo/file-name "how-it-works-hero"
-             :photo/alt       "Mayvenn's Install includes: Shampoo & Condition, Braid down, Sew-In, Style"
-             :photo/mob-uuid  "b8c13ff9-ff2a-46b6-9973-d085805e2734"
-             :photo/dsk-uuid  "cf2ba376-a913-49de-a2bd-e90c50c295ff"}
+  {:layers [{:layer/type :hero
+             :file-name  "how-it-works-hero"
+             :ucare?     true
+             :alt        "Mayvenn's Install includes: Shampoo & Condition, Braid down, Sew-In, Style"
+             :mob-uuid   "b8c13ff9-ff2a-46b6-9973-d085805e2734"
+             :dsk-uuid   "cf2ba376-a913-49de-a2bd-e90c50c295ff"}
             {:layer/type             :find-out-more
              :header/value           "We’re offering hair + service for the price of one"
              :body/value             "We know that quality bundles can be expensive. That’s why when you buy our hair, we’re paying for your install appointment."
