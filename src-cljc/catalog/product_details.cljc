@@ -345,8 +345,10 @@
   [data selected-sku sku-price]
   (let [shop?                 (= "shop" (get-in data keypaths/store-slug))
         sku-family            (-> selected-sku :hair/family first)
-        show-incentive-block? (and shop?
-                                   (not= "ready-wigs" sku-family))]
+        customizable-wig?     (and
+                               (experiments/wig-customization? data)
+                               (#{"360-wigs" "lace-front-wigs"} sku-family))
+        show-incentive-block? shop?]
     (cond-> {:cta/id          "add-to-cart"
              :cta/label       "Add to Cart"
              :cta/target      [events/control-add-sku-to-bag
@@ -358,13 +360,23 @@
              :quadpay/price   sku-price}
 
       show-incentive-block?
-      (merge {:add-to-cart.background/color            "bg-cool-gray"
-              :add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
-              :add-to-cart.incentive-block/footnote    "*Mayvenn Install cannot be combined with other promo codes."
-              :add-to-cart.incentive-block/link-label  "Learn more"
-              :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
-              :add-to-cart.incentive-block/message     [:span "Save 10% & get a free Mayvenn Install when you " [:br]
-                                                        "purchase 3 bundles, closure, or frontals.* "]}))))
+      (merge
+       (if customizable-wig?
+         {:add-to-cart.background/color         "bg-cool-gray"
+          :add-to-cart.incentive-block/id       "add-to-cart-incentive-block"
+          :add-to-cart.incentive-block/callout  "✋Don't miss out on free Wig Customization"
+          :add-to-cart.incentive-block/footnote "*Wig Customization cannot be combined with other promotions"
+          :add-to-cart.incentive-block/message  (str "Get a free Wig Customization by a licensed stylist when "
+                                                     "you purchase a Virgin Lace Front Wig or Virgin 360 Wig.")}
+
+         {:add-to-cart.background/color            "bg-cool-gray"
+          :add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
+          :add-to-cart.incentive-block/footnote    "*Mayvenn Install cannot be combined with other promotions"
+          :add-to-cart.incentive-block/link-id     "learn-more-mayvenn-install"
+          :add-to-cart.incentive-block/link-label  "Learn more"
+          :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
+          :add-to-cart.incentive-block/message     (str "Save 10% & get a free Mayvenn Install when you "
+                                                        "purchase 3 bundles, closure, or frontals.* ")})))))
 
 (defn query [data]
   (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)

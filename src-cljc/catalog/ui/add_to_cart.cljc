@@ -18,18 +18,20 @@
       (component/html [:div.flex.items-center.justify-center.inherit-color label]))]))
 
 (defn add-to-cart-incentive-block-molecule
-  [{:add-to-cart.incentive-block/keys [id message link-label link-target footnote]}]
+  [{:add-to-cart.incentive-block/keys
+    [id callout message link-id link-label link-target footnote]}]
   (when id
-    (component/html
-     [:div.flex.pb1
-      [:div.flex.flex-column
-       [:div.proxima.content-3
-        message
-        (ui/button-small-underline-primary
-         {:data-test "freeinstall-add-to-cart-info-link"
-          :on-click  (apply utils/send-event-callback link-target)}
-         link-label)]
-       [:div.h8.dark-gray footnote]]])))
+    [:div.pb1
+     [:div.proxima.content-2.line-height-1.bold callout]
+     [:div.pl4.pr1
+      [:div.proxima.content-3.mb1
+       message
+       (when link-id
+         (ui/button-small-underline-primary
+          {:data-test "freeinstall-add-to-cart-info-link"
+           :on-click  (apply utils/send-event-callback link-target)}
+          link-label))]
+      [:div.content-4.dark-gray footnote]]]))
 
 (defn add-to-cart-background-atom
   [color]
