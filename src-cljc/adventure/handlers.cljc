@@ -23,29 +23,7 @@
 
 (defmethod transitions/transition-state events/control-adventure-choice
   [_ event {:keys [choice]} app-state]
-  (-> app-state
-      (update-in keypaths/adventure-choices
-                 merge (:value choice))))
-
-(defmethod effects/perform-effects events/control-adventure-choice
-  [_ _ {:keys [choice]} _ app-state]
-  #?(:cljs
-     (when-let [destination-message (:target-message choice)]
-       (apply history/enqueue-navigate destination-message)
-       (let [cookie    (get-in app-state storefront.keypaths/cookie)
-             adventure (get-in app-state keypaths/adventure)]
-         (cookie/save-adventure cookie adventure)))))
-
-(defmethod trackings/perform-track events/control-adventure-choice
-  [_ event {:keys [prompt buttons current-step choice]} app-state]
-  #?(:cljs
-     (stringer/track-event "adventure_question_answered"
-                           {:question_text   (if (string? prompt)
-                                               prompt
-                                               (string/join " " (filter string? prompt)))
-                            :answer_options  (mapv #(select-keys % [:text :value]) buttons)
-                            :current_step    current-step
-                            :answer_selected (:value choice)})))
+  (-> app-state (update-in keypaths/adventure-choices merge (:value choice))))
 
 (defmethod effects/perform-effects events/navigate-adventure
   [_ event {:keys [query-params]} app-state-before app-state]

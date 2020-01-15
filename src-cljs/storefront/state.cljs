@@ -81,16 +81,26 @@
   {:cash-balance-section-expanded?         false
    :store-credit-balance-section-expanded? false})
 
+(defn extract-adventure-choices
+  [cookie]
+  (-> (cookie-jar/retrieve-adventure cookie)
+      :choices
+      js/decodeURIComponent
+      js/JSON.parse
+      (js->clj :keywordize-keys true)))
+
 (defn initial-state []
   (let [cookie (cookie-jar/make-cookie)]
     {:cookie    cookie
      :modules   #{}
      ;; TODO(corey) why is this in 'adventure'?
-     :adventure {:affiliate-stylist-id
-                 (some-> cookie
-                         cookie-jar/retrieve-affiliate-stylist-id
-                         :affiliate-stylist-id
-                         spice/parse-int)}
+     :adventure (merge
+                 {:affiliate-stylist-id
+                  (some-> cookie
+                          cookie-jar/retrieve-affiliate-stylist-id
+                          :affiliate-stylist-id
+                          spice/parse-int)}
+                 (extract-adventure-choices cookie))
      :features  #{}
      :scheme    (apply str (drop-last (.-protocol js/location)))
 

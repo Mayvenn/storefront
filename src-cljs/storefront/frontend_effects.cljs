@@ -102,13 +102,6 @@
   (js/setTimeout #(scroll/scroll-selector-to-top "[data-ref=promo-code]") 0))
 
 (defmethod effects/perform-effects events/app-start [dispatch event args _ app-state]
-  (let [choices (-> (get-in app-state keypaths/cookie)
-                    cookie-jar/retrieve-adventure
-                    :choices
-                    js/decodeURIComponent
-                    js/JSON.parse
-                    (js->clj :keywordize-keys true))]
-    (messages/handle-message events/control-adventure-choice {:choice {:value choices}}))
   (quadpay/insert)
   (svg/insert-sprite)
   (convert/insert-tracking)
