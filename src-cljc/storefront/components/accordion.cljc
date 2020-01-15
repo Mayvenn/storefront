@@ -19,10 +19,6 @@
   {:title      title
    :paragraphs paragraphs})
 
-(defn section->html [{:keys [title paragraphs]}]
-  {:title      (component/html title)
-   :paragraphs (component/html paragraphs)})
-
 (defn- section-element
   [expanded? index title paragraphs section-click-event]
   (component/html
@@ -44,10 +40,7 @@
                   (for [[i paragraph] (map-indexed vector paragraphs)]
                     [:p.py2.h6 {:key (str i)} paragraph])])))]))
 
-(defcomponent component [{:keys [expanded-indices sections]} owner {:keys [section-click-event
-                                                                           static-sections]}]
+(defcomponent component [{:keys [expanded-indices sections]} owner {:keys [section-click-event]}]
   [:div
-   (for [[idx {:keys [title paragraphs]}] (map-indexed vector (if sections
-                                                                (map section->html sections)
-                                                                static-sections))]
+   (for [[idx {:keys [title paragraphs]}] (map-indexed vector sections)]
      ^:inline (section-element (contains? (set expanded-indices) idx) idx title paragraphs section-click-event))])
