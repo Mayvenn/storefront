@@ -33,16 +33,11 @@
           link-label))]
       [:div.content-4.dark-gray footnote]]]))
 
-(defn add-to-cart-background-atom
-  [color]
-  (when color
-    {:class color}))
-
 (defcomponent organism
   "Add to Cart organism"
   [data _ _]
   [:div.px3.pt3.pb1
-   (add-to-cart-background-atom (:add-to-cart.background/color data))
+   {:class "bg-cool-gray"}
    (add-to-cart-incentive-block-molecule data)
    (cta-molecule data)
    #?(:cljs

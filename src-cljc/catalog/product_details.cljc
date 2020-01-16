@@ -344,12 +344,10 @@
 
 (defn add-to-cart-query
   [data selected-sku sku-price]
-  (let [shop?                 (= "shop" (get-in data keypaths/store-slug))
-        sku-family            (-> selected-sku :hair/family first)
-        customizable-wig?     (and
-                               (experiments/wig-customization? data)
-                               (#{"360-wigs" "lace-front-wigs"} sku-family))
-        show-incentive-block? shop?]
+  (let [shop?                                (= "shop" (get-in data keypaths/store-slug))
+        sku-family                           (-> selected-sku :hair/family first)
+        mayvenn-install-incentive-families   #{"bundles" "closures" "frontals" "360-frontals"}
+        wig-customization-incentive-families #{"360-wigs" "lace-front-wigs"}]
     (cond-> {:cta/id          "add-to-cart"
              :cta/label       "Add to Cart"
              :cta/target      [events/control-add-sku-to-bag
@@ -360,24 +358,27 @@
              :quadpay/loaded? (get-in data keypaths/loaded-quadpay)
              :quadpay/price   sku-price}
 
-      show-incentive-block?
+      (and
+       shop?
+       (mayvenn-install-incentive-families sku-family))
       (merge
-       (if customizable-wig?
-         {:add-to-cart.background/color         "bg-cool-gray"
-          :add-to-cart.incentive-block/id       "add-to-cart-incentive-block"
-          :add-to-cart.incentive-block/callout  "✋Don't miss out on free Wig Customization"
-          :add-to-cart.incentive-block/footnote "*Wig Customization cannot be combined with other promotions"
-          :add-to-cart.incentive-block/message  (str "Get a free Wig Customization by a licensed stylist when "
-                                                     "you purchase a Virgin Lace Front Wig or Virgin 360 Wig.")}
-
-         {:add-to-cart.background/color            "bg-cool-gray"
-          :add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
-          :add-to-cart.incentive-block/footnote    "*Mayvenn Install cannot be combined with other promotions"
-          :add-to-cart.incentive-block/link-id     "learn-more-mayvenn-install"
-          :add-to-cart.incentive-block/link-label  "Learn more"
-          :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
-          :add-to-cart.incentive-block/message     (str "Save 10% & get a free Mayvenn Install when you "
-                                                        "purchase 3 bundles, closure, or frontals.* ")})))))
+       {:add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
+        :add-to-cart.incentive-block/footnote    "*Mayvenn Install cannot be combined with other promotions"
+        :add-to-cart.incentive-block/link-id     "learn-more-mayvenn-install"
+        :add-to-cart.incentive-block/link-label  "Learn more"
+        :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
+        :add-to-cart.incentive-block/message     (str "Save 10% & get a free Mayvenn Install when you "
+                                                      "purchase 3 bundles, closure, or frontals.* ")})
+      (and
+       shop?
+       (experiments/wig-customization? data)
+       (wig-customization-incentive-families sku-family))
+      (merge
+       {:add-to-cart.incentive-block/id       "add-to-cart-incentive-block"
+        :add-to-cart.incentive-block/callout  "✋Don't miss out on free Wig Customization"
+        :add-to-cart.incentive-block/footnote "*Wig Customization cannot be combined with other promotions"
+        :add-to-cart.incentive-block/message  (str "Get a free Wig Customization by a licensed stylist when "
+                                                   "you purchase a Virgin Lace Front Wig or Virgin 360 Wig.")}))))
 
 (defn query [data]
   (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
