@@ -148,7 +148,7 @@
        ui/spinner]
       [:div
        [:a.gray.medium.m1
-        (merge {:data-test (str "line-item-remove-" id)}
+        (merge {:data-test id}
                (apply utils/fake-href target))
         (svg/consolidated-trash-can {:width  "14px"
                                      :height "16px"})]])))
