@@ -341,7 +341,7 @@
 
 (defn picker-dialog
   "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
-  [{:keys [title items cell-component-fn product-alternative wrap?]}]
+  [{:keys [title items cell-component-fn wrap?]}]
   [:div.hide-on-tb-dt.z6.fixed.overlay.overflow-auto.bg-cool-gray
    {:key (str "picker-dialog-" title) :data-test "picker-dialog"}
    [:div.p3.content-1.proxima.bg-white.relative.border-bottom.border-gray
@@ -358,12 +358,7 @@
    [:div.py3.px1 ;; body
     (when wrap?
       {:class "flex flex-wrap"})
-    (mapv cell-component-fn items)]
-   (when-let [{:keys [link-attrs link-text lead-in]} product-alternative]
-     [:div.center.mt6
-      {:data-test "picker-product-alternative"}
-      [:div.h6 lead-in]
-      [:div.h4.medium.mt2 [:a.p-color.underline link-attrs link-text]]])])
+    (mapv cell-component-fn items)]])
 
 (defcomponent component
   [{:keys [navigation-event
@@ -372,7 +367,6 @@
            selections
            options
            sku-quantity
-           product-alternative
            color-picker-redesign?]
     :as   data} owner _]
   (let [color-option-fn (if color-picker-redesign? color-option-new color-option)]
@@ -391,8 +385,7 @@
                                                                   :color            item
                                                                   :checked?         (= (:hair/color selections)
                                                                                        (:option/slug item))
-                                                                  :sku-image        (:option/sku-swatch item)}))
-                                         :product-alternative product-alternative})
+                                                                  :sku-image        (:option/sku-swatch item)}))})
           :hair/length   (picker-dialog {:title               (get-in facets [selected-picker :facet/name])
                                          :items               (sort-by :option/order (get options selected-picker))
                                          :cell-component-fn   (fn [item]
@@ -403,8 +396,7 @@
                                                                   :checked?         (= (:hair/length selections)
                                                                                        (:option/slug item))
                                                                   :selected-picker  selected-picker
-                                                                  :item             item}))
-                                         :product-alternative product-alternative})
+                                                                  :item             item}))})
           :item/quantity (picker-dialog {:title               "Quantity"
                                          :items               (range 1 11)
                                          :cell-component-fn   (fn [quantity]
@@ -412,8 +404,7 @@
                                                                  {:key           (str "quantity-" quantity)
                                                                   :primary-label (str quantity)
                                                                   :checked?      (= quantity sku-quantity)
-                                                                  :quantity      quantity}))
-                                         :product-alternative product-alternative})
+                                                                  :quantity      quantity}))})
           nil)))
      (when (seq options)
        (picker-rows data))]))
@@ -436,13 +427,4 @@
      :selected-length        (get-in facets [:hair/length :facet/options (:hair/length selections)])
      :product-sold-out-style (when product-sold-out? {:class "gray"})
      :sku-quantity           (get-in data keypaths/browse-sku-quantity 1)
-     :product-alternative    (when (and
-                                    (= 1 (count (:hair/color options)))
-                                    (= selected-picker :hair/color)
-                                    (some family ["frontals" "bundles" "closures" "360-frontals"]))
-                               {:lead-in    "Want more color?"
-                                :link-text  "Browse Dyed Virgin"
-                                :link-attrs (utils/route-to events/navigate-category
-                                                            {:page/slug           "dyed-virgin-hair"
-                                                             :catalog/category-id "16"})})
      :navigation-event       events/navigate-product-details}))
