@@ -179,8 +179,9 @@
      (invisible-select
       {:value     (:hair/color selections)
        :on-change #(messages/handle-message events/control-product-detail-picker-option-select
-                                            {:selection :hair/color
-                                             :value     (.-value (.-target %))})
+                                            {:selection        :hair/color
+                                             :navigation-event navigation-event
+                                             :value            (.-value (.-target %))})
        :options   (map (fn [option]
                          [:option {:value (:option/slug option)
                                    :key   (str "color-" (:option/slug option))}
