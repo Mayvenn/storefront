@@ -412,8 +412,7 @@
 
 (defn query
   [data]
-  (let [family            (:hair/family (get-in data catalog.keypaths/detailed-product-selected-sku))
-        options           (get-in data catalog.keypaths/detailed-product-options)
+  (let [options           (get-in data catalog.keypaths/detailed-product-options)
         selected-picker   (get-in data catalog.keypaths/detailed-product-selected-picker)
         product-skus      (products/extract-product-skus data (products/current-product data))
         product-sold-out? (every? (comp not :inventory/in-stock?) product-skus)
@@ -422,7 +421,7 @@
     {:selected-picker        selected-picker
      :color-picker-redesign? (experiments/color-picker-redesign? data)
      :facets                 facets
-     :selections             (get-in data catalog.keypaths/detailed-product-selections)
+     :selections             selections
      :options                options
      :selected-color         (get-in facets [:hair/color :facet/options (:hair/color selections)])
      :selected-length        (get-in facets [:hair/length :facet/options (:hair/length selections)])
