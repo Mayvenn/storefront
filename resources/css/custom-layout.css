@@ -6,6 +6,10 @@
   overflow: hidden;
 }
 
+.stretch {
+    min-height: stretch;
+}
+
 @media (--on-tablet) {
   .max-960, .container { max-width: 720px; }
 }

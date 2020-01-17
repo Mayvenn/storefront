@@ -763,8 +763,7 @@
 
 (defcomponent template
   [{:keys [header footer popup promo-banner flash cart data nav-event]} _ _]
-  [:div.flex.flex-column {:style {:min-height    "100vh"
-                                  :margin-bottom "-1px"}}
+  [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
    #?(:cljs (popup/built-component popup nil))
 
    (when promo-banner

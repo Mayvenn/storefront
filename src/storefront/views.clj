@@ -19,7 +19,7 @@
   (def mayvenn-logo-splash "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 208 121\"><path fill=\"#000\" d=\"M104 62.855L81.778 31.513 104 .004l22.222 31.509L104 62.855zM208 121c-1.495-18.277-9.127-36.945-17.365-49.61-10.964-16.856-22.524-31.478-22.524-48.62 0-11.409 5.647-21.514 6.268-22.672L104.003 0H104h-.003L33.62.098c.622 1.158 6.269 11.263 6.269 22.673 0 17.141-11.12 32.059-22.524 48.62C9.413 82.937 1.495 102.722 0 121h52.664a53.858 53.858 0 01-2.475-16.177 53.626 53.626 0 0112.36-34.33L97.964 121h12.072l35.415-50.508a53.626 53.626 0 0112.36 34.331c0 5.638-.87 11.07-2.475 16.177H208z\"/><path clip-rule=\"evenodd\" fill-rule=\"evenodd\"</svg>")
 
 (def spinner-content
-  [:div {:style "height:100vh;"}
+  [:div.stretch
    [:div {:style "margin:auto; width:50%; position: relative; top: 50%; transform: translateY(-50%);"}
     (raw mayvenn-logo-splash)
     [:div {:style (str "height: 2em;"
@@ -245,8 +245,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
           (page/include-css (assets/path "/css/app.css"))]
          [:body.bg-cool-gray
           [:div.container
-           [:div.col-9-on-tb-dt.mx-auto.px2.flex.flex-column.items-center
-            {:style "min-height: 100vh;"}
+           [:div.col-9-on-tb-dt.mx-auto.px2.flex.flex-column.items-center.stretch
             [:img.py2 {:src (assets/path "/images/header_logo.svg")}]
             (ui/ucare-img {:class "mx-auto block"
                            :style "max-width: 80%"} "2c16b22e-2a8c-4ac6-83c8-78e8aff1d558")

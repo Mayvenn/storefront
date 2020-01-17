@@ -138,8 +138,7 @@
    (let [gray-background? (#{events/navigate-voucher-redeem events/navigate-voucher-redeemed} nav-event)
          v2-home?         (and (experiments/v2-homepage? data)
                                (#{events/navigate-home} nav-event))]
-     [:div.flex.flex-column {:style {:min-height    "100vh"
-                                     :margin-bottom "-1px"}}
+     [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
       [:div {:key "popup"}
        #?(:cljs (popup/built-component data nil))]
 
@@ -217,9 +216,8 @@
       [:div {:data-test (keypaths/->component-str nav-event)}
        [:div {:key "popup"}
         #?(:cljs (popup/built-component data nil))]
-       [:div.flex.content-stretch
-        {:style {:min-height    "100vh"
-                 :margin-bottom "-30px"}
+       [:div.flex.stretch
+        {:style {:margin-bottom "-30px"}
          :class "max-580 mx-auto relative"}
         ((main-component nav-event) data nil)]]
 

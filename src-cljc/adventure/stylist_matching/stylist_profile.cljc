@@ -257,8 +257,7 @@
 
 (defcomponent component
   [{:keys [header-data footer-data google-map-data] :as query} owner opts]
-  [:div.bg-white.col-12.mb6 {:style {:min-height    "100vh"
-                              :margin-bottom "-1px"}}
+  [:div.bg-white.col-12.mb6.stretch {:style {:margin-bottom "-1px"}}
    [:main
     (components.header/adventure-header header-data)
     [:div (component/build stylist-profile-card-component query nil)]

@@ -270,8 +270,7 @@
   (component/build component (query data) opts))
 
 (defn layout [app-state nav-event]
-  [:div.flex.flex-column {:style {:min-height    "100vh"
-                                  :margin-bottom "-1px"}}
+  [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
    #?(:cljs (popup/built-component app-state nil))
 
    ^:inline (promo-banner/built-static-organism app-state nil)
