@@ -15,9 +15,9 @@
 
 (defn category->seo [category-name description image-url]
   {:page/title            (str category-name " | Mayvenn")
-   :opengraph/title       (str category-name " - Free shipping. Free 30 day returns.")
+   :opengraph/title       (str category-name " - Free shipping. Free 30 day returns. Made with 100% virgin human hair.")
    :page.meta/description description
-   :opengraph/description (copy "Machine-wefted and backed by our 30 Day Quality Guarantee, our"
+   :opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our 30 Day Quality Guarantee, our"
                                 category-name
                                 "are the best quality products on the market and ships free!")
    ;; TODO make this a proper image and place under :selector/images
@@ -43,10 +43,9 @@
          "to achieve your desired look.")})
 
 (def wig-templates
-  {:page/title-template "%s%s| Mayvenn"
-   :page.meta/description-template
-   (copy "Mayvenn’s %s%sallow you to change up and achieve your desired look."
-         "Shop our collection of virgin hair wigs today.")})
+  {:opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our 30 Day Quality Guarantee, our"
+                                "Wigs"
+                                "can be customized to fit your unique look using the built-in combs and adjustable strap.")})
 
 (def texture-templates
   {:page/title-template "%s%s| Mayvenn"
@@ -502,10 +501,84 @@
                                                       :title/primary "Lace Front Wigs"}
                                    "ready-wigs"      {:order         0
                                                       :title/primary "Ready to Wear Wigs"}}}
-          ;; TODO: commented out the template because wigs presented a special challenge because their selected-facet-string
-          ;; contained the word "wigs" so the titles/descriptions kept showing redundant.  Revisit this once the wigs category
-          ;; page gets rebuilt.
-          #_wig-templates)])
+          wig-templates)
+   (merge {:catalog/category-id "24"
+           :footer/order        21
+           :dtc-footer/order    8
+           :header/order        1
+           :header/group        2
+
+           :category/new? true
+
+           :copy/title "Virgin Lace Front Wigs"
+           :page/slug  "virgin-lace-front-wigs"
+           :seo/title  "Virgin Lace Front Wigs"
+
+           :copy/description (copy "With the lace base in front only,"
+                                   "these are ideal for exploring new ways to part your hair."
+                                   "Ours are made with virgin lace & real human hair.")
+
+           :catalog/department  #{"hair"}
+           :hair/family         #{"lace-front-wigs"}
+           :selector/essentials [:hair/family :catalog/department]
+           :selector/electives  [:hair/texture :hair/origin]}
+          (category->seo "Virgin Lace Front Wigs: Natural Hair Lace Wigs"
+                         (copy "Mayvenn’s virgin lace front wigs allow you to achieve a new look in minutes"
+                               "& come in different variations such as Brazilian, Malaysian, straight,"
+                               "& deep wave.")
+                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/")
+          wig-templates)
+   (merge {:catalog/category-id "25"
+           :footer/order        22
+           :dtc-footer/order    9
+           :header/order        2
+           :header/group        2
+
+           :category/new? true
+
+           :copy/title "Ready to Wear Wigs"
+           :page/slug  "ready-wear-wigs"
+           :seo/title  "Ready to Wear Wigs"
+
+           :copy/description (copy "Made of authentic and high-quality human hair,"
+                                   "ready to wear wigs are a quick,"
+                                   "convenient way to change up your look instantly.")
+
+           :catalog/department    #{"hair"}
+           :hair/family           #{"ready-wigs"}
+           :selector/essentials   [:hair/family :catalog/department]
+           :selector/electives    [:hair/texture :hair/origin]}
+          (category->seo "Ready to Wear Wigs"
+                         (copy "Mayvenn’s ready to wear human hair wigs allow you to achieve a new look in minutes"
+                               "& come in different variations."
+                               "Crafted with a customizable lace hairline, clips, and an adjustable strap.")
+                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/")
+          wig-templates)
+   (merge {:catalog/category-id "26"
+           :footer/order        23
+           :dtc-footer/order    10
+           :header/order        3
+           :header/group        2
+
+           :category/new? true
+
+           :copy/title "Virgin 360 Wigs"
+           :page/slug  "virgin-360-wigs"
+           :seo/title  "Virgin 360 Wigs"
+
+           :copy/description (copy "Ideal for ponytails, these wigs are denser & fuller."
+                                   "360 wigs have lace around the entire crown of your head with a cap in the middle.")
+
+           :catalog/department    #{"hair"}
+           :hair/family           #{"360-wigs"}
+           :selector/essentials   [:hair/family :catalog/department]
+           :selector/electives    [:hair/texture :hair/origin]}
+          (category->seo "Virgin 360 Wigs"
+                         (copy "Mayvenn’s virgin 360 wigs allow you to achieve a new look in minutes"
+                               "& come in different variations such as Brazilian, Malaysian, straight,"
+                               "& deep wave.")
+                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/")
+          wig-templates)])
 
 (def mayvenn-install-eligible
   [{:catalog/category-id            "23"
@@ -675,7 +748,7 @@
                      :alt         "Clip-Ins"}}
 
      :footer/order     40
-     :dtc-footer/order 8
+     :dtc-footer/order 11
      :header/group     2
      :header/order     4
      :seo/sitemap      true}
@@ -698,7 +771,7 @@
            :direct-to-details/slug "50g-straight-tape-ins"
 
            :footer/order     50
-           :dtc-footer/order 9
+           :dtc-footer/order 12
            :header/group     2
            :header/order     5
            :page/redirect?   true
