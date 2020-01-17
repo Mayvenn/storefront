@@ -2,6 +2,7 @@
   (:require [bidi.bidi :as bidi]
             [catalog.categories :as categories]
             catalog.keypaths
+            [catalog.facets :as facets]
             [catalog.product-details :as product-details]
             [catalog.products :as products]
             [catalog.skuers :as skuers]
@@ -28,6 +29,7 @@
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.skus :as skus]
             [storefront.assets :as assets]
             [storefront.backend-api :as api]
             [storefront.config :as config]
@@ -577,6 +579,15 @@
                                                            (:catalog/category-id category))
                                                  (html-response render-ctx)))))))
 
+(defn determine-sku-id [data product route-sku-id]
+  (let [valid-product-skus (product-details/get-valid-product-skus product (get-in data keypaths/v2-skus))
+        valid-sku-ids      (set (map :catalog/sku-id valid-product-skus))]
+    (or (when (seq route-sku-id) (valid-sku-ids route-sku-id)) ;; Find the sku that matches the one in the uri
+        (:catalog/sku-id ;; Fallback to epitome
+         (skus/determine-epitome
+          (facets/color-order-map (get-in data keypaths/v2-facets))
+          valid-product-skus)))))
+
 (defn render-product-details [{:keys [environment] :as render-ctx}
                               data
                               {:keys [params] :as req}
@@ -585,7 +596,7 @@
   (if (contains? discontinued-products product-id)
     (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
     (when-let [product (get-in data (conj keypaths/v2-products product-id))]
-      (let [sku-id         (product-details/determine-sku-id data product (:SKU params))
+      (let [sku-id         (determine-sku-id data product (:SKU params))
             sku            (get-in data (conj keypaths/v2-skus sku-id))
             canonical-slug (:page/slug product)
             redirect?      (and canonical-slug

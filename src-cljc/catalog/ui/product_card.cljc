@@ -41,14 +41,14 @@
 
 (defn query
   [data product]
-  (let [skus       (vals (select-keys (get-in data keypaths/v2-skus)
-                                      (:selector/skus product)))
-        facets     (get-in data keypaths/v2-facets)
-        selections (get-in data catalog.keypaths/category-selections)
+  (let [skus                (vals (select-keys (get-in data keypaths/v2-skus)
+                                               (:selector/skus product)))
+        facets              (get-in data keypaths/v2-facets)
+        category-selections (get-in data catalog.keypaths/category-selections)
 
         color-order-map           (facets/color-order-map facets)
         in-stock-skus             (selector/match-all {}
-                                                      (assoc selections :inventory/in-stock? #{true})
+                                                      (assoc category-selections :inventory/in-stock? #{true})
                                                       skus)
         skus-to-search            (or (not-empty in-stock-skus) skus)
         product-detail-selections (get-in data catalog.keypaths/detailed-product-selections)
@@ -74,9 +74,10 @@
                                     {:catalog/product-id (:catalog/product-id product)
                                      :page/slug          product-slug
                                      :query-params       {:SKU (:catalog/sku-id
-                                                                (sku-best-matching-selections product-detail-selections
-                                                                                              skus
-                                                                                              color-order-map))}}]
+                                                                (sku-best-matching-selections
+                                                                 (merge product-detail-selections category-selections)
+                                                                 skus
+                                                                 color-order-map))}}]
      :product-card-details/id      (str "product-card-details-" product-slug)
      :product-card-details/content (if (empty? in-stock-skus)
                                      ["Out of stock"]

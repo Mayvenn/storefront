@@ -71,17 +71,15 @@
     [:span.h4 "Currently out of stock"]))
 
 (def sold-out-button
-  (ui/button-large-primary {:on-click       utils/noop-callback
-                            :data-test      "sold-out"
-                            :disabled?      true
-                            :disabled-class "bg-gray"}
+  (ui/button-large-primary {:on-click  utils/noop-callback
+                            :data-test "sold-out"
+                            :disabled? true}
                            "Sold Out"))
 
 (def unavailable-button
-  (ui/button-large-primary {:on-click       utils/noop-callback
-                            :data-test      "unavailable"
-                            :disabled?      true
-                            :disabled-class "bg-gray"}
+  (ui/button-large-primary {:on-click  utils/noop-callback
+                            :data-test "unavailable"
+                            :disabled? true}
                            "Unavailable"))
 
 (defn ^:private handle-scroll [component e]
@@ -319,9 +317,11 @@
                         :page/slug          (:page/slug product)
                         :query-params       {:SKU (:catalog/sku-id sku)}}]})))
 
-(defn find-carousel-images [product product-skus selected-sku]
+(defn find-carousel-images [product product-skus selections selected-sku]
   (->> (selector/match-all {}
-                           (or selected-sku (first product-skus))
+                           (or selected-sku
+                               selections
+                               (first product-skus))
                            (:selector/images product))
        (selector/match-all {:selector/strict? true}
                            {:use-case #{"carousel"}
@@ -386,7 +386,9 @@
         product         (products/current-product data)
         product-skus    (products/extract-product-skus data product)
         facets          (facets/by-slug data)
-        carousel-images (find-carousel-images product product-skus selected-sku)
+        carousel-images (find-carousel-images product product-skus
+                                              (select-keys selections [:hair/color])
+                                              selected-sku)
         options         (get-in data catalog.keypaths/detailed-product-options)
         ugc             (ugc-query product selected-sku data)
         sku-price       (:sku/price selected-sku)
@@ -446,24 +448,26 @@
        vals))
 
 (defn determine-sku-id
-  ([app-state product]
-   (determine-sku-id app-state product nil))
-  ([app-state product new-sku-id]
-   (let [prev-sku-id        (get-in app-state catalog.keypaths/detailed-product-selected-sku-id)
-         valid-product-skus (get-valid-product-skus product (get-in app-state keypaths/v2-skus))
-         facets             (get-in app-state storefront.keypaths/v2-facets)
-         epitome            (skus/determine-epitome (facets/color-order-map facets)
-                                                    valid-product-skus)
-         valid-sku-ids      (set (map :catalog/sku-id valid-product-skus))]
-     (or (when (seq new-sku-id)
-           (valid-sku-ids new-sku-id))
-         (valid-sku-ids prev-sku-id)
-         (:catalog/sku-id epitome)))))
+  [app-state product]
+  (let [selected-sku-id    (get-in app-state catalog.keypaths/detailed-product-selected-sku-id)
+        valid-product-skus (get-valid-product-skus product (get-in app-state keypaths/v2-skus))
+        valid-sku-ids      (set (map :catalog/sku-id valid-product-skus))
+        direct-load?       (zero? (count (get-in app-state storefront.keypaths/navigation-undo-stack)))]
+    ;; When given a sku-id use it
+    ;; Else on direct load use the epitome
+    ;; otherwise return nil to indicate an unavailable combination of items
+     (or (valid-sku-ids selected-sku-id)
+         (when direct-load?
+           (:catalog/sku-id
+            (skus/determine-epitome
+             (facets/color-order-map (get-in app-state storefront.keypaths/v2-facets))
+             valid-product-skus))))))
 
 (defn url-points-to-invalid-sku? [selected-sku query-params]
-  (and (:catalog/sku-id selected-sku)
-       (not= (:catalog/sku-id selected-sku)
-             (:SKU query-params))))
+  (boolean
+   (and (:catalog/sku-id selected-sku)
+        (not= (:catalog/sku-id selected-sku)
+              (:SKU query-params)))))
 
 #?(:cljs
    (defn fetch-product-details [app-state product-id]
@@ -471,7 +475,8 @@
                        {:catalog/product-id product-id}
                        (fn [response]
                          (messages/handle-message events/api-success-v2-products-for-details response)
-                         (messages/handle-message events/viewed-sku {:sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)})))
+                         (when-let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)]
+                           (messages/handle-message events/viewed-sku {:sku selected-sku}))))
 
      (if-let [current-product (products/current-product app-state)]
        (if (auth/permitted-product? app-state current-product)
@@ -496,9 +501,7 @@
         product      (products/product-by-id app-state product-id)
         facets       (facets/by-slug app-state)
         product-skus (products/extract-product-skus app-state product)]
-    (sku-selector/product-options facets
-                                  product
-                                  product-skus)))
+    (sku-selector/product-options facets product product-skus)))
 
 (defn ^:private assoc-selections
   "Selections are ultimately a function of three inputs:
@@ -549,21 +552,22 @@
                           (determine-sku-from-selections app-state))
         options      (generate-product-options app-state)]
     (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-selected-sku
-                  selected-sku)
-        (update-in catalog.keypaths/detailed-product-selections
-                   merge {selection value})
+        (assoc-in catalog.keypaths/detailed-product-selected-sku selected-sku)
+        (update-in catalog.keypaths/detailed-product-selections merge {selection value})
         (assoc-in catalog.keypaths/detailed-product-options options))))
 
 (defmethod effects/perform-effects events/control-product-detail-picker-option-select
-  [_ event {:keys [selection value navigation-event]} _ app-state]
+  [_ event {:keys [navigation-event]} _ app-state]
   (let [sku-id-for-selection (-> app-state
                                  (get-in catalog.keypaths/detailed-product-selected-sku)
                                  :catalog/sku-id)
-        params-with-sku-id   (-> app-state
-                                 products/current-product
-                                 (select-keys [:catalog/product-id :page/slug])
-                                 (assoc :query-params {:SKU sku-id-for-selection}))]
+        params-with-sku-id   (cond-> app-state
+                               :always
+                               products/current-product
+                               :always
+                               (select-keys [:catalog/product-id :page/slug])
+                               (some? sku-id-for-selection)
+                               (assoc :query-params {:SKU sku-id-for-selection}))]
     (effects/redirect navigation-event params-with-sku-id :sku-option-select)
     #?(:cljs (scroll/enable-body-scrolling))))
 
@@ -597,9 +601,11 @@
      (let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)]
        (if (url-points-to-invalid-sku? selected-sku query-params)
          (effects/redirect origin-nav-event
-                           {:catalog/product-id product-id
-                            :page/slug          slug
-                            :query-params       {:SKU (:catalog/sku-id selected-sku)}})
+                           (merge
+                            {:catalog/product-id product-id
+                             :page/slug          slug}
+                            (when selected-sku
+                              {:query-params {:SKU (:catalog/sku-id selected-sku)}})))
          (do
            (when-let [album-keyword (some->> (conj keypaths/v2-products
                                                    product-id
@@ -613,6 +619,9 @@
    (defmethod effects/perform-effects events/navigate-product-details
      [_ event args _ app-state]
      (messages/handle-message events/initialize-product-details (assoc args :origin-nav-event event))))
+
+;; When a sku for combination is not found return nil sku -> 'Unavailable'
+;; When no sku id is given in the query parameters we must find and use an epitome
 
 (defmethod transitions/transition-state events/api-success-v2-products-for-details
   ;; for pre-selecting skus by url

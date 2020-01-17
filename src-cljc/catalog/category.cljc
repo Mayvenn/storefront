@@ -117,6 +117,9 @@
                       [:div.pyp2 title]]))
                  electives))])]))))
 
+(defn- hacky-fix-of-bad-slugs-on-facets [slug]
+  (string/replace (str slug) #"#" ""))
+
 (defn filter-panel [facets represented-options selections open-panel]
   [:div
    [:div.content-1.proxima.py6.pl10.pr1
@@ -135,7 +138,7 @@
                represented? (contains? (open-panel represented-options) slug)]
            [:div.py1.mr4
             {:key       (str "filter-option-" slug)
-             :data-test (str "filter-option-" slug)
+             :data-test (str "filter-option-" (hacky-fix-of-bad-slugs-on-facets slug))
              :disabled  (not represented?)}
             (ui/check-box {:label     [:span
                                        (when (categories/new-facet? [open-panel slug])
