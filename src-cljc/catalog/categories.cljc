@@ -61,7 +61,7 @@
            :legacy/named-search-slug "closures"
            :catalog/department       #{"hair"}
            :hair/family              #{"closures"}
-           :hair/color.process       #{"natural"}
+           :hair/color.process       #{"natural" "dyed"}
            :hair/source              #{"virgin"}
            :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives       [:hair/origin :hair/texture :hair/base-material]
@@ -90,7 +90,7 @@
 
            :catalog/department  #{"hair"}
            :hair/family         #{"360-frontals"}
-           :hair/color.process  #{"natural"}
+           :hair/color.process  #{"natural" "dyed"}
            :hair/source         #{"virgin"}
            :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives  [:hair/origin :hair/texture :hair/base-material]
@@ -121,7 +121,7 @@
 
            :catalog/department  #{"hair"}
            :hair/family         #{"frontals"}
-           :hair/color.process  #{"natural"}
+           :hair/color.process  #{"natural" "dyed"}
            :header/order        2
            :header/group        1
            :footer/order        12
@@ -210,7 +210,7 @@
 
            :catalog/department  #{"hair"}
            :hair/texture        #{"straight"}
-           :hair/color.process  #{"natural"}
+           :hair/color.process  #{"natural" "dyed"}
            :hair/source         #{"virgin"}
            :selector/essentials [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives  [:hair/family :hair/origin :hair/base-material]
@@ -244,7 +244,7 @@
 
            :catalog/department  #{"hair"}
            :hair/texture        #{"yaki-straight"}
-           :hair/color.process  #{"natural"}
+           :hair/color.process  #{"natural" "dyed"}
            :hair/source         #{"virgin"}
            :selector/essentials [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives  [:hair/family :hair/origin :hair/base-material]
@@ -279,7 +279,7 @@
            :legacy/named-search-slug "kinky-straight"
            :catalog/department       #{"hair"}
            :hair/texture             #{"kinky-straight"}
-           :hair/color.process       #{"natural"}
+           :hair/color.process       #{"natural" "dyed"}
            :hair/source              #{"virgin"}
            :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/base-material]
@@ -308,7 +308,7 @@
            :legacy/named-search-slug "body-wave"
            :catalog/department       #{"hair"}
            :hair/texture             #{"body-wave"}
-           :hair/color.process       #{"natural"}
+           :hair/color.process       #{"natural" "dyed"}
            :hair/source              #{"virgin"}
            :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/base-material]
@@ -339,7 +339,7 @@
            :legacy/named-search-slug "loose-wave"
            :catalog/department       #{"hair"}
            :hair/texture             #{"loose-wave"}
-           :hair/color.process       #{"natural"}
+           :hair/color.process       #{"natural" "dyed"}
            :hair/source              #{"virgin"}
            :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/base-material]
@@ -372,7 +372,7 @@
            :legacy/named-search-slug "water-wave"
            :catalog/department       #{"hair"}
            :hair/texture             #{"water-wave"}
-           :hair/color.process       #{"natural"}
+           :hair/color.process       #{"natural" "dyed"}
            :hair/source              #{"virgin"}
            :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/base-material]
@@ -402,7 +402,7 @@
            :legacy/named-search-slug "deep-wave"
            :catalog/department       #{"hair"}
            :hair/texture             #{"deep-wave"}
-           :hair/color.process       #{"natural"}
+           :hair/color.process       #{"natural" "dyed"}
            :hair/source              #{"virgin"}
            :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/base-material]
@@ -434,7 +434,7 @@
            :legacy/named-search-slug "curly"
            :catalog/department       #{"hair"}
            :hair/texture             #{"curly"}
-           :hair/color.process       #{"natural"}
+           :hair/color.process       #{"natural" "dyed"}
            :hair/source              #{"virgin"}
            :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/base-material]
