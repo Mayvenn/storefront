@@ -733,7 +733,7 @@
                              "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair."
                              "Ditch the tracks for a clip-in experience that is truly seamless.")
 
-     :page/title "Clip-In Extensions: Human Hair Clip-In Extensions | Mayvenn"
+     :page/title "Clip-In Hair Extensions: Human Hair Clip-In Extensions | Mayvenn"
      :page/slug  "seamless-clip-ins"
      :page.meta/description (copy "Get the hair of your dreams with our seamless clip-in hair extensions."
                                   "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair.")
