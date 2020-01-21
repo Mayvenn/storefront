@@ -543,6 +543,7 @@
            :copy/description (copy "Made of authentic and high-quality human hair,"
                                    "ready to wear wigs are a quick,"
                                    "convenient way to change up your look instantly.")
+           :subcategory/image-uri "//ucarecdn.com/a4f7ad94-3c2c-41aa-be4d-94d9d83b1602/-/format/auto/-/resize/120px/"
 
            :catalog/department    #{"hair"}
            :hair/family           #{"ready-wigs"}

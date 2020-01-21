@@ -11,8 +11,10 @@
               [storefront.history :as history]])
    [storefront.component :as component :refer [defcomponent defdynamic-component]]
    [catalog.categories :as categories]
+   [catalog.icp :as icp]
    [storefront.assets :as assets]
    [storefront.components.ui :as ui]
+   [storefront.accessors.experiments :as experiments]
    [storefront.events :as events]
    [storefront.transitions :as transitions]
    [storefront.keypaths :as keypaths]
@@ -296,7 +298,9 @@
 
 (defn ^:export built-component
   [data opts]
-  (component/build component (query data) opts))
+  (if (experiments/icp? data)
+    (icp/page data opts)
+    (component/build component (query data) opts)))
 
 (defmethod transitions/transition-state events/navigate-category
   [_ event {:keys [catalog/category-id query-params]} app-state]

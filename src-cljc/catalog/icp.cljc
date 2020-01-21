@@ -1,10 +1,14 @@
 (ns catalog.icp
   (:require
    catalog.categories
+   [storefront.assets :as assets]
    [storefront.component :as component :refer [defcomponent]]
    [storefront.components.ui :as ui]
    [storefront.events :as events]
-   [storefront.platform.component-utils :as utils]))
+   [storefront.platform.component-utils :as utils]
+   [catalog.categories :as categories]
+   [spice.core :as spice]
+   [storefront.keypaths :as keypaths]))
 
 (defcomponent ^:private header-organism
   [_ _ _]
@@ -43,7 +47,9 @@
 (defcomponent ^:private drill-category-organism
   [{:drill-category/keys [id title description image target action-id action-label]} _ _]
   (when id
-    [:div.flex
+    [:div.py3.flex
+     {:key       id
+      :data-test id}
      [:div.col-3
       [:div.bg-blue.mr3 image]]
      [:div.col-9
@@ -58,40 +64,27 @@
   [{:drill-category-list/keys [values]} _ _]
   (when (seq values)
     [:div.py8.px4
-     (mapv #(component/build drill-category-organism %)
+     (mapv #(component/build drill-category-organism %
+                             {:key (:drill-category/id %)})
            values)]))
 (defn ^:private drill-category-list-query
-  [category]
-  {:drill-category-list/values [{:drill-category/id           "ready-wear-wigs"
-                                 :drill-category/title        "ready to wear wigs"
-                                 :drill-category/description  (str "Made of authentic and high-quality human hair, "
-                                                                   "ready to wear wigs are a quick, "
-                                                                   "convenient way to change up your look instantly.
-")
-                                 :drill-category/image        "ready-wigs-img"
-                                 :drill-category/target       [events/navigate-home]
-                                 :drill-category/action-id    "drill-category-action-ready-to-wear-wigs"
-                                 :drill-category/action-label "Shop Ready To Wear Wigs"}
-                                {:drill-category/id           "ready-wear-wigs"
-                                 :drill-category/title        "ready to wear wigs"
-                                 :drill-category/description  (str "Made of authentic and high-quality human hair, "
-                                                                   "ready to wear wigs are a quick, "
-                                                                   "convenient way to change up your look instantly.
-")
-                                 :drill-category/image        "ready-wigs-img"
-                                 :drill-category/target       [events/navigate-home]
-                                 :drill-category/action-id    "drill-category-action-ready-to-wear-wigs"
-                                 :drill-category/action-label "Shop Ready To Wear Wigs"}
-                                {:drill-category/id           "ready-wear-wigs"
-                                 :drill-category/title        "ready to wear wigs"
-                                 :drill-category/description  (str "Made of authentic and high-quality human hair, "
-                                                                   "ready to wear wigs are a quick, "
-                                                                   "convenient way to change up your look instantly.
-")
-                                 :drill-category/image        "ready-wigs-img"
-                                 :drill-category/target       [events/navigate-home]
-                                 :drill-category/action-id    "drill-category-action-ready-to-wear-wigs"
-                                 :drill-category/action-label "Shop Ready To Wear Wigs"}]})
+  [_ categories]
+  (let [ready-wear-wigs        (categories/id->category 25 categories)
+        virgin-lace-front-wigs (categories/id->category 24 categories)
+        virgin-360-wigs        (categories/id->category 26 categories)]
+    {:drill-category-list/values
+     (mapv
+      (fn drill-category-query [category]
+        {:drill-category/id           (:page/slug category)
+         :drill-category/title        (:copy/title category)
+         :drill-category/description  (:copy/description category)
+         :drill-category/image        (when-let [icon-url (:subcategory/image-uri category)]
+                                        [:div.mt4 [:img {:src (assets/path icon-url)}]])
+         :drill-category/target       [events/navigate-category
+                                       (select-keys category [:catalog/category-id])]
+         :drill-category/action-id    (str "drill-category-action-" (:page/slug category))
+         :drill-category/action-label (str "Shop " (:copy/title category))})
+      [ready-wear-wigs virgin-lace-front-wigs virgin-360-wigs])}))
 
 (defcomponent ^:private template
   "This lays out different ux pieces to form a cohesive ux experience"
@@ -109,10 +102,12 @@
 
 (defn ^:export page
   [app-state opts]
-  (let [category (catalog.categories/current-category app-state)]
+  (let [category   (catalog.categories/current-category app-state)
+        categories (get-in app-state keypaths/categories)]
     (component/build template
-                     {:header              {}
-                      :footer              {}
-                      :category-hero       (category-hero-query category)
-                      :drill-category-list (drill-category-list-query category)}
+                     (spice/spy
+                      {:header              {}
+                       :footer              {}
+                       :category-hero       (category-hero-query category)
+                       :drill-category-list (drill-category-list-query category categories)})
                      opts)))

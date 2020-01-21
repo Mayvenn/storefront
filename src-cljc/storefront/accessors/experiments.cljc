@@ -55,6 +55,10 @@
 (defn ^:private display-feature? [data feature]
   (contains? (set (get-in data keypaths/features)) feature))
 
+(defn ^:private enabled?
+  [feature data]
+  (display-feature? data feature))
+
 (defn aladdin-experience?
   [data]
   (= "aladdin" (get-in data keypaths/store-experience)))
@@ -99,3 +103,6 @@
 (defn wig-customization?
   [data]
   (display-feature? data "wig-customization"))
+
+(def icp? (partial enabled? "clowns"))
+
