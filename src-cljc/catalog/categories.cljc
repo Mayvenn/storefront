@@ -212,6 +212,7 @@
            :hair/texture        #{"straight"}
            :hair/color.process  #{"natural" "dyed"}
            :hair/source         #{"virgin"}
+           :hair/family         #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives  [:hair/family :hair/origin :hair/color :hair/base-material]
            :copy/description    (copy "For those who want it given to them"
@@ -246,6 +247,7 @@
            :hair/texture        #{"yaki-straight"}
            :hair/color.process  #{"natural" "dyed"}
            :hair/source         #{"virgin"}
+           :hair/family         #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives  [:hair/family :hair/origin :hair/color :hair/base-material]
            :copy/description    (copy "Tired of having to break out the hot"
@@ -281,6 +283,7 @@
            :hair/texture             #{"kinky-straight"}
            :hair/color.process       #{"natural" "dyed"}
            :hair/source              #{"virgin"}
+           :hair/family              #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/color :hair/base-material]
            :copy/description         (copy "Blending is a breeze with our Kinky Straight"
@@ -310,6 +313,7 @@
            :hair/texture             #{"body-wave"}
            :hair/color.process       #{"natural" "dyed"}
            :hair/source              #{"virgin"}
+           :hair/family              #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/color :hair/base-material]
            :copy/description         (copy "Step into the spotlight with our collection of luscious Body Wave hair."
@@ -341,6 +345,7 @@
            :hair/texture             #{"loose-wave"}
            :hair/color.process       #{"natural" "dyed"}
            :hair/source              #{"virgin"}
+           :hair/family              #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/color :hair/base-material]
            :copy/description         (copy "For hair that holds a curl beautifully,"
@@ -374,6 +379,7 @@
            :hair/texture             #{"water-wave"}
            :hair/color.process       #{"natural" "dyed"}
            :hair/source              #{"virgin"}
+           :hair/family              #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/color :hair/base-material]
            :copy/description         (copy "Ride the lush, carefree waves of the bundles,"
@@ -404,6 +410,7 @@
            :hair/texture             #{"deep-wave"}
            :hair/color.process       #{"natural" "dyed"}
            :hair/source              #{"virgin"}
+           :hair/family              #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/color :hair/base-material]
            :copy/description         (copy "Reigning supreme in versatility, the Deep Wave hair collection features"
@@ -436,6 +443,7 @@
            :hair/texture             #{"curly"}
            :hair/color.process       #{"natural" "dyed"}
            :hair/source              #{"virgin"}
+           :hair/family              #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/color :hair/base-material]
            :copy/description         (copy "Let your bold, beautiful curls take center stage! Our curly hair collection is a tight,"

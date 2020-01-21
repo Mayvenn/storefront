@@ -260,7 +260,9 @@
   (let [category                   (categories/current-category data)
         selections                 (get-in data catalog.keypaths/category-selections)
         products-matching-category (selector/match-all {:selector/strict? true}
-                                                       (skuers/essentials category)
+                                                       (merge
+                                                        (skuers/electives category)
+                                                        (skuers/essentials category))
                                                        (vals (get-in data keypaths/v2-products)))
         products-matching-criteria (selector/match-all {:selector/strict? true}
                                                        (merge
