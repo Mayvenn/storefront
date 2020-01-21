@@ -128,9 +128,8 @@
 
 (defn prefill-guest-email-address [app-state]
   (update-in app-state keypaths/checkout-guest-email
-             #(or (not-empty %1) %2 %3)
-             (get-in app-state keypaths/order-user-email)
-             (get-in app-state keypaths/captured-email)))
+             #(or (not-empty %1) %2)
+             (get-in app-state keypaths/order-user-email)))
 
 (defn clear-recently-added-skus [app-state nav-event]
   (if (not= nav-event events/navigate-cart)
@@ -397,18 +396,14 @@
   (assoc-in app-state keypaths/order nil))
 
 (defmethod transition-state events/api-success-auth [_ event {:keys [user order]} app-state]
-  (let [signed-in-app-state (-> app-state
-                                (sign-in-user user)
-                                (clear-fields keypaths/sign-up-email
-                                              keypaths/sign-up-password
-                                              keypaths/sign-in-email
-                                              keypaths/sign-in-password
-                                              keypaths/reset-password-password
-                                              keypaths/reset-password-token))
-        opted-in?           (= "opted-in" (get-in signed-in-app-state keypaths/email-capture-session))]
-    (cond-> signed-in-app-state
-      (not opted-in?)
-      (assoc-in keypaths/email-capture-session "signed-in"))))
+  (-> app-state
+      (sign-in-user user)
+      (clear-fields keypaths/sign-up-email
+                    keypaths/sign-up-password
+                    keypaths/sign-in-email
+                    keypaths/sign-in-password
+                    keypaths/reset-password-password
+                    keypaths/reset-password-token)))
 
 (defmethod transition-state events/api-success-forgot-password [_ event args app-state]
   (clear-fields app-state keypaths/forgot-password-email))
@@ -609,24 +604,6 @@
 (defmethod transition-state events/talkable-offer-shown [_ event args app-state]
   (assoc-in app-state keypaths/pending-talkable-order nil))
 
-(defmethod transition-state events/control-email-captured-dismiss [_ event args app-state]
-  (assoc-in app-state keypaths/popup nil))
-
-(defmethod transition-state events/control-email-captured-submit [_ event args app-state]
-  (let [email (get-in app-state keypaths/captured-email)]
-    (if (or (> 3 (count email)) (not (string/includes? email "@")))
-      (assoc-in app-state keypaths/errors {:field-errors  {["email"] [{:path ["email"] :long-message "Email is invalid"}]}
-                                           :error-code    "invalid-input"
-                                           :error-message "Oops! Please fix the errors below."})
-      (-> app-state
-          clear-field-errors
-          (assoc-in keypaths/popup nil)
-          (assoc-in keypaths/email-capture-session "opted-in")))))
-
-(defmethod transition-state events/popup-show-email-capture
-  [_ event args app-state]
-  (assoc-in app-state keypaths/popup :email-capture-quadpay))
-
 (defmethod transition-state events/sign-out [_ event args app-state]
   (-> app-state
       (assoc-in keypaths/v2-dashboard state/initial-dashboard-state)
@@ -661,10 +638,6 @@
 (defmethod transition-state events/module-loaded [_ _ {:keys [module-name]} app-state]
   (when module-name
     (update app-state :modules (fnil conj #{}) module-name)))
-
-(defmethod transition-state events/visitor-identified
-  [_ _ args app-state]
-  (assoc-in app-state keypaths/email-capture-session "opted-in"))
 
 (defmethod transition-state events/set-confetti-mode
   [_ _ {mode :mode} app-state]

@@ -159,10 +159,6 @@
 (defpath control-focus)
 (defpath control-blur)
 
-(defpath control-email-captured)
-(defpath control-email-captured-dismiss)
-(defpath control-email-captured-submit)
-
 (defpath control-design-system-popup-show)
 (defpath control-design-system-popup-dismiss)
 
@@ -433,12 +429,10 @@
 
 (defpath popup-hide)
 (defpath popup-show)
-(defpath popup-show-email-capture)
 (defpath popup-show-free-install)
 (defpath popup-show-v2-homepage)
 (defpath control-v2-homepage-popup-dismiss)
 (defpath popup-show-adventure-free-install)
-(defpath popup-show-pick-a-stylist-email-capture)
 (defpath control-adventure-free-install-dismiss)
 (defpath popup-show-consolidated-cart-free-install)
 (defpath control-consolidated-cart-free-install-dismiss)
@@ -449,8 +443,6 @@
 (defpath sign-out)
 
 (defpath viewed-sku)
-
-(defpath determine-and-show-popup)
 
 (defpath faq-section-selected)
 
@@ -518,9 +510,6 @@
 (defpath control-adventure-select-stylist-pre-purchase)
 (defpath control-adventure-select-stylist-post-purchase)
 
-(defpath control-pick-a-stylist-email-capture-submit)
-(defpath control-pick-a-stylist-email-capture-dismiss)
-
 (defpath adventure-address-component-mounted)
 (defpath control-adventure-stylist-salon-address-clicked)
 (defpath control-adventure-stylist-phone-clicked)
@@ -539,9 +528,6 @@
 (defpath adventure-stylist-search-results-post-purchase-displayed)
 (defpath adventure-stylist-results-delay-completed)
 (defpath adventure-stylist-results-wait-resolved)
-
-(defpath visitor-identified)
-(defpath adventure-visitor-identified)
 
 (defpath api-success-remove-servicing-stylist)
 

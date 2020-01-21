@@ -34,9 +34,7 @@
                     (empty? adventure-choices)
                     (not (and (= events/navigate-adventure-match-stylist event)
                               (some-> query-params :utm_source (string/includes? "toadventure")))))
-           (history/enqueue-navigate events/navigate-home nil))
-         (when (boolean (:em_hash query-params))
-           (messages/handle-message events/adventure-visitor-identified))))))
+           (history/enqueue-navigate events/navigate-home nil))))))
 
 (defmethod transitions/transition-state events/api-success-fetch-matched-stylists
   [_ _ {:keys [stylists]} app-state]
@@ -59,15 +57,6 @@
               {:latitude  (:latitude query)
                :longitude (:longitude query)
                :radius    (:radius query)})))
-
-(defmethod effects/perform-effects events/adventure-visitor-identified
-  [_ _ _ _ app-state]
-  #?(:cljs
-     (cookie/save-email-capture-session (get-in app-state storefront.keypaths/cookie) "opted-in")))
-
-(defmethod transitions/transition-state events/adventure-visitor-identified
-  [_ event {:keys [query-params]} app-state]
-  (assoc-in app-state storefront.keypaths/email-capture-session "opted-in"))
 
 (def ^:private slug->video
   {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}

@@ -135,7 +135,6 @@
 (def product-details (conj ui :product-details))
 (def product-details-url-sku-code (conj product-details :url-sku-code))
 
-(def captured-email (conj ui :captured-email))
 (def phone-capture-session (conj ui :phone-capture-session))
 
 (def account (conj ui :account))
@@ -290,8 +289,6 @@
 
 (def facebook-email-denied (conj ui :facebook-email-denied))
 
-(def email-capture-session (conj ui :email-capture-session))
-(def dismissed-pick-a-stylist-email-capture (conj ui :dismissed-pick-a-stylist-email-capture))
 (def dismissed-free-install (conj ui :dismissed-free-install))
 
 (def experiments [:experiments])

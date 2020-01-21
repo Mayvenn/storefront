@@ -156,11 +156,9 @@
 
           :expanded-commission-order-id #{nil}
 
-          :email-capture-session  (cookie-jar/retrieve-email-capture-session cookie)
           :phone-capture-session  (cookie-jar/get-phone-capture-session cookie)
           :dismissed-free-install (cookie-jar/get-dismissed-free-install cookie)
 
-          :dismissed-pick-a-stylist-email-capture (cookie-jar/retrieve-dismissed-pick-a-stylist-email-capture cookie)
           :sign-in                                {:email    ""
                                                    :password ""}
           :sign-up                                {:email    ""

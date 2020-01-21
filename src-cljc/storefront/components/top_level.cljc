@@ -8,9 +8,7 @@
                        [storefront.config :as config]
                        [storefront.history :as history]
                        ;; popups, must be required to load properly
-                       adventure.components.email-capture
                        adventure.components.program-details-popup
-                       storefront.components.email-capture
                        storefront.components.share-your-cart
                        storefront.components.v2-homepage-popup])
             #?@(:clj

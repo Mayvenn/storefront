@@ -134,15 +134,11 @@
     (and shop-or-aladdin? on-deals-page?)))
 
 (defmethod effects/perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
-  (messages/handle-message events/determine-and-show-popup)
   (when (redirect-from-deals-page? app-state)
     (effects/redirect events/navigate-shop-by-look {:album-keyword :all-bundle-sets})))
 
 (def popup-dismiss-events
-  {:email-capture-quadpay          events/control-email-captured-dismiss
-   :email-capture                  events/control-email-captured-dismiss
-   :pick-a-stylist-email-capture   events/control-pick-a-stylist-email-capture-dismiss
-   :adventure-free-install         events/control-adventure-free-install-dismiss
+  {:adventure-free-install         events/control-adventure-free-install-dismiss
    :consolidated-cart-free-install events/control-consolidated-cart-free-install-dismiss
    :v2-homepage                    events/control-v2-homepage-popup-dismiss
    :share-cart                     events/control-popup-hide
@@ -262,15 +258,10 @@
       (cookie-jar/save-affiliate-stylist-id (get-in app-state keypaths/cookie)
                                             {:affiliate-stylist-id affiliate-stylist-id}))
 
-    (when (boolean (:em_hash query-params))
-      (messages/handle-message events/adventure-visitor-identified))
-
     (when-not module-load?
       (when (get-in app-state keypaths/popup)
         (messages/handle-message events/popup-hide))
       (quadpay/hide-modal))
-
-    (messages/handle-message events/determine-and-show-popup)
 
     (let [utm-params (some-> query-params
                              (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
@@ -289,9 +280,7 @@
                (not= event events/navigate-force-set-password))
       (effects/redirect events/navigate-force-set-password))
 
-    (exception-handler/refresh)
-
-    (popup/touch-email-capture-session app-state)))
+    (exception-handler/refresh)))
 
 (defmethod effects/perform-effects events/navigate-home
   [_ _ _ _ app-state]
@@ -358,13 +347,6 @@
   (when (not (and (get-in app-state keypaths/user-token)
                   (get-in app-state keypaths/user-store-id)))
     (effects/redirect events/navigate-sign-in)))
-
-(defmethod effects/perform-effects events/control [_ _ args _ app-state]
-  (popup/touch-email-capture-session app-state))
-
-(defmethod effects/perform-effects events/control-email-captured-submit [_ _ args _ app-state]
-  (when (empty? (get-in app-state keypaths/errors))
-    (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "opted-in")))
 
 (defmethod effects/perform-effects events/app-restart [_ _ _ _]
   (.reload js/window.location))
@@ -938,15 +920,7 @@
   (api/get-promotions (get-in app-state keypaths/api-cache)
                       (first (get-in app-state keypaths/order-promotion-codes))))
 
-(defmethod effects/perform-effects events/control-email-captured [_ event args _ app-state]
-  (scroll/enable-body-scrolling))
-
-(defmethod effects/perform-effects events/control-email-captured-dismiss [_ event args _ app-state]
-  (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "dismissed"))
-
 (defmethod effects/perform-effects events/sign-out [_ event args app-state-before app-state]
-  (when (not= "opted-in" (popup/email-capture-session app-state))
-    (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "dismissed"))
   (messages/handle-message events/clear-order)
   (cookie-jar/clear-account (get-in app-state keypaths/cookie))
   (messages/handle-message events/control-menu-collapse-all)
@@ -974,10 +948,6 @@
     (when (and (not already-loaded-module?)
                (= for-navigation-event evt))
       (messages/handle-message evt (assoc args :navigate/caused-by :module-load)))))
-
-(defmethod effects/perform-effects events/visitor-identified
-  [_ _ _ _ app-state]
-  (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "opted-in"))
 
 (defmethod effects/perform-effects events/external-redirect-typeform-recommend-stylist
   [_ _ _ _ _ _]

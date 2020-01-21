@@ -59,18 +59,6 @@
    :optional-keys [:storefront/utm-source :storefront/utm-medium :storefront/utm-campaign :storefront/utm-content :storefront/utm-term]
    :required-keys []})
 
-(def email-capture-session
-  {:domain        nil
-   :max-age       nil ;; determined dynamically
-   :optional-keys []
-   :required-keys [:popup-session]})
-
-(def dismissed-pick-a-stylist-email-capture
-  {:domain        nil
-   :max-age       thirty-minutes
-   :optional-keys []
-   :required-keys [:dismissed-pick-a-stylist-email-capture]})
-
 (def telligent-session
   {:domain        (root-domain)
    :max-age       nil ;; determined dynamically
@@ -122,7 +110,6 @@
 (defn clear-account [cookie]
   (doseq [spec account-specs]
     (clear-cookie spec cookie)))
-(def clear-email-capture-session (partial clear-cookie email-capture-session))
 (def retrieve-login (partial retrieve user))
 (def retrieve-current-order (partial retrieve order))
 (def retrieve-pending-promo-code (partial retrieve pending-promo))
@@ -134,12 +121,6 @@
        {:completed-order-number :number
         :completed-order-token  :token})
       (update :token js/decodeURIComponent)))
-
-(def retrieve-email-capture-session (comp :popup-session (partial retrieve email-capture-session)))
-
-(def retrieve-dismissed-pick-a-stylist-email-capture
-  (comp :dismissed-pick-a-stylist-email-capture
-        (partial retrieve dismissed-pick-a-stylist-email-capture)))
 
 (def ^:private session-id-length 24)
 
@@ -166,19 +147,6 @@
                cookie
                (set/rename-keys order {:number :completed-order-number
                                        :token  :completed-order-token})))
-
-(defn save-email-capture-session [cookie value]
-  (let [max-age (condp = value
-                  "signed-in" four-weeks
-                  "opted-in"  (* 200 one-year)
-                  "dismissed" (* 60 30))]
-    (.set cookie :popup-session value max-age "/" (:domain email-capture-session) config/secure?)))
-
-(defn save-dismissed-pick-a-stylist-email-capture
-  [cookie]
-  (save-cookie dismissed-pick-a-stylist-email-capture
-               cookie
-               {:dismissed-pick-a-stylist-email-capture "1"}))
 
 (defn save-phone-capture-session [cookie]
   (.set cookie "phone-popup-session" "opted-in" (* 200 one-year) "/" nil config/secure?))

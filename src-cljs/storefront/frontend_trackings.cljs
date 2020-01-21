@@ -56,8 +56,7 @@
 
 (defmethod perform-track events/app-start [_ event args app-state]
   (when (get-in app-state keypaths/user-id)
-    (stringer/identify (get-in app-state keypaths/user)
-                       events/visitor-identified)))
+    (stringer/identify (get-in app-state keypaths/user))))
 
 (defn- nav-was-selecting-bundle-option? [app-state]
   (when-let [prev-nav-message (:navigation-message (first (get-in app-state keypaths/navigation-undo-stack)))]
@@ -210,8 +209,7 @@
 
 (defmethod perform-track events/order-placed [_ event order app-state]
   (stringer/identify {:id    (-> order :user :id)
-                      :email (-> order :user :email)}
-                     events/visitor-identified)
+                      :email (-> order :user :email)})
   (stringer/track-event "checkout-complete" (stringer-order-completed order))
   (let [order-total (:total order)
 
@@ -256,8 +254,7 @@
                                                    :line-item-skuers line-item-skuers}))))
 
 (defmethod perform-track events/api-success-auth [_ event args app-state]
-  (stringer/identify (get-in app-state keypaths/user)
-                     events/visitor-identified))
+  (stringer/identify (get-in app-state keypaths/user)))
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow user] :as args} app-state]
   (stringer/track-event "sign_in" {:type flow})
@@ -272,31 +269,6 @@
 (defmethod perform-track events/enable-feature [_ event {:keys [feature experiment]} app-state]
   (stringer/track-event "experiment-joined" {:name experiment
                                              :variation feature}))
-
-(defn track-email-capture-capture [app-state {:keys [email]}]
-  (stringer/identify {:email email}
-                     events/visitor-identified)
-  (stringer/track-event "email_capture-capture"
-                        {:email            email
-                         :test-variations  (get-in app-state keypaths/features)
-                         :store-slug       (get-in app-state keypaths/store-slug)
-                         :store-experience (get-in app-state keypaths/store-experience)})
-  (google-tag-manager/track-email-capture-capture {:email email}))
-
-(defmethod perform-track events/control-email-captured-submit [_ event _ app-state]
-  (when (empty? (get-in app-state keypaths/errors))
-    (facebook-analytics/subscribe)
-    (let [captured-email (get-in app-state keypaths/captured-email)]
-      (track-email-capture-capture app-state {:email captured-email}))))
-
-(defn track-email-capture-deploy []
-  (stringer/track-event "email_capture-deploy" {}))
-
-(defmethod perform-track events/popup-show-email-capture [_ events args app-state]
-  (track-email-capture-deploy))
-
-(defmethod perform-track events/control-email-captured-dismiss [_ events args app-state]
-  (stringer/track-event "email_capture-dismiss" {}))
 
 (defn- checkout-initiate [app-state flow]
   (let [order-number (get-in app-state keypaths/order-number)]
@@ -314,8 +286,7 @@
   (convert/track-conversion "paypal-checkout"))
 
 (defmethod perform-track events/api-success-update-order-update-guest-address [_ event {:keys [order]} app-state]
-  (stringer/identify (:user order)
-                     events/visitor-identified)
+  (stringer/identify (:user order))
   (stringer/track-event "checkout-identify_guest")
   (stringer/track-event "checkout-address_enter" {:order_number (:number order)}))
 

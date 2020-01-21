@@ -38,11 +38,6 @@
           :storeSlug           store-slug
           :usedPromotionCodes  used-promotion-codes}))
 
-(defn track-email-capture-capture
-  [{:keys [email]}]
-  (track {:event        "emailCapture"
-          :emailAddress email}))
-
 (defn track-checkout-initiate
   [{:keys [number]}]
   (track {:event       "checkoutInitiate"
