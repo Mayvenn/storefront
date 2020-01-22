@@ -113,9 +113,8 @@
   (let [category   (catalog.categories/current-category app-state)
         categories (get-in app-state keypaths/categories)]
     (component/build template
-                     (spice/spy
-                      {:header              {}
-                       :footer              {}
-                       :category-hero       (category-hero-query category)
-                       :drill-category-list (drill-category-list-query category categories)})
+                     {:header              {}
+                      :footer              {}
+                      :category-hero       (category-hero-query category)
+                      :drill-category-list (drill-category-list-query category categories)}
                      opts)))
