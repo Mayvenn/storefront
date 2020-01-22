@@ -105,4 +105,3 @@
   (display-feature? data "wig-customization"))
 
 (def icp? (partial enabled? "clowns"))
-

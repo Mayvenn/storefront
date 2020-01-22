@@ -45,21 +45,23 @@
     "Get free customization with qualifying purchases.")})
 
 (defcomponent ^:private drill-category-organism
-  [{:drill-category/keys [id title description image target action-id action-label]} _ _]
+  [{:drill-category/keys [id title description image-url target action-id action-label]} _ _]
   (when id
     [:div.py3.flex
      {:key       id
       :data-test id}
-     [:div.col-3
-      [:div.bg-blue.mr3 image]]
-     [:div.col-9
+     [:div.mt1.mr3
+      [:img {:src   (assets/path image-url)
+             :width 62}]]
+     [:div
       [:div.title-2.proxima.shout title]
       [:div.content-2.proxima.py1 description]
       (when action-id
         (ui/button-small-underline-primary
-         {:data-test action-id
-          :on-click  (apply utils/send-event-callback target)}
+         (assoc (apply utils/route-to target)
+                :data-test  action-id)
          action-label))]]))
+
 (defcomponent ^:private drill-category-list-organism
   [{:drill-category-list/keys [values]} _ _]
   (when (seq values)
@@ -78,13 +80,18 @@
         {:drill-category/id           (:page/slug category)
          :drill-category/title        (:copy/title category)
          :drill-category/description  (:copy/description category)
-         :drill-category/image        (when-let [icon-url (:subcategory/image-uri category)]
-                                        [:div.mt4 [:img {:src (assets/path icon-url)}]])
-         :drill-category/target       [events/navigate-category
-                                       (select-keys category [:catalog/category-id])]
+         :drill-category/image-url    (:subcategory/image-uri category)
+         :drill-category/target       [events/navigate-category category]
          :drill-category/action-id    (str "drill-category-action-" (:page/slug category))
          :drill-category/action-label (str "Shop " (:copy/title category))})
       [ready-wear-wigs virgin-lace-front-wigs virgin-360-wigs])}))
+
+(def ^:private divider
+  [:div
+   {:style {:background-image    "url('//ucarecdn.com/73db5b08-860e-4e6c-b052-31ed6d951f00/-/resize/x24/')"
+            :background-position "center center"
+            :background-repeat   "repeat-x"
+            :height              "24px"}}])
 
 (defcomponent ^:private template
   "This lays out different ux pieces to form a cohesive ux experience"
@@ -93,6 +100,7 @@
    (component/build header-organism header)
    (component/build category-hero-organism category-hero)
    (component/build drill-category-list-organism drill-category-list)
+   divider
    ;;    [:div "Categories list from selectors"]
    ;;    [:div "Products paginated list from selectors"]
    ;;    [:div "Educational content"]

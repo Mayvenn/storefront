@@ -525,6 +525,7 @@
            :copy/description (copy "With the lace base in front only,"
                                    "these are ideal for exploring new ways to part your hair."
                                    "Ours are made with virgin lace & real human hair.")
+           :subcategory/image-uri "//ucarecdn.com/71dcdd17-f9cc-456f-b763-2c1c047c30b4/-/format/auto/-/resize/124x/"
 
            :catalog/department  #{"hair"}
            :hair/family         #{"lace-front-wigs"}
@@ -551,7 +552,7 @@
            :copy/description (copy "Made of authentic and high-quality human hair,"
                                    "ready to wear wigs are a quick,"
                                    "convenient way to change up your look instantly.")
-           :subcategory/image-uri "//ucarecdn.com/a4f7ad94-3c2c-41aa-be4d-94d9d83b1602/-/format/auto/-/resize/120px/"
+           :subcategory/image-uri "//ucarecdn.com/a4f7ad94-3c2c-41aa-be4d-94d9d83b1602/-/format/auto/-/resize/124x/"
 
            :catalog/department    #{"hair"}
            :hair/family           #{"ready-wigs"}
@@ -571,12 +572,13 @@
 
            :category/new? true
 
-           :copy/title "Virgin 360 Wigs"
+           :copy/title "Virgin 360 Lace Wigs"
            :page/slug  "virgin-360-wigs"
-           :seo/title  "Virgin 360 Wigs"
+           :seo/title  "Virgin 360 Lace Wigs"
 
            :copy/description (copy "Ideal for ponytails, these wigs are denser & fuller."
                                    "360 wigs have lace around the entire crown of your head with a cap in the middle.")
+           :subcategory/image-uri "//ucarecdn.com/fe34e6e9-8927-4b62-94ac-91b37f0a137f/-/format/auto/-/resize/124x/"
 
            :catalog/department    #{"hair"}
            :hair/family           #{"360-wigs"}
