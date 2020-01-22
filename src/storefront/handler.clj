@@ -588,35 +588,56 @@
           (facets/color-order-map (get-in data keypaths/v2-facets))
           valid-product-skus)))))
 
+(def dyed-virgin-redirects
+  {"89"  {:catalog/product-id "12" :page/slug "indian-straight-bundles"}
+   "90"  {:catalog/product-id "16" :page/slug "indian-straight-lace-closures"}
+   "93"  {:catalog/product-id "50" :page/slug "indian-straight-lace-frontals"}
+   "94"  {:catalog/product-id "9" :page/slug "brazilian-straight-bundles"}
+   "95"  {:catalog/product-id "8" :page/slug "malaysian-body-wave-bundles"}
+   "96"  {:catalog/product-id "22" :page/slug "brazilian-loose-wave-bundles"}
+   "97"  {:catalog/product-id "30" :page/slug "brazilian-deep-wave-bundles"}
+   "98"  {:catalog/product-id "4" :page/slug "brazilian-straight-lace-closures"}
+   "99"  {:catalog/product-id "3" :page/slug "malaysian-body-wave-lace-closures"}
+   "100" {:catalog/product-id "33" :page/slug "brazilian-loose-wave-lace-closures"}
+   "101" {:catalog/product-id "11" :page/slug "brazilian-deep-wave-lace-closures"}})
+
 (defn render-product-details [{:keys [environment] :as render-ctx}
                               data
                               {:keys [params] :as req}
                               {:keys [catalog/product-id
                                       page/slug]}]
-  (if (contains? discontinued-products product-id)
-    (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
-    (when-let [product (get-in data (conj keypaths/v2-products product-id))]
-      (let [sku-id         (determine-sku-id data product (:SKU params))
-            sku            (get-in data (conj keypaths/v2-skus sku-id))
-            canonical-slug (:page/slug product)
-            redirect?      (and canonical-slug
-                                (or (not= slug canonical-slug)
-                                    (and sku-id (not sku))))
-            permitted?     (auth/permitted-product? data product)]
-        (cond
-          (not permitted?)
-          (redirect-to-home environment req)
+  (let [dyed-virgin-redirect (get dyed-virgin-redirects product-id)]
+    (cond
+      (contains? discontinued-products product-id)
+      (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
 
-          redirect?
-          (let [path (products/path-for-sku product-id canonical-slug sku-id)]
-            (util.response/redirect path))
+      dyed-virgin-redirect
+      (util.response/redirect (path-for req events/navigate-product-details (merge params dyed-virgin-redirect))
+                              :moved-permanently)
 
-          :else
-          (html-response render-ctx
-                         (-> data
-                             (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
-                             (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
-                             (assoc-in catalog.keypaths/detailed-product-id product-id))))))))
+      :else
+      (when-let [product (get-in data (conj keypaths/v2-products product-id))]
+        (let [sku-id         (determine-sku-id data product (:SKU params))
+              sku            (get-in data (conj keypaths/v2-skus sku-id))
+              canonical-slug (:page/slug product)
+              redirect?      (and canonical-slug
+                                  (or (not= slug canonical-slug)
+                                      (and sku-id (not sku))))
+              permitted?     (auth/permitted-product? data product)]
+          (cond
+            (not permitted?)
+            (redirect-to-home environment req)
+
+            redirect?
+            (let [path (products/path-for-sku product-id canonical-slug sku-id)]
+              (util.response/redirect path))
+
+            :else
+            (html-response render-ctx
+                           (-> data
+                               (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
+                               (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
+                               (assoc-in catalog.keypaths/detailed-product-id product-id)))))))))
 
 ;;TODO Move to wrap set catalog
 ;;TODO join queries!!!

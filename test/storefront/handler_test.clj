@@ -174,7 +174,7 @@
                                                         :body   (generate-string {:products []})})))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
-          (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/99-red-balloons"))]
+          (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/999-red-balloons"))]
             (is (= 404 (:status resp))))))))
   (testing "when whitelisted for discontinued"
     (let [[_ storeback-handler] (with-requests-chan (routes

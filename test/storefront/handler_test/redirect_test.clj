@@ -457,3 +457,16 @@
   (is-redirected-from-freeinstall-to-shop "/adv/shop/shop-by-look/bar" "/shop/look")
   (is-redirected-from-freeinstall-to-shop "/cart" "/cart")
   (is-redirected-from-freeinstall-to-shop "/all-other/pages/on-freeinstall" "/"))
+
+(deftest redirects-dyed-virgin-to-virgin-pdp
+  (testing "When a request comes for a dyed virgin pdp, the user is redirected to the virgin pdp"
+    (with-services {}
+      (with-handler handler
+        (let [resp (handler (mock/request :get "https://shop.mayvenn.com/products/89-dyed-virgin-indian-straight-bundles"))]
+          (is (= 301 (:status resp)) (pr-str resp))
+          (is (= "https://shop.mayvenn.com/products/12-indian-straight-bundles" (get-in resp [:headers "Location"]))))))
+    (with-services {}
+      (with-handler handler
+        (let [resp (handler (mock/request :get "https://shop.mayvenn.com/products/94-dyed-virgin-straight-brazilian-bundles"))]
+          (is (= 301 (:status resp)) (pr-str resp))
+          (is (= "https://shop.mayvenn.com/products/9-brazilian-straight-bundles" (get-in resp [:headers "Location"]))))))))
