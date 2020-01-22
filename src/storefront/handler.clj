@@ -604,7 +604,7 @@
           (facets/color-order-map (get-in data keypaths/v2-facets))
           valid-product-skus)))))
 
-(def dyed-virgin-redirects
+(def dyed-virgin-product-id->virgin-product
   {"89"  {:catalog/product-id "12" :page/slug "indian-straight-bundles"}
    "90"  {:catalog/product-id "16" :page/slug "indian-straight-lace-closures"}
    "93"  {:catalog/product-id "50" :page/slug "indian-straight-lace-frontals"}
@@ -622,13 +622,13 @@
                               {:keys [params] :as req}
                               {:keys [catalog/product-id
                                       page/slug]}]
-  (let [dyed-virgin-redirect (get dyed-virgin-redirects product-id)]
+  (let [virgin-product (get dyed-virgin-product-id->virgin-product product-id)]
     (cond
       (contains? discontinued-products product-id)
       (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
 
-      dyed-virgin-redirect
-      (util.response/redirect (path-for req events/navigate-product-details (merge params dyed-virgin-redirect))
+      virgin-product
+      (util.response/redirect (path-for req events/navigate-product-details (merge params virgin-product))
                               :moved-permanently)
 
       :else
