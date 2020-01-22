@@ -122,7 +122,7 @@
      (condp <= rating
        1    :whole
        0.75 :three-quarter
-       0.50 :half-star
+       0.50 :half
        :empty))))
 
 (defn svg-star-rating
