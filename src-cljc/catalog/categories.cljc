@@ -577,8 +577,8 @@
                                      "curly"          {:title/primary "Curly"
                                                        :order         8}}}])
 
-(def stylist-exclusives
-  [(merge {:catalog/category-id       "14"
+(def the-only-stylist-exclusive
+  (merge {:catalog/category-id       "14"
            :auth/requires             #{:stylist}
            :footer/order              30
            :header/order              30
@@ -598,7 +598,10 @@
                                             "Free 30 day returns. Made with 100% virgin human hair.")
            :page.meta/description     (copy "")
            :opengraph/description     (copy "")
-           :seo/sitemap               false})])
+           :seo/sitemap               false}))
+
+(def stylist-exclusives
+  [the-only-stylist-exclusive])
 
 (def virgin-hair-nav-roots
   [(merge {:catalog/category-id   "15"
@@ -678,29 +681,33 @@
      :seo/sitemap      true}
     clip-in-tape-in-templates)])
 
+(def the-only-tape-in-category
+  (merge {:catalog/category-id "22"
+          :catalog/department  #{"hair"}
+          :category/new?       false
+
+          :hair/family         #{"tape-ins"}
+          :selector/electives  [:hair/color :hair/weight :hair/length]
+          :selector/essentials [:catalog/department :hair/family]
+
+          :copy/title "Tape-Ins"
+
+          :page/slug "tape-ins"
+
+          :direct-to-details/id     "111"
+          :direct-to-details/slug   "50g-straight-tape-ins"
+          :direct-to-details/sku-id "TAPE-S-1-20"
+
+          :footer/order     50
+          :dtc-footer/order 12
+          :header/group     2
+          :header/order     5
+          :page/redirect?   true
+          :seo/sitemap      false}
+         clip-in-tape-in-templates))
+
 (def tape-ins-category
-  [(merge {:catalog/category-id "22"
-           :catalog/department  #{"hair"}
-           :category/new?       false
-
-           :hair/family         #{"tape-ins"}
-           :selector/electives  [:hair/color :hair/weight :hair/length]
-           :selector/essentials [:catalog/department :hair/family]
-
-           :copy/title "Tape-Ins"
-
-           :page/slug "tape-ins"
-
-           :direct-to-details/id   "111"
-           :direct-to-details/slug "50g-straight-tape-ins"
-
-           :footer/order     50
-           :dtc-footer/order 12
-           :header/group     2
-           :header/order     5
-           :page/redirect?   true
-           :seo/sitemap      false}
-          clip-in-tape-in-templates)])
+  [the-only-tape-in-category])
 
 (def menu-categories
   (concat virgin-hair

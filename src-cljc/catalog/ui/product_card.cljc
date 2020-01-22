@@ -28,7 +28,8 @@
                                   (selector/match-all {:selector/complete? true} criteria skus)))
         [selections
          {:hair/color (:hair/color selections)}
-         {:hair/length (:hair/length selections)}]))
+         {:hair/length (:hair/length selections)}
+         {}]))
 
 (defn product-options
   [facets skus facet-slug]

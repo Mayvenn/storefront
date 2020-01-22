@@ -452,12 +452,18 @@
   (let [selected-sku-id    (get-in app-state catalog.keypaths/detailed-product-selected-sku-id)
         valid-product-skus (get-valid-product-skus product (get-in app-state keypaths/v2-skus))
         valid-sku-ids      (set (map :catalog/sku-id valid-product-skus))
-        direct-load?       (zero? (count (get-in app-state storefront.keypaths/navigation-undo-stack)))]
+        direct-load?       (zero? (count (get-in app-state keypaths/navigation-undo-stack)))
+        direct-to-details? (contains? (->> (get-in app-state keypaths/categories)
+                                           (keep :direct-to-details/sku-id)
+                                           set)
+                                      (or (:SKU (:query-params (get-in app-state storefront.keypaths/navigation-args)))
+                                          selected-sku-id))]
     ;; When given a sku-id use it
     ;; Else on direct load use the epitome
     ;; otherwise return nil to indicate an unavailable combination of items
      (or (valid-sku-ids selected-sku-id)
-         (when direct-load?
+         (when (or direct-load?
+                   direct-to-details?)
            (:catalog/sku-id
             (skus/determine-epitome
              (facets/color-order-map (get-in app-state storefront.keypaths/v2-facets))

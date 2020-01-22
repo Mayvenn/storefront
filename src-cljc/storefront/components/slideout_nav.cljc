@@ -15,7 +15,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [ui.promo-banner :as promo-banner]))
+            [ui.promo-banner :as promo-banner]
+            [catalog.categories :as categories]))
 
 (defn burger-header [cart]
   (component/html
@@ -192,12 +193,12 @@
                                    :catalog/category-id "12"})
      :data-test  "menu-shop-closures"
      :content    [(caretize-content "Closures & Frontals")]}
-    {:link-attrs (utils/route-to events/navigate-category
-                                 {:page/slug           "wigs"
-                                  :catalog/category-id "13"})
-     :data-test  "menu-shop-wigs"
+    {:link-attrs  (utils/route-to events/navigate-category
+                                  {:page/slug           "wigs"
+                                   :catalog/category-id "13"})
+     :data-test   "menu-shop-wigs"
      :new-content "NEW"
-     :content    [[:span.medium.flex-auto "Wigs"]]}
+     :content     [[:span.medium.flex-auto "Wigs"]]}
     {:link-attrs (utils/route-to events/navigate-category
                                  {:page/slug           "seamless-clip-ins"
                                   :catalog/category-id "21"})
@@ -205,16 +206,18 @@
      :content    [[:span.medium.flex-auto "Clip-Ins"]]}
     {:link-attrs (utils/route-to events/navigate-product-details
                                  {:page/slug          "50g-straight-tape-ins"
-                                  :catalog/product-id "111"})
+                                  :catalog/product-id "111"
+                                  :query-params       {:SKU (:direct-to-details/sku-id categories/the-only-tape-in-category)}})
      :data-test  "menu-shop-tape-ins"
      :content    [[:span.medium.flex-auto "Tape-Ins"]]}]))
 
 (def stylist-exclusive-row
   {:link-attrs (utils/route-to events/navigate-product-details
                                {:page/slug          "rings-kits"
-                                :catalog/product-id "49"})
-   :data-test "menu-stylist-products"
-   :content [[:span.medium.flex-auto "Stylist Exclusives"]]})
+                                :catalog/product-id "49"
+                                :query-params       {:SKU (:direct-to-details/sku-id categories/the-only-stylist-exclusive)}})
+   :data-test  "menu-stylist-products"
+   :content    [[:span.medium.flex-auto "Stylist Exclusives"]]})
 
 (defn content-rows [_]
   [{:link-attrs (utils/route-to events/navigate-content-guarantee)
