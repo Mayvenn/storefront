@@ -564,20 +564,36 @@
                        (path-for req events/navigate-category (categories id)))]
       (util.response/redirect path :moved-permanently))))
 
+
+(def dyed-virgin-category-id->virgin-category
+  {"16" {:catalog/category-id "2"
+         :page/slug           "virgin-straight"}
+   "17" {:catalog/category-id "0"
+         :page/slug           "virgin-closures"}
+   "18" {:catalog/category-id "1"
+         :page/slug           "virgin-frontals"}})
+
 (defn render-category
   [render-ctx data req {:keys [catalog/category-id page/slug]}]
-  (if (contains? discontinued-categories category-id)
-    (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
-    (let [categories (get-in data keypaths/categories)]
-      (when-let [category (categories/id->category category-id categories)]
-        (cond
-          (not= slug (:page/slug category)) (-> (path-for req events/navigate-category category)
-                                                (util.response/redirect :moved-permanently))
-          (:page/redirect? category)        (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
-          :else                             (->> (assoc-in data
-                                                           keypaths/current-category-id
-                                                           (:catalog/category-id category))
-                                                 (html-response render-ctx)))))))
+  (let [virgin-category (get dyed-virgin-category-id->virgin-category category-id)]
+    (cond
+      (contains? discontinued-categories category-id)
+      (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
+
+      virgin-category
+      (util.response/redirect (path-for req events/navigate-category virgin-category) 302)
+
+      :else
+      (let [categories (get-in data keypaths/categories)]
+        (when-let [category (categories/id->category category-id categories)]
+          (cond
+            (not= slug (:page/slug category)) (-> (path-for req events/navigate-category category)
+                                                  (util.response/redirect :moved-permanently))
+            (:page/redirect? category)        (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
+            :else                             (->> (assoc-in data
+                                                             keypaths/current-category-id
+                                                             (:catalog/category-id category))
+                                                   (html-response render-ctx))))))))
 
 (defn determine-sku-id [data product route-sku-id]
   (let [valid-product-skus (product-details/get-valid-product-skus product (get-in data keypaths/v2-skus))

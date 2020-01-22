@@ -470,3 +470,21 @@
         (let [resp (handler (mock/request :get "https://shop.mayvenn.com/products/94-dyed-virgin-straight-brazilian-bundles"))]
           (is (= 301 (:status resp)) (pr-str resp))
           (is (= "https://shop.mayvenn.com/products/9-brazilian-straight-bundles" (get-in resp [:headers "Location"]))))))))
+
+(deftest redirects-dyed-virgin-categories-to-corresponding-virgin-categories
+  (testing "When a request comes for a dyed virgin category, the user is redirected to the virgin category page"
+    (with-services {}
+      (with-handler handler
+        (let [resp (handler (mock/request :get "https://shop.mayvenn.com/categories/16-dyed-virgin-hair"))]
+          (is (= 302 (:status resp)) (pr-str resp))
+          (is (= "https://shop.mayvenn.com/categories/2-virgin-straight" (get-in resp [:headers "Location"]))))))
+    (with-services {}
+      (with-handler handler
+        (let [resp (handler (mock/request :get "https://shop.mayvenn.com/categories/17-dyed-virgin-closures"))]
+          (is (= 302 (:status resp)) (pr-str resp))
+          (is (= "https://shop.mayvenn.com/categories/0-virgin-closures" (get-in resp [:headers "Location"]))))))
+    (with-services {}
+      (with-handler handler
+        (let [resp (handler (mock/request :get "https://shop.mayvenn.com/categories/18-dyed-virgin-frontals"))]
+          (is (= 302 (:status resp)) (pr-str resp))
+          (is (= "https://shop.mayvenn.com/categories/1-virgin-frontals" (get-in resp [:headers "Location"])))))) ))
