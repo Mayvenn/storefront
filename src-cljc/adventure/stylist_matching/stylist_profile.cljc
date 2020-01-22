@@ -105,78 +105,74 @@
                                        "production" "mayvenn"
                                        "diva-acceptance")]
     (when stylist
-      (cond-> {:header-data (cond-> {:header.title/id               "adventure-title"
-                                     :header.title/primary          "Meet Your Stylist"
-                                     :header.back-navigation/id     "adventure-back"
-                                     :header.back-navigation/back   (first undo-history)
-                                     :header.back-navigation/target [events/navigate-adventure-find-your-stylist]}
-                              (not post-purchase?)
-                              (merge {:header.cart/id    "mobile-cart"
-                                      :header.cart/value (:order.items/quantity current-order)
-                                      :header.cart/color "white"}))
+      {:header-data (cond-> {:header.title/id               "adventure-title"
+                             :header.title/primary          "Meet Your Stylist"
+                             :header.back-navigation/id     "adventure-back"
+                             :header.back-navigation/back   (first undo-history)
+                             :header.back-navigation/target [events/navigate-adventure-find-your-stylist]}
+                      (not post-purchase?)
+                      (merge {:header.cart/id    "mobile-cart"
+                              :header.cart/value (:order.items/quantity current-order)
+                              :header.cart/color "white"}))
 
-               :footer-data {:footer/copy "Meet more stylists in your area"
-                             :footer/id   "meet-more-stylists"
-                             :cta/id      "browse-stylists"
-                             :cta/label   "Browse Stylists"
-                             :cta/target  [events/navigate-adventure-find-your-stylist]}
+       :footer-data {:footer/copy "Meet more stylists in your area"
+                     :footer/id   "meet-more-stylists"
+                     :cta/id      "browse-stylists"
+                     :cta/label   "Browse Stylists"
+                     :cta/target  [events/navigate-adventure-find-your-stylist]}
 
-               :google-map-data #?(:cljs (maps/map-query data)
-                                   :clj  nil)
-               :cta/id          "select-stylist"
-               :cta/target      main-cta-target
-               :cta/label       (str "Select " stylist-name)
+       :google-map-data #?(:cljs (maps/map-query data)
+                           :clj  nil)
+       :cta/id          "select-stylist"
+       :cta/target      main-cta-target
+       :cta/label       (str "Select " stylist-name)
 
-               :transposed-title/id          "stylist-name"
-               :transposed-title/primary     stylist-name
-               :transposed-title/secondary   (-> stylist :salon :name)
-               :rating/value                 (:rating stylist)
-               :phone-link/target            [events/control-adventure-stylist-phone-clicked
-                                              {:stylist-id   (:stylist-id stylist)
-                                               :phone-number (some-> stylist :address :phone formatters/phone-number)}]
-               :phone-link/phone-number      (some-> stylist :address :phone formatters/phone-number-parens)
-               :circle-portrait/portrait-url (-> stylist :portrait :resizable-url)
-               :carousel/items               (let [ucare-img-urls (map :resizable-url (:gallery-images stylist))]
-                                               (map-indexed (fn [j ucare-img-url]
-                                                              {:key            (str "gallery-img-" stylist-id "-" j)
-                                                               :ucare-img-url  ucare-img-url
-                                                               :target-message [events/navigate-adventure-stylist-gallery
-                                                                                {:stylist-id   stylist-id
-                                                                                 :store-slug   (:store-slug stylist)
-                                                                                 :query-params {:offset j}}]})
-                                                            ucare-img-urls))
+       :transposed-title/id          "stylist-name"
+       :transposed-title/primary     stylist-name
+       :transposed-title/secondary   (-> stylist :salon :name)
+       :rating/value                 (:rating stylist)
+       :phone-link/target            [events/control-adventure-stylist-phone-clicked
+                                      {:stylist-id   (:stylist-id stylist)
+                                       :phone-number (some-> stylist :address :phone formatters/phone-number)}]
+       :phone-link/phone-number      (some-> stylist :address :phone formatters/phone-number-parens)
+       :circle-portrait/portrait-url (-> stylist :portrait :resizable-url)
+       :carousel/items               (let [ucare-img-urls (map :resizable-url (:gallery-images stylist))]
+                                       (map-indexed (fn [j ucare-img-url]
+                                                      {:key            (str "gallery-img-" stylist-id "-" j)
+                                                       :ucare-img-url  ucare-img-url
+                                                       :target-message [events/navigate-adventure-stylist-gallery
+                                                                        {:stylist-id   stylist-id
+                                                                         :store-slug   (:store-slug stylist)
+                                                                         :query-params {:offset j}}]})
+                                                    ucare-img-urls))
 
-               :share-icon/target [events/share-stylist {:stylist-id (:stylist-id stylist)
-                                                         :title      (str stylist-name " - " (get-in data (conj storefront.keypaths/store :location :city)))
-                                                         :text       (str stylist-name " is a Mayvenn Certified Stylist with top-rated reviews, great professionalism, and amazing work. Check out this stylist here:")
-                                                         :url        (strings/format "https://shop.%s.com/stylist/%d-%s?utm_campaign=%d&utm_term=fi_stylist_share&utm_medium=referral"
-                                                                                     environment
-                                                                                     stylist-id
-                                                                                     (:store-slug stylist)
-                                                                                     stylist-id)}]
-               :share-icon/icon   (svg/share-icon {:height "19px"
-                                                   :width  "18px"})
+       :share-icon/target [events/share-stylist {:stylist-id (:stylist-id stylist)
+                                                 :title      (str stylist-name " - " (get-in data (conj storefront.keypaths/store :location :city)))
+                                                 :text       (str stylist-name " is a Mayvenn Certified Stylist with top-rated reviews, great professionalism, and amazing work. Check out this stylist here:")
+                                                 :url        (strings/format "https://shop.%s.com/stylist/%d-%s?utm_campaign=%d&utm_term=fi_stylist_share&utm_medium=referral"
+                                                                             environment
+                                                                             stylist-id
+                                                                             (:store-slug stylist)
+                                                                             stylist-id)}]
+       :share-icon/icon   (svg/share-icon {:height "19px"
+                                           :width  "18px"})
 
-               :details [{:section-details/title   "Experience"
-                          :section-details/content (string/join ", " (remove nil?
-                                                                             [(when-let [stylist-since (:stylist-since stylist)]
-                                                                                (ui/pluralize-with-amount
-                                                                                 (- (date/year (date/now)) stylist-since)
-                                                                                 "year"))
-                                                                              (case (-> stylist :salon :salon-type)
-                                                                                "salon"   "in-salon"
-                                                                                "in-home" "in-home"
-                                                                                nil)
-                                                                              (when (:licensed stylist)
-                                                                                "licensed")]))}
-                         (when (-> stylist :service-menu :specialty-sew-in-leave-out)
-                           {:section-details/title              "Specialties"
-                            :section-details/content            (:service-menu stylist)
-                            :section-details/wig-customization? (experiments/wig-customization? data)})]}
-        (and (experiments/mayvenn-rating? data)
-             (:mayvenn-rating stylist))
-        (merge
-         {:rating/value (:mayvenn-rating stylist)})))))
+       :details [{:section-details/title   "Experience"
+                  :section-details/content (string/join ", " (remove nil?
+                                                                     [(when-let [stylist-since (:stylist-since stylist)]
+                                                                        (ui/pluralize-with-amount
+                                                                         (- (date/year (date/now)) stylist-since)
+                                                                         "year"))
+                                                                      (case (-> stylist :salon :salon-type)
+                                                                        "salon"   "in-salon"
+                                                                        "in-home" "in-home"
+                                                                        nil)
+                                                                      (when (:licensed stylist)
+                                                                        "licensed")]))}
+                 (when (-> stylist :service-menu :specialty-sew-in-leave-out)
+                   {:section-details/title              "Specialties"
+                    :section-details/content            (:service-menu stylist)
+                    :section-details/wig-customization? (experiments/wig-customization? data)})]})))
 
 (defn carousel-molecule
   [{:carousel/keys [items]}]

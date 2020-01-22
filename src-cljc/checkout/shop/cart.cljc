@@ -724,13 +724,6 @@
 
               :servicing-stylist-banner/action-id nil})
 
-      (and (experiments/mayvenn-rating? data)
-           entered?
-           servicing-stylist
-           (:mayvenn-rating servicing-stylist))
-      (merge
-       {:servicing-stylist-banner/rating {:rating/value (:mayvenn-rating servicing-stylist)}})
-
       applied?
       (merge {:confetti-spout/mode (get-in data keypaths/confetti-mode)
               :confetti-spout/id   "confetti-spout"}))))

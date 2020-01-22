@@ -70,46 +70,42 @@
             :header.cart/color             "white"})))
 
 (defn stylist-card-query
-  [{:keys [salon service-menu store-slug stylist-id] :as stylist} post-purchase? mayvenn-rating?]
+  [{:keys [salon service-menu store-slug stylist-id rating] :as stylist} post-purchase?]
   (let [{salon-name :name
          :keys      [address-1 address-2 city state zipcode]} salon
         {:keys [specialty-sew-in-leave-out
                 specialty-sew-in-closure
                 specialty-sew-in-360-frontal
                 specialty-sew-in-frontal]}                    service-menu]
-    (cond-> {:react/key                        (str "stylist-card-" store-slug)
-             :stylist-card/target              (if post-purchase?
-                                                 [events/navigate-adventure-stylist-profile-post-purchase {:stylist-id stylist-id
-                                                                                                           :store-slug store-slug}]
-                                                 [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
-                                                                                             :store-slug store-slug}])
-             :stylist-card/id                  (str "stylist-card-" store-slug)
-             :stylist-card.thumbnail/id        (str "stylist-card-thumbnail-" store-slug)
-             :stylist-card.thumbnail/ucare-id  (-> stylist :portrait :resizable-url)
-             :stylist-card.title/id            "stylist-name"
-             :stylist-card.title/primary       (stylists/->display-name stylist)
-             ;;TODO: rating -> external-rating
-             :rating/value                     (:rating stylist)
-             :stylist-card.services-list/id    (str "stylist-card-services-" store-slug)
-             :stylist-card.services-list/value [(stylist-cards/checks-or-x-atom "Leave Out"
-                                                                                (boolean specialty-sew-in-leave-out))
-                                                (stylist-cards/checks-or-x-atom "Closure"
-                                                                                (boolean specialty-sew-in-closure))
-                                                (stylist-cards/checks-or-x-atom "360° Frontal"
-                                                                                (boolean specialty-sew-in-360-frontal))
-                                                (stylist-cards/checks-or-x-atom "Frontal" (boolean specialty-sew-in-frontal))]
-             :element/type                      :stylist-card
-             :stylist-card.address-marker/id    (str "stylist-card-address-" store-slug)
-             :stylist-card.address-marker/value (string/join " "
-                                                             [(string/join ", "
-                                                                           [address-1 address-2 city state])
-                                                              zipcode])}
-
-      (and mayvenn-rating? (:mayvenn-rating stylist))
-      (merge {:rating/value (:mayvenn-rating stylist)}))))
+    {:react/key                        (str "stylist-card-" store-slug)
+     :stylist-card/target              (if post-purchase?
+                                         [events/navigate-adventure-stylist-profile-post-purchase {:stylist-id stylist-id
+                                                                                                   :store-slug store-slug}]
+                                         [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
+                                                                                     :store-slug store-slug}])
+     :stylist-card/id                  (str "stylist-card-" store-slug)
+     :stylist-card.thumbnail/id        (str "stylist-card-thumbnail-" store-slug)
+     :stylist-card.thumbnail/ucare-id  (-> stylist :portrait :resizable-url)
+     :stylist-card.title/id            "stylist-name"
+     :stylist-card.title/primary       (stylists/->display-name stylist)
+     :rating/value                     rating
+     :stylist-card.services-list/id    (str "stylist-card-services-" store-slug)
+     :stylist-card.services-list/value [(stylist-cards/checks-or-x-atom "Leave Out"
+                                                                        (boolean specialty-sew-in-leave-out))
+                                        (stylist-cards/checks-or-x-atom "Closure"
+                                                                        (boolean specialty-sew-in-closure))
+                                        (stylist-cards/checks-or-x-atom "360° Frontal"
+                                                                        (boolean specialty-sew-in-360-frontal))
+                                        (stylist-cards/checks-or-x-atom "Frontal" (boolean specialty-sew-in-frontal))]
+     :element/type                      :stylist-card
+     :stylist-card.address-marker/id    (str "stylist-card-address-" store-slug)
+     :stylist-card.address-marker/value (string/join " "
+                                                     [(string/join ", "
+                                                                   [address-1 address-2 city state])
+                                                      zipcode])}))
 
 (defn matched-stylist-query
-  [servicing-stylist {:order/keys [submitted?] :order.shipping/keys [phone]} post-purchase? mayvenn-rating?]
+  [servicing-stylist {:order/keys [submitted?] :order.shipping/keys [phone]} post-purchase?]
   (when submitted?
     (merge {:matched-stylist.title/id            "matched-with-stylist"
             :matched-stylist.title/primary       "Chat with your Stylist"
@@ -127,7 +123,7 @@
             :matched-stylist.cta-title/primary   "In the meantime…"
             :matched-stylist.cta-title/secondary "Get inspired for your appointment"
             :matched-stylist.cta-title/target    ["https://www.instagram.com/explore/tags/mayvennfreeinstall/"]}
-           (stylist-card-query servicing-stylist post-purchase? mayvenn-rating?))))
+           (stylist-card-query servicing-stylist post-purchase?))))
 
 (defn shopping-method-choice-query
   [servicing-stylist {:order/keys [submitted?]}]
@@ -187,7 +183,6 @@
   (let [servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
         nav-event         (get-in app-state storefront.keypaths/navigation-event)
         post-purchase?    (post-purchase? nav-event)
-        mayvenn-rating?   (experiments/mayvenn-rating? app-state)
         order             (if (pre-purchase? nav-event)
                             (api.orders/current app-state)
                             (api.orders/completed app-state))
@@ -199,5 +194,4 @@
                                                                             order)
                       :matched-stylist        (matched-stylist-query servicing-stylist
                                                                      order
-                                                                     post-purchase?
-                                                                     mayvenn-rating?)})))
+                                                                     post-purchase?)})))

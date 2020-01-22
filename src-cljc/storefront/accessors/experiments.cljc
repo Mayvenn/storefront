@@ -88,10 +88,6 @@
   [data]
   (display-feature? data "stylist-results-updated"))
 
-(defn mayvenn-rating?
-  [data]
-  (display-feature? data "mayvenn-rating"))
-
 (defn promo-link?
   [data]
   (display-feature? data "promo-link"))
