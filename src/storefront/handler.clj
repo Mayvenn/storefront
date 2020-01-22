@@ -939,6 +939,7 @@
                (GET "/stylist/edit" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/account" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/commissions" [] (util.response/redirect "/stylist/earnings" :moved-permanently))
+               (GET "/freeinstall-share" req (redirect-to-home environment req))
                (GET "/categories" req (redirect-to-home environment req))
                (GET "/categories/" req (redirect-to-home environment req))
                (GET "/products" req (redirect-to-home environment req))

@@ -54,7 +54,6 @@
 
 (def ^:private sharing-events
   #{events/navigate-friend-referrals
-    events/navigate-friend-referrals-freeinstall
     events/navigate-shared-cart
     events/navigate-stylist-share-your-store})
 

@@ -130,7 +130,6 @@
               "/stylist/orders"                           (edn->bidi events/navigate-v2-stylist-dashboard-orders)
               ["/stylist/orders/" :order-number]          (edn->bidi events/navigate-stylist-dashboard-order-details)
               "/share"                                    (edn->bidi events/navigate-friend-referrals)
-              "/freeinstall-share"                        (edn->bidi events/navigate-friend-referrals-freeinstall)
               "/mayvenn-made"                             (edn->bidi events/navigate-mayvenn-made)
               "/gallery"                                  (edn->bidi events/navigate-store-gallery)
               "/gallery/edit"                             (edn->bidi events/navigate-gallery-edit)

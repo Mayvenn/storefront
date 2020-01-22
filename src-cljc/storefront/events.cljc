@@ -112,7 +112,6 @@
 (defpath navigate-account-referrals)
 
 (defpath navigate-friend-referrals)
-(defpath navigate-friend-referrals-freeinstall)
 
 (defpath navigate-checkout)
 (defpath navigate-checkout-sign-in)
