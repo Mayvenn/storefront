@@ -187,12 +187,6 @@
                                    :catalog/category-id "15"})
      :data-test  "menu-shop-virgin-hair"
      :content    [(caretize-content "Virgin Hair")]}
-
-    {:link-attrs (utils/route-to events/navigate-category
-                                 {:page/slug           "dyed-virgin-hair"
-                                  :catalog/category-id "16"})
-     :data-test  "menu-shop-dyed-virgin-hair"
-     :content    [[:span.medium.flex-auto "Dyed Virgin Hair"]]}
     {:link-attrs (utils/fake-href events/menu-list
                                   {:page/slug           "closures-and-frontals"
                                    :catalog/category-id "12"})

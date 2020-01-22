@@ -141,7 +141,7 @@
     [:div.col-12.clearfix.px3
      [:div.col-on-tb-dt.col-6-on-tb-dt.mt6
       (component/build dtc-shop-section {:categories      categories
-                                                  :partition-count 5})]
+                                         :partition-count 6})]
      [:div.col-on-tb-dt.col-6-on-tb-dt.mt6
       (component/build contacts-section contacts)]
      (when essence-copy

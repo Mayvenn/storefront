@@ -141,64 +141,6 @@
                                "combinations. Shop now to create your look.")
                          "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")
           {:page/title "Virgin Hair Frontals: Virgin Hair Lace Frontals | Mayvenn"}
-          frontals-templates)
-
-   (merge {:catalog/category-id      "17"
-           :copy/title               "Dyed Virgin Closures"
-           :page/slug                "dyed-virgin-closures"
-           :seo/title                "Dyed Virgin Hair Closures"
-           :legacy/named-search-slug "closures"
-           :category/new?            false
-           :catalog/department       #{"hair"}
-           :hair/family              #{"closures"}
-           :hair/color.process       #{"dyed"}
-           :hair/source              #{"virgin"}
-           :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives       [:hair/origin :hair/texture :hair/base-material :hair/color]
-           :header/order             3
-           :header/group             1
-           :footer/order             13
-           :copy/description         (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                           "Our collection of closures and frontals blend seamlessly with our bundles"
-                                           "and can be customized to fit your unique look.")
-           :images                   {:hero {:filename    "DyedVirginClosures.jpg",
-                                             :desktop-url "//ucarecdn.com/28dbf16e-3df7-4160-b109-c183c7a93e93/",
-                                             :mobile-url  "//ucarecdn.com/b9b70ce1-57c3-4376-b341-aff6c165c706/",
-                                             :alt         "Dyed Vigin Closures"}}}
-          (category->seo "Dyed Virgin Closures"
-                         (copy "Mayvenn’s dyed virgin hair closures allow you to"
-                               "close off any unit or install and come in a variety of"
-                               "different combinations. Shop now to create your look.")
-                         "//ucarecdn.com/7082d52d-3a68-422c-9a81-47fba51c1c55/")
-          {:page/title "Dyed Virgin Closures: Human Hair Closures | Mayvenn"}
-          closures-templates)
-   (merge {:catalog/category-id      "18"
-           :copy/title               "Dyed Virgin Frontals"
-           :page/slug                "dyed-virgin-frontals"
-           :seo/title                "Dyed Virgin Hair Frontals"
-           :legacy/named-search-slug "frontals"
-           :category/new?            false
-           :catalog/department       #{"hair"}
-           :hair/family              #{"frontals"}
-           :hair/color.process       #{"dyed"}
-           :hair/source              #{"virgin"}
-           :header/order             4
-           :header/group             1
-           :footer/order             14
-           :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives       [:hair/origin :hair/texture :hair/base-material :hair/color]
-           :copy/description         (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                           "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")
-           :images                   {:hero {:filename    "DyedVirginFrontals.jpg",
-                                             :desktop-url "//ucarecdn.com/7a0dcb8e-5589-48d6-94d0-eeb972ce962f/",
-                                             :mobile-url  "//ucarecdn.com/ac0cda32-5258-43bf-82d5-1928537bec8c/",
-                                             :alt         "Dyed Virgin Frontals"}}}
-          (category->seo "Dyed Virgin Frontals"
-                         (copy "Mayvenn’s dyed virgin hair frontals blend in seamlessly with"
-                               "our bundles and come in a variety of different combinations."
-                               "Shop now to create your look.")
-                         "//ucarecdn.com/e014902e-3fdb-46ba-ad63-581a4caa8ab0/")
-          {:page/title "Dyed Virgin Frontals: Human Hair Lace Frontals | Mayvenn"}
           frontals-templates)])
 
 (def virgin-hair
@@ -651,14 +593,14 @@
            :stylist-exclusives/family #{"kits"}
            :selector/electives        []
            :selector/essentials       [:catalog/department :kits/contents :stylist-exclusives/family]
-           :page/title                "Stylist Exclusives | Mayvenn"
+           :page/title                "Stylist"
            :opengraph/title           (copy "Stylist Exclusives - Free shipping."
                                             "Free 30 day returns. Made with 100% virgin human hair.")
            :page.meta/description     (copy "")
            :opengraph/description     (copy "")
            :seo/sitemap               false})])
 
-(def dyed-hair-nav-roots
+(def virgin-hair-nav-roots
   [(merge {:catalog/category-id   "15"
            :copy/title            "Virgin Hair"
            :page/slug             "virgin-hair"
@@ -682,35 +624,6 @@
            :opengraph/description (copy "")
            :page/redirect?        true
            :seo/sitemap           false})
-   (merge {:catalog/category-id "16"
-           :copy/title          "Dyed Virgin Hair"
-           :page/slug           "dyed-virgin-hair"
-           :category/new?       false
-           :catalog/department  #{"hair"}
-           :hair/family         #{"bundles" "closures" "frontals"}
-           :hair/color.process  #{"dyed"}
-           :hamburger/order     1
-           :header/order        8
-           :header/group        0
-           :footer/order        8
-           :dtc-footer/order    4
-           :hair/source         #{"virgin"}
-           :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives  [:hair/origin :hair/texture :hair/color]
-           :images              {:hero {:filename    "DyedVirginHair.jpg"
-                                        :desktop-url "//ucarecdn.com/e3f9b527-4f74-46e6-ba91-2802092c1abe/"
-                                        :mobile-url  "//ucarecdn.com/43f356cb-6489-40a9-aa44-f9d763a1753b/"
-                                        :alt         "Dyed Virgin Hair"}
-                                 :icon {:url "/images/categories/dyed-icon.svg"}}
-           :copy/description    (copy "When natural brown isn’t cutting it,"
-                                      "find your true color match with our Dyed Virgin Hair."
-                                      "Save time and skip the hassle of fussing with toner and"
-                                      "bleach for the convenience of pre-dyed hair extensions.")}
-          (category->seo "Dyed Virgin Hair Extensions"
-                         (copy "When natural brown isn’t cutting it, find your true color match with"
-                               "our Dyed Virgin Hair. Free shipping. Free 30 day returns. Made with 100% dyed virgin human hair extensions.")
-                         nil))
-
    (merge {:catalog/category-id "12"
            :copy/title          "Closures & Frontals"
            :page/slug           "closures-and-frontals"
@@ -797,7 +710,7 @@
   (concat wigs
           mayvenn-install-eligible
           stylist-exclusives
-          dyed-hair-nav-roots
+          virgin-hair-nav-roots
           menu-categories
           seamless-clip-ins-category
           tape-ins-category))
