@@ -448,12 +448,7 @@
                                    "ready-wigs"      {:order         0
                                                       :title/primary "Ready to Wear Wigs"}}})
    (merge {:catalog/category-id "24"
-           :footer/order        21
-           :dtc-footer/order    8
-           :header/order        1
-           :header/group        2
-
-           :category/new? true
+           :category/new?       true
 
            :copy/title "Virgin Lace Front Wigs"
            :page/slug  "virgin-lace-front-wigs"
@@ -478,12 +473,7 @@
                                "straight, and deep wave.")
                          "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"))
    (merge {:catalog/category-id "25"
-           :footer/order        22
-           :dtc-footer/order    9
-           :header/order        2
-           :header/group        2
-
-           :category/new? true
+           :category/new?       true
 
            :copy/title "Ready to Wear Wigs"
            :page/slug  "ready-wear-wigs"
@@ -507,12 +497,7 @@
                                "Mayvenn’s ready to wear human hair wigs allow you to achieve a new look in minutes")
                          "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"))
    (merge {:catalog/category-id "26"
-           :footer/order        23
-           :dtc-footer/order    10
-           :header/order        3
-           :header/group        2
-
-           :category/new? true
+           :category/new?       true
 
            :copy/title "Virgin 360 Lace Wigs"
            :page/slug  "virgin-360-wigs"
