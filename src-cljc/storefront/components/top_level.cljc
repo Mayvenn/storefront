@@ -132,8 +132,7 @@
 (defn main-layout
   [data nav-event]
   (component/html
-   (let [gray-background? (#{events/navigate-voucher-redeem events/navigate-voucher-redeemed} nav-event)
-         v2-home?         (and (experiments/v2-homepage? data)
+   (let [v2-home?         (and (experiments/v2-homepage? data)
                                (#{events/navigate-home} nav-event))]
      [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
       [:div {:key "popup"}
@@ -148,17 +147,9 @@
       ^:inline (header/built-component data nil)
 
       [:div.relative.flex.flex-column.flex-auto
-       ;; HACK: one page does not have a white background, nor enough
-       ;; content to fill its inner div.
-       (when gray-background?
-         {:class "bg-cool-gray"})
        ^:inline (flash/built-component data nil)
 
-       [:main.bg-white.flex-auto (merge
-                                  {:data-test (keypaths/->component-str nav-event)}
-                                  ;; HACK: See above hack
-                                  (when gray-background?
-                                    {:class "bg-cool-gray"}))
+       [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
         ((main-component nav-event) data nil)]
 
        [:footer (footer/built-component data nil)]]])))

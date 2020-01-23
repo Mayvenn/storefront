@@ -18,7 +18,8 @@
             [voucher.keypaths :as voucher-keypaths]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [storefront.components.svg :as svg]))
 
 (defn ^:private divider []
   (component/html
@@ -29,13 +30,14 @@
 
 (defn ^:private inactive-qr-section []
   (component/html
-   [:div
-    [:h3.pt6 "Scan the QR code to redeem a certificate"]
-    [:h6 "Your camera will be used as the scanner."]
-    [:div.flex.justify-center.py4 (ui/ucare-img {:width "50"} "4bd0f715-fa5a-4d82-9cec-62dc993c5d23")]
-    [:div.mx-auto.col-10.col-3-on-tb-dt.mb4
+   [:div.col-10.mx-auto.p4
+    [:h3.mt8.title-2.canela "Scan the QR Code to Redeem a Voucher"]
+    [:h6.content-3.proxima.mt1 "Your camera will be used as the scanner."]
+    [:div.flex.justify-center.mt10 (svg/qr-code-icon {:width "50px"
+                                                     :height "50px"})]
+    [:div.mx-auto.col-12.col-3-on-tb-dt.mt6.mb2
      (ui/button-medium-primary {:on-click     (utils/send-event-callback events/control-voucher-scan)
-                                :data-test    "voucher-scan"} "Scan")]]))
+                                :data-test    "voucher-scan"} "Scan QR Code")]]))
 
 (defn ^:private qr-preview-section []
   (component/html
@@ -50,37 +52,41 @@
       (qr-preview-section)
       (inactive-qr-section))
 
-    [:div.mx-auto.col-10.pb2.flex.items-center.justify-between
+    [:div.mx-auto.col-9.pb2.flex.items-center.justify-between
      ^:inline (divider)
      [:span.h6.px2 "or"]
      ^:inline (divider)]]
    [:div.p4.col-4-on-tb-dt.center.mx-auto
     [:div.hide-on-mb-tb.py4]
-    [:h3.pb4 "Enter the 8-digit code"]
+    [:h3.mb2 "Enter the 8-digit code"]
     [:form
      {:on-submit (utils/send-event-callback events/control-voucher-redeem {:code code})}
-     (ui/input-group
-      {:keypath       voucher-keypaths/eight-digit-code
-       :wrapper-class "col-12 pl3 bg-white circled-item"
-       :data-test     "voucher-code"
-       :focused       true
-       :placeholder   "xxxxxxxx"
-       :value         code
-       :errors        (get field-errors ["voucher-code"])
-       :data-ref      "voucher-code"}
-      {:content    "Redeem"
-       :args       {:class        "flex justify-center items-center circled-item"
-                    :on-click     (utils/send-event-callback events/control-voucher-redeem {:code code})
-                    :spinning?    redeeming-voucher?
-                    :data-test    "voucher-redeem"}})]
+     [:div.col-10.mx-auto
+      (ui/input-group
+       {:keypath       voucher-keypaths/eight-digit-code
+        :wrapper-class "flex-grow-1"
+        :data-test     "voucher-code"
+        :focused       true
+        :placeholder   "XXXXXXXX"
+        :value         code
+        :errors        (get field-errors ["voucher-code"])
+        :data-ref      "voucher-code"}
+       {:content (svg/forward-arrow {:class  "fill-white"
+                                     :width  "15px"
+                                     :height "15px"})
+        :args    {:class     ""
+                  :style     {:width "47px"}
+                  :on-click  (utils/send-event-callback events/control-voucher-redeem {:code code})
+                  :spinning? redeeming-voucher?
+                  :data-test "voucher-redeem"}})]]
 
-    [:h6.pt6.line-height-2.center.my2
+    [:h6.mt6.proxima.content-4.dark-gray.left-align
      "Vouchers are sent to Mayvenn customers via text and/or email when they buy 3 or more bundles and use a special promo code."]]])
 
 (def ^:private missing-service-menu
   [:div
-   [:div.col-8.mx-auto.error.bg-error.border.border-error.rounded.light.letter-spacing-1.mt8
-    [:div.px2.py1.bg-lighten-5.rounded.center
+   [:div.col-8.mx-auto.error.bg-error.border.border-error.light.letter-spacing-1.mt8
+    [:div.px2.py1.bg-lighten-5.center
      "We need a little more information from you before you can use this feature. "
      "Please contact customer service at "
      (ui/link :link/phone :a.medium.error {} "+1 (888) 562-7952")]]
@@ -91,15 +97,14 @@
 
 (defcomponent ^:private component
   [{:keys [service-menu-fetching? service-menu-missing?] :as data} owner opts]
-  [:div.bg-cool-gray
-   (cond service-menu-fetching?
-         spinner
+  (cond service-menu-fetching?
+        spinner
 
-         service-menu-missing?
-         missing-service-menu
+        service-menu-missing?
+        missing-service-menu
 
-         :default
-         (primary-component data))])
+        :default
+        (primary-component data)))
 
 (defn ^:private query [data]
   (let [service-menu-required? (experiments/dashboard-with-vouchers? data)

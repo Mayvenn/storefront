@@ -391,3 +391,8 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "map-pin")]))
+
+(defn qr-code-icon [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "qr-code-icon")]))
