@@ -423,30 +423,34 @@
                                    "With options ranging from 360 to Ready to Wear,"
                                    "there’s a wig available for each of your alter egos.")
 
-           :images                {:hero {:filename    "Wigs.jpg"
-                                          :desktop-url "//ucarecdn.com/c17d9942-4cec-4f32-814c-ed5141efef59/"
-                                          :mobile-url  "//ucarecdn.com/27fac423-2571-4dee-90fa-e98071051fea/"
-                                          :alt         "Wigs"}}
-           :catalog/department    #{"hair"}
-           :hair/family           #{"360-wigs" "lace-front-wigs" "ready-wigs"}
-           :selector/essentials   [:hair/family :catalog/department]
-           :selector/electives    [:hair/family :hair/texture :hair/origin :hair/color]
-           :page/title            "Human Hair Wigs: Natural Hair Lace Wigs | Mayvenn"
-           :opengraph/title       (copy "Mayvenn 360 and Lace Frontal Wigs - Free shipping."
-                                        "Free 30 day returns. Made with 100% virgin human hair.")
-           :page.meta/description (copy "Mayvenn’s virgin human hair wigs allow you to achieve a new look in minutes"
-                                        "& come in different variations such as Brazilian, Malaysian, straight,"
-                                        "& deep wave.")
-           :opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our"
-                                        "30 Day Quality Guarantee, our Wigs can be customized to fit"
-                                        "your unique look using the built-in combs and adjustable strap.")
-           :image-url             "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"
-           :subsections           {"360-wigs"        {:order         2
-                                                      :title/primary "360 Wigs"}
-                                   "lace-front-wigs" {:order         1
-                                                      :title/primary "Lace Front Wigs"}
-                                   "ready-wigs"      {:order         0
-                                                      :title/primary "Ready to Wear Wigs"}}})
+           :images                         {:hero {:filename    "Wigs.jpg"
+                                                   :desktop-url "//ucarecdn.com/c17d9942-4cec-4f32-814c-ed5141efef59/"
+                                                   :mobile-url  "//ucarecdn.com/27fac423-2571-4dee-90fa-e98071051fea/"
+                                                   :alt         "Wigs"}}
+           :catalog/department             #{"hair"}
+           :hair/family                    #{"360-wigs" "lace-front-wigs" "ready-wigs"}
+           :selector/essentials            [:hair/family :catalog/department]
+           :selector/electives             [:hair/family :hair/texture :hair/origin :hair/color]
+           :page/title                     "Human Hair Wigs: Natural Hair Lace Wigs | Mayvenn"
+           :page.meta/description          (copy "Mayvenn’s virgin human hair wigs allow you to achieve a new look in minutes"
+                                                 "& come in different variations such as Brazilian, Malaysian, straight,"
+                                                 "& deep wave.")
+           :page/title-template            "%s%s| Mayvenn"
+           :page.meta/description-template (copy "Mayvenn's %shuman %sare allow you to change up and"
+                                                 "achieve your desired look. Shop our collection of"
+                                                 "virgin hair wigs today.")
+           :opengraph/title                (copy "Mayvenn 360 and Lace Frontal Wigs - Free shipping."
+                                                 "Free 30 day returns. Made with 100% virgin human hair.")
+           :opengraph/description          (copy "100% virgin human hair, machine-wefted and backed by our"
+                                                 "30 Day Quality Guarantee, our Wigs can be customized to fit"
+                                                 "your unique look using the built-in combs and adjustable strap.")
+           :image-url                      "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"
+           :subsections                    {"360-wigs"        {:order         2
+                                                               :title/primary "360 Wigs"}
+                                            "lace-front-wigs" {:order         1
+                                                               :title/primary "Lace Front Wigs"}
+                                            "ready-wigs"      {:order         0
+                                                               :title/primary "Ready to Wear Wigs"}}})
    (merge {:catalog/category-id "24"
            :category/new?       true
 
