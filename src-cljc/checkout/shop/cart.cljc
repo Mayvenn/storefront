@@ -592,33 +592,34 @@
 (defn promo-input-query
   [data order entered?]
   (when (and (orders/no-applied-promo? order) (not entered?))
-    (let [keypath                keypaths/cart-coupon-code
-          value                  (get-in data keypath)
-          promo-link?            (experiments/promo-link? data)
-          show-promo-code-field? (or (not promo-link?)
-                                     (get-in data keypaths/promo-code-entry-open?))
-          disabled?              (or (update-pending? data)
-                                     (empty? value))
-          input-group-attrs      {:text-input-attrs
-                                  {:errors        nil
-                                   :value         (or value "")
-                                   :keypath       keypath
-                                   :label         "enter promocode"
-                                   :data-test     "promo-code"
-                                   :id            "promo-code"
-                                   :wrapper-class "col-12 bg-white"
-                                   :type          "text"}
-                                  :button-attrs
-                                  {:args    {:data-test "cart-apply-promo"
-                                             :disabled? disabled?
-                                             :on-click  (utils/send-event-callback events/control-cart-update-coupon)
-                                             :style     {:width   "42px"
-                                                         :padding "0"}}
-                                   :content (svg/forward-arrow {:class (if disabled?
-                                                                         "fill-gray"
-                                                                         "fill-white")
-                                                                :style {:width  "14px"
-                                                                        :height "14px"}})}}]
+    (let [keypath                 keypaths/cart-coupon-code
+          value                   (get-in data keypath)
+          promo-link?             (experiments/promo-link? data)
+          show-promo-code-field?  (or (not promo-link?)
+                                      (get-in data keypaths/promo-code-entry-open?))
+          disabled?               (or (update-pending? data)
+                                      (empty? value))
+          promo-code-field-errors (get (get-in data keypaths/field-errors) ["promo-code"])
+          input-group-attrs       {:text-input-attrs
+                                   {:errors        promo-code-field-errors
+                                    :value         (or value "")
+                                    :keypath       keypath
+                                    :label         "enter promocode"
+                                    :data-test     "promo-code"
+                                    :id            "promo-code"
+                                    :wrapper-class "col-12 bg-white"
+                                    :type          "text"}
+                                   :button-attrs
+                                   {:args    {:data-test "cart-apply-promo"
+                                              :disabled? disabled?
+                                              :on-click  (utils/send-event-callback events/control-cart-update-coupon)
+                                              :style     {:width   "42px"
+                                                          :padding "0"}}
+                                    :content (svg/forward-arrow {:class (if disabled?
+                                                                          "fill-gray"
+                                                                          "fill-white")
+                                                                 :style {:width  "14px"
+                                                                         :height "14px"}})}}]
       (cond-> {}
 
         show-promo-code-field?
