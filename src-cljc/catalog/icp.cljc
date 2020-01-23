@@ -107,12 +107,13 @@
   [{:keys [header footer category-hero drill-category-list product-list]} _ _]
   [:div
    (component/build header-organism header)
-   (component/build category-hero-organism category-hero)
-   (vertical-squiggle-atom "-36px")
-   ;; TODO squiggle atom
-   (component/build drill-category-list-organism drill-category-list)
-   divider-atom
-   (component/build product-list/organism product-list)
+   [:div.max-960.mx-auto
+    (component/build category-hero-organism category-hero)
+    (vertical-squiggle-atom "-36px")
+    ;; TODO squiggle atom
+    (component/build drill-category-list-organism drill-category-list)
+    divider-atom
+    (component/build product-list/organism product-list)]
    ;;    [:div "Educational content"]
    ;;    [:div "Recent blog posts"]
    ;;    [:div "Contact"]
