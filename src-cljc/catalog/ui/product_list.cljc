@@ -153,7 +153,9 @@
 
 (defcomponent organism
   [{:keys [subsections all-product-cards loading-products? filter-tabs-data]} _ _]
-  [:div.px2
+  [:div.px2.py4
+   [:div.canela.title-1.center.mt3.py4
+    "Shop All Wigs"]
    [:div.px1.bg-white.sticky.z1
     ;; The -5px prevents a sliver of the background from being visible above the filters
     ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)

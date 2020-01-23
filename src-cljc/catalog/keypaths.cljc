@@ -20,7 +20,7 @@
 (def category-selections (conj category :selections))
 
 ;; Contains the data used to render the category page (ICP)
-(def category-query (conj ui :category-ui))
+(def category-query (conj ui :category-query))
 
 (def initial (-> {}
                  (assoc-in detailed-product {})))

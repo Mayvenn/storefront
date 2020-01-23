@@ -5,10 +5,19 @@
             [spice.core :as spice]
             [storefront.assets :as assets]
             [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
+
+(defn ^:private vertical-squiggle-atom
+  [top]
+  (component/html
+   [:div.relative
+    [:div.absolute.col-12.flex.justify-center
+     {:style {:top top}}
+     ^:inline (svg/vertical-squiggle {:style {:height "72px"}})]]))
 
 (defcomponent ^:private header-organism
   [_ _ _]
@@ -99,6 +108,7 @@
   [:div
    (component/build header-organism header)
    (component/build category-hero-organism category-hero)
+   (vertical-squiggle-atom "-36px")
    ;; TODO squiggle atom
    (component/build drill-category-list-organism drill-category-list)
    divider-atom
