@@ -42,11 +42,6 @@
    (copy "Mayvenn's %s%smimic a natural hairline and offer versatile parting options"
          "to achieve your desired look.")})
 
-(def wig-templates
-  {:opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our 30 Day Quality Guarantee, our"
-                                "Wigs"
-                                "can be customized to fit your unique look using the built-in combs and adjustable strap.")})
-
 (def texture-templates
   {:page/title-template "%s%s| Mayvenn"
    :page.meta/description-template
@@ -451,8 +446,7 @@
                                    "lace-front-wigs" {:order         1
                                                       :title/primary "Lace Front Wigs"}
                                    "ready-wigs"      {:order         0
-                                                      :title/primary "Ready to Wear Wigs"}}}
-          wig-templates)
+                                                      :title/primary "Ready to Wear Wigs"}}})
    (merge {:catalog/category-id "24"
            :footer/order        21
            :dtc-footer/order    8
@@ -473,13 +467,16 @@
            :catalog/department  #{"hair"}
            :hair/family         #{"lace-front-wigs"}
            :selector/essentials [:hair/family :catalog/department]
-           :selector/electives  [:hair/texture :hair/origin]}
+           :selector/electives  [:hair/texture :hair/origin]
+
+           :opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our"
+                                        "30 Day Quality Guarantee, our Wigs can be customized to fit"
+                                        "your unique look using the built-in combs and adjustable strap.")}
           (category->seo "Lace Front Wigs: Human Hair Lace Front Wigs"
                          (copy "Mayvenn’s human hair lace front wigs mimic a natural hairline"
                                "and come in different variations such as Brazilian, Malaysian,"
                                "straight, and deep wave.")
-                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/")
-          wig-templates)
+                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"))
    (merge {:catalog/category-id "25"
            :footer/order        22
            :dtc-footer/order    9
@@ -497,16 +494,18 @@
                                         "convenient way to change up your look instantly.")
            :subcategory/image-uri "//ucarecdn.com/a4f7ad94-3c2c-41aa-be4d-94d9d83b1602/-/format/auto/-/resize/124x/"
 
-           :catalog/department  #{"hair"}
-           :hair/family         #{"ready-wigs"}
-           :selector/essentials [:hair/family :catalog/department]
-           :selector/electives  [:hair/texture :hair/origin]}
+           :catalog/department    #{"hair"}
+           :hair/family           #{"ready-wigs"}
+           :selector/essentials   [:hair/family :catalog/department]
+           :selector/electives    [:hair/texture :hair/origin]
+           :opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our"
+                                        "30 Day Quality Guarantee, our Wigs can be customized to fit"
+                                        "your unique look using the built-in combs and adjustable strap.")}
           (category->seo "Ready-to-Wear Human Hair Lace Wigs"
                          (copy "Mayvenn’s ready-to-wear human hair lace wigs provide a quick style switch-up and "
                                "come in different variations such as Brazilian, straight, and loose wave."
                                "Mayvenn’s ready to wear human hair wigs allow you to achieve a new look in minutes")
-                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/")
-          wig-templates)
+                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"))
    (merge {:catalog/category-id "26"
            :footer/order        23
            :dtc-footer/order    10
@@ -523,16 +522,18 @@
                                         "360 wigs have lace around the entire crown of your head with a cap in the middle.")
            :subcategory/image-uri "//ucarecdn.com/fe34e6e9-8927-4b62-94ac-91b37f0a137f/-/format/auto/-/resize/124x/"
 
-           :catalog/department  #{"hair"}
-           :hair/family         #{"360-wigs"}
-           :selector/essentials [:hair/family :catalog/department]
-           :selector/electives  [:hair/texture :hair/origin]}
+           :catalog/department    #{"hair"}
+           :hair/family           #{"360-wigs"}
+           :selector/essentials   [:hair/family :catalog/department]
+           :selector/electives    [:hair/texture :hair/origin]
+           :opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our"
+                                        "30 Day Quality Guarantee, our Wigs can be customized to fit"
+                                        "your unique look using the built-in combs and adjustable strap.")}
           (category->seo "360 Lace Wigs: Human Hair 360 Lace Wigs"
                          (copy "Mayvenn’s human hair 360 lace wigs give you all around protection and"
                                "come in different variations such as Brazilian, Malaysian, straight,"
                                "and deep wave.")
-                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/")
-          wig-templates)])
+                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"))])
 
 (def mayvenn-install-eligible
   [{:catalog/category-id            "23"
