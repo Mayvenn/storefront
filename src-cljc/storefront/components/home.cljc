@@ -312,6 +312,7 @@
                                        {:mob-uuid  "762369fb-6680-4e0a-bf99-4e6317f03f1d"
                                         :dsk-uuid  "b11d90d3-ed57-4c18-a61b-d91b68e1cccb"
                                         :file-name "talkable_banner_25.jpg"
+                                        :ucare?    true
                                         :alt       "refer friends, earn rewards, get 25% off"
                                         :opts      (utils/route-to events/navigate-friend-referrals
                                                                    {:query-params {:campaign_tags  "25-off"
