@@ -416,6 +416,7 @@
            :header/order        0
            :header/group        2
 
+           :page/icp? true
            :category/new? true
 
            :copy/title "Wigs"

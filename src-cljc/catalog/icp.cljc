@@ -1,14 +1,14 @@
 (ns catalog.icp
-  (:require
-   catalog.categories
-   [storefront.assets :as assets]
-   [storefront.component :as component :refer [defcomponent]]
-   [storefront.components.ui :as ui]
-   [storefront.events :as events]
-   [storefront.platform.component-utils :as utils]
-   [catalog.categories :as categories]
-   [spice.core :as spice]
-   [storefront.keypaths :as keypaths]))
+  (:require [catalog.categories :as categories]
+            catalog.keypaths
+            [catalog.ui.product-list :as product-list]
+            [spice.core :as spice]
+            [storefront.assets :as assets]
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.ui :as ui]
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]))
 
 (defcomponent ^:private header-organism
   [_ _ _]
@@ -86,7 +86,7 @@
          :drill-category/action-label (str "Shop " (:copy/title category))})
       [ready-wear-wigs virgin-lace-front-wigs virgin-360-wigs])}))
 
-(def ^:private divider
+(def ^:private divider-atom
   [:div
    {:style {:background-image    "url('//ucarecdn.com/73db5b08-860e-4e6c-b052-31ed6d951f00/-/resize/x24/')"
             :background-position "center center"
@@ -95,26 +95,32 @@
 
 (defcomponent ^:private template
   "This lays out different ux pieces to form a cohesive ux experience"
-  [{:keys [header footer category-hero drill-category-list]} _ _]
+  [{:keys [header footer category-hero drill-category-list product-list]} _ _]
   [:div
    (component/build header-organism header)
    (component/build category-hero-organism category-hero)
+   ;; TODO squiggle atom
    (component/build drill-category-list-organism drill-category-list)
-   divider
-   ;;    [:div "Categories list from selectors"]
-   ;;    [:div "Products paginated list from selectors"]
+   divider-atom
+   (component/build product-list/organism product-list)
    ;;    [:div "Educational content"]
    ;;    [:div "Recent blog posts"]
    ;;    [:div "Contact"]
    (component/build footer-organism footer)])
 
+(defn query
+  [app-state]
+  (let [category   (catalog.categories/current-category app-state)
+        categories (get-in app-state keypaths/categories)
+        selections (get-in app-state catalog.keypaths/category-selections)
+        products   (vals (get-in app-state keypaths/v2-products))]
+    {:header              {}
+     :footer              {}
+     :category-hero       (category-hero-query category)
+     :drill-category-list (drill-category-list-query category categories)
+     :product-list        (product-list/query app-state category products selections)}))
+
 (defn ^:export page
   [app-state opts]
-  (let [category   (catalog.categories/current-category app-state)
-        categories (get-in app-state keypaths/categories)]
-    (component/build template
-                     {:header              {}
-                      :footer              {}
-                      :category-hero       (category-hero-query category)
-                      :drill-category-list (drill-category-list-query category categories)}
-                     opts)))
+  (let [page-data (get-in app-state catalog.keypaths/category-query)]
+    (component/build template page-data opts)))
