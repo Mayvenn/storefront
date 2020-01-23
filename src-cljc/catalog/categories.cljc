@@ -416,7 +416,7 @@
            :header/order        0
            :header/group        2
 
-           :page/icp? true
+           :page/icp?     true
            :category/new? true
 
            :copy/title "Wigs"
@@ -465,19 +465,19 @@
            :page/slug  "virgin-lace-front-wigs"
            :seo/title  "Virgin Lace Front Wigs"
 
-           :copy/description (copy "With the lace base in front only,"
-                                   "these are ideal for exploring new ways to part your hair."
-                                   "Ours are made with virgin lace & real human hair.")
+           :copy/description      (copy "With the lace base in front only,"
+                                        "these are ideal for exploring new ways to part your hair."
+                                        "Ours are made with virgin lace & real human hair.")
            :subcategory/image-uri "//ucarecdn.com/71dcdd17-f9cc-456f-b763-2c1c047c30b4/-/format/auto/-/resize/124x/"
 
            :catalog/department  #{"hair"}
            :hair/family         #{"lace-front-wigs"}
            :selector/essentials [:hair/family :catalog/department]
            :selector/electives  [:hair/texture :hair/origin]}
-          (category->seo "Virgin Lace Front Wigs: Natural Hair Lace Wigs"
-                         (copy "Mayvenn’s virgin lace front wigs allow you to achieve a new look in minutes"
-                               "& come in different variations such as Brazilian, Malaysian, straight,"
-                               "& deep wave.")
+          (category->seo "Lace Front Wigs: Human Hair Lace Front Wigs"
+                         (copy "Mayvenn’s human hair lace front wigs mimic a natural hairline"
+                               "and come in different variations such as Brazilian, Malaysian,"
+                               "straight, and deep wave.")
                          "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/")
           wig-templates)
    (merge {:catalog/category-id "25"
@@ -492,19 +492,19 @@
            :page/slug  "ready-wear-wigs"
            :seo/title  "Ready to Wear Wigs"
 
-           :copy/description (copy "Made of authentic and high-quality human hair,"
-                                   "ready to wear wigs are a quick,"
-                                   "convenient way to change up your look instantly.")
+           :copy/description      (copy "Made of authentic and high-quality human hair,"
+                                        "ready to wear wigs are a quick,"
+                                        "convenient way to change up your look instantly.")
            :subcategory/image-uri "//ucarecdn.com/a4f7ad94-3c2c-41aa-be4d-94d9d83b1602/-/format/auto/-/resize/124x/"
 
-           :catalog/department    #{"hair"}
-           :hair/family           #{"ready-wigs"}
-           :selector/essentials   [:hair/family :catalog/department]
-           :selector/electives    [:hair/texture :hair/origin]}
-          (category->seo "Ready to Wear Wigs"
-                         (copy "Mayvenn’s ready to wear human hair wigs allow you to achieve a new look in minutes"
-                               "& come in different variations."
-                               "Crafted with a customizable lace hairline, clips, and an adjustable strap.")
+           :catalog/department  #{"hair"}
+           :hair/family         #{"ready-wigs"}
+           :selector/essentials [:hair/family :catalog/department]
+           :selector/electives  [:hair/texture :hair/origin]}
+          (category->seo "Ready-to-Wear Human Hair Lace Wigs"
+                         (copy "Mayvenn’s ready-to-wear human hair lace wigs provide a quick style switch-up and "
+                               "come in different variations such as Brazilian, straight, and loose wave."
+                               "Mayvenn’s ready to wear human hair wigs allow you to achieve a new look in minutes")
                          "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/")
           wig-templates)
    (merge {:catalog/category-id "26"
@@ -519,18 +519,18 @@
            :page/slug  "virgin-360-wigs"
            :seo/title  "Virgin 360 Lace Wigs"
 
-           :copy/description (copy "Ideal for ponytails, these wigs are denser & fuller."
-                                   "360 wigs have lace around the entire crown of your head with a cap in the middle.")
+           :copy/description      (copy "Ideal for ponytails, these wigs are denser & fuller."
+                                        "360 wigs have lace around the entire crown of your head with a cap in the middle.")
            :subcategory/image-uri "//ucarecdn.com/fe34e6e9-8927-4b62-94ac-91b37f0a137f/-/format/auto/-/resize/124x/"
 
-           :catalog/department    #{"hair"}
-           :hair/family           #{"360-wigs"}
-           :selector/essentials   [:hair/family :catalog/department]
-           :selector/electives    [:hair/texture :hair/origin]}
-          (category->seo "Virgin 360 Wigs"
-                         (copy "Mayvenn’s virgin 360 wigs allow you to achieve a new look in minutes"
-                               "& come in different variations such as Brazilian, Malaysian, straight,"
-                               "& deep wave.")
+           :catalog/department  #{"hair"}
+           :hair/family         #{"360-wigs"}
+           :selector/essentials [:hair/family :catalog/department]
+           :selector/electives  [:hair/texture :hair/origin]}
+          (category->seo "360 Lace Wigs: Human Hair 360 Lace Wigs"
+                         (copy "Mayvenn’s human hair 360 lace wigs give you all around protection and"
+                               "come in different variations such as Brazilian, Malaysian, straight,"
+                               "and deep wave.")
                          "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/")
           wig-templates)])
 
