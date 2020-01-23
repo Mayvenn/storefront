@@ -113,13 +113,11 @@
   (let [voucher                   (get-in app-state voucher-keypaths/voucher-response)
         service-menu              (get-in app-state keypaths/user-stylist-service-menu)
         install-type              (-> voucher :discount :unit_type)
-        payout-amount             (-> #_service-menu
-                                      #_(get (keyword (get unit-type->menu-kw-payout install-type)))
-                                      100
+        payout-amount             (-> service-menu
+                                      (get (keyword (get unit-type->menu-kw-payout install-type)))
                                       mf/as-money-without-cents)
-        advertised-amount         (-> #_service-menu
-                                      #_(get (keyword (get unit-type->menu-kw-advertised install-type)))
-                                      140
+        advertised-amount         (-> service-menu
+                                      (get (keyword (get unit-type->menu-kw-advertised install-type)))
                                       mf/as-money-without-cents)
         install-type-display-name (get unit-type->display-name install-type)
         payout-equals-advertised? (= payout-amount advertised-amount)]
