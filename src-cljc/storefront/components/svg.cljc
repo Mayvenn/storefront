@@ -396,3 +396,8 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "qr-code-icon")]))
+
+(defn diamond-check [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "diamond-check")]))
