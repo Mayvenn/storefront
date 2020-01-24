@@ -798,11 +798,20 @@
     (let [order       (get-in-req-state request keypaths/order)
           order-token (get (:query-params request) "order-token")]
       (cond
-        (or (nil? order)
-            (not= (:number order) order-number)
-            (not= (:token order) order-token)
-            (not (#{"cart" "submitted"} (:state order))))
+        (and order
+             (or (not= (:number order) order-number)
+                 (not= (:token order) order-token)
+                 (not (#{"cart" "submitted"} (:state order)))))
         (util.response/redirect "/checkout/payment?error=quadpay-invalid-state")
+
+        ;; one of two things has happened:
+        ;; - this is not a valid order (why are we here then?)
+        ;; - we had network flake (then it's a temporary bug)
+        ;;
+        ;; So, we're optimistically assuming the order has been placed instead
+        ;; of asking the customer to try checking out again.
+        (nil? order)
+        (util.response/redirect "/checkout/processing")
 
         (= "cart" (:state order))
         (util.response/redirect "/checkout/processing")
