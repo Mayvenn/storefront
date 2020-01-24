@@ -537,9 +537,7 @@
                                      (for [{:keys [name price coupon-code] :as adjustment}
                                            (filter adjustments/non-zero-adjustment? adjustments)
                                            :let [install-summary-line? (orders/freeinstall-promotion? adjustment)]]
-                                       (cond-> {:cart-summary-line/id    (text->data-test-name (if any-wig?
-                                                                                                 "wig-customization-adjustment"
-                                                                                                 name))
+                                       (cond-> {:cart-summary-line/id    (str (text->data-test-name name) "-adjustment")
                                                 :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
                                                                                             :height "2em" :width "2em"})
                                                 :cart-summary-line/label (adjustments/display-adjustment-name adjustment)
