@@ -70,7 +70,8 @@
         :placeholder   "XXXXXXXX"
         :value         code
         :errors        (get field-errors ["voucher-code"])
-        :data-ref      "voucher-code"}
+        :data-ref      "voucher-code"
+        :maxlength     8}
        {:content (svg/forward-arrow {:class  "fill-white"
                                      :width  "15px"
                                      :height "15px"})
