@@ -134,7 +134,8 @@
                                      (consume-preloaded-data))))
 
 (defn ^:export debug-app-state []
-  (clj->js @app-state))
+  (clj->js @app-state
+           :keyword-fn (comp #(subs % 1) str)))
 
 (defn ^:export current-order []
   (clj->js (get-in @app-state keypaths/order)))
