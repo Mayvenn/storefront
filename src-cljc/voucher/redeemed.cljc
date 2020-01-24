@@ -150,8 +150,7 @@
                                            [:div "Your " install-type-display-name " Payout Amount: "
                                             payout-amount]
                                            [:div install-type-display-name " Advertised Price: "
-                                            advertised-amount
-                                            [:span.p-color "*"]])}))))
+                                            advertised-amount "*"])}))))
 
 (defn ^:export built-component
   [data opts]
