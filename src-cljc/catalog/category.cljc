@@ -132,14 +132,14 @@
                            (sort-by :option/order)
                            (partition-all 4)
                            (map-indexed vector))]
-      [:div.flex-on-dt.justify-around
+      [:div.flex-on-dt.justify-between.items-center
        {:key (str "filter-panel-" i)}
        (for [option options]
          (let [selected?    (contains? (open-panel selections)
                                        (:option/slug option))
                slug         (:option/slug option)
                represented? (contains? (open-panel represented-options) slug)]
-           [:div.py1.mr4
+           [:div.py1.mr4.col-3-on-dt
             {:key       (str "filter-option-" slug)
              :data-test (str "filter-option-" (hacky-fix-of-bad-slugs-on-facets slug))
              :disabled  (not represented?)}
@@ -229,8 +229,10 @@
      (let [tabs  (component/build filter-tabs filter-tabs-data opts)]
        (if open-panel
          [:div
-          [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white tabs (filter-panel facets represented-options selections open-panel)]
-          [:div.hide-on-mb-tb tabs (filter-panel facets represented-options selections open-panel)]]
+          [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
+           tabs (filter-panel facets represented-options selections open-panel)]
+          [:div.hide-on-mb-tb
+           tabs (filter-panel facets represented-options selections open-panel)]]
          [:div
           [:div.hide-on-dt tabs]
           [:div.hide-on-mb-tb tabs]]))]

@@ -88,29 +88,29 @@
                            (sort-by :option/order)
                            (partition-all 4)
                            (map-indexed vector))]
-      [:div.flex-on-dt.justify-around
+      [:div.flex-on-dt.justify-between.items-center
        {:key (str "filter-panel-" i)}
        (for [option options]
          (let [selected?    (contains? (open-panel selections)
                                        (:option/slug option))
                slug         (:option/slug option)
                represented? (contains? (open-panel represented-options) slug)]
-           [:div.py1.mr4
+           [:div.py1.mr4.col-3-on-dt
             {:key       (str "filter-option-" slug)
              :data-test (str "filter-option-" (hacky-fix-of-bad-slugs-on-facets slug))
              :disabled  (not represented?)}
-            (ui/check-box {:label     [:span
-                                       (when (categories/new-facet? [open-panel slug])
-                                         [:span.mr1.p-color "NEW"])
-                                       (:option/name option)]
-                           :value     selected?
-                           :disabled  (not represented?)
-                           :on-change #(let [event-handler (if selected?
-                                                             events/control-category-option-unselect
-                                                             events/control-category-option-select)]
-                                         (messages/handle-message event-handler
-                                                                  {:facet  open-panel
-                                                                   :option slug}))})]))])]
+           (ui/check-box {:label     [:span
+                                      (when (categories/new-facet? [open-panel slug])
+                                        [:span.mr1.p-color "NEW"])
+                                      (:option/name option)]
+                          :value     selected?
+                          :disabled  (not represented?)
+                          :on-change #(let [event-handler (if selected?
+                                                            events/control-category-option-unselect
+                                                            events/control-category-option-select)]
+                                        (messages/handle-message event-handler
+                                                                 {:facet  open-panel
+                                                                  :option slug}))})]))])]
    [:div.clearfix.mxn3.mb2.hide-on-dt.flex.justify-around.items-center
     [:div.col-6.center.px5
      (ui/button-medium-underline-primary
