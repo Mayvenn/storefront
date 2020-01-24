@@ -18,6 +18,39 @@
 (defn copy [& sentences]
   (string/join " " sentences))
 
+(defn ^:private divider []
+  (component/html
+   [:hr.border-top.border-gray.col-12.m0
+    {:style {:border-bottom 0
+             :border-left 0
+             :border-right 0}}]))
+
+(defn guest-sign-up [sign-up-data]
+  [:section.center.mt3.col-11.mx-auto
+   [:h1.canela.title-2.mt4
+    "Sign Up"]
+   [:p.col-10.col-9-on-tb-dt.proxima.content-3.mt3.mx-auto
+    "Take advantage of express checkout, order tracking, and more when you sign up."]
+
+   [:div.col-10.col-9-on-tb-dt.mx-auto.mt6
+    (when (:facebook-loaded? sign-up-data)
+      (ui/button-medium-facebook-blue
+       {:on-click  (utils/send-event-callback events/control-facebook-sign-in)
+        :data-test "facebook-button"}
+       [:div.mx-auto
+        (svg/button-facebook-f {:width "7px" :height "14px"})
+        [:span.ml2 "Facebook Sign Up"]]))]
+
+   [:div.mx-auto.col-10.col-9-on-tb-dt.pb2.flex.items-center.justify-between.mt3
+    ^:inline (divider)
+    [:span.proxima.content-3.px2 "or"]
+    ^:inline (divider)]
+
+   [:p.canela.title-3.mt2.mb3
+    "Create an Account"]
+   (sign-up/form sign-up-data
+                 {:sign-up-text "Create my account"})])
+
 (defcomponent component
   [{:keys [guest? sign-up-data]} _ _]
   (ui/narrow-container
@@ -33,25 +66,7 @@
       (copy "We've received your order and will be processing it right away."
             "Once your order ships we will send you an email confirmation.")]]
     (when guest?
-      [:div.mt3
-       [:section.center
-        (ui/ucare-img {:class "mx-auto"
-                       :height "55px"
-                       :width  "55px"} "962e39be-3d22-4f23-a9b3-d1623ac7c1d7")
-        [:h1
-         "Create an account"]
-        [:p.h5
-         "Take advantage of express checkout, order tracking, and more when you sign up."]
-
-        [:p.h5.py2
-         "Sign in with Facebook to link your account."]
-        [:div.col-12.col-8-on-tb-dt.mx-auto
-         (facebook/narrow-sign-in-button (:facebook-loaded? sign-up-data))]
-
-        [:p.h5.py4
-         "Or create a Mayvenn.com account"]
-        (sign-up/form sign-up-data
-                      {:sign-up-text "Create my account"})]])]))
+      (guest-sign-up sign-up-data))]))
 
 (defn servicing-stylist-card-title-molecule
   [{:stylist-card.title/keys [id primary secondary]}]
@@ -144,25 +159,7 @@
       (matched-with-servicing-stylist-component data)
       get-inspired-cta)
     (when guest?
-      [:div.mt3
-       [:section.center
-        [:img {:src    "//ucarecdn.com/962e39be-3d22-4f23-a9b3-d1623ac7c1d7/-/format/auto/profile"
-               :height "55px"
-               :width  "55px"}]
-        [:h1
-         "Create an account"]
-        [:p.h5
-         "Take advantage of express checkout, order tracking, and more when you sign up."]
-
-        [:p.h5.py2
-         "Sign in with Facebook to link your account."]
-        [:div.col-12.col-6-on-tb-dt.mx-auto
-         (facebook/narrow-sign-in-button (:facebook-loaded? sign-up-data))]
-
-        [:p.h5.py4
-         "Or create a Mayvenn.com account"]
-        (sign-up/form sign-up-data
-                      {:sign-up-text "Create my account"})]])]))
+      (guest-sign-up sign-up-data))]))
 
 (defn query
   [data]

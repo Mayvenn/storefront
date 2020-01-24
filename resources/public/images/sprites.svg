@@ -299,4 +299,9 @@
       <path fill="#6BC8AD" fill-rule="nonzero" d="M23.428 34.27l9.87-18.21-2.7-1.62-7.65 13.89-3.15-3.72-2.43 2.28z"/>
     </g>
   </symbol>
+  <symbol id="button-facebook-f" viewBox="0 0 7 14">
+    <g fill="#FFF" fill-rule="evenodd">
+      <path d="M6.727 7.006H4.615V14H1.487V7.006H0V4.534h1.487v-1.6C1.487 1.79 2.073 0 4.644 0l2.318.008v2.4H5.28c-.274 0-.664.127-.664.673v1.453H7l-.273 2.472z" id="a"/>
+      </g>
+  </symbol>
 </svg>

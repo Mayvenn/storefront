@@ -129,6 +129,7 @@
 (defn button-large-facebook-blue        [attrs & content] (button "btn-large btn-facebook-blue button-font-1 shout" attrs content))
 (defn button-medium-primary             [attrs & content] (button "btn-medium btn-p-color button-font-1 shout" attrs content))
 (defn button-medium-secondary           [attrs & content] (button "btn-medium btn-outline button-font-1 shout" attrs content))
+(defn button-medium-facebook-blue       [attrs & content] (button "btn-medium btn-facebook-blue button-font-1 shout" attrs content))
 (defn button-small-primary              [attrs & content] (button "btn-small btn-p-color button-font-4 shout" attrs content))
 (defn button-small-secondary            [attrs & content] (button "btn-small btn-outline bg-white button-font-4 shout" attrs content))
 (defn button-pill                       [attrs & content] (button "btn-pill btn-s-color button-font-3 shout" attrs content))

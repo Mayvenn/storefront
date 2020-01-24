@@ -401,3 +401,8 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "diamond-check")]))
+
+(defn button-facebook-f [opts]
+   (component/html
+    [:svg opts
+     ^:inline (svg-xlink "button-facebook-f")]))

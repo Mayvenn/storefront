@@ -40,7 +40,8 @@
    [:div.mt2.mb2.col-12.left
     (ui/check-box {:label   "Show password"
                    :keypath keypaths/account-show-password?
-                   :value   show-password?})]
+                   :value   show-password?
+                   :label-classes "proxima content-1"})]
 
    [:div.col-12.col-8-on-tb-dt
     (ui/submit-button sign-up-text

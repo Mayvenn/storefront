@@ -54,7 +54,7 @@
 
     [:div.mx-auto.col-9.pb2.flex.items-center.justify-between
      ^:inline (divider)
-     [:span.h6.px2 "or"]
+     [:span.proxima.content-3.px2 "or"]
      ^:inline (divider)]]
    [:div.p4.col-4-on-tb-dt.center.mx-auto
     [:div.hide-on-mb-tb.py4]
