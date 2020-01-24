@@ -102,6 +102,45 @@
             :background-repeat   "repeat-x"
             :height              "24px"}}])
 
+(defcomponent content-box-organism
+  [_ _ _]
+  [:div.py8.px4.bg-cool-gray
+   [:div.pb2
+    [:div.proxima.title-2.bold.caps "Wigs 101:"]
+    [:div.canela.title-1.pb2 "How to Choose"]
+    [:div.canela.content-1 "There are a few main factors to consider when you’re choosing a wig. When you have a good sense of the look you want to achieve, your lifestyle and your budget, the rest will fall into place. Ask yourself the density, lace color, length of hair you want, and if you prefer virgin hair or dyed hair."]]
+
+   [:div.py2
+    [:div.proxima.title-2.bold.caps.pb1 "Cap Size"]
+    [:div.canela.content-2 "Cap size ranges between 20-21 inches. If for any reason your wig doesn’t fit, reach out to Customer Service for details to return or exchange your product."]]
+
+   [:div.py2
+    [:div.proxima.title-2.bold.caps.pb1 "Density"]
+    [:div.canela.content-2 "The fullest density clocks in at 200% - other measures are 180, 150 and 130. If the style you’re planning needs a lot of thickness, you should choose a higher density like 180 or 200. If you only need a little, consider 130 or 150."]]
+
+   [:div.py2
+    [:div.proxima.title-2.bold.caps.pb1 "Lace Color"]
+    [:div.canela.content-2 "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."]]
+
+   [:div.py2
+    [:div.proxima.title-2.bold.caps.pb1 "Length"]
+    [:div.canela.content-2 "Short and sassy or drama down to your ankles? The choice is yours!"]]
+
+   [:div.py2
+    [:div.proxima.title-2.bold.caps.pb1 "Virgin & Dyed"]
+    [:div.canela.content-2 "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want. The most straight-forward choice is often to purchase a pre-dyed wig."]]
+
+   [:div.py2
+    [:div.proxima.title-2.bold.caps.pb1 "Free Wig Customization"]
+    [:div.canela.content-2 "We’re here to make wigs easier and offer free knot bleaching, hairline plucking and lace cutting with each qualifying wig purchase. If your wig isn’t ready to wear, it includes free customization."]]
+
+   [:div.py2
+    [:div.proxima.title-2.bold.caps.pb1 "Still Have Questions?"]
+    [:div.canela.content-2
+     [:div "Customer Service can help!"] 
+     [:div "Call (888) 562-7952 "]
+     [:div "Monday through Friday from 8am-5pm PST."]]]])
+
 (defcomponent ^:private template
   "This lays out different ux pieces to form a cohesive ux experience"
   [{:keys [header footer category-hero drill-category-list product-list]} _ _]
@@ -114,7 +153,8 @@
     (component/build drill-category-list-organism drill-category-list)
     divider-atom
     (component/build product-list/organism product-list)]
-   ;;    [:div "Educational content"]
+   divider-atom
+   (component/build content-box-organism {})
    ;;    [:div "Recent blog posts"]
    ;;    [:div "Contact"]
    (component/build footer-organism footer)])
