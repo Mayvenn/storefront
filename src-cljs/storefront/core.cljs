@@ -16,6 +16,7 @@
             [storefront.trackings :refer [perform-track]]
             [storefront.frontend-trackings]
             [clojure.string :as string]
+            clojure.walk
             [goog.object :as gobj]
             ["react" :as react]
             ["react-dom" :as react-dom]
@@ -133,8 +134,16 @@
 (defonce app-state (atom (deep-merge (state/initial-state)
                                      (consume-preloaded-data))))
 
+(defn ^:private sort-maps
+  "Replaces all maps in a nested structure with sorted maps."
+  [form]
+  (clojure.walk/postwalk
+   #(cond->> %
+      (map? %) (into (sorted-map)))
+   form))
+
 (defn ^:export debug-app-state []
-  (clj->js @app-state
+  (clj->js (sort-maps @app-state)
            :keyword-fn (comp #(subs % 1) str)))
 
 (defn ^:export current-order []
