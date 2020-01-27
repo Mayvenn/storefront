@@ -146,7 +146,7 @@
    [:div.py2
     [:div.proxima.title-2.bold.caps.pb1 "Still Have Questions?"]
     [:div.canela.content-2
-     [:div "Customer Service can help!"] 
+     [:div "Customer Service can help!"]
      [:div "Call (888) 562-7952 "]
      [:div "Monday through Friday from 8am-5pm PST."]]]])
 
