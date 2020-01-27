@@ -445,11 +445,12 @@
                                                  "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                                  "your unique look using the built-in combs and adjustable strap.")
            :image-url                      "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"
-           :subsections                    {"360-wigs"        {:order         2
-                                                               :title/primary "360 Wigs"}
-                                            "lace-front-wigs" {:order         1
+           :subcategory-ids                ["24" "26" "25"]
+           :subsections                    {"lace-front-wigs" {:order         0
                                                                :title/primary "Lace Front Wigs"}
-                                            "ready-wigs"      {:order         0
+                                            "360-wigs"        {:order         1
+                                                               :title/primary "360 Wigs"}
+                                            "ready-wigs"      {:order         2
                                                                :title/primary "Ready to Wear Wigs"}}})
    (merge {:catalog/category-id "24"
            :category/new?       true

@@ -9,7 +9,8 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [spice.maps :as maps]))
 
 (defn ^:private vertical-squiggle-atom
   [top]
@@ -79,10 +80,9 @@
                              {:key (:drill-category/id %)})
            values)]))
 (defn ^:private drill-category-list-query
-  [_ categories]
-  (let [ready-wear-wigs        (categories/id->category 25 categories)
-        virgin-lace-front-wigs (categories/id->category 24 categories)
-        virgin-360-wigs        (categories/id->category 26 categories)]
+  [{:keys [subcategory-ids]} categories]
+  (let [indexed-categories (maps/index-by :catalog/category-id categories)
+        category-order     (zipmap subcategory-ids (range))]
     {:drill-category-list/values
      (mapv
       (fn drill-category-query [category]
@@ -93,7 +93,9 @@
          :drill-category/target       [events/navigate-category category]
          :drill-category/action-id    (str "drill-category-action-" (:page/slug category))
          :drill-category/action-label (str "Shop " (:copy/title category))})
-      [ready-wear-wigs virgin-lace-front-wigs virgin-360-wigs])}))
+      (->> (select-keys indexed-categories subcategory-ids)
+           vals
+           (sort-by (comp category-order :catalog/category-id))))}))
 
 (def ^:private purple-divider-atom
   [:div
