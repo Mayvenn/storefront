@@ -124,16 +124,13 @@
       "Done")]]])
 
 (defcomponent ^:private product-cards-empty-state
-  [loading? _ _]
+  [_ _ _]
   [:div.col-12.my8.py4.center
-   (if loading?
-     (ui/large-spinner {:style {:height "4em"}})
-     [:div
-      [:p.h1.py4 "😞"]
-      [:p.h2.py6 "Sorry, we couldn’t find any matches."]
-      [:p.h4.mb10.pb10
-       [:a.p-color (utils/fake-href events/control-category-option-clear) "Clear all filters"]
-       " to see more hair."]])])
+   [:p.h1.py4 "😞"]
+   [:p.h2.py6 "Sorry, we couldn’t find any matches."]
+   [:p.h4.mb10.pb10
+    [:a.p-color (utils/fake-href events/control-category-option-clear) "Clear all filters"]
+    " to see more hair."]])
 
 (defcomponent ^:private product-list-subsection-component
   [{:keys [product-cards subsection-key] primary-title :title/primary} _ {:keys [id]}]
@@ -172,13 +169,16 @@
          [:div.hide-on-dt tabs]
          [:div.hide-on-mb-tb tabs]]))]
 
-   (if (empty? all-product-cards)
-     (component/build product-cards-empty-state loading-products? {})
-     (mapv (fn build [{:as subsection :keys [subsection-key]}]
-             (component/build product-list-subsection-component
-                              subsection
-                              (component-id (str "subsection-" subsection-key))))
-           subsections))])
+   (cond
+     loading-products?          [:div.col-12.my8.py4.center (ui/large-spinner {:style {:height "4em"}})]
+
+     (empty? all-product-cards) (component/build product-cards-empty-state {} {})
+
+     :else                      (mapv (fn build [{:as subsection :keys [subsection-key]}]
+                                        (component/build product-list-subsection-component
+                                                         subsection
+                                                         (component-id (str "subsection-" subsection-key))))
+                                      subsections))])
 
 (defn subsections-query
   [{:keys [catalog/category-id subsections]}
