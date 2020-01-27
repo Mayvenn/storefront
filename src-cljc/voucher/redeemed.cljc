@@ -132,7 +132,7 @@
       :cta/secondary-target     [events/navigate-voucher-redeem]
       :cta/secondary-copy       "Redeem Another Voucher"
       :informational/primary-id "redemption-amount"
-      :informational/primary    (str "$" payout-amount)
+      :informational/primary    payout-amount
       :informational/secondary-id "redemption-secondary"
       :informational/secondary  "has been added to your earnings"}
 
