@@ -1,6 +1,7 @@
 (ns storefront.accessors.experiments
   (:require [storefront.keypaths :as keypaths]
-            [spice.date :as date]))
+            [spice.date :as date]
+            [catalog.categories :as categories]))
 
 #_(defn bucketing-example
     [data]
@@ -100,4 +101,10 @@
   [data]
   (display-feature? data "wig-customization"))
 
-(def icp? (partial enabled? "clowns"))
+(defn icp?
+  [data]
+  (or
+   ;; NOTE: the wig category is good to go so always show the ICP page for the
+   ;; wig category id
+   (= "13" (:catalog/category-id (categories/current-category data)))
+   (display-feature? data "clowns")))

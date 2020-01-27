@@ -303,14 +303,11 @@
 
 (defn ^:export built-component
   [data opts]
-  (if (and (experiments/icp? data)
-           (:page/icp? (categories/current-category data)))
-    (icp/page data opts)
-    (component/build component (query data) opts)))
-
-(defn project-query
-  [app-state keypath]
-  (assoc-in app-state keypath (icp/query app-state)))
+  (let [current-category (categories/current-category data)]
+    (if (and (experiments/icp? data)
+             (:page/icp? current-category))
+      (icp/page data opts)
+      (component/build component (query data) opts))))
 
 (defmethod transitions/transition-state events/navigate-category
   [_ event {:keys [catalog/category-id query-params]} app-state]
@@ -327,10 +324,7 @@
                      (maps/map-values #(set (string/split % query-param-separator)))))
 
       (not= prev-category-id category-id)
-      (assoc-in catalog.keypaths/category-panel nil)
-
-      (experiments/icp? app-state)
-      (project-query catalog.keypaths/category-query))))
+      (assoc-in catalog.keypaths/category-panel nil))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-category
@@ -359,15 +353,13 @@
   [_ _ {:keys [selected]} app-state]
   (-> app-state
       (assoc-in keypaths/hide-header? selected)
-      (assoc-in catalog.keypaths/category-panel selected)
-      (project-query catalog.keypaths/category-query)))
+      (assoc-in catalog.keypaths/category-panel selected)))
 
 (defmethod transitions/transition-state events/control-category-panel-close
   [_ _ _ app-state]
   (-> app-state
       (assoc-in keypaths/hide-header? nil)
-      (assoc-in catalog.keypaths/category-panel nil)
-      (project-query catalog.keypaths/category-query)))
+      (assoc-in catalog.keypaths/category-panel nil)))
 
 #?(:cljs
    (defmethod effects/perform-effects events/control-category-option
@@ -384,22 +376,17 @@
 
 (defmethod transitions/transition-state events/control-category-option-select
   [_ _ {:keys [facet option]} app-state]
-  (-> app-state
-      (update-in (conj catalog.keypaths/category-selections facet) set/union #{option})
-      (project-query catalog.keypaths/category-query)))
+  (update-in app-state (conj catalog.keypaths/category-selections facet) set/union #{option}))
 
 (defmethod transitions/transition-state events/control-category-option-unselect
   [_ _ {:keys [facet option]} app-state]
   (let [facet-path       (conj catalog.keypaths/category-selections facet)
         facet-selections (set/difference (get-in app-state facet-path)
-                                         #{option})
-        new-app-state    (if (empty? facet-selections)
-                           (update-in app-state catalog.keypaths/category-selections dissoc facet)
-                           (assoc-in app-state facet-path facet-selections))]
-    (project-query new-app-state catalog.keypaths/category-query)))
+                                         #{option})]
+    (if (empty? facet-selections)
+      (update-in app-state catalog.keypaths/category-selections dissoc facet)
+      (assoc-in app-state facet-path facet-selections))))
 
 (defmethod transitions/transition-state events/control-category-option-clear
   [_ _ _ app-state]
-  (-> app-state
-      (assoc-in catalog.keypaths/category-selections {})
-      (project-query catalog.keypaths/category-query) ))
+  (assoc-in app-state catalog.keypaths/category-selections {}))

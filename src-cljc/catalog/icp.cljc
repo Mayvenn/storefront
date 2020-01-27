@@ -179,5 +179,4 @@
 
 (defn ^:export page
   [app-state opts]
-  (let [page-data (get-in app-state catalog.keypaths/category-query)]
-    (component/build template page-data opts)))
+  (component/build template (query app-state) opts))
