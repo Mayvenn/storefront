@@ -392,7 +392,7 @@
            :catalog/department             #{"hair"}
            :hair/family                    #{"360-wigs" "lace-front-wigs" "ready-wigs"}
            :selector/essentials            [:hair/family :catalog/department]
-           :selector/electives             [:hair/family :hair/texture :hair/origin :hair/color]
+           :selector/electives             [:hair/family :hair/texture :hair/origin]
            :page/title                     "Human Hair Wigs: Natural Hair Lace Wigs | Mayvenn"
            :page.meta/description          (copy "Mayvenn’s virgin human hair wigs allow you to achieve a new look in minutes"
                                                  "& come in different variations such as Brazilian, Malaysian, straight,"
