@@ -593,11 +593,10 @@
     :catalog/department    #{"hair"}
     :category/show-title?  true
     :category/new?         true
-    :category/description  (str "For those who want it given to them straight, our collection "
-                                "of 100% virgin straight hair is your go-to for a "
-                                "sleek look with minimal effort.")
-    :category/image-url   "http://ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
-    :copy/description      "For those who want it given to them straight, our collection of 100% virgin straight hair is your go-to for a sleek look with minimal effort."
+    :category/description  (copy "Our collection of 100% Virgin hair is a must-have for when you want more volume, length and texture."
+                                 "Switch up your look with these high-quality bundles. Buy three and the install is free.")
+    :category/image-url    "http://ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
+    :copy/description      "For those whom want it given to them straight, our collection of 100% virgin straight hair is your go-to for a sleek look with minimal effort."
     :copy/title            "Hair Bundles"
     :hair/family           #{"bundles"}
     :page/icp?             true
@@ -611,10 +610,10 @@
     :opengraph/title       "Natural Human Hair Bundles - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
     :selector/electives    [:hair/texture :hair/origin :hair/color]
     :selector/essentials   [:catalog/department :hair/family]
-    :subcategories/layout :grid
-    :subcategories/ids    ["2" "3" "4" "5" "6" "7" "8" "9"]
-    :subcategories/title  "Textures"
-    :seo/sitemap          true}])
+    :subcategories/layout  :grid
+    :subcategories/ids     ["2" "3" "4" "5" "6" "7" "8" "9"]
+    :subcategories/title   "Textures"
+    :seo/sitemap           true}])
 
 (def the-only-stylist-exclusive
   (merge {:catalog/category-id       "14"
