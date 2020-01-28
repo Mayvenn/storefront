@@ -164,6 +164,8 @@
                                         :url      "//ucarecdn.com/f4addde0-3c0e-40f8-85b0-fe2e2e96a7b5/",
                                         :alt      "Straight Hair Extensions Mayvenn"}
                                  :icon {:url "/images/categories/straight-icon.svg"}}
+           :subcategory/svg-uri "/images/categories/straight-icon.svg"
+           :subcategory/title   "Straight"
            :home/order          0
            :footer/order        0
            :dtc-footer/order    0
@@ -202,6 +204,8 @@
                                         :url      "//ucarecdn.com/d4b4aa87-fd32-4ff3-b60a-fd1118beab05/",
                                         :alt      "Yaki Straight Hair Extensions Mayvenn"}
                                  :icon {:url "/images/categories/yaki-straight-icon.svg"}}
+           :subcategory/svg-uri "/images/categories/yaki-straight-icon.svg"
+           :subcategory/title   "Yaki Straight"
            :home/order          4
            :footer/order        1
            :header/order        1
@@ -233,6 +237,8 @@
                                              :mobile-url  "//ucarecdn.com/8c996c90-9db1-4a45-b6bf-1c242b708583/",
                                              :alt         "Virgin Kinky Straight"}
                                       :icon {:url "/images/categories/kinky-straight-icon.svg"}}
+           :subcategory/svg-uri      "/images/categories/kinky-straight-icon.svg"
+           :subcategory/title        "Kinky Straight"
            :footer/order             2
            :header/order             2
            :header/group             0}
@@ -263,6 +269,8 @@
                                              :url      "//ucarecdn.com/cbf5424f-3bab-4c6b-9fd1-328e9d94e564/",
                                              :alt      "Body Wave Hair Extensions Mayvenn"}
                                       :icon {:url "/images/categories/body-wave-icon.svg"}}
+           :subcategory/svg-uri      "/images/categories/body-wave-icon.svg"
+           :subcategory/title        "Body Wave"
            :home/order               1
            :footer/order             3
            :dtc-footer/order         1
@@ -297,6 +305,8 @@
                                              :url      "//ucarecdn.com/c935b035-3b7d-4262-a750-a5fa3b559721/",
                                              :alt      "Loose Wave Hair Extensions Mayvenn"}
                                       :icon {:url "/images/categories/loose-wave-icon.svg"}}
+           :subcategory/svg-uri      "/images/categories/loose-wave-icon.svg"
+           :subcategory/title        "Loose Wave"
            :home/order               2
            :footer/order             4
            :dtc-footer/order         2
@@ -329,6 +339,8 @@
                                              :mobile-url  "//ucarecdn.com/5a015964-8ca9-4d65-80ec-ab0703cc5d97/",
                                              :alt         "Virgin Water Wave"}
                                       :icon {:url "/images/categories/water-wave-icon.svg"}}
+           :subcategory/svg-uri      "/images/categories/water-wave-icon.svg"
+           :subcategory/title        "Water Wave"
            :footer/order             5
            :header/order             5
            :header/group             0}
@@ -361,6 +373,8 @@
                                              :url      "//ucarecdn.com/2574ca60-0336-4c42-9087-159740bafdd2/",
                                              :alt      "Deep Wave Hair Extensions Mayvenn"}
                                       :icon {:url "/images/categories/deep-wave-icon.svg"}}
+           :subcategory/svg-uri      "/images/categories/deep-wave-icon.svg"
+           :subcategory/title        "Deep Wave"
            :home/order               3
            :footer/order             6
            :dtc-footer/order         3
@@ -390,6 +404,8 @@
                                              :mobile-url  "//ucarecdn.com/17c827ca-e4df-4427-bdf8-c3426ff8d750/",
                                              :alt         "Virgin Curly"}
                                       :icon {:url "/images/categories/curly-icon.svg"}}
+           :subcategory/svg-uri      "/images/categories/curly-icon.svg"
+           :subcategory/title        "Curly"
            :footer/order             7
            :header/order             7
            :header/group             0}
@@ -411,12 +427,14 @@
            :header/order        0
            :header/group        2
 
-           :page/icp?     true
-           :category/new? true
-
-           :copy/title "Wigs"
-           :page/slug  "wigs"
-           :seo/title  "Wigs"
+           :page/icp?            true
+           :category/new?        true
+           :category/description (copy "Want a fun, protective style that switches up your look,"
+                                       "color or hair length instantly?"
+                                       "Human hair wigs are the perfect choice.")
+           :copy/title           "Human Hair Wigs"
+           :page/slug            "wigs"
+           :seo/title            "Wigs"
 
            :copy/description (copy "These units will be your go-to protective style"
                                    "for achieving a brand new look."
@@ -445,7 +463,9 @@
                                                  "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                                  "your unique look using the built-in combs and adjustable strap.")
            :image-url                      "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"
-           :subcategory-ids                ["24" "26" "25"]
+           :product-list/title             "Shop All Wigs"
+           :subcategories/ids              ["24" "26" "25"]
+           :subcategories/layout           :list
            :subsections                    {"lace-front-wigs" {:order         0
                                                                :title/primary "Lace Front Wigs"}
                                             "360-wigs"        {:order         1
@@ -567,6 +587,34 @@
                                                        :order         7}
                                      "curly"          {:title/primary "Curly"
                                                        :order         8}}}])
+
+(def human-hair-bundles
+  [{:catalog/category-id   "27"
+    :catalog/department    #{"hair"}
+    :category/show-title?  true
+    :category/new?         true
+    :category/description  (str "For those who want it given to them straight, our collection "
+                                "of 100% virgin straight hair is your go-to for a "
+                                "sleek look with minimal effort.")
+    :category/image-url   "http://ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
+    :copy/description      "For those who want it given to them straight, our collection of 100% virgin straight hair is your go-to for a sleek look with minimal effort."
+    :copy/title            "Hair Bundles"
+    :hair/family           #{"bundles"}
+    :page/icp?             true
+    :page/slug             "human-hair-bundles"
+    :page/title            "Hair Bundles: Sew-In Hair Bundles | Mayvenn"
+    :page.meta/description (copy "Mayvenn’s real human hair bundles come in different variations such as"
+                                 "Brazilian, Malaysian, straight, deep wave, and loose wave. Create your look today.")
+    :product-list/title    "Shop All Bundles"
+    :opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our 30 Day Quality Guarantee,"
+                                 "our natural human hair bundles are the best quality products on the market and ship free!")
+    :opengraph/title       "Natural Human Hair Bundles - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
+    :selector/electives    [:hair/texture :hair/origin :hair/color]
+    :selector/essentials   [:catalog/department :hair/family]
+    :subcategories/layout :grid
+    :subcategories/ids    ["2" "3" "4" "5" "6" "7" "8" "9"]
+    :subcategories/title  "Textures"
+    :seo/sitemap          true}])
 
 (def the-only-stylist-exclusive
   (merge {:catalog/category-id       "14"
@@ -711,7 +759,8 @@
           virgin-hair-nav-roots
           menu-categories
           seamless-clip-ins-category
-          tape-ins-category))
+          tape-ins-category
+          human-hair-bundles))
 
 (defn id->category [id categories]
   (->> categories

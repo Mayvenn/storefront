@@ -149,10 +149,9 @@
    :key value})
 
 (defcomponent organism
-  [{:keys [subsections all-product-cards loading-products? filter-tabs-data]} _ _]
+  [{:keys [title subsections all-product-cards loading-products? filter-tabs-data]} _ _]
   [:div.px2.py4
-   [:div.canela.title-1.center.mt3.py4
-    "Shop All Wigs"]
+   [:div.canela.title-2.center.mt3.py4 title]
    [:div.px1.bg-white.sticky.z1
     ;; The -5px prevents a sliver of the background from being visible above the filters
     ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
@@ -215,7 +214,8 @@
         product-cards              (mapcat :product-cards subsections)
         open-panel                 (get-in app-state catalog.keypaths/category-panel)
         facets                     (maps/index-by :facet/slug (get-in app-state keypaths/v2-facets))]
-    {:subsections       subsections
+    {:title             (:product-list/title category)
+     :subsections       subsections
      :all-product-cards (mapcat :product-cards subsections)
      :loading-products? (utils/requesting? app-state (conj request-keys/get-products
                                                            (skuers/essentials category)))

@@ -33,37 +33,38 @@
   [{:category-hero.title/keys [id value]}]
   (when id
     [:div.title-1.canela.pt5 value]))
+
 (defn category-hero-description
   "A ui element"
   [{:category-hero.description/keys [id value]}]
   (when id
     [:div.content-2.proxima.py5 value]))
+
 (defcomponent ^:private category-hero-organism
   "This uses ui elements to build a piece of UX"
   [data _ _]
   [:div.bg-warm-gray.center.py5.px6
    (category-hero-title data)
    (category-hero-description data)])
+
 (defn ^:private category-hero-query
   [category wig-customization?]
-  {:category-hero.title/id       "category-hero-title"
-   :category-hero.title/value    "Human Hair Wigs"
-   :category-hero.description/id "category-hero-description"
-   :category-hero.description/value
-   (str
-    "Want a fun, protective style that switches up your look, color or hair length instantly? "
-    "Human hair wigs are the perfect choice. "
-    (when wig-customization? "Get free customization with qualifying purchases."))})
+  {:category-hero.title/id          "category-hero-title"
+   :category-hero.title/value       (:copy/title category)
+   :category-hero.description/id    "category-hero-description"
+   :category-hero.description/value (if (->> category :catalog/category-id (= "13") (and wig-customization?))
+                                      (str (:category/description category) " Get free customization with qualifying purchases.")
+                                      (:category/description category))})
 
-(defcomponent ^:private drill-category-organism
+(defcomponent ^:private drill-category-list-entry-organism
   [{:drill-category/keys [id title description image-url target action-id action-label]} _ _]
   (when id
     [:div.py3.flex
      {:key       id
       :data-test id}
      [:div.mt1.mr3
-      [:img {:src   (assets/path image-url)
-             :width 62}]]
+      (when image-url
+        (ui/ucare-img {:width "62"} image-url))]
      [:div
       [:div.title-2.proxima.shout title]
       [:div.content-2.proxima.py1 description]
@@ -77,26 +78,52 @@
   [{:drill-category-list/keys [values]} _ _]
   (when (seq values)
     [:div.py8.px4
-     (mapv #(component/build drill-category-organism %
+     (mapv #(component/build drill-category-list-entry-organism %
                              {:key (:drill-category/id %)})
            values)]))
-(defn ^:private drill-category-list-query
-  [{:keys [subcategory-ids]} categories]
-  (let [indexed-categories (maps/index-by :catalog/category-id categories)
-        category-order     (zipmap subcategory-ids (range))]
-    {:drill-category-list/values
-     (mapv
-      (fn drill-category-query [category]
-        {:drill-category/id           (:page/slug category)
-         :drill-category/title        (:copy/title category)
-         :drill-category/description  (:copy/description category)
-         :drill-category/image-url    (:subcategory/image-uri category)
-         :drill-category/target       [events/navigate-category category]
-         :drill-category/action-id    (str "drill-category-action-" (:page/slug category))
-         :drill-category/action-label (str "Shop " (:copy/title category))})
-      (->> (select-keys indexed-categories subcategory-ids)
-           vals
-           (sort-by (comp category-order :catalog/category-id))))}))
+
+(defcomponent ^:private drill-category-grid-entry-organism
+  [{:drill-category/keys [id title description svg-url target action-id action-label]} _ _]
+  (when id
+    [:div.col-6.py3.flex.flex-column.items-center
+     {:key       id
+      :data-test id}
+     [:div.mt1
+      [:img {:src   (assets/path svg-url)
+             :width 75}]]
+     (when action-id
+       (ui/button-small-underline-primary
+        (assoc (apply utils/route-to target)
+               :data-test  action-id)
+        action-label))]))
+
+(defcomponent ^:private drill-category-grid-organism
+  [{:drill-category-grid/keys [values title]} _ _]
+  (when (seq values)
+    [:div.py8.px4
+     [:div.title-2.proxima.shout title]
+     [:div.flex.flex-wrap
+      (mapv #(component/build drill-category-grid-entry-organism %
+                              {:key (:drill-category/id %)})
+            values)]]))
+
+(defn ^:private category->drill-category-list-entry
+  [category]
+  {:drill-category/id           (:page/slug category)
+   :drill-category/title        (:copy/title category)
+   :drill-category/description  (:copy/description category)
+   :drill-category/image-url    (:subcategory/image-uri category)
+   :drill-category/target       [events/navigate-category category]
+   :drill-category/action-id    (str "drill-category-action-" (:page/slug category))
+   :drill-category/action-label (str "Shop " (:copy/title category))})
+
+(defn ^:private category->drill-category-grid-entry
+  [category]
+  {:drill-category/id           (:page/slug category)
+   :drill-category/svg-url      (:subcategory/svg-uri category)
+   :drill-category/target       [events/navigate-category category]
+   :drill-category/action-id    (str "drill-category-action-" (:page/slug category))
+   :drill-category/action-label (:subcategory/title category)})
 
 (def ^:private purple-divider-atom
   [:div
@@ -149,32 +176,48 @@
 
 (defcomponent ^:private template
   "This lays out different ux pieces to form a cohesive ux experience"
-  [{:keys [header footer category-hero drill-category-list product-list]} _ _]
+  [{:keys [header footer category-hero drill-category-list drill-category-grid product-list]} _ _]
   [:div
    (component/build header-organism header)
    [:div.max-960.mx-auto
     (component/build category-hero-organism category-hero)
     (vertical-squiggle-atom "-36px")
     (component/build drill-category-list-organism drill-category-list)
+    (component/build drill-category-grid-organism drill-category-grid)
     purple-divider-atom
     (component/build product-list/organism product-list)
     green-divider-atom
     (component/build content-box-organism {})]
    (component/build footer-organism footer)])
 
+(defn category->subcategories
+  "Returns a hydrated sequence of subcategories for the given category"
+  [all-categories {subcategory-ids :subcategories/ids}]
+  (let [indexed-categories (maps/index-by :catalog/category-id all-categories)
+        category-order     (zipmap subcategory-ids (range))]
+    (->> (select-keys indexed-categories subcategory-ids)
+         vals
+         (sort-by (comp category-order :catalog/category-id)))) )
+
 (defn query
   [app-state]
-  (let [category           (catalog.categories/current-category app-state)
-        categories         (get-in app-state keypaths/categories)
-        selections         (get-in app-state catalog.keypaths/category-selections)
-        products           (vals (get-in app-state keypaths/v2-products))
-        wig-customization? (experiments/wig-customization? app-state)]
-    {:header              {}
-     :footer              {}
-     :category-hero       (category-hero-query category wig-customization?)
-     :drill-category-list (drill-category-list-query category categories)
-     :product-list        (product-list/query app-state category products selections)}))
+  (let [category      (catalog.categories/current-category app-state)
+        subcategories (category->subcategories (get-in app-state keypaths/categories) category)
+        selections    (get-in app-state catalog.keypaths/category-selections)
+        products      (vals (get-in app-state keypaths/v2-products))]
+    (cond->
+        {:header              {}
+         :footer              {}
+         :category-hero       (category-hero-query category (experiments/wig-customization? app-state))
+         :product-list        (product-list/query app-state category products selections)}
 
-(defn ^:export page
+      (= :grid (:subcategories/layout category))
+      (merge {:drill-category-grid {:drill-category-grid/values (mapv category->drill-category-grid-entry subcategories)
+                                    :drill-category-grid/title  (:subcategories/title category)}})
+
+      (= :list (:subcategories/layout category))
+      (merge {:drill-category-list {:drill-category-list/values (mapv category->drill-category-list-entry subcategories)}}))))
+
+(defn page
   [app-state opts]
   (component/build template (query app-state) opts))
