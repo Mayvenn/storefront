@@ -174,7 +174,7 @@
     (when (:category/new? category)
           [:div.s-color.title-3.proxima.bold.shout "New"])
     [:div.h1.title-1.canela (:copy/title category)]
-    (when-let [icon-url (-> category :images :icon :url)]
+    (when-let [icon-url (:icon category)]
       [:div.mt4 [:img {:src   (assets/path icon-url)
                        :style {:width "54px"}}]])
     [:div.my3.mx6-on-mb.col-8-on-tb-dt.mx-auto-on-tb-dt

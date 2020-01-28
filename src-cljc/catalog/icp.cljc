@@ -120,7 +120,7 @@
 (defn ^:private category->drill-category-grid-entry
   [category]
   {:drill-category/id           (:page/slug category)
-   :drill-category/svg-url      (:subcategory/svg-uri category)
+   :drill-category/svg-url      (:icon category)
    :drill-category/target       [events/navigate-category category]
    :drill-category/action-id    (str "drill-category-action-" (:page/slug category))
    :drill-category/action-label (:subcategory/title category)})
