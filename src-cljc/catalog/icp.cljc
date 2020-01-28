@@ -133,15 +133,11 @@
 
    [:div.py2
     [:div.proxima.title-2.bold.caps.pb1 "Length"]
-    [:div.canela.content-2 "Short and sassy or drama down to your ankles? The choice is yours!"]]
+    [:div.canela.content-2 "Short and sassy or drama down to your ankles? The choice is yours! Available in lengths ranging from 10” to 24”."]]
 
    [:div.py2
     [:div.proxima.title-2.bold.caps.pb1 "Virgin & Dyed"]
-    [:div.canela.content-2 "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want. The most straight-forward choice is often to purchase a pre-dyed wig."]]
-
-   [:div.py2
-    [:div.proxima.title-2.bold.caps.pb1 "Free Wig Customization"]
-    [:div.canela.content-2 "We’re here to make wigs easier and offer free knot bleaching, hairline plucking and lace cutting with each qualifying wig purchase. If your wig isn’t ready to wear, it includes free customization."]]
+    [:div.canela.content-2 "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."]]
 
    [:div.py2
     [:div.proxima.title-2.bold.caps.pb1 "Still Have Questions?"]
