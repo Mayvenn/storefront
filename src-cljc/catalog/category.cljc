@@ -204,8 +204,8 @@
      [:div
       {:key subsection-id
        :id  subsection-id}
-      [:div.canela.title-2.center.mt8.mb4
-       primary-title]
+      (when primary-title
+        [:div.canela.title-2.center.mt8.mb4 primary-title])
       [:div.flex.flex-wrap
        (map product-card/organism product-cards)]])))
 

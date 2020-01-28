@@ -136,8 +136,8 @@
   [{:keys [product-cards subsection-key] primary-title :title/primary} _ {:keys [id]}]
   [:div
    {:id id :data-test id}
-   [:div.canela.title-2.center.mt8.mb2
-    primary-title]
+   (when primary-title
+     [:div.canela.title-2.center.mt8.mb2 primary-title])
    [:div.flex.flex-wrap
     (map product-card/organism product-cards)]])
 
@@ -151,7 +151,7 @@
 (defcomponent organism
   [{:keys [title subsections all-product-cards loading-products? filter-tabs-data]} _ _]
   [:div.px2.py4
-   [:div.canela.title-2.center.mt3.py4 title]
+   [:div.canela.title-1.center.mt3.py4 title]
    [:div.px1.bg-white.sticky.z1
     ;; The -5px prevents a sliver of the background from being visible above the filters
     ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
