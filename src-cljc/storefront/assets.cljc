@@ -3,7 +3,7 @@
 
 (defn path [resource-path]
   (let [mapped-asset (when asset-mappings/manifest
-                       (-> resource-path (subs 1) asset-mappings/manifest))]
+                       (some-> resource-path (subs 1) asset-mappings/manifest))]
     (if (and asset-mappings/cdn-host mapped-asset)
       (str "https://" asset-mappings/cdn-host "/cdn/" mapped-asset)
       resource-path)))
