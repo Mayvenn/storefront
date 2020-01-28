@@ -7,6 +7,7 @@
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.accessors.experiments :as experiments]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
@@ -44,7 +45,7 @@
    (category-hero-title data)
    (category-hero-description data)])
 (defn ^:private category-hero-query
-  [category]
+  [category wig-customization?]
   {:category-hero.title/id       "category-hero-title"
    :category-hero.title/value    "Human Hair Wigs"
    :category-hero.description/id "category-hero-description"
@@ -52,7 +53,7 @@
    (str
     "Want a fun, protective style that switches up your look, color or hair length instantly? "
     "Human hair wigs are the perfect choice. "
-    "Get free customization with qualifying purchases.")})
+    (when wig-customization? "Get free customization with qualifying purchases."))})
 
 (defcomponent ^:private drill-category-organism
   [{:drill-category/keys [id title description image-url target action-id action-label]} _ _]
@@ -163,13 +164,14 @@
 
 (defn query
   [app-state]
-  (let [category   (catalog.categories/current-category app-state)
-        categories (get-in app-state keypaths/categories)
-        selections (get-in app-state catalog.keypaths/category-selections)
-        products   (vals (get-in app-state keypaths/v2-products))]
+  (let [category           (catalog.categories/current-category app-state)
+        categories         (get-in app-state keypaths/categories)
+        selections         (get-in app-state catalog.keypaths/category-selections)
+        products           (vals (get-in app-state keypaths/v2-products))
+        wig-customization? (experiments/wig-customization? app-state)]
     {:header              {}
      :footer              {}
-     :category-hero       (category-hero-query category)
+     :category-hero       (category-hero-query category wig-customization?)
      :drill-category-list (drill-category-list-query category categories)
      :product-list        (product-list/query app-state category products selections)}))
 
