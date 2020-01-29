@@ -56,7 +56,10 @@
 
 (do
   #?@(:cljs
-      [(defn short-date [date-like]
+      [(defn short-date-with-interposed-str [date-like s]
+         (when-let [date (date/to-datetime date-like)]
+           (goog.string/format "%d%s%ds%d" (inc (.getMonth date)) s (.getDate date) s (.getFullYear date))))
+       (defn short-date [date-like]
          (when-let [date (date/to-datetime date-like)]
            (goog.string/format "%d/%d/%d" (inc (.getMonth date)) (.getDate date) (.getFullYear date))))
 

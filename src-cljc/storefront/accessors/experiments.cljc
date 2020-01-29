@@ -108,3 +108,7 @@
    ;; wig category id
    (= "13" (:catalog/category-id (categories/current-category data)))
    (display-feature? data "clowns")))
+
+(defn stylist-reviews?
+  [data]
+  (display-feature? data "stylist-reviews"))
