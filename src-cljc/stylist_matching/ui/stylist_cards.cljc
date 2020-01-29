@@ -116,9 +116,9 @@
       (stylist-card-services-list-molecule data)]]))
 
 (defcomponent organism
-  [data _ _]
+  [data _ {:keys [id]}]
   [:div.flex.flex-column.left-align.rounded.border.border-cool-gray.mx3.my3.bg-white
-   {:key (:react/key data)}
+   {:id id :data-test id}
    (stylist-card-header-molecule data)
    [:div.col-12
     (if (:screen/seen? data)

@@ -286,7 +286,7 @@
         :let  [component (get dispatches (:element/type item) fall-back)]
         :when component]
     [:div {:key (:react/key item)}
-     (ui/screen-aware component item)]))
+     (ui/screen-aware component item (component/component-id (:react/key item)))]))
 
 (defn gallery-modal-query
   [app-state]

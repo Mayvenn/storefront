@@ -101,6 +101,13 @@
               :else `[~tag ~@body])))
    :cljs (def normalize-element identity))
 
+(defn component-id
+  "This helper creates a map with a react-key and makes that
+   value also available to the component itself through opts"
+  [value]
+  {:opts {:id value}
+   :key value})
+
 (defn ^:private element? [v]
   (and (vector? v) (keyword? (first v))))
 

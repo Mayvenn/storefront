@@ -141,13 +141,6 @@
    [:div.flex.flex-wrap
     (map product-card/organism product-cards)]])
 
-(defn ^:private component-id
-  "This helper creates a map with a react-key and makes that
-   value also available to the component itself through opts"
-  [value]
-  {:opts {:id value}
-   :key value})
-
 (defcomponent organism
   [{:keys [title subsections all-product-cards loading-products? filter-tabs-data]} _ _]
   [:div.px2.py4
@@ -176,7 +169,7 @@
      :else                      (mapv (fn build [{:as subsection :keys [subsection-key]}]
                                         (component/build product-list-subsection-component
                                                          subsection
-                                                         (component-id (str "subsection-" subsection-key))))
+                                                         (component/component-id (str "subsection-" subsection-key))))
                                       subsections))])
 
 (defn subsections-query
