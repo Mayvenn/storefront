@@ -185,36 +185,34 @@
                                 content)]))
 
 (defcomponent organism
-  [{:keys [cart-item suggestions]} _ _]
-  [:div
-   (when-let [react-key (:react/key cart-item)]
-     [:div.pt1.pb2.m1.flex
-      {:key react-key}
-       ;; image group
-      [:div.relative.pt3
-       {:style {:min-width "70px"}}
-       (cart-item-square-thumbnail-molecule cart-item)
-       (cart-item-service-thumbnail-molecule cart-item)]
+  [{:keys [cart-item suggestions]} _ {:keys [id]}]
+  [:div.pt1.pb2.m1.flex
+   {:id id :data-test id}
+   ;; image group
+   [:div.relative.pt3
+    {:style {:min-width "70px"}}
+    (cart-item-square-thumbnail-molecule cart-item)
+    (cart-item-service-thumbnail-molecule cart-item)]
 
-       ;; info group
-      [:div.flex-grow-1
-       [:div.flex
-        [:div.flex-grow-1
-         (cart-item-title-molecule cart-item)
+   ;; info group
+   [:div.flex-grow-1
+    [:div.flex
+     [:div.flex-grow-1
+      (cart-item-title-molecule cart-item)
 
-         [:div
-          (cart-item-copy-molecule cart-item)
-          (ui.molecules/stars-rating-molecule cart-item)
-          (cart-item-adjustable-quantity-molecule cart-item)
-          (cart-item-pick-stylist-molecule cart-item)]]
+      [:div
+       (cart-item-copy-molecule cart-item)
+       (ui.molecules/stars-rating-molecule cart-item)
+       (cart-item-adjustable-quantity-molecule cart-item)
+       (cart-item-pick-stylist-molecule cart-item)]]
 
-         ;; price group
-        [:div.right.right-align.pt1.flex.flex-column.items-end
-         {:style {:min-width "67px"}}
-         (cart-item-remove-action-molecule cart-item)
-         (cart-item-swap-action-molecule cart-item)
-         (cart-item-floating-box-molecule cart-item)]]
+     ;; price group
+     [:div.right.right-align.pt1.flex.flex-column.items-end
+      {:style {:min-width "67px"}}
+      (cart-item-remove-action-molecule cart-item)
+      (cart-item-swap-action-molecule cart-item)
+      (cart-item-floating-box-molecule cart-item)]]
 
-       (cart-item-steps-to-complete-molecule cart-item)
+    (cart-item-steps-to-complete-molecule cart-item)
 
-       (component/build suggestions/consolidated-component suggestions nil)]])])
+    (component/build suggestions/consolidated-component suggestions nil)]])

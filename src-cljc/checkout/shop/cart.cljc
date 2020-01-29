@@ -126,10 +126,11 @@
        [:div.flex-grow-1.border-bottom.border-gray.ml-auto]]
       (map-indexed
        (fn [index cart-item]
-         (component/build cart-item/organism {:cart-item   cart-item
-                                              :suggestions (when (zero? index)
-                                                             suggestions)}
-                          {:key (str index)}))
+         (when-let [react-key (:react/key cart-item)]
+           (component/build cart-item/organism {:cart-item   cart-item
+                                                :suggestions (when (zero? index)
+                                                               suggestions)}
+                            (component/component-id (str index "-cart-item-" react-key)))))
        cart-items))]
 
     [:div.col-on-tb-dt.col-6-on-tb-dt
