@@ -16,3 +16,8 @@
                            {:message (str "The stylist you are looking for is not available."
                                           " Please search for another stylist in your area below.")})
   (effects/redirect events/navigate-adventure-find-your-stylist))
+
+(defmethod transitions/transition-state events/api-success-fetch-stylist-reviews
+  [_ _ {:keys [reviews stylist-id] :as args} app-state]
+  (-> app-state
+      (assoc-in (conj keypaths/reviews stylist-id) reviews)))
