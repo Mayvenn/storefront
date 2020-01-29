@@ -38,7 +38,7 @@
   "A ui element"
   [{:category-hero.description/keys [id value]}]
   (when id
-    [:div.content-2.proxima.py5 value]))
+    [:div.content-2.proxima.py5.col-6-on-dt.mx-auto value]))
 
 (defcomponent ^:private category-hero-organism
   "This uses ui elements to build a piece of UX"
@@ -59,10 +59,10 @@
 (defcomponent ^:private drill-category-list-entry-organism
   [{:drill-category/keys [id title description image-url target action-id action-label]} _ _]
   (when id
-    [:div.py3.flex
+    [:div.p3.col-4-on-tb-dt.flex.flex-wrap
      {:key       id
       :data-test id}
-     [:div.mt1.mr3
+     [:div.mt1.mr3.col-12-on-dt
       (when image-url
         (ui/ucare-img {:width "62"} image-url))]
      [:div
@@ -77,7 +77,7 @@
 (defcomponent ^:private drill-category-list-organism
   [{:drill-category-list/keys [values]} _ _]
   (when (seq values)
-    [:div.py8.px4
+    [:div.py8.flex.flex-wrap
      (mapv #(component/build drill-category-list-entry-organism %
                              {:key (:drill-category/id %)})
            values)]))
