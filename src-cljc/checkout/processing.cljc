@@ -3,9 +3,9 @@
             #?@(:cljs [[spice.core :as spice]
                        [storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.api :as api]
+                       [storefront.keypaths :as keypaths]
                        [storefront.history :as history]])
             [storefront.component :as component :refer [defcomponent]]
-            [storefront.keypaths :as keypaths]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
@@ -68,12 +68,15 @@
         (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
         (fn success-handler [& _]
           (get-order-status order (partial quadpay-confirm-order app-state) 0))
-        (fn failure-handler [response]
-          (let [response-body (get-in response [:response :body])]
+        (fn failure-handler [{:keys [status] :as response}]
+          (let [{:keys [error-code error-message] :as response-body} (get-in response [:response :body])]
+            (spice.core/spy response-body)
             (if (api/waiter-style? response-body)
-              (do
-                (history/enqueue-navigate events/navigate-cart {:query-params {:error (:error-code response-body)}})
-                (messages/handle-later events/flash-show-failure {:message (:error-message response-body)}))
+              (if (and (= status 422) (= error-code "invalid-state"))
+                (get-order-status order (partial quadpay-confirm-order app-state) 0)
+                (do
+                  (history/enqueue-navigate events/navigate-cart {:query-params {:error error-code}})
+                  (messages/handle-later events/flash-show-failure {:message error-message})))
 
               (get-order-status order (partial quadpay-confirm-order app-state) 0))))))))
 
