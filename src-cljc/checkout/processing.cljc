@@ -70,7 +70,6 @@
           (get-order-status order (partial quadpay-confirm-order app-state) 0))
         (fn failure-handler [{:keys [status] :as response}]
           (let [{:keys [error-code error-message] :as response-body} (get-in response [:response :body])]
-            (spice.core/spy response-body)
             (if (api/waiter-style? response-body)
               (if (and (= status 422) (= error-code "invalid-state"))
                 (get-order-status order (partial quadpay-confirm-order app-state) 0)
