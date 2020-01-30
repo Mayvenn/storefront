@@ -59,6 +59,7 @@
            :hair/family              #{"closures"}
            :hair/color.process       #{"natural" "dyed"}
            :hair/source              #{"virgin"}
+           :category/tags            #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives       [:hair/origin :hair/texture :hair/color :hair/base-material]
            :header/order             0
@@ -84,6 +85,7 @@
            :hair/family         #{"360-frontals"}
            :hair/color.process  #{"natural" "dyed"}
            :hair/source         #{"virgin"}
+           :category/tags       #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives  [:hair/origin :hair/texture :hair/color :hair/base-material]
 
@@ -115,6 +117,7 @@
            :footer/order        12
            :dtc-footer/order    6
            :hair/source         #{"virgin"}
+           :category/tags       #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives  [:hair/origin :hair/texture :hair/color :hair/base-material]
            :copy/description    (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
@@ -611,7 +614,8 @@
            :hair/family         #{"closures" "frontals" "360-frontals"}
            :hair/color.process  #{"dyed" "natural"}
            :hair/source         #{"virgin"}
-           :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
+           :category/tags       #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
+           :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source :category/tags]
            :hamburger/order     1
            :selector/electives  []
            :copy/description    (copy "Save your precious strands and top your look"
