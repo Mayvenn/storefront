@@ -1,5 +1,6 @@
 (ns catalog.categories
   (:require [clojure.string :as string]
+            [cemerick.url :as cemerick-url]
             [storefront.keypaths :as keypaths]
             [catalog.keypaths]
             [storefront.events :as events]))
@@ -586,7 +587,7 @@
            :catalog/department    #{"hair"}
            :hair/color.process    #{"natural"}
            :hair/source           #{"virgin"},
-           :hair/family           :query/missing
+           :hair/family           #{}
            :hair/texture          #{"straight"
                                     "kinky-straight"
                                     "yaki-straight"
@@ -713,12 +714,22 @@
   (id->category (get-in data catalog.keypaths/category-id)
                 (get-in data keypaths/categories)))
 
-(defn canonical-category-id [data selections]
-  (let [current-category (current-category data)]
-    (if (-> current-category :catalog/category-id (= "13"))
-      (case (get selections "family")
-        "360-wigs"        "26"
-        "lace-front-wigs" "24"
-        "ready-wigs"      "25"
-        "13")
-      (:catalog/category-id current-category))))
+(defn canonical-category-id [data]
+  "With ICPs, the 'canonical category id' may be different from the ICP category
+  id. E.g. 13-wigs with a selected family of 'lace-front-wigs' will have a
+  canonical cateogry id of 24, or in other words, lace-front-wigs' category id."
+  (let [current-category  (current-category data)
+        query-selections  (:query (get-in data keypaths/navigation-uri))
+        query-map         #?(:clj (cemerick-url/query->map query-selections)
+                             :cljs query-selections)
+        categories        (get-in data keypaths/categories)
+        single-categories (filter #(= 1 (count (:hair/family %))) categories)
+        family-selection  (some-> (get query-map "family")
+                                  (string/split #"~"))]
+
+    ;; NOTE: this cond will be built out to consider texture selections for the bundle category page in the future (and perhaps other ICPs)
+    (cond
+      (and family-selection (= (count family-selection) 1))
+      (:catalog/category-id (first (filter #(some (:hair/family %) family-selection) single-categories)))
+
+      :else (:catalog/category-id current-category))))

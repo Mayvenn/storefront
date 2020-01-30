@@ -498,6 +498,7 @@
   (->> (:body resp)
        parse-canonical-uri
        :query))
+
 (deftest canonical-uris-query-params
   (with-services {}
     (with-handler handler
@@ -649,7 +650,16 @@
                                                                "Comes in different variations such as Brazilian "
                                                                "and Malaysian, straight, deep wave and loose wave.")
                                                           "/categories/23-mayvenn-install"
-                                                          "origin=indian"))))))
+                                                          "origin=indian")))
+
+      (testing "when mayvenn-install category has a category selected"
+        (-> (mock/request :get "https://shop.mayvenn.com/categories/23-mayvenn-install?family=closures")
+            handler
+            (validate-title-and-description-and-canonical "Virgin Hair Closures | Mayvenn"
+                                                          (str "Mayvenn's Virgin Hair Closures are beautifully crafted and provide a realistic part to "
+                                                                "close off any unit or install.")
+                                                          "/categories/0-virgin-closures"
+                                                          nil))))))
 
 (def default-wig-title
   "Human Hair Wigs: Natural Hair Lace Wigs | Mayvenn")
@@ -701,6 +711,15 @@
                                                                    "Shop our collection of virgin hair wigs today.")
                                                               "/categories/13-wigs"
                                                               "origin=brazilian&texture=loose-wave"))))
+
+        (testing "two families are selected"
+          (-> (mock/request :get (str wig-category-url
+                                      "?family=lace-front-wigs~ready-wigs"))
+              handler
+              (validate-title-and-description-and-canonical default-wig-title
+                                                            default-wig-description
+                                                            "/categories/13-wigs"
+                                                            "family=lace-front-wigs%7Eready-wigs")))
 
         (testing "three options are selected- one is a subcategory and the other two are general filter options"
           (-> (mock/request :get (str wig-category-url

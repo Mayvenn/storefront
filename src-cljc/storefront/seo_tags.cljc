@@ -77,7 +77,7 @@
 (defn format-with-nil-protection
   [template & fill-strings]
   (->> fill-strings
-       (map #(if (nil? %) "" (str % " ")))
+       (map #(if (empty? %) "" (str % " ")))
        (apply strings/format template)))
 
 (defn category-tags [data]
@@ -88,7 +88,7 @@
                                 (string? uri-query) cemerick-url/query->map
                                 :always             (select-keys (mapv name category/allowed-query-params))
                                 :always             category/sort-query-params)
-        canonical-category-id (categories/canonical-category-id data selected-options)
+        canonical-category-id (categories/canonical-category-id data)
         category              (categories/id->category canonical-category-id categories)
         indexable?            (and
                                (not-any? #(string/includes? % category/query-param-separator)
@@ -135,10 +135,7 @@
 
 (defn update-path
   [uri data]
-  (let [query-params          (:query uri)
-        query-map             #?(:clj (cemerick-url/query->map query-params)
-                                 :cljs query-params)
-        canonical-category-id (categories/canonical-category-id data query-map)
+  (let [canonical-category-id (categories/canonical-category-id data)
         categories            (get-in data keypaths/categories)
         {:keys [page/slug]}   (categories/id->category canonical-category-id categories)]
     (assoc uri :path (str "/categories/" canonical-category-id "-" slug))))
@@ -149,18 +146,30 @@
         path      (:path uri)
         query-map #?(:clj (cemerick-url/query->map query)
                      :cljs query)]
-    #?(:clj (do (prn "CLJ") (assoc uri :query (uri/map->query (into {}
-                                                                    (remove #(string/includes? path (second %)) query-map)))))
-       :cljs (do (prn "CLJS") (assoc uri
-                                     :query (into {}
-                                                  (remove #(string/includes? path (second %)) query-map)))))))
+    #?(:clj (->> query-map
+                 (remove #(string/includes? path (second %)))
+                 (into {})
+                 uri/map->query
+                 (assoc uri :query))
+       :cljs (->> query-map
+                  (remove #(string/includes? path (second %)))
+                  (into {})
+                  (assoc uri :query)))))
+
+(defn handle-icp-paths-and-query-params
+  [uri data]
+  (let [path (:path uri)]
+    (if (string/includes? path "categories")
+      (some-> uri
+              (update-path data)
+              remove-unneccessary-query-params)
+      uri)))
 
 (defn canonical-uri
   [data]
   (let [nav-event (get-in data keypaths/navigation-event)]
     (some-> (get-in data keypaths/navigation-uri)
-            (update-path data)
-            remove-unneccessary-query-params
+            (handle-icp-paths-and-query-params data)
             (utils/?update :query (partial filter-and-sort-seo-query-params nav-event)) ;;; WHERE WE DEAL WITH QUERY PARAMS
             (update :host string/replace #"^[^.]+" "shop")
             (assoc :scheme (get-in data keypaths/scheme))
