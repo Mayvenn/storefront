@@ -548,13 +548,17 @@
            (re-find #"<title[^>]*>(.+)</title>")
            second))
 
-(defn validate-title-and-description
-  [resp expected-title expected-description]
+(defn validate-title-and-description-and-canonical
+  [resp expected-title expected-description expected-canonical expected-query-params]
   (is (= 200 (:status resp)))
   (is (= expected-title
          (parse-title (:body resp))))
   (is (= expected-description
-         (parse-meta-tag-content (:body resp) "description"))))
+         (parse-meta-tag-content (:body resp) "description")))
+  (is (= expected-canonical
+         (-> resp :body parse-canonical-uri :path)))
+  (is (= expected-query-params
+         (response->canonical-uri-query-string resp))))
 
 (def default-closure-title
   "Virgin Hair Closures: Human Hair Closures | Mayvenn")
@@ -574,17 +578,21 @@
         (testing "no options are selected we get generic description"
           (-> (mock/request :get virgin-closures-category-url)
               handler
-              (validate-title-and-description default-closure-title
-                                              default-closure-description)))
+              (validate-title-and-description-and-canonical default-closure-title
+                                                            default-closure-description
+                                                            "/categories/0-virgin-closures"
+                                                            nil)))
 
         (testing "when one facet is selected"
           (-> (mock/request :get (str virgin-closures-category-url
                                       "?origin=indian"))
               handler
-              (validate-title-and-description "Indian Virgin Hair Closures | Mayvenn"
-                                              (str "Mayvenn's Indian Virgin Hair Closures are beautifully "
-                                                   "crafted and provide a realistic part to close off any unit "
-                                                   "or install."))))
+              (validate-title-and-description-and-canonical "Indian Virgin Hair Closures | Mayvenn"
+                                                            (str "Mayvenn's Indian Virgin Hair Closures are beautifully "
+                                                                 "crafted and provide a realistic part to close off any unit "
+                                                                 "or install.")
+                                                            "/categories/0-virgin-closures"
+                                                            "origin=indian")))
 
         (testing "two options are selected"
           (testing "when one facet is selected"
@@ -592,10 +600,12 @@
                                         "?texture=loose-wave"
                                         "&color=%232-chocolate-brown"))
                 handler
-                (validate-title-and-description "Loose Wave #2 Chocolate Brown Virgin Hair Closures | Mayvenn"
-                                                (str "Mayvenn's Loose Wave #2 Chocolate Brown Virgin Hair "
-                                                     "Closures are beautifully crafted and provide a realistic part to "
-                                                     "close off any unit or install.")))))
+                (validate-title-and-description-and-canonical "Loose Wave #2 Chocolate Brown Virgin Hair Closures | Mayvenn"
+                                                              (str "Mayvenn's Loose Wave #2 Chocolate Brown Virgin Hair "
+                                                                   "Closures are beautifully crafted and provide a realistic part to "
+                                                                   "close off any unit or install.")
+                                                              "/categories/0-virgin-closures"
+                                                              "texture=loose-wave&color=%232-chocolate-brown"))))
 
         (testing "three options are selected"
           (-> (mock/request :get (str virgin-closures-category-url
@@ -603,10 +613,12 @@
                                       "&origin=indian"
                                       "&color=%232-chocolate-brown"))
               handler
-              (validate-title-and-description "Indian Loose Wave #2 Chocolate Brown Virgin Hair Closures | Mayvenn"
-                                              (str "Mayvenn's Indian Loose Wave #2 Chocolate Brown Virgin "
-                                                   "Hair Closures are beautifully crafted and provide a realistic "
-                                                   "part to close off any unit or install."))))
+              (validate-title-and-description-and-canonical "Indian Loose Wave #2 Chocolate Brown Virgin Hair Closures | Mayvenn"
+                                                            (str "Mayvenn's Indian Loose Wave #2 Chocolate Brown Virgin "
+                                                                 "Hair Closures are beautifully crafted and provide a realistic "
+                                                                 "part to close off any unit or install.")
+                                                            "/categories/0-virgin-closures"
+                                                            "origin=indian&texture=loose-wave&color=%232-chocolate-brown")))
 
         (testing "Four options from four facets are selected we get generic description"
           (-> (mock/request :get (str virgin-closures-category-url
@@ -615,20 +627,109 @@
                                       "&color=%232-chocolate-brown"
                                       "&base-material=lace"))
               handler
-              (validate-title-and-description default-closure-title
-                                              default-closure-description)))
+              (validate-title-and-description-and-canonical default-closure-title
+                                                            default-closure-description
+                                                            "/categories/0-virgin-closures"
+                                                            "origin=indian&texture=loose-wave&color=%232-chocolate-brown")))
 
         (testing "two options from the same facet are selected we get a generic description"
           (-> (mock/request :get (str virgin-closures-category-url
                                       "?origin=indian~brazilian"))
               handler
-              (validate-title-and-description default-closure-title
-                                              default-closure-description))))
+              (validate-title-and-description-and-canonical default-closure-title
+                                                            default-closure-description
+                                                            "/categories/0-virgin-closures"
+                                                            "origin=indian%7Ebrazilian"))))
 
       (testing "when a category page does not have a template and has selections"
         (-> (mock/request :get "https://shop.mayvenn.com/categories/23-mayvenn-install?origin=indian")
             handler
-            (validate-title-and-description "Mayvenn Install Eligible | Mayvenn"
-                                            (str "Mayvenn’s Natural Lace Front Wigs and 360 Wigs. "
-                                                 "Comes in different variations such as Brazilian "
-                                                 "and Malaysian, straight, deep wave and loose wave.")))))))
+            (validate-title-and-description-and-canonical "Mayvenn Install Eligible | Mayvenn"
+                                                          (str "Mayvenn’s Natural Lace Front Wigs and 360 Wigs. "
+                                                               "Comes in different variations such as Brazilian "
+                                                               "and Malaysian, straight, deep wave and loose wave.")
+                                                          "/categories/23-mayvenn-install"
+                                                          "origin=indian"))))))
+
+(def default-wig-title
+  "Human Hair Wigs: Natural Hair Lace Wigs | Mayvenn")
+
+(def default-wig-description
+  (str "Mayvenn’s virgin human hair wigs allow you to achieve a new "
+       "look in minutes & come in different variations such as "
+       "Brazilian, Malaysian, straight, & deep wave."))
+
+(def wig-category-url
+  "https://shop.mayvenn.com/categories/13-wigs")
+
+(def lace-front-wig-category-url
+  "https://shop.mayvenn.com/categories/24-virgin-lace-front-wigs")
+
+(deftest wig-page-title-and-description-templates
+  (with-services {}
+    (with-handler handler
+      (testing "a wig page has a template"
+        (testing "no options are selected we get generic description"
+          (-> (mock/request :get wig-category-url)
+              handler
+              (validate-title-and-description-and-canonical default-wig-title
+                                                            default-wig-description
+                                                            "/categories/13-wigs"
+                                                            nil)))
+
+        (testing "when one family is selected,"
+          (testing "uses that family's category canonical uri"
+            (-> (mock/request :get (str wig-category-url
+                                        "?family=lace-front-wigs"))
+                handler
+                (validate-title-and-description-and-canonical "Lace Front Wigs: Human Hair Lace Front Wigs | Mayvenn"
+                                                              (str "Mayvenn’s human hair lace front wigs mimic a natural hairline "
+                                                                   "and come in different variations such as Brazilian, Malaysian, "
+                                                                   "straight, and deep wave.")
+                                                              "/categories/24-virgin-lace-front-wigs"
+                                                              nil))))
+
+        (testing "two options are selected"
+          (testing "when one facet is selected"
+            (-> (mock/request :get (str wig-category-url
+                                        "?origin=brazilian"
+                                        "&texture=loose-wave"))
+                handler
+                (validate-title-and-description-and-canonical "Brazilian Loose Wave Wigs | Mayvenn"
+                                                              (str "Mayvenn's Brazilian Loose Wave human Wigs are allow you to "
+                                                                   "change up and achieve your desired look. "
+                                                                   "Shop our collection of virgin hair wigs today.")
+                                                              "/categories/13-wigs"
+                                                              "origin=brazilian&texture=loose-wave"))))
+
+        (testing "three options are selected- one is a subcategory and the other two are general filter options"
+          (-> (mock/request :get (str wig-category-url
+                                      "?texture=loose-wave"
+                                      "&origin=indian"
+                                      "&family=lace-front-wigs"))
+              handler
+              (validate-title-and-description-and-canonical "Lace Front Wigs: Human Hair Lace Front Wigs | Mayvenn"
+                                                            (str "Mayvenn’s human hair lace front wigs mimic a natural hairline "
+                                                                 "and come in different variations such as Brazilian, Malaysian, "
+                                                                 "straight, and deep wave.")
+                                                            "/categories/24-virgin-lace-front-wigs"
+                                                            "origin=indian&texture=loose-wave")))
+
+        (testing "two options from the same facet are selected we get a generic description"
+          (-> (mock/request :get (str wig-category-url
+                                      "?origin=indian~brazilian"))
+              handler
+              (validate-title-and-description-and-canonical default-wig-title
+                                                            default-wig-description
+                                                            "/categories/13-wigs"
+                                                            "origin=indian%7Ebrazilian")))
+
+        (testing "two options from the same facet and another from another facet are selected we get a generic description"
+          (-> (mock/request :get (str wig-category-url
+                                      "?origin=indian~brazilian"
+                                      "&texture=loose-wave"))
+              handler
+              (validate-title-and-description-and-canonical default-wig-title
+                                                            default-wig-description
+                                                            "/categories/13-wigs"
+                                                            "origin=indian%7Ebrazilian&texture=loose-wave")))))))

@@ -713,3 +713,12 @@
   (id->category (get-in data catalog.keypaths/category-id)
                 (get-in data keypaths/categories)))
 
+(defn canonical-category-id [data selections]
+  (let [current-category (current-category data)]
+    (if (-> current-category :catalog/category-id (= "13"))
+      (case (get selections "family")
+        "360-wigs"        "26"
+        "lace-front-wigs" "24"
+        "ready-wigs"      "25"
+        "13")
+      (:catalog/category-id current-category))))
