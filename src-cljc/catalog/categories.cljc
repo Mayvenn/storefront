@@ -380,7 +380,7 @@
            :category/description (copy "Want a fun, protective style that switches up your look,"
                                        "color or hair length instantly?"
                                        "Human hair wigs are the perfect choice.")
-           :copy/title           "Wigs"
+           :copy/title           "Human Hair Wigs"
            :page/slug            "wigs"
            :seo/title            "Wigs"
 
