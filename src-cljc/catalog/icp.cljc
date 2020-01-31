@@ -85,12 +85,13 @@
 (defcomponent ^:private drill-category-grid-entry-organism
   [{:drill-category/keys [id title description svg-url target action-id action-label]} _ _]
   (when id
-    [:div.col-6.py3.flex.flex-column.items-center
+    [:div.py3.flex.flex-column.items-center
      {:key       id
-      :data-test id}
+      :data-test id
+      :style     {:width "110px"}}
      [:div.mt1
       [:img {:src   (assets/path svg-url)
-             :width 75}]]
+             :width 72}]]
      (when action-id
        (ui/button-small-underline-primary
         (assoc (apply utils/route-to target)
@@ -102,7 +103,7 @@
   (when (seq values)
     [:div.py8.px4
      [:div.title-2.proxima.shout title]
-     [:div.flex.flex-wrap
+     [:div.flex.flex-wrap.justify-around
       (mapv #(component/build drill-category-grid-entry-organism %
                               {:key (:drill-category/id %)})
             values)]]))
