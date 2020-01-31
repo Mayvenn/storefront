@@ -137,6 +137,7 @@
            :cta/target      main-cta-target
            :cta/label       (str "Select " stylist-name)
 
+           :rating/value                 (:rating stylist)
            :transposed-title/id          "stylist-name"
            :transposed-title/primary     stylist-name
            :transposed-title/secondary   (-> stylist :salon :name)
@@ -199,7 +200,7 @@
                                                      #?(:cljs (-> % :review-date formatters/abbr-date)
                                                         :clj  ""))
                                              stylist-reviews)
-                :rating/reviews-count (:count paginated-reviews)})
+                :rating/reviews-count  (:count paginated-reviews)})
 
         (and (= (:current-page paginated-reviews)
                 (:pages paginated-reviews)))
