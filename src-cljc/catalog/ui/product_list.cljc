@@ -173,12 +173,13 @@
                                       subsections))])
 
 (defn subsections-query
-  [{:keys [catalog/category-id subsections]}
+  [{:keys [subsections/category-selector subsections]}
    products-matching-criteria
    data]
   (->> products-matching-criteria
-       (group-by (or (categories/category-id->subsection-fn category-id)
-                     (constantly :no-subsections)))
+       (group-by (if category-selector
+                   (comp first category-selector)
+                   (constantly :no-subsections)))
        (sequence
         (comp
          (map (fn [[subsection-key products]] (assoc (get subsections subsection-key)

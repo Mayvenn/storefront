@@ -368,10 +368,6 @@
                          "//ucarecdn.com/128b68e2-bf3a-4d72-8e39-0c71662f9c86/")
           texture-templates)])
 
-(def category-id->subsection-fn
-  {"13" (comp first :hair/family)
-   "23" (comp first :hair/texture)})
-
 (def wigs
   [(merge {:catalog/category-id "13"
            :footer/order        20
@@ -413,6 +409,7 @@
            :product-list/title             "Shop All Wigs"
            :subcategories/ids              ["24" "26" "25"]
            :subcategories/layout           :list
+           :subsections/category-selector  :hair/family
            :subsections                    {"lace-front-wigs" {:order         0
                                                                :title/primary "Lace Front Wigs"}
                                             "360-wigs"        {:order         1
@@ -513,6 +510,7 @@
                                           "Free 30 day returns. Made with 100% virgin human hair.")
     :selector/electives             [:hair/texture :hair/family :hair/origin :hair/color]
     :selector/essentials            [:catalog/department :promo.mayvenn-install/eligible]
+    :subsections/category-selector  :hair/texture
     :subsections                    {"straight"       {:title/primary "Straight"
                                                        :order         1}
                                      "yaki-straight"  {:title/primary "Yaki Straight"
@@ -633,13 +631,14 @@
      :category/new?       false
 
      :hair/family         #{"seamless-clip-ins"}
-     :selector/electives  [:hair/weight :hair/texture :hair/color]
      :selector/essentials [:catalog/department :hair/family]
+     :selector/electives  [:hair/weight :hair/texture :hair/color]
 
-     :copy/title       "Clip-Ins"
-     :copy/description (copy "Get the hair of your dreams in an instant with our seamless clip-in extensions."
-                             "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair."
-                             "Ditch the tracks for a clip-in experience that is truly seamless.")
+     :subcategory/image-uri "//ucarecdn.com/d255ccf8-75af-4729-86da-af6e15783fc2/-/format/auto/-/resize/124x/"
+     :copy/title            "Clip-In Hair Extensions"
+     :copy/description      (copy "Get the hair of your dreams in an instant with our seamless clip-in extensions."
+                                  "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair."
+                                  "Ditch the tracks for a clip-in experience that is truly seamless.")
 
      :page/title            "Clip-In Hair Extensions: Human Hair Clip-In Extensions | Mayvenn"
      :page/slug             "seamless-clip-ins"
@@ -663,13 +662,15 @@
           :category/new?       false
 
           :hair/family         #{"tape-ins"}
-          :selector/electives  [:hair/color :hair/weight :hair/length]
           :selector/essentials [:catalog/department :hair/family]
+          :selector/electives  [:hair/color :hair/weight :hair/length]
 
-          :copy/title "Tape-Ins"
+          :copy/title       "Tape-In Hair Extensions"
+          :copy/description "tape in desc"
 
           :page/slug "tape-ins"
 
+          :subcategory/image-uri    "//ucarecdn.com/1998d5dd-51fa-4ee4-8fef-2ce0d8ed6f8e/-/format/auto/-/resize/124x/"
           :direct-to-details/id     "111"
           :direct-to-details/slug   "50g-straight-tape-ins"
           :direct-to-details/sku-id "TAPE-S-1-20"
@@ -685,12 +686,45 @@
 (def tape-ins-category
   [the-only-tape-in-category])
 
+(def hair-extensions-category
+  [{:catalog/category-id "28"
+    :catalog/department  #{"hair"}
+    :category/new?       false
+
+    :page/icp? true
+
+    :hair/family         #{"seamless-clip-ins" "tape-ins"}
+    :selector/essentials [:catalog/department :hair/family]
+    :selector/electives  [:hair/weight :hair/color :hair/texture]
+
+    :copy/title "Hair Extensions"
+    :product-list/title "Shop All Hair Extensions"
+
+    :page/slug                     "hair-extensions"
+    :copy/description              "hair extensions desc"
+    :seo/sitemap                   false
+    :page/title                    "Hair Extensions: Real Human Hair Extensions | Mayvenn"
+    :page.meta/description         (str "Mayvenn’s real human hair extensions come in different variations"
+                                        " such as Brazilian and Malaysian, straight, deep wave and loose wave."
+                                        " Shop now.")
+    :category/image-url            "http://ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
+    :opengraph/title               "Real Human Hair Extensions - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
+    :opengraph/description         "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in and tape-in extensions are the best quality products on the market and ships free!"
+    :subsections/category-selector :hair/family
+    :subcategories/ids             ["21" "22"]
+    :subcategories/layout          :list
+    :subsections                   {"seamless-clip-ins" {:order         0
+                                                         :title/primary "Clip-in Hair Extensions"}
+                                    "tape-ins"          {:order         1
+                                                         :title/primary "Tape-in Hair Extensions"}}}])
+
 (def menu-categories
   (concat virgin-hair
           closures))
 
 (def initial-categories
   (concat wigs
+          hair-extensions-category
           mayvenn-install-eligible
           stylist-exclusives
           virgin-hair-nav-roots

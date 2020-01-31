@@ -59,13 +59,13 @@
 (defcomponent ^:private drill-category-list-entry-organism
   [{:drill-category/keys [id title description image-url target action-id action-label]} _ _]
   (when id
-    [:div.p3.col-4-on-tb-dt.flex.flex-wrap
+    [:div.p3.col-4-on-tb-dt.flex.flex-wrap.col-12
      {:key       id
       :data-test id}
-     [:div.mt1.mr3.col-12-on-dt
+     [:div.col-12-on-tb-dt.col-3
       (when image-url
         (ui/ucare-img {:width "62"} image-url))]
-     [:div
+     [:div.col-12-on-tb-dt.col-9
       [:div.title-2.proxima.shout title]
       [:div.content-2.proxima.py1 description]
       (when action-id
@@ -113,7 +113,13 @@
    :drill-category/title        (:copy/title category)
    :drill-category/description  (:copy/description category)
    :drill-category/image-url    (:subcategory/image-uri category)
-   :drill-category/target       [events/navigate-category category]
+   :drill-category/target       (if-let [product-id (:direct-to-details/id category)]
+                                  [events/navigate-product-details (merge
+                                                                    {:catalog/product-id product-id
+                                                                     :page/slug          (:direct-to-details/slug category)}
+                                                                    (when-let [sku-id (:direct-to-details/sku-id category)]
+                                                                      {:query-params {:SKU sku-id}}))]
+                                  [events/navigate-category category])
    :drill-category/action-id    (str "drill-category-action-" (:page/slug category))
    :drill-category/action-label (str "Shop " (:copy/title category))})
 
@@ -121,7 +127,13 @@
   [category]
   {:drill-category/id           (:page/slug category)
    :drill-category/svg-url      (:icon category)
-   :drill-category/target       [events/navigate-category category]
+   :drill-category/target       (if-let [product-id (:direct-to-details/id category)]
+                                  [events/navigate-product-details (merge
+                                                                    {:catalog/product-id product-id
+                                                                     :page/slug          (:direct-to-details/slug category)}
+                                                                    (when-let [sku-id (:direct-to-details/sku-id category)]
+                                                                      {:query-params {:SKU sku-id}}))]
+                                  [events/navigate-category category])
    :drill-category/action-id    (str "drill-category-action-" (:page/slug category))
    :drill-category/action-label (:subcategory/title category)})
 
