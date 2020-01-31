@@ -525,6 +525,7 @@
 (defpath api-failure-fetch-stylist-details)
 (defpath api-success-fetch-stylist-reviews)
 (defpath api-failure-fetch-stylist-reviews)
+(defpath control-fetch-stylist-reviews)
 (defpath adventure-stylist-search-results-displayed)
 (defpath adventure-stylist-search-results-post-purchase-displayed)
 (defpath adventure-stylist-results-delay-completed)

@@ -3,8 +3,7 @@
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
-            [storefront.transitions :as transitions]
-            #?@(:cljs [[storefront.history :as history]])))
+            [storefront.transitions :as transitions]))
 
 (defmethod transitions/transition-state events/api-success-fetch-stylist-details
   [_ _ {:keys [stylist]} app-state]
@@ -18,6 +17,8 @@
   (effects/redirect events/navigate-adventure-find-your-stylist))
 
 (defmethod transitions/transition-state events/api-success-fetch-stylist-reviews
-  [_ _ {:keys [reviews stylist-id] :as args} app-state]
-  (-> app-state
-      (assoc-in (conj keypaths/reviews stylist-id) reviews)))
+  [_ _ paginated-reviews app-state]
+  (let [existing-reviews (:reviews (get-in app-state keypaths/paginated-reviews))]
+    (-> app-state
+        (assoc-in keypaths/paginated-reviews paginated-reviews)
+        (update-in (conj keypaths/paginated-reviews :reviews) (partial concat existing-reviews)))))

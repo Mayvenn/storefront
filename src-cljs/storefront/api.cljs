@@ -1084,12 +1084,14 @@
      :error-handler #(messages/handle-message events/api-failure-fetch-stylist-details %)})))
 
 (defn fetch-stylist-reviews
-  [cache stylist-id]
+  [cache {:as params :keys [stylist-id page]}]
   (cache-req
    cache
    GET
    "/v1/stylist/reviews"
    request-keys/fetch-stylist-reviews
-   {:params        {:stylist-id stylist-id}
-    :handler       #(messages/handle-message events/api-success-fetch-stylist-reviews (merge {:stylist-id stylist-id} %))
+   {:params        {:stylist-id stylist-id
+                    :per-page   5
+                    :page       page}
+    :handler       #(messages/handle-message events/api-success-fetch-stylist-reviews %)
     :error-handler #(messages/handle-message events/api-failure-fetch-stylist-reviews %)}))

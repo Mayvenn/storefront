@@ -5,10 +5,6 @@
   [app-state stylist-id]
   (get-in app-state (conj keypaths/stylists stylist-id)))
 
-(defn reviews
-  [app-state stylist-id]
-  (get-in app-state (conj keypaths/reviews stylist-id)))
-
 (defn ->display-name
   [{:keys [store-nickname address] :as stylist}]
   (when stylist

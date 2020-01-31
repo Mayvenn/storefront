@@ -23,9 +23,11 @@
             storefront.keypaths
             [storefront.transitions :as transitions]
             [stylist-directory.stylists :as stylists]
+            stylist-directory.keypaths
             [spice.core :as spice]
             [stylist-matching.ui.header :as header-org]
-            [storefront.platform.strings :as strings]))
+            [storefront.platform.strings :as strings]
+            [storefront.request-keys :as request-keys]))
 
 (defn transposed-title-molecule
   [{:transposed-title/keys [id primary secondary]}]
@@ -93,23 +95,24 @@
 
 (defn query
   [data]
-  (let [stylist-id     (get-in data keypaths/stylist-profile-id)
-        stylist        (stylists/by-id data stylist-id)
-        stylist-name   (stylists/->display-name stylist)
-        current-order  (api.orders/current data)
-        post-purchase? (post-purchase? (get-in data storefront.keypaths/navigation-event))
-        undo-history   (get-in data storefront.keypaths/navigation-undo-stack)
-        direct-load?   (zero? (count undo-history))
+  (let [stylist-id                          (get-in data keypaths/stylist-profile-id)
+        stylist                             (stylists/by-id data stylist-id)
+        stylist-name                        (stylists/->display-name stylist)
+        {stylist-reviews :reviews
+         :as             paginated-reviews} (get-in data stylist-directory.keypaths/paginated-reviews)
+        current-order                       (api.orders/current data)
+        post-purchase?                      (post-purchase? (get-in data storefront.keypaths/navigation-event))
+        undo-history                        (get-in data storefront.keypaths/navigation-undo-stack)
+        fetching-reviews?                   (utils/requesting? data request-keys/fetch-stylist-reviews)
 
-        main-cta-target              [(if post-purchase?
-                                        events/control-adventure-select-stylist-post-purchase
-                                        events/control-adventure-select-stylist-pre-purchase)
-                                      {:servicing-stylist stylist
-                                       :card-index        0}]
-        {:keys [latitude longitude]} (:salon stylist)
-        environment                  (case (get-in data storefront.keypaths/environment)
-                                       "production" "mayvenn"
-                                       "diva-acceptance")]
+        main-cta-target [(if post-purchase?
+                           events/control-adventure-select-stylist-post-purchase
+                           events/control-adventure-select-stylist-pre-purchase)
+                         {:servicing-stylist stylist
+                          :card-index        0}]
+        environment     (case (get-in data storefront.keypaths/environment)
+                          "production" "mayvenn"
+                          "diva-acceptance")]
     (when stylist
       (cond->
           {:header-data (cond-> {:header.title/id               "adventure-title"
@@ -137,8 +140,6 @@
            :transposed-title/id          "stylist-name"
            :transposed-title/primary     stylist-name
            :transposed-title/secondary   (-> stylist :salon :name)
-           :rating/value                 (:rating stylist)
-           :rating/reviews-count         (:review-count stylist)
            :phone-link/target            [events/control-adventure-stylist-phone-clicked
                                           {:stylist-id   (:stylist-id stylist)
                                            :phone-number (some-> stylist :address :phone formatters/phone-number)}]
@@ -182,15 +183,27 @@
                         :section-details/content            (:service-menu stylist)
                         :section-details/wig-customization? (experiments/wig-customization? data)})]}
 
+        (:mayvenn-rating-publishable stylist)
+        (merge  {:rating/value (:rating stylist)})
+
         (and (experiments/stylist-reviews? data)
              (:mayvenn-rating-publishable stylist)
-             (stylists/reviews data stylist-id))
+             (seq stylist-reviews))
         (merge {:reviews/id            "stylist-reviews"
+                :reviews/cta-id        "more-stylist-reviews"
+                :reviews/cta-target    [events/control-fetch-stylist-reviews]
+                :reviews/cta-label     (if fetching-reviews? ui/spinner "View More")
                 :reviews/rating        (:rating stylist)
-                :reviews/reviews-count (:review-count stylist)
-                :reviews/reviews       (->> (stylists/reviews data stylist-id)
-                                            (mapv #(assoc % :review-date #?(:cljs (-> % :review-date formatters/abbr-date)
-                                                                            :clj  ""))))})))))
+                :reviews/reviews-count (:count paginated-reviews)
+                :reviews/reviews       (mapv #(assoc % :review-date
+                                                     #?(:cljs (-> % :review-date formatters/abbr-date)
+                                                        :clj  ""))
+                                             stylist-reviews)
+                :rating/reviews-count (:count paginated-reviews)})
+
+        (and (= (:current-page paginated-reviews)
+                (:pages paginated-reviews)))
+        (merge {:reviews/cta-id nil})))))
 
 (defn carousel-molecule
   [{:carousel/keys [items]}]
@@ -243,7 +256,7 @@
         (checks-or-x "Frontal" (:specialty-sew-in-frontal content))]])]])
 
 (defn reviews-molecule
-  [{:reviews/keys [id rating reviews-count reviews]}]
+  [{:reviews/keys [cta-target cta-id cta-label id rating reviews-count reviews]}]
   (when id
     [:div.mx3.my6
      {:key id
@@ -256,8 +269,9 @@
                                                                                      #_(when expanded? "rotate-180"))
                                                                         :height "1em"
                                                                         :width  "1em"}))]
-     (for [{:keys [stars install-type review-content reviewer-name review-date]} reviews]
+     (for [{:keys [review-id stars install-type review-content reviewer-name review-date]} reviews]
        [:div.py2.border-bottom.border-cool-gray
+        {:key review-id}
         [:div
          (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars)]
            [:div.flex
@@ -268,7 +282,22 @@
         [:div.py1 review-content]
         [:div.flex
          [:div "— " reviewer-name]
-         [:div.ml1.dark-gray review-date]]])]))
+         [:div.ml1.dark-gray review-date]]])
+     (when cta-id
+       [:div.p5.center
+        {:data-test cta-id}
+        (ui/button-medium-underline-primary
+         {:on-click (apply utils/send-event-callback cta-target)} cta-label)])]))
+
+(defmethod effects/perform-effects events/control-fetch-stylist-reviews
+  [dispatch event args prev-app-state app-state]
+  #?(:cljs
+     (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache)
+                                {:stylist-id (get-in app-state keypaths/stylist-profile-id)
+                                 :page       (-> (get-in app-state stylist-directory.keypaths/paginated-reviews)
+                                                 :current-page
+                                                 (or 0)
+                                                 inc)})))
 
 (defn footer-body-molecule
   [{:footer/keys [copy id]}]
@@ -329,7 +358,9 @@
      (let [stylist-id (spice/parse-int stylist-id)]
        (google-maps/insert)
        (api/fetch-stylist-details (get-in app-state storefront.keypaths/api-cache) stylist-id)
-       (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache) stylist-id))))
+       (when (experiments/stylist-reviews? app-state)
+         (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache) {:stylist-id stylist-id
+                                                                                      :page       1})))))
 
 (defmethod effects/perform-effects events/share-stylist
   [_ _ {:keys [url text title stylist-id]} _]
@@ -345,7 +376,9 @@
 
 (defmethod transitions/transition-state events/navigate-adventure-stylist-profile
   [_ _ {:keys [stylist-id]} app-state]
-  (assoc-in app-state keypaths/stylist-profile-id (spice/parse-int stylist-id)))
+  (-> app-state
+      (assoc-in keypaths/stylist-profile-id (spice/parse-int stylist-id))
+      (assoc-in stylist-directory.keypaths/paginated-reviews nil)))
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-profile-post-purchase
   [dispatch event {:keys [stylist-id]} prev-app-state app-state]
@@ -353,7 +386,8 @@
      (let [stylist-id (spice/parse-int stylist-id)]
        (google-maps/insert)
        (api/fetch-stylist-details (get-in app-state storefront.keypaths/api-cache) stylist-id)
-       (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache) stylist-id))))
+       (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache) {:stylist-id stylist-id
+                                                                                    :page       1}))))
 
 (defmethod transitions/transition-state events/navigate-adventure-stylist-profile-post-purchase
   [_ _ {:keys [stylist-id]} app-state]
