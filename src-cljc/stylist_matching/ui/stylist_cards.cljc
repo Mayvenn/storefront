@@ -103,11 +103,9 @@
 
 (defn stylist-review-count-molecule
   [{:reviews/keys [review-count]}]
-  [:div.flex.items-center.button-font-3.s-color
-   (when review-count
-     (ui/button-small-underline-secondary
-      {:class "mx1 shout"}
-      (ui/pluralize-with-amount review-count "REVIEW")))])
+  (when review-count
+    [:div.flex.items-center.content-3.ml1
+     (ui/pluralize-with-amount review-count "Review")]))
 
 (defn stylist-card-header-molecule
   [{:stylist-card/keys [target id] :as data}]
