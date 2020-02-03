@@ -119,7 +119,7 @@
            :hair/source         #{"virgin"}
            :category/tags       #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives  [:hair/origin :hair/texture :hair/color :hair/base-material]
+           :selector/electives  [:hair/origin :hair/texture :hair/color]
            :copy/description    (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                       "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
           (category->seo "Frontals"
@@ -128,6 +128,36 @@
                                "combinations. Shop now to create your look.")
                          "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")
           {:page/title "Virgin Hair Frontals: Virgin Hair Lace Frontals | Mayvenn"}
+          frontals-templates)
+   (merge {:catalog/category-id      "29"
+           :copy/title               "Lace Frontals"
+           :page/slug                "lace-frontals"
+           :seo/title                "Virgin Hair Frontals"
+           :legacy/named-search-slug "frontals" ;;
+
+           :catalog/department  #{"hair"}
+           :hair/family         #{"frontals"}
+           :hair/color.process  #{"natural" "dyed"}
+           :header/order        2
+           :header/group        1
+           :footer/order        12
+           :dtc-footer/order    6
+           :hair/source         #{"virgin"}
+           :category/tags       #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
+           :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
+           :selector/electives  [:hair/origin :hair/texture :hair/color]
+           :copy/description    (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                      "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
+          (category->seo "Lace Frontals"
+                         (copy "Mayvenn’s human hair lace frontals blend in seamlessly"
+                               "with our bundles and come in a variety of different"
+                               "combinations. Shop now to create your look.")
+                         "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/")
+          {:page/title            "Lace Frontals: Human Hair Lace Frontals | Mayvenn"
+           :opengraph/title       "Lace Frontals - Free shipping. Free 30 day returns. Made with 100% human hair."
+           :opengraph/description (copy "Mayvenn’s human hair lace frontals blend in seamlessly"
+                                        "with our bundles and backed by our 30 Day Quality Guarantee,"
+                                        "our human hair lace frontals are the best quality products on the market and ship free!")}
           frontals-templates)])
 
 (def virgin-hair
