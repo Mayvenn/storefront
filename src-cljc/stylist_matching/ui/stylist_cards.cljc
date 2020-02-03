@@ -101,6 +101,14 @@
                                            72))
        [:div {:style {:height "72px" :width "72px"}}]))))
 
+(defn stylist-review-count-molecule
+  [{:reviews/keys [review-count]}]
+  [:div.flex.items-center.button-font-3.s-color
+   (when review-count
+     (ui/button-small-underline-secondary
+      {:class "mx1 shout"}
+      (ui/pluralize-with-amount review-count "REVIEW")))])
+
 (defn stylist-card-header-molecule
   [{:stylist-card/keys [target id] :as data}]
   (when id
@@ -110,7 +118,9 @@
       (stylist-card-thumbnail-molecule data)]
      [:div.col-9.medium.px3
       (stylist-card-title-molecule data)
-      (molecules/stars-rating-molecule data)
+      [:div.flex.items-center
+       (molecules/stars-rating-molecule data)
+       (stylist-review-count-molecule data)]
       (stylist-card-salon-name-molecule data)
       (stylist-card-address-marker-molecule data)
       (stylist-card-services-list-molecule data)]]))

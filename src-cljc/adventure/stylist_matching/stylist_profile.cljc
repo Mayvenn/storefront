@@ -36,18 +36,18 @@
    [:div.title-2.proxima.shout primary]])
 
 (defn stars-rating-molecule
-  [{:rating/keys [value reviews-count]}]
+  [{:rating/keys [value review-count]}]
   (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value)]
     [:div.flex
      [:span.s-color.bold.mr1 value]
      whole-stars
      partial-star
      empty-stars
-     (when reviews-count
+     (when review-count
        (ui/button-small-underline-secondary
-        (merge {:class "mx1"}
+        (merge {:class "mx1 shout"}
                (utils/scroll-href "reviews"))
-        (str reviews-count " REVIEW" (when (not= reviews-count 1) "S"))))]))
+        (ui/pluralize-with-amount review-count "REVIEW")))]))
 
 (defn stylist-phone-molecule
   [{:phone-link/keys [target phone-number]}]
@@ -190,17 +190,17 @@
         (and (experiments/stylist-reviews? data)
              (:mayvenn-rating-publishable stylist)
              (seq stylist-reviews))
-        (merge {:reviews/id            "stylist-reviews"
-                :reviews/cta-id        "more-stylist-reviews"
-                :reviews/cta-target    [events/control-fetch-stylist-reviews]
-                :reviews/cta-label     (if fetching-reviews? ui/spinner "View More")
-                :reviews/rating        (:rating stylist)
-                :reviews/reviews-count (:count paginated-reviews)
-                :reviews/reviews       (mapv #(assoc % :review-date
-                                                     #?(:cljs (-> % :review-date formatters/abbr-date)
-                                                        :clj  ""))
-                                             stylist-reviews)
-                :rating/reviews-count  (:count paginated-reviews)})
+        (merge {:reviews/id           "stylist-reviews"
+                :reviews/cta-id       "more-stylist-reviews"
+                :reviews/cta-target   [events/control-fetch-stylist-reviews]
+                :reviews/cta-label    (if fetching-reviews? ui/spinner "View More")
+                :reviews/rating       (:rating stylist)
+                :reviews/review-count (:review-count stylist)
+                :reviews/reviews      (mapv #(assoc % :review-date
+                                                    #?(:cljs (-> % :review-date formatters/abbr-date)
+                                                       :clj  ""))
+                                            stylist-reviews)
+                :rating/review-count  (:review-count stylist)})
 
         (and (= (:current-page paginated-reviews)
                 (:pages paginated-reviews)))
@@ -257,7 +257,7 @@
         (checks-or-x "Frontal" (:specialty-sew-in-frontal content))]])]])
 
 (defn reviews-molecule
-  [{:reviews/keys [cta-target cta-id cta-label id rating reviews-count reviews]}]
+  [{:reviews/keys [cta-target cta-id cta-label id rating review-count reviews]}]
   (when id
     [:div.mx3.my6
      {:key id
@@ -266,7 +266,8 @@
       [:div.flex.items-center
        [:div.h6.title-3.proxima.shout "REVIEWS"]
        [:div.content-3.proxima.ml1
-        "(" rating " - " (ui/pluralize-with-amount reviews-count "review") ")"]]]
+        "(" rating " - " (ui/pluralize-with-amount review-count "review") ")"]]]
+
      (for [{:keys [review-id stars install-type review-content reviewer-name review-date]} reviews]
        [:div.py2.border-bottom.border-cool-gray
         {:key review-id}
