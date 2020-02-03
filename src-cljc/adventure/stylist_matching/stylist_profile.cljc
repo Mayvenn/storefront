@@ -266,10 +266,6 @@
       [:div.flex.items-center
        [:div.h6.title-3.proxima.shout "REVIEWS"]
        [:div.content-3.proxima.ml1 (str "(" rating " - " reviews-count " review" (when (not= reviews-count 1) "s") ")")]]
-      (ui/button-small-underline-primary {} "sort" (svg/dropdown-arrow {:class  (str "ml1 fill-p-color "
-                                                                                     #_(when expanded? "rotate-180"))
-                                                                        :height "1em"
-                                                                        :width  "1em"}))]
      (for [{:keys [review-id stars install-type review-content reviewer-name review-date]} reviews]
        [:div.py2.border-bottom.border-cool-gray
         {:key review-id}
