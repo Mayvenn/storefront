@@ -562,10 +562,10 @@
          (response->canonical-uri-query-string resp))))
 
 (def default-closure-title
-  "Virgin Hair Closures: Human Hair Closures | Mayvenn")
+  "Hair Closures: Human Hair Closure Sew-Ins | Mayvenn")
 
 (def default-closure-description
-  (str "Mayvenn’s virgin hair closures allow you to "
+  (str "Mayvenn’s hair closures allow you to "
        "close off any unit or install and come in a variety of "
        "different combinations. Shop now to create your look."))
 
