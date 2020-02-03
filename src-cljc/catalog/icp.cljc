@@ -83,20 +83,15 @@
            values)]))
 
 (defcomponent ^:private drill-category-grid-entry-organism
-  [{:drill-category/keys [id title description svg-url target action-id action-label]} _ _]
+  [{:drill-category/keys [title svg-url target]} _ {:keys [id]}]
   (when id
     [:div.py3.flex.flex-column.items-center
-     {:key       id
-      :data-test id
-      :style     {:width "110px"}}
-     [:div.mt1
+     {:id id :data-test id}
+     [:a.block.mt1
+      (apply utils/route-to target)
       [:img {:src   (assets/path svg-url)
              :width 72}]]
-     (when action-id
-       (ui/button-small-underline-primary
-        (assoc (apply utils/route-to target)
-               :data-test  action-id)
-        action-label))]))
+     (ui/button-small-underline-primary {} title)]))
 
 (defcomponent ^:private drill-category-grid-organism
   [{:drill-category-grid/keys [values title]} _ _]
@@ -104,8 +99,9 @@
     [:div.py8.px4
      [:div.title-2.proxima.shout title]
      [:div.flex.flex-wrap.justify-around
-      (mapv #(component/build drill-category-grid-entry-organism %
-                              {:key (:drill-category/id %)})
+      (mapv #(component/build drill-category-grid-entry-organism
+                              %
+                              (component/component-id (:drill-category/id %)))
             values)]]))
 
 (defn ^:private category->drill-category-list-entry
@@ -126,17 +122,16 @@
 
 (defn ^:private category->drill-category-grid-entry
   [category]
-  {:drill-category/id           (:page/slug category)
-   :drill-category/svg-url      (:icon category)
-   :drill-category/target       (if-let [product-id (:direct-to-details/id category)]
-                                  [events/navigate-product-details (merge
-                                                                    {:catalog/product-id product-id
-                                                                     :page/slug          (:direct-to-details/slug category)}
-                                                                    (when-let [sku-id (:direct-to-details/sku-id category)]
-                                                                      {:query-params {:SKU sku-id}}))]
-                                  [events/navigate-category category])
-   :drill-category/action-id    (str "drill-category-action-" (:page/slug category))
-   :drill-category/action-label (:subcategory/title category)})
+  {:drill-category/id      (str "drill-category-action-" (:page/slug category))
+   :drill-category/title   (:subcategory/title category)
+   :drill-category/svg-url (:icon category)
+   :drill-category/target  (if-let [product-id (:direct-to-details/id category)]
+                             [events/navigate-product-details (merge
+                                                               {:catalog/product-id product-id
+                                                                :page/slug          (:direct-to-details/slug category)}
+                                                               (when-let [sku-id (:direct-to-details/sku-id category)]
+                                                                 {:query-params {:SKU sku-id}}))]
+                             [events/navigate-category category])})
 
 (def ^:private purple-divider-atom
   [:div
