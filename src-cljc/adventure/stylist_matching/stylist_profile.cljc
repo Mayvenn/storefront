@@ -265,7 +265,8 @@
      [:div.flex.justify-between
       [:div.flex.items-center
        [:div.h6.title-3.proxima.shout "REVIEWS"]
-       [:div.content-3.proxima.ml1 (str "(" rating " - " reviews-count " review" (when (not= reviews-count 1) "s") ")")]]
+       [:div.content-3.proxima.ml1
+        "(" rating " - " (ui/pluralize-with-amount reviews-count "review") ")"]]]
      (for [{:keys [review-id stars install-type review-content reviewer-name review-date]} reviews]
        [:div.py2.border-bottom.border-cool-gray
         {:key review-id}
