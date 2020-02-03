@@ -66,14 +66,14 @@
            :header/group             1
            :footer/order             10
            :copy/description         (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                           "Our collection of closures and frontals blend seamlessly with our bundles"
+                                           "Our collection of closures blend seamlessly with our bundles"
                                            "and can be customized to fit your unique look.")}
           (category->seo "Closures"
-                         (copy "Mayvenn’s virgin hair closures allow you to close off"
+                         (copy "Mayvenn’s hair closures allow you to close off"
                                "any unit or install and come in a variety of different"
                                "combinations. Shop now to create your look.")
                          "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")
-          {:page/title "Virgin Hair Closures: Human Hair Closures | Mayvenn"}
+          {:page/title "Hair Closures: Human Hair Closure Sew-Ins | Mayvenn"}
           closures-templates)
    (merge {:catalog/category-id      "10"
            :copy/title               "Virgin 360 Frontals"
