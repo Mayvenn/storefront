@@ -766,6 +766,9 @@
 
     :page/slug                     "hair-extensions"
     :copy/description              ""
+    :category/description          (str "Ditch the tracks and opt for hair that blends in seamlessly. "
+                                        "Mayvenn human hair extensions are made with a thin polyurethane "
+                                        "weft that blends with your hair for a natural look.")
     :seo/sitemap                   false
     :page/title                    "Hair Extensions: Real Human Hair Extensions | Mayvenn"
     :page.meta/description         (str "Mayvenn’s real human hair extensions come in different variations"
