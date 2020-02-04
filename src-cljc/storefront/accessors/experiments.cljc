@@ -101,14 +101,6 @@
   [data]
   (display-feature? data "wig-customization"))
 
-(defn icp?
-  [data]
-  (or
-   ;; NOTE: the wig category is good to go so always show the ICP page for the
-   ;; wig category id
-   (= "13" (:catalog/category-id (categories/current-category data)))
-   (display-feature? data "clowns")))
-
 (defn stylist-reviews?
   [data]
   (display-feature? data "stylist-reviews"))

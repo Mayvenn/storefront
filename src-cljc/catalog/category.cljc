@@ -305,8 +305,7 @@
 (defn ^:export built-component
   [data opts]
   (let [current-category (categories/current-category data)]
-    (if (and (experiments/icp? data)
-             (:page/icp? current-category))
+    (if (:page/icp? current-category)
       (icp/page data opts)
       (component/build component (query data) opts))))
 
