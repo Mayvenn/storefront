@@ -54,6 +54,7 @@
            :copy/title               "Hair Closures"
            :page/slug                "virgin-closures"
            :seo/title                "Hair Closures"
+           :seo/filter-title         "Virgin Hair Closures"
            :legacy/named-search-slug "closures"
            :catalog/department       #{"hair"}
            :hair/family              #{"closures"}

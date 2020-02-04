@@ -101,15 +101,17 @@
                                      (mapv (partial facet-option->option-name facets))
                                      (string/join " ")))
 
-        {seo-title :seo/title
-         :keys     [page/title-template
-                    page.meta/description-template]} category
-        page-title            (if (and can-use-seo-template? selected-facet-string)
-                                (format-with-nil-protection title-template selected-facet-string seo-title)
-                                (:page/title category))
-        page-meta-description (if (and can-use-seo-template? selected-facet-string)
-                                (format-with-nil-protection description-template selected-facet-string seo-title)
-                                (:page.meta/description category))]
+        {seo-title        :seo/title
+         seo-filter-title :seo/filter-title
+         :keys            [page/title-template
+                           page.meta/description-template]} category
+        seo-title                                           (or seo-filter-title seo-title)
+        page-title                                          (if (and can-use-seo-template? selected-facet-string)
+                                                              (format-with-nil-protection title-template selected-facet-string seo-title)
+                                                              (:page/title category))
+        page-meta-description                               (if (and can-use-seo-template? selected-facet-string)
+                                                              (format-with-nil-protection description-template selected-facet-string seo-title)
+                                                              (:page.meta/description category))]
     (cond-> [[:title {} page-title]
              [:meta {:name "description" :content page-meta-description}]
              [:meta {:property "og:title" :content (:opengraph/title category)}]
