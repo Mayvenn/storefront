@@ -180,8 +180,7 @@
      ^:inline (svg/straight-line {:width  "1px"
                                   :height "42px"})]
     [:div.flex.flex-wrap.items-baseline.justify-center.col-12.col-8-on-tb-dt.mx-auto
-     (map-indexed (partial contact-us-block) contact-us-blocks)]]
-   [:div.bg-p-color.pt1]])
+     (map-indexed (partial contact-us-block) contact-us-blocks)]]])
 
 (defcomponent shop-quote-img
   [{:quote/keys [dsk-ucare-id mob-ucare-id text primary-attribution secondary-attribution] :as data} _ _]

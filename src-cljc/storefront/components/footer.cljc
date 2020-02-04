@@ -62,6 +62,7 @@
 (defcomponent full-component
   [{:keys [contacts categories essence-copy]} owner opts]
   [:div.bg-cool-gray
+   [:div.bg-p-color.pt1]
    [:div.container
     [:div.col-12.clearfix.px3
      [:div.col-on-tb-dt.col-6-on-tb-dt.mt6
@@ -137,6 +138,7 @@
 (defcomponent dtc-full-component
   [{:keys [contacts categories essence-copy]} owner opts]
   [:div.bg-cool-gray
+   [:div.bg-p-color.pt1]
    [:div.container
     [:div.col-12.clearfix.px3
      [:div.col-on-tb-dt.col-6-on-tb-dt.mt6
