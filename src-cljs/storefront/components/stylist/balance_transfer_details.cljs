@@ -39,7 +39,7 @@
     [:div.medium {:data-test (str "line-item-title-" sku)} product-title]
     [:div {:data-test (str "line-item-color-" sku)} color-name]
     (when show-price?
-      [:div {:data-test (str "line-item-price-ea-" sku)} "Price: " (mf/as-money-without-cents unit-price) " ea"])
+      [:div {:data-test (str "line-item-price-ea-" sku)} "Price: " (mf/as-money unit-price) " ea"])
     [:div
      (when-let [length (:length variant-attrs)]
        [:span {:data-test (str "line-item-length-" sku)} length "” "])

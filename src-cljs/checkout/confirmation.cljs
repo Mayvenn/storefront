@@ -223,7 +223,7 @@
                        :detail-top-left/id        (str "line-item-color-" sku-id)
                        :detail-top-left/value     (-> sku :hair/color first color-options->name str)
                        :detail-bottom-right/id    (str "line-item-price-ea-" sku-id)
-                       :detail-bottom-right/value (str (mf/as-money-without-cents price) " ea")
+                       :detail-bottom-right/value (str (mf/as-money price) " ea")
                        :detail-bottom-left/id     (str "line-item-quantity-" sku-id)
                        :detail-bottom-left/value  (str "Qty " (:quantity line-item))}))
                   (orders/product-items order))}))

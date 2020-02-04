@@ -31,16 +31,13 @@
 (defn display-adjustable-line-items
   [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
   (for [{sku-id :sku variant-id :id :as line-item} line-items
-
         :let [sku                  (get skus sku-id)
-              legacy-variant-id    (or (:legacy/variant-id line-item) (:id line-item))
-              price                (or (:sku/price line-item)         (:unit-price line-item))
+              price                (or (:sku/price line-item)
+                                       (:unit-price line-item))
               removing?            (get delete-line-item-requests variant-id)
               updating?            (get update-line-item-requests sku-id)
               just-added-to-order? (contains? recently-added-skus sku-id)
-              length-circle-value  (-> sku :hair/length first)
-              discount-price       (line-items/discounted-unit-price line-item)
-              money-formatter      mf/as-money-without-cents]]
+              length-circle-value  (-> sku :hair/length first)]]
     [:div.pt1.pb2 {:key (str sku-id "-" (:quantity line-item))}
      [:div.left.pr1
       (when-not length-circle-value
@@ -96,7 +93,7 @@
                                                               {:variant line-item})
                                    (utils/send-event-callback events/control-cart-line-item-inc
                                                               {:variant line-item}))]
-        [:div.h5.right {:data-test (str "line-item-price-ea-" sku-id)} (money-formatter price) " each"]]]]]))
+        [:div.h5.right {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money price) " each"]]]]]))
 
 (defcomponent full-component [{:keys [order
                                       skus

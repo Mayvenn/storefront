@@ -105,7 +105,7 @@
                                               :src   rectangle-swatch}]])])
                                       [:span.black
                                        "Starting at "
-                                       [:span.content-2.proxima (mf/as-money-without-cents (:sku/price cheapest-sku))]]])
+                                       [:span.content-2.proxima (mf/as-money (:sku/price cheapest-sku))]]])
      :card-image/src               (str (:url image) "-/format/auto/" (:filename image))
      :card-image/alt               (:alt image)}))
 

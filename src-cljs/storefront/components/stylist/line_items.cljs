@@ -20,7 +20,7 @@
       [:div.medium {:data-test (str base-dt "-title")} product-title]
       [:div {:data-test (str base-dt "-color")} color-name]
       (when show-price?
-        [:div {:data-test (str base-dt "-price-ea")} "Price: " (mf/as-money-without-cents unit-price) " ea"])
+        [:div {:data-test (str base-dt "-price-ea")} "Price: " (mf/as-money unit-price) " ea"])
       [:div
        (when-let [length (:length variant-attrs)]
          [:span {:data-test (str base-dt "-length")} length "” "])
