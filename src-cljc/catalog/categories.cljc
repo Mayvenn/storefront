@@ -593,7 +593,7 @@
     :category/new?         true
     :category/description  (copy "Our collection of 100% Virgin hair is a must-have for when you want more volume, length and texture."
                                  "Switch up your look with these high-quality bundles. Buy three and the install is free.")
-    :category/image-url    "http://ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
+    :category/image-url    "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
     :copy/description      "For those whom want it given to them straight, our collection of 100% virgin straight hair is your go-to for a sleek look with minimal effort."
     :copy/title            "Hair Bundles"
     :hair/family           #{"bundles"}
@@ -761,7 +761,7 @@
     :selector/essentials [:catalog/department :hair/family]
     :selector/electives  [:hair/weight :hair/color :hair/texture]
 
-    :copy/title "Hair Extensions"
+    :copy/title         "Hair Extensions"
     :product-list/title "Shop All Hair Extensions"
 
     :page/slug                     "hair-extensions"
@@ -771,7 +771,7 @@
     :page.meta/description         (str "Mayvenn’s real human hair extensions come in different variations"
                                         " such as Brazilian and Malaysian, straight, deep wave and loose wave."
                                         " Shop now.")
-    :category/image-url            "http://ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
+    :category/image-url            "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
     :opengraph/title               "Real Human Hair Extensions - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
     :opengraph/description         "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in and tape-in extensions are the best quality products on the market and ships free!"
     :subsections/category-selector :hair/family
