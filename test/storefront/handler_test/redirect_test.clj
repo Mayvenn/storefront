@@ -488,3 +488,10 @@
         (let [resp (handler (mock/request :get "https://shop.mayvenn.com/categories/18-dyed-virgin-frontals"))]
           (is (= 302 (:status resp)) (pr-str resp))
           (is (= "https://shop.mayvenn.com/categories/1-virgin-frontals" (get-in resp [:headers "Location"])))))) ))
+
+(deftest redirects-discontinued-product-to-category
+  (with-services {}
+    (with-handler handler
+      (let [resp (handler (mock/request :get "https://shop.mayvenn.com/products/59-indian-deep-wave-lace-frontals"))]
+        (is (= 301 (:status resp)) (pr-str resp))
+        (is (= "https://shop.mayvenn.com/categories/1-virgin-frontals" (get-in resp [:headers "Location"])))))))

@@ -601,7 +601,8 @@
           valid-product-skus)))))
 
 (def discontinued-product-id->redirect
-  {"89"  [events/navigate-product-details {:catalog/product-id "12" :page/slug "indian-straight-bundles"}]
+  {"59"  [events/navigate-category        {:catalog/category-id "1" :page/slug "virgin-frontals"}]
+   "89"  [events/navigate-product-details {:catalog/product-id "12" :page/slug "indian-straight-bundles"}]
    "90"  [events/navigate-product-details {:catalog/product-id "16" :page/slug "indian-straight-lace-closures"}]
    "93"  [events/navigate-product-details {:catalog/product-id "50" :page/slug "indian-straight-lace-frontals"}]
    "94"  [events/navigate-product-details {:catalog/product-id "9" :page/slug "brazilian-straight-bundles"}]
