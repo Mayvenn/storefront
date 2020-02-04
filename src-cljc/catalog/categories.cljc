@@ -53,7 +53,7 @@
   [(merge {:catalog/category-id      "0"
            :copy/title               "Virgin Closures"
            :page/slug                "virgin-closures"
-           :seo/title                "Hair Closures"
+           :seo/title                "Virgin Hair Closures"
            :legacy/named-search-slug "closures"
            :catalog/department       #{"hair"}
            :hair/family              #{"closures"}
