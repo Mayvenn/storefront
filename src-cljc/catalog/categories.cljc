@@ -51,9 +51,9 @@
 
 (def closures
   [(merge {:catalog/category-id      "0"
-           :copy/title               "Virgin Closures"
+           :copy/title               "Hair Closures"
            :page/slug                "virgin-closures"
-           :seo/title                "Virgin Hair Closures"
+           :seo/title                "Hair Closures"
            :legacy/named-search-slug "closures"
            :catalog/department       #{"hair"}
            :hair/family              #{"closures"}
@@ -64,10 +64,13 @@
            :selector/electives       [:hair/origin :hair/texture :hair/color :hair/base-material]
            :header/order             0
            :header/group             1
+           :header/title             "Virgin Hair Closures"
            :footer/order             10
+           ;; :dtc-footer/order         10
            :copy/description         (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                            "Our collection of closures blend seamlessly with our bundles"
-                                           "and can be customized to fit your unique look.")}
+                                           "and can be customized to fit your unique look.")
+           :footer/title             "Virgin Closures"}
           (category->seo "Closures"
                          (copy "Mayvenn’s hair closures allow you to close off"
                                "any unit or install and come in a variety of different"
@@ -94,8 +97,10 @@
                                    "and low-density edges for a naturally flawless look.")
            :footer/order     11
            :dtc-footer/order 5
+           :footer/title     "Virgin 360 Frontals"
            :header/order     1
-           :header/group     1}
+           :header/group     1
+           :header/title     "Virgin 360 Frontals"}
           (category->seo "360 Frontals"
                          (copy "Mayvenn’s virgin hair 360 frontals got you covered and come in"
                                "different variations such as Brazilian, Malaysian, straight, "
@@ -112,10 +117,12 @@
            :catalog/department  #{"hair"}
            :hair/family         #{"frontals"}
            :hair/color.process  #{"natural" "dyed"}
-           :header/order        2
-           :header/group        1
-           :footer/order        12
-           :dtc-footer/order    6
+           ;; :header/order        2
+           ;; :header/group        1
+           ;; :header/title        "Virgin Frontals"
+           ;; :footer/order        12
+           ;; :dtc-footer/order    6
+           ;; :footer/title        "Virgin Frontals"
            :hair/source         #{"virgin"}
            :category/tags       #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
@@ -140,8 +147,10 @@
            :hair/color.process  #{"natural" "dyed"}
            :header/order        2
            :header/group        1
+           :header/title        "Lace Frontals"
            :footer/order        12
            :dtc-footer/order    6
+           :footer/title        "Lace Frontals"
            :hair/source         #{"virgin"}
            :category/tags       #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
@@ -186,8 +195,10 @@
            :home/order          0
            :footer/order        0
            :dtc-footer/order    0
+           :footer/title        "Virgin Straight"
            :header/order        0
-           :header/group        0}
+           :header/group        0
+           :header/title        "Virgin Straight"}
           (category->seo "Natural Straight Extensions"
                          (copy "Straight Brazilian weave, straight Indian hair and straight Peruvian hair."
                                "Our straight bundles are sleek from root to tip.")
@@ -220,8 +231,10 @@
            :subcategory/title   "Yaki Straight"
            :home/order          4
            :footer/order        1
+           :footer/title        "Virgin Yaki Straight"
            :header/order        1
-           :header/group        0}
+           :header/group        0
+           :header/title        "Virgin Yaki Straight"}
           (category->seo "Yaki Straight Extensions"
                          (copy "Our Yaki Straight hair collection features both Peruvian and Brazilian straight hair bundles."
                                "With Lace Closure or Lace Frontals in different lengths.")
@@ -247,8 +260,10 @@
            :icon                     "/images/categories/kinky-straight-icon.svg"
            :subcategory/title        "Kinky Straight"
            :footer/order             2
+           :footer/title             "Virgin Kinky Straight"
            :header/order             2
-           :header/group             0}
+           :header/group             0
+           :header/title             "Virgin Kinky Straight"}
           (category->seo "Kinky Straight Extensions"
                          (copy "100% human hair bundles and extensions from Mayvenn."
                                "Peruvian and Brazilian Kinky Straight Lace Closures and Frontals.")
@@ -276,8 +291,10 @@
            :home/order               1
            :footer/order             3
            :dtc-footer/order         1
+           :footer/title             "Virgin Body Wave"
            :header/order             3
-           :header/group             0}
+           :header/group             0
+           :header/title             "Virgin Body Straight"}
           (category->seo "Body Wave Extensions"
                          (copy "Malaysian and Peruvian body wave silk, lace and 360 frontal bundles."
                                "Unbelievably soft and goes from straight to wavy and back again.")
@@ -307,8 +324,10 @@
            :home/order               2
            :footer/order             4
            :dtc-footer/order         2
+           :footer/title             "Virgin Loose Wave"
            :header/order             4
-           :header/group             0}
+           :header/group             0
+           :header/title             "Virgin Loose Straight"}
           (category->seo "Loose Wave Extensions"
                          (copy "Mayvenn’s Brazilian, Peruvian and Indian loose wave bundles."
                                "Also includes loose wave lace closures. All are 100% virgin Loose Wave hair.")
@@ -334,8 +353,10 @@
            :icon                     "/images/categories/water-wave-icon.svg"
            :subcategory/title        "Water Wave"
            :footer/order             5
+           :footer/title             "Virgin Water Wave"
            :header/order             5
-           :header/group             0}
+           :header/group             0
+           :header/title             "Virgin Water Wave"}
           (category->seo "Water Wave Extensions"
                          (copy "Water Wave Bundles, Closures, and Frontals."
                                "Peruvian and Brazilian bundles."
@@ -365,8 +386,10 @@
            :home/order               3
            :footer/order             6
            :dtc-footer/order         3
+           :footer/title             "Virgin Deep Wave"
            :header/order             6
-           :header/group             0}
+           :header/group             0
+           :header/title             "Virgin Deep Wave"}
           (category->seo "Deep Wave Extensions"
                          (copy "Deep Wave bundles and closures, including Brazilian, Peruvian and Indian Deep Wave."
                                "Soft, spiral wave full of body and bounce.")
@@ -389,8 +412,10 @@
            :icon                     "/images/categories/curly-icon.svg"
            :subcategory/title        "Curly"
            :footer/order             7
+           :footer/title             "Virgin Curly"
            :header/order             7
-           :header/group             0}
+           :header/group             0
+           :header/title             "Virgin Curly"}
           (category->seo "Curly Extensions"
                          (copy "Shop our Brazilian curly bundle, Peruvian Curly Bundle,"
                                "Peruvian Curly Lace closures and Curly Lace frontals."
@@ -402,8 +427,10 @@
   [(merge {:catalog/category-id "13"
            :footer/order        20
            :dtc-footer/order    7
+           :footer/title        "Wigs"
            :header/order        0
            :header/group        2
+           :header/title        "Wigs"
 
            :page/icp?            true
            :category/new?        true
@@ -589,8 +616,10 @@
   (merge {:catalog/category-id       "14"
           :auth/requires             #{:stylist}
           :footer/order              30
+          :footer/title              "Stylist Exclusives"
           :header/order              30
           :header/group              2
+          :header/title              "Stylist Exclusives"
           :copy/title                "Stylist Exclusives"
           :page/slug                 "stylist-exclusives"
           :direct-to-details/id      "49"
@@ -681,8 +710,10 @@
 
      :footer/order     40
      :dtc-footer/order 11
+     :footer/title     "Seamless Clip Ins"
      :header/group     2
      :header/order     4
+     :header/title     "Seamless Clip Ins"
      :seo/sitemap      true}
     clip-in-tape-in-templates)])
 
@@ -707,8 +738,10 @@
 
           :footer/order     50
           :dtc-footer/order 12
+          :footer/title     "Tape Ins"
           :header/group     2
           :header/order     5
+          :header/title     "Tape Ins"
           :page/redirect?   true
           :seo/sitemap      false}
          clip-in-tape-in-templates))

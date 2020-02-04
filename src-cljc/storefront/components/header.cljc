@@ -329,7 +329,7 @@
                  logo-nav-event
                  (merge {:event logo-nav-event})))]]))
 
-(defn category->flyout-option [{:as category :keys [:page/slug copy/title category/new?]}]
+(defn category->flyout-option [{:as category :keys [:page/slug header/title category/new?]}]
   {:key         slug
    :nav-message (let [{:direct-to-details/keys [id slug sku-id]} category]
                   (if id

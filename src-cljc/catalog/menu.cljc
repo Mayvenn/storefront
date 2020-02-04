@@ -36,7 +36,9 @@
          [:span.flex-auto.titleize
           (when new?
             [:span.p-color "NEW "])
-          copy])])]]])
+          (if (= copy "Lace Frontals")
+            "Virgin Frontals"
+            copy)])])]]])
 
 (defn category-query [data]
   (let [{:keys [selector/essentials] :as nav-root} (categories/current-traverse-nav data)]

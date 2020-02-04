@@ -16,7 +16,8 @@
 (defn phone-uri [tel-num]
   (apply str "tel://+" (numbers/digits-only tel-num)))
 
-(defn ^:private category->link [{:keys        [copy/title page/slug] :as category
+(defn ^:private category->link [{:keys        [page/slug] :as category
+                                 footer-title :footer/title
                                  product-id   :direct-to-details/id
                                  product-slug :direct-to-details/slug
                                  sku-id       :direct-to-details/sku-id}]
@@ -28,7 +29,9 @@
                                                           {:query-params {:SKU sku-id}}))]
                       [events/navigate-category category])
         slug        (or product-slug slug)]
-    {:title         title
+    {:title         (if (= footer-title "Lace Frontals") ;; TODO: Remove once Frontals icp is created
+                      "Virgin Frontals"
+                      footer-title)
      :slug          slug
      :new-category? (categories/new-category? slug)
      :nav-message   nav-message}))
