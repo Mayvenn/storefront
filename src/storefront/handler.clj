@@ -551,9 +551,6 @@
 (def discontinued-categories
   #{"19" "20"})
 
-(def discontinued-products
-  #{"102" "103" "104" "105" "106" "107" "108" "109" "116" "117"})
-
 (defn redirect-legacy-product-page
   [render-ctx data req {:keys [legacy/product-slug]}]
   (when-let [[type id] (legacy-product-slug->new-location product-slug)]
@@ -563,7 +560,6 @@
                        (path-for req events/navigate-product-details product)
                        (path-for req events/navigate-category (categories id)))]
       (util.response/redirect path :moved-permanently))))
-
 
 (def dyed-virgin-category-id->virgin-category
   {"16" {:catalog/category-id "2"
@@ -604,34 +600,38 @@
           (facets/color-order-map (get-in data keypaths/v2-facets))
           valid-product-skus)))))
 
-(def dyed-virgin-product-id->virgin-product
-  {"89"  {:catalog/product-id "12" :page/slug "indian-straight-bundles"}
-   "90"  {:catalog/product-id "16" :page/slug "indian-straight-lace-closures"}
-   "93"  {:catalog/product-id "50" :page/slug "indian-straight-lace-frontals"}
-   "94"  {:catalog/product-id "9" :page/slug "brazilian-straight-bundles"}
-   "95"  {:catalog/product-id "8" :page/slug "malaysian-body-wave-bundles"}
-   "96"  {:catalog/product-id "22" :page/slug "brazilian-loose-wave-bundles"}
-   "97"  {:catalog/product-id "30" :page/slug "brazilian-deep-wave-bundles"}
-   "98"  {:catalog/product-id "4" :page/slug "brazilian-straight-lace-closures"}
-   "99"  {:catalog/product-id "3" :page/slug "malaysian-body-wave-lace-closures"}
-   "100" {:catalog/product-id "33" :page/slug "brazilian-loose-wave-lace-closures"}
-   "101" {:catalog/product-id "11" :page/slug "brazilian-deep-wave-lace-closures"}})
+(def discontinued-product-id->redirect
+  {"89"  [events/navigate-product-details {:catalog/product-id "12" :page/slug "indian-straight-bundles"}]
+   "90"  [events/navigate-product-details {:catalog/product-id "16" :page/slug "indian-straight-lace-closures"}]
+   "93"  [events/navigate-product-details {:catalog/product-id "50" :page/slug "indian-straight-lace-frontals"}]
+   "94"  [events/navigate-product-details {:catalog/product-id "9" :page/slug "brazilian-straight-bundles"}]
+   "95"  [events/navigate-product-details {:catalog/product-id "8" :page/slug "malaysian-body-wave-bundles"}]
+   "96"  [events/navigate-product-details {:catalog/product-id "22" :page/slug "brazilian-loose-wave-bundles"}]
+   "97"  [events/navigate-product-details {:catalog/product-id "30" :page/slug "brazilian-deep-wave-bundles"}]
+   "98"  [events/navigate-product-details {:catalog/product-id "4" :page/slug "brazilian-straight-lace-closures"}]
+   "99"  [events/navigate-product-details {:catalog/product-id "3" :page/slug "malaysian-body-wave-lace-closures"}]
+   "100" [events/navigate-product-details {:catalog/product-id "33" :page/slug "brazilian-loose-wave-lace-closures"}]
+   "101" [events/navigate-product-details {:catalog/product-id "11" :page/slug "brazilian-deep-wave-lace-closures"}]
+   "102" [events/navigate-home            {}]
+   "103" [events/navigate-home            {}]
+   "104" [events/navigate-home            {}]
+   "105" [events/navigate-home            {}]
+   "106" [events/navigate-home            {}]
+   "107" [events/navigate-home            {}]
+   "108" [events/navigate-home            {}]
+   "109" [events/navigate-home            {}]
+   "116" [events/navigate-home            {}]
+   "117" [events/navigate-home            {}]})
 
 (defn render-product-details [{:keys [environment] :as render-ctx}
                               data
                               {:keys [params] :as req}
                               {:keys [catalog/product-id
                                       page/slug]}]
-  (let [virgin-product (get dyed-virgin-product-id->virgin-product product-id)]
-    (cond
-      (contains? discontinued-products product-id)
-      (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
-
-      virgin-product
-      (util.response/redirect (path-for req events/navigate-product-details (merge params virgin-product))
+  (let [[redirect-nav-event redirect-nav-params] (get discontinued-product-id->redirect product-id)]
+    (if redirect-nav-event
+      (util.response/redirect (path-for req redirect-nav-event (merge params redirect-nav-params))
                               :moved-permanently)
-
-      :else
       (when-let [product (get-in data (conj keypaths/v2-products product-id))]
         (let [sku-id         (determine-sku-id data product (:SKU params))
               sku            (get-in data (conj keypaths/v2-skus sku-id))
