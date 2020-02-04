@@ -86,7 +86,9 @@
   [{:drill-category/keys [title svg-url target]} _ {:keys [id]}]
   (when id
     [:div.py3.flex.flex-column.items-center
-     {:id id :data-test id}
+     {:id        id
+      :data-test id
+      :style     {:width "120px"}}
      [:a.block.mt1
       (apply utils/route-to target)
       [:img {:src   (assets/path svg-url)
@@ -96,13 +98,24 @@
 (defcomponent ^:private drill-category-grid-organism
   [{:drill-category-grid/keys [values title]} _ _]
   (when (seq values)
-    [:div.py8.px4
-     [:div.title-2.proxima.shout title]
-     [:div.flex.flex-wrap.justify-around
-      (mapv #(component/build drill-category-grid-entry-organism
-                              %
-                              (component/component-id (:drill-category/id %)))
-            values)]]))
+    (let [grid-entries (mapv #(component/build drill-category-grid-entry-organism
+                                               %
+                                               (component/component-id (:drill-category/id %)))
+                             values)]
+      [:div.py8.px4
+       [:div.title-2.proxima.shout title]
+       [:div.hide-on-mb.hide-on-tb ; dt
+        (->> grid-entries
+             (partition-all 4)
+             (mapv (fn [row] [:div.flex.justify-around row])))]
+       [:div.hide-on-dt.hide-on-mb ; tb
+        (->> grid-entries
+             (partition 3 3 [[:div {:style {:width "120px"}}]])
+             (mapv (fn [row] [:div.flex.justify-around row])))]
+       [:div.hide-on-dt.hide-on-tb ; mb
+        (->> grid-entries
+             (partition-all 2)
+             (mapv (fn [row] [:div.flex.justify-around row])))]])))
 
 (defn ^:private category->drill-category-list-entry
   [category]
