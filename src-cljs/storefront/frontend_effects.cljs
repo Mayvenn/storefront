@@ -219,12 +219,17 @@
 
 (defmethod effects/perform-effects events/navigate
   [_ event {:keys [navigate/caused-by query-params nav-stack-item]} prev-app-state app-state]
-  (let [new-nav-event?     (not= (get-in prev-app-state keypaths/navigation-event)
-                                 (get-in app-state keypaths/navigation-event))
-        new-query-params?  (not= (not-empty (dissoc (get-in prev-app-state keypaths/navigation-args) :query-params))
-                                 (not-empty (dissoc (get-in app-state keypaths/navigation-args) :query-params)))
-        video-query-param? (:video query-params)
-        module-load?       (= caused-by :module-load)]
+  (let [[previous-nav-event previous-nav-args] (get-in prev-app-state keypaths/navigation-message)
+        [current-nav-event current-nav-args]   (get-in app-state keypaths/navigation-message)
+
+        landing-on-same-category-page? (and (= events/navigate-category current-nav-event previous-nav-event)
+                                            (= (:catalog/category-id current-nav-args)
+                                               (:catalog/category-id previous-nav-args)))
+        new-nav-event?                 (not= previous-nav-event current-nav-event)
+        new-query-params?              (not= (:query-params previous-nav-args)
+                                             (:query-params current-nav-args))
+        video-query-param?             (:video query-params)
+        module-load?                   (= caused-by :module-load)]
 
     (messages/handle-message events/control-menu-collapse-all)
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})
@@ -240,8 +245,7 @@
                            (get-in app-state keypaths/pending-promo-code))))
 
     (seo/set-tags app-state)
-    (when (and (not video-query-param?)
-               (or new-nav-event? new-query-params?))
+    (when (and (not video-query-param?) (not landing-on-same-category-page?) (or new-nav-event? new-query-params?))
       (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
         (if (zero? restore-scroll-top)
           ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
