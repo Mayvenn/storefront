@@ -728,7 +728,7 @@
           :selector/electives  [:hair/color :hair/weight :hair/length]
 
           :copy/title       "Tape-In Hair Extensions"
-          :copy/description "tape in desc"
+          :copy/description ""
 
           :page/slug "tape-ins"
 
@@ -765,7 +765,7 @@
     :product-list/title "Shop All Hair Extensions"
 
     :page/slug                     "hair-extensions"
-    :copy/description              "hair extensions desc"
+    :copy/description              ""
     :seo/sitemap                   false
     :page/title                    "Hair Extensions: Real Human Hair Extensions | Mayvenn"
     :page.meta/description         (str "Mayvenn’s real human hair extensions come in different variations"
