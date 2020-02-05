@@ -2,6 +2,7 @@
   (:require [storefront.events :as events]
             [storefront.config :as config]
             [storefront.browser.cookie-jar :as cookie-jar]
+            [catalog.categories :as categories]
             [spice.core :as spice]))
 
 (def initial-checkout-state
@@ -106,6 +107,7 @@
 
      :session-id (cookie-jar/force-session-id cookie)
 
+     :categories         categories/initial-categories
      :user               (cookie-jar/retrieve-login cookie)
      :order              (cookie-jar/retrieve-current-order cookie)
      :completed-order    (cookie-jar/retrieve-completed-order cookie)

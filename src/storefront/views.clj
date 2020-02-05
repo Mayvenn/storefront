@@ -174,7 +174,7 @@
                        (str "var COMPILED_MODULE_URIS=" (json/generate-string (config/frontend-modules)) ";"))
                      ;; need to make sure the edn which has double quotes is validly escaped as
                      ;; json as it goes into the JS file
-                     (format "var data = %s;" (data->transit data))
+                     (format "var data = %s;" (data->transit (dissoc data (first keypaths/categories))))
                      "var environment=\"" environment "\";"
                      "var clientVersion=\"" client-version "\";"
                      "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
