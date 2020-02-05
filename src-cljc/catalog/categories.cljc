@@ -308,7 +308,7 @@
            :footer/title             "Virgin Body Wave"
            :header/order             3
            :header/group             0
-           :header/title             "Virgin Body Straight"}
+           :header/title             "Virgin Body Wave"}
           (category->seo "Body Wave Extensions"
                          (copy "Malaysian and Peruvian body wave silk, lace and 360 frontal bundles."
                                "Unbelievably soft and goes from straight to wavy and back again.")
