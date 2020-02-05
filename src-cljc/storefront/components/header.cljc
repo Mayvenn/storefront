@@ -232,7 +232,7 @@
         (apply utils/route-to nav-message)
         (when new?
           [:span.p-color "NEW "])
-        (string/capitalize copy)]])]))
+        (some->> copy string/capitalize)]])]))
 
 (defn flyout [columns expanded?]
   (component/html
