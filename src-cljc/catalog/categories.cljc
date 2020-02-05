@@ -84,6 +84,7 @@
            :page/slug                "virgin-360-frontals"
            :seo/title                "Virgin 360 Hair Frontals"
            :legacy/named-search-slug "360-frontals"
+           :subcategory/image-uri    "//ucarecdn.com/e6a42693-73a2-4cda-8ad8-bc16b7d8b5f4/-/format/auto/-/resize/124x/"
 
            :catalog/department  #{"hair"}
            :hair/family         #{"360-frontals"}
@@ -110,27 +111,40 @@
           {:page/title "360 Lace Frontals: Virgin Hair 360 Frontals | Mayvenn"}
           frontals-templates)
    (merge {:catalog/category-id      "1"
-           :copy/title               "Virgin Frontals"
+           :copy/title               "Hair Frontals"
            :page/slug                "virgin-frontals"
            :seo/title                "Virgin Hair Frontals"
            :legacy/named-search-slug "frontals"
            :menu/hide?               true
+           :page/icp?                true
+           :category/description     (copy "Save your precious strands and top your look off with"
+                                           "the ultimate tool in protective weave styling. Our collection of"
+                                           "frontals blend seamlessly with our bundles and can be customized to"
+                                           "fit your unique look.")
 
-           :catalog/department  #{"hair"}
-           :hair/family         #{"frontals"}
-           :hair/color.process  #{"natural" "dyed"}
+           :catalog/department            #{"hair"}
+           :hair/family                   #{"frontals" "360-frontals"}
+           :hair/color.process            #{"natural" "dyed"}
            ;; :header/order        2
            ;; :header/group        1
            ;; :header/title        "Virgin Frontals"
            ;; :footer/order        12
            ;; :dtc-footer/order    6
            ;; :footer/title        "Virgin Frontals"
-           :hair/source         #{"virgin"}
-           :category/tags       #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
-           :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives  [:hair/origin :hair/texture :hair/color]
-           :copy/description    (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                      "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
+           :hair/source                   #{"virgin"}
+           :category/tags                 #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
+           :selector/essentials           [:catalog/department :hair/family :hair/color.process :hair/source]
+           :selector/electives            [:hair/origin :hair/texture :hair/color]
+           :copy/description              (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                                "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")
+           :product-list/title            "Shop All Frontals"
+           :subcategories/ids             ["10" "29"]
+           :subcategories/layout          :list
+           :subsections/category-selector :hair/family
+           :subsections                   {"360-frontals" {:order         0
+                                                           :title/primary "360 Lace Frontals"}
+                                           "frontals"     {:order         1
+                                                           :title/primary "Virgin Lace Frontals"}}}
           (category->seo "Frontals"
                          (copy "Mayvenn’s virgin hair frontals blend in seamlessly"
                                "with our bundles and come in a variety of different"
@@ -141,24 +155,25 @@
    (merge {:catalog/category-id      "29"
            :copy/title               "Lace Frontals"
            :page/slug                "lace-frontals"
-           :seo/title                "Virgin Hair Frontals" ; TODO what should this be?
+           :seo/title                "Virgin Hair Frontals"     ; TODO what should this be?
            :legacy/named-search-slug "frontals"
-           :catalog/department  #{"hair"}
-           :hair/family         #{"frontals"}
-           :hair/color.process  #{"natural" "dyed"}
-           :header/order        2
-           :header/group        1
-           :header/title        "Virgin Frontals"
-           :footer/order        12
-           :dtc-footer/order    6
-           :footer/title        "Virgin Frontals"
-           :hair/source         #{"virgin"}
-           :menu/title          "Virgin Frontals"
-           :category/tags       #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
-           :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives  [:hair/origin :hair/texture :hair/color]
-           :copy/description    (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                      "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
+           :catalog/department       #{"hair"}
+           :hair/family              #{"frontals"}
+           :hair/color.process       #{"natural" "dyed"}
+           :header/order             2
+           :header/group             1
+           :header/title             "Virgin Frontals"
+           :footer/order             12
+           :dtc-footer/order         6
+           :footer/title             "Virgin Frontals"
+           :hair/source              #{"virgin"}
+           :menu/title               "Virgin Frontals"
+           :category/tags            #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
+           :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
+           :selector/electives       [:hair/origin :hair/texture :hair/color]
+           :subcategory/image-uri    "//ucarecdn.com/47e29e97-821e-4c20-aeac-35eadc1a653d/-/format/auto/-/resize/124x/"
+           :copy/description         (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                           "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
           (category->seo "Lace Frontals"
                          (copy "Mayvenn’s human hair lace frontals blend in seamlessly"
                                "with our bundles and come in a variety of different"
