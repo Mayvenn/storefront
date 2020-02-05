@@ -63,8 +63,12 @@
      {:key       id
       :data-test id}
      [:div.col-12-on-tb-dt.col-3
-      (when image-url
-        (ui/ucare-img {:width "62"} image-url))]
+      [:div.hide-on-tb-dt.flex.justify-end.mr4.mt1
+       (when image-url
+         (ui/ucare-img {:width "62"} image-url))]
+      [:div.hide-on-mb
+       (when image-url
+         (ui/ucare-img {:width "62"} image-url))]]
      [:div.col-12-on-tb-dt.col-9
       [:div.title-2.proxima.shout title]
       [:div.content-2.proxima.py1 description]
