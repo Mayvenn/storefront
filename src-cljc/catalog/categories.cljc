@@ -114,6 +114,7 @@
            :page/slug                "virgin-frontals"
            :seo/title                "Virgin Hair Frontals"
            :legacy/named-search-slug "frontals"
+           :menu/hide?               true
 
            :catalog/department  #{"hair"}
            :hair/family         #{"frontals"}
@@ -140,19 +141,19 @@
    (merge {:catalog/category-id      "29"
            :copy/title               "Lace Frontals"
            :page/slug                "lace-frontals"
-           :seo/title                "Virgin Hair Frontals"
-           :legacy/named-search-slug "frontals" ;;
-
+           :seo/title                "Virgin Hair Frontals" ; TODO what should this be?
+           :legacy/named-search-slug "frontals"
            :catalog/department  #{"hair"}
            :hair/family         #{"frontals"}
            :hair/color.process  #{"natural" "dyed"}
            :header/order        2
            :header/group        1
-           :header/title        "Lace Frontals"
+           :header/title        "Virgin Frontals"
            :footer/order        12
            :dtc-footer/order    6
-           :footer/title        "Lace Frontals"
+           :footer/title        "Virgin Frontals"
            :hair/source         #{"virgin"}
+           :menu/title          "Virgin Frontals"
            :category/tags       #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives  [:hair/origin :hair/texture :hair/color]

@@ -36,9 +36,7 @@
          [:span.flex-auto.titleize
           (when new?
             [:span.p-color "NEW "])
-          (if (= copy "Lace Frontals")
-            "Virgin Frontals"
-            copy)])])]]])
+          copy])])]]])
 
 (defn category-query [data]
   (let [{:keys [selector/essentials] :as nav-root} (categories/current-traverse-nav data)]
@@ -49,11 +47,13 @@
      :menu/options              (->> categories/menu-categories
                                      (selector/match-all {:selector/strict? true}
                                                          (select-keys nav-root essentials))
+                                     (remove :menu/hide?)
                                      (map #(assoc %
                                                   :nav-message [events/navigate-category %]
                                                   :key (:page/slug %)
                                                   :new? (:category/new? %)
-                                                  :copy (:copy/title %))))}))
+                                                  :copy (or (:menu/title %)
+                                                            (:copy/title %)))))}))
 
 (defn shop-looks-query [data]
   {:return-link/event-message [events/menu-home]

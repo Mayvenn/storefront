@@ -29,9 +29,7 @@
                                                           {:query-params {:SKU sku-id}}))]
                       [events/navigate-category category])
         slug        (or product-slug slug)]
-    {:title         (if (= footer-title "Lace Frontals") ;; TODO: Remove once Frontals icp is created
-                      "Virgin Frontals"
-                      footer-title)
+    {:title         footer-title
      :slug          slug
      :new-category? (categories/new-category? slug)
      :nav-message   nav-message}))
