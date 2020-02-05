@@ -80,8 +80,8 @@
           {:page/title "Hair Closures: Human Hair Closure Sew-Ins | Mayvenn"}
           closures-templates)
    (merge {:catalog/category-id      "10"
-           :copy/title               "Virgin 360 Frontals"
-           :page/slug                "virgin-360-frontals"
+           :copy/title               "360 Lace Frontals"
+           :page/slug                "360-lace-frontals"
            :seo/title                "Virgin 360 Hair Frontals"
            :legacy/named-search-slug "360-frontals"
            :subcategory/image-uri    "//ucarecdn.com/e6a42693-73a2-4cda-8ad8-bc16b7d8b5f4/-/format/auto/-/resize/124x/"
@@ -153,8 +153,8 @@
           {:page/title "Virgin Hair Frontals: Virgin Hair Lace Frontals | Mayvenn"}
           frontals-templates)
    (merge {:catalog/category-id      "29"
-           :copy/title               "Lace Frontals"
-           :page/slug                "lace-frontals"
+           :copy/title               "Virgin Lace Frontals"
+           :page/slug                "virgin-lace-frontals"
            :seo/title                "Virgin Hair Frontals"     ; TODO what should this be?
            :legacy/named-search-slug "frontals"
            :catalog/department       #{"hair"}
