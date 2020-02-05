@@ -21,7 +21,7 @@
 
 (defn retrieve-parsed-affiliate-id [app-state]
   #?(:cljs (and
-            (contains? #{"shop" "freeinstall"} (get-in app-state keypaths/store-slug))
+            (contains? #{"shop"} (get-in app-state keypaths/store-slug))
             (some-> app-state
                     (get-in keypaths/cookie)
                     cookie-jar/retrieve-affiliate-stylist-id
