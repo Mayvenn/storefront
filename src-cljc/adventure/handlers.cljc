@@ -21,10 +21,6 @@
   #{events/navigate-adventure-out-of-area
     events/navigate-adventure-match-success-pre-purchase})
 
-(defmethod transitions/transition-state events/control-adventure-choice
-  [_ event {:keys [choice]} app-state]
-  (-> app-state (update-in keypaths/adventure-choices merge (:value choice))))
-
 (defmethod effects/perform-effects events/navigate-adventure
   [_ event {:keys [query-params]} app-state-before app-state]
   #?(:cljs

@@ -503,8 +503,6 @@
 (defpath navigate-adventure-stylist-profile)
 (defpath navigate-adventure-stylist-profile-post-purchase)
 
-(defpath control-adventure)
-(defpath control-adventure-choice)
 (defpath control-adventure-select-stylist)
 (defpath control-adventure-select-stylist-pre-purchase)
 (defpath control-adventure-select-stylist-post-purchase)
