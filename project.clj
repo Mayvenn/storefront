@@ -75,58 +75,59 @@
                               (binding [*out* *err*]
                                 (println (cljs.analyzer/message env s))
                                 (System/exit 1)))))]
-     :compiler         {:output-dir       "target/release/js/out"
-                        :asset-path       "/js/out" ; our CDN host is defined at startup time, so we're basically ignoring this value
-                        :source-map       true
+     :compiler         {:output-dir              "target/release/js/out"
+                        :asset-path              "/js/out" ; our CDN host is defined at startup time, so we're basically ignoring this value
+                        :source-map              true
+                        :rename-prefix-namespace "mvn"
                         ;; Don't forget to update config.clj > define-frontend-modules
                         ;; Don't forget to update dev.cljs.edn
-                        :modules          {:cljs-base     {:output-to "target/release/js/out/cljs_base.js"}
-                                           :main          {:output-to "target/release/js/out/main.js"
-                                                           :entries   #{storefront.core}}
-                                           :dashboard     {:output-to "target/release/js/out/dashboard.js"
-                                                           :entries   #{stylist.dashboard}}
-                                           :redeem        {:output-to "target/release/js/out/redeem.js"
-                                                           :entries   #{voucher.redeem}}
-                                           :design-system {:output-to "target/release/js/out/design-system.js"
-                                                           :entries   #{design-system.home}}
-                                           :catalog       {:output-to "target/release/js/out/catalog.js"
-                                                           :entries   #{catalog.core}}
-                                           :checkout      {:output-to  "target/release/js/out/checkout.js"
-                                                           :entries    #{checkout.core}
-                                                           :depends-on #{:catalog}}}
-                        :closure-defines  {goog.DEBUG false}
-                        :infer-externs    false
-                        :static-fns       true
-                        :fn-invoke-direct true
-                        :parallel-build   true
-                        :language-out     :es6-strict
-                        :npm-deps         false
-                        :install-deps     false
-                        :pseudo-names     false
-                        :libs             ["src-cljs/rng/rng.js"]
-                        :foreign-libs     [{:file     "src-cljs/storefront/jsQR.js"
-                                            :file-min "target/min-js/jsQR.js"
-                                            :provides ["jsQR"]}
-                                           {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
-                                            :file-min "target/min-js/bugsnag-2.5.0.js"
-                                            :provides ["bugsnag"]}]
-                        :externs          ["externs/luckyorange.js"
-                                           "externs/jsQR.js"
-                                           "externs/bugsnag.js"
-                                           "externs/convert.js"
-                                           "externs/facebook.js"
-                                           "externs/google_maps.js"
-                                           "externs/pixlee.js"
-                                           "externs/quadpay.js"
-                                           "externs/riskified.js"
-                                           "externs/spreedly.js"
-                                           "externs/stringer.js"
-                                           "externs/stripe.js"
-                                           "externs/talkable.js"
-                                           "externs/uploadcare.js"
-                                           "externs/wistia.js"
-                                           "externs/yotpo.js"]
-                        :optimizations    :advanced}}}}
+                        :modules                 {:cljs-base     {:output-to "target/release/js/out/cljs_base.js"}
+                                                  :main          {:output-to "target/release/js/out/main.js"
+                                                                  :entries   #{storefront.core}}
+                                                  :dashboard     {:output-to "target/release/js/out/dashboard.js"
+                                                                  :entries   #{stylist.dashboard}}
+                                                  :redeem        {:output-to "target/release/js/out/redeem.js"
+                                                                  :entries   #{voucher.redeem}}
+                                                  :design-system {:output-to "target/release/js/out/design-system.js"
+                                                                  :entries   #{design-system.home}}
+                                                  :catalog       {:output-to "target/release/js/out/catalog.js"
+                                                                  :entries   #{catalog.core}}
+                                                  :checkout      {:output-to  "target/release/js/out/checkout.js"
+                                                                  :entries    #{checkout.core}
+                                                                  :depends-on #{:catalog}}}
+                        :closure-defines         {goog.DEBUG false}
+                        :infer-externs           false
+                        :static-fns              true
+                        :fn-invoke-direct        true
+                        :parallel-build          true
+                        :language-out            :es6-strict
+                        :npm-deps                false
+                        :install-deps            false
+                        :pseudo-names            false
+                        :libs                    ["src-cljs/rng/rng.js"]
+                        :foreign-libs            [{:file     "src-cljs/storefront/jsQR.js"
+                                                   :file-min "target/min-js/jsQR.js"
+                                                   :provides ["jsQR"]}
+                                                  {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
+                                                   :file-min "target/min-js/bugsnag-2.5.0.js"
+                                                   :provides ["bugsnag"]}]
+                        :externs                 ["externs/luckyorange.js"
+                                                  "externs/jsQR.js"
+                                                  "externs/bugsnag.js"
+                                                  "externs/convert.js"
+                                                  "externs/facebook.js"
+                                                  "externs/google_maps.js"
+                                                  "externs/pixlee.js"
+                                                  "externs/quadpay.js"
+                                                  "externs/riskified.js"
+                                                  "externs/spreedly.js"
+                                                  "externs/stringer.js"
+                                                  "externs/stripe.js"
+                                                  "externs/talkable.js"
+                                                  "externs/uploadcare.js"
+                                                  "externs/wistia.js"
+                                                  "externs/yotpo.js"]
+                        :optimizations           :advanced}}}}
   :auto-clean false
   :profiles {:uberjar {:aot :all}
              :test    {:plugins [[lein-test-report-junit-xml "0.2.0"]]}
