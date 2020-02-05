@@ -17,20 +17,6 @@
     background-repeat: "repeat";
 }
 
-.bg-adventure-basic-prompt {
-    background-position: left 1em bottom;
-    background-repeat:   no-repeat;
-    background-size:     contain;
-}
-
-.bg-adventure-shop-hair {
-    background: url(//ucarecdn.com/20636e0b-60ff-405a-88a4-94c9a3bb3e8a/-/format/auto/-/quality/lightest/bg)
-                   center
-                   bottom/90%
-                   no-repeat,
-                linear-gradient(#CDB8D9,#9A8FB4)
-}
-
 :root {
     --p-color:     #4427c1;
 }
