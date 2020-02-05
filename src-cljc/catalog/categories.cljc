@@ -344,7 +344,7 @@
            :footer/title             "Virgin Loose Wave"
            :header/order             4
            :header/group             0
-           :header/title             "Virgin Loose Straight"}
+           :header/title             "Virgin Loose Wave"}
           (category->seo "Loose Wave Extensions"
                          (copy "Mayvenn’s Brazilian, Peruvian and Indian loose wave bundles."
                                "Also includes loose wave lace closures. All are 100% virgin Loose Wave hair.")
