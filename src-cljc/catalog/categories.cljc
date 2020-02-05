@@ -816,7 +816,17 @@
     :subsections                   {"seamless-clip-ins" {:order         0
                                                          :title/primary "Clip-in Hair Extensions"}
                                     "tape-ins"          {:order         1
-                                                         :title/primary "Tape-in Hair Extensions"}}}])
+                                                         :title/primary "Tape-in Hair Extensions"}}
+    :content-block/type     :about-attributes ;; incase we have different templates in the future
+    :content-block/title    "Hair Extensions 101:"
+    :content-block/header   "How to Choose"
+    :content-block/summary  "No matter what kind of transformation you’re looking for, our seamless clip-in & tape-in hair extensions will help you achieve your desired look in an instant. Our clip-ins & tape-ins are perfect for when you want a natural-looking appearance that complements your own hair while giving that much coveted oomph-factor."
+    :content-block/sections [{:title "Tape-In Hair Extensions"
+                              :body  "Our seamless tape-in hair extensions have a thin weft that flawlessly blends with your own hair, so you can have the hair of your dreams."}
+                             {:title "Clip-In Hair Extensions"
+                              :body  "With a thin weft that blends into your hair seamlessly, our clip-in human hair extensions help you create the hair of your dreams."}
+                             {:title "Human Hair Extensions"
+                              :body  "Our human hair extensions are a must-have for creating the hair you’ve always wanted. Our high-quality extensions are easy to install and available in many textures like Straight, Yaki Straight, Kinky Straight, Body Wave, Loose Wave, Water Wave, Deep Wave, and Curly, plus multiple lengths for all kinds of hairstyles."}]}])
 
 (def menu-categories
   (concat virgin-hair
