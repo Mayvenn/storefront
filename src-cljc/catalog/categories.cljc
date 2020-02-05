@@ -729,7 +729,7 @@
           :selector/electives  [:hair/color :hair/weight :hair/length]
 
           :copy/title       "Tape-In Hair Extensions"
-          :copy/description ""
+          :copy/description "Our straight tape-in extensions lie completely flat against the head and blend seamlessly with your own hair."
 
           :page/slug "tape-ins"
 
