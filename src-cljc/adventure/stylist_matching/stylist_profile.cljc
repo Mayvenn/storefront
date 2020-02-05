@@ -197,7 +197,7 @@
                 :reviews/rating       (:rating stylist)
                 :reviews/review-count (:review-count stylist)
                 :reviews/reviews      (mapv #(assoc % :review-date
-                                                    #?(:cljs (-> % :review-date formatters/abbr-date)
+                                                    #?(:cljs (-> % :review-date formatters/short-date)
                                                        :clj  ""))
                                             stylist-reviews)
                 :rating/review-count  (:review-count stylist)})
@@ -256,6 +256,13 @@
         (checks-or-x "Closure" (:specialty-sew-in-closure content))
         (checks-or-x "Frontal" (:specialty-sew-in-frontal content))]])]])
 
+(def install-type->display-name
+  {"leave-out"         "Leave Out Install"
+   "closure"           "Closure Install"
+   "frontal"           "Frontal Install"
+   "360-frontal"       "360° Frontal Install"
+   "wig-customization" "Wig Customization"})
+
 (defn reviews-molecule
   [{:reviews/keys [cta-target cta-id cta-label id rating review-count reviews]}]
   (when id
@@ -277,7 +284,7 @@
             whole-stars
             partial-star
             empty-stars
-            [:div.ml2.content-3.proxima install-type]])]
+            [:div.ml2.content-3.proxima (get install-type->display-name install-type)]])]
         [:div.py1 review-content]
         [:div.flex
          [:div "— " reviewer-name]
