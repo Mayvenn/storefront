@@ -43,7 +43,8 @@
   ;; This is actually the recommended way to do this in JavaScript.
   ;; The other option is to use a time library, but goog.i18n adds 500K to the
   ;; page size.
-  (get day-abbr (.getDay date)))
+  #?(:cljs (get day-abbr (.getDay date))
+     :clj nil))
 
 (defn month+day [date-like]
   (when-let [date (date/to-datetime date-like)]
