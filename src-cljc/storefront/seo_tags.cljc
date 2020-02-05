@@ -135,14 +135,14 @@
                  category/sort-query-params
                  not-empty))))
 
-(defn update-path
+(defn ^:private update-path
   [uri data]
   (let [canonical-category-id (categories/canonical-category-id data)
         categories            (get-in data keypaths/categories)
         {:keys [page/slug]}   (categories/id->category canonical-category-id categories)]
     (assoc uri :path (str "/categories/" canonical-category-id "-" slug))))
 
-(defn remove-unneccessary-query-params
+(defn ^:private remove-unnecessary-query-params
   [uri]
   (let [query     (:query uri)
         path      (:path uri)
@@ -158,13 +158,13 @@
                   (into {})
                   (assoc uri :query)))))
 
-(defn handle-icp-paths-and-query-params
+(defn ^:private handle-icp-paths-and-query-params
   [uri data]
   (let [path (:path uri)]
     (if (string/includes? path "categories")
       (some-> uri
               (update-path data)
-              remove-unneccessary-query-params)
+              remove-unnecessary-query-params)
       uri)))
 
 (defn canonical-uri
