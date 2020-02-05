@@ -61,7 +61,7 @@
 (defcomponent ^:private drill-category-list-entry-organism
   [{:drill-category/keys [id title description image-url target action-id action-label]} _ _]
   (when id
-    [:div.p3.col-4-on-tb-dt.flex.flex-wrap.col-12
+    [:div.p3.col-4-on-tb-dt.flex.flex-wrap.col-12.content-start
      {:key       id
       :data-test id}
      [:div.col-12-on-tb-dt.col-3
