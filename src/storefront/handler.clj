@@ -794,31 +794,18 @@
         (= "submitted" (:state order))
         (util.response/redirect (str "/orders/" (:number order) "/complete"))))))
 
-(defn quadpay-routes [ctx]
+(defn quadpay-routes
+  "NOTE: Quadpay's successful charges are known to storefront only through the
+  client-side pinging so that we can track the placed order event."
+  [ctx]
   (GET "/orders/:order-number/quadpay" [order-number :as request]
-    (let [order       (get-in-req-state request keypaths/order)
-          order-token (get (:query-params request) "order-token")]
-      (cond
-        (and order
-             (or (not= (:number order) order-number)
-                 (not= (:token order) order-token)
-                 (not (#{"cart" "submitted"} (:state order)))))
+    (let [order-from-cookie (get-in-req-state request keypaths/order)
+          order-token       (get (:query-params request) "order-token")]
+      (if (and order-from-cookie
+               (or (not= (:number order-from-cookie) order-number)
+                   (not= (:token order-from-cookie) order-token)))
         (util.response/redirect "/checkout/payment?error=quadpay-invalid-state")
-
-        ;; one of two things has happened:
-        ;; - this is not a valid order (why are we here then?)
-        ;; - we had network flake (then it's a temporary bug)
-        ;;
-        ;; So, we're optimistically assuming the order has been placed instead
-        ;; of asking the customer to try checking out again.
-        (nil? order)
-        (util.response/redirect "/checkout/processing")
-
-        (= "cart" (:state order))
-        (util.response/redirect "/checkout/processing")
-
-        (= "submitted" (:state order))
-        (util.response/redirect (str "/orders/" (:number order) "/complete"))))))
+        (util.response/redirect "/checkout/processing")))))
 
 (defn static-routes [_]
   (fn [{:keys [uri] :as req}]
