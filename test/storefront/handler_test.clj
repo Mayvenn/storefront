@@ -546,7 +546,7 @@
 
 (defn parse-title [body]
   (some->> body
-           (re-find #"<title[^>]*>(.+)</title>")
+           (re-find #"<title[^>]*>(.*)</title>")
            second))
 
 (defn validate-title-and-description-and-canonical
