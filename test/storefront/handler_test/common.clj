@@ -528,8 +528,12 @@
              [{:option/slug "360-wigs",
                :option/name "360 Wigs",
                :sku/name "360 Wig",
-               :filter/order 7}]}
-
+               :filter/order 7}
+              {:option/slug    "bundles"
+               :option/name    "Bundles"
+               :sku/name       "Bundle"
+               :adventure/name "Leave Out"
+               :filter/order   1}]}
             {:facet/slug   "hair/color",
              :facet/name   "Color",
              :filter/order 6,
