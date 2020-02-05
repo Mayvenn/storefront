@@ -111,7 +111,7 @@
    (merge {:catalog/category-id      "1"
            :copy/title               "Hair Frontals"
            :page/slug                "virgin-frontals"
-           :seo/title                "Virgin Hair Frontals"
+           :seo/title                "Hair Frontals"
            :legacy/named-search-slug "frontals"
            :menu/hide?               true
            :page/icp?                true
@@ -144,11 +144,9 @@
                                            "frontals"     {:order         1
                                                            :title/primary "Virgin Lace Frontals"}}}
           (category->seo "Frontals"
-                         (copy "Mayvenn’s virgin hair frontals blend in seamlessly"
-                               "with our bundles and come in a variety of different"
-                               "combinations. Shop now to create your look.")
+                         "Mayvenn’s hair frontals blend in seamlessly with our bundles and come in a variety of different combinations. Shop now to create your look."
                          "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")
-          {:page/title "Virgin Hair Frontals: Virgin Hair Lace Frontals | Mayvenn"}
+          {:page/title "Hair Frontals: Human Hair Lace Frontal Sew-Ins | Mayvenn"}
           frontals-templates)
    (merge {:catalog/category-id      "29"
            :copy/title               "Virgin Lace Frontals"
