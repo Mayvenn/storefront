@@ -657,29 +657,29 @@
                               :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]}])
 
 (def the-only-stylist-exclusive
-  (merge {:catalog/category-id       "14"
-          :auth/requires             #{:stylist}
-          :footer/order              30
-          :footer/title              "Stylist Exclusives"
-          :header/order              30
-          :header/group              2
-          :header/title              "Stylist Exclusives"
-          :copy/title                "Stylist Exclusives"
-          :page/slug                 "stylist-exclusives"
-          :direct-to-details/id      "49"
-          :direct-to-details/slug    "rings-kits"
-          :direct-to-details/sku-id  "SK3"
-          :catalog/department        #{"stylist-exclusives"},
-          :kits/contents             #{"rings"},
-          :stylist-exclusives/family #{"kits"}
-          :selector/electives        []
-          :selector/essentials       [:catalog/department :kits/contents :stylist-exclusives/family]
-          :page/title                "Stylist"
-          :opengraph/title           (copy "Stylist Exclusives - Free shipping."
-                                           "Free 30 day returns. Made with 100% virgin human hair.")
-          :page.meta/description     (copy "")
-          :opengraph/description     (copy "")
-          :seo/sitemap               false}))
+  {:catalog/category-id       "14"
+   :auth/requires             #{:stylist}
+   :footer/order              30
+   :footer/title              "Stylist Exclusives"
+   :header/order              30
+   :header/group              2
+   :header/title              "Stylist Exclusives"
+   :copy/title                "Stylist Exclusives"
+   :page/slug                 "stylist-exclusives"
+   :direct-to-details/id      "49"
+   :direct-to-details/slug    "rings-kits"
+   :direct-to-details/sku-id  "SK3"
+   :catalog/department        #{"stylist-exclusives"},
+   :kits/contents             #{"rings"},
+   :stylist-exclusives/family #{"kits"}
+   :selector/electives        []
+   :selector/essentials       [:catalog/department :kits/contents :stylist-exclusives/family]
+   :page/title                "Stylist"
+   :opengraph/title           (copy "Stylist Exclusives - Free shipping."
+                                    "Free 30 day returns. Made with 100% virgin human hair.")
+   :page.meta/description     (copy "")
+   :opengraph/description     (copy "")
+   :seo/sitemap               false})
 
 (def stylist-exclusives
   [the-only-stylist-exclusive])
