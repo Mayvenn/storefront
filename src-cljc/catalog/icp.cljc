@@ -183,7 +183,7 @@
     [:div.proxima.title-2.bold.caps.pb1 "Still Have Questions?"]
     [:div.canela.content-2
      [:div "Customer Service can help!"]
-     [:div "Call (888) 562-7952 "]
+     [:div "Call " [:a.inherit-color {:href (ui/phone-url "18885627952")} "(888) 562-7952 "]]
      [:div "Monday through Friday from 8am-5pm PST."]]]])
 
 (defcomponent ^:private template
