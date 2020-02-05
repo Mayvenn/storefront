@@ -431,15 +431,6 @@
                                (api/get-servicing-stylist storeback-config
                                                           servicing-stylist-id)))))))
 
-(defn wrap-adventure-route-params [h]
-  (fn [{:as req :keys [nav-message]}]
-    (let [params        (second nav-message)
-          album-keyword (keyword (:album-keyword params))
-          look-id       (spice/parse-int (:look-id params))]
-      (h (cond-> req
-           album-keyword (assoc-in-req-state keypaths/selected-album-keyword album-keyword)
-           look-id       (assoc-in-req-state keypaths/selected-look-id look-id))))))
-
 ;; TODO: Add joining ability to v2 product queries
 (defn wrap-fetch-catalog [h storeback-config]
   (fn [req]
@@ -898,7 +889,6 @@
       (wrap-fetch-order (:storeback-config ctx))
       (wrap-fetch-servicing-stylist-for-completed-order (:storeback-config ctx))
       (wrap-fetch-completed-order (:storeback-config ctx))
-      (wrap-adventure-route-params)
       (wrap-cookies (storefront-site-defaults (:environment ctx)))))
 
 (defn wrap-redirect-legacy-routes
