@@ -11,6 +11,28 @@
             [storefront.events :as events]
             [storefront.keypaths :as storefront.keypaths]))
 
+(def shop-contact-query
+  {:layer/type         :shop-contact
+   :title/value        "Contact Us"
+   :sub-subtitle/value "We're here to help"
+   :subtitle/value     "Have Questions?"
+   :contact-us-blocks  [{:url   (ui/sms-url "346-49")
+                         :svg   (svg/icon-sms {:height 51
+                                               :width  56})
+                         :title "Live Chat"
+                         :copy  "Text: 346-49"}
+                        {:url   (ui/phone-url "1 (888) 562-7952")
+                         :svg   (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
+                                                :height 57
+                                                :width  57})
+                         :title "Call Us"
+                         :copy  "1 (888) 562-7952"}
+                        {:url   (ui/email-url "help@mayvenn.com")
+                         :svg   (svg/icon-email {:height 39
+                                                 :width  56})
+                         :title "Email Us"
+                         :copy  "help@mayvenn.com"}]})
+
 (defn query
   [data]
   (let [cms-homepage-hero  (some-> data (get-in storefront.keypaths/cms-homepage) :shop :hero)
@@ -119,26 +141,7 @@
        :quote/text                  "You deserve quality extensions & exceptional service without the unreasonable price tag."
        :quote/primary-attribution   "— Diishan Imira"
        :quote/secondary-attribution "CEO of Mayvenn"}
-      {:layer/type         :shop-contact
-       :title/value        "Contact Us"
-       :sub-subtitle/value "We're here to help"
-       :subtitle/value     "Have Questions?"
-       :contact-us-blocks  [{:url   (ui/sms-url "346-49")
-                             :svg   (svg/icon-sms {:height 51
-                                                   :width  56})
-                             :title "Live Chat"
-                             :copy  "Text: 346-49"}
-                            {:url   (ui/phone-url "1 (888) 562-7952")
-                             :svg   (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
-                                                    :height 57
-                                                    :width  57})
-                             :title "Call Us"
-                             :copy  "1 (888) 562-7952"}
-                            {:url   (ui/email-url "help@mayvenn.com")
-                             :svg   (svg/icon-email {:height 39
-                                                     :width  56})
-                             :title "Email Us"
-                             :copy  "help@mayvenn.com"}]}
+      shop-contact-query
       {:layer/type             :sticky-footer
        :layer/id               "sticky-footer-get-started"
        :sticky/content         "It’s true, we are paying for your install! "

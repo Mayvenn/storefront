@@ -11,6 +11,8 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
+            [adventure.components.layered :as layered]
+            [adventure.shop-home :as shop-home]
             [spice.maps :as maps]))
 
 (defn ^:private vertical-squiggle-atom
@@ -197,7 +199,8 @@
     purple-divider-atom
     (component/build product-list/organism product-list)
     (when content-box green-divider-atom)
-    (when content-box (component/build content-box-organism content-box))]
+    (when content-box (component/build content-box-organism content-box))
+    (component/build layered/shop-contact shop-home/shop-contact-query)]
    (component/build footer-organism footer)])
 
 (defn category->subcategories
