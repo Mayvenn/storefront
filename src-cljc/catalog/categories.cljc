@@ -94,9 +94,7 @@
            :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives  [:hair/origin :hair/texture :hair/color :hair/base-material]
 
-           :copy/description (copy "From your hairline to nape, we’ve got you covered with our revolutionary 360 Lace Frontal."
-                                   "This one-of-a-kind frontal piece features freestyle parting, baby hairs,"
-                                   "and low-density edges for a naturally flawless look.")
+           :copy/description "Mayvenn’s hair 360 frontals got you covered and come in different variations such as Brazilian, Malaysian, straight, and deep wave."
            :footer/order     11
            :dtc-footer/order 5
            :footer/title     "Virgin 360 Frontals"
@@ -172,8 +170,7 @@
            :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives       [:hair/origin :hair/texture :hair/color]
            :subcategory/image-uri    "//ucarecdn.com/47e29e97-821e-4c20-aeac-35eadc1a653d/-/format/auto/-/resize/124x/"
-           :copy/description         (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                           "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
+           :copy/description         "Our lace frontal human hair pieces blend in seamlessly with our bundles and come in a variety of different combinations. Shop now to create your look."}
           (category->seo "Lace Frontals"
                          (copy "Mayvenn’s human hair lace frontals blend in seamlessly"
                                "with our bundles and come in a variety of different"
