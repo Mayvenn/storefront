@@ -1,11 +1,11 @@
 (ns storefront.seo-tags
   (:require [storefront.assets :as assets]
             [storefront.keypaths :as keypaths]
+            [storefront.accessors.categories :as accessors.categories]
             [cemerick.url :as cemerick-url]
             [catalog.keypaths :as k]
             [catalog.facets :as facets]
             [storefront.events :as events]
-            [catalog.categories :as categories]
             [catalog.category :as category]
             [catalog.products :as products]
             [spice.selector :as selector]
@@ -88,10 +88,10 @@
                                 (string? uri-query) cemerick-url/query->map
                                 :always             (select-keys (mapv name category/allowed-query-params))
                                 :always             category/sort-query-params)
-        canonical-category-id (categories/canonical-category-id data)
-        category              (categories/id->category canonical-category-id categories)
+        canonical-category-id (accessors.categories/canonical-category-id data)
+        category              (accessors.categories/id->category canonical-category-id categories)
         indexable?            (and
-                               (not-any? #(string/includes? % category/query-param-separator)
+                               (not-any? #(string/includes? % accessors.categories/query-param-separator)
                                          (vals selected-options))
                                (<= (count selected-options) 3))
         can-use-seo-template? (and (:page/title-template category)
@@ -135,13 +135,6 @@
                  category/sort-query-params
                  not-empty))))
 
-(defn ^:private update-path
-  [uri data]
-  (let [canonical-category-id (categories/canonical-category-id data)
-        categories            (get-in data keypaths/categories)
-        {:keys [page/slug]}   (categories/id->category canonical-category-id categories)]
-    (assoc uri :path (str "/categories/" canonical-category-id "-" slug))))
-
 (defn ^:private remove-unnecessary-query-params
   [uri]
   (let [query     (:query uri)
@@ -160,11 +153,17 @@
 
 (defn ^:private handle-icp-paths-and-query-params
   [uri data]
-  (let [path (:path uri)]
+  (let [path        (:path uri)
+        update-path (fn update-path
+                      [uri data]
+                      (let [canonical-category-id (accessors.categories/canonical-category-id data)
+                            categories            (get-in data keypaths/categories)
+                            {:keys [page/slug]}   (accessors.categories/id->category canonical-category-id categories)]
+                        (assoc uri :path (str "/categories/" canonical-category-id "-" slug))))]
     (if (string/includes? path "categories")
-      (some-> uri
-              (update-path data)
-              remove-unnecessary-query-params)
+      (-> uri
+          (update-path data)
+          remove-unnecessary-query-params)
       uri)))
 
 (defn canonical-uri

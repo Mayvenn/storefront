@@ -1,6 +1,7 @@
 (ns catalog.menu
   (:require [catalog.categories :as categories]
             [spice.selector :as selector]
+            [storefront.accessors.categories :as accessors.categories]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -39,7 +40,7 @@
           copy])])]]])
 
 (defn category-query [data]
-  (let [{:keys [selector/essentials] :as nav-root} (categories/current-traverse-nav data)]
+  (let [{:keys [selector/essentials] :as nav-root} (accessors.categories/current-traverse-nav data)]
     {:return-link/event-message [events/menu-home]
      :return-link/copy          "Back"
      :return-link/id            "back-from-category"

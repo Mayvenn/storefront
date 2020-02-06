@@ -2,7 +2,7 @@
   (:require #?@(:cljs [[storefront.history :as history]])
             adventure.keypaths
             api.orders
-            [catalog.category :as category]
+            [storefront.accessors.categories :as accessors.categories]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.header :as header]
@@ -56,7 +56,7 @@
                                                              :shopping-method-choice.button/target   [events/navigate-category
                                                                                                       {:page/slug           "wigs"
                                                                                                        :catalog/category-id "13"
-                                                                                                       :query-params        {:family (str "lace-front-wigs" category/query-param-separator "360-wigs")}}]
+                                                                                                       :query-params        {:family (str "lace-front-wigs" accessors.categories/query-param-separator "360-wigs")}}]
                                                              :shopping-method-choice.button/ucare-id "71dcdd17-f9cc-456f-b763-2c1c047c30b4"}]))})
 
 (defcomponent template

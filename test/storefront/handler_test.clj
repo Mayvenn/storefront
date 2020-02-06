@@ -675,6 +675,9 @@
 (def lace-front-wig-category-url
   "https://shop.mayvenn.com/categories/24-virgin-lace-front-wigs")
 
+(def human-hair-bundles-category-url
+  "https://shop.mayvenn.com/categories/27-human-hair-bundles")
+
 (deftest wig-page-title-and-description-templates
   (with-services {}
     (with-handler handler
@@ -751,3 +754,26 @@
                                                             default-wig-description
                                                             "/categories/13-wigs"
                                                             "origin=indian%7Ebrazilian&texture=loose-wave")))))))
+
+#_(deftest human-hair-bundles-and-description-templates
+  (with-services {}
+    (with-handler handler
+      (testing "If there is a texture facet applied, change the canonical to the texture page"
+        (-> (mock/request :get (str human-hair-bundles-category-url
+                                    "?texture=loose-wave"))
+            handler
+            (validate-title-and-description-and-canonical
+             "Loose Wave Extensions | Mayvenn"
+             "Mayvenn’s Brazilian, Peruvian and Indian loose wave bundles. Also includes loose wave lace closures. All are 100% virgin Loose Wave hair."
+             "/categories/6-virgin-loose-wave"
+             "family=bundles")))
+      (testing "If only origin and/or color facets are applied, change the metadata but keep the url" ; PASS
+        (-> (mock/request :get (str human-hair-bundles-category-url
+                                    "?origin=indian"
+                                    "&color=%232-chocolate-brown"))
+            handler
+            (validate-title-and-description-and-canonical
+             "Indian #2 Chocolate Brown Human Virgin Hair Bundles | Mayvenn"
+             "Mayvenn's Indian #2 Chocolate Brown human Virgin Hair Bundles are machine-wefted and made with virgin hair for unbeatable quality. Shop to achieve your desired look!"
+             "/categories/27-human-hair-bundles"
+             "origin=indian&color=%232-chocolate-brown"))))))

@@ -10,11 +10,11 @@
               [storefront.accessors.auth :as auth]
               [storefront.history :as history]])
    [storefront.component :as component :refer [defcomponent defdynamic-component]]
+   [storefront.accessors.categories :as accessors.categories]
    [catalog.categories :as categories]
    [catalog.icp :as icp]
    [storefront.assets :as assets]
    [storefront.components.ui :as ui]
-   [storefront.accessors.experiments :as experiments]
    [storefront.events :as events]
    [storefront.transitions :as transitions]
    [storefront.keypaths :as keypaths]
@@ -27,21 +27,7 @@
    [spice.selector :as selector]
    [clojure.set :as set]
    [clojure.string :as string]
-   [catalog.ui.product-card :as product-card]
-   [catalog.keypaths :as catalog.keypaths]))
-
-(def query-param-separator "~")
-
-(def ^:private query-params->facet-slugs
-  {:grade         :hair/grade
-   :family        :hair/family
-   :origin        :hair/origin
-   :weight        :hair/weight
-   :texture       :hair/texture
-   :base-material :hair/base-material
-   :color         :hair/color
-   :length        :hair/length
-   :color.process :hair/color.process})
+   [catalog.ui.product-card :as product-card]))
 
 (def category-query-params-ordering
   {"origin"        0
@@ -60,7 +46,14 @@
         params))
 
 (def ^:private facet-slugs->query-params
-  (set/map-invert query-params->facet-slugs))
+  (set/map-invert accessors.categories/query-params->facet-slugs))
+
+(defn category-selections->query-params
+  [category-selections]
+  (->> category-selections
+       (maps/map-values (fn [s] (string/join accessors.categories/query-param-separator s)))
+       (maps/map-keys (comp name facet-slugs->query-params))
+       sort-query-params))
 
 (def allowed-query-params
   (vals facet-slugs->query-params))
@@ -261,7 +254,7 @@
 
 (defn ^:private query
   [data]
-  (let [category                   (categories/current-category data)
+  (let [category                   (accessors.categories/current-category data)
         selections                 (get-in data catalog.keypaths/category-selections)
         products-matching-category (selector/match-all {:selector/strict? true}
                                                        (merge
@@ -304,7 +297,7 @@
 
 (defn ^:export built-component
   [data opts]
-  (let [current-category (categories/current-category data)]
+  (let [current-category (accessors.categories/current-category data)]
     (if (:page/icp? current-category)
       (icp/page data opts)
       (component/build component (query data) opts))))
@@ -320,8 +313,7 @@
 
       true
       (assoc-in catalog.keypaths/category-selections
-                (->> (maps/select-rename-keys query-params query-params->facet-slugs)
-                     (maps/map-values #(set (string/split % query-param-separator)))))
+                (accessors.categories/query-params->selector-electives query-params))
 
       (not= prev-category-id category-id)
       (assoc-in catalog.keypaths/category-panel nil))))
@@ -329,7 +321,7 @@
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-category
      [_ event {:keys [catalog/category-id slug query-params]} _ app-state]
-     (let [category   (categories/current-category app-state)
+     (let [category   (accessors.categories/current-category app-state)
            success-fn #(messages/handle-message events/api-success-v2-products-for-browse
                                                 (assoc % :category-id category-id))]
        ;; Some pages may disable scrolling on the body, e.g.: product detail page
@@ -364,11 +356,9 @@
 #?(:cljs
    (defmethod effects/perform-effects events/control-category-option
      [_ _ _ _ app-state]
-     (let [{:keys [catalog/category-id page/slug]} (categories/current-category app-state)]
+     (let [{:keys [catalog/category-id page/slug]} (accessors.categories/current-category app-state)]
        (->> (get-in app-state catalog.keypaths/category-selections)
-            (maps/map-values (fn [s] (string/join query-param-separator s)))
-            (maps/map-keys (comp name facet-slugs->query-params))
-            sort-query-params
+            category-selections->query-params
             (assoc {:catalog/category-id category-id
                     :page/slug           slug}
                    :query-params)

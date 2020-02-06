@@ -1,7 +1,5 @@
 (ns catalog.categories
   (:require [clojure.string :as string]
-            [cemerick.url :as cemerick-url]
-            [storefront.keypaths :as keypaths]
             [catalog.keypaths]
             [storefront.events :as events]))
 
@@ -60,6 +58,12 @@
    :page.meta/description-template
    (copy "Mayvenn’s %s%sallow you to change up and achieve your desired look."
          "Shop our collection of virgin hair wigs today.")})
+
+(def bundle-templates
+  {:page/title-template "%sHuman %s| Mayvenn"
+   :page.meta/description-template
+   (copy "Mayvenn's %shuman %sare machine-wefted and made with virgin"
+         "hair for unbeatable quality. Shop to achieve your desired look!")})
 
 (def closures
   [(merge {:catalog/category-id        "0"
@@ -639,49 +643,49 @@
                                                        :order         8}}}])
 
 (def human-hair-bundles
-  [(merge {:catalog/category-id        "27"
-           :catalog/department         #{"hair"}
-           :category/show-title?       true
-           :category/new?              false
+  [(merge {:catalog/category-id    "27"
+           :catalog/department     #{"hair"}
+           :category/show-title?   true
+           :category/new?          false
            :flyout-menu/title          "Hair Bundles"
            :flyout-menu/order          0
            :icp-menu-experiment-footer/order 0
            :icp-menu-experiment-footer/title "Hair Bundles"
-           :category/description       (copy "Our collection of 100% Virgin hair is a must-have for when you want more volume, length and texture."
-                                             "Switch up your look with these high-quality bundles. Buy three and the install is free.")
-           :category/image-url         "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
-           :copy/description           "For those whom want it given to them straight, our collection of 100% virgin straight hair is your go-to for a sleek look with minimal effort."
-           :copy/title                 "Hair Bundles"
-           :hair/family                #{"bundles"}
-           :page/icp?                  true
-           :page/slug                  "human-hair-bundles"
-           :page/title                 "Hair Bundles: Sew-In Hair Bundles | Mayvenn"
-           :page.meta/description      (copy "Mayvenn’s real human hair bundles come in different variations such as"
-                                             "Brazilian, Malaysian, straight, deep wave, and loose wave. Create your look today.")
-           :product-list/title         "Shop All Bundles"
-           :opengraph/description      (copy "100% virgin human hair, machine-wefted and backed by our 30 Day Quality Guarantee,"
-                                             "our natural human hair bundles are the best quality products on the market and ship free!")
-           :opengraph/title            "Natural Human Hair Bundles - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
-           :selector/electives         [:hair/texture :hair/origin :hair/color]
-           :selector/essentials        [:catalog/department :hair/family]
-           :subcategories/layout       :grid
-           :subcategories/ids          ["2" "3" "4" "5" "6" "7" "8" "9"]
-           :subcategories/title        "Textures"
-           :seo/sitemap                true
-           :seo/title                  "Virgin Hair Bundles"
-           :content-block/type         :about-attributes ;; incase we have different templates in the future
-           :content-block/title        "Hair Bundles 101:"
-           :content-block/header       "How to Style"
-           :content-block/summary      "With high quality bundles, the amount of hairstyles you can create are endless. Browse our selection of hair weaves here at Mayvenn. We feature virgin hair bundles that come in a variety of textures, such as curly, yaki straight, deep wave, and more."
-           :content-block/sections     [{:title "Our Hair"
-                                         :body  "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}
-                                        {:title "How to Choose Bundles"
-                                         :body  "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}
-                                        {:title "What to Know About Your Install"
-                                         :body  "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}
-                                        {:title "Free Install"
-                                         :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]}
-          bundles-templates)])
+           :category/description   (copy "Our collection of 100% Virgin hair is a must-have for when you want more volume, length and texture."
+                                         "Switch up your look with these high-quality bundles. Buy three and the install is free.")
+           :category/image-url     "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
+           :copy/description       "For those whom want it given to them straight, our collection of 100% virgin straight hair is your go-to for a sleek look with minimal effort."
+           :copy/title             "Hair Bundles"
+           :hair/family            #{"bundles"}
+           :page/icp?              true
+           :page/slug              "human-hair-bundles"
+           :page/title             "Hair Bundles: Sew-In Hair Bundles | Mayvenn"
+           :page.meta/description  (copy "Mayvenn’s real human hair bundles come in different variations such as"
+                                         "Brazilian, Malaysian, straight, deep wave, and loose wave. Create your look today.")
+           :product-list/title     "Shop All Bundles"
+           :opengraph/description  (copy "100% virgin human hair, machine-wefted and backed by our 30 Day Quality Guarantee,"
+                                         "our natural human hair bundles are the best quality products on the market and ship free!")
+           :opengraph/title        "Natural Human Hair Bundles - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
+           :selector/electives     [:hair/texture :hair/origin :hair/color]
+           :selector/essentials    [:catalog/department :hair/family]
+           :subcategories/layout   :grid
+           :subcategories/ids      ["2" "3" "4" "5" "6" "7" "8" "9"]
+           :subcategories/title    "Textures"
+           :seo/sitemap            true
+           :seo/title              "Virgin Hair Bundles"
+           :content-block/type     :about-attributes ;; incase we have different templates in the future
+           :content-block/title    "Hair Bundles 101:"
+           :content-block/header   "How to Style"
+           :content-block/summary  "With high quality bundles, the amount of hairstyles you can create are endless. Browse our selection of hair weaves here at Mayvenn. We feature virgin hair bundles that come in a variety of textures, such as curly, yaki straight, deep wave, and more."
+           :content-block/sections [{:title "Our Hair"
+                                     :body  "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}
+                                    {:title "How to Choose Bundles"
+                                     :body  "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}
+                                    {:title "What to Know About Your Install"
+                                     :body  "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}
+                                    {:title "Free Install"
+                                     :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]}
+          bundle-templates)])
 
 (def the-only-stylist-exclusive
   {:catalog/category-id        "14"
@@ -893,41 +897,3 @@
           tape-ins-category
           human-hair-bundles))
 
-(defn id->category [id categories]
-  (->> categories
-       (filter (comp #{(str id)} :catalog/category-id))
-       first))
-
-(defn named-search->category [named-search-slug categories]
-  (->> categories
-       (filter #(= named-search-slug
-                   (:legacy/named-search-slug %)))
-       first))
-
-(defn current-traverse-nav [data]
-  (id->category (get-in data keypaths/current-traverse-nav-id)
-                (get-in data keypaths/categories)))
-
-(defn current-category [data]
-  (id->category (get-in data catalog.keypaths/category-id)
-                (get-in data keypaths/categories)))
-
-(defn canonical-category-id [data]
-  "With ICPs, the 'canonical category id' may be different from the ICP category
-  id. E.g. 13-wigs with a selected family of 'lace-front-wigs' will have a
-  canonical cateogry id of 24, or in other words, lace-front-wigs' category id."
-  (let [current-category  (current-category data)
-        query-selections  (:query (get-in data keypaths/navigation-uri))
-        query-map         #?(:clj (cemerick-url/query->map query-selections)
-                             :cljs query-selections)
-        categories        (get-in data keypaths/categories)
-        single-categories (filter #(= 1 (count (:hair/family %))) categories)
-        family-selection  (some-> (get query-map "family")
-                                  (string/split #"~"))]
-
-    ;; NOTE: this cond will be built out to consider texture selections for the bundle category page in the future (and perhaps other ICPs)
-    (cond
-      (and family-selection (= (count family-selection) 1))
-      (:catalog/category-id (first (filter #(some (:hair/family %) family-selection) single-categories)))
-
-      :else (:catalog/category-id current-category))))

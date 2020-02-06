@@ -27,6 +27,7 @@
             [spice.core :as spice]
             [spice.maps :as maps]
             [storefront.accessors.auth :as auth]
+            [storefront.accessors.categories :as accessors.categories]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.skus :as skus]
@@ -514,7 +515,7 @@
 (defn redirect-named-search
   [render-ctx data req {:keys [named-search-slug]}]
   (let [categories (get-in data keypaths/categories)]
-    (when-let [category (categories/named-search->category named-search-slug categories)]
+    (when-let [category (accessors.categories/named-search->category named-search-slug categories)]
       (-> (path-for req events/navigate-category category)
           (util.response/redirect :moved-permanently)))))
 
@@ -572,7 +573,7 @@
 
       :else
       (let [categories (get-in data keypaths/categories)]
-        (when-let [category (categories/id->category category-id categories)]
+        (when-let [category (accessors.categories/id->category category-id categories)]
           (cond
             (not= slug (:page/slug category)) (-> (path-for req events/navigate-category category)
                                                   (util.response/redirect :moved-permanently))
@@ -650,8 +651,8 @@
 ;;TODO Move to wrap set catalog
 ;;TODO join queries!!!
 (defn- assoc-category-route-data [data storeback-config params]
-  (let [category                (categories/id->category (:catalog/category-id params)
-                                                         (get-in data keypaths/categories))
+  (let [category                (accessors.categories/id->category (:catalog/category-id params)
+                                                                   (get-in data keypaths/categories))
         {:keys [skus products]} (api/fetch-v2-products storeback-config (spice.maps/map-values vec (skuers/essentials category)))]
     (-> data
         (assoc-in catalog.keypaths/category-id (:catalog/category-id params))

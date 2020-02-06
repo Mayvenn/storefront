@@ -1,8 +1,8 @@
 (ns catalog.icp
-  (:require [catalog.categories :as categories]
-            catalog.keypaths
+  (:require catalog.keypaths
             [catalog.ui.product-list :as product-list]
             [spice.core :as spice]
+            [storefront.accessors.categories :as accessors.categories]
             [storefront.assets :as assets]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
@@ -217,7 +217,7 @@
 
 (defn query
   [app-state]
-  (let [category      (catalog.categories/current-category app-state)
+  (let [category      (accessors.categories/current-category app-state)
         subcategories (category->subcategories (get-in app-state keypaths/categories) category)
         selections    (get-in app-state catalog.keypaths/category-selections)
         products      (vals (get-in app-state keypaths/v2-products))]
