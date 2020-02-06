@@ -11,7 +11,7 @@
 
 (defn timeframe [rate-sku]
   (case rate-sku
-    "WAITER-SHIPPING-1" "4-6 day shipping"
+    "WAITER-SHIPPING-1" "4-6 days"
     "WAITER-SHIPPING-2" "1-2 business days"
     "WAITER-SHIPPING-4" "1 business day"
     "WAITER-SHIPPING-7" "2-4 days"
