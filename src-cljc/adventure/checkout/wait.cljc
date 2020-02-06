@@ -3,7 +3,8 @@
             [storefront.components.ui :as ui]
             #?@(:cljs [[storefront.api :as api]
                        [storefront.browser.cookie-jar :as cookie-jar]
-                       [storefront.history :as history]])
+                       [storefront.history :as history]
+                       [storefront.hooks.exception-handler :as exception-handler]])
             [storefront.component :as component :refer [defcomponent]]
             [storefront.keypaths :as keypaths]
             adventure.keypaths
@@ -38,14 +39,28 @@
      (if (not-empty (get-in app-state adventure.keypaths/adventure-stylist-match-location))
        (messages/handle-message events/api-fetch-stylists-within-radius-post-purchase)
        (let [{:keys [address1 address2 city state zipcode]} (get-in app-state keypaths/completed-order-shipping-address)
+             completed-order                                (get-in app-state keypaths/completed-order)
              params                                         (clj->js {"address" (string/join " " [address1 address2 (str city ",") state zipcode])
-                                                                      "region"  "US"})]
-         (. (js/google.maps.Geocoder.)
-            (geocode params
-                     (fn [results status]
-                       (if (= "OK" status)
-                         (messages/handle-message events/api-success-shipping-address-geo-lookup {:locations results})
-                         (messages/handle-message events/api-failure-shipping-address-geo-lookup results)))))))))
+                                                                      "region"  "US"})
+             geocode                                        (fn []
+                                                              (if js/google.maps.Geocoder
+                                                                (. (js/google.maps.Geocoder.)
+                                                                   (geocode params
+                                                                            (fn [results status]
+                                                                              (if (= "OK" status)
+                                                                                (messages/handle-message events/api-success-shipping-address-geo-lookup {:locations results})
+                                                                                (messages/handle-message events/api-failure-shipping-address-geo-lookup results)))))
+                                                                (do
+                                                                  (exception-handler/report (js/Error. "Failed load google.maps.Geocoder")
+                                                                                            {:api-version (get-in app-state keypaths/app-version "unknown")
+                                                                                             :context     {:order-number (:number completed-order)}})
+                                                                  (messages/handle-message events/api-failure-shipping-address-geo-lookup nil))))]
+         (if js/google.maps.Geocoder
+           (geocode)
+           (js/setTimeout geocode 3000))))))
+
+(defmethod effects/perform-effects events/api-failure-shipping-address-geo-lookup [_ event _ _ app-state]
+  (messages/handle-message events/navigate-order-complete (get-in app-state keypaths/completed-order)))
 
 (defmethod transitions/transition-state events/api-success-shipping-address-geo-lookup [_ _ {:keys [locations]} app-state]
   #?(:cljs
