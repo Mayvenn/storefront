@@ -2,30 +2,8 @@
   (:require [clojure.string :as string]
             [cemerick.url :as cemerick-url]
             [storefront.keypaths :as keypaths]
-            [clojure.walk :refer [keywordize-keys]]
             [catalog.keypaths]
-            [spice.maps :as maps]
-            [storefront.events :as events]
-            [catalog.keypaths :as catalog.keypaths]
-            [catalog.skuers :as skuers]
-            [spice.selector :as selector]))
-
-(def query-param-separator "~")
-
-(def query-params->facet-slugs
-  {:grade         :hair/grade
-   :family        :hair/family
-   :origin        :hair/origin
-   :weight        :hair/weight
-   :texture       :hair/texture
-   :base-material :hair/base-material
-   :color         :hair/color
-   :length        :hair/length
-   :color.process :hair/color.process})
-
-(defn query-params->selector-electives [query-params]
-  (->> (maps/select-rename-keys query-params query-params->facet-slugs)
-       (maps/map-values #(set (.split (str %) query-param-separator)))))
+            [storefront.events :as events]))
 
 (def new-facet?
   ;; [<facet-slug> <option-slug>]
