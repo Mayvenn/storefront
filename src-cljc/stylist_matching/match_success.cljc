@@ -126,7 +126,7 @@
            (stylist-card-query servicing-stylist post-purchase?))))
 
 (defn shopping-method-choice-query
-  [servicing-stylist {:order/keys [submitted?]} hide-bundle-sets?]
+  [servicing-stylist {:order/keys [submitted?]} hide-bundle-sets? wig-customization?]
   (when-not submitted?
     (update {:shopping-method-choice.title/id        "stylist-matching-shopping-method-choice"
              :shopping-method-choice.title/primary   [:div "Congratulations on matching with "
@@ -154,9 +154,11 @@
                                                                  :catalog/category-id "23"}]
                        :shopping-method-choice.button/ucare-id "6c39cd72-6fde-4ec2-823c-5e39412a6d54"}]
 
-               (-> servicing-stylist
-                   :service-menu
-                   :specialty-wig-customization)
+               (and
+                wig-customization?
+                (-> servicing-stylist
+                        :service-menu
+                        :specialty-wig-customization))
                (concat [{:shopping-method-choice.button/id       "button-shop-wigs"
                          :shopping-method-choice.button/label    "Shop Virgin Wigs"
                          :shopping-method-choice.button/target   [events/navigate-category
@@ -183,20 +185,22 @@
 
 (defn page
   [app-state]
-  (let [servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
-        nav-event         (get-in app-state storefront.keypaths/navigation-event)
-        post-purchase?    (post-purchase? nav-event)
-        order             (if (pre-purchase? nav-event)
-                            (api.orders/current app-state)
-                            (api.orders/completed app-state))
-        browser-history   (get-in app-state storefront.keypaths/navigation-undo-stack)
-        hide-bundle-sets? (experiments/hide-bundle-sets? app-state)]
+  (let [servicing-stylist  (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        nav-event          (get-in app-state storefront.keypaths/navigation-event)
+        post-purchase?     (post-purchase? nav-event)
+        order              (if (pre-purchase? nav-event)
+                             (api.orders/current app-state)
+                             (api.orders/completed app-state))
+        browser-history    (get-in app-state storefront.keypaths/navigation-undo-stack)
+        hide-bundle-sets?  (experiments/hide-bundle-sets? app-state)
+        wig-customization? (experiments/wig-customization? app-state)]
     (component/build template
                      {:header                 (header-query order
                                                             browser-history)
                       :shopping-method-choice (shopping-method-choice-query servicing-stylist
                                                                             order
-                                                                            hide-bundle-sets?)
+                                                                            hide-bundle-sets?
+                                                                            wig-customization?)
                       :matched-stylist        (matched-stylist-query servicing-stylist
                                                                      order
                                                                      post-purchase?)})))
