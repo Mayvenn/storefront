@@ -108,3 +108,7 @@
 (defn hide-bundle-sets?
   [data]
   (display-feature? data "hide-bundle-sets"))
+
+(defn show-priority-shipping-method?
+  [data]
+  (display-feature? data "show-priority-shipping-method"))

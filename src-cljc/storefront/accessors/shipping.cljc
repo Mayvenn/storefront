@@ -1,25 +1,27 @@
 (ns storefront.accessors.shipping
-  (:require [clojure.string :as string]
-            [spice.date :as date]))
+  (:require [storefront.accessors.line-items :as line-items]))
+
+(defn longform-timeframe [rate-sku]
+  (case rate-sku
+    "WAITER-SHIPPING-1" "4-6 days (Weekends Included)"
+    "WAITER-SHIPPING-2" "1-2 business days (No Weekend & No P.O. Box)"
+    "WAITER-SHIPPING-4" "1 business day (No Weekend & No P.O. Box)"
+    "WAITER-SHIPPING-7" "2-4 days (Weekends Included)"
+    nil))
 
 (defn timeframe [rate-sku]
   (case rate-sku
-    "WAITER-SHIPPING-1" "3-5 business days"
-    "WAITER-SHIPPING-2" "1-2 business days (No Weekend & No P.O. Box)"
-    "WAITER-SHIPPING-4" "1 business day (No Weekend & No P.O. Box)"
+    "WAITER-SHIPPING-1" "4-6 day shipping"
+    "WAITER-SHIPPING-2" "1-2 business days"
+    "WAITER-SHIPPING-4" "1 business day"
+    "WAITER-SHIPPING-7" "2-4 days"
     nil))
-
-(defn v2-name [rate-sku]
-  (case rate-sku
-    "WAITER-SHIPPING-1" "3-5 Day Shipping"
-    "WAITER-SHIPPING-2" "1-2 Day Shipping"
-    "WAITER-SHIPPING-4" "1 Day Shipping"))
 
 (defn shipping-details [shipment]
   (let [shipping-line-item (->> shipment
                                 :line-items
-                                (filter (comp some? timeframe :sku))
+                                (filter line-items/shipping-method?)
                                 first)]
     {:state     (:state shipment)
-     :timeframe (-> shipping-line-item :sku timeframe)
-     :name      (-> shipping-line-item :sku v2-name)}))
+     :timeframe (-> shipping-line-item :sku longform-timeframe)
+     :name      (-> shipping-line-item :product-name)}))

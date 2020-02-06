@@ -16,13 +16,13 @@
    [checkout.ui.cart-summary :as cart-summary]
    [clojure.string :as string]
    [spice.core :as spice]
-   [spice.date :as date]
    [storefront.accessors.adjustments :as adjustments]
    [storefront.accessors.mayvenn-install :as mayvenn-install]
    [storefront.accessors.experiments :as experiments]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.products :as products]
    [storefront.accessors.stylists :as stylists]
+   [storefront.accessors.shipping :as shipping]
    [storefront.component :as component :refer [defcomponent defdynamic-component]]
    [storefront.components.checkout-delivery :as checkout-delivery]
    [storefront.components.flash :as flash]
@@ -422,9 +422,7 @@
                                     vector
                                     (apply (juxt :quantity :unit-price))
                                     (reduce *))
-        shipping-timeframe (some->> shipping
-                                    (checkout-delivery/enrich-shipping-method (date/now))
-                                    :copy/timeframe)]
+        shipping-timeframe (some-> shipping :sku shipping/timeframe)]
     (cond->
         {:cart-summary-total-line/id    "total"
          :cart-summary-total-line/label "Total"
@@ -489,9 +487,7 @@
                                     vector
                                     (apply (juxt :quantity :unit-price))
                                     (reduce *))
-        shipping-timeframe (some->> shipping
-                                    (checkout-delivery/enrich-shipping-method (date/now))
-                                    :copy/timeframe)
+        shipping-timeframe (some-> shipping :sku shipping/timeframe)
 
         adjustment         (->> order :adjustments (map :price) (reduce + 0))
         total-savings      (- adjustment)

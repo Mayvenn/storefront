@@ -10,6 +10,7 @@
             [storefront.accessors.mayvenn-install :as mayvenn-install]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
+            [storefront.accessors.shipping :as shipping]
             [storefront.api :as api]
             [storefront.config :as config]
             [storefront.browser.cookie-jar :as cookie-jar]
@@ -247,9 +248,7 @@
                                       vector
                                       (apply (juxt :quantity :unit-price))
                                       (reduce *))
-          shipping-timeframe (some->> shipping
-                                      (checkout-delivery/enrich-shipping-method (date/now))
-                                      :copy/timeframe)
+          shipping-timeframe (some-> shipping :sku shipping/timeframe)
 
           adjustment         (->> order :adjustments (map :price) (reduce + 0))
           total-savings      (- adjustment)
