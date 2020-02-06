@@ -91,7 +91,7 @@
         canonical-category-id (categories/canonical-category-id data)
         category              (categories/id->category canonical-category-id categories)
         indexable?            (and
-                               (not-any? #(string/includes? % category/query-param-separator)
+                               (not-any? #(string/includes? % categories/query-param-separator)
                                          (vals selected-options))
                                (<= (count selected-options) 3))
         can-use-seo-template? (and (:page/title-template category)

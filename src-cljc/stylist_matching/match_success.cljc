@@ -2,7 +2,7 @@
   (:require #?@(:cljs [[storefront.history :as history]])
             adventure.keypaths
             api.orders
-            [catalog.category :as category]
+            [catalog.categories :as categories]
             [clojure.string :as string]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
@@ -162,7 +162,7 @@
                          :shopping-method-choice.button/target   [events/navigate-category
                                                                   {:page/slug           "wigs"
                                                                    :catalog/category-id "13"
-                                                                   :query-params        {:family (str "lace-front-wigs" category/query-param-separator "360-wigs")}}]
+                                                                   :query-params        {:family (str "lace-front-wigs" categories/query-param-separator "360-wigs")}}]
                          :shopping-method-choice.button/ucare-id "71dcdd17-f9cc-456f-b763-2c1c047c30b4"}]))}
             ;; TODO: re-examine this update when hide-bundle-sets? experiment is resolved
             :list/buttons (partial remove nil?))))

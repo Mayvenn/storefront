@@ -14,7 +14,6 @@
    [catalog.icp :as icp]
    [storefront.assets :as assets]
    [storefront.components.ui :as ui]
-   [storefront.accessors.experiments :as experiments]
    [storefront.events :as events]
    [storefront.transitions :as transitions]
    [storefront.keypaths :as keypaths]
@@ -27,21 +26,7 @@
    [spice.selector :as selector]
    [clojure.set :as set]
    [clojure.string :as string]
-   [catalog.ui.product-card :as product-card]
-   [catalog.keypaths :as catalog.keypaths]))
-
-(def query-param-separator "~")
-
-(def ^:private query-params->facet-slugs
-  {:grade         :hair/grade
-   :family        :hair/family
-   :origin        :hair/origin
-   :weight        :hair/weight
-   :texture       :hair/texture
-   :base-material :hair/base-material
-   :color         :hair/color
-   :length        :hair/length
-   :color.process :hair/color.process})
+   [catalog.ui.product-card :as product-card]))
 
 (def category-query-params-ordering
   {"origin"        0
@@ -60,7 +45,7 @@
         params))
 
 (def ^:private facet-slugs->query-params
-  (set/map-invert query-params->facet-slugs))
+  (set/map-invert categories/query-params->facet-slugs))
 
 (def allowed-query-params
   (vals facet-slugs->query-params))
@@ -319,9 +304,7 @@
       (assoc-in catalog.keypaths/category-id category-id)
 
       true
-      (assoc-in catalog.keypaths/category-selections
-                (->> (maps/select-rename-keys query-params query-params->facet-slugs)
-                     (maps/map-values #(set (string/split % query-param-separator)))))
+      (assoc-in catalog.keypaths/category-selections (categories/query-params->selector-electives query-params))
 
       (not= prev-category-id category-id)
       (assoc-in catalog.keypaths/category-panel nil))))
@@ -366,8 +349,8 @@
      [_ _ _ _ app-state]
      (let [{:keys [catalog/category-id page/slug]} (categories/current-category app-state)]
        (->> (get-in app-state catalog.keypaths/category-selections)
-            (maps/map-values (fn [s] (string/join query-param-separator s)))
-            (maps/map-keys (comp name facet-slugs->query-params))
+            (maps/map-values (fn [s] (string/join categories/query-param-separator s)))
+            (maps/map-keys (comp name categories/facet-slugs->query-params))
             sort-query-params
             (assoc {:catalog/category-id category-id
                     :page/slug           slug}
