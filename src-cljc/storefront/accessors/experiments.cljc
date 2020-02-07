@@ -112,3 +112,7 @@
 (defn show-priority-shipping-method?
   [data]
   (display-feature? data "show-priority-shipping-method"))
+
+(defn icp-menu?
+  [data]
+  (display-feature? data "icp-menu"))

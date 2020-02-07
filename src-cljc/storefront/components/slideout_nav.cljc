@@ -156,7 +156,7 @@
                                :height 16})])
 
 (defn shopping-rows
-  [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals? site]}]
+  [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals? site icp-menu?]}]
   (concat
    (when show-freeinstall-link?
      [{:link-attrs  (utils/route-to events/navigate-adventure-match-stylist)
@@ -183,33 +183,60 @@
        :data-test  "menu-shop-by-bundle-sets"
        :content    [(caretize-content "Shop Bundle Sets")]}])
 
-   [{:link-attrs (utils/fake-href events/menu-list
-                                  {:page/slug           "virgin-hair"
-                                   :catalog/category-id "15"})
-     :data-test  "menu-shop-virgin-hair"
-     :content    [(caretize-content "Virgin Hair")]}
-    {:link-attrs (utils/fake-href events/menu-list
-                                  {:page/slug           "closures-and-frontals"
-                                   :catalog/category-id "12"})
-     :data-test  "menu-shop-closures"
-     :content    [(caretize-content "Closures & Frontals")]}
-    {:link-attrs  (utils/route-to events/navigate-category
-                                  {:page/slug           "wigs"
-                                   :catalog/category-id "13"})
-     :data-test   "menu-shop-wigs"
-     :new-content "NEW"
-     :content     [[:span.medium.flex-auto "Wigs"]]}
-    {:link-attrs (utils/route-to events/navigate-category
-                                 {:page/slug           "seamless-clip-ins"
-                                  :catalog/category-id "21"})
-     :data-test  "menu-shop-seamless-clip-ins"
-     :content    [[:span.medium.flex-auto "Clip-Ins"]]}
-    {:link-attrs (utils/route-to events/navigate-product-details
-                                 {:page/slug          "50g-straight-tape-ins"
-                                  :catalog/product-id "111"
-                                  :query-params       {:SKU (:direct-to-details/sku-id categories/the-only-tape-in-category)}})
-     :data-test  "menu-shop-tape-ins"
-     :content    [[:span.medium.flex-auto "Tape-Ins"]]}]))
+   (if icp-menu?
+     [{:link-attrs (utils/route-to events/navigate-category
+                                   {:page/slug           "human-hair-bundles"
+                                    :catalog/category-id "27"})
+       :data-test  "menu-shop-human-hair-bundles"
+       :content    [[:span.medium.flex-auto "Hair Bundles"]]}
+      {:link-attrs (utils/route-to events/navigate-category
+                                   {:page/slug           "virgin-closures"
+                                    :catalog/category-id "0"})
+       :data-test  "menu-shop-virgin-closures"
+       :content    [[:span.medium.flex-auto "Closures"]]}
+      {:link-attrs (utils/route-to events/navigate-category
+                                   {:page/slug           "virgin-frontals"
+                                    :catalog/category-id "1"})
+       :data-test  "menu-shop-virgin-frontals"
+       :content    [[:span.medium.flex-auto "Frontals"]]}
+      {:link-attrs  (utils/route-to events/navigate-category
+                                    {:page/slug           "wigs"
+                                     :catalog/category-id "13"})
+       :data-test   "menu-shop-wigs"
+       :new-content "NEW"
+       :content     [[:span.medium.flex-auto "Wigs"]]}
+      {:link-attrs  (utils/route-to events/navigate-category
+                                    {:page/slug           "hair-extensions"
+                                     :catalog/category-id "28"})
+       :data-test   "menu-shop-hair-extensions"
+       :content     [[:span.medium.flex-auto "Hair Extensions"]]}]
+     [{:link-attrs (utils/fake-href events/menu-list
+                                    {:page/slug           "virgin-hair"
+                                     :catalog/category-id "15"})
+       :data-test  "menu-shop-virgin-hair"
+       :content    [(caretize-content "Virgin Hair")]}
+      {:link-attrs (utils/fake-href events/menu-list
+                                    {:page/slug           "closures-and-frontals"
+                                     :catalog/category-id "12"})
+       :data-test  "menu-shop-closures"
+       :content    [(caretize-content "Closures & Frontals")]}
+      {:link-attrs  (utils/route-to events/navigate-category
+                                    {:page/slug           "wigs"
+                                     :catalog/category-id "13"})
+       :data-test   "menu-shop-wigs"
+       :new-content "NEW"
+       :content     [[:span.medium.flex-auto "Wigs"]]}
+      {:link-attrs (utils/route-to events/navigate-category
+                                   {:page/slug           "seamless-clip-ins"
+                                    :catalog/category-id "21"})
+       :data-test  "menu-shop-seamless-clip-ins"
+       :content    [[:span.medium.flex-auto "Clip-Ins"]]}
+      {:link-attrs (utils/route-to events/navigate-product-details
+                                   {:page/slug          "50g-straight-tape-ins"
+                                    :catalog/product-id "111"
+                                    :query-params       {:SKU (:direct-to-details/sku-id categories/the-only-tape-in-category)}})
+       :data-test  "menu-shop-tape-ins"
+       :content    [[:span.medium.flex-auto "Tape-Ins"]]}])))
 
 (def stylist-exclusive-row
   {:link-attrs (utils/route-to events/navigate-product-details
@@ -302,7 +329,8 @@
 (defn query [data]
   (-> (header/basic-query data)
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
-      (assoc-in [:cart :quantity]  (orders/product-quantity (get-in data keypaths/order)))
+      (assoc-in [:cart :quantity] (orders/product-quantity (get-in data keypaths/order)))
+      (assoc-in [:icp-menu?] (experiments/icp-menu? data))
       (assoc-in [:menu-data] (case (get-in data keypaths/current-traverse-nav-menu-type)
                                :category         (menu/category-query data)
                                :shop-looks       (menu/shop-looks-query data)

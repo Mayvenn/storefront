@@ -1,26 +1,26 @@
 (ns storefront.components.footer
-  (:require [storefront.accessors.auth :as auth]
+  (:require [catalog.categories :as categories]
+            [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.nav :as nav]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.footer-links :as footer-links]
             [storefront.components.footer-minimal :as footer-minimal]
-            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [catalog.categories :as categories]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.numbers :as numbers]))
 
 (defn phone-uri [tel-num]
   (apply str "tel://+" (numbers/digits-only tel-num)))
 
-(defn ^:private category->link [{:keys        [page/slug] :as category
-                                 footer-title :footer/title
-                                 product-id   :direct-to-details/id
-                                 product-slug :direct-to-details/slug
-                                 sku-id       :direct-to-details/sku-id}]
+(defn ^:private category->link
+  [icp-menu?
+   {:keys        [page/slug] :as category
+    product-id   :direct-to-details/id
+    product-slug :direct-to-details/slug
+    sku-id       :direct-to-details/sku-id}]
   (let [nav-message (if product-id
                       [events/navigate-product-details (merge
                                                         {:catalog/product-id product-id
@@ -29,26 +29,29 @@
                                                           {:query-params {:SKU sku-id}}))]
                       [events/navigate-category category])
         slug        (or product-slug slug)]
-    {:title         footer-title
-     :slug          slug
-     :new-category? (categories/new-category? slug)
-     :nav-message   nav-message}))
+    {:title       (if icp-menu?
+                    (:icp-menu-experiment-footer/title category)
+                    (:footer/title category))
+     :id          slug
+     :new-link?   (categories/new-category? slug)
+     :nav-message nav-message}))
 
-(defn shop-section [{:keys [partition-count categories]}]
+(defn shop-section [{:keys [link-columns]}]
   (component/html
-   (let [links (mapv category->link categories)]
-     [:div
-      [:div.content-3.proxima.shout.bold.mb2 "Shop"]
-      [:nav.black.clearfix {:aria-label "Shop Products"}
-       (for [link-column (partition-all partition-count links)]
-         [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :slug))}
-          (for [{:keys [title new-category? nav-message slug]} link-column]
-            [:a.inherit-color.block.py1.light.titleize
-             (merge {:key (str "footer-link-" slug)}
-                    (apply utils/route-to nav-message))
-             (when new-category?
-               [:span.p-color "NEW "])
-             title])])]])))
+   [:div
+    [:div.content-3.proxima.shout.bold.mb2 "Shop"]
+    [:nav.black.clearfix {:aria-label "Shop Products"}
+     (for [link-column link-columns]
+       [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :id))}
+        (for [{:keys [title new-link? nav-message id]} link-column
+              :let [data-test (str "footer-link-" id)]]
+          [:a.inherit-color.block.py1.light.titleize
+           (merge {:key       data-test
+                   :data-test data-test}
+                  (apply utils/route-to nav-message))
+           (when new-link?
+             [:span.p-color "NEW "])
+           title])])]]))
 
 (defcomponent contacts-section [{:keys [call-number sms-number contact-email]} _ _]
   [:div
@@ -61,13 +64,13 @@
     (ui/link :link/email :a.block.py1.inherit-color {} contact-email)]])
 
 (defcomponent full-component
-  [{:keys [contacts categories essence-copy]} owner opts]
+  [{:keys [link-columns contacts essence-copy]} owner opts]
   [:div.bg-cool-gray
    [:div.bg-p-color.pt1]
    [:div.container
     [:div.col-12.clearfix.px3
      [:div.col-on-tb-dt.col-6-on-tb-dt.mt6
-      (shop-section {:partition-count 10 :categories categories})]
+      (shop-section {:link-columns link-columns})]
      [:div.col-on-tb-dt.col-6-on-tb-dt.mt6
       (component/build contacts-section contacts)]
      (when essence-copy
@@ -83,68 +86,33 @@
    :call-number   "+1 (888) 562-7952"
    :contact-email "help@mayvenn.com"})
 
-(defn query
-  [data]
-  (let [shop? (= (get-in data keypaths/store-slug) "shop")]
-    {:contacts     (contacts-query data)
-     :categories   (if shop?
-                     (->> (get-in data keypaths/categories)
-                          (into []
-                                (comp (filter :dtc-footer/order)
-                                      (filter (partial auth/permitted-category? data))))
-                          (sort-by :dtc-footer/order))
-                     (->> (get-in data keypaths/categories)
-                          (into []
-                                (comp
-                                 (filter :footer/order)
-                                 (filter (partial auth/permitted-category? data))))
-                          (sort-by :footer/order)))
-     :essence-copy (str "Included is a one year subscription to ESSENCE Magazine - a $10 value! "
-                        "Offer and refund details will be included with your confirmation.")}))
-
-(defn dtc-link [{:keys [title new-category? nav-message slug]}]
+(defn dtc-link [{:keys [title new-link? nav-message id]}]
   (component/html
    [:a.inherit-color.block.py2.light.titleize.pointer
-    ^:attrs (merge {:key (str "footer-link-" slug)}
-                   ;; be super specific so we can utilize the routing fast path
-                   (utils/route-to (first nav-message)
-                                   (select-keys (second nav-message)
-                                                [:catalog/category-id
-                                                 :page/slug
-                                                 :catalog/product-id
-                                                 :named-search-slug
-                                                 :legacy/product-slug])))
-    (when new-category?
+    ^:attrs (merge {:data-test (str id "-footer-link")
+                    :key       (str id "-footer-link")}
+                   (apply utils/route-to nav-message))
+    (when new-link?
       [:span.p-color "NEW "])
     (str title)]))
 
-(defcomponent dtc-shop-section [{:keys [categories partition-count]} _ _]
-  (let [links                          (mapv category->link categories)
-        [column-1-links rest-of-links] (split-at partition-count links)]
-    [:div.col-12
-     [:div.content-3.proxima.shout.bold.mb2 "Shop"]
-     [:nav.black.clearfix {:aria-label "Shop Products"}
-      [:div.col.col-6
-       [:a.inherit-color.block.py2.light.titleize
-        ^:attrs (assoc (utils/route-to events/navigate-adventure-match-stylist)
-                       :data-test "freeinstall-footer-link")
-        "Mayvenn Install"]
-       (for [link column-1-links]
-         ^:inline (dtc-link link))]
-      (for [link-column (partition-all partition-count rest-of-links)]
-        [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :slug))}
-         (for [link link-column]
-           ^:inline (dtc-link link))])]]))
+(defcomponent dtc-shop-section [{:keys [link-columns]} _ _]
+  [:div.col-12
+   [:div.content-3.proxima.shout.bold.mb2 "Shop"]
+   [:nav.black.clearfix {:aria-label "Shop Products"}
+    (for [link-column link-columns]
+      [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :id))}
+       (for [link link-column]
+         ^:inline (dtc-link link))])]])
 
 (defcomponent dtc-full-component
-  [{:keys [contacts categories essence-copy]} owner opts]
+  [{:keys [contacts link-columns essence-copy]} owner opts]
   [:div.bg-cool-gray
    [:div.bg-p-color.pt1]
    [:div.container
     [:div.col-12.clearfix.px3
      [:div.col-on-tb-dt.col-6-on-tb-dt.mt6
-      (component/build dtc-shop-section {:categories      categories
-                                         :partition-count 6})]
+      (component/build dtc-shop-section {:link-columns link-columns})]
      [:div.col-on-tb-dt.col-6-on-tb-dt.mt6
       (component/build contacts-section contacts)]
      (when essence-copy
@@ -155,6 +123,63 @@
     (component/build footer-links/component {:minimal? false} nil)]
    [:div.hide-on-mb-tb
     (component/build footer-links/component {:minimal? false} nil)]])
+
+(defn ^:private split-evenly
+  [coll]
+  (when coll
+    (let [coll-length    (count coll)
+          half-way-point (int (Math/ceil (float (/ coll-length 2))))]
+      (split-at half-way-point coll))))
+
+(defn query
+  [data]
+  (let [shop?     (= (get-in data keypaths/store-slug) "shop")
+        classic?  (= "mayvenn-classic" (get-in data keypaths/store-experience))
+        icp-menu? (experiments/icp-menu? data)
+        sort-key  (cond
+                    icp-menu?
+                    :icp-menu-experiment-footer/order
+
+                    shop?
+                    :dtc-footer/order
+
+                    :else
+                    :footer/order)
+        sorted-categories (->> (get-in data keypaths/categories)
+                               (into []
+                                     (comp (filter sort-key)
+                                           (filter (partial auth/permitted-category? data))))
+                               (sort-by sort-key))
+
+        non-category-links [(when shop?
+                              {:title       "Mayvenn Install"
+                               :id          "freeinstall"
+                               :new-link?   false
+                               :nav-message [events/navigate-adventure-match-stylist]})
+                            (when icp-menu?
+                              {:title       "Shop By Look"
+                               :id          "shop-by-look"
+                               :new-link?   false
+                               :nav-message [events/navigate-shop-by-look {:album-keyword :look}]})
+                            (when (and icp-menu? classic?)
+                              {:title       "Deals"
+                               :id          "shop-deals"
+                               :new-link?   false
+                               :nav-message [events/navigate-shop-by-look {:album-keyword :deals}]})
+                            (when (and icp-menu? (not classic?))
+                              {:title       "Shop Bundle Sets"
+                               :id          "shop-bundle-sets"
+                               :new-link?   false
+                               :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]})]
+        links              (->> sorted-categories
+                                (mapv (partial category->link icp-menu?))
+                                (concat non-category-links)
+                                (remove nil?))]
+    {:contacts     (contacts-query data)
+     :link-columns (split-evenly links)
+     :essence-copy (str "Included is a one year subscription to ESSENCE Magazine - a $10 value! "
+                        "Offer and refund details will be included with your confirmation.")
+     :icp-menu?    icp-menu?}))
 
 (defn built-component
   [data opts]
