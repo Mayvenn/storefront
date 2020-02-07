@@ -481,10 +481,6 @@
            :page.meta/description          (copy "Mayvenn’s virgin human hair wigs allow you to achieve a new look in minutes"
                                                  "& come in different variations such as Brazilian, Malaysian, straight,"
                                                  "& deep wave.")
-           :page/title-template            "%s%s| Mayvenn"
-           :page.meta/description-template (copy "Mayvenn's %shuman %sare allow you to change up and"
-                                                 "achieve your desired look. Shop our collection of"
-                                                 "virgin hair wigs today.")
            :opengraph/title                (copy "Mayvenn 360 and Lace Frontal Wigs - Free shipping."
                                                  "Free 30 day returns. Made with 100% virgin human hair.")
            :opengraph/description          (copy "100% virgin human hair, machine-wefted and backed by our"
@@ -519,7 +515,8 @@
                                             {:title "Length"
                                              :body  "Short and sassy or drama down to your ankles? The choice is yours! Available in lengths ranging from 10” to 24”."}
                                             {:title "Virgin & Dyed"
-                                             :body  "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]})
+                                             :body  "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]}
+          wig-templates)
    (merge {:catalog/category-id "24"
            :category/new?       true
 
