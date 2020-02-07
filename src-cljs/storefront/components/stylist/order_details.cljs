@@ -206,7 +206,7 @@
 
 (defn query [app-state]
   (let [order-number                   (:order-number (get-in app-state keypaths/navigation-args))
-        show-priority-shipping-method? (experiments/show-priority-shipping-method? data)
+        show-priority-shipping-method? (experiments/show-priority-shipping-method? app-state)
         sale                           (cond-> (sale-by-order-number app-state order-number)
                                          (no-vouchers? app-state)
                                          (dissoc :voucher))
