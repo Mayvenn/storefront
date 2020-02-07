@@ -197,7 +197,6 @@
 (defn stylist-card-query
   [post-purchase?
    wig-customization?
-   stylist-reviews?
    idx
    {:keys [review-count salon service-menu gallery-images store-slug store-nickname stylist-id rating] :as stylist}]
   (let [{salon-name :name :keys [address-1 address-2 city state zipcode]} salon
@@ -260,13 +259,12 @@
                                                          [(string/join ", "
                                                                        [address-1 address-2 city state])
                                                           zipcode])}
-      (and (:mayvenn-rating-publishable stylist)
-           stylist-reviews?)
+      (:mayvenn-rating-publishable stylist)
       (merge {:reviews/review-count review-count}))))
 
 (defn stylist-cards-query
-  [post-purchase? wig-customization? stylist-reviews? stylists]
-  (map-indexed (partial stylist-card-query post-purchase? wig-customization? stylist-reviews?) stylists))
+  [post-purchase? wig-customization? stylists]
+  (map-indexed (partial stylist-card-query post-purchase? wig-customization?) stylists))
 
 (def call-out-query
   {:call-out-center/bg-class    "bg-cool-gray"
@@ -332,5 +330,4 @@
                                                       call-out-query
                                                       (stylist-cards-query post-purchase?
                                                                            (experiments/wig-customization? app-state)
-                                                                           (experiments/stylist-reviews? app-state)
                                                                            stylist-search-results))}))))

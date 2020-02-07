@@ -101,10 +101,6 @@
   [data]
   (display-feature? data "wig-customization"))
 
-(defn stylist-reviews?
-  [data]
-  (display-feature? data "stylist-reviews"))
-
 (defn hide-bundle-sets?
   [data]
   (display-feature? data "hide-bundle-sets"))

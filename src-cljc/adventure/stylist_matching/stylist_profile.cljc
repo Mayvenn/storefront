@@ -187,8 +187,7 @@
         (:mayvenn-rating-publishable stylist)
         (merge  {:rating/value (:rating stylist)})
 
-        (and (experiments/stylist-reviews? data)
-             (:mayvenn-rating-publishable stylist)
+        (and (:mayvenn-rating-publishable stylist)
              (seq stylist-reviews))
         (merge {:reviews/id           "stylist-reviews"
                 :reviews/cta-id       "more-stylist-reviews"
@@ -364,9 +363,8 @@
      (let [stylist-id (spice/parse-int stylist-id)]
        (google-maps/insert)
        (api/fetch-stylist-details (get-in app-state storefront.keypaths/api-cache) stylist-id)
-       (when (experiments/stylist-reviews? app-state)
-         (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache) {:stylist-id stylist-id
-                                                                                      :page       1})))))
+       (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache) {:stylist-id stylist-id
+                                                                                    :page       1}))))
 
 (defmethod effects/perform-effects events/share-stylist
   [_ _ {:keys [url text title stylist-id]} _]
