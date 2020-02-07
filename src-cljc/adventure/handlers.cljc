@@ -17,21 +17,6 @@
             [catalog.products :as products]
             [storefront.accessors.orders :as orders]))
 
-(def events-not-to-direct-load
-  #{events/navigate-adventure-out-of-area
-    events/navigate-adventure-match-success-pre-purchase})
-
-(defmethod effects/perform-effects events/navigate-adventure
-  [_ event {:keys [query-params]} app-state-before app-state]
-  #?(:cljs
-     (do
-       (let [adventure-choices (get-in app-state keypaths/adventure-choices)]
-         (when (and (events-not-to-direct-load event)
-                    (empty? adventure-choices)
-                    (not (and (= events/navigate-adventure-match-stylist event)
-                              (some-> query-params :utm_source (string/includes? "toadventure")))))
-           (history/enqueue-navigate events/navigate-home nil))))))
-
 (defmethod transitions/transition-state events/api-success-fetch-matched-stylists
   [_ _ {:keys [stylists]} app-state]
   (assoc-in app-state

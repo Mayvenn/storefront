@@ -1,11 +1,20 @@
 (ns stylist-matching.out-of-area
-  (:require api.orders
+  (:require #?@(:cljs [[storefront.history :as history]])
+            adventure.keypaths
+            api.orders
             [catalog.category :as category]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.header :as header]
+            [storefront.effects :as effects]
             [storefront.events :as events]
             [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]))
+
+(defmethod effects/perform-effects events/navigate-adventure-out-of-area
+  [_ _ _ {:keys [query]} app-state]
+  #?(:cljs
+     (when (nil? (get-in app-state adventure.keypaths/adventure-stylist-match-location))
+       (history/enqueue-redirect events/navigate-adventure-find-your-stylist))))
 
 (defn header-query
   [{:order.items/keys [quantity]}]
@@ -41,7 +50,7 @@
                                                                                                       {:page/slug           "mayvenn-install"
                                                                                                        :catalog/category-id "23"}]
                                                              :shopping-method-choice.button/ucare-id "6c39cd72-6fde-4ec2-823c-5e39412a6d54"}])
-                                                   (spice.core/spy wig-customization?)
+                                                   wig-customization?
                                                    (concat [{:shopping-method-choice.button/id       "button-shop-wigs"
                                                              :shopping-method-choice.button/label    "Shop Virgin Wigs"
                                                              :shopping-method-choice.button/target   [events/navigate-category
