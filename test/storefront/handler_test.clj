@@ -705,9 +705,9 @@
                                         "&texture=loose-wave"))
                 handler
                 (validate-title-and-description-and-canonical "Brazilian Loose Wave Wigs | Mayvenn"
-                                                              (str "Mayvenn's Brazilian Loose Wave human Wigs are allow you to "
-                                                                   "change up and achieve your desired look. "
-                                                                   "Shop our collection of virgin hair wigs today.")
+                                                              (str "Mayvenn’s Brazilian Loose Wave Wigs allow you to change up "
+                                                                   "and achieve your desired look. Shop our collection of virgin "
+                                                                   "hair wigs today.")
                                                               "/categories/13-wigs"
                                                               "origin=brazilian&texture=loose-wave"))))
 
