@@ -226,8 +226,6 @@
                                             (= (:catalog/category-id current-nav-args)
                                                (:catalog/category-id previous-nav-args)))
         new-nav-event?                 (not= previous-nav-event current-nav-event)
-        new-query-params?              (not= (:query-params previous-nav-args)
-                                             (:query-params current-nav-args))
         video-query-param?             (:video query-params)
         module-load?                   (= caused-by :module-load)]
 
@@ -245,7 +243,8 @@
                            (get-in app-state keypaths/pending-promo-code))))
 
     (seo/set-tags app-state)
-    (when (and (not video-query-param?) (not landing-on-same-category-page?) (or new-nav-event? new-query-params?))
+    (when (or (and (not video-query-param?) (not landing-on-same-category-page?))
+              new-nav-event?)
       (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
         (if (zero? restore-scroll-top)
           ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
