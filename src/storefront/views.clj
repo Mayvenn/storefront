@@ -107,6 +107,9 @@
           [:meta {:name "apple-mobile-web-app-status-bar-style" :content "white"}]
           [:meta {:name "mobile-web-app-capable" :content "yes"}]
 
+          (when (#{"acceptance" "development"} environment)
+            [:meta {:name "robots" :content "noindex"}])
+
           (into '() (seo/tags-for-page data))
 
           favicon-links
