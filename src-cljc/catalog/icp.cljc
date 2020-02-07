@@ -169,35 +169,38 @@
 (defcomponent content-box-organism
   [{:keys [title header summary sections]} _ _]
   [:div.py8.px4.bg-cool-gray
-   [:div.pb2
-    [:div.proxima.title-2.bold.caps ^:inline (str title)]
-    [:div.canela.title-1.pb2 ^:inline (str header)]
-    [:div.canela.content-1 ^:inline (str summary)]]
+   [:div.max-960.mx-auto
+    [:div.pb2
+     [:div.proxima.title-2.bold.caps ^:inline (str title)]
+     [:div.canela.title-1.pb2 ^:inline (str header)]
+     [:div.canela.content-1 ^:inline (str summary)]]
 
-   (for [{:keys [title body]} sections]
-     [:div.py2 {:keys title}
-      [:div.proxima.title-2.bold.caps.pb1 ^:inline (str title)]
-      [:div.canela.content-2 ^:inline (str body)]])
+    (for [{:keys [title body]} sections]
+      [:div.py2 {:keys title}
+       [:div.proxima.title-2.bold.caps.pb1 ^:inline (str title)]
+       [:div.canela.content-2 ^:inline (str body)]])
 
-   [:div.py2
-    [:div.proxima.title-2.bold.caps.pb1 "Still Have Questions?"]
-    [:div.canela.content-2
-     [:div "Customer Service can help!"]
-     [:div "Call " [:a.inherit-color {:href (ui/phone-url "18885627952")} "(888) 562-7952 "]]
-     [:div "Monday through Friday from 8am-5pm PST."]]]])
+    [:div.py2
+     [:div.proxima.title-2.bold.caps.pb1 "Still Have Questions?"]
+     [:div.canela.content-2
+      [:div "Customer Service can help!"]
+      [:div "Call " [:a.inherit-color {:href (ui/phone-url "18885627952")} "(888) 562-7952 "]]
+      [:div "Monday through Friday from 8am-5pm PST."]]]]])
 
 (defcomponent ^:private template
   "This lays out different ux pieces to form a cohesive ux experience"
   [{:keys [header footer category-hero content-box drill-category-list drill-category-grid product-list]} _ _]
   [:div
    (component/build header-organism header)
-   [:div.max-960.mx-auto
+   [:div
     (component/build category-hero-organism category-hero)
     (vertical-squiggle-atom "-36px")
-    (component/build drill-category-list-organism drill-category-list)
-    (component/build drill-category-grid-organism drill-category-grid)
+    [:div.max-960.mx-auto
+     (component/build drill-category-list-organism drill-category-list)
+     (component/build drill-category-grid-organism drill-category-grid)]
     purple-divider-atom
-    (component/build product-list/organism product-list)
+    [:div.max-960.mx-auto
+     (component/build product-list/organism product-list)]
     (when content-box green-divider-atom)
     (when content-box (component/build content-box-organism content-box))
     (component/build layered/shop-contact shop-home/shop-contact-query)]
