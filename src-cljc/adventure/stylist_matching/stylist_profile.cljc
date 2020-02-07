@@ -192,7 +192,8 @@
         (merge {:reviews/id           "stylist-reviews"
                 :reviews/cta-id       "more-stylist-reviews"
                 :reviews/cta-target   [events/control-fetch-stylist-reviews]
-                :reviews/cta-label    (if fetching-reviews? ui/spinner "View More")
+                :reviews/cta-label    "View More"
+                :reviews/spinning?    fetching-reviews?
                 :reviews/rating       (:rating stylist)
                 :reviews/review-count (:review-count stylist)
                 :reviews/reviews      (mapv #(assoc % :review-date
@@ -265,7 +266,7 @@
    "wig-customization" "Wig Customization"})
 
 (defn reviews-molecule
-  [{:reviews/keys [cta-target cta-id cta-label id rating review-count reviews]}]
+  [{:reviews/keys [spinning? cta-target cta-id cta-label id rating review-count reviews]}]
   (when id
     [:div.mx3.my6
      {:key id
@@ -293,8 +294,10 @@
      (when cta-id
        [:div.p5.center
         {:data-test cta-id}
-        (ui/button-medium-underline-primary
-         {:on-click (apply utils/send-event-callback cta-target)} cta-label)])]))
+        (if spinning?
+          ui/spinner
+          (ui/button-medium-underline-primary
+           {:on-click (apply utils/send-event-callback cta-target)} cta-label))])]))
 
 (defmethod effects/perform-effects events/control-fetch-stylist-reviews
   [dispatch event args prev-app-state app-state]
