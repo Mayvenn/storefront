@@ -817,55 +817,57 @@
   [the-only-tape-in-category])
 
 (def hair-extensions-category
-  [{:catalog/category-id "28"
-    :catalog/department  #{"hair"}
-    :category/new?       false
+  [(merge
+    {:catalog/category-id "28"
+     :catalog/department  #{"hair"}
+     :category/new?       false
 
-    :page/icp? true
+     :page/icp? true
 
-    :hair/family         #{"seamless-clip-ins" "tape-ins"}
-    :selector/essentials [:catalog/department :hair/family]
-    :selector/electives  [:hair/weight :hair/color :hair/texture]
+     :hair/family         #{"seamless-clip-ins" "tape-ins"}
+     :selector/essentials [:catalog/department :hair/family]
+     :selector/electives  [:hair/weight :hair/color :hair/texture]
 
-    :flyout-menu/title "Hair Extensions"
-    :flyout-menu/order 4
+     :flyout-menu/title "Hair Extensions"
+     :flyout-menu/order 4
 
-    :icp-menu-experiment-footer/order 4
-    :icp-menu-experiment-footer/title "Hair Extensions"
+     :icp-menu-experiment-footer/order 4
+     :icp-menu-experiment-footer/title "Hair Extensions"
 
-    :copy/title         "Hair Extensions"
-    :product-list/title "Shop All Hair Extensions"
+     :copy/title         "Hair Extensions"
+     :product-list/title "Shop All Hair Extensions"
 
-    :page/slug                     "hair-extensions"
-    :copy/description              ""
-    :category/description          (str "Ditch the tracks and opt for hair that blends in seamlessly. "
-                                        "Mayvenn human hair extensions are made with a thin polyurethane "
-                                        "weft that blends with your hair for a natural look.")
-    :seo/sitemap                   false
-    :page/title                    "Hair Extensions: Real Human Hair Extensions | Mayvenn"
-    :page.meta/description         (str "Mayvenn’s real human hair extensions come in different variations"
-                                        " such as Brazilian and Malaysian, straight, deep wave and loose wave."
-                                        " Shop now.")
-    :category/image-url            "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
-    :opengraph/title               "Real Human Hair Extensions - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
-    :opengraph/description         "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in and tape-in extensions are the best quality products on the market and ships free!"
-    :subsections/category-selector :hair/family
-    :subcategories/ids             ["21" "22"]
-    :subcategories/layout          :list
-    :subsections                   {"seamless-clip-ins" {:order         0
-                                                         :title/primary "Clip-in Hair Extensions"}
-                                    "tape-ins"          {:order         1
-                                                         :title/primary "Tape-in Hair Extensions"}}
-    :content-block/type            :about-attributes ;; incase we have different templates in the future
-    :content-block/title           "Hair Extensions 101:"
-    :content-block/header          "How to Choose"
-    :content-block/summary         "No matter what kind of transformation you’re looking for, our seamless clip-in & tape-in hair extensions will help you achieve your desired look in an instant. Our clip-ins & tape-ins are perfect for when you want a natural-looking appearance that complements your own hair while giving that much coveted oomph-factor."
-    :content-block/sections        [{:title "Tape-In Hair Extensions"
-                                     :body  "Our seamless tape-in hair extensions have a thin weft that flawlessly blends with your own hair, so you can have the hair of your dreams."}
-                                    {:title "Clip-In Hair Extensions"
-                                     :body  "With a thin weft that blends into your hair seamlessly, our clip-in human hair extensions help you create the hair of your dreams."}
-                                    {:title "Human Hair Extensions"
-                                     :body  "Our human hair extensions are a must-have for creating the hair you’ve always wanted. Our high-quality extensions are easy to install and available in many textures like Straight, Yaki Straight, Kinky Straight, Body Wave, Loose Wave, Water Wave, Deep Wave, and Curly, plus multiple lengths for all kinds of hairstyles."}]}])
+     :page/slug                     "hair-extensions"
+     :copy/description              ""
+     :category/description          (str "Ditch the tracks and opt for hair that blends in seamlessly. "
+                                         "Mayvenn human hair extensions are made with a thin polyurethane "
+                                         "weft that blends with your hair for a natural look.")
+     :seo/sitemap                   false
+     :page/title                    "Hair Extensions: Real Human Hair Extensions | Mayvenn"
+     :page.meta/description         (str "Mayvenn’s real human hair extensions come in different variations"
+                                         " such as Brazilian and Malaysian, straight, deep wave and loose wave."
+                                         " Shop now.")
+     :category/image-url            "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
+     :opengraph/title               "Real Human Hair Extensions - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
+     :opengraph/description         "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in and tape-in extensions are the best quality products on the market and ships free!"
+     :subsections/category-selector :hair/family
+     :subcategories/ids             ["21" "22"]
+     :subcategories/layout          :list
+     :subsections                   {"seamless-clip-ins" {:order         0
+                                                          :title/primary "Clip-in Hair Extensions"}
+                                     "tape-ins"          {:order         1
+                                                          :title/primary "Tape-in Hair Extensions"}}
+     :content-block/type            :about-attributes ;; incase we have different templates in the future
+     :content-block/title           "Hair Extensions 101:"
+     :content-block/header          "How to Choose"
+     :content-block/summary         "No matter what kind of transformation you’re looking for, our seamless clip-in & tape-in hair extensions will help you achieve your desired look in an instant. Our clip-ins & tape-ins are perfect for when you want a natural-looking appearance that complements your own hair while giving that much coveted oomph-factor."
+     :content-block/sections        [{:title "Tape-In Hair Extensions"
+                                      :body  "Our seamless tape-in hair extensions have a thin weft that flawlessly blends with your own hair, so you can have the hair of your dreams."}
+                                     {:title "Clip-In Hair Extensions"
+                                      :body  "With a thin weft that blends into your hair seamlessly, our clip-in human hair extensions help you create the hair of your dreams."}
+                                     {:title "Human Hair Extensions"
+                                      :body  "Our human hair extensions are a must-have for creating the hair you’ve always wanted. Our high-quality extensions are easy to install and available in many textures like Straight, Yaki Straight, Kinky Straight, Body Wave, Loose Wave, Water Wave, Deep Wave, and Curly, plus multiple lengths for all kinds of hairstyles."}]}
+    clip-in-tape-in-templates)])
 
 (def menu-categories
   (concat virgin-hair
