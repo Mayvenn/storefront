@@ -652,9 +652,7 @@
 (defn- assoc-category-route-data [data storeback-config params]
   (let [category                (categories/id->category (:catalog/category-id params)
                                                          (get-in data keypaths/categories))
-        {:keys [skus products]} (api/fetch-v2-products storeback-config (spice.maps/map-values
-                                                                         first
-                                                                         (skuers/essentials category)))]
+        {:keys [skus products]} (api/fetch-v2-products storeback-config (spice.maps/map-values vec (skuers/essentials category)))]
     (-> data
         (assoc-in catalog.keypaths/category-id (:catalog/category-id params))
         (update-in keypaths/v2-products merge (products/index-products products))
