@@ -236,7 +236,8 @@
       (string/replace #"[^a-z]+" "-")))
 
 (defn cart-summary-query
-  [{:as order :keys [adjustments]}
+  [show-priority-shipping-method?
+   {:as order :keys [adjustments]}
    {:mayvenn-install/keys [locked? applied? service-discount service-type]}
    available-store-credit]
   (when (seq order)
@@ -248,8 +249,10 @@
                                       vector
                                       (apply (juxt :quantity :unit-price))
                                       (reduce *))
-          shipping-timeframe (some-> shipping :sku shipping/timeframe)
-
+          timeframe-copy-fn  (if show-priority-shipping-method?
+                               shipping/priority-shipping-experimental-timeframe
+                               shipping/timeframe)
+          shipping-timeframe (some-> shipping :sku timeframe-copy-fn)
           adjustment         (->> order :adjustments (map :price) (reduce + 0))
           total-savings      (- adjustment)
           wig-customization? (= :wig-customization service-type)]
@@ -336,7 +339,10 @@
       :loaded-quadpay?              (get-in data keypaths/loaded-quadpay)
       :servicing-stylist            stylist
       :items                        (item-card-query data)
-      :cart-summary                 (cart-summary-query order mayvenn-install (orders/available-store-credit order user))}
+      :cart-summary                 (cart-summary-query (experiments/show-priority-shipping-method? data)
+                                                        order
+                                                        mayvenn-install
+                                                        (orders/available-store-credit order user))}
 
       applied?
       (maps/deep-merge

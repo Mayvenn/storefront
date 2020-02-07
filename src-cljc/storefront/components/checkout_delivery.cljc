@@ -15,7 +15,7 @@
                              shipping-method))
 
 (defcomponent component
-  [{:keys [shipping-methods selected-sku]} owner _]
+  [{:keys [show-priority-shipping-method? shipping-methods selected-sku]} owner _]
   [:div
    [:.h3 "Shipping Method"]
    [:.py1
@@ -31,7 +31,9 @@
        [:.right.ml1.medium {:class (if (pos? price) "black" "p-color")} (mf/as-money-or-free price)]
        [:.overflow-hidden
         [:div (when (= selected-sku sku) {:data-test "selected-shipping-method"}) name]
-        [:.h6 (or (shipping/longform-timeframe sku) "")]]))]])
+        [:.h6 (or (if show-priority-shipping-method?
+                    (shipping/priority-shipping-experimental-longform-timeframe sku)
+                    (shipping/longform-timeframe sku)) "")]]))]])
 
 (def priority-shipping-method?
   (comp boolean #{"WAITER-SHIPPING-7"} :sku))
@@ -48,5 +50,6 @@
                                           (not show-priority-shipping-method?))
                                          (remove priority-shipping-method?))
         selected-sku                   (get-in data keypaths/checkout-selected-shipping-method-sku)]
-    {:shipping-methods shipping-methods
-     :selected-sku     selected-sku}))
+    {:shipping-methods               shipping-methods
+     :show-priority-shipping-method? show-priority-shipping-method?
+     :selected-sku                   selected-sku}))

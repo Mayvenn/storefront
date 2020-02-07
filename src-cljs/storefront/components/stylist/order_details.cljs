@@ -205,21 +205,24 @@
        first))
 
 (defn query [app-state]
-  (let [order-number           (:order-number (get-in app-state keypaths/navigation-args))
-        sale                   (cond-> (sale-by-order-number app-state order-number)
-                                 (no-vouchers? app-state)
-                                 (dissoc :voucher))
-        shipments-enriched     (for [shipment (-> sale :order :shipments)]
-                                 (let [product-line-items          (remove (comp #{"waiter"} :source) (:line-items shipment))
-                                       enriched-product-line-items (mapv (partial checkout.classic-cart/add-product-title-and-color-to-line-item
-                                                                                  (get-in app-state keypaths/v2-products)
-                                                                                  (get-in app-state keypaths/v2-facets))
-                                                                         product-line-items)]
-                                   (assoc shipment
-                                          :line-items enriched-product-line-items
-                                          :shipping-details (shipping/shipping-details shipment))))
-        returned-quantities    (orders/returned-quantities (:order sale))
-        shipments-with-returns (add-returns (vec shipments-enriched) returned-quantities)]
+  (let [order-number                   (:order-number (get-in app-state keypaths/navigation-args))
+        show-priority-shipping-method? (experiments/show-priority-shipping-method? data)
+        sale                           (cond-> (sale-by-order-number app-state order-number)
+                                         (no-vouchers? app-state)
+                                         (dissoc :voucher))
+        shipments-enriched             (for [shipment (-> sale :order :shipments)]
+                                         (let [product-line-items          (remove (comp #{"waiter"} :source) (:line-items shipment))
+                                               enriched-product-line-items (mapv (partial checkout.classic-cart/add-product-title-and-color-to-line-item
+                                                                                          (get-in app-state keypaths/v2-products)
+                                                                                          (get-in app-state keypaths/v2-facets))
+                                                                                 product-line-items)]
+                                           (assoc shipment
+                                                  :line-items enriched-product-line-items
+                                                  :shipping-details (shipping/shipping-details
+                                                                     show-priority-shipping-method?
+                                                                     shipment))))
+        returned-quantities            (orders/returned-quantities (:order sale))
+        shipments-with-returns         (add-returns (vec shipments-enriched) returned-quantities)]
     {:sale                      (assoc-in sale [:order :shipments] shipments-with-returns)
      :loading?                  (utils/requesting? app-state request-keys/get-stylist-dashboard-sale)
      :popup-visible?            (get-in app-state keypaths/v2-dashboard-balance-transfers-voucher-popup-visible?)
