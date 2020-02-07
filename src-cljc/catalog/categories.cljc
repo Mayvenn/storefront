@@ -843,6 +843,7 @@
                                          "Mayvenn human hair extensions are made with a thin polyurethane "
                                          "weft that blends with your hair for a natural look.")
      :seo/sitemap                   false
+     :seo/title                     "Hair Extensions"
      :page/title                    "Hair Extensions: Real Human Hair Extensions | Mayvenn"
      :page.meta/description         (str "Mayvenn’s real human hair extensions come in different variations"
                                          " such as Brazilian and Malaysian, straight, deep wave and loose wave."
