@@ -259,7 +259,8 @@
                                                          [(string/join ", "
                                                                        [address-1 address-2 city state])
                                                           zipcode])}
-      (:mayvenn-rating-publishable stylist)
+      (and (:mayvenn-rating-publishable stylist)
+           (> review-count 0))
       (merge {:reviews/review-count review-count}))))
 
 (defn stylist-cards-query

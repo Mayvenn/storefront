@@ -199,7 +199,9 @@
                                                     #?(:cljs (-> % :review-date formatters/short-date)
                                                        :clj  ""))
                                             stylist-reviews)
-                :rating/review-count  (:review-count stylist)})
+                :rating/review-count  (let [review-count (:review-count stylist)]
+                                        (when (> review-count 0)
+                                          review-count))})
 
         (and (= (:current-page paginated-reviews)
                 (:pages paginated-reviews)))
