@@ -43,7 +43,7 @@
              params                                         (clj->js {"address" (string/join " " [address1 address2 (str city ",") state zipcode])
                                                                       "region"  "US"})
              geocode                                        (fn []
-                                                              (if js/google.maps.Geocoder
+                                                              (if (and js/google js/google.maps js/google.maps.Geocoder)
                                                                 (. (js/google.maps.Geocoder.)
                                                                    (geocode params
                                                                             (fn [results status]
@@ -55,7 +55,7 @@
                                                                                             {:api-version (get-in app-state keypaths/app-version "unknown")
                                                                                              :context     {:order-number (:number completed-order)}})
                                                                   (messages/handle-message events/api-failure-shipping-address-geo-lookup nil))))]
-         (if js/google.maps.Geocoder
+         (if (and js/google js/google.maps js/google.maps.Geocoder)
            (geocode)
            (js/setTimeout geocode 3000))))))
 
