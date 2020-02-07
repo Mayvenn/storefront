@@ -692,10 +692,9 @@
             (-> (mock/request :get (str wig-category-url
                                         "?family=lace-front-wigs"))
                 handler
-                (validate-title-and-description-and-canonical "Lace Front Wigs: Human Hair Lace Front Wigs | Mayvenn"
-                                                              (str "Mayvenn’s human hair lace front wigs mimic a natural hairline "
-                                                                   "and come in different variations such as Brazilian, Malaysian, "
-                                                                   "straight, and deep wave.")
+                (validate-title-and-description-and-canonical "Virgin Lace Front Wigs | Mayvenn"
+                                                              (str "Mayvenn’s Virgin Lace Front Wigs allow you to change up and "
+                                                                   "achieve your desired look. Shop our collection of virgin hair wigs today.")
                                                               "/categories/24-virgin-lace-front-wigs"
                                                               nil))))
 
@@ -727,10 +726,10 @@
                                       "&origin=indian"
                                       "&family=lace-front-wigs"))
               handler
-              (validate-title-and-description-and-canonical "Lace Front Wigs: Human Hair Lace Front Wigs | Mayvenn"
-                                                            (str "Mayvenn’s human hair lace front wigs mimic a natural hairline "
-                                                                 "and come in different variations such as Brazilian, Malaysian, "
-                                                                 "straight, and deep wave.")
+              (validate-title-and-description-and-canonical "Indian Loose Wave  Virgin Lace Front Wigs | Mayvenn"
+                                                            (str "Mayvenn’s Indian Loose Wave  Virgin Lace Front "
+                                                                 "Wigs allow you to change up and achieve your desired "
+                                                                 "look. Shop our collection of virgin hair wigs today.")
                                                             "/categories/24-virgin-lace-front-wigs"
                                                             "origin=indian&texture=loose-wave")))
 
