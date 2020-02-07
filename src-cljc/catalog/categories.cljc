@@ -49,6 +49,12 @@
    (copy "Mayvenn's %shuman %sare machine-wefted and made with virgin"
          "hair for unbeatable quality. Shop to achieve your desired look!")})
 
+(def wig-templates
+  {:page/title-template "%s%s| Mayvenn"
+   :page.meta/description-template
+   (copy "Mayvenn’s %s%sallow you to change up and achieve your desired look."
+         "Shop our collection of virgin hair wigs today.")})
+
 (def closures
   [(merge {:catalog/category-id        "0"
            :copy/title                 "Hair Closures"
@@ -538,7 +544,8 @@
                          (copy "Mayvenn’s human hair lace front wigs mimic a natural hairline"
                                "and come in different variations such as Brazilian, Malaysian,"
                                "straight, and deep wave.")
-                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"))
+                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/")
+          wig-templates)
    (merge {:catalog/category-id "25"
            :category/new?       true
 
@@ -561,7 +568,8 @@
           (category->seo "Ready-to-Wear Human Hair Lace Wigs"
                          (copy "Mayvenn’s ready-to-wear human hair lace wigs provide a quick style switch-up and "
                                "come in different variations such as Brazilian, straight, and loose wave.")
-                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"))
+                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/")
+          wig-templates)
    (merge {:catalog/category-id "26"
            :category/new?       true
 
@@ -584,7 +592,8 @@
                          (copy "Mayvenn’s human hair 360 lace wigs give you all around protection and"
                                "come in different variations such as Brazilian, Malaysian, straight,"
                                "and deep wave.")
-                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"))])
+                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/")
+          wig-templates)])
 
 (def mayvenn-install-eligible
   [{:catalog/category-id            "23"
