@@ -44,6 +44,7 @@
   [{:product-description/keys
     [description
      colors
+     density
      weights
      materials
      summary
@@ -54,8 +55,9 @@
     [:div.border.border-width-2.m3.p4.border-cool-gray
      [:div.light.canela.title-2 "Description"]
      [:div {:item-prop "description"}
-      (when (or colors weights materials)
+      (when (or colors density weights materials)
         (let [attrs (->> [["Color" colors]
+                          ["Density" density]
                           ["Weight" weights]
                           ["Material" materials]]
                          (filter second))
