@@ -74,20 +74,8 @@
      (try
        (let [app-state-before @app-state]
          (swap! app-state #(msg-transition % message))
-         (try
-           (track @app-state message)
-           (catch js/Error e
-             (let [state @app-state]
-               (exception-handler/report e {:ex-data                    (ex-data e)
-                                            :api-version                (get-in state keypaths/app-version "unknown")
-                                            :handling-message           message
-                                            :while-tracking?            true
-                                            :current-features           (get-in state keypaths/features)
-                                            :current-navigation-message (get-in state keypaths/navigation-message)
-                                            :current-order-number       (get-in state keypaths/order-number)
-                                            :current-user-id            (get-in state keypaths/user-id)
-                                            :current-store-id           (get-in state keypaths/store-stylist-id)}))))
          (effects app-state-before @app-state message))
+       (track @app-state message)
        (catch :default e
          (let [state @app-state]
            (exception-handler/report e {:ex-data                    (ex-data e)
