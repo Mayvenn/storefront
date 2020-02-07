@@ -3,10 +3,10 @@
 
 (defn longform-timeframe [rate-sku]
   (case rate-sku
-    "WAITER-SHIPPING-1" "4-6 days (Weekends Included)"
+    "WAITER-SHIPPING-1" "4-6 days (Weekend Delivery Included)"
     "WAITER-SHIPPING-2" "1-2 business days (No Weekend & No P.O. Box)"
     "WAITER-SHIPPING-4" "1 business day (No Weekend & No P.O. Box)"
-    "WAITER-SHIPPING-7" "2-4 days (Weekends Included)"
+    "WAITER-SHIPPING-7" "2-4 days (Weekend Delivery Included)"
     nil))
 
 (defn timeframe [rate-sku]
