@@ -4,6 +4,7 @@
             #?@(:cljs [[storefront.api :as api]
                        [storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.history :as history]
+                       [storefront.hooks.google-maps :as google-maps]
                        [storefront.hooks.exception-handler :as exception-handler]])
             [storefront.component :as component :refer [defcomponent]]
             [storefront.keypaths :as keypaths]
@@ -29,6 +30,7 @@
   #?(:cljs
      (let [completed-order        (get-in app-state keypaths/completed-order)
            has-servicing-stylist? (boolean (:servicing-stylist-id completed-order))]
+       (google-maps/insert)
        (cond
          has-servicing-stylist? (history/enqueue-redirect events/navigate-order-complete completed-order)
          completed-order        (messages/handle-message events/api-shipping-address-geo-lookup)
