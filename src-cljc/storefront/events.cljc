@@ -436,6 +436,9 @@
 (defpath popup-show-consolidated-cart-free-install)
 (defpath control-consolidated-cart-free-install-dismiss)
 
+(defpath popup-show-wigs-customization)
+(defpath control-wigs-customization-dismiss)
+
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)
 

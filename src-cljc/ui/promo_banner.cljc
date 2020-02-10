@@ -58,13 +58,15 @@
 
 (defmethod component :shop/wigs shop-wigs
   [_ _ {hide-dt? :hide-dt?}]
-  [:div.block.white.p2.bg-p-color.flex.justify-center.items-center
-   {:on-click  nil
+  [:a.block.white.p2.bg-p-color.flex.justify-center.items-center
+   {:on-click  (utils/send-event-callback events/popup-show-wigs-customization)
     :data-test (when-not hide-dt? "wig-customization-promo-banner")}
    (svg/info {:height "14px"
               :width  "14px"
               :class  "mr1"})
-   [:div.pointer.h6 "Buy a wig & get it customized for free."]])
+   [:div.pointer.h6 "Buy a wig & get it customized for free. "
+    [:span.underline
+     "Learn" ui/nbsp "more"]]])
 
 (defmethod component :basic basic
   [{:keys [promo]} _ {hide-dt? :hide-dt?}]
