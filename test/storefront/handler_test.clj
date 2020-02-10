@@ -22,16 +22,6 @@
 (defn set-cookies [req cookies]
   (update req :headers assoc "cookie" (string/join "; " (map (fn [[k v]] (str k "=" v)) cookies))))
 
-(def storeback-one-time-login-response
-  (-> (generate-string {:user  {:email "acceptance+bob@mayvenn.com"
-                                :id    3
-                                :token "USERTOKEN"}
-                        :order {:number "W123456"
-                                :token  "ORDERTOKEN"}})
-      (response)
-      (status 200)
-      (content-type "application/json")))
-
 (defn parsed-url [url]
   (let [[base query] (.split (str url) "\\?")]
     [base (codec/form-decode query)]))
@@ -61,22 +51,6 @@
      (is (= 301 (:status resp#)))
      (is (= (format "https://%s.mayvenn.com%s" domain# path#)
             (-> resp# :headers (get "Location"))))))
-
-(deftest one-time-login-sets-cookies
-  (with-services {:storeback-handler (routes
-                                      common/default-storeback-handler
-                                      (POST "/v2/one-time-login" _ storeback-one-time-login-response))}
-    (with-handler handler
-      (let [resp (handler (mock/request :get "https://bob.mayvenn.com/one-time-login?token=USERTOKEN&user-id=1&sha=FIRST&target=%2F"))
-            cookies (get-in resp [:headers "Set-Cookie"])
-            location (get-in resp [:headers "Location"])]
-        (testing "It removes one-time-login params, but keeps other query params in the url it redirects to"
-          (is-redirected-to resp "bob" "/?sha=FIRST"))
-        (testing "It assigns cookies to the client to automatically log them into storefront frontend"
-          (is (some #{"user-token=USERTOKEN;Max-Age=2592000;Secure;Path=/;Domain=bob.mayvenn.com"} cookies))
-          (is (some #{(format "email=%s;Max-Age=2592000;Secure;Path=/;Domain=bob.mayvenn.com"
-                              (ring.util.codec/form-encode "acceptance+bob@mayvenn.com"))}
-                    cookies)))))))
 
 (deftest affiliate-store-urls-redirect-to-shop
   (with-services {:storeback-handler (routes

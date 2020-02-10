@@ -819,32 +819,6 @@
                 :nav-uri (uri/map->URI {:host server-name :path uri :query query-string})
                 :nav-message nav-message)))))
 
-(defn login-and-redirect
-  [{:keys [environment storeback-config] :as ctx}
-   {:keys [subdomains query-params server-name store] :as req}]
-  (let [{:strs [token user-id target]} query-params
-        {:keys [user] :as response}    (api/one-time-login-in storeback-config user-id token (:stylist-id store))
-        cookie-options                 {:max-age (cookies/days 30)
-                                        :domain  (str (first subdomains) (cookie-root-domain server-name))}
-        whitelisted-redirect-paths     #{"/" "/products/49-rings-kits"}
-        dest-req                       (-> req
-                                           (assoc :uri (or (whitelisted-redirect-paths target) "/"))
-                                           (update :query-params dissoc "token" "user-id" "target"))]
-    (if user
-      (->  (util.response/redirect (store-url (first subdomains) environment dest-req))
-           (cookies/set environment :email (:email user) cookie-options)
-           (cookies/set environment :id (:id user) cookie-options)
-           (cookies/set environment :store-slug (:store-slug user) cookie-options)
-           (cookies/set environment :store-id (:store-id user) cookie-options)
-           (cookies/set environment :stylist-experience (:stylist-experience user) cookie-options)
-           (cookies/set environment :user-token (:token user) cookie-options))
-      (util.response/redirect (store-homepage (first subdomains) environment dest-req)))))
-
-(defn site-routes [ctx]
-  (routes
-   (GET "/one-time-login" req (login-and-redirect ctx req))
-   (frontend-routes ctx)))
-
 (defn shared-cart-routes [ctx]
   (GET "/create-cart-from/:shared-cart-id" req
     (let [cookie-options {:http-only false
@@ -879,7 +853,7 @@
 (defn routes-with-orders [ctx]
   (-> (routes (paypal-routes ctx)
               (quadpay-routes ctx)
-              (-> (routes (site-routes ctx)
+              (-> (routes (frontend-routes ctx)
                           (shared-cart-routes ctx))
                   (wrap-state ctx)
                   (wrap-site-routes ctx)))
