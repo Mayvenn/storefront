@@ -80,7 +80,9 @@
             :type  "image/png",
             :rel   "icon"}]
     [:link {:rel "manifest" :href "/web_app_manifest.json"}]
-    [:link {:href  "/safari-pinned-tab.svg"}]
+    [:link {:href  "/safari-pinned-tab.svg"
+            :rel   "mask-icon"
+            :color "black"}]
     [:link {:href "/favicon.ico", :rel "shortcut icon"}]
     [:meta {:content "#FFF", :name "msapplication-TileColor"}]))
 
