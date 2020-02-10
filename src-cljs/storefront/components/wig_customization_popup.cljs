@@ -1,6 +1,7 @@
 (ns storefront.components.wig-customization-popup
   (:require [storefront.component :as component :refer [defcomponent]]
             [adventure.faq :as faq]
+            [storefront.components.accordion :as accordion]
             [storefront.components.footer-modal :as footer-modal]
             [storefront.components.popup :as popup]
             [storefront.components.svg :as svg]
@@ -130,8 +131,22 @@
       (for [[i b] (map-indexed vector bullets)]
           [:li.py1 {:key (str i)} b])]]]])
 
+(defn ^:private faq-molecule [{:faq/keys [expanded-index sections background-color]}]
+  [:div.px6.mx-auto.col-10-on-dt.py6
+   {:class background-color}
+   [:div.canela.title-1.center.my7 "Frequently Asked Questions"]
+   (component/build
+    accordion/component
+    {:expanded-indices #{expanded-index}
+     :sections         (map
+                        (fn [{:keys [title paragraphs]}]
+                          {:title [:content-1 title]
+                           :paragraphs paragraphs})
+                        sections)}
+    {:opts {:section-click-event events/faq-section-selected}})])
+
 (defmethod popup/component :wigs-customization
-  [{:keys [faq-data call-out-data] :as queried-data} owner _]
+  [{:keys [call-out-data] :as queried-data} owner _]
   (ui/modal {:col-class   "col-12 col-10-on-tb col-10-on-dt my8-on-tb-dt flex justify-center"
              :close-attrs (utils/fake-href events/control-consolidated-cart-free-install-dismiss)
              :bg-class    "bg-darken-4"}
@@ -157,7 +172,7 @@
               [:div.bg-white.relative (vertical-squiggle "-50px")]
 
               [:div.bg-warm-gray
-               (faq/component (assoc faq-data :modal? true))]
+               (faq-molecule queried-data)]
 
               (component/build call-out-center/organism call-out-data nil)]]))
 
@@ -175,15 +190,26 @@
 
 (defmethod popup/query :wigs-customization
   [data]
-  {:faq-data      (faq/free-install-query data)
-   :call-out-data {:call-out-center/bg-class    "bg-white"
-                   :call-out-center/title       "Want to book with your own stylist?"
-                   :call-out-center/subtitle    "Recommend them to become Mayvenn Certified"
-                   :whats-included/header-value "What's Included?"
-                   :whats-included/bullets      ["Bleaching the knots" "Tinting the lace" "Cutting the lace" "Customize your hairline"]
-                   :cta/id                      "recommend-stylist"
-                   :cta/target                  [events/external-redirect-typeform-recommend-stylist]
-                   :cta/label                   "Submit Your Stylist"
-                   :element/type                :call-out
-                   :react/key                   :recommend-stylist}})
+  {:faq-data           (faq/free-install-query data)
+   :call-out-data      {:call-out-center/bg-class    "bg-white"
+                        :call-out-center/title       "Want to book with your own stylist?"
+                        :call-out-center/subtitle    "Recommend them to become Mayvenn Certified"
+                        :whats-included/header-value "What's Included?"
+                        :whats-included/bullets      ["Bleaching the knots" "Tinting the lace" "Cutting the lace" "Customize your hairline"]
+                        :cta/id                      "recommend-stylist"
+                        :cta/target                  [events/external-redirect-typeform-recommend-stylist]
+                        :cta/label                   "Submit Your Stylist"
+                        :element/type                :call-out
+                        :react/key                   :recommend-stylist}
+   :faq/sections       [{:title      "How does Free Customization work?",
+                         :paragraphs ["When customers buy any Lace Front or 360 Frontal Wig from Mayvenn, we’ll pay for the wig customization by one of our certified local stylists."]}
+                        {:title      "How do I drop the wig off to the stylist?"
+                         :paragraphs ["After the customer completes their wig purchase, Mayvenn Concierge will reach out and connect the customer with their desired stylist for Wig Customization appointment."]}
+                        {:title      "What does the Wig Customization include?"
+                         :paragraphs ["Plucking the hairline, bleaching the knots, tinting and cutting the lace."]}
+                        {:title      "What doesn’t the Wig Customization include?"
+                         :paragraphs ["Any installation services (braiding, sewing, etc) are NOT included. Coloring, styling, and further customizations are also add-on services not covered by Mayvenn."]}
+                        {:title      "How long does it take to customize the wig?"
+                         :paragraphs ["The stylist has 1 week to complete the wig customization"]}]
+   :faq/expanded-index (get-in data keypaths/faq-expanded-section)})
 
