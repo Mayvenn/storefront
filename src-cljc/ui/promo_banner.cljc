@@ -5,6 +5,7 @@
                        [goog.style]
                        ["react" :as react]])
             [catalog.products :as products]
+            [storefront.accessors.categories :as accessors.categories]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as accessors.products]
@@ -55,6 +56,17 @@
     [:span.underline
      "Mayvenn" ui/nbsp "Install"]]])
 
+(defmethod component :shop/wigs shop-wigs
+  [_ _ {hide-dt? :hide-dt?}]
+  [:a.block.white.p2.bg-p-color.flex.justify-center.items-center
+   {:on-click  nil
+    :data-test (when-not hide-dt? "wig-customization-promo-banner")}
+   (svg/info {:height "14px"
+              :width  "14px"
+              :class  "mr1"})
+   [:div.pointer.h6 "Buy a wig & get it customized for free. "
+    [:span.underline "Learn more"]]])
+
 (defmethod component :basic basic
   [{:keys [promo]} _ {hide-dt? :hide-dt?}]
   [:div.white.center.pp5.bg-p-color.h5.bold
@@ -99,16 +111,19 @@
   "Determine what type of promotion behavior we are under
    experiment for"
   [data]
-  (let [shop?             (= "shop" (get-in data keypaths/store-slug))
-        aladdin?          (experiments/aladdin-experience? data)
-        [navigation-event
-         navigation-args] (get-in data keypaths/navigation-message)]
+  (let [shop?                (= "shop" (get-in data keypaths/store-slug))
+        aladdin?             (experiments/aladdin-experience? data)
+        affiliate?           (= "influencer" (get-in data keypaths/store-experience))
+        [navigation-event _] (get-in data keypaths/navigation-message)
+        wig-customization?   (experiments/wig-customization? data)
+        wigs?                (or (and (= events/navigate-product-details navigation-event)
+                                      (accessors.products/wig-product? (products/current-product data)))
+                                 (and (= events/navigate-category navigation-event)
+                                      (accessors.categories/wig-category? (accessors.categories/current-category data))))]
     (cond
-      (or (and (= events/navigate-product-details navigation-event)
-               (accessors.products/wig-product? (products/current-product data)))
-          (and (= events/navigate-category navigation-event)
-               (= "13" (:catalog/category-id navigation-args))))
-      nil
+      (and wig-customization?
+           (or shop? aladdin? affiliate?) wigs?)
+      :shop/wigs
 
       shop?
       :shop/freeinstall

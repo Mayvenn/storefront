@@ -22,4 +22,3 @@
       :hair/family
       first
       wig-families))
-

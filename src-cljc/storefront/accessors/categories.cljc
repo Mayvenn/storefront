@@ -1,5 +1,6 @@
 (ns storefront.accessors.categories
-  (:require [catalog.keypaths]
+  (:require [storefront.accessors.products :as products]
+            [catalog.keypaths]
             [catalog.skuers :as skuers]
             [cemerick.url :as cemerick-url]
             [clojure.walk :refer [keywordize-keys]]
@@ -46,7 +47,7 @@
   (id->category (get-in data catalog.keypaths/category-id)
                 (get-in data keypaths/categories)))
 
-(defn canonical-category-id 
+(defn canonical-category-id
   "With ICPs, the 'canonical category id' may be different from the ICP category
   id. E.g. 13-wigs with a selected family of 'lace-front-wigs' will have a
   canonical cateogry id of 24, or in other words, lace-front-wigs' category id."
@@ -66,3 +67,9 @@
       (:catalog/category-id (first (filter #(some (:hair/family %) family-selection) single-categories)))
 
       :else (:catalog/category-id current-category))))
+
+(defn wig-category? [category]
+  (-> category
+      :hair/family
+      first
+      products/wig-families))
