@@ -99,7 +99,7 @@
 
 (defn wig-customization?
   [data]
-  (display-feature? data "wig-customization"))
+  true)
 
 (defn hide-bundle-sets?
   [data]
