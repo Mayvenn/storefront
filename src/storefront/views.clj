@@ -68,14 +68,14 @@
           (prefetch-image "large_spinner" "/images/large-spinner.svg")))
 
 (def favicon-links
-  '([:link {:href  "/apple-touch-icon-precomposed.png",
+  '([:link {:href  "/favicon-180.png",
             :sizes "180x180",
             :rel   "apple-touch-icon"}]
-    [:link {:href  "/favicon-32x32.png",
+    [:link {:href  "/favicon-32.png",
             :sizes "32x32",
             :type  "image/png",
             :rel   "icon"}]
-    [:link {:href  "/favicon-16x16.png",
+    [:link {:href  "/favicon-16.png",
             :sizes "16x16",
             :type  "image/png",
             :rel   "icon"}]
