@@ -68,7 +68,7 @@
           (prefetch-image "large_spinner" "/images/large-spinner.svg")))
 
 (def favicon-links
-  '([:link {:href  "/favicon-180.png",
+  '([:link {:href  "/apple-touch-icon.png",
             :sizes "180x180",
             :rel   "apple-touch-icon"}]
     [:link {:href  "/favicon-32.png",
@@ -83,7 +83,6 @@
     [:link {:href  "/safari-pinned-tab.svg"
             :rel   "mask-icon"
             :color "black"}]
-    [:link {:href "/favicon.ico", :rel "shortcut icon"}]
     [:meta {:content "#FFF", :name "msapplication-TileColor"}]))
 
 (defn data->transit [data]
