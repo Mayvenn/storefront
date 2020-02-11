@@ -8,8 +8,10 @@
                        [storefront.hooks.seo :as seo]
                        [storefront.browser.scroll :as scroll]
                        [storefront.history :as history]
+                       [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.reviews :as review-hooks]
-                       [storefront.platform.messages :as messages]])
+                       [storefront.platform.messages :as messages]
+                       [storefront.trackings :as trackings]])
             [catalog.facets :as facets]
             [catalog.keypaths]
             [catalog.product-details-ugc :as ugc]
@@ -21,6 +23,7 @@
             [spice.selector :as selector]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.products :as accessors.products]
             [storefront.accessors.skus :as skus]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.marquee :as marquee]
@@ -626,6 +629,14 @@
    (defmethod effects/perform-effects events/navigate-product-details
      [_ event args _ app-state]
      (messages/handle-message events/initialize-product-details (assoc args :origin-nav-event event))))
+
+#?(:cljs
+   (defmethod trackings/perform-track events/navigate-product-details
+     [_ event {:keys [catalog/product-id]} app-state]
+     (when (-> product-id
+               ((get-in app-state keypaths/v2-products))
+               accessors.products/wig-product?)
+       (facebook-analytics/track-event "wig_content_fired"))))
 
 ;; When a sku for combination is not found return nil sku -> 'Unavailable'
 ;; When no sku id is given in the query parameters we must find and use an epitome

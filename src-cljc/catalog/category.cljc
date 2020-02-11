@@ -8,7 +8,9 @@
               [storefront.api :as api]
               [storefront.effects :as effects]
               [storefront.accessors.auth :as auth]
-              [storefront.history :as history]])
+              [storefront.history :as history]
+              [storefront.hooks.facebook-analytics :as facebook-analytics]
+              [storefront.trackings :as trackings]])
    [storefront.component :as component :refer [defcomponent defdynamic-component]]
    [storefront.accessors.categories :as accessors.categories]
    [catalog.categories :as categories]
@@ -340,6 +342,14 @@
          (effects/redirect events/navigate-home))
        (when-let [subsection-key (:subsection query-params)]
          (js/setTimeout (partial scroll/scroll-selector-to-top (str "#subsection-" subsection-key)) 0)))))
+
+#?(:cljs
+   (defmethod trackings/perform-track events/navigate-category
+     [_ event {:keys [catalog/category-id]} app-state]
+     (when (-> category-id
+               (accessors.categories/id->category (get-in app-state keypaths/categories))
+               accessors.categories/wig-category?)
+       (facebook-analytics/track-event "wig_content_fired"))))
 
 (defmethod transitions/transition-state events/control-category-panel-open
   [_ _ {:keys [selected]} app-state]
