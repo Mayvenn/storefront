@@ -3,6 +3,7 @@
   (:require #?@(:cljs
                 [[storefront.api :as api]
                  [storefront.browser.scroll :as scroll]
+                 [storefront.hooks.facebook-analytics :as facebook-analytics]
                  [storefront.hooks.google-maps :as google-maps]
                  [storefront.platform.maps :as maps]
                  [storefront.platform.messages :refer [handle-message]]])
@@ -366,6 +367,8 @@
   [dispatch event {:keys [stylist-id]} prev-app-state app-state]
   #?(:cljs
      (let [stylist-id (spice/parse-int stylist-id)]
+       (facebook-analytics/track-event "ViewContent" {:content_type "stylist"
+                                                      :content_ids [stylist-id]})
        (google-maps/insert)
        (api/fetch-stylist-details (get-in app-state storefront.keypaths/api-cache) stylist-id)
        (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache) {:stylist-id stylist-id
