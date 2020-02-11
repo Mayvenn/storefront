@@ -51,7 +51,7 @@
                   (partial carousel-slide destination-event product-id page-slug sku-id "mayvenn-made-slide-")
                   social-cards)
        :settings {:nav         false
-                  :startIndex  1
+                  :startIndex  0
                   :edgePadding 50
                   ;; setting this to true causes some of our event listeners to
                   ;; get dropped by tiny-slider.
