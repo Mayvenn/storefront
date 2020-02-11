@@ -417,15 +417,15 @@
   "This is for cart's that haven't entered an upsell (free install, wig customization, etc)"
   [show-priority-shipping-method?
    {:as order :keys [adjustments tax-total total]} {:mayvenn-install/keys [any-wig?]}]
-  (let [subtotal           (orders/products-subtotal order)
-        shipping           (orders/shipping-item order)
-        shipping-cost      (some->> shipping
-                                    vector
-                                    (apply (juxt :quantity :unit-price))
-                                    (reduce *))
-        timeframe-copy-fn  (if show-priority-shipping-method?
-                             shipping/priority-shipping-experimental-timeframe
-                             shipping/timeframe)
+  (let [subtotal          (orders/products-subtotal order)
+        shipping          (orders/shipping-item order)
+        shipping-cost     (some->> shipping
+                                   vector
+                                   (apply (juxt :quantity :unit-price))
+                                   (reduce *))
+        timeframe-copy-fn (if show-priority-shipping-method?
+                            shipping/priority-shipping-experimental-timeframe
+                            shipping/timeframe)
 
         shipping-timeframe (some-> shipping :sku timeframe-copy-fn)]
     (cond->
@@ -473,12 +473,13 @@
          :freeinstall-informational/secondary-link-label  "learn more"}
 
       any-wig?
-      (merge {:freeinstall-informational/button-id         "add-wig-customization"
-              :freeinstall-informational/primary           "Don't miss out on free Wig Customization"
-              :freeinstall-informational/secondary         "Get a free customization by a licensed stylist when you add a Wig Customization to your cart below."
-              :freeinstall-informational/cta-label         "Add Wig Customization"
-              :freeinstall-informational/secondary-link-id nil
-              :freeinstall-informational/fine-print        "*Wig Customization cannot be combined with other promo codes, and excludes Ready to Wear Wigs"}))))
+      (merge {:freeinstall-informational/button-id             "add-wig-customization"
+              :freeinstall-informational/primary               "Don't miss out on free Wig Customization"
+              :freeinstall-informational/secondary             "Get a free customization by a licensed stylist when you add a Wig Customization to your cart below."
+              :freeinstall-informational/cta-label             "Add Wig Customization"
+              :freeinstall-informational/secondary-link-id     "Learn More"
+              :freeinstall-informational/secondary-link-target [events/popup-show-wigs-customization]
+              :freeinstall-informational/fine-print            "*Wig Customization cannot be combined with other promo codes, and excludes Ready to Wear Wigs"}))))
 
 (defn upsold-cart-summary-query
   "The cart has an upsell 'entered' because the customer has requested a service discount"
@@ -728,8 +729,7 @@
       (merge {:checkout-caption-copy (str "After you place your order, please contact "
                                           (stylists/->display-name servicing-stylist)
                                           " to make your appointment.")
-
-              :servicing-stylist-banner/action-id nil})
+              })
 
       applied?
       (merge {:confetti-spout/mode (get-in data keypaths/confetti-mode)
