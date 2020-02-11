@@ -32,14 +32,14 @@
 (def you-buy-the-hair
   (let [bullets [{:title/value "Select Your Wig"
                   :body/value  "Decide which wig you want and buy from Mayvenn. Shop Lace Front & 360 Lace Wigs."}
-                  {:title/value ["Choose A Mayvenn" ui/hyphen "Certified Stylist"]
-                   :body/value  "Browse our network of professional stylists in your area and make an appointment."}
-                  {:title/value "Drop Off Your Wig"
-                   :body/value  "Leave the wig with your stylist and talk about what you want. Your stylist will bleach the knots, tint the lace, cut the lace, customize your hairline and make sure it fits perfectly."}
+                 {:title/value ["Choose A Mayvenn" ui/hyphen "Certified Stylist"]
+                  :body/value  "Browse our network of professional stylists in your area and make an appointment."}
+                 {:title/value "Drop Off Your Wig"
+                  :body/value  "Leave the wig with your stylist and talk about what you want. Your stylist will bleach the knots, tint the lace, cut the lace, customize your hairline and make sure it fits perfectly."}
                  {:title/value "Schedule Your Pickup"
                   :body/value  "Make an appointment to pick up your wig with your stylist in a week."}
                  {:title/value "Go Get Your Wig"
-                  :body/value  "You pick up your wig. Let us pick up the tab. Let us over the cost of your customization—we insist."}]]
+                  :body/value  "You pick up your wig. Let us pick up the tab. Let us cover the cost of your customization—we insist."}]]
 
     [:div.col-12.bg-cool-gray.center.flex.flex-column.items-center.p2
      [:div.mt2
@@ -57,7 +57,11 @@
       (map-indexed (partial shop-step (str #_layer-id "-mb-tb-"))
                    bullets)]
 
-     (ui/button-large-primary {:class "col-10"} "Buy Wigs")]))
+     (ui/button-large-primary {:class              "col-10"
+                               :navigation-message [events/navigate-category {:catalog/category-id "13"
+                                                                              :page/slug           "wigs"
+                                                                              :query-params        {:family "lace-front-wigs~360-wigs"}}]}
+                              "Buy Wigs")]))
 
 (def mayvenn-guarantees
   [:div.col-12.center.flex.flex-column.items-center.pb6
