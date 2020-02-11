@@ -50,7 +50,7 @@
                                          72)))))
 
 (defn stylist-card-header-molecule
-  [{:stylist-card/keys [target id] :as data}]
+  [{:stylist-card.header/keys [target id] :as data}]
   (when id
     [:div.col-12.flex.items-start.p2
      (assoc (apply utils/route-to target) :data-test id)

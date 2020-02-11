@@ -78,12 +78,12 @@
                 specialty-sew-in-360-frontal
                 specialty-sew-in-frontal]}                    service-menu]
     {:react/key                        (str "stylist-card-" store-slug)
-     :stylist-card/target              (if post-purchase?
+     :stylist-card.header/target       (if post-purchase?
                                          [events/navigate-adventure-stylist-profile-post-purchase {:stylist-id stylist-id
                                                                                                    :store-slug store-slug}]
                                          [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
                                                                                      :store-slug store-slug}])
-     :stylist-card/id                  (str "stylist-card-" store-slug)
+     :stylist-card.header/id           (str "stylist-card-header" store-slug)
      :stylist-card.thumbnail/id        (str "stylist-card-thumbnail-" store-slug)
      :stylist-card.thumbnail/ucare-id  (-> stylist :portrait :resizable-url)
      :stylist-card.title/id            "stylist-name"

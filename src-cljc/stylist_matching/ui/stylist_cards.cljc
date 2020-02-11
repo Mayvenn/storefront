@@ -108,7 +108,7 @@
      (ui/pluralize-with-amount review-count "Review")]))
 
 (defn stylist-card-header-molecule
-  [{:stylist-card/keys [target id] :as data}]
+  [{:stylist-card.header/keys [target id] :as data}]
   (when id
     [:div.col-12.flex.items-start.pb2.pt4
      (assoc (apply utils/route-to target) :data-test id)
@@ -126,7 +126,8 @@
 (defcomponent organism
   [data _ {:keys [id]}]
   [:div.flex.flex-column.left-align.rounded.border.border-cool-gray.mx3.my3.bg-white
-   {:id id :data-test id}
+   {:id        id
+    :data-test id}
    (stylist-card-header-molecule data)
    [:div.col-12
     (if (:screen/seen? data)
