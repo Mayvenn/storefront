@@ -395,7 +395,7 @@
   [_ event {:keys [stylist-id]} app-state]
   #?(:cljs
      (facebook-analytics/track-event "ViewContent" {:content_type "stylist"
-                                                    :content_ids [stylist-id]})))
+                                                    :content_ids [(spice/parse-int stylist-id)]})))
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-profile-post-purchase
   [dispatch event {:keys [stylist-id]} prev-app-state app-state]
