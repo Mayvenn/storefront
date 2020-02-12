@@ -367,8 +367,6 @@
   [dispatch event {:keys [stylist-id]} prev-app-state app-state]
   #?(:cljs
      (let [stylist-id (spice/parse-int stylist-id)]
-       (facebook-analytics/track-event "ViewContent" {:content_type "stylist"
-                                                      :content_ids [stylist-id]})
        (google-maps/insert)
        (api/fetch-stylist-details (get-in app-state storefront.keypaths/api-cache) stylist-id)
        (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache) {:stylist-id stylist-id
@@ -391,6 +389,11 @@
   (-> app-state
       (assoc-in keypaths/stylist-profile-id (spice/parse-int stylist-id))
       (assoc-in stylist-directory.keypaths/paginated-reviews nil)))
+
+(defmethod trackings/perform-track events/navigate-adventure-stylist-profile
+  [_ event {:keys [stylist-id]} app-state]
+  (facebook-analytics/track-event "ViewContent" {:content_type "stylist"
+                                                 :content_ids [stylist-id]}))
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-profile-post-purchase
   [dispatch event {:keys [stylist-id]} prev-app-state app-state]
