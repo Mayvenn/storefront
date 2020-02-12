@@ -91,15 +91,16 @@
 (defcomponent ^:private drill-category-grid-entry-organism
   [{:drill-category/keys [title svg-url target]} _ {:keys [id]}]
   (when id
-    [:div.py3.flex.flex-column.items-center
-     {:id        id
-      :data-test id
-      :style     {:width "120px"}}
-     [:a.block.mt1
-      (apply utils/route-to target)
-      [:img {:src   (assets/path svg-url)
-             :width 72}]]
-     (ui/button-small-underline-primary {} title)]))
+    (let [link-attrs (apply utils/route-to target)]
+      [:div.py3.flex.flex-column.items-center
+       {:id        id
+        :data-test id
+        :style     {:width "120px"}}
+       [:a.block.mt1
+        link-attrs
+        [:img {:src   (assets/path svg-url)
+               :width 72}]]
+       (ui/button-small-underline-primary link-attrs title)])))
 
 (defcomponent ^:private drill-category-grid-organism
   [{:drill-category-grid/keys [values title]} _ _]
