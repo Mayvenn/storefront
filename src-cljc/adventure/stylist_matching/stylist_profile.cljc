@@ -392,8 +392,9 @@
 
 (defmethod trackings/perform-track events/navigate-adventure-stylist-profile
   [_ event {:keys [stylist-id]} app-state]
-  (facebook-analytics/track-event "ViewContent" {:content_type "stylist"
-                                                 :content_ids [stylist-id]}))
+  #?(:cljs
+     (facebook-analytics/track-event "ViewContent" {:content_type "stylist"
+                                                    :content_ids [stylist-id]})))
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-profile-post-purchase
   [dispatch event {:keys [stylist-id]} prev-app-state app-state]
