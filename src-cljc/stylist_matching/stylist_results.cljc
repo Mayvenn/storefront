@@ -2,6 +2,7 @@
   (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.history :as history]
+                       [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.accessors.orders :as orders]
                        [storefront.platform.messages :as messages]])
@@ -145,15 +146,18 @@
 
 (defmethod trackings/perform-track events/api-success-assign-servicing-stylist
   [_ event {:keys [servicing-stylist order card-index]} app-state]
-  #?(:cljs
-     (stringer/track-event "stylist_selected"
-                           {:stylist_id     (:stylist-id servicing-stylist)
-                            :card_index     card-index
-                            :current_step   (if (= event events/api-success-assign-servicing-stylist-post-purchase)
-                                              3
-                                              2)
-                            :order_number   (:number order)
-                            :stylist_rating (:rating servicing-stylist)})))
+  #?@(:cljs
+      [(facebook-analytics/track-event "AddToCart" {:content_type "stylist"
+                                                    :content_ids  [(:stylist-id servicing-stylist)]
+                                                    :num_items    1})
+       (stringer/track-event "stylist_selected"
+                             {:stylist_id     (:stylist-id servicing-stylist)
+                              :card_index     card-index
+                              :current_step   (if (= event events/api-success-assign-servicing-stylist-post-purchase)
+                                                3
+                                                2)
+                              :order_number   (:number order)
+                              :stylist_rating (:rating servicing-stylist)})]))
 
 (defmethod trackings/perform-track events/adventure-stylist-search-results-displayed
   [_ event args app-state]
