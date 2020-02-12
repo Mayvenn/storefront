@@ -22,6 +22,7 @@
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             storefront.keypaths
+            [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
             [stylist-directory.stylists :as stylists]
             stylist-directory.keypaths
