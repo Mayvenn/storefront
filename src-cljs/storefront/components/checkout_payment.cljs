@@ -24,20 +24,16 @@
 (defmethod effects/perform-effects events/control-checkout-choose-payment-method-submit [_ event _ _ app-state]
   (handle-message events/flash-dismiss)
   (let [order                    (get-in app-state keypaths/order)
-        covered-by-store-credit? (orders/fully-covered-by-store-credit? order (get-in app-state keypaths/user))
+        covered-by-store-credit  (orders/fully-covered-by-store-credit? order (get-in app-state keypaths/user))
         selected-payment-methods (get-in app-state keypaths/checkout-selected-payment-methods)
         quadpay-selected?        (contains? selected-payment-methods :quadpay)
         freeinstall-applied?     (orders/freeinstall-applied? order)
-        user-is-stylist?         (get-in app-state keypaths/user-store-id)
-        must-use-card?           (or (and (not covered-by-store-credit?)
-                                          (not quadpay-selected?))
-                                     (and user-is-stylist?
-                                          freeinstall-applied?
-                                          (not quadpay-selected?)))
-        selected-saved-card-id   (when must-use-card?
+        selected-saved-card-id   (when (and (or (not covered-by-store-credit) freeinstall-applied?)
+                                            (not quadpay-selected?))
                                    (get-in app-state keypaths/checkout-credit-card-selected-id))
         needs-stripe-token?      (and (contains? #{"add-new-card" nil} selected-saved-card-id)
-                                      must-use-card?)]
+                                      (or (not covered-by-store-credit) freeinstall-applied?)
+                                      (not quadpay-selected?))]
     (if needs-stripe-token?
       (create-stripe-token app-state {:place-order? false})
       (api/update-cart-payments
