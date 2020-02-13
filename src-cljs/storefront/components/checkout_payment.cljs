@@ -171,7 +171,7 @@
                                   order
                                   (get-in data keypaths/user))
         selected-payment-methods (set (keys (get-in data keypaths/checkout-selected-payment-methods)))
-        freeinstall-applied?     (orders/freeinstall-applied? order)
+        freeinstall-applied?     (orders/service-line-item-promotion-applied? order)
         user                     (get-in data keypaths/user)]
     (merge
      {:store-credit          {:credit-available  available-store-credit
