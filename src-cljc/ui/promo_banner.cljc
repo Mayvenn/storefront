@@ -4,7 +4,6 @@
                        [goog.events.EventType :as EventType]
                        [goog.style]
                        ["react" :as react]])
-            catalog.keypaths
             [catalog.products :as products]
             [storefront.accessors.categories :as accessors.categories]
             [storefront.accessors.experiments :as experiments]
@@ -130,7 +129,7 @@
       shop?
       :shop/freeinstall
 
-      (and aladdin? (orders/service-line-item-promotion-applied? (get-in data keypaths/order)))
+      (and aladdin? (orders/freeinstall-applied? (get-in data keypaths/order)))
       :v2-freeinstall/applied
 
       aladdin?

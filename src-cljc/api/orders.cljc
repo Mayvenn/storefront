@@ -27,7 +27,7 @@
       {:mayvenn-install/entered?           freeinstall-entered?
        :mayvenn-install/locked?            (and freeinstall-entered?
                                                 (pos? items-remaining-for-install))
-       :mayvenn-install/applied?           (orders/service-line-item-promotion-applied? order)
+       :mayvenn-install/applied?           (orders/freeinstall-applied? order)
        :mayvenn-install/quantity-required  install-items-required
        :mayvenn-install/quantity-remaining (- install-items-required items-added-for-install)
        :mayvenn-install/quantity-added     items-added-for-install

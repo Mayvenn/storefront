@@ -121,15 +121,15 @@
        :storefront/all-line-items
        (filter line-items/service?)))
 
-(defn service-line-item-promotion?
+(defn freeinstall-promotion?
   [{:keys [name]}]
   (boolean
    (#{"FREEINSTALL" "Wig Customization"} name)))
 
-(defn service-line-item-promotion-applied?
+(defn freeinstall-applied?
   [order]
   (boolean
-   (some (comp service-line-item-promotion? :promotion)
+   (some (comp freeinstall-promotion? :promotion)
          (mapcat :applied-promotions (service-line-items order)))))
 
 (defn freeinstall-entered?

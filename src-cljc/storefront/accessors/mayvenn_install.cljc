@@ -78,7 +78,7 @@
     {:mayvenn-install/entered?           freeinstall-entered?
      :mayvenn-install/locked?            (and service-line-item
                                               (not (line-items/fully-discounted? service-line-item)))
-     :mayvenn-install/applied?           (orders/service-line-item-promotion-applied? order)
+     :mayvenn-install/applied?           (orders/freeinstall-applied? order)
      :mayvenn-install/quantity-required  install-items-required
      :mayvenn-install/quantity-remaining items-remaining-for-install
      :mayvenn-install/quantity-added     items-added-for-install
