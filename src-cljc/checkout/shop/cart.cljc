@@ -543,7 +543,7 @@
 
                                      (for [{:keys [name price coupon-code] :as adjustment}
                                            (filter adjustments/non-zero-adjustment? adjustments)
-                                           :let [install-summary-line? (orders/freeinstall-promotion? adjustment)]]
+                                           :let [install-summary-line? (orders/service-line-item-promotion? adjustment)]]
                                        (cond-> {:cart-summary-line/id    (str (text->data-test-name name) "-adjustment")
                                                 :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
                                                                                             :height "2em" :width "2em"})
@@ -646,7 +646,7 @@
         line-items                           (map (partial add-product-title-and-color-to-line-item products facets)
                                                   (orders/product-items order))
         freeinstall-entered-cart-incomplete? (and (orders/freeinstall-entered? order)
-                                                  (not (orders/freeinstall-applied? order)))
+                                                  (not (orders/service-line-item-promotion-applied? order)))
         mayvenn-install                      (mayvenn-install/mayvenn-install data)
         entered?                             (:mayvenn-install/entered? mayvenn-install)
         applied?                             (:mayvenn-install/applied? mayvenn-install)

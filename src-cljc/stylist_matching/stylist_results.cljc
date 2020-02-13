@@ -104,9 +104,8 @@
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-post-purchase
   [_ _ args _ app-state]
   #?(:cljs
-     (let [matched-stylists                        (get-in app-state adventure.keypaths/adventure-matched-stylists)
-           freeinstall-applied-to-completed-order? (orders/freeinstall-applied? (get-in app-state storefront.keypaths/completed-order))]
-       (if freeinstall-applied-to-completed-order?
+     (let [matched-stylists (get-in app-state adventure.keypaths/adventure-matched-stylists)]
+       (if (orders/service-line-item-promotion-applied? (get-in app-state storefront.keypaths/completed-order))
          (if (empty? matched-stylists)
            (messages/handle-message events/api-shipping-address-geo-lookup)
            (messages/handle-message events/adventure-stylist-search-results-post-purchase-displayed))
