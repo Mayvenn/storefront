@@ -651,8 +651,8 @@
            :flyout-menu/order                0
            :icp-menu-experiment-footer/order 0
            :icp-menu-experiment-footer/title "Hair Bundles"
-           :category/description             (copy "Our collection of 100% Virgin hair is a must-have for when you want more volume, length and texture."
-                                                   "Switch up your look with these high-quality bundles. Buy three and the install is free.")
+           :category/description             (copy "Have a hairstyle in mind and want more volume, length, and texture? Add our 100% Virgin hair bundles."
+                                                   "Purchase three high-quality human hair bundles and the install is free.")
            :category/image-url               "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
            :copy/description                 "For those whom want it given to them straight, our collection of 100% virgin straight hair is your go-to for a sleek look with minimal effort."
            :copy/title                       "Hair Bundles"
