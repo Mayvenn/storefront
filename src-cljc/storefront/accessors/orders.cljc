@@ -166,7 +166,7 @@
         store-credit      (:total-available-store-credit user)
         store-credit-used (min order-total store-credit)]
     (cond-> {}
-      (or (freeinstall-applied? order)
+      (or (service-line-item-promotion-applied? order)
           (> order-total store-credit-used)) (assoc :stripe {})
       (can-use-store-credit? order user)     (assoc :store-credit {}))))
 
