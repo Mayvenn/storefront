@@ -257,10 +257,12 @@
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow user] :as args} app-state]
   (stringer/track-event "sign_in" {:type flow})
+  (facebook-analytics/init-with-customer-data (:email user) (get-in app-state keypaths/order-shipping-address))
   (facebook-analytics/track-custom-event "user_logged_in" {:store_url stylist-urls/store-url}))
 
-(defmethod perform-track events/api-success-auth-sign-up [_ event {:keys [flow] :as args} app-state]
-  (stringer/track-event "sign_up" {:type flow}))
+(defmethod perform-track events/api-success-auth-sign-up [_ event {:keys [flow user] :as args} app-state]
+  (stringer/track-event "sign_up" {:type flow})
+  (facebook-analytics/init-with-customer-data (:email user) (get-in app-state keypaths/order-shipping-address)))
 
 (defmethod perform-track events/api-success-auth-reset-password [_ events {:keys [flow] :as args} app-state]
   (stringer/track-event "reset_password" {:type flow}))
@@ -400,3 +402,7 @@
   [_ _ {:keys [stylist-id error]} _]
   (stringer/track-event "stylist_profile_share_error" {:current_servicing_stylist_id stylist-id
                                                        :error_message                error}))
+
+(defmethod perform-track events/order-completed [_ event args app-state]
+  (let [{:keys [user shipping-address]} (get-in app-state keypaths/completed-order)]
+    (facebook-analytics/init-with-customer-data (:email user) shipping-address)))
