@@ -62,8 +62,7 @@
   (when-let [prev-nav-message (:navigation-message (first (get-in app-state keypaths/navigation-undo-stack)))]
     (let [[nav-event nav-args]           (get-in app-state keypaths/navigation-message)
           [prev-nav-event prev-nav-args] prev-nav-message]
-      (and (or
-            (= nav-event prev-nav-event events/navigate-product-details))
+      (and (= nav-event prev-nav-event events/navigate-product-details)
            (= (:catalog/product-id nav-args) (:catalog/product-id prev-nav-args))))))
 
 (defmethod perform-track events/navigate [_ event {:keys [navigate/caused-by] :as args} app-state]
