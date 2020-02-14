@@ -119,7 +119,6 @@
 (defmethod effects/perform-effects events/app-stop [_ event args _ app-state]
   (convert/remove-tracking)
   (riskified/remove-tracking)
-  (facebook-analytics/remove-tracking)
   (lucky-orange/remove-tracking)
   (pixlee/remove-tracking)
   (browser-events/unattach-capture-late-readystatechange-callbacks)
