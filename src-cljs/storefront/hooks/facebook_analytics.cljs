@@ -16,8 +16,5 @@
    (when (.hasOwnProperty js/window "fbq")
      (js/fbq "trackCustom" action (clj->js args)))))
 
-(defn track-page [path]
-  (track-event "PageView"))
-
 (defn subscribe []
   (track-event "Subscribe"))

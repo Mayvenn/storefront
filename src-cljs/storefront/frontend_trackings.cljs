@@ -70,8 +70,7 @@
     (let [path (routes/current-path app-state)]
       (when (not (nav-was-selecting-bundle-option? app-state))
         (riskified/track-page path)
-        (stringer/track-page (get-in app-state keypaths/store-experience))
-        (facebook-analytics/track-page path)))))
+        (stringer/track-page (get-in app-state keypaths/store-experience))))))
 
 (defmethod perform-track events/control-category-panel-open
   [_ event {:keys [selected]} app-state]
