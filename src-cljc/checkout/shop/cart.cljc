@@ -340,7 +340,8 @@
                             :cart-item-remove-action/id                     (str "line-item-remove-" sku-id)
                             :cart-item-remove-action/spinning?              removing?
                             :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]})
-        matched?         (boolean stylist)]
+        matched?         (boolean stylist)
+        add-on-services? (experiments/add-on-services? app-state)]
 
     (cond-> cart-items
       entered?
@@ -398,7 +399,14 @@
                    {:cart-item-title/id      "line-item-title-applied-mayvenn-install"
                     :cart-item-title/primary "Mayvenn Install"
                     :cart-item-copy/value    "You’re all set! Shampoo, braiding and basic styling included."
-                    :cart-item-copy/id       "congratulations"})))]))))
+                    :cart-item-copy/id       "congratulations"}))
+
+          (and applied?
+               matched?
+               add-on-services?)
+          (merge {:cart-item-modify-button/id      "browse-add-ons"
+                  :cart-item-modify-button/target  [events/control-browse-add-ons-button]
+                  :cart-item-modify-button/content "+ Browse Add-Ons"}))]))))
 
 (defn coupon-code->remove-promo-action [coupon-code]
   {:cart-summary-line/action-id     "cart-remove-promo"

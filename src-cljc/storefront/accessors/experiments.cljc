@@ -112,3 +112,7 @@
 (defn icp-menu?
   [data]
   (display-feature? data "icp-menu"))
+
+(defn add-on-services?
+  [data]
+  (display-feature? data "add-on-services"))

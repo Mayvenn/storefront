@@ -208,6 +208,7 @@
 (defpath control-cart-remove)
 (defpath control-cart-share-show)
 (defpath control-pick-stylist-button)
+(defpath control-browse-add-ons-button)
 (defpath control-change-stylist)
 (defpath share-stylist)
 
