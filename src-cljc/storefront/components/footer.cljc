@@ -7,6 +7,7 @@
             [storefront.components.footer-links :as footer-links]
             [storefront.components.footer-minimal :as footer-minimal]
             [storefront.components.ui :as ui]
+            [storefront.config :as config]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
@@ -83,7 +84,7 @@
 (defn contacts-query
   [data]
   {:sms-number    (get-in data keypaths/sms-number)
-   :call-number   "+1 (855) 287-6868"
+   :call-number   config/support-phone-number
    :contact-email "help@mayvenn.com"})
 
 (defn dtc-link [{:keys [title new-link? nav-message id]}]

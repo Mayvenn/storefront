@@ -1,6 +1,7 @@
 (ns storefront.components.footer-modal
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
+            [storefront.config :as config]
             [storefront.keypaths :as keypaths]
             [storefront.components.footer-links :as footer-links]))
 
@@ -19,7 +20,7 @@
 
 (defn query
   [data]
-  {:call-number "+1 (855) 287-6868"})
+  {:call-number config/support-phone-number})
 
 (defn built-component
   [data opts]

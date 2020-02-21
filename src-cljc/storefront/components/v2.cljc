@@ -3,6 +3,7 @@
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.component :as component :refer [defcomponent]]
+            [storefront.config :as config]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.transitions :as transitions]
@@ -131,7 +132,7 @@
                :description "Get your hair installed absolutely FREE!"})]])))
 
 (def ^:private faq-section-copy
-  (let [phone-link (ui/link :link/phone :a.inherit-color {} "1-855-287-6868")]
+  (let [phone-link (ui/link :link/phone :a.inherit-color {} config/support-phone-number)]
     [(accordion/section [:h6 "How does this all work? How do I get a free install?"]
                         ["It’s easy! Mayvenn will pay your stylist directly for your install."
                          " Just purchase 3 bundles or more (frontals and closures count as bundles)"

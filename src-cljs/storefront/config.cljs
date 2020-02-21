@@ -4,6 +4,13 @@
 
 (def welcome-subdomain "welcome")
 
+;; TODO: make this load from server side rendering (since config.clj has this)
+;; human-readable phone number to call support. Use a helper function to
+;; format it properly for "tel:" (see ui/phone-url)
+;;
+;; Don't forget to update static html pages & config.clj if you change this.
+(def support-phone-number "1 (855) 287-6868")
+
 (def feature-block-look-ids
   ;;NOTE edit the clj config too!
   ;;NOTE @Ryan, please only change the top map

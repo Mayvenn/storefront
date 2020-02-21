@@ -1,7 +1,8 @@
 (ns storefront.components.footer-minimal
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.footer-links :as footer-links]
-            [storefront.components.ui :as ui]))
+            [storefront.components.ui :as ui]
+            [storefront.config :as config]))
 
 (defcomponent component
   [{:keys [call-number]} owner opts]
@@ -17,7 +18,7 @@
 
 (defn query
   [data]
-  {:call-number "+1 (855) 287-6868"})
+  {:call-number config/support-phone-number})
 
 (defn built-component
   [data opts]

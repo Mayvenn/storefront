@@ -8,6 +8,12 @@
 
 (def welcome-subdomain "welcome")
 
+;; human-readable phone number to call support. Use a helper function to
+;; format it properly for "tel:" (see ui/phone-url)
+;;
+;; Don't forget to update static html pages & config.cljs if you change this.
+(def support-phone-number "1 (855) 287-6868")
+
 (defn define-frontend-modules []
   ;; all module names must be cljs mangled (aka - hyphens get converted to underscore)
   ;; See implementation of cljs.loader: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/loader.cljs#L15-L46

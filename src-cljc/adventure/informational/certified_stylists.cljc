@@ -5,6 +5,7 @@
             [storefront.component :as component]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.config :as config]
             [storefront.events :as events]
             storefront.keypaths))
 
@@ -57,12 +58,12 @@
                                                          :width  56})
                                    :title "Live Chat"
                                    :copy  "Text: 346-49"}
-                                  {:url   (ui/phone-url "1 (855) 287-6868")
+                                  {:url   (ui/phone-url config/support-phone-number)
                                    :svg   (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
                                                           :height 57
                                                           :width  57})
                                    :title "Call Us"
-                                   :copy  "1 (855) 287-6868"}
+                                   :copy   config/support-phone-number}
                                   {:url   (ui/email-url "help@mayvenn.com")
                                    :svg   (svg/icon-email {:height 39
                                                            :width  56})

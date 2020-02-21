@@ -7,6 +7,7 @@
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.config :as config]
             [storefront.accessors.experiments :as experiments]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -185,7 +186,7 @@
      [:div.proxima.title-2.bold.caps.pb1 "Still Have Questions?"]
      [:div.canela.content-2
       [:div "Customer Service can help!"]
-      [:div "Call " [:a.inherit-color {:href (ui/phone-url "18552876868")} "(888) 287-6868 "]]
+      [:div "Call " [:a.inherit-color {:href (ui/phone-url config/support-phone-number)} config/support-phone-number " "]]
       [:div "Monday through Friday from 8am-5pm PST."]]]]])
 
 (defcomponent ^:private template
