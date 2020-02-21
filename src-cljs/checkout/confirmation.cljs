@@ -358,7 +358,7 @@
           :cart-item-title/id                    "line-item-title-applied-mayvenn-install"
           :cart-item-title/primary               "Mayvenn Install"
           :cart-item-title/secondary             [:div.line-height-3
-                                                  "Shampoo, condition, braid down, Sew-in and style included."]}}})
+                                                  "You’re all set! Shampoo, braiding and basic styling included."]}}})
 
       (and applied? wig-customization?)
       (maps/deep-merge
@@ -367,7 +367,7 @@
          {:cart-item-title/id        "line-item-title-applied-wig-customization"
           :cart-item-title/primary   "Wig Customization"
           :cart-item-title/secondary [:div.content-3
-                                      "Hair line plucking, bleaching of knots, lace cut, and style included."]}}})
+                                      "You're all set! Bleaching knots, tinting & cutting lace and hairline customization included."]}}})
 
       (and applied? stylist)
       (merge
