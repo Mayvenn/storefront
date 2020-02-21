@@ -175,8 +175,8 @@
       (apply utils/send-event-callback decrement-target)
       (apply utils/send-event-callback increment-target))]))
 
-(defn cart-item-pick-stylist-molecule
-  [{:cart-item-pick-stylist/keys [id target content]}]
+(defn cart-item-modify-button
+  [{:cart-item-modify-button/keys [id target content]}]
   (when id
     [:div
      (ui/button-small-secondary (merge {:class        "p-color bold mt1"
@@ -204,7 +204,7 @@
        (cart-item-copy-molecule cart-item)
        (ui.molecules/stars-rating-molecule cart-item)
        (cart-item-adjustable-quantity-molecule cart-item)
-       (cart-item-pick-stylist-molecule cart-item)]]
+       (cart-item-modify-button cart-item)]]
 
      ;; price group
      [:div.right.right-align.pt1.flex.flex-column.items-end

@@ -307,40 +307,40 @@
                                    (variants-requests app-state request-keys/update-line-item (map :sku line-items)))
         delete-line-item-requests (variants-requests app-state request-keys/delete-line-item (map :id line-items))
 
-        cart-items (for [{sku-id :sku variant-id :id :as line-item} line-items
-                         :let
-                         [sku                  (get skus sku-id)
-                          price                (or (:sku/price line-item)
-                                                   (:unit-price line-item))
-                          qty-adjustment-args {:variant (select-keys line-item [:id :sku])}
-                          removing?            (get delete-line-item-requests variant-id)
-                          updating?            (get update-line-item-requests sku-id)
-                          just-added-to-order? (some #(= sku-id %) (get-in app-state keypaths/cart-recently-added-skus))]]
-                     {:react/key                                      (str sku-id "-" (:quantity line-item))
-                      :cart-item-title/id                             (str "line-item-title-" sku-id)
-                      :cart-item-title/primary                        (or (:product-title line-item)
-                                                                          (:product-name line-item))
-                      :cart-item-title/secondary                      (:color-name line-item)
-                      :cart-item-floating-box/id                      (str "line-item-price-ea-with-label-" sku-id)
-                      :cart-item-floating-box/value                   [:div {:data-test (str "line-item-price-ea-" sku-id)}
-                                                                       (mf/as-money price)
-                                                                       [:div.proxima.content-4 " each"]]
-                      :cart-item-square-thumbnail/id                  sku-id
-                      :cart-item-square-thumbnail/sku-id              sku-id
-                      :cart-item-square-thumbnail/highlighted?        just-added-to-order?
-                      :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
-                                                                        (str length-circle-value "”"))
-                      :cart-item-square-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)
-                      :cart-item-adjustable-quantity/id               (str "line-item-quantity-" sku-id)
-                      :cart-item-adjustable-quantity/spinning?        updating?
-                      :cart-item-adjustable-quantity/value            (:quantity line-item)
-                      :cart-item-adjustable-quantity/id-suffix        sku-id
-                      :cart-item-adjustable-quantity/decrement-target [events/control-cart-line-item-dec qty-adjustment-args]
-                      :cart-item-adjustable-quantity/increment-target [events/control-cart-line-item-inc qty-adjustment-args]
-                      :cart-item-remove-action/id                     (str "line-item-remove-" sku-id)
-                      :cart-item-remove-action/spinning?              removing?
-                      :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]})
-        matched?   (boolean stylist)]
+        cart-items       (for [{sku-id :sku variant-id :id :as line-item} line-items
+                               :let
+                               [sku                  (get skus sku-id)
+                                price                (or (:sku/price line-item)
+                                                         (:unit-price line-item))
+                                qty-adjustment-args {:variant (select-keys line-item [:id :sku])}
+                                removing?            (get delete-line-item-requests variant-id)
+                                updating?            (get update-line-item-requests sku-id)
+                                just-added-to-order? (some #(= sku-id %) (get-in app-state keypaths/cart-recently-added-skus))]]
+                           {:react/key                                      (str sku-id "-" (:quantity line-item))
+                            :cart-item-title/id                             (str "line-item-title-" sku-id)
+                            :cart-item-title/primary                        (or (:product-title line-item)
+                                                                                (:product-name line-item))
+                            :cart-item-title/secondary                      (:color-name line-item)
+                            :cart-item-floating-box/id                      (str "line-item-price-ea-with-label-" sku-id)
+                            :cart-item-floating-box/value                   [:div {:data-test (str "line-item-price-ea-" sku-id)}
+                                                                             (mf/as-money price)
+                                                                             [:div.proxima.content-4 " each"]]
+                            :cart-item-square-thumbnail/id                  sku-id
+                            :cart-item-square-thumbnail/sku-id              sku-id
+                            :cart-item-square-thumbnail/highlighted?        just-added-to-order?
+                            :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
+                                                                              (str length-circle-value "”"))
+                            :cart-item-square-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)
+                            :cart-item-adjustable-quantity/id               (str "line-item-quantity-" sku-id)
+                            :cart-item-adjustable-quantity/spinning?        updating?
+                            :cart-item-adjustable-quantity/value            (:quantity line-item)
+                            :cart-item-adjustable-quantity/id-suffix        sku-id
+                            :cart-item-adjustable-quantity/decrement-target [events/control-cart-line-item-dec qty-adjustment-args]
+                            :cart-item-adjustable-quantity/increment-target [events/control-cart-line-item-inc qty-adjustment-args]
+                            :cart-item-remove-action/id                     (str "line-item-remove-" sku-id)
+                            :cart-item-remove-action/spinning?              removing?
+                            :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]})
+        matched?         (boolean stylist)]
 
     (cond-> cart-items
       entered?
@@ -385,9 +385,9 @@
                      :cart-item-service-thumbnail/locked?       true}))
 
           (and applied? (not matched?))
-          (merge {:cart-item-pick-stylist/id      "pick-a-stylist"
-                  :cart-item-pick-stylist/target  [events/control-pick-stylist-button]
-                  :cart-item-pick-stylist/content "pick stylist"})
+          (merge {:cart-item-modify-button/id      "pick-a-stylist"
+                  :cart-item-modify-button/target  [events/control-pick-stylist-button]
+                  :cart-item-modify-button/content "pick stylist"})
 
           applied?
           (merge (if wig-customization?
