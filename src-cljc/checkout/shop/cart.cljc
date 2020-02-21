@@ -393,16 +393,12 @@
           (merge (if wig-customization?
                    {:cart-item-title/id      "line-item-title-applied-wig-customization"
                     :cart-item-title/primary "Wig Customization"
-                    :cart-item-copy/value    "Congratulations! You're all set for your Wig Customization. Click the button below to pick your stylist."
+                    :cart-item-copy/value    "You're all set! Bleaching knots, tinting & cutting lace and hairline customization included."
                     :cart-item-copy/id       "congratulations"}
                    {:cart-item-title/id      "line-item-title-applied-mayvenn-install"
                     :cart-item-title/primary "Mayvenn Install"
                     :cart-item-copy/value    "You’re all set! Shampoo, braiding and basic styling included."
-                    :cart-item-copy/id       "congratulations"}))
-
-          (and applied? matched? wig-customization?)
-          (merge
-           {:cart-item-copy/value "Congratulations! You're all set for your Wig Customization"}))]))))
+                    :cart-item-copy/id       "congratulations"})))]))))
 
 (defn coupon-code->remove-promo-action [coupon-code]
   {:cart-summary-line/action-id     "cart-remove-promo"
