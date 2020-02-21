@@ -65,7 +65,7 @@
       primary]
      [:div.mx-auto.col-10
       (for [{:breakdown-item/keys [id label value]} items]
-        [:div.flex.justify-between.bg-cool-gray.p2
+        [:div.flex.justify-between.bg-refresh-gray.p2
          {:key       id
           :data-test id}
          [:div label]
@@ -101,7 +101,10 @@
    [:div.mt5.col-9
     (cta-with-secondary-molecule queried-data)]
 
-   (fine-print-molecule queried-data)])
+   (fine-print-molecule queried-data)
+   ;; This page sometimes shows a large gap above the footer when switching between desktop and mobile view in Chrome.
+   ;; We have not been able to reproduce this in mobile Chrome or iOS Safari Simulator, so we don't think it's a real problem.
+   ])
 
 (defn ^:private query [app-state]
   (let [voucher                   (get-in app-state voucher-keypaths/voucher-response)
