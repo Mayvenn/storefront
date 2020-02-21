@@ -303,7 +303,7 @@
     [:div.p4
      {:class (str "bg-" color-class
                   (when (#{"black" "quadpay-blue" "fb-blue" "p-color"} color-class) " white")
-                  (when (string/ends-with? color-class "white") " border border-gray"))
+                  (when (#{"refresh-gray" "white" "error"} color-class) " border border-gray"))
       :style {:height "8em"}}
      [:div.mt4
       [:div color-class]
@@ -328,13 +328,15 @@
    [:div.flex.flex-wrap.mxn1.mb4
     (color-swatch "p-color" "4427c1")
     (color-swatch "s-color" "6bc8ad")
-    (color-swatch "cool-gray" "eeefef")]
+    (color-swatch "black" "000000")
+    (color-swatch "white" "ffffff")]
 
    (subheader "Grays")
    [:div.flex.flex-wrap.mxn1.mb4
-    (color-swatch "black" "000000")
     (color-swatch "gray" "cccccc")
-    (color-swatch "white" "ffffff")]
+    (color-swatch "cool-gray" "eeefef")
+    (color-swatch "warm-gray" "ece6e2")
+    (color-swatch "refresh-gray" "f5f5f5")]
 
    (subheader "Success dialog and error handling")
    [:div.flex.flex-wrap.mxn1.mb4
