@@ -5,7 +5,6 @@
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
-            [storefront.accessors.service-menu :as service-menu]
             [storefront.effects :as effects]
             [storefront.platform.component-utils :as utils]
             [voucher.keypaths :as voucher-keypaths]
@@ -49,12 +48,7 @@
      [:div.flex-wrap.flex.items-center.content-3.proxima.bg-lighten-5.flex.justify-between
       {:key       id
        :data-test id}
-      [:div.px4.py2 "Voucher Redeemed: " content]
-      [:div.px2.py1
-       (svg/circled-check {:width  "16px"
-                           :height "16px"
-                           :style  {:stroke-width 1.5}
-                           :class  "stroke-s-color"})]]]))
+      [:div.px4.py2 content]]]))
 
 (def icon-molecule
   [:div.p-color.mt6.mb2
@@ -62,18 +56,20 @@
                        :width  "47px"
                        :class  "stroke-s-color"})])
 
-(defn ^:private informational-molecule
-  [{:informational/keys [primary-id primary secondary-id secondary tertiary-id tertiary]}]
+(defn ^:private breakdown-molecule
+  [{:breakdown/keys [primary-id primary items]}]
   (when primary-id
-    [:div.center {:key primary-id}
-     [:div.title-1.canela.my3
+    [:div.col-12 {:key primary-id}
+     [:div.center.title-2.canela.mb4
       {:data-test primary-id}
       primary]
-     (when secondary-id
-       (into [:div.proxima.content-3.shout.bold
-              {:data-test secondary-id}] secondary))
-     (when tertiary-id
-       [:div.content-3.proxima.mt2 tertiary])]))
+     [:div.mx-auto.col-10
+      (for [{:breakdown-item/keys [id label value]} items]
+        [:div.flex.justify-between.bg-cool-gray.p2
+         {:key       id
+          :data-test id}
+         [:div label]
+         [:div value]])]]))
 
 (defn cta-with-secondary-molecule
   [{:cta/keys [id copy target
@@ -97,14 +93,12 @@
 
 (defcomponent ^:private component
   [queried-data owner opts]
-  [:div.flex.flex-column.items-center.m4
-   (notification-molecule queried-data)
+  [:div.flex.flex-column.items-center.p4
+   [:div.mb8.col-12 (notification-molecule queried-data)]
 
-   icon-molecule
+   (breakdown-molecule queried-data)
 
-   (informational-molecule queried-data)
-
-   [:div.mt6.col-9
+   [:div.mt5.col-9
     (cta-with-secondary-molecule queried-data)]
 
    (fine-print-molecule queried-data)])
@@ -115,42 +109,30 @@
         install-type              (-> voucher :discount :unit_type)
         payout-amount             (-> service-menu
                                       (get (keyword (get unit-type->menu-kw-payout install-type)))
-                                      mf/as-money-without-cents)
-        advertised-amount         (-> service-menu
-                                      (get (keyword (get unit-type->menu-kw-advertised install-type)))
-                                      mf/as-money-without-cents)
-        install-type-display-name (get unit-type->display-name install-type)
-        payout-equals-advertised? (= payout-amount advertised-amount)]
-    (cond->
-     {:spinning?                (utils/requesting? app-state request-keys/fetch-user-stylist-service-menu)
-      :notification/id          (str "voucher-redeemed-" install-type-display-name)
-      :notification/content     install-type-display-name
-      :cta/id                   "view-earnings"
-      :cta/target               [events/navigate-v2-stylist-dashboard-payments]
-      :cta/copy                 [:span.bold "View Earnings"]
-      :cta/secondary-id         "redeem-voucher"
-      :cta/secondary-target     [events/navigate-voucher-redeem]
-      :cta/secondary-copy       "Redeem Another Voucher"
-      :informational/primary-id "redemption-amount"
-      :informational/primary    payout-amount
-      :informational/secondary-id "redemption-secondary"
-      :informational/secondary  "has been added to your earnings"}
+                                      mf/as-money)
+        install-type-display-name (get unit-type->display-name install-type)]
+    {:spinning?            (utils/requesting? app-state request-keys/fetch-user-stylist-service-menu)
+     :notification/id      (str "voucher-redeemed-" install-type-display-name)
+     :notification/content "Voucher redeemed successfully"
+     :cta/id               "view-earnings"
+     :cta/target           [events/navigate-v2-stylist-dashboard-payments]
+     :cta/copy             [:span.bold "View Earnings"]
+     :cta/secondary-id     "redeem-voucher"
+     :cta/secondary-target [events/navigate-voucher-redeem]
+     :cta/secondary-copy   "Redeem Another Voucher"
+     :breakdown/primary-id "redemption-amount"
+     :breakdown/primary    "Payout Breakdown"
+     :breakdown/items      [{:breakdown-item/id     "base-service"
+                             :breakdown-item/label  install-type-display-name
+                             :breakdown-item/value (str payout-amount "*")}]
 
-      (not payout-equals-advertised?)
-      (merge {:fine-print/id              "fine-print"
-              :fine-print/copy            (str
-                                           "The advertised price is the price that we display publicly to"
-                                           " customers and should match your salon’s service prices. Your actual"
-                                           " payout amount was set between you and Mayvenn at the start of your"
-                                           " program. Charging customers for the difference between the advertised"
-                                           " price and your payout amount will result in your removal from the"
-                                           " program.")
-              :informational/tertiary-id "redemption-payout-and-advertised-amounts"
-              :informational/tertiary    (list
-                                           [:div "Your " install-type-display-name " Payout Amount: "
-                                            payout-amount]
-                                           [:div install-type-display-name " Advertised Price: "
-                                            advertised-amount "*"])}))))
+     :fine-print/id   "fine-print"
+     :fine-print/copy (str
+                       "The Payout Breakdown above is the agreed upon amount set between you "
+                       "and Mayvenn at the start of your program. This amount is less than the "
+                       "price advertised on the website to customers. Charging customers for the "
+                       "difference between the advertised price and payout amount will result in "
+                       "your removal from the program.")}))
 
 (defn ^:export built-component
   [data opts]
