@@ -11,6 +11,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
+            [storefront.config :as config]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
@@ -90,7 +91,7 @@
     [:div.px2.py1.bg-lighten-5.center
      "We need a little more information from you before you can use this feature. "
      "Please contact customer service at "
-     (ui/link :link/phone :a.medium.error {} "+1 (855) 287-6868")]]
+     (ui/link :link/phone :a.medium.error {} config/support-phone-number)]]
    [:div.mt8.center [:a (utils/route-to events/navigate-home) "Back to Home"]]])
 
 (def ^:private spinner
