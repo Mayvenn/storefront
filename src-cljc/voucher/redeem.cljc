@@ -90,7 +90,7 @@
     [:div.px2.py1.bg-lighten-5.center
      "We need a little more information from you before you can use this feature. "
      "Please contact customer service at "
-     (ui/link :link/phone :a.medium.error {} "+1 (888) 562-7952")]]
+     (ui/link :link/phone :a.medium.error {} "+1 (855) 287-6868")]]
    [:div.mt8.center [:a (utils/route-to events/navigate-home) "Back to Home"]]])
 
 (def ^:private spinner

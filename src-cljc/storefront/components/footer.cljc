@@ -83,7 +83,7 @@
 (defn contacts-query
   [data]
   {:sms-number    (get-in data keypaths/sms-number)
-   :call-number   "+1 (888) 562-7952"
+   :call-number   "+1 (855) 287-6868"
    :contact-email "help@mayvenn.com"})
 
 (defn dtc-link [{:keys [title new-link? nav-message id]}]

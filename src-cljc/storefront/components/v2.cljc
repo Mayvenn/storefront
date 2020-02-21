@@ -131,7 +131,7 @@
                :description "Get your hair installed absolutely FREE!"})]])))
 
 (def ^:private faq-section-copy
-  (let [phone-link (ui/link :link/phone :a.inherit-color {} "1-888-562-7952")]
+  (let [phone-link (ui/link :link/phone :a.inherit-color {} "1-855-287-6868")]
     [(accordion/section [:h6 "How does this all work? How do I get a free install?"]
                         ["It’s easy! Mayvenn will pay your stylist directly for your install."
                          " Just purchase 3 bundles or more (frontals and closures count as bundles)"
