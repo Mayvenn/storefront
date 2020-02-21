@@ -30,20 +30,20 @@
     --clear: rgba(0, 0, 0, 0);
 
     /* THESE ARE OUR NEW COLORS TODO: vet that these will be used for background*/
-    --p-color:     #4427c1;
-    --s-color:     #6bc8ad;
-    --red:         #f94941;
-    --pink:        #f4c3d6;
-    --light-red:   #fef7fa;
-    --paypal:      #49bbf0;
-    --pale-purple: #dedbe5;
-    --white:       #ffffff;
-    --gray-mask:   rgba(204, 204, 204, 0.1);
-    --gray:        #cccccc;
-    --dark-gray:   #979797;
-    --refresh-gray #f5f5f5;
-    --cool-gray:   #eeefef;
-    --warm-gray:   #ece6e2;
-    --black:       #000000;
+    --p-color:      #4427c1;
+    --s-color:      #6bc8ad;
+    --red:          #f94941;
+    --pink:         #f4c3d6;
+    --light-red:    #fef7fa;
+    --paypal:       #49bbf0;
+    --pale-purple:  #dedbe5;
+    --white:        #ffffff;
+    --gray-mask:    rgba(204, 204, 204, 0.1);
+    --gray:         #cccccc;
+    --dark-gray:    #979797;
+    --refresh-gray: #f5f5f5;
+    --cool-gray:    #eeefef;
+    --warm-gray:    #ece6e2;
+    --black:        #000000;
 }
 
