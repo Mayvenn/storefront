@@ -12,12 +12,13 @@
 .bg-lighten-5              { background-color: var(--lighten-5); }
 .bg-gray-mask              { background-color: var(--gray-mask); }
 
-.bg-p-color     { background-color: var(--p-color); }
-.bg-s-color     { background-color: var(--s-color); }
-.bg-cool-gray   { background-color: var(--cool-gray); }
-.bg-warm-gray   { background-color: var(--warm-gray); }
-.bg-pale-purple { background-color: var(--pale-purple); }
-.bg-pink        { background-color: var(--pink); }
+.bg-p-color      { background-color: var(--p-color); }
+.bg-s-color      { background-color: var(--s-color); }
+.bg-refresh-gray { background-color: var(--refresh-gray); }
+.bg-cool-gray    { background-color: var(--cool-gray); }
+.bg-warm-gray    { background-color: var(--warm-gray); }
+.bg-pale-purple  { background-color: var(--pale-purple); }
+.bg-pink         { background-color: var(--pink); }
 
 :root {
     --facebook-blue:          #3b5998;
@@ -40,6 +41,7 @@
     --gray-mask:   rgba(204, 204, 204, 0.1);
     --gray:        #cccccc;
     --dark-gray:   #979797;
+    --refresh-gray #f5f5f5;
     --cool-gray:   #eeefef;
     --warm-gray:   #ece6e2;
     --black:       #000000;
