@@ -260,7 +260,7 @@
          :stylist-card.address-marker/id    (str "stylist-card-address-" store-slug)
          :stylist-card.address-marker/value (string/join " "
                                                          [(string/join ", "
-                                                                       [address-1 address-2 city state])
+                                                                       (remove string/blank? [address-1 address-2 city state]))
                                                           zipcode])}
       (and (:mayvenn-rating-publishable stylist)
            (> review-count 0))
