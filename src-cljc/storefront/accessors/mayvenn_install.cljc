@@ -6,37 +6,33 @@
             storefront.keypaths))
 
 (defn ^:private family->ordering
-  [wig-customization? family]
-  (let [families (merge
-                  {"bundles"      5
-                   "closures"     4
-                   "frontals"     3
-                   "360-frontals" 2}
-                  (when wig-customization?
-                    {"360-wigs"        1
-                     "lace-front-wigs" 1}))]
+  [family]
+  (let [families {"bundles"         5
+                  "closures"        4
+                  "frontals"        3
+                  "360-frontals"    2
+                  "360-wigs"        1
+                  "lace-front-wigs" 1}]
     (get families family 10)))
 
-(defn ^:private product-family->service-type
-  [wig-customization? family]
+(defn hair-family->service-type
+  [family]
   (get
-   (merge
-    {"bundles"      :leave-out
-     "closures"     :closure
-     "frontals"     :frontal
-     "360-frontals" :three-sixty}
-    (when wig-customization?
-      {"360-wigs"        :wig-customization
-       "lace-front-wigs" :wig-customization}))
+   {"bundles"         :leave-out
+    "closures"        :closure
+    "frontals"        :frontal
+    "360-frontals"    :three-sixty
+    "360-wigs"        :wig-customization
+    "lace-front-wigs" :wig-customization}
    family))
 
 (defn product-line-items->service-type
-  [wig-customization? product-items]
+  [product-items]
   (->> product-items
        (map (comp :hair/family :variant-attrs))
-       (sort-by (partial family->ordering wig-customization?))
+       (sort-by (partial family->ordering))
        first
-       (product-family->service-type wig-customization?)))
+       hair-family->service-type))
 
 ;; TODO: consider unifying this with api.orders/mayvenn-install
 (defn mayvenn-install
@@ -54,9 +50,7 @@
                                           (filter line-items/any-wig?)
                                           count
                                           pos?))
-        service-type                (product-line-items->service-type
-                                     wig-customization?
-                                     (orders/product-items-for-shipment shipment))
+        service-type                (product-line-items->service-type (orders/product-items-for-shipment shipment))
         service-line-item           (first (orders/service-line-items order))
         sku-catalog                 (get-in app-state storefront.keypaths/v2-skus)
         wig-customization-service?  (= :wig-customization service-type)
