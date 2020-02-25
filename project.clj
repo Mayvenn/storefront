@@ -94,6 +94,7 @@
                                            :checkout      {:output-to  "target/release/js/out/checkout.js"
                                                            :entries    #{checkout.core}
                                                            :depends-on #{:catalog}}}
+                        :rename-prefix    "mvn_"
                         :closure-defines  {goog.DEBUG false}
                         :infer-externs    false
                         :static-fns       true
