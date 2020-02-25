@@ -94,7 +94,11 @@
                                            :checkout      {:output-to  "target/release/js/out/checkout.js"
                                                            :entries    #{checkout.core}
                                                            :depends-on #{:catalog}}}
-                        :rename-prefix    "mvn_"
+                        ;; rename-prefix: for a ~2% gzipped file size tax, prefixes all
+                        ;; storefront's minified vars with m_ to avoid naming conflicts
+                        ;; with minified code from google tag manager. Any
+                        ;; exported function still retains its described name
+                        :rename-prefix    "m_"
                         :closure-defines  {goog.DEBUG false}
                         :infer-externs    false
                         :static-fns       true
