@@ -727,7 +727,8 @@
                                                                                          (map mayvenn-install/hair-family->service-type (:hair/family %))))
                                                                               "Incompatible with cart"
                                                                               ;; TODO needs to have an error if they stylist doesn't have the service type on their menu
-                                                                              :else nil))))}
+                                                                              :else nil)))
+                                             (sort-by :add-on-service/ui-order))}
 
       entered?
       (merge {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
