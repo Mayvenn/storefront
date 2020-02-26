@@ -209,6 +209,7 @@
 (defpath control-cart-share-show)
 (defpath control-pick-stylist-button)
 (defpath control-browse-add-ons-button)
+(defpath control-add-ons-popup-done-button)
 (defpath control-change-stylist)
 (defpath share-stylist)
 
@@ -269,6 +270,7 @@
 (defpath api-success-v2-products-for-nav)
 (defpath api-success-v2-products-for-browse)
 (defpath api-success-v2-products-for-details)
+(defpath api-success-get-skus)
 
 (defpath api-success-facets)
 

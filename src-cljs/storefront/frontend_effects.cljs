@@ -698,7 +698,15 @@
           (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))
         (cookie-jar/save-order (get-in app-state keypaths/cookie) order)
         (add-pending-promo-code app-state order))
-      (messages/handle-message events/clear-order))))
+      (messages/handle-message events/clear-order))
+
+    (when (and (-> order orders/service-line-items not-empty)
+               (experiments/add-on-services? app-state)
+               (:servicing-stylist-id order))
+      (api/get-skus
+       (get-in app-state keypaths/api-cache)
+       {:catalog/department "service" :service/type "addon"}
+       #(messages/handle-message events/api-success-get-skus %)))))
 
 (defmethod effects/perform-effects events/clear-order [_ _ _ _ app-state]
   (cookie-jar/clear-order (get-in app-state keypaths/cookie)))

@@ -16,6 +16,7 @@
    [checkout.ui.cart-summary :as cart-summary]
    [clojure.string :as string]
    [spice.core :as spice]
+   [spice.selector :as spice.selector]
    [storefront.accessors.adjustments :as adjustments]
    [storefront.accessors.mayvenn-install :as mayvenn-install]
    [storefront.accessors.experiments :as experiments]
@@ -27,14 +28,18 @@
    [storefront.components.checkout-delivery :as checkout-delivery]
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
+   [storefront.components.header :as components.header]
    [storefront.components.money-formatters :as mf]
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
+   [storefront.effects :as effects]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
+   [storefront.platform.messages :as messages]
    [storefront.request-keys :as request-keys]
    [storefront.routes :as routes]
+   [storefront.transitions :as transitions]
    [ui.molecules :as ui-molecules]
    [ui.promo-banner :as promo-banner]))
 
@@ -711,7 +716,18 @@
              :quadpay/order-total       (when-not locked? (:total order))
              :quadpay/show?             (get-in data keypaths/loaded-quadpay)
              :quadpay/directive         (if locked? :no-total :just-select)
-             :mayvenn-install           mayvenn-install}
+             :mayvenn-install           mayvenn-install
+             :add-on-services/spinner   (get-in data request-keys/get-skus)
+             :add-on-services/services  (->> (get-in data keypaths/v2-skus)
+                                             vals
+                                             (spice.selector/match-all {} {:catalog/department "service" :service/type "addon"})
+                                             (map #(assoc %
+                                                          :disabled-message (cond
+                                                                              (not (some #{(:mayvenn-install/service-type mayvenn-install)}
+                                                                                         (map mayvenn-install/hair-family->service-type (:hair/family %))))
+                                                                              "Incompatible with cart"
+                                                                              ;; TODO needs to have an error if they stylist doesn't have the service type on their menu
+                                                                              :else nil))))}
 
       entered?
       (merge {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
@@ -742,44 +758,62 @@
            item-count
            empty-cart
            full-cart]} owner opts]
-  (if fetching-order?
+  (let [empty?    (and (zero? item-count)
+                       (not (:entered? full-cart)))
+        cart-data (if empty?
+                    empty-cart
+                    full-cart)]
+    [:div
+     [:div.border-bottom.border-gray.border-width-1
+      [:div.px2.my2 (ui-molecules/return-link cart-data)]]
+     [:div.col-7-on-dt.mx-auto
+      (component/build (if empty?
+                         empty-component
+                         full-component) cart-data opts)]]))
+
+(defn add-on-services-popup-template [{{:add-on-services/keys [spinner services] :as test} :full-cart}]
+  (if spinner
     [:div.py3.h2 ui/spinner]
-    (let [empty?    (and (zero? item-count)
-                         (not (:entered? full-cart)))
-          cart-data (if empty?
-                      empty-cart
-                      full-cart)]
-      [:div
-       [:div.border-bottom.border-gray.border-width-1
-        [:div.px2.my2 (ui-molecules/return-link cart-data)]]
-       [:div.col-7-on-dt.mx-auto
-        (component/build (if empty?
-                           empty-component
-                           full-component) cart-data opts)]])))
+    [:div.bg-white
+     (components.header/mobile-nav-header {:class "border-bottom border-gray" } nil
+                                          (component/html [:div.center.proxima.content-1 "Add-on Services"])
+                                          (component/html [:div (ui/button-medium-underline-secondary (utils/fake-href events/control-add-ons-popup-done-button) "DONE")]))
+     (mapv (fn [{service-name :sku/name sku-id :catalog/sku-id price :sku/price}]
+             [:div.p4.flex
+              {:key (str "add-on-service-" sku-id)}
+              [:div.mt1 (ui/check-box {})]
+              [:div.flex-grow-1.mr2
+               [:div.proxima.content-2 service-name]
+               [:div.proxima.content-3 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."]]
+              [:div
+               (mf/as-money price)]])
+           services)]))
 
 (defn query [data]
-  {:fetching-order? (utils/requesting? data request-keys/get-order)
-   :item-count      (orders/product-quantity (get-in data keypaths/order))
-   :empty-cart      (empty-cart-query data)
-   :full-cart       (full-cart-query data)})
+  {:fetching-order?          (utils/requesting? data request-keys/get-order)
+   :item-count               (orders/product-quantity (get-in data keypaths/order))
+   :empty-cart               (empty-cart-query data)
+   :full-cart                (full-cart-query data)})
 
 (defcomponent template
-  [{:keys [header footer popup promo-banner flash cart data nav-event]} _ _]
-  [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
-   #?(:cljs (popup/built-component popup nil))
+  [{:keys [header footer popup promo-banner flash cart data nav-event add-on-services-popup?] :as query-data} _ _]
+  (if add-on-services-popup?
+    (add-on-services-popup-template cart)
+    [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
+       #?(:cljs (popup/built-component popup nil))
 
-   (when promo-banner
-     (promo-banner/built-static-organism promo-banner nil))
+       (when promo-banner
+         (promo-banner/built-static-organism promo-banner nil))
 
-   (header/built-component header nil)
-   [:div.relative.flex.flex-column.flex-auto
-    (flash/built-component flash nil)
+       (header/built-component header nil)
+       [:div.relative.flex.flex-column.flex-auto
+        (flash/built-component flash nil)
 
-    [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-     (component/build cart-component cart nil)]
+        [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+         (component/build cart-component cart nil)]
 
-    [:footer
-     (storefront.footer/built-component footer nil)]]])
+        [:footer
+         (storefront.footer/built-component footer nil)]]]))
 
 (defn page
   [app-state nav-event]
@@ -788,10 +822,17 @@
                     (when (and (zero? (orders/product-quantity (get-in app-state keypaths/order)))
                                (-> app-state mayvenn-install/mayvenn-install :mayvenn-install/entered? not))
                       {:promo-banner app-state})
-                    {:cart      (query app-state)
-                     :header    app-state
-                     :footer    app-state
-                     :popup     app-state
-                     :flash     app-state
-                     :data      app-state
-                     :nav-event nav-event})))
+                    {:cart                     (query app-state)
+                     :header                   app-state
+                     :footer                   app-state
+                     :popup                    app-state
+                     :flash                    app-state
+                     :data                     app-state
+                     :nav-event                nav-event
+                     :add-on-services-popup?   (get-in app-state keypaths/add-ons-popup-displayed?)})))
+
+(defmethod transitions/transition-state events/control-browse-add-ons-button [_ event args app-state]
+  (assoc-in app-state keypaths/add-ons-popup-displayed? true))
+
+(defmethod transitions/transition-state events/control-add-ons-popup-done-button [_ event args app-state]
+  (assoc-in app-state keypaths/add-ons-popup-displayed? false))
