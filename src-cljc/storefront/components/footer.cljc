@@ -17,8 +17,7 @@
   (apply str "tel://+" (numbers/digits-only tel-num)))
 
 (defn ^:private category->link
-  [icp-menu?
-   {:keys        [page/slug] :as category
+  [{:keys        [page/slug] :as category
     product-id   :direct-to-details/id
     product-slug :direct-to-details/slug
     sku-id       :direct-to-details/sku-id}]
@@ -30,9 +29,7 @@
                                                           {:query-params {:SKU sku-id}}))]
                       [events/navigate-category category])
         slug        (or product-slug slug)]
-    {:title       (if icp-menu?
-                    (:icp-menu-experiment-footer/title category)
-                    (:footer/title category))
+    {:title       (:footer/title category)
      :id          slug
      :new-link?   (categories/new-category? slug)
      :nav-message nav-message}))
@@ -136,16 +133,7 @@
   [data]
   (let [shop?     (= (get-in data keypaths/store-slug) "shop")
         classic?  (= "mayvenn-classic" (get-in data keypaths/store-experience))
-        icp-menu? (experiments/icp-menu? data)
-        sort-key  (cond
-                    icp-menu?
-                    :icp-menu-experiment-footer/order
-
-                    shop?
-                    :dtc-footer/order
-
-                    :else
-                    :footer/order)
+        sort-key  :footer/order
         sorted-categories (->> (get-in data keypaths/categories)
                                (into []
                                      (comp (filter sort-key)
@@ -157,30 +145,28 @@
                                :id          "freeinstall"
                                :new-link?   false
                                :nav-message [events/navigate-adventure-match-stylist]})
-                            (when icp-menu?
-                              {:title       "Shop By Look"
-                               :id          "shop-by-look"
-                               :new-link?   false
-                               :nav-message [events/navigate-shop-by-look {:album-keyword :look}]})
-                            (when (and icp-menu? classic?)
+                            {:title       "Shop By Look"
+                             :id          "shop-by-look"
+                             :new-link?   false
+                             :nav-message [events/navigate-shop-by-look {:album-keyword :look}]}
+                            (when classic?
                               {:title       "Deals"
                                :id          "shop-deals"
                                :new-link?   false
                                :nav-message [events/navigate-shop-by-look {:album-keyword :deals}]})
-                            (when (and icp-menu? (not classic?))
+                            (when (not classic?)
                               {:title       "Shop Bundle Sets"
                                :id          "shop-bundle-sets"
                                :new-link?   false
                                :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]})]
         links              (->> sorted-categories
-                                (mapv (partial category->link icp-menu?))
+                                (mapv (partial category->link))
                                 (concat non-category-links)
                                 (remove nil?))]
     {:contacts     (contacts-query data)
      :link-columns (split-evenly links)
      :essence-copy (str "Included is a one year subscription to ESSENCE Magazine - a $10 value! "
-                        "Offer and refund details will be included with your confirmation.")
-     :icp-menu?    icp-menu?}))
+                        "Offer and refund details will be included with your confirmation.")}))
 
 (defn built-component
   [data opts]

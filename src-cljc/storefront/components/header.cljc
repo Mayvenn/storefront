@@ -357,31 +357,16 @@
    :new?        new?})
 
 (defn shop-a-la-carte-flyout-query [data]
-  {:shop-a-la-carte-menu/columns   (if (experiments/icp-menu? data)
-                                     ;; NOTE: If we go with the icp-menu long-term, then we can remove :header/order and :header/group from each category categories.cljc
-                                     (->>  (get-in data keypaths/categories)
-                                           (filter :flyout-menu/order)
-                                           (filter (fn [category]
-                                                     (or (auth/stylist? (auth/signed-in data))
-                                                         (not (-> category
-                                                                  :catalog/department
-                                                                  (contains? "stylist-exclusives"))))))
-                                           (sort-by :flyout-menu/order)
-                                           (map category->icp-flyout-option)
-                                           (vector nil))
-                                     (->>  (get-in data keypaths/categories)
-                                           (filter :header/order)
-                                           (filter (fn [category]
-                                                     (or (auth/stylist? (auth/signed-in data))
-                                                         (not (-> category
-                                                                  :catalog/department
-                                                                  (contains? "stylist-exclusives"))))))
-                                           (sort-by :header/group)
-                                           (group-by :header/group)
-                                           vals
-                                           (map (partial sort-by :header/order))
-                                           (map (partial map category->flyout-option))
-                                           (mapcat (partial partition-all 11))))
+  {:shop-a-la-carte-menu/columns   (->>  (get-in data keypaths/categories)
+                                         (filter :flyout-menu/order)
+                                         (filter (fn [category]
+                                                   (or (auth/stylist? (auth/signed-in data))
+                                                       (not (-> category
+                                                                :catalog/department
+                                                                (contains? "stylist-exclusives"))))))
+                                         (sort-by :flyout-menu/order)
+                                         (map category->icp-flyout-option)
+                                         (vector nil))
    :shop-a-la-carte-menu/expanded? (get-in data keypaths/shop-a-la-carte-menu-expanded)})
 
 (defn shop-looks-query [data]

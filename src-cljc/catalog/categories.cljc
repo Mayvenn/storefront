@@ -66,32 +66,27 @@
          "hair for unbeatable quality. Shop to achieve your desired look!")})
 
 (def closures
-  [(merge {:catalog/category-id        "0"
-           :copy/title                 "Hair Closures"
-           :page/slug                  "virgin-closures"
-           :seo/title                  "Hair Closures"
-           :seo/filter-title           "Virgin Hair Closures"
-           :legacy/named-search-slug   "closures"
-           :catalog/department         #{"hair"}
-           :hair/family                #{"closures"}
-           :hair/color.process         #{"natural" "dyed"}
-           :hair/source                #{"virgin"}
-           :category/tags              #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
-           :selector/essentials        [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives         [:hair/origin :hair/texture :hair/color :hair/base-material]
-           :header/order               0
-           :header/group               1
-           :header/title               "Virgin Hair Closures"
-           :flyout-menu/title          "Closures"
-           :flyout-menu/order          1
-           :footer/order               10
-           :icp-menu-experiment-footer/order 1
-           :icp-menu-experiment-footer/title "Closures"
-           ;; :dtc-footer/order         10
-           :copy/description           (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                             "Our collection of closures blend seamlessly with our bundles"
-                                             "and can be customized to fit your unique look.")
-           :footer/title               "Virgin Closures"}
+  [(merge {:catalog/category-id      "0"
+           :copy/title               "Hair Closures"
+           :page/slug                "virgin-closures"
+           :seo/title                "Hair Closures"
+           :seo/filter-title         "Virgin Hair Closures"
+           :legacy/named-search-slug "closures"
+           :catalog/department       #{"hair"}
+           :hair/family              #{"closures"}
+           :hair/color.process       #{"natural" "dyed"}
+           :hair/source              #{"virgin"}
+           :category/tags            #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
+           :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
+           :selector/electives       [:hair/origin :hair/texture :hair/color :hair/base-material]
+           :header/title             "Virgin Hair Closures"
+           :flyout-menu/title        "Closures"
+           :flyout-menu/order        1
+           :footer/order             1
+           :footer/title             "Closures"
+           :copy/description         (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                           "Our collection of closures blend seamlessly with our bundles"
+                                           "and can be customized to fit your unique look.")}
           (category->seo "Closures"
                          (copy "Mayvenn’s hair closures allow you to close off"
                                "any unit or install and come in a variety of different"
@@ -115,11 +110,6 @@
            :selector/electives  [:hair/origin :hair/texture :hair/color :hair/base-material]
 
            :copy/description "Mayvenn’s hair 360 frontals got you covered and come in different variations such as Brazilian, Malaysian, straight, and deep wave."
-           :footer/order     11
-           :dtc-footer/order 5
-           :footer/title     "Virgin 360 Frontals"
-           :header/order     1
-           :header/group     1
            :header/title     "Virgin 360 Frontals"}
           (category->seo "360 Frontals"
                          (copy "Mayvenn’s virgin hair 360 frontals got you covered and come in"
@@ -145,11 +135,8 @@
            :hair/color.process            #{"natural" "dyed"}
            :flyout-menu/title             "Frontals"
            :flyout-menu/order             2
-           :icp-menu-experiment-footer/order    2
-           :icp-menu-experiment-footer/title    "Frontals"
-           ;; :footer/order        12
-           ;; :dtc-footer/order    6
-           ;; :footer/title        "Virgin Frontals"
+           :footer/order                  2
+           :footer/title                  "Frontals"
            :hair/source                   #{"virgin"}
            :category/tags                 #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :selector/essentials           [:catalog/department :hair/family :hair/color.process :hair/source]
@@ -177,12 +164,7 @@
            :catalog/department       #{"hair"}
            :hair/family              #{"frontals"}
            :hair/color.process       #{"natural" "dyed"}
-           :header/order             2
-           :header/group             1
            :header/title             "Virgin Frontals"
-           :footer/order             12
-           :dtc-footer/order         6
-           :footer/title             "Virgin Frontals"
            :hair/source              #{"virgin"}
            :menu/title               "Virgin Frontals"
            :category/tags            #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
@@ -226,11 +208,6 @@
            :icon                "/images/categories/straight-icon.svg"
            :subcategory/title   "Straight"
            :home/order          0
-           :footer/order        0
-           :dtc-footer/order    0
-           :footer/title        "Virgin Straight"
-           :header/order        0
-           :header/group        0
            :header/title        "Virgin Straight"}
           (category->seo "Natural Straight Extensions"
                          (copy "Straight Brazilian weave, straight Indian hair and straight Peruvian hair."
@@ -263,10 +240,6 @@
            :icon                "/images/categories/yaki-straight-icon.svg"
            :subcategory/title   "Yaki Straight"
            :home/order          4
-           :footer/order        1
-           :footer/title        "Virgin Yaki Straight"
-           :header/order        1
-           :header/group        0
            :header/title        "Virgin Yaki Straight"}
           (category->seo "Yaki Straight Extensions"
                          (copy "Our Yaki Straight hair collection features both Peruvian and Brazilian straight hair bundles."
@@ -292,10 +265,6 @@
                                            "locks.")
            :icon                     "/images/categories/kinky-straight-icon.svg"
            :subcategory/title        "Kinky Straight"
-           :footer/order             2
-           :footer/title             "Virgin Kinky Straight"
-           :header/order             2
-           :header/group             0
            :header/title             "Virgin Kinky Straight"}
           (category->seo "Kinky Straight Extensions"
                          (copy "100% human hair bundles and extensions from Mayvenn."
@@ -322,11 +291,6 @@
            :icon                     "/images/categories/body-wave-icon.svg"
            :subcategory/title        "Body Wave"
            :home/order               1
-           :footer/order             3
-           :dtc-footer/order         1
-           :footer/title             "Virgin Body Wave"
-           :header/order             3
-           :header/group             0
            :header/title             "Virgin Body Wave"}
           (category->seo "Body Wave Extensions"
                          (copy "Malaysian and Peruvian body wave silk, lace and 360 frontal bundles."
@@ -355,11 +319,6 @@
            :icon                     "/images/categories/loose-wave-icon.svg"
            :subcategory/title        "Loose Wave"
            :home/order               2
-           :footer/order             4
-           :dtc-footer/order         2
-           :footer/title             "Virgin Loose Wave"
-           :header/order             4
-           :header/group             0
            :header/title             "Virgin Loose Wave"}
           (category->seo "Loose Wave Extensions"
                          (copy "Mayvenn’s Brazilian, Peruvian and Indian loose wave bundles."
@@ -385,10 +344,6 @@
                                            "statement with Water Wave hair.")
            :icon                     "/images/categories/water-wave-icon.svg"
            :subcategory/title        "Water Wave"
-           :footer/order             5
-           :footer/title             "Virgin Water Wave"
-           :header/order             5
-           :header/group             0
            :header/title             "Virgin Water Wave"}
           (category->seo "Water Wave Extensions"
                          (copy "Water Wave Bundles, Closures, and Frontals."
@@ -417,11 +372,6 @@
            :icon                     "/images/categories/deep-wave-icon.svg"
            :subcategory/title        "Deep Wave"
            :home/order               3
-           :footer/order             6
-           :dtc-footer/order         3
-           :footer/title             "Virgin Deep Wave"
-           :header/order             6
-           :header/group             0
            :header/title             "Virgin Deep Wave"}
           (category->seo "Deep Wave Extensions"
                          (copy "Deep Wave bundles and closures, including Brazilian, Peruvian and Indian Deep Wave."
@@ -444,10 +394,6 @@
                                            "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")
            :icon                     "/images/categories/curly-icon.svg"
            :subcategory/title        "Curly"
-           :footer/order             7
-           :footer/title             "Virgin Curly"
-           :header/order             7
-           :header/group             0
            :header/title             "Virgin Curly"}
           (category->seo "Curly Extensions"
                          (copy "Shop our Brazilian curly bundle, Peruvian Curly Bundle,"
@@ -457,17 +403,12 @@
           texture-templates)])
 
 (def wigs
-  [(merge {:catalog/category-id        "13"
-           :footer/order               20
-           :icp-menu-experiment-footer/order 3
-           :icp-menu-experiment-footer/title "Wigs"
-           :dtc-footer/order           7
-           :footer/title               "Wigs"
-           :header/order               0
-           :header/group               2
-           :flyout-menu/order          3
-           :flyout-menu/title          "Wigs"
-           :header/title               "Wigs"
+  [(merge {:catalog/category-id "13"
+           :footer/order        3
+           :footer/title        "Wigs"
+           :flyout-menu/order   3
+           :flyout-menu/title   "Wigs"
+           :header/title        "Wigs"
 
            :page/icp?            true
            :category/new?        true
@@ -479,53 +420,53 @@
            :seo/title            "Wigs"
 
            ;; TODO: GROT once old category page is retired
-           :copy/description               (copy "These units will be your go-to protective style"
-                                                 "for achieving a brand new look."
-                                                 "With options ranging from 360 to Ready to Wear,"
-                                                 "there’s a wig available for each of your alter egos.")
-           :catalog/department             #{"hair"}
-           :hair/family                    #{"360-wigs" "lace-front-wigs" "ready-wigs"}
-           :selector/essentials            [:hair/family :catalog/department]
-           :selector/electives             [:hair/family :hair/texture :hair/origin]
-           :page/title                     "Human Hair Wigs: Natural Hair Lace Wigs | Mayvenn"
-           :page.meta/description          (copy "Mayvenn’s virgin human hair wigs allow you to achieve a new look in minutes"
-                                                 "& come in different variations such as Brazilian, Malaysian, straight,"
-                                                 "& deep wave.")
-           :opengraph/title                (copy "Mayvenn 360 and Lace Frontal Wigs - Free shipping."
-                                                 "Free 30 day returns. Made with 100% virgin human hair.")
-           :opengraph/description          (copy "100% virgin human hair, machine-wefted and backed by our"
-                                                 "30 Day Quality Guarantee, our Wigs can be customized to fit"
-                                                 "your unique look using the built-in combs and adjustable strap.")
-           :product-list/title             "Shop All Wigs"
-           :subcategories/ids              ["24" "26" "25"]
-           :subcategories/layout           :list
-           :subsections/category-selector  :hair/family
-           :subsections                    {"lace-front-wigs" {:order         0
-                                                               :title/primary "Lace Front Wigs"}
-                                            "360-wigs"        {:order         1
-                                                               :title/primary "360 Wigs"}
-                                            "ready-wigs"      {:order         2
-                                                               :title/primary "Ready to Wear Wigs"}}
-           :content-block/type             :about-attributes ;; incase we have different templates in the future
-           :content-block/title            "Wigs 101:"
-           :content-block/header           "How to Choose"
-           :content-block/summary          (str "There are a few main factors to consider "
-                                                "when you’re choosing a wig. When you have a "
-                                                "good sense of the look you want to achieve, your "
-                                                "lifestyle and your budget, the rest will fall "
-                                                "into place. Ask yourself the density, lace color, "
-                                                "length of hair you want, and if you prefer virgin "
-                                                "hair or dyed hair.")
-           :content-block/sections         [{:title "Cap Size"
-                                             :body  "Cap size ranges between 20-21 inches. If for any reason your wig doesn’t fit, reach out to Customer Service for details to return or exchange your product."}
-                                            {:title "Density"
-                                             :body  "The fullest density clocks in at 200% - other measures are 180, 150 and 130. If the style you’re planning needs a lot of thickness, you should choose a higher density like 180 or 200. If you only need a little, consider 130 or 150."}
-                                            {:title "Lace Color"
-                                             :body  "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}
-                                            {:title "Length"
-                                             :body  "Short and sassy or drama down to your ankles? The choice is yours! Available in lengths ranging from 10” to 24”."}
-                                            {:title "Virgin & Dyed"
-                                             :body  "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]}
+           :copy/description              (copy "These units will be your go-to protective style"
+                                                "for achieving a brand new look."
+                                                "With options ranging from 360 to Ready to Wear,"
+                                                "there’s a wig available for each of your alter egos.")
+           :catalog/department            #{"hair"}
+           :hair/family                   #{"360-wigs" "lace-front-wigs" "ready-wigs"}
+           :selector/essentials           [:hair/family :catalog/department]
+           :selector/electives            [:hair/family :hair/texture :hair/origin]
+           :page/title                    "Human Hair Wigs: Natural Hair Lace Wigs | Mayvenn"
+           :page.meta/description         (copy "Mayvenn’s virgin human hair wigs allow you to achieve a new look in minutes"
+                                                "& come in different variations such as Brazilian, Malaysian, straight,"
+                                                "& deep wave.")
+           :opengraph/title               (copy "Mayvenn 360 and Lace Frontal Wigs - Free shipping."
+                                                "Free 30 day returns. Made with 100% virgin human hair.")
+           :opengraph/description         (copy "100% virgin human hair, machine-wefted and backed by our"
+                                                "30 Day Quality Guarantee, our Wigs can be customized to fit"
+                                                "your unique look using the built-in combs and adjustable strap.")
+           :product-list/title            "Shop All Wigs"
+           :subcategories/ids             ["24" "26" "25"]
+           :subcategories/layout          :list
+           :subsections/category-selector :hair/family
+           :subsections                   {"lace-front-wigs" {:order         0
+                                                              :title/primary "Lace Front Wigs"}
+                                           "360-wigs"        {:order         1
+                                                              :title/primary "360 Wigs"}
+                                           "ready-wigs"      {:order         2
+                                                              :title/primary "Ready to Wear Wigs"}}
+           :content-block/type            :about-attributes ;; incase we have different templates in the future
+           :content-block/title           "Wigs 101:"
+           :content-block/header          "How to Choose"
+           :content-block/summary         (str "There are a few main factors to consider "
+                                               "when you’re choosing a wig. When you have a "
+                                               "good sense of the look you want to achieve, your "
+                                               "lifestyle and your budget, the rest will fall "
+                                               "into place. Ask yourself the density, lace color, "
+                                               "length of hair you want, and if you prefer virgin "
+                                               "hair or dyed hair.")
+           :content-block/sections        [{:title "Cap Size"
+                                            :body  "Cap size ranges between 20-21 inches. If for any reason your wig doesn’t fit, reach out to Customer Service for details to return or exchange your product."}
+                                           {:title "Density"
+                                            :body  "The fullest density clocks in at 200% - other measures are 180, 150 and 130. If the style you’re planning needs a lot of thickness, you should choose a higher density like 180 or 200. If you only need a little, consider 130 or 150."}
+                                           {:title "Lace Color"
+                                            :body  "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}
+                                           {:title "Length"
+                                            :body  "Short and sassy or drama down to your ankles? The choice is yours! Available in lengths ranging from 10” to 24”."}
+                                           {:title "Virgin & Dyed"
+                                            :body  "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]}
           wig-templates)
    (merge {:catalog/category-id "24"
            :category/new?       true
@@ -643,95 +584,91 @@
                                                        :order         8}}}])
 
 (def human-hair-bundles
-  [(merge {:catalog/category-id              "27"
-           :catalog/department               #{"hair"}
-           :category/show-title?             true
-           :category/new?                    false
-           :flyout-menu/title                "Hair Bundles"
-           :flyout-menu/order                0
-           :icp-menu-experiment-footer/order 0
-           :icp-menu-experiment-footer/title "Hair Bundles"
-           :category/description             (copy "Our collection of 100% Virgin hair is a must-have for when you want more volume, length and texture."
-                                                   "Switch up your look with these high-quality bundles. Buy three and the install is free.")
-           :category/image-url               "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
-           :copy/description                 "For those whom want it given to them straight, our collection of 100% virgin straight hair is your go-to for a sleek look with minimal effort."
-           :copy/title                       "Hair Bundles"
-           :hair/family                      #{"bundles"}
-           :page/icp?                        true
-           :page/slug                        "human-hair-bundles"
-           :page/title                       "Hair Bundles: Sew-In Hair Bundles | Mayvenn"
-           :page.meta/description            (copy "Mayvenn’s real human hair bundles come in different variations such as"
-                                                   "Brazilian, Malaysian, straight, deep wave, and loose wave. Create your look today.")
-           :product-list/title               "Shop All Bundles"
-           :opengraph/description            (copy "100% virgin human hair, machine-wefted and backed by our 30 Day Quality Guarantee,"
-                                                   "our natural human hair bundles are the best quality products on the market and ship free!")
-           :opengraph/title                  "Natural Human Hair Bundles - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
-           :selector/electives               [:hair/texture :hair/origin :hair/color]
-           :selector/essentials              [:catalog/department :hair/family]
-           :subcategories/layout             :grid
-           :subcategories/ids                ["2" "3" "4" "5" "6" "7" "8" "9"]
-           :subcategories/title              "Textures"
-           :subsections/category-selector    :hair/texture
-           :subsections                      {"straight"       {:order         0
-                                                                :title/primary "Straight"}
-                                              "yaki-straight"  {:order         1
-                                                                :title/primary "Yaki Straight"}
-                                              "kinky-straight" {:order         2
-                                                                :title/primary "Kinky Straight"}
-                                              "body-wave"      {:order         3
-                                                                :title/primary "Body Wave"}
-                                              "loose-wave"     {:order         4
-                                                                :title/primary "Loose Wave"}
-                                              "water-wave"     {:order         5
-                                                                :title/primary "Water Wave"}
-                                              "deep-wave"      {:order         6
-                                                                :title/primary "Deep Wave"}
-                                              "curly"          {:order         7
-                                                                :title/primary "Curly"}}
-           :seo/sitemap                      true
-           :seo/title                        "Virgin Hair Bundles"
-           :content-block/type               :about-attributes ;; incase we have different templates in the future
-           :content-block/title              "Hair Bundles 101:"
-           :content-block/header             "How to Style"
-           :content-block/summary            "With high quality bundles, the amount of hairstyles you can create are endless. Browse our selection of hair weaves here at Mayvenn. We feature virgin hair bundles that come in a variety of textures, such as curly, yaki straight, deep wave, and more."
-           :content-block/sections           [{:title "Our Hair"
-                                               :body  "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}
-                                              {:title "How to Choose Bundles"
-                                               :body  "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}
-                                              {:title "What to Know About Your Install"
-                                               :body  "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}
-                                              {:title "Free Install"
-                                               :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]}
+  [(merge {:catalog/category-id           "27"
+           :catalog/department            #{"hair"}
+           :category/show-title?          true
+           :category/new?                 false
+           :flyout-menu/title             "Hair Bundles"
+           :flyout-menu/order             0
+           :footer/order                  0
+           :footer/title                  "Hair Bundles"
+           :category/description          (copy "Our collection of 100% Virgin hair is a must-have for when you want more volume, length and texture."
+                                                "Switch up your look with these high-quality bundles. Buy three and the install is free.")
+           :category/image-url            "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
+           :copy/description              "For those whom want it given to them straight, our collection of 100% virgin straight hair is your go-to for a sleek look with minimal effort."
+           :copy/title                    "Hair Bundles"
+           :hair/family                   #{"bundles"}
+           :page/icp?                     true
+           :page/slug                     "human-hair-bundles"
+           :page/title                    "Hair Bundles: Sew-In Hair Bundles | Mayvenn"
+           :page.meta/description         (copy "Mayvenn’s real human hair bundles come in different variations such as"
+                                                "Brazilian, Malaysian, straight, deep wave, and loose wave. Create your look today.")
+           :product-list/title            "Shop All Bundles"
+           :opengraph/description         (copy "100% virgin human hair, machine-wefted and backed by our 30 Day Quality Guarantee,"
+                                                "our natural human hair bundles are the best quality products on the market and ship free!")
+           :opengraph/title               "Natural Human Hair Bundles - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
+           :selector/electives            [:hair/texture :hair/origin :hair/color]
+           :selector/essentials           [:catalog/department :hair/family]
+           :subcategories/layout          :grid
+           :subcategories/ids             ["2" "3" "4" "5" "6" "7" "8" "9"]
+           :subcategories/title           "Textures"
+           :subsections/category-selector :hair/texture
+           :subsections                   {"straight"       {:order         0
+                                                             :title/primary "Straight"}
+                                           "yaki-straight"  {:order         1
+                                                             :title/primary "Yaki Straight"}
+                                           "kinky-straight" {:order         2
+                                                             :title/primary "Kinky Straight"}
+                                           "body-wave"      {:order         3
+                                                             :title/primary "Body Wave"}
+                                           "loose-wave"     {:order         4
+                                                             :title/primary "Loose Wave"}
+                                           "water-wave"     {:order         5
+                                                             :title/primary "Water Wave"}
+                                           "deep-wave"      {:order         6
+                                                             :title/primary "Deep Wave"}
+                                           "curly"          {:order         7
+                                                             :title/primary "Curly"}}
+           :seo/sitemap                   true
+           :seo/title                     "Virgin Hair Bundles"
+           :content-block/type            :about-attributes ;; incase we have different templates in the future
+           :content-block/title           "Hair Bundles 101:"
+           :content-block/header          "How to Style"
+           :content-block/summary         "With high quality bundles, the amount of hairstyles you can create are endless. Browse our selection of hair weaves here at Mayvenn. We feature virgin hair bundles that come in a variety of textures, such as curly, yaki straight, deep wave, and more."
+           :content-block/sections        [{:title "Our Hair"
+                                            :body  "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}
+                                           {:title "How to Choose Bundles"
+                                            :body  "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}
+                                           {:title "What to Know About Your Install"
+                                            :body  "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}
+                                           {:title "Free Install"
+                                            :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]}
           bundle-templates)])
 
 (def the-only-stylist-exclusive
-  {:catalog/category-id        "14"
-   :auth/requires              #{:stylist}
-   :footer/order               30
-   :footer/title               "Stylist Exclusives"
-   :icp-menu-experiment-footer/order 5
-   :icp-menu-experiment-footer/title "Stylist Exclusives"
-   :header/order               30
-   :header/group               2
-   :header/title               "Stylist Exclusives"
-   :flyout-menu/title          "Stylist Exclusives"
-   :flyout-menu/order          5
-   :copy/title                 "Stylist Exclusives"
-   :page/slug                  "stylist-exclusives"
-   :direct-to-details/id       "49"
-   :direct-to-details/slug     "rings-kits"
-   :direct-to-details/sku-id   "SK3"
-   :catalog/department         #{"stylist-exclusives"},
-   :kits/contents              #{"rings"},
-   :stylist-exclusives/family  #{"kits"}
-   :selector/electives         []
-   :selector/essentials        [:catalog/department :kits/contents :stylist-exclusives/family]
-   :page/title                 "Stylist"
-   :opengraph/title            (copy "Stylist Exclusives - Free shipping."
-                                     "Free 30 day returns. Made with 100% virgin human hair.")
-   :page.meta/description      (copy "")
-   :opengraph/description      (copy "")
-   :seo/sitemap                false})
+  {:catalog/category-id       "14"
+   :auth/requires             #{:stylist}
+   :footer/order              5
+   :footer/title              "Stylist Exclusives"
+   :header/title              "Stylist Exclusives"
+   :flyout-menu/title         "Stylist Exclusives"
+   :flyout-menu/order         5
+   :copy/title                "Stylist Exclusives"
+   :page/slug                 "stylist-exclusives"
+   :direct-to-details/id      "49"
+   :direct-to-details/slug    "rings-kits"
+   :direct-to-details/sku-id  "SK3"
+   :catalog/department        #{"stylist-exclusives"},
+   :kits/contents             #{"rings"},
+   :stylist-exclusives/family #{"kits"}
+   :selector/electives        []
+   :selector/essentials       [:catalog/department :kits/contents :stylist-exclusives/family]
+   :page/title                "Stylist"
+   :opengraph/title           (copy "Stylist Exclusives - Free shipping."
+                                    "Free 30 day returns. Made with 100% virgin human hair.")
+   :page.meta/description     (copy "")
+   :opengraph/description     (copy "")
+   :seo/sitemap               false})
 
 (def stylist-exclusives
   [the-only-stylist-exclusive])
@@ -804,13 +741,8 @@
      :opengraph/title       "Mayvenn Clip-In Hair Extensions - Free shipping. Free 30 day returns. Made with 100% human hair extensions."
      :opengraph/description "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in extensions are the best quality products on the market and ships free!"
 
-     :footer/order     40
-     :dtc-footer/order 11
-     :footer/title     "Seamless Clip Ins"
-     :header/group     2
-     :header/order     4
-     :header/title     "Seamless Clip Ins"
-     :seo/sitemap      true}
+     :header/title "Seamless Clip Ins"
+     :seo/sitemap  true}
     clip-in-tape-in-templates)])
 
 (def the-only-tape-in-category
@@ -832,14 +764,9 @@
           :direct-to-details/slug   "50g-straight-tape-ins"
           :direct-to-details/sku-id "TAPE-S-1-20"
 
-          :footer/order     50
-          :dtc-footer/order 12
-          :footer/title     "Tape Ins"
-          :header/group     2
-          :header/order     5
-          :header/title     "Tape Ins"
-          :page/redirect?   true
-          :seo/sitemap      false}
+          :header/title   "Tape Ins"
+          :page/redirect? true
+          :seo/sitemap    false}
          clip-in-tape-in-templates))
 
 (def tape-ins-category
@@ -860,8 +787,8 @@
      :flyout-menu/title "Hair Extensions"
      :flyout-menu/order 4
 
-     :icp-menu-experiment-footer/order 4
-     :icp-menu-experiment-footer/title "Hair Extensions"
+     :footer/order 4
+     :footer/title "Hair Extensions"
 
      :copy/title         "Hair Extensions"
      :product-list/title "Shop All Hair Extensions"
