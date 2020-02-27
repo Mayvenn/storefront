@@ -494,58 +494,342 @@
    :status 200})
 
 (def facets-body
-  {:facets [{:facet/slug   "hair/origin",
-             :facet/name   "Origin",
-             :filter/order 3,
-             :facet/options
-             [{:option/slug  "brazilian",
-               :option/name  "Brazilian hair",
-               :sku/name     "Brazilian",
-               :filter/order 0}
-              {:option/slug  "indian",
-               :option/name  "Indian hair",
-               :sku/name     "Indian",
-               :filter/order 3}]}
-            {:facet/slug   "hair/base-material",
-             :facet/name   "Material",
-             :filter/order 5,
-             :facet/options
-             [{:option/slug  "lace",
-               :option/name  "Lace",
-               :filter/order 0}]}
-            {:facet/slug   "hair/texture",
-             :facet/name   "Texture",
-             :filter/order 4,
-             :facet/options
-             [{:option/slug    "loose-wave",
-               :option/name    "Loose Wave",
-               :adventure/name "Loose Wave",
-               :filter/order   4}]}
-            {:facet/slug "hair/family",
-             :facet/name "Category",
-             :filter/order 2,
-             :facet/options
-             [{:option/slug "360-wigs",
-               :option/name "360 Wigs",
-               :sku/name "360 Wig",
-               :filter/order 7}
-              {:option/slug    "bundles"
-               :option/name    "Bundles"
-               :sku/name       "Bundle"
-               :adventure/name "Leave Out"
-               :filter/order   1}]}
-            {:facet/slug   "hair/color",
-             :facet/name   "Color",
-             :filter/order 6,
-             :facet/options
-             [{:option/slug             "#2-chocolate-brown",
-               :option/name             "#2 Chocolate Brown",
-               :adventure/name          "#2 Chocolate Brown",
-               :sku/name                "#2 Chocolate Brown",
-               :option/image            "chocolate-brown.jpg",
-               :option/circle-swatch    "chocolate-brown-circle.jpg",
-               :option/rectangle-swatch "chocolate-brown-rectangle.jpg",
-               :filter/order            4}]}]})
+  "This has been copied from cellar"
+  {:facets [{:facet/slug    :catalog/department
+             :facet/name    "Department"
+             :filter/order  0
+             :facet/options [{:option/slug  "stylist-exclusives"
+                              :option/name  "Stylist Exclusives"
+                              :filter/order 0}
+                             {:option/slug  "hair"
+                              :option/name  "Hair"
+                              :filter/order 1}]}
+            {:facet/slug    :stylist-exclusives/family
+             :facet/name    "Category"
+             :filter/order  2
+             :facet/options [{:option/slug  "kits"
+                              :option/name  "Kits"
+                              :filter/order 0}]}
+            {:facet/slug    :hair/grade
+             :facet/name    "Grade"
+             :filter/order  1
+             :facet/options [{:option/slug  "6a"
+                              :option/name  "6a Premier collection"
+                              :filter/order 0}
+                             {:option/slug  "7a"
+                              :option/name  "7a Deluxe collection"
+                              :filter/order 1}
+                             {:option/slug  "8a"
+                              :option/name  "8a Ultra collection"
+                              :filter/order 2}]}
+            {:facet/slug    :hair/family
+             :facet/name    "Category"
+             :filter/order  2
+             :facet/options [{:option/slug    "bundles"
+                              :option/name    "Bundles"
+                              :sku/name       "Bundle"
+                              :adventure/name "Leave Out"
+                              :filter/order   1}
+                             {:option/slug    "closures"
+                              :option/name    "Closures"
+                              :adventure/name "Closure"
+                              :sku/name       "Closure"
+                              :filter/order   2}
+                             {:option/slug    "frontals"
+                              :option/name    "Frontals"
+                              :adventure/name "Frontal"
+                              :sku/name       "Frontal"
+                              :filter/order   3}
+                             {:option/slug    "360-frontals"
+                              :option/name    "360 frontals"
+                              :adventure/name "360°"
+                              :sku/name       "360 Frontal"
+                              :filter/order   4}
+                             {:option/slug  "lace-front-wigs"
+                              :option/name  "Lace Front Wigs"
+                              :sku/name     "Front Wig"
+                              :filter/order 5}
+                             {:option/slug  "360-wigs"
+                              :option/name  "360 Wigs"
+                              :sku/name     "360 Wig"
+                              :filter/order 6}
+                             {:option/slug  "ready-wigs"
+                              :option/name  "Ready-to-Wear Wigs"
+                              :sku/name     "Ready-to-Wear Wig"
+                              :filter/order 7}
+                             {:option/slug  "seamless-clip-ins"
+                              :option/name  "Seamless Clip-Ins"
+                              :sku/name     "Seamless Clip-In"
+                              :filter/order 8}
+                             {:option/slug  "tape-ins"
+                              :option/name  "Tape-Ins"
+                              :sku/name     "Tape-In"
+                              :filter/order 9}
+                             ]}
+            {:facet/slug    :hair/color
+             :facet/name    "Color"
+             :filter/order  6
+             :facet/options [{:option/slug             "black"
+                              :option/name             "Natural Black"
+                              :adventure/name          "Natural Black"
+                              :sku/name                "Natural Black"
+                              :option/image            "//ucarecdn.com/c172523d-b231-49da-a9c1-51ec8a8e802a/-/format/auto/black_v1.png"
+                              :option/circle-swatch    "//ucarecdn.com/c172523d-b231-49da-a9c1-51ec8a8e802a/-/format/auto/black_v1.png"
+                              :option/rectangle-swatch "//ucarecdn.com/cf2e6d44-4e93-4792-801b-1e2aacdac408/-/format/auto/swatchnatural.png"
+                              :filter/order            0}
+                             {:option/slug             "#1-jet-black" ; We can't remove '#' without breaking links to the category pages w/ filters
+                              :option/name             "#1 Jet Black"
+                              :adventure/name          "#1 Jet Black"
+                              :sku/name                "#1 Jet Black"
+                              :option/image            "//ucarecdn.com/81e6cd3d-6fae-41b1-a7a5-cbefd64a4526/-/format/auto/prodsitecolorswatch1.png"
+                              :option/circle-swatch    "//ucarecdn.com/81e6cd3d-6fae-41b1-a7a5-cbefd64a4526/-/format/auto/prodsitecolorswatch1.png"
+                              :option/rectangle-swatch "//ucarecdn.com/916da696-76a8-43cd-a9dd-4914f89e986d/-/format/auto/swatch001.png"
+                              :filter/order            1}
+                             {:option/slug             "1b-soft-black"
+                              :option/name             "#1B Soft Black"
+                              :adventure/name          "#1B Soft Black"
+                              :sku/name                "#1B Soft Black"
+                              :option/image            "//ucarecdn.com/41276dc8-e77f-4f7a-b73a-465af9474f04/-/format/auto/prodsitecolorswatch01b.png"
+                              :option/circle-swatch    "//ucarecdn.com/41276dc8-e77f-4f7a-b73a-465af9474f04/-/format/auto/prodsitecolorswatch01b.png"
+                              :option/rectangle-swatch "//ucarecdn.com/5b6a2321-5342-49b9-8362-4e5de87d50c4/-/format/auto/swatch01b.png"
+                              :filter/order            2}
+                             {:option/slug             "1c-mocha-brown"
+                              :option/name             "#1C Mocha Brown"
+                              :adventure/name          "#1C Mocha Brown"
+                              :sku/name                "#1C Mocha Brown"
+                              :option/image            "//ucarecdn.com/b0b1f53f-4900-47d8-ba50-0aec454222f4/-/format/auto/swatch-01c-mocha-black.png"
+                              :option/circle-swatch    "//ucarecdn.com/b0b1f53f-4900-47d8-ba50-0aec454222f4/-/format/auto/swatch-01c-mocha-black.png"
+                              :option/rectangle-swatch "//ucarecdn.com/82056301-cddb-4c8b-b731-7014d3e8a236/-/format/auto/swatch01c.png"
+                              :filter/order            3}
+                             {:option/slug             "#2-chocolate-brown" ; We can't remove '#' without breaking links to the category pages w/ filters
+                              :option/name             "#2 Chocolate Brown"
+                              :adventure/name          "#2 Chocolate Brown"
+                              :sku/name                "#2 Chocolate Brown"
+                              :option/image            "//ucarecdn.com/6f2160cb-bc75-48a5-8d2d-6c7bcf7f1215/-/format/auto/prodsitecolorswatch2.png"
+                              :option/circle-swatch    "//ucarecdn.com/6f2160cb-bc75-48a5-8d2d-6c7bcf7f1215/-/format/auto/prodsitecolorswatch2.png"
+                              :option/rectangle-swatch "//ucarecdn.com/4663aebe-baa4-4604-9b1c-67520fb24a7a/-/format/auto/swatch002.png"
+                              :filter/order            4}
+                             {:option/slug             "#4-caramel-brown" ; We can't remove '#' without breaking links to the category pages w/ filters
+                              :option/name             "#4 Caramel Brown"
+                              :adventure/name          "#4 Caramel Brown"
+                              :sku/name                "#4 Caramel Brown"
+                              :option/image            "//ucarecdn.com/b096b5c3-a469-4c2b-a188-c0de34e8231d/-/format/auto/prodsitecolorswatch4.png"
+                              :option/circle-swatch    "//ucarecdn.com/b096b5c3-a469-4c2b-a188-c0de34e8231d/-/format/auto/prodsitecolorswatch4.png"
+                              :option/rectangle-swatch "//ucarecdn.com/9830b374-9ad5-46f7-b9ed-842dc0770cee/-/format/auto/swatch004.png"
+                              :filter/order            5}
+                             {:option/slug             "dark-blonde"
+                              :option/name             "Dark Blonde (#27)"
+                              :adventure/name          "Dark Blonde (#27)"
+                              :sku/name                "#27 Dark Blonde"
+                              :option/image            "//ucarecdn.com/f7eb2f95-3283-4160-bdf9-38a87be676c2/-/format/auto/dark_blonde.png"
+                              :option/circle-swatch    "//ucarecdn.com/f7eb2f95-3283-4160-bdf9-38a87be676c2/-/format/auto/dark_blonde.png"
+                              :option/rectangle-swatch "//ucarecdn.com/fafb4300-d3fa-4bf1-9485-c934097aa660/-/format/auto/swatch027.png"
+                              :filter/order            6}
+                             {:option/slug             "6-hazelnut-brown"
+                              :option/name             "#6 Hazelnut Brown"
+                              :adventure/name          "#6 Hazelnut Brown"
+                              :sku/name                "#6 Hazelnut Brown"
+                              :option/image            "//ucarecdn.com/798955ee-84e2-402e-a130-14085825996a/-/format/auto/swatch-006-hazelnut-brown.png"
+                              :option/circle-swatch    "//ucarecdn.com/798955ee-84e2-402e-a130-14085825996a/-/format/auto/swatch-006-hazelnut-brown.png"
+                              :option/rectangle-swatch "//ucarecdn.com/496bf2bd-26e0-4445-a5d5-1777207b063b/-/format/auto/swatch006.png"
+                              :filter/order            7}
+                             {:option/slug             "dark-blonde-dark-roots"
+                              :option/name             "Dark Blonde (#27) with Dark Roots (#1B)"
+                              :adventure/name          "Dark Blonde (#27) with Dark Roots (#1B)"
+                              :sku/name                "#27 Dark Blonde with #1B Dark Roots"
+                              :option/image            "//ucarecdn.com/9e15a581-6e80-401a-8cb2-0608fef474e9/-/format/auto/dark_blonde_dark_roots.png"
+                              :option/circle-swatch    "//ucarecdn.com/9e15a581-6e80-401a-8cb2-0608fef474e9/-/format/auto/dark_blonde_dark_roots.png"
+                              :option/rectangle-swatch "//ucarecdn.com/882188a0-69ab-47da-b757-812b4adce7a5/-/format/auto/swatch02701b.png"
+                              :filter/order            8}
+                             {:option/slug             "blonde"
+                              :option/name             "Blonde (#613)"
+                              :adventure/name          "Blonde (#613)"
+                              :sku/name                "#613 Blonde"
+                              :option/image            "//ucarecdn.com/85ede6dd-8e84-4096-ad5c-685d50dd99ec/-/format/auto/blonde.png"
+                              :option/circle-swatch    "//ucarecdn.com/85ede6dd-8e84-4096-ad5c-685d50dd99ec/-/format/auto/blonde.png"
+                              :option/rectangle-swatch "//ucarecdn.com/4fd70f0a-96ce-4b6d-bc23-674fc8d37aa3/-/format/auto/swatch613.png"
+                              :filter/order            9}
+                             {:option/slug             "blonde-dark-roots"
+                              :option/name             "Blonde (#613) with Dark Roots (#1B)"
+                              :adventure/name          "Blonde (#613) with Dark Roots (#1B)"
+                              :sku/name                "#613 Blonde with #1B Dark Roots"
+                              :option/image            "//ucarecdn.com/02f4a86c-12fa-47b3-8f50-078568e4f905/-/format/auto/blonde_dark_roots.png"
+                              :option/circle-swatch    "//ucarecdn.com/02f4a86c-12fa-47b3-8f50-078568e4f905/-/format/auto/blonde_dark_roots.png"
+                              :option/rectangle-swatch "//ucarecdn.com/8d84b3ac-430b-4d96-8545-f742a9a929cf/-/format/auto/swatch61301b.png"
+                              :filter/order            10}
+                             {:option/slug             "18-chestnut-blonde"
+                              :option/name             "#18 Chestnut Blonde"
+                              :adventure/name          "#18 Chestnut Blonde"
+                              :sku/name                "#18 Chestnut Blonde"
+                              :option/image            "//ucarecdn.com/171ded35-1e70-4132-8563-9599501a336a/-/format/auto/swatch-018-chestnut-blonde.png"
+                              :option/circle-swatch    "//ucarecdn.com/171ded35-1e70-4132-8563-9599501a336a/-/format/auto/swatch-018-chestnut-blonde.png"
+                              :option/rectangle-swatch "//ucarecdn.com/73970def-580f-48a1-bba7-d03eb9ad7b99/-/format/auto/swatch018.png"
+                              :filter/order            11}
+                             {:option/slug             "60-golden-ash-blonde"
+                              :option/name             "#60 Golden Ash Blonde"
+                              :adventure/name          "#60 Golden Ash Blonde"
+                              :sku/name                "#60 Golden Ash Blonde"
+                              :option/image            "//ucarecdn.com/d49e6650-a8a0-4d9d-8732-0f2210bf219c/-/format/auto/swatch-060-golden-blonde.png"
+                              :option/circle-swatch    "//ucarecdn.com/d49e6650-a8a0-4d9d-8732-0f2210bf219c/-/format/auto/swatch-060-golden-blonde.png"
+                              :option/rectangle-swatch "//ucarecdn.com/f63586db-a0a0-4efa-9fec-903c439e651d/-/format/auto/swatch060.png"
+                              :filter/order            12}
+                             {:option/slug             "613-bleach-blonde"
+                              :option/name             "#613 Bleach Blonde"
+                              :adventure/name          "#613 Bleach Blonde"
+                              :sku/name                "#613 Bleach Blonde"
+                              :option/image            "//ucarecdn.com/361d56ce-97e5-48fc-842a-d848d1cdfefb/-/format/auto/swatch-613-bleach-blonde.png"
+                              :option/circle-swatch    "//ucarecdn.com/361d56ce-97e5-48fc-842a-d848d1cdfefb/-/format/auto/swatch-613-bleach-blonde.png"
+                              :option/rectangle-swatch "//ucarecdn.com/4fd70f0a-96ce-4b6d-bc23-674fc8d37aa3/-/format/auto/swatch613.png"
+                              :filter/order            13}
+                             {:option/slug             "vibrant-burgundy"
+                              :option/name             "Vibrant Burgundy"
+                              :adventure/name          "Vibrant Burgundy"
+                              :sku/name                "Vibrant Burgundy"
+                              :option/image            "//ucarecdn.com/3629dcae-412e-44a0-bff8-df441beb9975/-/format/auto/prodsitecolorswatch99j.png"
+                              :option/circle-swatch    "//ucarecdn.com/3629dcae-412e-44a0-bff8-df441beb9975/-/format/auto/prodsitecolorswatch99j.png"
+                              :option/rectangle-swatch "//ucarecdn.com/5eadafa5-87ac-42ab-9af7-9be9621a0de9/-/format/auto/swatch99j.png"
+                              :filter/order            14}]}
+            {:facet/slug    :hair/texture
+             :facet/name    "Texture"
+             :filter/order  4
+             :facet/options [{:option/slug    "straight"
+                              :option/name    "Straight"
+                              :adventure/name "Straight"
+                              :filter/order   0}
+                             {:option/slug    "yaki-straight"
+                              :option/name    "Yaki Straight"
+                              :adventure/name "Yaki Straight"
+                              :filter/order   1}
+                             {:option/slug    "kinky-straight"
+                              :option/name    "Kinky Straight"
+                              :adventure/name "Kinky Straight"
+                              :filter/order   2}
+                             {:option/slug    "body-wave"
+                              :option/name    "Body Wave"
+                              :adventure/name "Body Wave"
+                              :filter/order   3}
+                             {:option/slug    "loose-wave"
+                              :option/name    "Loose Wave"
+                              :adventure/name "Loose Wave"
+                              :filter/order   4}
+                             {:option/slug    "water-wave"
+                              :option/name    "Water Wave"
+                              :adventure/name "Water Wave"
+                              :filter/order   5}
+                             {:option/slug    "deep-wave"
+                              :option/name    "Deep Wave"
+                              :adventure/name "Deep Wave"
+                              :filter/order   6}
+                             {:option/slug    "curly"
+                              :option/name    "Curly"
+                              :adventure/name "Curly"
+                              :filter/order   7}]}
+            {:facet/slug    :hair/origin
+             :facet/name    "Origin"
+             :filter/order  3
+             :facet/options [{:option/slug  "brazilian"
+                              :option/name  "Brazilian hair"
+                              :sku/name     "Brazilian"
+                              :filter/order 0}
+                             {:option/slug  "malaysian"
+                              :option/name  "Malaysian hair"
+                              :sku/name     "Malaysian"
+                              :filter/order 1}
+                             {:option/slug  "peruvian"
+                              :option/name  "Peruvian hair"
+                              :sku/name     "Peruvian"
+                              :filter/order 2}
+                             {:option/slug  "indian"
+                              :option/name  "Indian hair"
+                              :sku/name     "Indian"
+                              :filter/order 3}]}
+            {:facet/slug    :hair/base-material
+             :facet/name    "Material"
+             :filter/order  5
+             :facet/options [{:option/slug  "lace"
+                              :option/name  "Lace"
+                              :filter/order 0}
+                             {:option/slug  "silk"
+                              :option/name  "Silk"
+                              :filter/order 1}]}
+            {:facet/slug    :hair/length
+             :facet/name    "Length"
+             :filter/order  7
+             :facet/options [{:option/slug  "10"
+                              :option/name  "10″"
+                              :filter/order 0}
+                             {:option/slug  "11"
+                              :option/name  "11″"
+                              :filter/order 1}
+                             {:option/slug  "12"
+                              :option/name  "12″"
+                              :filter/order 2}
+                             {:option/slug  "13"
+                              :option/name  "13″"
+                              :filter/order 3}
+                             {:option/slug  "14"
+                              :option/name  "14″"
+                              :filter/order 4}
+                             {:option/slug  "15"
+                              :option/name  "15″"
+                              :filter/order 5}
+                             {:option/slug  "16"
+                              :option/name  "16″"
+                              :filter/order 6}
+                             {:option/slug  "18"
+                              :option/name  "18″"
+                              :filter/order 7}
+                             {:option/slug  "20"
+                              :option/name  "20″"
+                              :filter/order 8}
+                             {:option/slug  "22"
+                              :option/name  "22″"
+                              :filter/order 9}
+                             {:option/slug  "24"
+                              :option/name  "24″"
+                              :filter/order 10}
+                             {:option/slug  "26"
+                              :option/name  "26″"
+                              :filter/order 11}
+                             {:option/slug  "28"
+                              :option/name  "28″"
+                              :filter/order 12}
+                             {:option/slug  "30"
+                              :option/name  "30″"
+                              :filter/order 13}]}
+            {:facet/slug    :hair/color.process
+             :facet/name    "Color Process"
+             :filter/order  8
+             :facet/options [{:option/slug  "dyed"
+                              :option/name  "Dyed"
+                              :sku/name     "Dyed"
+                              :filter/order 0}]}
+            {:facet/slug    :hair/source
+             :facet/name    "Hair Source"
+             :filter/order  9
+             :facet/options [{:option/slug  "human"
+                              :option/name  "100% Human"
+                              :sku/name     "100% Human"
+                              :filter/order 0}
+                             {:option/slug  "virgin"
+                              :option/name  "Virgin"
+                              :sku/name     "Virgin"
+                              :filter/order 1}]}
+            {:facet/slug    :hair/weight
+             :facet/name    "Weight"
+             :filter/order  10
+             :facet/options [{:option/slug  "50g"
+                              :option/name  "50g"
+                              :sku/name     "50g"
+                              :filter/order 0}
+                             {:option/slug  "160g"
+                              :option/name  "160g"
+                              :sku/name     "160g"
+                              :filter/order 1}
+                             {:option/slug  "220g"
+                              :option/name  "220g"
+                              :sku/name     "220g"
+                              :filter/order 2}]}]})
 
 (def default-storeback-handler
   (routes

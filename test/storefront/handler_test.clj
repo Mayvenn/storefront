@@ -629,8 +629,8 @@
       (testing "when mayvenn-install category has a category selected"
         (-> (mock/request :get "https://shop.mayvenn.com/categories/23-mayvenn-install?family=closures")
             handler
-            (validate-title-and-description-and-canonical "Virgin Hair Closures | Mayvenn"
-                                                          (str "Mayvenn's Virgin Hair Closures are beautifully crafted and provide a realistic part to "
+            (validate-title-and-description-and-canonical "Closures Virgin Hair Closures | Mayvenn"
+                                                          (str "Mayvenn's Closures Virgin Hair Closures are beautifully crafted and provide a realistic part to "
                                                                 "close off any unit or install.")
                                                           "/categories/0-virgin-closures"
                                                           nil))))))
@@ -669,8 +669,8 @@
             (-> (mock/request :get (str wig-category-url
                                         "?family=lace-front-wigs"))
                 handler
-                (validate-title-and-description-and-canonical "Virgin Lace Front Wigs | Mayvenn"
-                                                              (str "Mayvenn’s Virgin Lace Front Wigs allow you to change up and "
+                (validate-title-and-description-and-canonical "Lace Front Wigs Virgin Lace Front Wigs | Mayvenn"
+                                                              (str "Mayvenn’s Lace Front Wigs Virgin Lace Front Wigs allow you to change up and "
                                                                    "achieve your desired look. Shop our collection of virgin hair wigs today.")
                                                               "/categories/24-virgin-lace-front-wigs"
                                                               nil))))
@@ -703,8 +703,8 @@
                                       "&origin=indian"
                                       "&family=lace-front-wigs"))
               handler
-              (validate-title-and-description-and-canonical "Indian Loose Wave  Virgin Lace Front Wigs | Mayvenn"
-                                                            (str "Mayvenn’s Indian Loose Wave  Virgin Lace Front "
+              (validate-title-and-description-and-canonical "Indian Loose Wave Lace Front Wigs Virgin Lace Front Wigs | Mayvenn"
+                                                            (str "Mayvenn’s Indian Loose Wave Lace Front Wigs Virgin Lace Front "
                                                                  "Wigs allow you to change up and achieve your desired "
                                                                  "look. Shop our collection of virgin hair wigs today.")
                                                             "/categories/24-virgin-lace-front-wigs"
