@@ -437,19 +437,25 @@
   (fn [req]
     (let [order                      (get-in-req-state req keypaths/order)
           skus-on-order              (mapv :sku (orders/product-items order))
+          services-on-order          (mapv :sku (orders/service-line-items order))
           skus-we-have               (keys (get-in-req-state req keypaths/v2-skus))
           needed-skus                (set/difference (set skus-on-order) (set skus-we-have))
+          needed-service-skus        (set/difference (set services-on-order) (set skus-we-have))
           {order-skus     :skus
            order-products :products} (when (seq needed-skus)
                                        (api/fetch-v2-products storeback-config {:selector/sku-ids needed-skus}))
           {pdp-skus     :skus
            pdp-products :products}   (when-let [product-id (-> req :nav-message second :catalog/product-id)]
                                        (api/fetch-v2-products storeback-config {:catalog/product-id product-id}))
-          {:keys [facets]}           (when-not (get-in-req-state req keypaths/v2-facets)
-                                       (api/fetch-v2-facets storeback-config))]
+
+          {service-skus :skus} (when (seq needed-service-skus)
+                                 (api/fetch-v2-skus storeback-config {:catalog/sku-ids needed-service-skus}))
+
+          {:keys [facets]}     (when-not (get-in-req-state req keypaths/v2-facets)
+                                 (api/fetch-v2-facets storeback-config))]
       (h (-> req
              (update-in-req-state keypaths/v2-products merge (products/index-products (concat order-products pdp-products)))
-             (update-in-req-state keypaths/v2-skus merge (products/index-skus (concat order-skus pdp-skus)))
+             (update-in-req-state keypaths/v2-skus merge (products/index-skus (concat order-skus pdp-skus service-skus)))
              (assoc-in-req-state keypaths/v2-facets (map #(update % :facet/slug keyword) facets))
              (assoc-in-req-state keypaths/categories categories/initial-categories))))))
 
