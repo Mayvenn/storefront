@@ -3,7 +3,8 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
-            storefront.keypaths))
+            storefront.keypaths
+            [storefront.accessors.images :as images]))
 
 (defn ^:private family->ordering
   [family]
@@ -51,8 +52,12 @@
                                           count
                                           pos?))
         service-type                (product-line-items->service-type (orders/product-items-for-shipment shipment))
-        service-line-item           (first (orders/service-line-items order))
+        service-line-item           (->> order
+                                         orders/service-line-items
+                                         (filter (comp #{"base"} :service/type :variant-attrs))
+                                         first)
         sku-catalog                 (get-in app-state storefront.keypaths/v2-skus)
+        base-service-sku            (get sku-catalog (:sku service-line-item))
         wig-customization-service?  (= :wig-customization service-type)
         install-items-required      (if wig-customization-service? 1 3)
         item-eligibility-fn         (if wig-customization-service?
@@ -79,4 +84,5 @@
      :mayvenn-install/stylist            servicing-stylist
      :mayvenn-install/service-discount   (- (line-items/service-line-item-price service-line-item))
      :mayvenn-install/any-wig?           any-wig?
+     :mayvenn-install/service-image-url  (->> base-service-sku (images/skuer->image "cart") :url)
      :mayvenn-install/service-type       service-type}))

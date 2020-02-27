@@ -134,7 +134,8 @@
            {:style {:height "100%"}}
            (svg/lock {:style {:width   "17px"
                               :height  "23px"
-                              :opacity ".75"}})]]
+                              :opacity ".75"}
+                      :class "mtn2"})]]
          (ui/ucare-img {:width "50px"
                         :style {:filter "contrast(0.1) brightness(1.75)"}} image-url)]
         (ui/ucare-img {:width "50px"} image-url))]]))

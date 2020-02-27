@@ -319,7 +319,8 @@
         {:mayvenn-install/keys [service-discount
                                 applied?
                                 stylist
-                                service-type]
+                                service-type
+                                service-image-url]
          :as                   mayvenn-install} (mayvenn-install/mayvenn-install data)
         user                                    (get-in data keypaths/user)
         wig-customization?                      (= :wig-customization service-type)]
@@ -350,7 +351,8 @@
         {:cart-item
          {:react/key                             "freeinstall-line-item-freeinstall"
           :cart-item-service-thumbnail/id        "freeinstall"
-          :cart-item-service-thumbnail/image-url "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"
+          :cart-item-service-thumbnail/image-url (or service-image-url ; GROT: when cellar deploy is done with service image
+                                                     "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/")
           :cart-item-floating-box/id             "line-item-freeinstall-price"
           :cart-item-floating-box/value          [:div.flex.flex-column.justify-end
                                                   {:style {:height "100%"}}

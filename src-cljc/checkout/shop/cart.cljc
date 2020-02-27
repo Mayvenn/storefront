@@ -301,7 +301,7 @@
 (defn cart-items-query
   [app-state
    {:mayvenn-install/keys
-    [service-type entered? locked? applied? stylist service-discount quantity-remaining quantity-required quantity-added any-wig?]}
+    [service-image-url service-type entered? locked? applied? stylist service-discount quantity-remaining quantity-required quantity-added any-wig?]}
    line-items
    skus
    add-items-action]
@@ -359,7 +359,8 @@
                  :cart-item-remove-action/spinning?        (utils/requesting? app-state request-keys/remove-freeinstall-line-item)
                  :cart-item-remove-action/target           [events/control-checkout-remove-promotion {:code "freeinstall"}]
                  :cart-item-service-thumbnail/id           "freeinstall"
-                 :cart-item-service-thumbnail/image-url    "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"
+                 :cart-item-service-thumbnail/image-url    (or service-image-url ; GROT: when cellar deploy is done with service image
+                                                               "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/")
                  :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)
                  :confetti-mode                            (get-in app-state keypaths/confetti-mode)}
 
