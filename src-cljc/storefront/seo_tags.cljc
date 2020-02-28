@@ -77,8 +77,10 @@
 (defn format-with-nil-protection
   [template & fill-strings]
   (->> fill-strings
+       distinct
+       ((juxt first second))
        (map #(if (empty? %) "" (str % " ")))
-       (apply strings/format template)))
+       (apply (fnil (partial strings/format template) " " " "))))
 
 (defn category-tags [data]
   (let [categories            (get-in data keypaths/categories)
@@ -136,34 +138,32 @@
                  not-empty))))
 
 (defn ^:private remove-unnecessary-query-params
-  [uri]
+  [uri single-category? category-family]
   (let [query     (:query uri)
         path      (:path uri)
         query-map #?(:clj (cemerick-url/query->map query)
                      :cljs query)]
     #?(:clj (->> query-map
-                 (remove #(string/includes? path (second %)))
+                 (remove #(and single-category? (category-family (second %))))
                  (into {})
                  uri/map->query
                  (assoc uri :query))
        :cljs (->> query-map
-                  (remove #(string/includes? path (second %)))
+                  (remove #(and single-category? (category-family (second %))))
                   (into {})
                   (assoc uri :query)))))
 
 (defn ^:private handle-icp-paths-and-query-params
   [uri data]
   (let [path        (:path uri)
-        update-path (fn update-path
-                      [uri data]
-                      (let [canonical-category-id (accessors.categories/canonical-category-id data)
-                            categories            (get-in data keypaths/categories)
-                            {:keys [page/slug]}   (accessors.categories/id->category canonical-category-id categories)]
-                        (assoc uri :path (str "/categories/" canonical-category-id "-" slug))))]
+        canonical-category-id (accessors.categories/canonical-category-id data)
+        categories            (get-in data keypaths/categories)
+        {:keys [page/slug hair/family]}   (accessors.categories/id->category canonical-category-id categories)
+        single-category?      (= (count family) 1)]
     (if (string/includes? path "categories")
       (-> uri
-          (update-path data)
-          remove-unnecessary-query-params)
+          (assoc :path (str "/categories/" canonical-category-id "-" slug))
+          (remove-unnecessary-query-params single-category? family))
       uri)))
 
 (defn canonical-uri

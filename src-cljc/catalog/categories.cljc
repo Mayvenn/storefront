@@ -499,7 +499,7 @@
 
            :copy/title "Ready to Wear Wigs"
            :page/slug  "ready-wear-wigs"
-           :seo/title  "Ready to Wear Wigs"
+           :seo/title  "Ready-to-Wear Wigs"
 
            :copy/description      (copy "Made of authentic and high-quality human hair,"
                                         "ready to wear wigs are a quick,"

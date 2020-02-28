@@ -727,7 +727,38 @@
               (validate-title-and-description-and-canonical default-wig-title
                                                             default-wig-description
                                                             "/categories/13-wigs"
-                                                            "origin=indian%7Ebrazilian&texture=loose-wave")))))))
+                                                            "origin=indian%7Ebrazilian&texture=loose-wave")))
+
+        (testing "when ready-wigs is selected,"
+          (testing "uses that family's category canonical uri"
+            (-> (mock/request :get "https://shop.mayvenn.com/categories/25-ready-wear-wigs")
+                handler
+                (validate-title-and-description-and-canonical "Ready-to-Wear Human Hair Lace Wigs | Mayvenn"
+                                                              (str "Mayvenn’s Ready-to-Wear Wigs provide a quick style switch-up and  come in "
+                                                                   "different variations such as Brazilian, straight, and loose wave.")
+                                                              "/categories/25-ready-wear-wigs"
+                                                              nil))))
+
+        (testing "when 360-wigs is selected,"
+          (testing "uses that family's category canonical uri"
+            (-> (mock/request :get "https://shop.mayvenn.com/categories/13-wigs?family=360-wigs")
+                handler
+                (validate-title-and-description-and-canonical "360 Wigs Virgin 360 Lace Wigs | Mayvenn"
+                                                              (str "Mayvenn’s 360 Wigs Virgin 360 Lace Wigs allow you to change up and "
+                                                                   "achieve your desired look. Shop our collection of virgin hair wigs today.")
+                                                              "/categories/26-virgin-360-wigs"
+                                                              nil))))
+
+        (testing "when ready-wigs is selected,"
+          (testing "uses that family's category canonical uri"
+            (-> (mock/request :get (str "https://shop.mayvenn.com/categories/13-wigs"
+                                        "?family=ready-wigs"))
+                handler
+                (validate-title-and-description-and-canonical "Ready-to-Wear Wigs | Mayvenn"
+                                                              (str "Mayvenn’s Ready-to-Wear Wigs allow you to change up and "
+                                                                   "achieve your desired look. Shop our collection of virgin hair wigs today.")
+                                                              "/categories/25-ready-wear-wigs"
+                                                              nil))))))))
 
 #_(deftest human-hair-bundles-and-description-templates
   (with-services {}
