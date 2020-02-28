@@ -521,7 +521,8 @@
 (defn parse-title [body]
   (some->> body
            (re-find #"<title[^>]*>(.*)</title>")
-           second))
+           second
+           (#(string/replace % #"&amp;" "&"))))
 
 (defn validate-title-and-description-and-canonical
   [resp expected-title expected-description expected-canonical expected-query-params]
@@ -733,9 +734,10 @@
           (testing "uses that family's category canonical uri"
             (-> (mock/request :get "https://shop.mayvenn.com/categories/25-ready-wear-wigs")
                 handler
-                (validate-title-and-description-and-canonical "Ready-to-Wear Human Hair Lace Wigs | Mayvenn"
-                                                              (str "Mayvenn’s Ready-to-Wear Wigs provide a quick style switch-up and  come in "
-                                                                   "different variations such as Brazilian, straight, and loose wave.")
+                (validate-title-and-description-and-canonical "Ready-to-Wear Wigs: Short, Bob, Side-Part & More | Mayvenn"
+                                                              (str "Mayvenn’s ready-to-wear human hair lace wigs provide "
+                                                                   "a quick style switch-up and  come in different "
+                                                                   "variations such as Brazilian, straight, and loose wave.")
                                                               "/categories/25-ready-wear-wigs"
                                                               nil))))
 
