@@ -297,12 +297,13 @@
       (string/replace #"[0-9]" (comp spice/number->word int))
       string/lower-case
       (string/replace #"[^a-z]+" "-")))
-;; TODO: suggestions should be paired with appropriate cart item here
 
+;; TODO: suggestions should be paired with appropriate cart item here
 (defn cart-items-query
   [app-state
    {:mayvenn-install/keys
-    [service-image-url service-type entered? locked? applied? stylist service-discount quantity-remaining quantity-required quantity-added any-wig?]}
+    [service-title
+     service-image-url service-type entered? locked? applied? stylist service-discount quantity-remaining quantity-required quantity-added any-wig?]}
    line-items
    skus
    add-items-action]
@@ -379,7 +380,7 @@
                      :cart-item-steps-to-complete/steps         {}
                      :cart-item-steps-to-complete/current-step  0
                      :cart-item-service-thumbnail/locked?       true}
-                    {:cart-item-title/primary                   "Mayvenn Install (locked)"
+                    {:cart-item-title/primary                   (str service-title " (locked)")
                      :cart-item-title/id                        "line-item-title-locked-mayvenn-install"
                      :cart-item-copy/value                      (str "Add " quantity-remaining
                                                                      " or more items to receive your free Mayvenn Install")
@@ -404,7 +405,7 @@
                     :cart-item-copy/value    "You're all set! Bleaching knots, tinting & cutting lace and hairline customization included."
                     :cart-item-copy/id       "congratulations"}
                    {:cart-item-title/id      "line-item-title-applied-mayvenn-install"
-                    :cart-item-title/primary "Mayvenn Install"
+                    :cart-item-title/primary service-title
                     :cart-item-copy/value    "You’re all set! Shampoo, braiding and basic styling included."
                     :cart-item-copy/id       "congratulations"}))
 

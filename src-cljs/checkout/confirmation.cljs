@@ -295,7 +295,6 @@
                                                :cart-summary-line/value (mf/as-money (- (min available-store-credit total)))}]))}
 
         applied?
-
         (merge {:cart-summary-total-incentive/id      "mayvenn-install"
                 :cart-summary-total-incentive/label   "Includes Mayvenn Install"
                 :cart-summary-total-incentive/savings (when (pos? total-savings)
@@ -320,6 +319,7 @@
                                 applied?
                                 stylist
                                 service-type
+                                service-title
                                 service-image-url]
          :as                   mayvenn-install} (mayvenn-install/mayvenn-install data)
         user                                    (get-in data keypaths/user)
@@ -358,7 +358,7 @@
                                                   {:style {:height "100%"}}
                                                   (some-> service-discount - mf/as-money)]
           :cart-item-title/id                    "line-item-title-applied-mayvenn-install"
-          :cart-item-title/primary               "Mayvenn Install"
+          :cart-item-title/primary               service-title
           :cart-item-title/secondary             [:div.line-height-3
                                                   "You’re all set! Shampoo, braiding and basic styling included."]}}})
 

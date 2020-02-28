@@ -82,6 +82,7 @@
      :mayvenn-install/quantity-remaining items-remaining-for-install
      :mayvenn-install/quantity-added     items-added-for-install
      :mayvenn-install/stylist            servicing-stylist
+     :mayvenn-install/service-title      (:sku/title base-service-sku)
      :mayvenn-install/service-discount   (- (line-items/service-line-item-price service-line-item))
      :mayvenn-install/any-wig?           any-wig?
      :mayvenn-install/service-image-url  (->> base-service-sku (images/skuer->image "cart") :url)
