@@ -686,57 +686,57 @@
                                                   (orders/product-items order))
         freeinstall-entered-cart-incomplete? (and (orders/freeinstall-entered? order)
                                                   (not (orders/service-line-item-promotion-applied? order)))
-        mayvenn-install                      (mayvenn-install/mayvenn-install data)
-        entered?                             (:mayvenn-install/entered? mayvenn-install)
-        applied?                             (:mayvenn-install/applied? mayvenn-install)
-        servicing-stylist                    (:mayvenn-install/stylist mayvenn-install)
-        locked?                              (:mayvenn-install/locked? mayvenn-install)
-        any-wig?                             (:mayvenn-install/any-wig? mayvenn-install)
-        skus                                 (get-in data keypaths/v2-skus)
-        recently-added-sku-ids               (get-in data keypaths/cart-recently-added-skus)
-        last-texture-added                   (->> recently-added-sku-ids
-                                                  last
-                                                  (get skus)
-                                                  :hair/texture
-                                                  first)
-        mayvenn-install-shopping-action      [events/navigate-category
-                                              (merge
-                                               {:page/slug           "mayvenn-install"
-                                                :catalog/category-id "23"}
-                                               (when last-texture-added
-                                                 {:query-params {:subsection last-texture-added}}))]
-        continue-shopping-action             (if any-wig?
-                                               [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
-                                               mayvenn-install-shopping-action)
-        add-items-action                     (if any-wig?
-                                               [events/navigate-category
-                                                {:page/slug           "wigs"
-                                                 :catalog/category-id "13"
-                                                 :query-params        {:family "lace-front-wigs~360-wigs"}}]
-                                               mayvenn-install-shopping-action)
-        sorted-addon-services                (->> (get-in data keypaths/v2-skus)
-                                                  vals
-                                                  (spice.selector/match-all {} {:catalog/department "service" :service/type "addon"})
-                                                  (map (fn [{addon-service-hair-family :hair/family
-                                                             addon-sku-id              :catalog/sku-id
-                                                             :as                       addon-service}]
-                                                         (assoc addon-service
-                                                                :addon-unavailable-reason (or
-                                                                                           (when (not (stylist-can-perform-addon-service? servicing-stylist addon-sku-id))
-                                                                                             "Not available with your stylist")
-                                                                                           (when (not (contains?
-                                                                                                       (set (map mayvenn-install/hair-family->service-type addon-service-hair-family))
-                                                                                                       (:mayvenn-install/service-type mayvenn-install)))
-                                                                                             (storefront.platform.strings/format
-                                                                                              "Only Available with %s Install" (->> addon-service-hair-family
-                                                                                                                                    first
-                                                                                                                                    (get hair-family-facet)
-                                                                                                                                    :sku/name)))))))
-                                                  (sort-by (comp boolean :addon-unavailable-reason))
-                                                  (partition-by :addon-unavailable-reason)
-                                                  (map (partial sort-by :add-on-service/ui-order)),
-                                                  flatten
-                                                  (map addon-service-sku->addon-service-menu-entry))]
+        {:mayvenn-install/keys
+         [entered? applied? locked? any-wig?
+          quantity-remaining]
+         servicing-stylist :mayenn-install/stylist
+         :as               mayvenn-install}  (mayvenn-install/mayvenn-install data)
+
+        skus                            (get-in data keypaths/v2-skus)
+        recently-added-sku-ids          (get-in data keypaths/cart-recently-added-skus)
+        last-texture-added              (->> recently-added-sku-ids
+                                             last
+                                             (get skus)
+                                             :hair/texture
+                                             first)
+        mayvenn-install-shopping-action [events/navigate-category
+                                         (merge
+                                          {:page/slug           "mayvenn-install"
+                                           :catalog/category-id "23"}
+                                          (when last-texture-added
+                                            {:query-params {:subsection last-texture-added}}))]
+        continue-shopping-action        (if any-wig?
+                                          [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
+                                          mayvenn-install-shopping-action)
+        add-items-action                (if any-wig?
+                                          [events/navigate-category
+                                           {:page/slug           "wigs"
+                                            :catalog/category-id "13"
+                                            :query-params        {:family "lace-front-wigs~360-wigs"}}]
+                                          mayvenn-install-shopping-action)
+        sorted-addon-services           (->> (get-in data keypaths/v2-skus)
+                                             vals
+                                             (spice.selector/match-all {} {:catalog/department "service" :service/type "addon"})
+                                             (map (fn [{addon-service-hair-family :hair/family
+                                                        addon-sku-id              :catalog/sku-id
+                                                        :as                       addon-service}]
+                                                    (assoc addon-service
+                                                           :addon-unavailable-reason (or
+                                                                                      (when (not (stylist-can-perform-addon-service? servicing-stylist addon-sku-id))
+                                                                                        "Not available with your stylist")
+                                                                                      (when (not (contains?
+                                                                                                  (set (map mayvenn-install/hair-family->service-type addon-service-hair-family))
+                                                                                                  (:mayvenn-install/service-type mayvenn-install)))
+                                                                                        (storefront.platform.strings/format
+                                                                                         "Only Available with %s Install" (->> addon-service-hair-family
+                                                                                                                               first
+                                                                                                                               (get hair-family-facet)
+                                                                                                                               :sku/name)))))))
+                                             (sort-by (comp boolean :addon-unavailable-reason))
+                                             (partition-by :addon-unavailable-reason)
+                                             (map (partial sort-by :add-on-service/ui-order)),
+                                             flatten
+                                             (map addon-service-sku->addon-service-menu-entry))]
     (cond-> {:suggestions               (suggestions/consolidated-query data)
              :line-items                line-items
              :skus                      skus
@@ -757,10 +757,10 @@
              :return-link/id            "continue-shopping"
              :return-link/copy          "Continue Shopping"
              :return-link/event-message continue-shopping-action
-             :quantity-remaining        (:mayvenn-install/quantity-remaining mayvenn-install)
+             :quantity-remaining        quantity-remaining
              :locked?                   locked?
              :entered?                  entered?
-             :applied?                  (:mayvenn-install/applied? mayvenn-install)
+             :applied?                  applied?
              :remove-freeinstall-event  [events/control-checkout-remove-promotion {:code "freeinstall"}]
              :cart-summary              (merge
                                          (cart-summary-query (experiments/show-priority-shipping-method? data)
