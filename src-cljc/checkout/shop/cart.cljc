@@ -27,7 +27,6 @@
    [storefront.accessors.stylists :as stylists]
    [storefront.accessors.shipping :as shipping]
    [storefront.component :as component :refer [defcomponent defdynamic-component]]
-   [storefront.components.checkout-delivery :as checkout-delivery]
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
    [storefront.components.header :as components.header]
@@ -38,7 +37,6 @@
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
-   [storefront.platform.messages :as messages]
    [storefront.request-keys :as request-keys]
    [storefront.routes :as routes]
    [storefront.transitions :as transitions]
@@ -495,7 +493,7 @@
   "The cart has an upsell 'entered' because the customer has requested a service discount"
   [show-priority-shipping-method?
    {:as order :keys [adjustments]}
-   {:as install :mayvenn-install/keys [any-wig? service-type entered? locked? applied? service-discount quantity-remaining]}] 
+   {:as install :mayvenn-install/keys [any-wig? service-type entered? locked? applied? service-discount quantity-remaining]}]
   (let [total              (:total order)
         tax                (:tax-total order)
         subtotal           (orders/products-subtotal order)
