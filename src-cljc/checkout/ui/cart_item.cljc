@@ -137,8 +137,10 @@
                               :opacity ".75"}
                       :class "mtn2"})]]
          (ui/ucare-img {:width "50px"
+                        :class "mtp3"
                         :style {:filter "contrast(0.1) brightness(1.75)"}} image-url)]
-        (ui/ucare-img {:width "50px"} image-url))]]))
+        (ui/ucare-img {:width "50px"
+                       :class "mtp3"} image-url))]]))
 
 (defn cart-item-remove-action-molecule
   [{:cart-item-remove-action/keys [id target spinning?]}]
