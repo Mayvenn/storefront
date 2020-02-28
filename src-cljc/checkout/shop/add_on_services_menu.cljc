@@ -77,7 +77,7 @@
                                                                                                          :sku/name)))))))
                                                  (sort-by (comp boolean :addon-unavailable-reason))
                                                  (partition-by :addon-unavailable-reason)
-                                                 (map (partial sort-by :add-on-service/ui-order)),
+                                                 (map (partial sort-by :order.view/add-on-sort)),
                                                  flatten
                                                  (map addon-service-sku->addon-service-menu-entry))]
     {:add-on-services/spinner  (get-in data request-keys/get-skus)
