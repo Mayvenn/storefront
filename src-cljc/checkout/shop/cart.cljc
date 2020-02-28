@@ -16,6 +16,7 @@
    [checkout.ui.cart-summary :as cart-summary]
    [clojure.string :as string]
    [clojure.set :as set]
+   [spice.maps :as maps]
    [spice.core :as spice]
    spice.selector
    [storefront.accessors.adjustments :as adjustments]
@@ -664,16 +665,22 @@
         boolean)))
 
 (defn addon-service-sku->addon-service-menu-entry
-  [{:keys    [catalog/sku-id sku/price disabled?]
+  [{:keys    [catalog/sku-id sku/price addon-unavailable-reason]
     sku-name :sku/name}]
   {:addon-service-entry/id                 (str "add-on-service-" sku-id)
-   :addon-service-entry/decoration-classes (when disabled? "bg-refresh-gray dark-gray")
+   :addon-service-entry/decoration-classes (when addon-unavailable-reason "bg-refresh-gray dark-gray")
    :addon-service-entry/primary            sku-name
    :addon-service-entry/secondary          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-   :addon-service-entry/tertiary           (mf/as-money price)})
+   :addon-service-entry/tertiary           (mf/as-money price)
+   :addon-service-entry/warning            addon-unavailable-reason})
 
 (defn full-cart-query [data]
   (let [shop?                                (#{"shop"} (get-in data keypaths/store-slug))
+        hair-family-facet                    (->> (get-in data keypaths/v2-facets)
+                                                  (maps/index-by :facet/slug)
+                                                  :hair/family
+                                                  :facet/options
+                                                  (maps/index-by :option/slug))
         order                                (get-in data keypaths/order)
         products                             (get-in data keypaths/v2-products)
         facets                               (get-in data keypaths/v2-facets)
@@ -714,15 +721,21 @@
                                                   (spice.selector/match-all {} {:catalog/department "service" :service/type "addon"})
                                                   (map (fn [{addon-service-hair-family :hair/family
                                                              addon-sku-id              :catalog/sku-id
-                                                             :as addon-service}]
+                                                             :as                       addon-service}]
                                                          (assoc addon-service
-                                                                :disabled? (or
-                                                                            (not (stylist-can-perform-addon-service? servicing-stylist addon-sku-id))
-                                                                            (not (contains?
-                                                                                  (set (map mayvenn-install/hair-family->service-type addon-service-hair-family))
-                                                                                  (:mayvenn-install/service-type mayvenn-install)))))))
-                                                  (sort-by (comp boolean :disabled?))
-                                                  (partition-by :disabled?)
+                                                                :addon-unavailable-reason (or
+                                                                                           (when (not (stylist-can-perform-addon-service? servicing-stylist addon-sku-id))
+                                                                                             "Not available with your stylist")
+                                                                                           (when (not (contains?
+                                                                                                       (set (map mayvenn-install/hair-family->service-type addon-service-hair-family))
+                                                                                                       (:mayvenn-install/service-type mayvenn-install)))
+                                                                                             (storefront.platform.strings/format
+                                                                                              "Only Available with %s Install" (->> addon-service-hair-family
+                                                                                                                                    first
+                                                                                                                                    (get hair-family-facet)
+                                                                                                                                    :sku/name)))))))
+                                                  (sort-by (comp boolean :addon-unavailable-reason))
+                                                  (partition-by :addon-unavailable-reason)
                                                   (map (partial sort-by :add-on-service/ui-order)),
                                                   flatten
                                                   (map addon-service-sku->addon-service-menu-entry))]
@@ -813,7 +826,7 @@
                                           (component/html [:div.center.proxima.content-1 "Add-on Services"])
                                           (component/html [:div (ui/button-medium-underline-secondary (utils/fake-href events/control-add-ons-popup-done-button) "DONE")]))
      (mapv
-      (fn [{:addon-service-entry/keys [id decoration-classes tertiary primary secondary]}]
+      (fn [{:addon-service-entry/keys [id decoration-classes primary secondary tertiary warning]}]
         [:div.p4.flex
          {:key       id
           :data-test id
@@ -821,7 +834,8 @@
          [:div.mt1 (ui/check-box {})]
          [:div.flex-grow-1.mr2
           [:div.proxima.content-2 primary]
-          [:div.proxima.content-3 secondary]]
+          [:div.proxima.content-3 secondary]
+          [:div.proxima.content-3.red warning]]
          [:div tertiary]])
            services)]))
 
