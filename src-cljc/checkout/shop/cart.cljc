@@ -15,8 +15,9 @@
    [checkout.ui.cart-item :as cart-item]
    [checkout.ui.cart-summary :as cart-summary]
    [clojure.string :as string]
+   [clojure.set :as set]
    [spice.core :as spice]
-   [spice.selector :as spice.selector]
+   spice.selector
    [storefront.accessors.adjustments :as adjustments]
    [storefront.accessors.mayvenn-install :as mayvenn-install]
    [storefront.accessors.experiments :as experiments]
@@ -646,6 +647,31 @@
                                  "Hide promo code"
                                  "Add promo code")})))))
 
+(def add-on-sku->addon-specialty
+  {"SRV-DPCU-000" :specialty-addon-hair-deep-conditioning,
+   "SRV-3CU-000"  :specialty-addon-360-frontal-customization,
+   "SRV-TKDU-000" :specialty-addon-weave-take-down,
+   "SRV-CCU-000"  :specialty-addon-closure-customization,
+   "SRV-FCU-000"  :specialty-addon-frontal-customization,
+   "SRV-TRMU-000" :specialty-addon-natural-hair-trim})
+
+(defn stylist-can-perform-addon-service?
+  [stylist addon-service-sku]
+  (let [service-key (get add-on-sku->addon-specialty addon-service-sku)]
+    (-> stylist
+        :service-menu
+        service-key
+        boolean)))
+
+(defn addon-service-sku->addon-service-menu-entry
+  [{:keys    [catalog/sku-id sku/price disabled?]
+    sku-name :sku/name}]
+  {:addon-service-entry/id                 (str "add-on-service-" sku-id)
+   :addon-service-entry/decoration-classes (when disabled? "bg-refresh-gray dark-gray")
+   :addon-service-entry/primary            sku-name
+   :addon-service-entry/secondary          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+   :addon-service-entry/tertiary           (mf/as-money price)})
+
 (defn full-cart-query [data]
   (let [shop?                                (#{"shop"} (get-in data keypaths/store-slug))
         order                                (get-in data keypaths/order)
@@ -682,7 +708,24 @@
                                                 {:page/slug           "wigs"
                                                  :catalog/category-id "13"
                                                  :query-params        {:family "lace-front-wigs~360-wigs"}}]
-                                               mayvenn-install-shopping-action)]
+                                               mayvenn-install-shopping-action)
+        sorted-addon-services                (->> (get-in data keypaths/v2-skus)
+                                                  vals
+                                                  (spice.selector/match-all {} {:catalog/department "service" :service/type "addon"})
+                                                  (map (fn [{addon-service-hair-family :hair/family
+                                                             addon-sku-id              :catalog/sku-id
+                                                             :as addon-service}]
+                                                         (assoc addon-service
+                                                                :disabled? (or
+                                                                            (not (stylist-can-perform-addon-service? servicing-stylist addon-sku-id))
+                                                                            (not (contains?
+                                                                                  (set (map mayvenn-install/hair-family->service-type addon-service-hair-family))
+                                                                                  (:mayvenn-install/service-type mayvenn-install)))))))
+                                                  (sort-by (comp boolean :disabled?))
+                                                  (partition-by :disabled?)
+                                                  (map (partial sort-by :add-on-service/ui-order)),
+                                                  flatten
+                                                  (map addon-service-sku->addon-service-menu-entry))]
     (cond-> {:suggestions               (suggestions/consolidated-query data)
              :line-items                line-items
              :skus                      skus
@@ -719,17 +762,7 @@
              :quadpay/directive         (if locked? :no-total :just-select)
              :mayvenn-install           mayvenn-install
              :add-on-services/spinner   (get-in data request-keys/get-skus)
-             :add-on-services/services  (->> (get-in data keypaths/v2-skus)
-                                             vals
-                                             (spice.selector/match-all {} {:catalog/department "service" :service/type "addon"})
-                                             (map #(assoc %
-                                                          :disabled-message (cond
-                                                                              (not (some #{(:mayvenn-install/service-type mayvenn-install)}
-                                                                                         (map mayvenn-install/hair-family->service-type (:hair/family %))))
-                                                                              "Incompatible with cart"
-                                                                              ;; TODO needs to have an error if they stylist doesn't have the service type on their menu
-                                                                              :else nil)))
-                                             (sort-by :add-on-service/ui-order))}
+             :add-on-services/services sorted-addon-services}
 
       entered?
       (merge {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
@@ -748,8 +781,7 @@
       (and entered? servicing-stylist (not shop?))
       (merge {:checkout-caption-copy (str "After you place your order, please contact "
                                           (stylists/->display-name servicing-stylist)
-                                          " to make your appointment.")
-              })
+                                          " to make your appointment.")})
 
       applied?
       (merge {:confetti-spout/mode (get-in data keypaths/confetti-mode)
@@ -780,15 +812,17 @@
      (components.header/mobile-nav-header {:class "border-bottom border-gray" } nil
                                           (component/html [:div.center.proxima.content-1 "Add-on Services"])
                                           (component/html [:div (ui/button-medium-underline-secondary (utils/fake-href events/control-add-ons-popup-done-button) "DONE")]))
-     (mapv (fn [{service-name :sku/name sku-id :catalog/sku-id price :sku/price}]
-             [:div.p4.flex
-              {:key (str "add-on-service-" sku-id)}
-              [:div.mt1 (ui/check-box {})]
-              [:div.flex-grow-1.mr2
-               [:div.proxima.content-2 service-name]
-               [:div.proxima.content-3 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."]]
-              [:div
-               (mf/as-money price)]])
+     (mapv
+      (fn [{:addon-service-entry/keys [id decoration-classes tertiary primary secondary]}]
+        [:div.p4.flex
+         {:key       id
+          :data-test id
+          :class     decoration-classes}
+         [:div.mt1 (ui/check-box {})]
+         [:div.flex-grow-1.mr2
+          [:div.proxima.content-2 primary]
+          [:div.proxima.content-3 secondary]]
+         [:div tertiary]])
            services)]))
 
 (defn query [data]
