@@ -11,6 +11,7 @@
    [catalog.images :as catalog-images]
    [checkout.call-out :as call-out]
    [checkout.header :as header]
+   [checkout.shop.add-on-services-menu :as add-on-services-menu]
    [checkout.suggestions :as suggestions]
    [checkout.ui.cart-item :as cart-item]
    [checkout.ui.cart-summary :as cart-summary]
@@ -646,39 +647,8 @@
                                  "Hide promo code"
                                  "Add promo code")})))))
 
-(def add-on-sku->addon-specialty
-  {"SRV-DPCU-000" :specialty-addon-hair-deep-conditioning,
-   "SRV-3CU-000"  :specialty-addon-360-frontal-customization,
-   "SRV-TKDU-000" :specialty-addon-weave-take-down,
-   "SRV-CCU-000"  :specialty-addon-closure-customization,
-   "SRV-FCU-000"  :specialty-addon-frontal-customization,
-   "SRV-TRMU-000" :specialty-addon-natural-hair-trim})
-
-(defn stylist-can-perform-addon-service?
-  [stylist addon-service-sku]
-  (let [service-key (get add-on-sku->addon-specialty addon-service-sku)]
-    (-> stylist
-        :service-menu
-        service-key
-        boolean)))
-
-(defn addon-service-sku->addon-service-menu-entry
-  [{:keys    [catalog/sku-id sku/price addon-unavailable-reason]
-    sku-name :sku/name}]
-  {:addon-service-entry/id                 (str "add-on-service-" sku-id)
-   :addon-service-entry/decoration-classes (when addon-unavailable-reason "bg-refresh-gray dark-gray")
-   :addon-service-entry/primary            sku-name
-   :addon-service-entry/secondary          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-   :addon-service-entry/tertiary           (mf/as-money price)
-   :addon-service-entry/warning            addon-unavailable-reason})
-
 (defn full-cart-query [data]
   (let [shop?                                (#{"shop"} (get-in data keypaths/store-slug))
-        hair-family-facet                    (->> (get-in data keypaths/v2-facets)
-                                                  (maps/index-by :facet/slug)
-                                                  :hair/family
-                                                  :facet/options
-                                                  (maps/index-by :option/slug))
         order                                (get-in data keypaths/order)
         products                             (get-in data keypaths/v2-products)
         facets                               (get-in data keypaths/v2-facets)
@@ -689,8 +659,8 @@
         {:mayvenn-install/keys
          [entered? applied? locked? any-wig?
           quantity-remaining]
-         servicing-stylist :mayenn-install/stylist
-         :as               mayvenn-install}  (mayvenn-install/mayvenn-install data)
+         :as mayvenn-install
+         servicing-stylist :mayvenn-install/stylist}  (mayvenn-install/mayvenn-install data)
 
         skus                            (get-in data keypaths/v2-skus)
         recently-added-sku-ids          (get-in data keypaths/cart-recently-added-skus)
@@ -713,30 +683,7 @@
                                            {:page/slug           "wigs"
                                             :catalog/category-id "13"
                                             :query-params        {:family "lace-front-wigs~360-wigs"}}]
-                                          mayvenn-install-shopping-action)
-        sorted-addon-services           (->> (get-in data keypaths/v2-skus)
-                                             vals
-                                             (spice.selector/match-all {} {:catalog/department "service" :service/type "addon"})
-                                             (map (fn [{addon-service-hair-family :hair/family
-                                                        addon-sku-id              :catalog/sku-id
-                                                        :as                       addon-service}]
-                                                    (assoc addon-service
-                                                           :addon-unavailable-reason (or
-                                                                                      (when (not (stylist-can-perform-addon-service? servicing-stylist addon-sku-id))
-                                                                                        "Not available with your stylist")
-                                                                                      (when (not (contains?
-                                                                                                  (set (map mayvenn-install/hair-family->service-type addon-service-hair-family))
-                                                                                                  (:mayvenn-install/service-type mayvenn-install)))
-                                                                                        (storefront.platform.strings/format
-                                                                                         "Only Available with %s Install" (->> addon-service-hair-family
-                                                                                                                               first
-                                                                                                                               (get hair-family-facet)
-                                                                                                                               :sku/name)))))))
-                                             (sort-by (comp boolean :addon-unavailable-reason))
-                                             (partition-by :addon-unavailable-reason)
-                                             (map (partial sort-by :add-on-service/ui-order)),
-                                             flatten
-                                             (map addon-service-sku->addon-service-menu-entry))]
+                                          mayvenn-install-shopping-action)]
     (cond-> {:suggestions               (suggestions/consolidated-query data)
              :line-items                line-items
              :skus                      skus
@@ -771,9 +718,7 @@
              :quadpay/order-total       (when-not locked? (:total order))
              :quadpay/show?             (get-in data keypaths/loaded-quadpay)
              :quadpay/directive         (if locked? :no-total :just-select)
-             :mayvenn-install           mayvenn-install
-             :add-on-services/spinner   (get-in data request-keys/get-skus)
-             :add-on-services/services sorted-addon-services}
+             :mayvenn-install           mayvenn-install}
 
       entered?
       (merge {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
@@ -816,27 +761,6 @@
                          empty-component
                          full-component) cart-data opts)]]))
 
-(defn add-on-services-popup-template [{{:add-on-services/keys [spinner services] :as test} :full-cart}]
-  (if spinner
-    [:div.py3.h2 ui/spinner]
-    [:div.bg-white
-     (components.header/mobile-nav-header {:class "border-bottom border-gray" } nil
-                                          (component/html [:div.center.proxima.content-1 "Add-on Services"])
-                                          (component/html [:div (ui/button-medium-underline-secondary (utils/fake-href events/control-add-ons-popup-done-button) "DONE")]))
-     (mapv
-      (fn [{:addon-service-entry/keys [id decoration-classes primary secondary tertiary warning]}]
-        [:div.p4.flex
-         {:key       id
-          :data-test id
-          :class     decoration-classes}
-         [:div.mt1 (ui/check-box {})]
-         [:div.flex-grow-1.mr2
-          [:div.proxima.content-2 primary]
-          [:div.proxima.content-3 secondary]
-          [:div.proxima.content-3.red warning]]
-         [:div tertiary]])
-           services)]))
-
 (defn query [data]
   {:fetching-order?          (utils/requesting? data request-keys/get-order)
    :item-count               (orders/product-quantity (get-in data keypaths/order))
@@ -844,9 +768,9 @@
    :full-cart                (full-cart-query data)})
 
 (defcomponent template
-  [{:keys [header footer popup promo-banner flash cart data nav-event add-on-services-popup?] :as query-data} _ _]
+  [{:keys [header footer popup promo-banner flash cart data nav-event add-on-services-popup? add-on-services-menu] :as query-data} _ _]
   (if add-on-services-popup?
-    (add-on-services-popup-template cart)
+    (add-on-services-menu/add-on-services-popup-template add-on-services-menu)
     [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
        #?(:cljs (popup/built-component popup nil))
 
@@ -870,17 +794,12 @@
                     (when (and (zero? (orders/product-quantity (get-in app-state keypaths/order)))
                                (-> app-state mayvenn-install/mayvenn-install :mayvenn-install/entered? not))
                       {:promo-banner app-state})
-                    {:cart                     (query app-state)
-                     :header                   app-state
-                     :footer                   app-state
-                     :popup                    app-state
-                     :flash                    app-state
-                     :data                     app-state
-                     :nav-event                nav-event
-                     :add-on-services-popup?   (get-in app-state keypaths/add-ons-popup-displayed?)})))
-
-(defmethod transitions/transition-state events/control-browse-add-ons-button [_ event args app-state]
-  (assoc-in app-state keypaths/add-ons-popup-displayed? true))
-
-(defmethod transitions/transition-state events/control-add-ons-popup-done-button [_ event args app-state]
-  (assoc-in app-state keypaths/add-ons-popup-displayed? false))
+                    {:cart                   (query app-state)
+                     :header                 app-state
+                     :footer                 app-state
+                     :popup                  app-state
+                     :flash                  app-state
+                     :data                   app-state
+                     :nav-event              nav-event
+                     :add-on-services-menu   (add-on-services-menu/query app-state)
+                     :add-on-services-popup? (get-in app-state keypaths/add-ons-popup-displayed?)})))
