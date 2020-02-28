@@ -700,7 +700,8 @@
       (do
         (let [{physical-line-items :spree
                service-line-items  :service}
-              (->> (:shipments order) (mapcat :storefront/all-line-items)
+              (->> (:shipments order)
+                   (mapcat :storefront/all-line-items)
                    (group-by (comp keyword :source))
                    (map :sku)
                    seq)]
