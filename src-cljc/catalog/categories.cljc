@@ -514,7 +514,7 @@
                                         "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                         "your unique look using the built-in combs and adjustable strap.")}
           (category->seo "Ready-to-Wear Wigs: Short, Bob, Side-Part & More"
-                         (copy "Mayvenn’s ready-to-wear human hair lace wigs provide a quick style switch-up and "
+                         (copy "Mayvenn’s ready-to-wear human hair lace wigs provide a quick style switch-up and"
                                "come in different variations such as Brazilian, straight, and loose wave.")
                          "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/")
           wig-templates)

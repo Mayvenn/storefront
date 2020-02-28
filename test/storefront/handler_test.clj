@@ -736,7 +736,7 @@
                 handler
                 (validate-title-and-description-and-canonical "Ready-to-Wear Wigs: Short, Bob, Side-Part & More | Mayvenn"
                                                               (str "Mayvenn’s ready-to-wear human hair lace wigs provide "
-                                                                   "a quick style switch-up and  come in different "
+                                                                   "a quick style switch-up and come in different "
                                                                    "variations such as Brazilian, straight, and loose wave.")
                                                               "/categories/25-ready-wear-wigs"
                                                               nil))))
