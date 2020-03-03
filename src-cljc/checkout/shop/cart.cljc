@@ -303,6 +303,7 @@
   [app-state
    {:mayvenn-install/keys
     [service-title
+     addon-services
      service-image-url service-type entered? locked? applied? stylist service-discount quantity-remaining quantity-required quantity-added any-wig?]}
    line-items
    skus
@@ -314,41 +315,41 @@
                                    (variants-requests app-state request-keys/update-line-item (map :sku line-items)))
         delete-line-item-requests (variants-requests app-state request-keys/delete-line-item (map :id line-items))
 
-        cart-items       (for [{sku-id :sku variant-id :id :as line-item} line-items
-                               :let
-                               [sku                  (get skus sku-id)
-                                price                (or (:sku/price line-item)
-                                                         (:unit-price line-item))
-                                qty-adjustment-args {:variant (select-keys line-item [:id :sku])}
-                                removing?            (get delete-line-item-requests variant-id)
-                                updating?            (get update-line-item-requests sku-id)
-                                just-added-to-order? (some #(= sku-id %) (get-in app-state keypaths/cart-recently-added-skus))]]
-                           {:react/key                                      (str sku-id "-" (:quantity line-item))
-                            :cart-item-title/id                             (str "line-item-title-" sku-id)
-                            :cart-item-title/primary                        (or (:product-title line-item)
-                                                                                (:product-name line-item))
-                            :cart-item-title/secondary                      (:color-name line-item)
-                            :cart-item-floating-box/id                      (str "line-item-price-ea-with-label-" sku-id)
-                            :cart-item-floating-box/value                   [:div {:data-test (str "line-item-price-ea-" sku-id)}
-                                                                             (mf/as-money price)
-                                                                             [:div.proxima.content-4 " each"]]
-                            :cart-item-square-thumbnail/id                  sku-id
-                            :cart-item-square-thumbnail/sku-id              sku-id
-                            :cart-item-square-thumbnail/highlighted?        just-added-to-order?
-                            :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
-                                                                              (str length-circle-value "”"))
-                            :cart-item-square-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)
-                            :cart-item-adjustable-quantity/id               (str "line-item-quantity-" sku-id)
-                            :cart-item-adjustable-quantity/spinning?        updating?
-                            :cart-item-adjustable-quantity/value            (:quantity line-item)
-                            :cart-item-adjustable-quantity/id-suffix        sku-id
-                            :cart-item-adjustable-quantity/decrement-target [events/control-cart-line-item-dec qty-adjustment-args]
-                            :cart-item-adjustable-quantity/increment-target [events/control-cart-line-item-inc qty-adjustment-args]
-                            :cart-item-remove-action/id                     (str "line-item-remove-" sku-id)
-                            :cart-item-remove-action/spinning?              removing?
-                            :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]})
-        matched?         (boolean stylist)
-        add-on-services? (experiments/add-on-services? app-state)]
+        cart-items                  (for [{sku-id :sku variant-id :id :as line-item} line-items
+                                          :let
+                                          [sku                  (get skus sku-id)
+                                           price                (or (:sku/price line-item)
+                                                                    (:unit-price line-item))
+                                           qty-adjustment-args {:variant (select-keys line-item [:id :sku])}
+                                           removing?            (get delete-line-item-requests variant-id)
+                                           updating?            (get update-line-item-requests sku-id)
+                                           just-added-to-order? (some #(= sku-id %) (get-in app-state keypaths/cart-recently-added-skus))]]
+                                      {:react/key                                      (str sku-id "-" (:quantity line-item))
+                                       :cart-item-title/id                             (str "line-item-title-" sku-id)
+                                       :cart-item-title/primary                        (or (:product-title line-item)
+                                                                                           (:product-name line-item))
+                                       :cart-item-title/secondary                      (:color-name line-item)
+                                       :cart-item-floating-box/id                      (str "line-item-price-ea-with-label-" sku-id)
+                                       :cart-item-floating-box/value                   [:div {:data-test (str "line-item-price-ea-" sku-id)}
+                                                                                        (mf/as-money price)
+                                                                                        [:div.proxima.content-4 " each"]]
+                                       :cart-item-square-thumbnail/id                  sku-id
+                                       :cart-item-square-thumbnail/sku-id              sku-id
+                                       :cart-item-square-thumbnail/highlighted?        just-added-to-order?
+                                       :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
+                                                                                         (str length-circle-value "”"))
+                                       :cart-item-square-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)
+                                       :cart-item-adjustable-quantity/id               (str "line-item-quantity-" sku-id)
+                                       :cart-item-adjustable-quantity/spinning?        updating?
+                                       :cart-item-adjustable-quantity/value            (:quantity line-item)
+                                       :cart-item-adjustable-quantity/id-suffix        sku-id
+                                       :cart-item-adjustable-quantity/decrement-target [events/control-cart-line-item-dec qty-adjustment-args]
+                                       :cart-item-adjustable-quantity/increment-target [events/control-cart-line-item-inc qty-adjustment-args]
+                                       :cart-item-remove-action/id                     (str "line-item-remove-" sku-id)
+                                       :cart-item-remove-action/spinning?              removing?
+                                       :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]})
+        matched?                    (boolean stylist)
+        add-on-services-experiment? (experiments/add-on-services? app-state)]
 
     (cond-> cart-items
       entered?
@@ -411,10 +412,21 @@
 
           (and applied?
                matched?
-               add-on-services?)
+               add-on-services-experiment?)
           (merge {:cart-item-modify-button/id      "browse-add-ons"
                   :cart-item-modify-button/target  [events/control-browse-add-ons-button]
-                  :cart-item-modify-button/content "+ Browse Add-Ons"}))]))))
+                  :cart-item-modify-button/content "+ Browse Add-Ons"})
+
+          (and applied?
+               matched?
+               add-on-services-experiment?
+               (seq addon-services))
+          (merge {:cart-item-sub-items/id    "addon-services"
+                  :cart-item-sub-items/title "Add-On Services"
+                  :cart-item-sub-items/items (map (fn [{:addon-service/keys [title price]}]
+                                                    {:cart-item-sub-item/title title
+                                                     :cart-item-sub-item/price price})
+                                                  addon-services)}))]))))
 
 (defn coupon-code->remove-promo-action [coupon-code]
   {:cart-summary-line/action-id     "cart-remove-promo"
@@ -427,7 +439,7 @@
   "This is for cart's that haven't entered an upsell (free install, wig customization, etc)"
   [show-priority-shipping-method?
    {:as order :keys [adjustments tax-total total]} {:mayvenn-install/keys [any-wig?]}]
-  (let [subtotal          (orders/products-subtotal order)
+  (let [subtotal          (orders/products-and-services-subtotal order)
         shipping          (orders/shipping-item order)
         shipping-cost     (some->> shipping
                                    vector
@@ -498,7 +510,7 @@
    {:as install :mayvenn-install/keys [any-wig? service-type entered? locked? applied? service-discount quantity-remaining]}]
   (let [total              (:total order)
         tax                (:tax-total order)
-        subtotal           (orders/products-subtotal order)
+        subtotal           (orders/products-and-services-subtotal order)
         shipping           (orders/shipping-item order)
         shipping-cost      (some->> shipping
                                     vector
@@ -519,10 +531,7 @@
          :cart-summary-total-line/value   [:div (some-> total mf/as-money)]
          :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
                                        :cart-summary-line/label "Subtotal"
-                                       :cart-summary-line/value (mf/as-money (cond-> subtotal
-                                                                               (or locked? applied?)
-                                                                               ;; Add the service discount to the subtotal
-                                                                               (- service-discount)))}]
+                                       :cart-summary-line/value (mf/as-money subtotal)}]
 
                                      (when shipping
                                        [{:cart-summary-line/id       "shipping"

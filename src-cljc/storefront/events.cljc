@@ -210,6 +210,7 @@
 (defpath control-pick-stylist-button)
 (defpath control-browse-add-ons-button)
 (defpath control-add-ons-popup-done-button)
+(defpath control-addon-checkbox)
 (defpath control-change-stylist)
 (defpath share-stylist)
 

@@ -11,6 +11,12 @@
   [{:keys [source]}]
   (= "spree" source))
 
+(defn product-or-service?
+  [line-item]
+  (or
+   (product? line-item)
+   (service? line-item)))
+
 (defn any-wig?
   [line-item]
   (-> line-item :variant-attrs :hair/family #{"ready-wigs" "360-wigs" "lace-front-wigs"}))

@@ -203,7 +203,9 @@
        (reduce (fn [acc {:keys [id quantity]}]
                  (update acc id (fnil + 0) quantity)) {})))
 
-(defn TEMP-pretend-service-items-do-not-exist [order]
+(defn TEMP-pretend-service-items-do-not-exist
+  [order]
+  "Defines shipments' :line-items as not containing services. Also defines :storefront/all-line-items as including them."
   (utils/?update order :shipments
                  (partial map
                           (fn [{:keys [line-items storefront/all-line-items] :as shipment}]
@@ -211,3 +213,15 @@
                               (nil? all-line-items)
                               (assoc :storefront/all-line-items line-items
                                      :line-items (remove line-items/service? line-items)))))))
+
+;;; Functions that operate over products & services
+
+(defn product-and-service-items [order]
+  (->> order
+       :shipments
+       first
+       :storefront/all-line-items
+        (filter line-items/product-or-service?)) )
+
+(defn products-and-services-subtotal [order]
+  (reduce + 0 (map line-item-subtotal (product-and-service-items order))))

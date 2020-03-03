@@ -238,12 +238,12 @@
 (defn cart-summary-query
   [show-priority-shipping-method?
    {:as order :keys [adjustments]}
-   {:mayvenn-install/keys [locked? applied? service-discount service-type]}
+   {:mayvenn-install/keys [locked? applied? service-discount addon-services service-type]}
    available-store-credit]
   (when (seq order)
     (let [total              (-> order :total)
           tax                (:tax-total order)
-          subtotal           (orders/products-subtotal order)
+          subtotal           (orders/products-and-services-subtotal order)
           shipping           (orders/shipping-item order)
           shipping-cost      (some->> shipping
                                       vector
@@ -262,10 +262,7 @@
                :cart-summary-total-line/value [:div (some-> total (- available-store-credit) (max 0) mf/as-money)]
                :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
                                              :cart-summary-line/label "Subtotal"
-                                             :cart-summary-line/value (mf/as-money (cond-> subtotal
-                                                                                     (or locked? applied?)
-                                                                                     ;; Add the service discount to the subtotal
-                                                                                     (- service-discount)))}
+                                             :cart-summary-line/value (mf/as-money subtotal)}
                                             {:cart-summary-line/id       "shipping"
                                              :cart-summary-line/label    "Shipping"
                                              :cart-summary-line/sublabel shipping-timeframe
@@ -294,6 +291,15 @@
                                                :cart-summary-line/class "p-color"
                                                :cart-summary-line/value (mf/as-money (- (min available-store-credit total)))}]))}
 
+        (seq addon-services)
+        (merge
+         {:cart-item-sub-items/id    "addon-services"
+          :cart-item-sub-items/title "Add-On Services"
+          :cart-item-sub-items/items (map (fn [{:addon-service/keys [title price]}]
+                                            {:cart-item-sub-item/title title
+                                             :cart-item-sub-item/price price})
+                                          addon-services)})
+
         applied?
         (merge {:cart-summary-total-incentive/id      "mayvenn-install"
                 :cart-summary-total-incentive/label   "Includes Mayvenn Install"
@@ -320,6 +326,7 @@
                                 stylist
                                 service-type
                                 service-title
+                                addon-services
                                 service-image-url]
          :as                   mayvenn-install} (mayvenn-install/mayvenn-install data)
         user                                    (get-in data keypaths/user)
@@ -344,6 +351,18 @@
                                                         order
                                                         mayvenn-install
                                                         (orders/available-store-credit order user))}
+
+
+      (seq addon-services)
+      (maps/deep-merge
+       {:freeinstall-cart-item
+        {:cart-item
+         {:cart-item-sub-items/id    "addon-services"
+          :cart-item-sub-items/title "Add-On Services"
+          :cart-item-sub-items/items (map (fn [{:addon-service/keys [title price]}]
+                                            {:cart-item-sub-item/title title
+                                             :cart-item-sub-item/price price})
+                                          addon-services)}}})
 
       applied?
       (maps/deep-merge

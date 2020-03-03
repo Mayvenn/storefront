@@ -187,6 +187,25 @@
                                        (apply utils/route-to target))
                                 content)]))
 
+(defn cart-item-sub-items-molecule
+  [{:cart-item-sub-items/keys [id title items]}]
+  (when id
+    [:div.mt2 {:data-test (str "cart-item-sub-items-molecule-" id)
+               :key       id}
+     [:div.shout.proxima.title-3 title]
+     (mapv (fn [{:cart-item-sub-item/keys [title price]}]
+             [:div.flex.justify-between
+              [:div.content-3.flex.items-center
+               [:div.bg-s-color.flex.justify-center.items-center.mr1
+                {:style {:height        11
+                         :width         11
+                         :border-radius "50%"}}
+                (svg/check-mark {:class "fill-white"
+                                 :style {:width  "7px"
+                                         :height "7px"}})]
+               title]
+              [:div price]]) items)]))
+
 (defcomponent organism
   [{:keys [cart-item suggestions]} _ {:keys [id]}]
   [:div.pt1.pb2.m1.flex
@@ -206,8 +225,7 @@
       [:div
        (cart-item-copy-molecule cart-item)
        (ui.molecules/stars-rating-molecule cart-item)
-       (cart-item-adjustable-quantity-molecule cart-item)
-       (cart-item-modify-button cart-item)]]
+       (cart-item-adjustable-quantity-molecule cart-item)]]
 
      ;; price group
      [:div.right.right-align.pt1.flex.flex-column.items-end
@@ -216,6 +234,8 @@
       (cart-item-swap-action-molecule cart-item)
       (cart-item-floating-box-molecule cart-item)]]
 
+    (cart-item-sub-items-molecule cart-item)
+    (cart-item-modify-button cart-item)
     (cart-item-steps-to-complete-molecule cart-item)
 
     (component/build suggestions/consolidated-component suggestions nil)]])

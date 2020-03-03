@@ -10,6 +10,7 @@
    [spice.maps :as maps]
    spice.selector
    [storefront.accessors.mayvenn-install :as mayvenn-install]
+   [storefront.accessors.orders :as orders]
    [storefront.component :as component :refer [defcomponent defdynamic-component]]
    [storefront.components.header :as components.header]
    [storefront.components.money-formatters :as mf]
@@ -39,14 +40,18 @@
         boolean)))
 
 (defn addon-service-sku->addon-service-menu-entry
-  [{:keys    [catalog/sku-id sku/price addon-unavailable-reason]
+  [{:keys    [catalog/sku-id sku/price legacy/variant-id addon-unavailable-reason addon-selected?]
     sku-name :sku/name}]
   {:addon-service-entry/id                 (str "add-on-service-" sku-id)
    :addon-service-entry/decoration-classes (when addon-unavailable-reason "bg-refresh-gray dark-gray")
    :addon-service-entry/primary            sku-name
    :addon-service-entry/secondary          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
    :addon-service-entry/tertiary           (mf/as-money price)
-   :addon-service-entry/warning            addon-unavailable-reason})
+   :addon-service-entry/warning            addon-unavailable-reason
+   :addon-service-entry/target             [events/control-addon-checkbox {:sku-id sku-id
+                                                                           :variant-id variant-id
+                                                                           :previously-checked? addon-selected?}]
+   :addon-service-entry/checked?           addon-selected?})
 
 (defn query [data]
   (let [hair-family-facet                   (->> (get-in data keypaths/v2-facets)
@@ -62,19 +67,23 @@
                                                  (map (fn [{addon-service-hair-family :hair/family
                                                             addon-sku-id              :catalog/sku-id
                                                             :as                       addon-service}]
-                                                        (assoc addon-service
-                                                               :addon-unavailable-reason
-                                                               (or
-                                                                (when (not (stylist-can-perform-addon-service? servicing-stylist addon-sku-id))
-                                                                  "Not available with your stylist")
-                                                                (when (not (contains?
-                                                                            (set (map mayvenn-install/hair-family->service-type addon-service-hair-family))
-                                                                            (:mayvenn-install/service-type mayvenn-install)))
-                                                                  (storefront.platform.strings/format
-                                                                   "Only Available with %s Install" (->> addon-service-hair-family
-                                                                                                         first
-                                                                                                         (get hair-family-facet)
-                                                                                                         :sku/name)))))))
+                                                        (-> addon-service
+                                                            (assoc
+                                                             :addon-unavailable-reason
+                                                             (or
+                                                              (when (not (stylist-can-perform-addon-service? servicing-stylist addon-sku-id))
+                                                                "Not available with your stylist")
+                                                              (when (not (contains?
+                                                                          (set (map mayvenn-install/hair-family->service-type addon-service-hair-family))
+                                                                          (:mayvenn-install/service-type mayvenn-install)))
+                                                                (storefront.platform.strings/format
+                                                                 "Only Available with %s Install" (->> addon-service-hair-family
+                                                                                                       first
+                                                                                                       (get hair-family-facet)
+                                                                                                       :sku/name)))))
+                                                            (assoc :addon-selected?
+                                                                   (contains? (set (map :sku (orders/service-line-items (get-in data keypaths/order))))
+                                                                              addon-sku-id)))))
                                                  (sort-by (comp boolean :addon-unavailable-reason))
                                                  (partition-by :addon-unavailable-reason)
                                                  (map (partial sort-by :order.view/add-on-sort)),
@@ -91,12 +100,13 @@
                                           (component/html [:div.center.proxima.content-1 "Add-on Services"])
                                           (component/html [:div (ui/button-medium-underline-secondary (utils/fake-href events/control-add-ons-popup-done-button) "DONE")]))
      (mapv
-      (fn [{:addon-service-entry/keys [id decoration-classes primary secondary tertiary warning]}]
+      (fn [{:addon-service-entry/keys [id decoration-classes primary secondary tertiary warning target checked?]}]
         [:div.p4.flex
          {:key       id
           :data-test id
           :class     decoration-classes}
-         [:div.mt1 (ui/check-box {})]
+         [:div.mt1 (ui/check-box {:value     checked?
+                                  :on-change (apply utils/send-event-callback target)})]
          [:div.flex-grow-1.mr2
           [:div.proxima.content-2 primary]
           [:div.proxima.content-3 secondary]
@@ -109,3 +119,21 @@
 
 (defmethod transitions/transition-state events/control-add-ons-popup-done-button [_ event args app-state]
   (assoc-in app-state keypaths/add-ons-popup-displayed? false))
+
+(defmethod effects/perform-effects events/control-addon-checkbox
+  [_ event {:keys [sku-id variant-id previously-checked?] :as args} app-state]
+  #?(:cljs
+     (let [session-id (get-in app-state keypaths/session-id)
+           order      (get-in app-state keypaths/order)]
+       (if previously-checked?
+         (api/delete-line-item session-id order variant-id)
+         (api/add-sku-to-bag session-id
+                             {:token      (:token order)
+                              :number     (:number order)
+                              :user-id    (get-in app-state keypaths/user-id)
+                              :user-token (get-in app-state keypaths/user-token)
+                              :sku        {:catalog/sku-id sku-id}
+                              :quantity   1}
+                             #(messages/handle-message events/api-success-update-order-add-service-line-item
+                                                       {:order %
+                                                        :shop? (get-in app-state keypaths/store-slug)}))))))
