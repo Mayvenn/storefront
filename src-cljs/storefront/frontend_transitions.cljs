@@ -162,6 +162,7 @@
     (-> app-state
         collapse-menus
         add-return-event
+        (assoc-in keypaths/hide-header? false)
         (add-pending-promo-code args)
         (add-affiliate-stylist-id args)
         clear-flash
