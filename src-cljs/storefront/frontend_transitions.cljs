@@ -15,6 +15,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.state :as state]
+            catalog.keypaths
             [storefront.transitions
              :refer [transition-state
                      sign-in-user
@@ -163,6 +164,7 @@
         collapse-menus
         add-return-event
         (assoc-in keypaths/hide-header? false)
+        (assoc-in catalog.keypaths/category-panel nil)
         (add-pending-promo-code args)
         (add-affiliate-stylist-id args)
         clear-flash
