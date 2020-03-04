@@ -1,4 +1,4 @@
-(ns checkout.shop.add-on-services-menu
+(ns checkout.shop.addon-services-menu
   (:require
    #?@(:cljs [[storefront.api :as api]
               [storefront.components.payment-request-button :as payment-request-button]
@@ -23,7 +23,7 @@
    [storefront.transitions :as transitions]))
 
 
-(def add-on-sku->addon-specialty
+(def addon-sku->addon-specialty
   {"SRV-DPCU-000" :specialty-addon-hair-deep-conditioning,
    "SRV-3CU-000"  :specialty-addon-360-frontal-customization,
    "SRV-TKDU-000" :specialty-addon-weave-take-down,
@@ -33,7 +33,7 @@
 
 (defn stylist-can-perform-addon-service?
   [stylist addon-service-sku]
-  (let [service-key (get add-on-sku->addon-specialty addon-service-sku)]
+  (let [service-key (get addon-sku->addon-specialty addon-service-sku)]
     (-> stylist
         :service-menu
         service-key
@@ -42,7 +42,7 @@
 (defn addon-service-sku->addon-service-menu-entry
   [{:keys    [catalog/sku-id sku/price legacy/variant-id addon-unavailable-reason addon-selected?]
     sku-name :sku/name}]
-  {:addon-service-entry/id                 (str "add-on-service-" sku-id)
+  {:addon-service-entry/id                 (str "addon-service-" sku-id)
    :addon-service-entry/decoration-classes (when addon-unavailable-reason "bg-refresh-gray dark-gray")
    :addon-service-entry/primary            sku-name
    :addon-service-entry/secondary          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
@@ -86,19 +86,19 @@
                                                                               addon-sku-id)))))
                                                  (sort-by (comp boolean :addon-unavailable-reason))
                                                  (partition-by :addon-unavailable-reason)
-                                                 (map (partial sort-by :order.view/add-on-sort)),
+                                                 (map (partial sort-by :order.view/addon-sort)),
                                                  flatten
                                                  (map addon-service-sku->addon-service-menu-entry))]
-    {:add-on-services/spinner  (get-in data request-keys/get-skus)
-     :add-on-services/services sorted-addon-services}))
+    {:addon-services/spinner  (get-in data request-keys/get-skus)
+     :addon-services/services sorted-addon-services}))
 
-(defn add-on-services-popup-template [{:add-on-services/keys [spinner services]}]
+(defn addon-services-popup-template [{:addon-services/keys [spinner services]}]
   (if spinner
     [:div.py3.h2 ui/spinner]
     [:div.bg-white
      (components.header/mobile-nav-header {:class "border-bottom border-gray" } nil
                                           (component/html [:div.center.proxima.content-1 "Add-on Services"])
-                                          (component/html [:div (ui/button-medium-underline-secondary (utils/fake-href events/control-add-ons-popup-done-button) "DONE")]))
+                                          (component/html [:div (ui/button-medium-underline-secondary (utils/fake-href events/control-addons-popup-done-button) "DONE")]))
      (mapv
       (fn [{:addon-service-entry/keys [id decoration-classes primary secondary tertiary warning target checked?]}]
         [:div.p4.flex
@@ -114,11 +114,11 @@
          [:div tertiary]])
            services)]))
 
-(defmethod transitions/transition-state events/control-browse-add-ons-button [_ event args app-state]
-  (assoc-in app-state keypaths/add-ons-popup-displayed? true))
+(defmethod transitions/transition-state events/control-browse-addons-button [_ event args app-state]
+  (assoc-in app-state keypaths/addons-popup-displayed? true))
 
-(defmethod transitions/transition-state events/control-add-ons-popup-done-button [_ event args app-state]
-  (assoc-in app-state keypaths/add-ons-popup-displayed? false))
+(defmethod transitions/transition-state events/control-addons-popup-done-button [_ event args app-state]
+  (assoc-in app-state keypaths/addons-popup-displayed? false))
 
 (defmethod effects/perform-effects events/control-addon-checkbox
   [_ event {:keys [sku-id variant-id previously-checked?] :as args} app-state]

@@ -349,4 +349,4 @@
 
 (def promo-code-entry-open? (conj ui :promo-code-entry-open?))
 
-(def add-ons-popup-displayed? (conj ui :cart-add-ons-popup-displayed?))
+(def addons-popup-displayed? (conj ui :cart-addons-popup-displayed?))

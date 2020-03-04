@@ -715,7 +715,7 @@
       (messages/handle-message events/clear-order))
 
     (when (and (-> order orders/service-line-items not-empty)
-               (experiments/add-on-services? app-state)
+               (experiments/addon-services? app-state)
                (:servicing-stylist-id order))
       (api/get-skus
        (get-in app-state keypaths/api-cache)

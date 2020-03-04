@@ -11,7 +11,7 @@
    [catalog.images :as catalog-images]
    [checkout.call-out :as call-out]
    [checkout.header :as header]
-   [checkout.shop.add-on-services-menu :as add-on-services-menu]
+   [checkout.shop.addon-services-menu :as addon-services-menu]
    [checkout.suggestions :as suggestions]
    [checkout.ui.cart-item :as cart-item]
    [checkout.ui.cart-summary :as cart-summary]
@@ -349,7 +349,7 @@
                                        :cart-item-remove-action/spinning?              removing?
                                        :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]})
         matched?                    (boolean stylist)
-        add-on-services-experiment? (experiments/add-on-services? app-state)]
+        addon-services-experiment?  (experiments/addon-services? app-state)]
 
     (cond-> cart-items
       entered?
@@ -412,14 +412,14 @@
 
           (and applied?
                matched?
-               add-on-services-experiment?)
-          (merge {:cart-item-modify-button/id      "browse-add-ons"
-                  :cart-item-modify-button/target  [events/control-browse-add-ons-button]
+               addon-services-experiment?)
+          (merge {:cart-item-modify-button/id      "browse-addons"
+                  :cart-item-modify-button/target  [events/control-browse-addons-button]
                   :cart-item-modify-button/content "+ Browse Add-Ons"})
 
           (and applied?
                matched?
-               add-on-services-experiment?
+               addon-services-experiment?
                (seq addon-services))
           (merge {:cart-item-sub-items/id    "addon-services"
                   :cart-item-sub-items/title "Add-On Services"
@@ -778,9 +778,9 @@
    :full-cart                (full-cart-query data)})
 
 (defcomponent template
-  [{:keys [header footer popup promo-banner flash cart data nav-event add-on-services-popup? add-on-services-menu] :as query-data} _ _]
-  (if add-on-services-popup?
-    (add-on-services-menu/add-on-services-popup-template add-on-services-menu)
+  [{:keys [header footer popup promo-banner flash cart data nav-event addon-services-popup? addon-services-menu] :as query-data} _ _]
+  (if addon-services-popup?
+    (addon-services-menu/addon-services-popup-template addon-services-menu)
     [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
        #?(:cljs (popup/built-component popup nil))
 
@@ -811,5 +811,5 @@
                      :flash                  app-state
                      :data                   app-state
                      :nav-event              nav-event
-                     :add-on-services-menu   (add-on-services-menu/query app-state)
-                     :add-on-services-popup? (get-in app-state keypaths/add-ons-popup-displayed?)})))
+                     :addon-services-menu    (addon-services-menu/query app-state)
+                     :addon-services-popup?  (get-in app-state keypaths/addons-popup-displayed?)})))

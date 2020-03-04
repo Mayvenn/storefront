@@ -109,6 +109,6 @@
   [data]
   (display-feature? data "show-priority-shipping-method"))
 
-(defn add-on-services?
+(defn addon-services?
   [data]
   (display-feature? data "add-on-services"))
