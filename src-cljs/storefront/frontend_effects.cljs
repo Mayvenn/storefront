@@ -702,8 +702,8 @@
               (->> (:shipments order)
                    (mapcat :storefront/all-line-items)
                    (group-by (comp keyword :source)))]
-          (messages/handle-message events/ensure-sku-ids (spice.core/spy {:sku-ids         (map :sku physical-line-items)
-                                                                          :service-sku-ids (map :sku service-line-items)})))
+          (messages/handle-message events/ensure-sku-ids {:sku-ids         (map :sku physical-line-items)
+                                                          :service-sku-ids (map :sku service-line-items)}))
 
         (when servicing-stylist-not-loaded?
           (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))
