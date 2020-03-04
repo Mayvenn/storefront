@@ -182,35 +182,36 @@
 
 (defn shop-site
   [data owner opts]
-  (let [nav-event (get-in data keypaths/navigation-event)]
-    (cond ; Design System
-      (routes/sub-page? [nav-event] [events/navigate-design-system])
-      #?(:clj
-         (design-system.home/built-top-level data nil)
-         :cljs
-         ((ui/lazy-load-component :design-system
-                                  'design-system.home/built-top-level
-                                  (get-in data keypaths/navigation-event))
-          data nil))
+  (component/html
+   (let [nav-event (get-in data keypaths/navigation-event)]
+     (cond ; Design System
+       (routes/sub-page? [nav-event] [events/navigate-design-system])
+       #?(:clj
+          (design-system.home/built-top-level data nil)
+          :cljs
+          ((ui/lazy-load-component :design-system
+                                   'design-system.home/built-top-level
+                                   (get-in data keypaths/navigation-event))
+           data nil))
 
-      (get-in data keypaths/menu-expanded) ; Slideout nav
-      (slideout-nav/built-component data nil)
+       (get-in data keypaths/menu-expanded) ; Slideout nav
+       (slideout-nav/built-component data nil)
 
-      (routes/sub-page? [nav-event] [events/navigate-cart]) ; Cart pages
-      (shop-cart/page data nav-event)
+       (routes/sub-page? [nav-event] [events/navigate-cart]) ; Cart pages
+       (shop-cart/page data nav-event)
 
-      ;; TODO this should be moved into the UI domain of stylist-matching
-      (routes/sub-page? [nav-event] [events/navigate-adventure])
-      [:div {:data-test (keypaths/->component-str nav-event)}
-       [:div {:key "popup"}
-        #?(:cljs (popup/built-component data nil))]
-       [:div.flex.stretch
-        {:style {:margin-bottom "-30px"}
-         :class "max-580 mx-auto relative"}
-        ((main-component nav-event) data nil)]]
+       ;; TODO this should be moved into the UI domain of stylist-matching
+       (routes/sub-page? [nav-event] [events/navigate-adventure])
+       [:div {:data-test (keypaths/->component-str nav-event)}
+        [:div {:key "popup"}
+         #?(:cljs (popup/built-component data nil))]
+        [:div.flex.stretch
+         {:style {:margin-bottom "-30px"}
+          :class "max-580 mx-auto relative"}
+         ((main-component nav-event) data nil)]]
 
-      :else
-      (main-layout data nav-event))))
+       :else
+       (main-layout data nav-event)))))
 
 (defcomponent top-level-component
   [data owner opts]
