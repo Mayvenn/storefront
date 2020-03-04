@@ -7,26 +7,28 @@
 (defn return-link
   [{:return-link/keys [copy id back]
     [event & args]    :return-link/event-message}]
-  (when id
-    [:div.proxima.title-3.shout.bold.flex
-    [:a.inherit-color
-     (merge {:data-test id}
-            (if (= :navigate (first event))
-              (apply utils/route-back-or-to back event args)
-              (apply utils/fake-href event args)))
-     [:div.flex.line-height-1
-      (ui/back-caret {})
-      [:span.ml1.border-bottom.border-black.border-width-3 copy]]]]))
+  (component/html
+   (when id
+     [:div.proxima.title-3.shout.bold.flex
+      [:a.inherit-color
+       (merge {:data-test id}
+              (if (= :navigate (first event))
+                (apply utils/route-back-or-to back event args)
+                (apply utils/fake-href event args)))
+       [:div.flex.line-height-1
+        (ui/back-caret {})
+        [:span.ml1.border-bottom.border-black.border-width-3 copy]]]])))
 
 (defn stars-rating-molecule
   [{rating :rating/value}]
-  (when rating
-    (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars rating)]
-      [:div.flex.items-center.button-font-3.s-color
-       [:span.mr1 rating]
-       whole-stars
-       partial-star
-       empty-stars])))
+  (component/html
+   (when rating
+     (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars rating)]
+       [:div.flex.items-center.button-font-3.s-color
+        [:span.mr1 rating]
+        whole-stars
+        partial-star
+        empty-stars]))))
 
 (defn ^:private ucare-hero
   [mob-uuid dsk-uuid file-name alt]
@@ -106,14 +108,15 @@
       label])))
 
 (defn ^:private star [index type]
-  [:span.mrp1
-   {:key (str (name type) "-" index)}
-   (case type
-     :whole         (svg/whole-star         {:height "13px" :width "13px"})
-     :three-quarter (svg/three-quarter-star {:height "13px" :width "13px"})
-     :half          (svg/half-star          {:height "13px" :width "13px"})
-     :empty         (svg/empty-star         {:height "13px" :width "13px"})
-     nil)])
+  (component/html
+   [:span.mrp1
+    {:key (str (name type) "-" index)}
+    (case type
+      :whole         (svg/whole-star         {:height "13px" :width "13px"})
+      :three-quarter (svg/three-quarter-star {:height "13px" :width "13px"})
+      :half          (svg/half-star          {:height "13px" :width "13px"})
+      :empty         (svg/empty-star         {:height "13px" :width "13px"})
+      nil)]))
 
 (defn ^:private rating->stars
   [rating full-rating]
@@ -128,9 +131,10 @@
 
 (defn svg-star-rating
   [rating]
-  [:div.flex.items-center
-   [:span.mrp2 rating]
-   (map-indexed star (rating->stars rating 5))])
+  (component/html
+   [:div.flex.items-center
+    [:span.mrp2 rating]
+    (map-indexed star (rating->stars rating 5))]))
 
 (defn svg-star-rating-molecule
   [{:rating/keys [value]}]
