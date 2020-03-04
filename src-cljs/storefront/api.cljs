@@ -721,7 +721,7 @@
           {:session-id session-id
            :variant-id variant-id
            :quantity (->> order
-                          orders/product-items
+                          orders/product-and-service-items
                           (orders/line-item-by-id variant-id)
                           :quantity)})
    #(messages/handle-message events/api-success-remove-from-bag {:order %})))
