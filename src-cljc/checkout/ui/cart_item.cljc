@@ -209,7 +209,7 @@
 (defcomponent organism
   [{:keys [cart-item suggestions]} _ {:keys [id]}]
   [:div.pt1.pb2.m1.flex
-   {:id id :data-test id}
+   {:key id :data-test id}
    ;; image group
    [:div.relative.pt3
     {:style {:min-width "70px"}}
