@@ -81,14 +81,6 @@
   [data]
   (display-feature? data "browser-pay"))
 
-(defn adv-cart-promo-entry?
-  [data]
-  (display-feature? data "adv-cart-promo-entry"))
-
-(defn stylist-results-updated?
-  [data]
-  (display-feature? data "stylist-results-updated"))
-
 (defn promo-link?
   [data]
   (display-feature? data "promo-link"))
