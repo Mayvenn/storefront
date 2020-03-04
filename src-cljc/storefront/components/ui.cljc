@@ -533,14 +533,17 @@
          retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" retina-quality "/")
                        width (str "-/resize/" (* 2 width) "x/"))
          default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" default-quality "/")
-                       width (str "-/resize/" width "x/"))]
-     [:picture ^:attrs (merge {:key image-id}
+                       width (str "-/resize/" width "x/"))
+         picture-attrs (merge {:key image-id}
                               (when picture-classes
-                                {:class picture-classes}))
-      [:source {:src-set (str retina-url " 2x," default-url " 1x")}]
-      [:img ^:attrs (-> img-attrs
-                        (dissoc :width :retina-quality :default-quality :picture-classses)
-                        (assoc :src default-url))]])))
+                                {:class picture-classes}))]
+     (if image-id
+       [:picture ^:attrs picture-attrs
+        [:source {:src-set (str retina-url " 2x," default-url " 1x")}]
+        [:img ^:attrs (-> img-attrs
+                          (dissoc :width :retina-quality :default-quality :picture-classses)
+                          (assoc :src default-url))]]
+       [:picture ^:attrs picture-attrs]))))
 
 (defn ucare-gif2video
   [{:as   attrs
