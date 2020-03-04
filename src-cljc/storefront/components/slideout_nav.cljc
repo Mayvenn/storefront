@@ -38,44 +38,48 @@
                      cart))))
 
 (defn ^:private marquee-col [content]
-  [:div.flex-auto
-   {:style {:flex-basis 0}}
-   content])
+  (component/html
+   [:div.flex-auto
+    {:style {:flex-basis 0}}
+    content]))
 
 (defn ^:private marquee-row [left-content right-content]
-  [:div.flex.my3
-   (marquee-col left-content)
-   [:div.pr3]
-   (marquee-col right-content)])
+  (component/html
+   [:div.flex.my3
+    (marquee-col left-content)
+    [:div.pr3]
+    (marquee-col right-content)]))
 
 (defn ^:private stylist-portrait [{:keys [stylist-portrait]}]
-  (let [header-image-size 40
-        portrait-status   (:status stylist-portrait)]
-    (if (#{"approved" "pending"} portrait-status)
-      (ui/circle-picture {:class "mr2 flex items-center"
-                          :width (str header-image-size "px")}
-                         (ui/square-image stylist-portrait header-image-size))
-      [:a.mr2.flex.items-center (utils/route-to events/navigate-stylist-account-profile)
-       (ui/ucare-img {:width           header-image-size
-                      :picture-classes "flex"}
-                     "81bd063f-56ba-4e9c-9aef-19a1207fd422")])))
+  (component/html
+   (let [header-image-size 40
+         portrait-status   (:status stylist-portrait)]
+     (if (#{"approved" "pending"} portrait-status)
+       (ui/circle-picture {:class "mr2 flex items-center"
+                           :width (str header-image-size "px")}
+                          (ui/square-image stylist-portrait header-image-size))
+       [:a.mr2.flex.items-center (utils/route-to events/navigate-stylist-account-profile)
+        (ui/ucare-img {:width           header-image-size
+                       :picture-classes "flex"}
+                      "81bd063f-56ba-4e9c-9aef-19a1207fd422")]))))
 
 (defn ^:private account-info-marquee [signed-in {:keys [email store-credit]}]
-  (when (-> signed-in ::auth/at-all)
-    [:div.my3.flex.flex-wrap
-     (when false #_(pos? store-credit)
-       [:div.mr4.mb2
-        [:div.title-3.proxima.shout "Credit"]
-        [:div.content-2.proxima (as-money store-credit)]])
-     [:div
-      [:div.title-3.proxima.shout "Signed in with"]
-      [:a.inherit-color.content-2.proxima
-       (merge
-        {:data-test "signed-in-as"}
-        (utils/route-to (if (-> signed-in ::auth/as (= :stylist))
-                          events/navigate-stylist-account-profile
-                          events/navigate-account-manage)))
-       email]]]))
+  (component/html
+   (when (-> signed-in ::auth/at-all)
+     [:div.my3.flex.flex-wrap
+      (when false #_(pos? store-credit)
+            [:div.mr4.mb2
+             [:div.title-3.proxima.shout "Credit"]
+             [:div.content-2.proxima (as-money store-credit)]])
+      [:div
+       [:div.title-3.proxima.shout "Signed in with"]
+       [:a.inherit-color.content-2.proxima
+        (merge
+         {:data-test "signed-in-as"}
+         (utils/route-to (if (-> signed-in ::auth/as (= :stylist))
+                           events/navigate-stylist-account-profile
+                           events/navigate-account-manage)))
+        email]]])))
 
 (defn ^:private stylist-actions
   [vouchers? show-community?]
@@ -133,27 +137,30 @@
     :guest   guest-actions))
 
 (defn ^:private menu-row [{:keys [link-attrs data-test new-content content]}]
-  [:li {:key data-test}
-   [:div.py3
-    (into [:a.block.inherit-color.flex.items-center.content-1.proxima
-           (assoc link-attrs :data-test data-test)
-           [:span.col-2.title-3.proxima.center (when-let [c new-content] c)]]
-          content)]])
+  (component/html
+   [:li {:key data-test}
+    [:div.py3
+     (into [:a.block.inherit-color.flex.items-center.content-1.proxima
+            (assoc link-attrs :data-test data-test)
+            [:span.col-2.title-3.proxima.center (when-let [c new-content] c)]]
+           content)]]))
 
 (defn ^:private content-row [{:keys [link-attrs data-test content]}]
-  [:li {:key data-test}
-   [:div.py3
-    (into [:a.block.inherit-color.flex.items-center.content-2.proxima
-           (assoc link-attrs :data-test data-test)
-           [:span.col-2]]
-          content)]])
+  (component/html
+   [:li {:key data-test}
+    [:div.py3
+     (into [:a.block.inherit-color.flex.items-center.content-2.proxima
+            (assoc link-attrs :data-test data-test)
+            [:span.col-2]]
+           content)]]))
 
 (defn ^:private caretize-content
   [content]
-  [:div.col-8.flex.justify-between.items-center
-   [:span.medium.flex-auto content]
-   ^:inline (ui/forward-caret {:width  16
-                               :height 16})])
+  (component/html
+   [:div.col-8.flex.justify-between.items-center
+    [:span.medium.flex-auto content]
+    ^:inline (ui/forward-caret {:width  16
+                                :height 16})]))
 
 (defn shopping-rows
   [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals? site]}]
@@ -239,16 +246,19 @@
     :content    ["Contact Us"]}])
 
 (defn ^:private menu-area [{:keys [signed-in] :as data}]
-  [:ul.list-reset.mb3.mt5
-   (for [row (shopping-rows data)]
-     (menu-row row))
-   (when (-> signed-in ::auth/as (= :stylist))
-     (menu-row stylist-exclusive-row))
-   [:div.mt5
-    (interpose
-     [:div.border-bottom.border-cool-gray.col-8.m-auto]
-     (for [row (content-rows data)]
-       (content-row row)))]])
+  (component/html
+   [:ul.list-reset.mb3.mt5
+    (for [row (shopping-rows data)]
+      (menu-row row))
+    (when (-> signed-in ::auth/as (= :stylist))
+      (menu-row stylist-exclusive-row))
+    [:div.mt5
+     (for [[i row] (map-indexed vector (content-rows data))]
+       [:div
+        {:key (str i)}
+        (when-not (zero? i)
+          [:div.border-bottom.border-cool-gray.col-8.m-auto])
+        (content-row row)])]]))
 
 (def ^:private sign-out-area
   (component/html
