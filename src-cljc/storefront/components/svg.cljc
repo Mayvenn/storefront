@@ -403,6 +403,19 @@
     ^:inline (svg-xlink "diamond-check")]))
 
 (defn button-facebook-f [opts]
-   (component/html
-    [:svg opts
-     ^:inline (svg-xlink "button-facebook-f")]))
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "button-facebook-f")]))
+
+(defn symbolic->html
+  "Converts a data from query that describes an svg to the appropriate html.
+
+  Query data is in the form: [:type options]
+  "
+  [[kind attrs]]
+  (component/html
+   (if kind
+     (case kind
+       :svg/close-x      ^:inline (close-x attrs)
+       :svg/discount-tag ^:inline (discount-tag attrs))
+     [:div])))

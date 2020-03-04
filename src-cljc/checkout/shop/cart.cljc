@@ -430,7 +430,7 @@
 
 (defn coupon-code->remove-promo-action [coupon-code]
   {:cart-summary-line/action-id     "cart-remove-promo"
-   :cart-summary-line/action-icon   (svg/close-x {:class "stroke-white fill-gray"})
+   :cart-summary-line/action-icon   [:svg/close-x {:class "stroke-white fill-gray" }]
    :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code coupon-code}]})
 
 ;; TODO (corey) any-wig? should be in the order....
@@ -469,8 +469,8 @@
                                      (for [{:keys [name price coupon-code] :as adjustment}
                                            (filter adjustments/non-zero-adjustment? adjustments)]
                                        (cond-> {:cart-summary-line/id    (text->data-test-name name)
-                                                :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
-                                                                                            :height "2em" :width "2em"})
+                                                :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-gray pr1"
+                                                                                             :height "2em" :width "2em"} ]
                                                 :cart-summary-line/label (adjustments/display-adjustment-name adjustment)
                                                 :cart-summary-line/class "p-color"
                                                 :cart-summary-line/value (mf/as-money-or-free price)}
@@ -545,8 +545,8 @@
                                          {:cart-summary-line/id    (if any-wig?
                                                                      "wig-customization-locked"
                                                                      "freeinstall-locked")
-                                          :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
-                                                                                      :height "2em" :width "2em"})
+                                          :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-gray pr1"
+                                                                                       :height "2em" :width "2em"}]
                                           :cart-summary-line/label (if any-wig?
                                                                      "Free Wig Customization"
                                                                      "Free Mayvenn Install")
@@ -557,15 +557,15 @@
                                          (coupon-code->remove-promo-action "freeinstall"))
 
                                         {:cart-summary-line/action-id     "cart-remove-promo"
-                                         :cart-summary-line/action-icon   (svg/close-x {:class "stroke-white fill-gray"})
+                                         :cart-summary-line/action-icon   [:svg/close-x {:class "stroke-white fill-gray"}]
                                          :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code "freeinstall"}]}])
 
                                      (for [{:keys [name price coupon-code] :as adjustment}
                                            (filter adjustments/non-zero-adjustment? adjustments)
                                            :let [install-summary-line? (orders/service-line-item-promotion? adjustment)]]
                                        (cond-> {:cart-summary-line/id    (str (text->data-test-name name) "-adjustment")
-                                                :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
-                                                                                            :height "2em" :width "2em"})
+                                                :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-gray pr1"
+                                                                                             :height "2em" :width "2em"}]
                                                 :cart-summary-line/label (adjustments/display-adjustment-name adjustment)
                                                 :cart-summary-line/class "p-color"
                                                 :cart-summary-line/value (mf/as-money-or-free price)}

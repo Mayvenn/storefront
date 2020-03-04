@@ -15,16 +15,16 @@
     [:table.col-12
      [:tbody
       (for [line lines]
-        (checkout.M/cart-summary-line-molecule line))]]
+        ^:inline (checkout.M/cart-summary-line-molecule line))]]
 
     (when-let [{:keys [text-input-attrs button-attrs]} promo-field-data]
       [:div.my2
-       (ui.M/field-reveal-molecule promo-field-data)
+       ^:inline (ui.M/field-reveal-molecule promo-field-data)
        (when (and text-input-attrs button-attrs)
-         (ui/input-group text-input-attrs button-attrs))])
+         ^:inline (ui/input-group text-input-attrs button-attrs))])
 
-    (checkout.M/freeinstall-informational query)]
+    ^:inline (checkout.M/freeinstall-informational query)]
 
    [:div.pt2.px4
-    (checkout.M/cart-summary-total-line query)
-    (checkout.M/cart-summary-total-incentive query)]])
+    ^:inline (checkout.M/cart-summary-total-line query)
+    ^:inline (checkout.M/cart-summary-total-incentive query)]])

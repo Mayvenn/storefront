@@ -100,9 +100,10 @@
 (defn field-reveal-molecule
   [{:field-reveal/keys [id label target]}]
   (when id
-    [:a.mlp3.content-3 (merge {:data-test id}
-                              (apply utils/fake-href target))
-     label]))
+    (component/html
+     [:a.mlp3.content-3 ^:attrs (merge {:data-test id}
+                                       (apply utils/fake-href target))
+      label])))
 
 (defn ^:private star [index type]
   [:span.mrp1
