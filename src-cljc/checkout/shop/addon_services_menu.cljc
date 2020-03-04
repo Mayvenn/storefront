@@ -43,11 +43,11 @@
   [{:keys    [catalog/sku-id sku/price legacy/variant-id addon-unavailable-reason addon-selected?]
     sku-name :sku/name}]
   {:addon-service-entry/id                 (str "addon-service-" sku-id)
-   :addon-service-entry/decoration-classes (when addon-unavailable-reason "bg-refresh-gray dark-gray")
+   :addon-service-entry/disabled-classes   (when addon-unavailable-reason "bg-refresh-gray dark-gray")
+   :addon-service-entry/warning            addon-unavailable-reason
    :addon-service-entry/primary            sku-name
    :addon-service-entry/secondary          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
    :addon-service-entry/tertiary           (mf/as-money price)
-   :addon-service-entry/warning            addon-unavailable-reason
    :addon-service-entry/target             [events/control-addon-checkbox {:sku-id sku-id
                                                                            :variant-id variant-id
                                                                            :previously-checked? addon-selected?}]
@@ -100,12 +100,13 @@
                                           (component/html [:div.center.proxima.content-1 "Add-on Services"])
                                           (component/html [:div (ui/button-medium-underline-secondary (utils/fake-href events/control-addons-popup-done-button) "DONE")]))
      (mapv
-      (fn [{:addon-service-entry/keys [id decoration-classes primary secondary tertiary warning target checked?]}]
+      (fn [{:addon-service-entry/keys [id disabled-classes primary secondary tertiary warning target checked?]}]
         [:div.p4.flex
          {:key       id
           :data-test id
-          :class     decoration-classes}
+          :class     disabled-classes}
          [:div.mt1 (ui/check-box {:value     checked?
+                                  :disabled  warning
                                   :on-change (apply utils/send-event-callback target)})]
          [:div.flex-grow-1.mr2
           [:div.proxima.content-2 primary]
