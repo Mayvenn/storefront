@@ -126,18 +126,21 @@
     [:div.col-on-tb-dt.col-6-on-tb-dt.px3.border-top.border-gray
      {:data-test "cart-line-items"}
      ;; HACK: have suggestions be paired with appropriate cart item
-     (interpose
-      [:div.flex
-       [:div.ml2 {:style {:width "78px"}}]
-       [:div.flex-grow-1.border-bottom.border-gray.ml-auto]]
-      (map-indexed
-       (fn [index cart-item]
-         (when-let [react-key (:react/key cart-item)]
-           (component/build cart-item/organism {:cart-item   cart-item
-                                                :suggestions (when (zero? index)
-                                                               suggestions)}
-                            (component/component-id (str index "-cart-item-" react-key)))))
-       cart-items))]
+     (for [[index cart-item] (map-indexed vector cart-items)
+           :let [react-key (:react/key cart-item)]
+           :when react-key]
+       ;; this would easier to represent via interpose, but the interposed
+       ;; element needs unique react keys...
+       [:div
+        {:key (str index "-cart-item-" react-key)}
+        (when-not (zero? index)
+          [:div.flex
+           [:div.ml2 {:style {:width "78px"}}]
+           [:div.flex-grow-1.border-bottom.border-gray.ml-auto]])
+        (component/build cart-item/organism {:cart-item   cart-item
+                                             :suggestions (when (zero? index)
+                                                            suggestions)}
+                         (component/component-id (str index "-cart-item-" react-key)))])]
 
     [:div.col-on-tb-dt.col-6-on-tb-dt
      (component/build cart-summary/organism cart-summary nil)
