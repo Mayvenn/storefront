@@ -449,7 +449,7 @@
                                        (api/fetch-v2-products storeback-config {:catalog/product-id product-id}))
 
           {service-skus :skus} (when (seq needed-service-skus)
-                                 (api/fetch-v2-skus storeback-config {:catalog/sku-ids needed-service-skus}))
+                                 (api/fetch-v2-skus storeback-config {:catalog/sku-id needed-service-skus}))
 
           {:keys [facets]}     (when-not (get-in-req-state req keypaths/v2-facets)
                                  (api/fetch-v2-facets storeback-config))]
