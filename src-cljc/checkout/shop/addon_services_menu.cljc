@@ -86,7 +86,7 @@
                                                                               addon-sku-id)))))
                                                  (sort-by (comp boolean :addon-unavailable-reason))
                                                  (partition-by (comp boolean :addon-unavailable-reason))
-                                                 (map (partial sort-by :order.view/add-on-sort)), ; TODO change all uses to addon-sort
+                                                 (map (partial sort-by :order.view/addon-sort))
                                                  flatten
                                                  (map addon-service-sku->addon-service-menu-entry))]
     {:addon-services/spinner  (get-in data request-keys/get-skus)
