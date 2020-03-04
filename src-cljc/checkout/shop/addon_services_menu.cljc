@@ -85,8 +85,8 @@
                                                                    (contains? (set (map :sku (orders/service-line-items (get-in data keypaths/order))))
                                                                               addon-sku-id)))))
                                                  (sort-by (comp boolean :addon-unavailable-reason))
-                                                 (partition-by :addon-unavailable-reason)
-                                                 (map (partial sort-by :order.view/addon-sort)),
+                                                 (partition-by (comp boolean :addon-unavailable-reason))
+                                                 (map (partial sort-by :order.view/add-on-sort)), ; TODO change all uses to addon-sort
                                                  flatten
                                                  (map addon-service-sku->addon-service-menu-entry))]
     {:addon-services/spinner  (get-in data request-keys/get-skus)
