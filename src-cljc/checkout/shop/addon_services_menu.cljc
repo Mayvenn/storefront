@@ -149,9 +149,3 @@
                              #(messages/handle-message events/api-success-update-order-add-service-line-item
                                                        {:order %
                                                         :shop? (get-in app-state keypaths/store-slug)}))))))
-
-
-#_(conj request-keys/add-to-bag (:catalog/sku-id sku))
-#_:add-to-bag
-#_(conj request-keys/delete-line-item variant-id)
-#_:delete-line-item
