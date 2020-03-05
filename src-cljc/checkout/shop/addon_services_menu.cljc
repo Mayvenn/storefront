@@ -99,15 +99,16 @@
      [:div.bg-white
       (components.header/mobile-nav-header {:class "border-bottom border-gray" } nil
                                            (component/html [:div.center.proxima.content-1 "Add-on Services"])
-                                           (component/html [:div (ui/button-medium-underline-secondary (utils/fake-href events/control-addons-popup-done-button) "DONE")]))
+                                           (component/html [:div (ui/button-medium-underline-secondary (merge {:data-test "addon-services-popup-close"}
+                                                                                                              (utils/fake-href events/control-addons-popup-done-button)) "DONE")]))
       (mapv
        (fn [{:addon-service-entry/keys [id disabled-classes primary secondary tertiary warning target checked?]}]
          [:div.p4.flex
           {:key       id
-           :data-test id
            :class     disabled-classes}
           [:div.mt1 (ui/check-box {:value     checked?
                                    :disabled  warning
+                                   :data-test id
                                    :on-change (apply utils/send-event-callback target)})]
           [:div.flex-grow-1.mr2
            [:div.proxima.content-2 primary]

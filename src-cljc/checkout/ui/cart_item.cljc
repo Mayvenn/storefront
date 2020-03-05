@@ -190,10 +190,10 @@
 (defn cart-item-sub-items-molecule
   [{:cart-item-sub-items/keys [id title items]}]
   (when id
-    [:div.mt2 {:data-test (str "cart-item-sub-items-molecule-" id)
+    [:div.mt2 {:data-test (str "cart-item-sub-items-" id)
                :key       id}
      [:div.shout.proxima.title-3 title]
-     (mapv (fn [{:cart-item-sub-item/keys [title price]}]
+     (mapv (fn [{:cart-item-sub-item/keys [sku-id title price]}]
              [:div.flex.justify-between
               [:div.content-3.flex.items-center
                [:div.bg-s-color.flex.justify-center.items-center.mr1
@@ -204,7 +204,7 @@
                                  :style {:width  "7px"
                                          :height "7px"}})]
                title]
-              [:div price]]) items)]))
+              [:div {:data-test (str "cart-item-sub-items-" sku-id "-price")} price]]) items)]))
 
 (defcomponent organism
   [{:keys [cart-item suggestions]} _ {:keys [id]}]

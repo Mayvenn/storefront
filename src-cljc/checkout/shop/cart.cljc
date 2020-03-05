@@ -426,10 +426,11 @@
                (seq addon-services))
           (merge {:cart-item-sub-items/id    "addon-services"
                   :cart-item-sub-items/title "Add-On Services"
-                  :cart-item-sub-items/items (map (fn [{:addon-service/keys [title price]}]
-                                                    {:cart-item-sub-item/title title
-                                                     :cart-item-sub-item/price price})
-                                                  addon-services)}))]))))
+                  :cart-item-sub-items/items (map (fn [{:addon-service/keys [title price sku-id]}]
+                                                    {:cart-item-sub-item/title  title
+                                                     :cart-item-sub-item/price  price
+                                                     :cart-item-sub-item/sku-id sku-id})
+                                                  (spice.core/spy addon-services))}))]))))
 
 (defn coupon-code->remove-promo-action [coupon-code]
   {:cart-summary-line/action-id     "cart-remove-promo"
