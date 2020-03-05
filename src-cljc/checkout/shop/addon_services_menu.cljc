@@ -1,6 +1,7 @@
 (ns checkout.shop.addon-services-menu
   (:require
    #?@(:cljs [[storefront.api :as api]
+              [storefront.browser.scroll :as scroll]
               [storefront.components.payment-request-button :as payment-request-button]
               [storefront.components.popup :as popup]
               [storefront.confetti :as confetti]
@@ -125,11 +126,14 @@
 (defmethod transitions/transition-state events/control-browse-addons-button [_ event args app-state]
   (assoc-in app-state keypaths/addons-popup-displayed? true))
 
+(defmethod effects/perform-effects events/control-browse-addons-button [_ event args _ app-state]
+  #?(:cljs (scroll/snap-to-top)))
+
 (defmethod transitions/transition-state events/control-addons-popup-done-button [_ event args app-state]
   (assoc-in app-state keypaths/addons-popup-displayed? false))
 
 (defmethod effects/perform-effects events/control-addon-checkbox
-  [_ event {:keys [sku-id variant-id previously-checked?] :as args} app-state]
+  [_ event {:keys [sku-id variant-id previously-checked?] :as args} _ app-state]
   #?(:cljs
      (let [session-id (get-in app-state keypaths/session-id)
            order      (get-in app-state keypaths/order)]
