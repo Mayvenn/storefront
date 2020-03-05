@@ -430,7 +430,7 @@
                                                     {:cart-item-sub-item/title  title
                                                      :cart-item-sub-item/price  price
                                                      :cart-item-sub-item/sku-id sku-id})
-                                                  (spice.core/spy addon-services))}))]))))
+                                                  addon-services)}))]))))
 
 (defn coupon-code->remove-promo-action [coupon-code]
   {:cart-summary-line/action-id     "cart-remove-promo"
