@@ -99,29 +99,31 @@
   (component/html
    (if spinning?
      [:div.py3.h2 ui/spinner]
-     [:div.bg-white
-      (components.header/mobile-nav-header {:class "border-bottom border-gray" } nil
-                                           (component/html [:div.center.proxima.content-1 "Add-on Services"])
-                                           (component/html [:div (ui/button-medium-underline-secondary (merge {:data-test "addon-services-popup-close"}
-                                                                                                              (utils/fake-href events/control-addons-popup-done-button)) "DONE")]))
-      (mapv
-       (fn [{:addon-service-entry/keys [id disabled-classes primary secondary tertiary warning target checked? checkbox-spinning?]}]
-         [:div.p3.py4.pr4.flex
-          {:key   id
-           :class disabled-classes}
-          (if checkbox-spinning?
-            [:div.mt1
-             [:div.pr2 {:style {:width "41px"}} ui/spinner]]
-            [:div.mt1.pl1 (ui/check-box {:value     checked?
-                                         :disabled  warning
-                                         :data-test id
-                                         :on-change (apply utils/send-event-callback target)})])
-          [:div.flex-grow-1.mr2
-           [:div.proxima.content-2 primary]
-           [:div.proxima.content-3 secondary]
-           [:div.proxima.content-3.red warning]]
-          [:div tertiary]])
-       services)])))
+     (ui/modal
+      {:col-class   "col-12 col-9-on-tb col-7-on-dt"}
+      [:div.bg-white
+       (components.header/mobile-nav-header {:class "border-bottom border-gray" } nil
+                                            (component/html [:div.center.proxima.content-1 "Add-on Services"])
+                                            (component/html [:div (ui/button-medium-underline-secondary (merge {:data-test "addon-services-popup-close"}
+                                                                                                               (utils/fake-href events/control-addons-popup-done-button)) "DONE")]))
+       (mapv
+        (fn [{:addon-service-entry/keys [id disabled-classes primary secondary tertiary warning target checked? checkbox-spinning?]}]
+          [:div.p3.py4.pr4.flex
+           {:key   id
+            :class disabled-classes}
+           (if checkbox-spinning?
+             [:div.mt1
+              [:div.pr2 {:style {:width "41px"}} ui/spinner]]
+             [:div.mt1.pl1 (ui/check-box {:value     checked?
+                                          :disabled  warning
+                                          :data-test id
+                                          :on-change (apply utils/send-event-callback target)})])
+           [:div.flex-grow-1.mr2
+            [:div.proxima.content-2 primary]
+            [:div.proxima.content-3 secondary]
+            [:div.proxima.content-3.red warning]]
+           [:div tertiary]])
+        services)]))))
 
 (defmethod transitions/transition-state events/control-browse-addons-button [_ event args app-state]
   (assoc-in app-state keypaths/addons-popup-displayed? true))

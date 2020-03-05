@@ -783,23 +783,24 @@
 
 (defcomponent template
   [{:keys [header footer popup promo-banner flash cart data nav-event addon-services-popup? addon-services-menu] :as query-data} _ _]
-  (if addon-services-popup?
-    (addon-services-menu/addon-services-popup-template addon-services-menu)
-    [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
-       #?(:cljs (popup/built-component popup nil))
+  [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
+   #?(:cljs (popup/built-component popup nil))
 
-       (when promo-banner
-         (promo-banner/built-static-organism promo-banner nil))
+   (when promo-banner
+     (promo-banner/built-static-organism promo-banner nil))
 
-       (header/built-component header nil)
-       [:div.relative.flex.flex-column.flex-auto
-        (flash/built-component flash nil)
+   (when addon-services-popup?
+     (addon-services-menu/addon-services-popup-template addon-services-menu))
 
-        [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-         (component/build cart-component cart nil)]
+   (header/built-component header nil)
+   [:div.relative.flex.flex-column.flex-auto
+    (flash/built-component flash nil)
 
-        [:footer
-         (storefront.footer/built-component footer nil)]]]))
+    [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+     (component/build cart-component cart nil)]
+
+    [:footer
+     (storefront.footer/built-component footer nil)]]])
 
 (defn page
   [app-state nav-event]
