@@ -126,9 +126,6 @@
 (defmethod transitions/transition-state events/control-browse-addons-button [_ event args app-state]
   (assoc-in app-state keypaths/addons-popup-displayed? true))
 
-(defmethod effects/perform-effects events/control-browse-addons-button [_ event args _ app-state]
-  #?(:cljs (scroll/snap-to-top)))
-
 (defmethod transitions/transition-state events/control-addons-popup-done-button [_ event args app-state]
   (assoc-in app-state keypaths/addons-popup-displayed? false))
 
