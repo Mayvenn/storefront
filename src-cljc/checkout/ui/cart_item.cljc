@@ -179,25 +179,28 @@
       (apply utils/send-event-callback increment-target))]))
 
 (defn cart-item-modify-button
-  [{:cart-item-modify-button/keys [id target content]}]
+  [{:cart-item-modify-button/keys [id target content locked?]}]
   (when id
-    [:div
-     (ui/button-small-secondary (merge {:class        "p-color bold mt1"
-                                        :data-test    id}
+    [:div.flex
+     (ui/button-small-secondary (merge {:class     "p-color bold mt1"
+                                        :disabled? locked?
+                                        :data-test id}
                                        (apply utils/route-to target))
                                 content)]))
 
 (defn cart-item-sub-items-molecule
-  [{:cart-item-sub-items/keys [id title items]}]
+  [{:cart-item-sub-items/keys [id title items locked?]}]
   (when id
-    [:div.mt2 {:data-test (str "cart-item-sub-items-" id)
-               :key       id}
+    [:div {:data-test (str "cart-item-sub-items-" id)
+           :class     (when locked? "gray")
+           :key       id}
      [:div.shout.proxima.title-3 title]
      (mapv (fn [{:cart-item-sub-item/keys [sku-id title price]}]
              [:div.flex.justify-between
               [:div.content-3.flex.items-center
-               [:div.bg-s-color.flex.justify-center.items-center.mr1
-                {:style {:height        11
+               [:div.flex.justify-center.items-center.mr1
+                {:class (if locked? "bg-gray" "bg-s-color")
+                 :style {:height        11
                          :width         11
                          :border-radius "50%"}}
                 (svg/check-mark {:class "fill-white"
@@ -234,8 +237,8 @@
       (cart-item-swap-action-molecule cart-item)
       (cart-item-floating-box-molecule cart-item)]]
 
+    (cart-item-steps-to-complete-molecule cart-item)
     (cart-item-sub-items-molecule cart-item)
     (cart-item-modify-button cart-item)
-    (cart-item-steps-to-complete-molecule cart-item)
 
     (component/build suggestions/consolidated-component suggestions nil)]])

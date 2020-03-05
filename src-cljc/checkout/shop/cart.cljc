@@ -413,24 +413,24 @@
                     :cart-item-copy/value    "You’re all set! Shampoo, braiding and basic styling included."
                     :cart-item-copy/id       "congratulations"}))
 
-          (and applied?
-               matched?
+          (and matched?
                addon-services-experiment?)
           (merge {:cart-item-modify-button/id      "browse-addons"
                   :cart-item-modify-button/target  [events/control-browse-addons-button]
+                  :cart-item-modify-button/locked? locked?
                   :cart-item-modify-button/content "+ Browse Add-Ons"})
 
-          (and applied?
-               matched?
+          (and matched?
                addon-services-experiment?
                (seq addon-services))
-          (merge {:cart-item-sub-items/id    "addon-services"
-                  :cart-item-sub-items/title "Add-On Services"
-                  :cart-item-sub-items/items (map (fn [{:addon-service/keys [title price sku-id]}]
-                                                    {:cart-item-sub-item/title  title
-                                                     :cart-item-sub-item/price  price
-                                                     :cart-item-sub-item/sku-id sku-id})
-                                                  addon-services)}))]))))
+          (merge {:cart-item-sub-items/id      "addon-services"
+                  :cart-item-sub-items/title   "Add-On Services"
+                  :cart-item-sub-items/locked? locked?
+                  :cart-item-sub-items/items   (map (fn [{:addon-service/keys [title price sku-id]}]
+                                                      {:cart-item-sub-item/title  title
+                                                       :cart-item-sub-item/price  price
+                                                       :cart-item-sub-item/sku-id sku-id})
+                                                    addon-services)}))]))))
 
 (defn coupon-code->remove-promo-action [coupon-code]
   {:cart-summary-line/action-id     "cart-remove-promo"
