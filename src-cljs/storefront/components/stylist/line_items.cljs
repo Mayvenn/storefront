@@ -14,10 +14,10 @@
 
 (defn ^:private display-line-item
   ([shipment-count line-item] (display-line-item shipment-count line-item true))
-  ([shipment-count {:keys [product-title color-name unit-price quantity returned-quantity sku id legacy/variant-id variant-attrs]} show-price?]
+  ([shipment-count {:keys [product-title color-name unit-price quantity returned-quantity product-name sku id legacy/variant-id variant-attrs]} show-price?]
    (let [base-dt (str "shipment-" shipment-count "-line-item-" sku)]
      [:div.h6.pb2 {:key (or variant-id id)}
-      [:div.medium {:data-test (str base-dt "-title")} product-title]
+      [:div.medium {:data-test (str base-dt "-title")} (or product-title product-name)]
       [:div {:data-test (str base-dt "-color")} color-name]
       (when show-price?
         [:div {:data-test (str base-dt "-price-ea")} "Price: " (mf/as-money unit-price) " ea"])
