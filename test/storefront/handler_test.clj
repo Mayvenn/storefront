@@ -606,7 +606,7 @@
               (validate-title-and-description-and-canonical default-closure-title
                                                             default-closure-description
                                                             "/categories/0-virgin-closures"
-                                                            "origin=indian&texture=loose-wave&color=%232-chocolate-brown")))
+                                                            "origin=indian&texture=loose-wave&color=%232-chocolate-brown&base-material=lace")))
 
         (testing "two options from the same facet are selected we get a generic description"
           (-> (mock/request :get (str virgin-closures-category-url

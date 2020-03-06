@@ -124,23 +124,25 @@
       (conj [:meta {:name "robots" :content "noindex"}]))))
 
 (defn filter-and-sort-seo-query-params
-  [nav-event query]
+  [[nav-event nav-args] query]
   (when (= events/navigate-category nav-event)
-    #?(:clj (-> query ;; string in clj
-                cemerick-url/query->map
-                (select-keys allowed-category-page-query-params-for-canonical-uri)
-                category/sort-query-params
-                uri/map->query
-                not-empty)
-       :cljs (-> query ;; map in cljs
-                 (select-keys allowed-category-page-query-params-for-canonical-uri)
-                 category/sort-query-params
-                 not-empty))))
+    (let [allowed-query-params (cond-> allowed-category-page-query-params-for-canonical-uri
+                                 (-> nav-args :page/slug #{"virgin-closures"})
+                                 (conj "base-material"))]
+      #?(:clj (-> query ;; string in clj
+                  cemerick-url/query->map
+                  (select-keys allowed-query-params)
+                  category/sort-query-params
+                  uri/map->query
+                  not-empty)
+         :cljs (-> query ;; map in cljs
+                   (select-keys allowed-query-params)
+                   category/sort-query-params
+                   not-empty)))))
 
 (defn ^:private remove-unnecessary-query-params
   [uri single-category? category-family]
   (let [query     (:query uri)
-        path      (:path uri)
         query-map #?(:clj (cemerick-url/query->map query)
                      :cljs query)]
     #?(:clj (->> query-map
@@ -155,11 +157,11 @@
 
 (defn ^:private handle-icp-paths-and-query-params
   [uri data]
-  (let [path        (:path uri)
-        canonical-category-id (accessors.categories/canonical-category-id data)
-        categories            (get-in data keypaths/categories)
-        {:keys [page/slug hair/family]}   (accessors.categories/id->category canonical-category-id categories)
-        single-category?      (= (count family) 1)]
+  (let [path                            (:path uri)
+        canonical-category-id           (accessors.categories/canonical-category-id data)
+        categories                      (get-in data keypaths/categories)
+        {:keys [page/slug hair/family]} (accessors.categories/id->category canonical-category-id categories)
+        single-category?                (= (count family) 1)]
     (if (string/includes? path "categories")
       (-> uri
           (assoc :path (str "/categories/" canonical-category-id "-" slug))
@@ -168,10 +170,10 @@
 
 (defn canonical-uri
   [data]
-  (let [nav-event (get-in data keypaths/navigation-event)]
+  (let [nav-message (get-in data keypaths/navigation-message)]
     (some-> (get-in data keypaths/navigation-uri)
             (handle-icp-paths-and-query-params data)
-            (utils/?update :query (partial filter-and-sort-seo-query-params nav-event)) ;;; WHERE WE DEAL WITH QUERY PARAMS
+            (utils/?update :query (partial filter-and-sort-seo-query-params nav-message)) ;;; WHERE WE DEAL WITH QUERY PARAMS
             (update :host string/replace #"^[^.]+" "shop")
             (assoc :scheme (get-in data keypaths/scheme))
             str)))
