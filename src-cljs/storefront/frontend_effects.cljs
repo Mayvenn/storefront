@@ -134,6 +134,8 @@
     (and shop-or-aladdin? on-deals-page?)))
 
 (defmethod effects/perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
+  (when (= feature "add-on-services") ;; Remove when experiments/add-on-services is removed
+    (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)}))
   (when (redirect-from-deals-page? app-state)
     (effects/redirect events/navigate-shop-by-look {:album-keyword :all-bundle-sets})))
 
