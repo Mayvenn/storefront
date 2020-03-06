@@ -164,12 +164,13 @@
      [:section])))
 
 (defn drop-down-row [opts text icon]
-  [:a.inherit-color.block.center.h5.flex.items-center.justify-center
-   (-> opts
-       (assoc-in [:style :min-width] "200px")
-       (assoc-in [:style :height] "39px"))
-   ^:inline text
-   ^:inline icon])
+  (component/html
+   [:a.inherit-color.block.center.h5.flex.items-center.justify-center
+    (-> opts
+        (assoc-in [:style :min-width] "200px")
+        (assoc-in [:style :height] "39px"))
+    ^:inline text
+    ^:inline icon]))
 
 (defn social-icon [ucare-uuid]
   (ui/ucare-img {:class "ml2"
