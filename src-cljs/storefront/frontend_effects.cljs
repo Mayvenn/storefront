@@ -139,13 +139,6 @@
   (when (redirect-from-deals-page? app-state)
     (effects/redirect events/navigate-shop-by-look {:album-keyword :all-bundle-sets})))
 
-(def popup-dismiss-events
-  {:adventure-free-install         events/control-adventure-free-install-dismiss
-   :consolidated-cart-free-install events/control-consolidated-cart-free-install-dismiss
-   :v2-homepage                    events/control-v2-homepage-popup-dismiss
-   :share-cart                     events/control-popup-hide
-   :design-system                  events/control-design-system-popup-dismiss})
-
 (defmethod effects/perform-effects events/ensure-sku-ids
   [_ _ {:keys [sku-ids service-sku-ids]} _ app-state]
   (let [ids-in-db               (keys (get-in app-state keypaths/v2-skus))
