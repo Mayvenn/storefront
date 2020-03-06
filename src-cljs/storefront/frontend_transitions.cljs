@@ -159,19 +159,25 @@
 
 
 (defn clean-up-open-category-panels
-  [app-state nav-event]
+  [app-state
+   [current-nav-event current-nav-event-args]
+   [_ previous-nav-event-args]]
   (cond-> app-state
-    (not= nav-event events/navigate-category)
+    (or (not= current-nav-event events/navigate-category)
+        (not= (:catalog/category-id current-nav-event-args)
+              (:catalog/category-id previous-nav-event-args)))
     (-> (assoc-in keypaths/hide-header? false)
         (assoc-in catalog.keypaths/category-panel nil))))
 
 (defmethod transition-state events/navigate [_ event args app-state]
-  (let [args (dissoc args :nav-stack-item)
-        uri  (url/url js/window.location)]
+  (let [args                 (dissoc args :nav-stack-item)
+        uri                  (url/url js/window.location)
+        new-nav-message      [event args]
+        previous-nav-message (get-in app-state keypaths/navigation-message)]
     (-> app-state
         collapse-menus
         add-return-event
-        (clean-up-open-category-panels event)
+        (clean-up-open-category-panels new-nav-message previous-nav-message)
         (add-pending-promo-code args)
         (add-affiliate-stylist-id args)
         clear-flash
@@ -186,7 +192,7 @@
         (assoc-in keypaths/navigation-uri uri)
         ;; order is important from here on
         (assoc-in keypaths/redirecting? false)
-        (assoc-in keypaths/navigation-message [event args]))))
+        (assoc-in keypaths/navigation-message new-nav-message))))
 
 (def ^:private hostname (comp :host url/url))
 
