@@ -41,13 +41,13 @@
         boolean)))
 
 (defn addon-service-sku->addon-service-menu-entry
-  [data {:keys [catalog/sku-id sku/price legacy/variant-id addon-unavailable-reason addon-selected?]
+  [data {:keys [catalog/sku-id sku/price legacy/variant-id copy/description addon-unavailable-reason addon-selected?]
          sku-name   :sku/name}]
   {:addon-service-entry/id                 (str "addon-service-" sku-id)
    :addon-service-entry/disabled-classes   (when addon-unavailable-reason "bg-refresh-gray dark-gray")
    :addon-service-entry/warning            addon-unavailable-reason
    :addon-service-entry/primary            sku-name
-   :addon-service-entry/secondary          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+   :addon-service-entry/secondary          description
    :addon-service-entry/tertiary           (mf/as-money price)
    :addon-service-entry/target             [events/control-addon-checkbox {:sku-id sku-id
                                                                            :variant-id variant-id
