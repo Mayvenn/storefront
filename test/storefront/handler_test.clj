@@ -482,7 +482,7 @@
                           (mock/request :get)
                           handler)]
             (is (= 200 (:status resp)))
-            (is (= "origin=peruvian" (response->canonical-uri-query-string resp)))))
+            (is (= "origin=peruvian&base-material=lace" (response->canonical-uri-query-string resp)))))
         (testing "with one query param"
           (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave?origin=peruvian"
                           (mock/request :get)

@@ -15,7 +15,9 @@
             [storefront.uri :as uri]
             [clojure.string :as string]
             #?@(:clj [[cheshire.core :as json]
-                      [storefront.safe-hiccup :as safe-hiccup]])))
+                      [storefront.safe-hiccup :as safe-hiccup]])
+            [clojure.set :as set]
+            [spice.maps :as maps]))
 
 (defn- use-case-then-order-key [img]
   [(condp = (:use-case img)
@@ -59,13 +61,6 @@
      [:meta {:property "og:type" :content "product"}]
      [:meta {:property "og:image" :content (str "http:" (:url image))}]
      [:meta {:property "og:description" :content (:opengraph/description product)}]]))
-
-(def ^:private allowed-category-page-query-params-for-canonical-uri
-  #{"origin"
-    "texture"
-    "color"
-    "family"
-    "weight"})
 
 (defn ^:private facet-option->option-name
   ;; For origin and color, the sku/name is more appropriate than the option name
@@ -124,11 +119,17 @@
       (conj [:meta {:name "robots" :content "noindex"}]))))
 
 (defn filter-and-sort-seo-query-params
-  [[nav-event nav-args] query]
+  [data nav-event query]
   (when (= events/navigate-category nav-event)
-    (let [allowed-query-params (cond-> allowed-category-page-query-params-for-canonical-uri
-                                 (-> nav-args :page/slug #{"virgin-closures"})
-                                 (conj "base-material"))]
+    (let [{:keys [selector/electives]} (accessors.categories/id->category
+                                        (accessors.categories/canonical-category-id data)
+                                        (get-in data keypaths/categories))
+          allowed-query-params         (->> electives
+                                            (select-keys
+                                             (set/map-invert accessors.categories/query-params->facet-slugs))
+                                            (maps/map-values name)
+                                            vals
+                                            set)]
       #?(:clj (-> query ;; string in clj
                   cemerick-url/query->map
                   (select-keys allowed-query-params)
@@ -170,10 +171,10 @@
 
 (defn canonical-uri
   [data]
-  (let [nav-message (get-in data keypaths/navigation-message)]
+  (let [nav-event (get-in data keypaths/navigation-event)]
     (some-> (get-in data keypaths/navigation-uri)
             (handle-icp-paths-and-query-params data)
-            (utils/?update :query (partial filter-and-sort-seo-query-params nav-message)) ;;; WHERE WE DEAL WITH QUERY PARAMS
+            (utils/?update :query (partial filter-and-sort-seo-query-params data nav-event)) ;;; WHERE WE DEAL WITH QUERY PARAMS
             (update :host string/replace #"^[^.]+" "shop")
             (assoc :scheme (get-in data keypaths/scheme))
             str)))
