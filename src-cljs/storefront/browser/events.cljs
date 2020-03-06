@@ -2,6 +2,9 @@
   (:require goog.events
             [goog.events.EventType :as EventType]
             [storefront.platform.messages :refer [handle-message]]
+            [storefront.effects :as effects]
+            [storefront.transitions :as transitions]
+            [storefront.keypaths :as keypaths]
             [storefront.events :as events]))
 
 (def ^:private browser-event-listener js/HTMLElement.prototype.addEventListener)
@@ -68,6 +71,14 @@
   [e]
   (when (= "Escape" (.-key e))
     (handle-message events/escape-key-pressed)))
+
+(defmethod transitions/transition-state events/escape-key-pressed
+  [_ event args app-state]
+  (assoc-in app-state keypaths/addons-popup-displayed? false))
+
+(defmethod effects/perform-effects events/escape-key-pressed [_ event args _ app-state]
+  (when-let [message-to-handle (get popup-dismiss-events (get-in app-state keypaths/popup))]
+    (handle-message message-to-handle)))
 
 (defn attach-esc-key-listener
   []

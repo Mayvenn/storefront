@@ -146,10 +146,6 @@
    :share-cart                     events/control-popup-hide
    :design-system                  events/control-design-system-popup-dismiss})
 
-(defmethod effects/perform-effects events/escape-key-pressed [_ event args _ app-state]
-  (when-let [message-to-handle (get popup-dismiss-events (get-in app-state keypaths/popup))]
-    (messages/handle-message message-to-handle)))
-
 (defmethod effects/perform-effects events/ensure-sku-ids
   [_ _ {:keys [sku-ids service-sku-ids]} _ app-state]
   (let [ids-in-db               (keys (get-in app-state keypaths/v2-skus))
