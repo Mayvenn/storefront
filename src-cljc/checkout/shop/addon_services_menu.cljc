@@ -100,7 +100,8 @@
    (if spinning?
      [:div.py3.h2 ui/spinner]
      (ui/modal
-      {:col-class   "col-12 col-9-on-tb col-7-on-dt"}
+      {:body-style {:max-width "625px"}
+       :col-class  "col-12"}
       [:div.bg-white
        (components.header/mobile-nav-header {:class "border-bottom border-gray" } nil
                                             (component/html [:div.center.proxima.content-1 "Add-on Services"])
