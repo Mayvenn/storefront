@@ -57,19 +57,23 @@
                        :class  "stroke-s-color"})])
 
 (defn ^:private breakdown-molecule
-  [{:breakdown/keys [primary-id primary items]}]
+  [{:breakdown/keys [primary-id primary items total]}]
   (when primary-id
     [:div.col-12 {:key primary-id}
      [:div.center.title-2.canela.mb4
       {:data-test primary-id}
       primary]
-     [:div.mx-auto.col-10
-      (for [{:breakdown-item/keys [id label value]} items]
-        [:div.flex.justify-between.bg-refresh-gray.p2
+     [:div.mx-auto.col-10.border-bottom
+      (for [{:breakdown-item/keys [id label value] :as stuff} items]
+        [:div.flex.justify-between.bg-alternate-refresh-gray-white.p2
          {:key       id
           :data-test id}
          [:div label]
-         [:div value]])]]))
+         [:div value]])]
+     (when total
+       [:div.flex.mx-auto.col-10.justify-between.p2
+                  [:div.proxima.content-4.shout.bold "total"]
+                  [:div.canela.title-1 total]])]))
 
 (defn cta-with-secondary-molecule
   [{:cta/keys [id copy target
@@ -107,35 +111,50 @@
    ])
 
 (defn ^:private query [app-state]
-  (let [voucher                   (get-in app-state voucher-keypaths/voucher-response)
-        service-menu              (get-in app-state keypaths/user-stylist-service-menu)
-        install-type              (-> voucher :discount :unit_type)
-        payout-amount             (-> service-menu
-                                      (get (keyword (get unit-type->menu-kw-payout install-type)))
-                                      mf/as-money)
-        install-type-display-name (get unit-type->display-name install-type)]
-    {:spinning?            (utils/requesting? app-state request-keys/fetch-user-stylist-service-menu)
-     :notification/id      (str "voucher-redeemed-" install-type-display-name)
-     :notification/content "Voucher redeemed successfully"
-     :cta/id               "view-earnings"
-     :cta/target           [events/navigate-v2-stylist-dashboard-payments]
-     :cta/copy             [:span.bold "View Earnings"]
-     :cta/secondary-id     "redeem-voucher"
-     :cta/secondary-target [events/navigate-voucher-redeem]
-     :cta/secondary-copy   "Redeem Another Voucher"
-     :breakdown/primary-id "redemption-amount"
-     :breakdown/primary    "Payout Breakdown"
-     :breakdown/items      [{:breakdown-item/id     "base-service"
-                             :breakdown-item/label  install-type-display-name
-                             :breakdown-item/value (str payout-amount "*")}]
+  (let [voucher (or (get-in app-state voucher-keypaths/voucher-redeemed-response)
+                    (get-in app-state voucher-keypaths/voucher-response))]
+    (cond-> {:spinning?            (utils/requesting? app-state request-keys/fetch-user-stylist-service-menu)
+             :notification/content "Voucher redeemed successfully"
+             :cta/id               "view-earnings"
+             :cta/target           [events/navigate-v2-stylist-dashboard-payments]
+             :cta/copy             [:span.bold "View Earnings"]
+             :cta/secondary-id     "redeem-voucher"
+             :cta/secondary-target [events/navigate-voucher-redeem]
+             :cta/secondary-copy   "Redeem Another Voucher"
 
-     :fine-print/id   "fine-print"
-     :fine-print/copy (str
-                       "The Payout Breakdown above is the agreed upon amount set between you "
-                       "and Mayvenn at the start of your program. This amount is less than the "
-                       "price advertised on the website to customers. Charging customers for the "
-                       "difference between the advertised price and payout amount will result in "
-                       "your removal from the program.")}))
+             :fine-print/id   "fine-print"
+             :fine-print/copy (str
+                               "The Payout Breakdown above is the agreed upon amount set between you "
+                               "and Mayvenn at the start of your program. This amount is less than the "
+                               "price advertised on the website to customers. Charging customers for the "
+                               "difference between the advertised price and payout amount will result in "
+                               "your removal from the program.")
+             :breakdown/primary-id "redemption-amount"
+             :breakdown/primary    "Payout Breakdown"}
+
+      (:discount voucher) ;; GROT: old behavior for single service vouchers, remove once vaqum is deployed
+      (merge (let [service-menu              (get-in app-state keypaths/user-stylist-service-menu)
+                   install-type              (-> voucher :discount :unit_type)
+                   install-type-display-name (get unit-type->display-name install-type)
+                   payout-amount             (-> service-menu
+                                                 (get (keyword (get unit-type->menu-kw-payout install-type)))
+                                                 mf/as-money)]
+               {:breakdown/items [{:breakdown-item/id    "base-service"
+                                   :breakdown-item/label install-type-display-name
+                                   :breakdown-item/value (str payout-amount "*")}]
+                :notification/id (str "voucher-redeemed-" install-type-display-name)}))
+
+      (:services voucher) ;; NOTE: post-deploy, just put these into default map
+      (merge {:breakdown/items (mapv (fn [service]
+                                       {:breakdown-item/id   (str (:sku service) "-service")
+                                       :breakdown-item/label (:product-name service)
+                                       :breakdown-item/value (str (mf/as-money (:price service)) "*")})
+                                     (:services voucher))
+              :breakdown/total (->> (:services voucher)
+                                    (map :price)
+                                    (reduce +)
+                                    mf/as-money)
+              :notification/id "voucher-redeemed-success"}))))
 
 (defn ^:export built-component
   [data opts]

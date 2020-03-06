@@ -20,6 +20,9 @@
 .bg-pale-purple  { background-color: var(--pale-purple); }
 .bg-pink         { background-color: var(--pink); }
 
+.bg-alternate-refresh-gray-white:nth-child(odd) { background-color: var(--refresh-gray); }
+.bg-alternate-refresh-gray-white:nth-child(even) { background-color: var(--white); }
+
 :root {
     --facebook-blue:          #3b5998;
     --quadpay-blue:           #1d73ec;
