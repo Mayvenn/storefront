@@ -9,6 +9,7 @@
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.experiments :as experiments]
+            catalog.keypaths
             [storefront.config :as config]
             [storefront.events :as events]
             [storefront.hooks.talkable :as talkable]
@@ -156,13 +157,21 @@
     (assoc-in app-state adventure.keypaths/adventure-home-video (adventure-slug->video (:video query-params)))
     (assoc-in app-state keypaths/v2-ui-home-video (v2-slug->video (:video query-params)))))
 
+
+(defn clean-up-open-category-panels
+  [app-state nav-event]
+  (cond-> app-state
+    (not= nav-event events/navigate-category)
+    (-> (assoc-in keypaths/hide-header? false)
+        (assoc-in catalog.keypaths/category-panel nil))))
+
 (defmethod transition-state events/navigate [_ event args app-state]
   (let [args (dissoc args :nav-stack-item)
         uri  (url/url js/window.location)]
     (-> app-state
         collapse-menus
         add-return-event
-        (assoc-in keypaths/hide-header? false)
+        (clean-up-open-category-panels event)
         (add-pending-promo-code args)
         (add-affiliate-stylist-id args)
         clear-flash
