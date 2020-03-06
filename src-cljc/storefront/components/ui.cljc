@@ -557,7 +557,8 @@
                     :loop                  true
                     :muted                 true
                     :webkitplaysinline     "true"
-                    :playsInline           true} attrs)
+                    :playsInline           true
+                    :disableRemotePlayback true} attrs)
     (for [format ["mp4", "webm"]]
       [:source {:src  (str "https://ucarecdn.com/" uuid "/gif2video/-/format/" format "/")
                 :type (str "video/" format)}])]))
