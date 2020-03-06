@@ -64,7 +64,7 @@
         addon-services-skus         (->> addon-services
                                          (map (fn [addon-service] (get sku-catalog (:sku addon-service))))
                                          (map (fn [addon-sku] {:addon-service/title  (:sku/title addon-sku)
-                                                               :addon-service/price  (mf/as-money (:sku/price addon-sku))
+                                                               :addon-service/price  (some-> addon-sku :sku/price mf/as-money)
                                                                :addon-service/sku-id (:catalog/sku-id addon-sku)})))
         wig-customization-service?  (= :wig-customization service-type)
         install-items-required      (if wig-customization-service? 1 3)
