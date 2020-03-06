@@ -97,7 +97,8 @@
 
 (defcomponent ^:private component
   [queried-data owner opts]
-  [:div.flex.flex-column.items-center.p4
+  [:div.flex.flex-column.items-center.p4.mx-auto
+   {:style {:max-width "498px"}}
    [:div.mb8.col-12 (notification-molecule queried-data)]
 
    (breakdown-molecule queried-data)
