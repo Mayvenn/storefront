@@ -75,7 +75,7 @@
                                                              :addon-unavailable-reason
                                                              (or
                                                               (when (not (stylist-can-perform-addon-service? servicing-stylist addon-sku-id))
-                                                                "Not available with your stylist")
+                                                                "Your stylist does not yet offer this service on Mayvenn")
                                                               (when (not (contains?
                                                                           (set (map mayvenn-install/hair-family->service-type addon-service-hair-family))
                                                                           (:mayvenn-install/service-type mayvenn-install)))
