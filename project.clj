@@ -63,7 +63,6 @@
   :source-paths ["src" "src-cljc" "src-cljs"]
   :resource-paths ["resources"]
   :aliases {"fig"    ["trampoline" "run" "-m" "figwheel.main" "-b" "dev" "-r"]
-            "kaocha" ["with-profile" "+kaocha" "run" "-m" "kaocha.runner"]
             "fig:pc" ["trampoline" "run" "-m" "figwheel.main" "-pc" "-b" "dev" "-r"]}
   :cljsbuild
   {:builds
@@ -139,8 +138,6 @@
              :repl    {:dependencies
                        [[cider/piggieback "0.4.0"]
                         [nrepl "0.6.0"]]}
-             :kaocha {:dependencies [[lambdaisland/kaocha "0.0-590"]]}
-
              :dev     {:source-paths ["dev/clj"]
                        :dependencies [[cider/piggieback "0.4.0"]
                                       [com.bhauman/figwheel-main "0.2.3"]
