@@ -63,7 +63,8 @@
      [:div.center.title-2.canela.mb4
       {:data-test primary-id}
       primary]
-     [:div.mx-auto.col-10.border-bottom
+     [:div.mx-auto.col-10
+      {:class (when (> (count items) 1) "border-bottom")}
       (for [{:breakdown-item/keys [id label value] :as stuff} items]
         [:div.flex.justify-between.bg-alternate-refresh-gray-white.p2
          {:key       id
