@@ -524,17 +524,22 @@
            second
            (#(string/replace % #"&amp;" "&"))))
 
-(defn validate-title-and-description-and-canonical
+(defmacro validate-title-and-description-and-canonical
   [resp expected-title expected-description expected-canonical expected-query-params]
-  (is (= 200 (:status resp)))
-  (is (= expected-title
-         (parse-title (:body resp))))
-  (is (= expected-description
-         (parse-meta-tag-content (:body resp) "description")))
-  (is (= expected-canonical
-         (-> resp :body parse-canonical-uri :path)))
-  (is (= expected-query-params
-         (response->canonical-uri-query-string resp))))
+  `(let [resp#                  ~resp
+         expected-title#        ~expected-title
+         expected-description#  ~expected-description
+         expected-canonical#    ~expected-canonical
+         expected-query-params# ~expected-query-params]
+     (is (= 200 (:status resp#)))
+     (is (= expected-title#
+            (parse-title (:body resp#))))
+     (is (= expected-description#
+            (parse-meta-tag-content (:body resp#) "description")))
+     (is (= expected-canonical#
+            (-> resp# :body parse-canonical-uri :path)))
+     (is (= expected-query-params#
+            (response->canonical-uri-query-string resp#)))))
 
 (def default-closure-title
   "Hair Closures: Human Hair Closure Sew-Ins | Mayvenn")
@@ -563,12 +568,13 @@
           (-> (mock/request :get (str virgin-closures-category-url
                                       "?origin=indian"))
               handler
-              (validate-title-and-description-and-canonical "Indian Virgin Hair Closures | Mayvenn"
-                                                            (str "Mayvenn's Indian Virgin Hair Closures are beautifully "
-                                                                 "crafted and provide a realistic part to close off any unit "
-                                                                 "or install.")
-                                                            "/categories/0-virgin-closures"
-                                                            "origin=indian")))
+              (validate-title-and-description-and-canonical
+               "Indian Virgin Hair Closures | Mayvenn"
+               (str "Mayvenn's Indian Virgin Hair Closures are beautifully "
+                    "crafted and provide a realistic part to close off any unit "
+                    "or install.")
+               "/categories/0-virgin-closures"
+               "origin=indian")))
 
         (testing "two options are selected"
           (testing "when one facet is selected"
@@ -603,10 +609,11 @@
                                       "&color=%232-chocolate-brown"
                                       "&base-material=lace"))
               handler
-              (validate-title-and-description-and-canonical default-closure-title
-                                                            default-closure-description
-                                                            "/categories/0-virgin-closures"
-                                                            "origin=indian&texture=loose-wave&color=%232-chocolate-brown&base-material=lace")))
+              (validate-title-and-description-and-canonical
+               default-closure-title
+               default-closure-description
+               "/categories/0-virgin-closures"
+               "origin=indian&texture=loose-wave&color=%232-chocolate-brown&base-material=lace")))
 
         (testing "two options from the same facet are selected we get a generic description"
           (-> (mock/request :get (str virgin-closures-category-url
@@ -627,14 +634,15 @@
                                                           "/categories/23-mayvenn-install"
                                                           "origin=indian")))
 
-      (testing "when mayvenn-install category has a category selected"
+      (testing "when mayvenn-install category has a category selected, that categories seo is used"
         (-> (mock/request :get "https://shop.mayvenn.com/categories/23-mayvenn-install?family=closures")
             handler
-            (validate-title-and-description-and-canonical "Closures Virgin Hair Closures | Mayvenn"
-                                                          (str "Mayvenn's Closures Virgin Hair Closures are beautifully crafted and provide a realistic part to "
-                                                                "close off any unit or install.")
-                                                          "/categories/0-virgin-closures"
-                                                          nil))))))
+            (validate-title-and-description-and-canonical
+             "Hair Closures: Human Hair Closure Sew-Ins | Mayvenn"
+             (str "Mayvenn’s hair closures allow you to close off any unit or "
+                  "install and come in a variety of different combinations. Shop now to create your look.")
+             "/categories/0-virgin-closures"
+             nil))))))
 
 (def default-wig-title
   "Human Hair Wigs: Natural Hair Lace Wigs | Mayvenn")
@@ -653,7 +661,7 @@
 (def human-hair-bundles-category-url
   "https://shop.mayvenn.com/categories/27-human-hair-bundles")
 
-(deftest wig-page-title-and-description-templates
+(deftest wig-page-seo
   (with-services {}
     (with-handler handler
       (testing "a wig page has a template"
@@ -666,30 +674,31 @@
                                                             nil)))
 
         (testing "when one family is selected,"
-          (testing "uses that family's category canonical uri"
+          (testing "uses that family's category seo (canonical uri, page-title, meta description)"
             (-> (mock/request :get (str wig-category-url
                                         "?family=lace-front-wigs"))
                 handler
-                (validate-title-and-description-and-canonical "Lace Front Wigs Virgin Lace Front Wigs | Mayvenn"
-                                                              (str "Mayvenn’s Lace Front Wigs Virgin Lace Front Wigs allow you to change up and "
-                                                                   "achieve your desired look. Shop our collection of virgin hair wigs today.")
-                                                              "/categories/24-virgin-lace-front-wigs"
-                                                              nil))))
+                (validate-title-and-description-and-canonical
+                 "Lace Front Wigs: Human Hair Lace Front Wigs | Mayvenn"
+                 (str "Mayvenn’s human hair lace front wigs mimic a natural hairline and come "
+                      "in different variations such as Brazilian, Malaysian, straight, and deep wave.")
+                 "/categories/24-virgin-lace-front-wigs"
+                 nil))))
 
-        (testing "two options are selected"
-          (testing "when one facet is selected"
-            (-> (mock/request :get (str wig-category-url
-                                        "?origin=brazilian"
-                                        "&texture=loose-wave"))
-                handler
-                (validate-title-and-description-and-canonical "Brazilian Loose Wave Wigs | Mayvenn"
-                                                              (str "Mayvenn’s Brazilian Loose Wave Wigs allow you to change up "
-                                                                   "and achieve your desired look. Shop our collection of virgin "
-                                                                   "hair wigs today.")
-                                                              "/categories/13-wigs"
-                                                              "origin=brazilian&texture=loose-wave"))))
+        (testing "two different non-family facets are selected the wig interstitial seo template are used"
+          (-> (mock/request :get (str wig-category-url
+                                      "?origin=brazilian"
+                                      "&texture=loose-wave"))
+              handler
+              (validate-title-and-description-and-canonical
+               "Brazilian Loose Wave Wigs | Mayvenn"
+               (str "Mayvenn’s Brazilian Loose Wave Wigs allow you to change up "
+                    "and achieve your desired look. Shop our collection of virgin "
+                    "hair wigs today.")
+               "/categories/13-wigs"
+               "origin=brazilian&texture=loose-wave")))
 
-        (testing "two families are selected"
+        (testing "two families are selected the default wig seo is used"
           (-> (mock/request :get (str wig-category-url
                                       "?family=lace-front-wigs~ready-wigs"))
               handler
@@ -704,12 +713,13 @@
                                       "&origin=indian"
                                       "&family=lace-front-wigs"))
               handler
-              (validate-title-and-description-and-canonical "Indian Loose Wave Lace Front Wigs Virgin Lace Front Wigs | Mayvenn"
-                                                            (str "Mayvenn’s Indian Loose Wave Lace Front Wigs Virgin Lace Front "
-                                                                 "Wigs allow you to change up and achieve your desired "
-                                                                 "look. Shop our collection of virgin hair wigs today.")
-                                                            "/categories/24-virgin-lace-front-wigs"
-                                                            "origin=indian&texture=loose-wave")))
+              (validate-title-and-description-and-canonical
+               "Indian Loose Wave Virgin Lace Front Wigs | Mayvenn"
+               (str "Mayvenn’s Indian Loose Wave Virgin Lace Front Wigs "
+                    "allow you to change up and achieve your desired "
+                    "look. Shop our collection of virgin hair wigs today.")
+               "/categories/24-virgin-lace-front-wigs"
+               "origin=indian&texture=loose-wave")))
 
         (testing "two options from the same facet are selected we get a generic description"
           (-> (mock/request :get (str wig-category-url
@@ -730,37 +740,28 @@
                                                             "/categories/13-wigs"
                                                             "origin=indian%7Ebrazilian&texture=loose-wave")))
 
-        (testing "when ready-wigs is selected,"
-          (testing "uses that family's category canonical uri"
-            (-> (mock/request :get "https://shop.mayvenn.com/categories/25-ready-wear-wigs")
-                handler
-                (validate-title-and-description-and-canonical "Ready-to-Wear Wigs: Short, Bob, Side-Part & More | Mayvenn"
-                                                              (str "Mayvenn’s ready-to-wear human hair lace wigs provide "
-                                                                   "a quick style switch-up and come in different "
-                                                                   "variations such as Brazilian, straight, and loose wave.")
-                                                              "/categories/25-ready-wear-wigs"
-                                                              nil))))
-
         (testing "when 360-wigs is selected,"
           (testing "uses that family's category canonical uri"
             (-> (mock/request :get "https://shop.mayvenn.com/categories/13-wigs?family=360-wigs")
                 handler
-                (validate-title-and-description-and-canonical "360 Wigs Virgin 360 Lace Wigs | Mayvenn"
-                                                              (str "Mayvenn’s 360 Wigs Virgin 360 Lace Wigs allow you to change up and "
-                                                                   "achieve your desired look. Shop our collection of virgin hair wigs today.")
-                                                              "/categories/26-virgin-360-wigs"
-                                                              nil))))
+                (validate-title-and-description-and-canonical
+                 "360 Lace Wigs: Human Hair 360 Lace Wigs | Mayvenn"
+                 (str "Mayvenn’s human hair 360 lace wigs give you all around protection and "
+                      "come in different variations such as Brazilian, Malaysian, straight, and deep wave.")
+                 "/categories/26-virgin-360-wigs"
+                 nil))))
 
         (testing "when ready-wigs is selected,"
           (testing "uses that family's category canonical uri"
             (-> (mock/request :get (str "https://shop.mayvenn.com/categories/13-wigs"
                                         "?family=ready-wigs"))
                 handler
-                (validate-title-and-description-and-canonical "Ready-to-Wear Wigs | Mayvenn"
-                                                              (str "Mayvenn’s Ready-to-Wear Wigs allow you to change up and "
-                                                                   "achieve your desired look. Shop our collection of virgin hair wigs today.")
-                                                              "/categories/25-ready-wear-wigs"
-                                                              nil))))))))
+                (validate-title-and-description-and-canonical
+                 "Ready-to-Wear Wigs: Short, Bob, Side-Part & More | Mayvenn"
+                 (str "Mayvenn’s ready-to-wear human hair lace wigs provide a quick style "
+                      "switch-up and come in different variations such as Brazilian, straight, and loose wave.")
+                 "/categories/25-ready-wear-wigs"
+                 nil))))))))
 
 #_(deftest human-hair-bundles-and-description-templates
   (with-services {}

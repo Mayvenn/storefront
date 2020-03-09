@@ -77,16 +77,25 @@
        (map #(if (empty? %) "" (str % " ")))
        (apply (fnil (partial strings/format template) " " " "))))
 
+(defn ^:private category->allowed-query-params
+  [{:keys [selector/electives]}]
+  (->> electives
+       (select-keys (set/map-invert accessors.categories/query-params->facet-slugs))
+       vals
+       (map name)
+       set))
+
 (defn category-tags [data]
   (let [categories            (get-in data keypaths/categories)
+        canonical-category-id (accessors.categories/canonical-category-id data)
+        category              (accessors.categories/id->category canonical-category-id categories)
+        allowed-query-params  (category->allowed-query-params category)
         facets                (facets/by-slug data)
         uri-query             (-> data (get-in keypaths/navigation-uri) :query)
         selected-options      (cond-> uri-query
                                 (string? uri-query) cemerick-url/query->map
-                                :always             (select-keys (mapv name category/allowed-query-params))
+                                :always             (select-keys allowed-query-params)
                                 :always             category/sort-query-params)
-        canonical-category-id (accessors.categories/canonical-category-id data)
-        category              (accessors.categories/id->category canonical-category-id categories)
         indexable?            (and
                                (not-any? #(string/includes? % accessors.categories/query-param-separator)
                                          (vals selected-options))
@@ -102,13 +111,14 @@
          seo-filter-title :seo/filter-title
          :keys            [page/title-template
                            page.meta/description-template]} category
-        seo-title                                           (or seo-filter-title seo-title)
-        page-title                                          (if (and can-use-seo-template? selected-facet-string)
-                                                              (format-with-nil-protection title-template selected-facet-string seo-title)
-                                                              (:page/title category))
-        page-meta-description                               (if (and can-use-seo-template? selected-facet-string)
-                                                              (format-with-nil-protection description-template selected-facet-string seo-title)
-                                                              (:page.meta/description category))]
+
+        seo-title             (or seo-filter-title seo-title)
+        page-title            (if (and can-use-seo-template? selected-facet-string)
+                                (format-with-nil-protection title-template selected-facet-string seo-title)
+                                (:page/title category))
+        page-meta-description (if (and can-use-seo-template? selected-facet-string)
+                                (format-with-nil-protection description-template selected-facet-string seo-title)
+                                (:page.meta/description category))]
     (cond-> [[:title {} page-title]
              [:meta {:name "description" :content page-meta-description}]
              [:meta {:property "og:title" :content (:opengraph/title category)}]
@@ -118,66 +128,40 @@
       (not indexable?)
       (conj [:meta {:name "robots" :content "noindex"}]))))
 
-(defn filter-and-sort-seo-query-params
-  [data nav-event query]
-  (when (= events/navigate-category nav-event)
-    (let [{:keys [selector/electives]} (accessors.categories/id->category
-                                        (accessors.categories/canonical-category-id data)
-                                        (get-in data keypaths/categories))
-          allowed-query-params         (->> electives
-                                            (select-keys
-                                             (set/map-invert accessors.categories/query-params->facet-slugs))
-                                            (maps/map-values name)
-                                            vals
-                                            set)]
-      #?(:clj (-> query ;; string in clj
-                  cemerick-url/query->map
-                  (select-keys allowed-query-params)
-                  category/sort-query-params
-                  uri/map->query
-                  not-empty)
-         :cljs (-> query ;; map in cljs
-                   (select-keys allowed-query-params)
-                   category/sort-query-params
-                   not-empty)))))
+(defn ^:private filter-and-sort-seo-query-params-for-category-page
+  [query category]
+  (let [allowed-query-params (category->allowed-query-params category)]
+    #?(:clj (-> query ;; string in clj
+                cemerick-url/query->map
+                (select-keys allowed-query-params)
+                category/sort-query-params
+                uri/map->query
+                not-empty)
+       :cljs (-> query ;; map in cljs
+                 (select-keys allowed-query-params)
+                 category/sort-query-params
+                 not-empty))))
 
-(defn ^:private remove-unnecessary-query-params
-  [uri single-category? category-family]
-  (let [query     (:query uri)
-        query-map #?(:clj (cemerick-url/query->map query)
-                     :cljs query)]
-    #?(:clj (->> query-map
-                 (remove #(and single-category? (category-family (second %))))
-                 (into {})
-                 uri/map->query
-                 (assoc uri :query))
-       :cljs (->> query-map
-                  (remove #(and single-category? (category-family (second %))))
-                  (into {})
-                  (assoc uri :query)))))
-
-(defn ^:private handle-icp-paths-and-query-params
+(defn ^:private derive-canonical-uri-query-params
   [uri data]
-  (let [path                            (:path uri)
-        canonical-category-id           (accessors.categories/canonical-category-id data)
-        categories                      (get-in data keypaths/categories)
-        {:keys [page/slug hair/family]} (accessors.categories/id->category canonical-category-id categories)
-        single-category?                (= (count family) 1)]
-    (if (string/includes? path "categories")
+  (let [nav-event             (get-in data keypaths/navigation-event)
+        canonical-category-id (accessors.categories/canonical-category-id data)
+        categories            (get-in data keypaths/categories)
+        {:keys [page/slug]
+         :as category}   (accessors.categories/id->category canonical-category-id categories)]
+    (if (= events/navigate-category nav-event)
       (-> uri
           (assoc :path (str "/categories/" canonical-category-id "-" slug))
-          (remove-unnecessary-query-params single-category? family))
-      uri)))
+          (utils/?update :query filter-and-sort-seo-query-params-for-category-page category))
+      (assoc uri :query nil))))
 
 (defn canonical-uri
   [data]
-  (let [nav-event (get-in data keypaths/navigation-event)]
-    (some-> (get-in data keypaths/navigation-uri)
-            (handle-icp-paths-and-query-params data)
-            (utils/?update :query (partial filter-and-sort-seo-query-params data nav-event)) ;;; WHERE WE DEAL WITH QUERY PARAMS
-            (update :host string/replace #"^[^.]+" "shop")
-            (assoc :scheme (get-in data keypaths/scheme))
-            str)))
+  (some-> (get-in data keypaths/navigation-uri)
+          (derive-canonical-uri-query-params data)
+          (update :host string/replace #"^[^.]+" "shop")
+          (assoc :scheme (get-in data keypaths/scheme))
+          str))
 
 (defn canonical-link-tag [data]
   (when-let [canonical-href (canonical-uri data)]
