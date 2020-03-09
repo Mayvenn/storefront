@@ -1,4 +1,4 @@
-FROM clojure:openjdk-8-lein
+FROM 545095154182.dkr.ecr.us-east-1.amazonaws.com/corretto-clojure:jdk-8-lein
 
 WORKDIR /app
 ADD project.clj /app/project.clj

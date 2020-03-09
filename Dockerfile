@@ -1,6 +1,6 @@
-FROM openjdk:8-jre
+FROM amazoncorretto:8
 
-RUN wget https://github.com/jmxtrans/jmxtrans-agent/releases/download/jmxtrans-agent-1.2.4/jmxtrans-agent-1.2.4.jar
+RUN curl -LO https://github.com/jmxtrans/jmxtrans-agent/releases/download/jmxtrans-agent-1.2.4/jmxtrans-agent-1.2.4.jar
 COPY storefront.jar storefront.jar
 COPY container_files /
 
