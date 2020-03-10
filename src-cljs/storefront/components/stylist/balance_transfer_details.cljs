@@ -3,6 +3,7 @@
             [ui.molecules :as ui-molecules]
             [storefront.accessors.adjustments :as adjustments]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.line-items :as accessors.line-items]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
@@ -207,11 +208,13 @@
        [:div.h5.medium.s-color (mf/as-money amount)]
        [:div.h8 "Cash"]]]]))
 
+;; TODO: Refactor the query in this namespace to not be as one-to-one with the
+;; model representation
 (defn ^:private voucher-award-component
-  [{:keys [balance-transfer] :as queried-data}]
-  (let [{:keys [id transfered-at amount data]}     balance-transfer
-        {:keys [order campaign-name order-number]} data
-        client-name                                (orders/first-name-plus-last-name-initial order)]
+  [{:keys [balance-transfer service-skus voucher-services] :as queried-data}]
+  (let [{:keys [id transfered-at amount data]}             balance-transfer
+        {:keys [order campaign-name order-number voucher]} data
+        client-name                                        (orders/first-name-plus-last-name-initial order)]
     [:div.container.mb4.px3
      [:div.py3 (ui-molecules/return-link queried-data)]
      [:div
@@ -223,7 +226,17 @@
        [:div.col-12
         (info-block "deposit date" (f/long-date (or transfered-at (:transfered_at data))))
         (info-block "client" client-name)
-        (info-block "service type" campaign-name)
+        (info-block "services" (if-let [services (:services voucher)]
+                                 [:div
+                                  (mapv (fn [{sku-name :sku/name
+                                              sku-id   :catalog/sku-id}]
+                                          (let [id (str "service-" sku-id)]
+                                            [:div
+                                             {:data-test id
+                                              :key       id}
+                                             sku-name]))
+                                        service-skus)]
+                                 campaign-name))
 
         (when order-number
           (info-block "order number"
@@ -242,11 +255,21 @@
   (let [balance-transfer-id (get-in data keypaths/stylist-earnings-balance-transfer-details-id)
         balance-transfer    (get-in data (conj keypaths/stylist-earnings-balance-transfers
                                                balance-transfer-id))
+        skus                (get-in data keypaths/v2-skus)
         type                (:type balance-transfer)]
     (merge
      {:return-link/id            "back-link"
       :return-link/event-message [events/navigate-v2-stylist-dashboard-payments]
       :return-link/copy          "Back"
+      :service-skus              (when (= "voucher_award" type)
+                                   (->> balance-transfer
+                                        :data
+                                        :voucher
+                                        :services
+                                        (mapv :sku)
+                                        (select-keys skus)
+                                        vals
+                                        (sort-by :order.view/addon-sort)))
       :balance-transfer          balance-transfer
       :fetching?                 (utils/requesting? data request-keys/get-stylist-balance-transfer)}
      (when (= type "commission")
@@ -281,10 +304,15 @@
 (defmethod effects/perform-effects events/api-success-stylist-balance-transfer-details
   [_ _ {:keys [data]} _ _]
   (messages/handle-message events/ensure-sku-ids
-                           {:sku-ids (->> (:order data)
-                                          orders/first-commissioned-shipment
-                                          orders/product-items-for-shipment
-                                          (map :sku))}))
+                           {:sku-ids         (->> (:order data)
+                                                  orders/first-commissioned-shipment
+                                                  orders/product-items-for-shipment
+                                                  (map :sku))
+                            :service-sku-ids (->> (:order data)
+                                                  orders/first-commissioned-shipment
+                                                  :line-items
+                                                  (filter accessors.line-items/service?)
+                                                  (map :sku))}))
 
 (defmethod transitions/transition-state events/api-success-stylist-balance-transfer-details [_ _ balance-transfer app-state]
   (-> app-state
