@@ -60,11 +60,12 @@
                                       (:category/description category))})
 
 (defcomponent ^:private drill-category-list-entry-organism
-  [{:drill-category/keys [id title description image-url target action-id action-label]} _ _]
+  [{:drill-category/keys [id title description image-url target action-id action-label width-class]} _ _]
   (when id
-    [:div.p3.col-4-on-tb-dt.flex.flex-wrap.col-12.content-start
+    [:div.p3.flex.flex-wrap.col-12.content-start
      {:key       id
-      :data-test id}
+      :data-test id
+      :class     (or width-class "col-4-on-tb-dt")}
      [:div.col-12-on-tb-dt.col-3
       [:div.hide-on-tb-dt.flex.justify-end.mr4.mt1
        (when image-url
@@ -82,12 +83,14 @@
          action-label))]]))
 
 (defcomponent ^:private drill-category-list-organism
-  [{:drill-category-list/keys [values]} _ _]
+  [{:drill-category-list/keys [values tablet-desktop-columns]} _ _]
   (when (seq values)
-    [:div.py8.flex.flex-wrap
-     (mapv #(component/build drill-category-list-entry-organism %
-                             {:key (:drill-category/id %)})
-           values)]))
+    (let [width-class (str "col-" (int (/ 12 tablet-desktop-columns)) "-on-tb-dt")]
+      [:div.py8.flex.flex-wrap.justify-center
+       (mapv #(component/build drill-category-list-entry-organism
+                               (assoc % :drill-category/width-class width-class)
+                               {:key (:drill-category/id %)})
+             values)])))
 
 (defcomponent ^:private drill-category-grid-entry-organism
   [{:drill-category/keys [title svg-url target]} _ {:keys [id]}]
@@ -239,7 +242,9 @@
                                     :drill-category-grid/title  (:subcategories/title category)}})
 
       (= :list (:subcategories/layout category))
-      (merge {:drill-category-list {:drill-category-list/values (mapv category->drill-category-list-entry subcategories)}}))))
+      (merge (let [values (mapv category->drill-category-list-entry subcategories)]
+               {:drill-category-list {:drill-category-list/values values
+                                      :drill-category-list/tablet-desktop-columns (max 1 (min 3 (count values)))}})))))
 
 (defn page
   [app-state opts]
