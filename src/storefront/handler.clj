@@ -575,7 +575,7 @@
       (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
 
       virgin-category
-      (util.response/redirect (path-for req events/navigate-category virgin-category) 302)
+      (util.response/redirect (path-for req events/navigate-category virgin-category) :moved-permanently)
 
       :else
       (let [categories (get-in data keypaths/categories)]
