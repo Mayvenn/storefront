@@ -226,7 +226,7 @@
            :hair/source         #{"virgin"}
            :hair/family         #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives  [:hair/family :hair/origin :hair/color :hair/base-material]
+           :selector/electives  [:hair/family :hair/origin]
            :copy/description    (copy "Tired of having to break out the hot"
                                       "tools for a textured straight look? Our Yaki"
                                       "Straight hair collection is here to save your"
@@ -336,7 +336,7 @@
            :hair/source              #{"virgin"}
            :hair/family              #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives       [:hair/family :hair/origin :hair/color :hair/base-material]
+           :selector/electives       [:hair/family :hair/origin]
            :copy/description         (copy "Ride the lush, carefree waves of the bundles,"
                                            "closures, and frontals in our Water Wave hair"
                                            "collection. For curls you can rock everywhere from"
@@ -389,7 +389,7 @@
            :hair/source              #{"virgin"}
            :hair/family              #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives       [:hair/family :hair/origin :hair/color :hair/base-material]
+           :selector/electives       [:hair/family :hair/origin :hair/base-material]
            :copy/description         (copy "Let your bold, beautiful curls take center stage! Our curly hair collection is a tight,"
                                            "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")
            :icon                     "/images/categories/curly-icon.svg"
