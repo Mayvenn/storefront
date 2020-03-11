@@ -107,6 +107,15 @@
     [:div.flex.items-center.content-3.ml1
      "(" rating-count ")"]))
 
+(defn stylist-card-bookings-count-molecule
+  [{:booking/keys [count] }]
+  (when count
+    [:div.content-3.col-12.flex.items-center
+     (svg/calendar {:class  "mrp3 fill-p-color"
+                   :width  "13px"
+                   :height "13px"})
+     [:span "Booked " (ui/pluralize-with-amount count "time")]]))
+
 (defn stylist-card-header-molecule
   [{:stylist-card.header/keys [target id] :as data}]
   (when id
@@ -121,6 +130,7 @@
        (stylist-ratings-count-molecule data)]
       (stylist-card-salon-name-molecule data)
       (stylist-card-address-marker-molecule data)
+      (stylist-card-bookings-count-molecule data)
       (stylist-card-services-list-molecule data)]]))
 
 (defcomponent organism

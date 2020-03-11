@@ -208,7 +208,8 @@
            store-slug
            store-nickname
            stylist-id
-           rating] :as stylist}]
+           rating
+           booking-count] :as stylist}]
   (let [rating-count                          (->> rating-star-counts vals (reduce +))
         {salon-name :name
          :keys      [address-1
@@ -238,6 +239,7 @@
          :stylist-card.title/id            "stylist-name"
          :stylist-card.title/primary       (stylists/->display-name stylist)
          :rating/value                     rating
+         :booking/count                    booking-count
          :stylist-card.services-list/id    (str "stylist-card-services-" store-slug)
          :stylist-card.services-list/value [(stylist-cards/checks-or-x-atom "Leave Out"
                                                                             (boolean specialty-sew-in-leave-out))
