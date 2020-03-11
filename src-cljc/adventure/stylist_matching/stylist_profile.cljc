@@ -28,7 +28,6 @@
             stylist-directory.keypaths
             [spice.core :as spice]
             [stylist-matching.ui.header :as header-org]
-            [storefront.platform.strings :as strings]
             [storefront.request-keys :as request-keys]))
 
 (defn transposed-title-molecule
@@ -161,11 +160,8 @@
            :share-icon/target [events/share-stylist {:stylist-id (:stylist-id stylist)
                                                      :title      (str stylist-name " - " (get-in data (conj storefront.keypaths/store :location :city)))
                                                      :text       (str stylist-name " is a Mayvenn Certified Stylist with top-rated reviews, great professionalism, and amazing work. Check out this stylist here:")
-                                                     :url        (strings/format "https://shop.%s.com/stylist/%d-%s?utm_campaign=%d&utm_term=fi_stylist_share&utm_medium=referral"
-                                                                                 environment
-                                                                                 stylist-id
-                                                                                 (:store-slug stylist)
-                                                                                 stylist-id)}]
+                                                     :url        (str "https://shop." environment ".com/stylist/" stylist-id "-" (:store-slug stylist)
+                                                                      "?utm_campaign=" stylist-id "&utm_term=fi_stylist_share&utm_medium=referral")}]
            :share-icon/icon   (svg/share-icon {:height "19px"
                                                :width  "18px"})
 

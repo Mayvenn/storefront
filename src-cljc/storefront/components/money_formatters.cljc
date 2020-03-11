@@ -1,6 +1,5 @@
 (ns storefront.components.money-formatters
-  (:require [storefront.platform.numbers :as num]
-            [storefront.platform.strings :as str]))
+  (:require [storefront.platform.numbers :as num]))
 
 (defn warn-if-nil [amount]
   (when (nil? amount)
@@ -25,9 +24,8 @@
 
 (defn as-money-without-cents [amount]
   (warn-if-nil amount)
-  (let [amount (num/parse-int (or amount 0))
-        format (if (< amount 0) "-$%s" "$%s")]
-    (str/format format (number-with-commas (num/abs amount)))))
+  (let [amount (num/parse-int (or amount 0))]
+    (str (if (< amount 0) "-$" "$") (number-with-commas (num/abs amount)))))
 
 (defn as-cents [amount]
   (warn-if-nil amount)
@@ -40,7 +38,9 @@
 (defn as-money-cents-only [amount]
   (warn-if-nil amount)
   (let [amount (-> (or amount 0) as-cents (rem 100))]
-    (str/format "%02d" amount)))
+    (if (< amount 10)
+      (str "0" amount)
+      (str amount))))
 
 (defn as-money [amount]
   (warn-if-nil amount)

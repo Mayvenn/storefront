@@ -23,54 +23,104 @@
    :category/image-url    image-url
    :seo/sitemap           true})
 
-(def bundles-templates
-  {:page/title-template "%sHuman %s| Mayvenn"
-   :page.meta/description-template
-   (copy "Mayvenn's %sHuman %sare machine-whefted and made with virgin hair for"
-         "unbeatable quality. Shop to achieve your desired look!")})
+(defn render-template
+  "Evaluates a template with a variable->values map, ctx, to produce a string.
+
+    > (render-template [\"hello, \" :person] {:person \"bob\"})
+    ;; => \"hello, bob\"
+
+  Rules of the template syntax:
+
+    - strings        => literal values, returned as-is
+    - keywords       => lookup the same keyword in ctx map. nil values are empty strings
+    - [key & append] => lookup the same keyword in ctx, appending the evaluation
+                        of `append` if the lookup of key is not empty. For
+                        example [:foo \"abc\"] w/ ctx of
+                          - {:foo \"def\"} produces \"defabc\"
+                          - {} produces \"\"
+
+  All parts are string concatenated together.
+  "
+  [tmpl ctx]
+  (transduce (comp (map (fn [form]
+                          (cond
+                            (keyword? form) (get ctx form)
+                            (vector? form)  (let [value (get ctx (first form))]
+                                              (when-not (empty? value)
+                                                (str value (render-template (rest form) ctx))))
+                            :else           form)))
+                   (remove empty?))
+             str
+             tmpl))
+
+(comment
+  (render-template [[:a " "] "Pizza " :b " | Mayvenn"]
+                   {:a "hello"
+                    :b "world"}) ;; => "hello Pizza world | Mayvenn"
+
+  (render-template [[:a " "] "Pizza " :b " | Mayvenn"]
+                   {:b "world"}) ;; => "Pizza world | Mayvenn"
+  )
 
 (def clip-in-tape-in-templates
-  {:page/title-template "%sVirgin %s| Mayvenn"
-   :page.meta/description-template
-   (copy "Get the hair of your dreams with our %s%s. Featuring a thin, polyurethane"
-         "weft that flawlessly blends with your own hair.")})
+  {:page/title-template            [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]
+   :page.meta/description-template ["Get the hair of your dreams with our "
+                                    :computed/selected-facet-string
+                                    " "
+                                    :seo/title
+                                    ". Featuring a thin, polyurethane"
+                                    " weft that flawlessly blends with your own hair."]})
 
 (def closures-templates
-  {:page/title-template "%s%s| Mayvenn"
-   :page.meta/description-template
-   (copy "Mayvenn's %s%sare beautifully crafted and provide a realistic part to"
-         "close off any unit or install.")})
+  {:page/title-template            [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]
+   :page.meta/description-template ["Mayvenn's "
+                                    :computed/selected-facet-string
+                                    " "
+                                    :seo/title
+                                    " are beautifully crafted and provide a realistic part to"
+                                    " close off any unit or install."]})
 
 (def frontals-templates
-  {:page/title-template "%s%s| Mayvenn"
-   :page.meta/description-template
-   (copy "Mayvenn's %s%smimic a natural hairline and offer versatile parting options"
-         "to achieve your desired look.")})
+  {:page/title-template            [[:computed/selected-facet-string " "] :seo/title " | Mayvenn"]
+   :page.meta/description-template ["Mayvenn's "
+                                    :computed/selected-facet-string
+                                    " "
+                                    :seo/title
+                                    " mimic a natural hairline and offer versatile parting options"
+                                    " to achieve your desired look."]})
 
 (def texture-templates
-  {:page/title-template "%s%s| Mayvenn"
-   :page.meta/description-template
-   (copy "Mayvenn's %shuman %sare machine-wefted and made with virgin"
-         "hair for unbeatable quality. Shop to achieve your desired look!")})
+  {:page/title-template            [:computed/selected-facet-string " " :seo/title " | Mayvenn"]
+   :page.meta/description-template ["Mayvenn's "
+                                    :computed/selected-facet-string
+                                    " Human "
+                                    :seo/title
+                                    " are machine-wefted and made with virgin"
+                                    " hair for unbeatable quality. Shop to achieve your desired look!"]})
 
 (def wig-templates
-  {:page/title-template "%s%s| Mayvenn"
-   :page.meta/description-template
-   (copy "Mayvenn’s %s%sallow you to change up and achieve your desired look."
-         "Shop our collection of virgin hair wigs today.")})
+  {:page/title-template            [:computed/selected-facet-string " " :seo/title " | Mayvenn"]
+   :page.meta/description-template ["Mayvenn’s "
+                                    :computed/selected-facet-string
+                                    " "
+                                    :seo/title
+                                    " allow you to change up and achieve your desired look."
+                                    " Shop our collection of virgin hair wigs today."]})
 
 (def bundle-templates
-  {:page/title-template "%sHuman %s| Mayvenn"
-   :page.meta/description-template
-   (copy "Mayvenn's %shuman %sare machine-wefted and made with virgin"
-         "hair for unbeatable quality. Shop to achieve your desired look!")})
+  {:page/title-template            [:computed/selected-facet-string " Human " :seo/title " | Mayvenn"]
+   :page.meta/description-template ["Mayvenn's "
+                                    :computed/selected-facet-string
+                                    " Human "
+                                    :seo/title
+                                    " are machine-wefted and made with virgin"
+                                    " hair for unbeatable quality. Shop to achieve your desired look!"]})
 
 (def closures
   [(merge {:catalog/category-id      "0"
            :copy/title               "Hair Closures"
            :page/slug                "virgin-closures"
            :seo/title                "Hair Closures"
-           :seo/filter-title         "Virgin Hair Closures"
            :legacy/named-search-slug "closures"
            :catalog/department       #{"hair"}
            :hair/family              #{"closures"}

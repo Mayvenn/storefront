@@ -79,11 +79,11 @@
                                                               (when (not (contains?
                                                                           (set (map mayvenn-install/hair-family->service-type addon-service-hair-family))
                                                                           (:mayvenn-install/service-type mayvenn-install)))
-                                                                (storefront.platform.strings/format
-                                                                 "Only Available with %s Install" (->> addon-service-hair-family
-                                                                                                       first
-                                                                                                       (get hair-family-facet)
-                                                                                                       :sku/name)))))
+                                                                (let [facet-name (->> addon-service-hair-family
+                                                                                    first
+                                                                                    (get hair-family-facet)
+                                                                                    :sku/name)]
+                                                                  (str "Only Available with " facet-name " Install" )))))
                                                             (assoc :addon-selected?
                                                                    (contains? (set (map :sku (orders/service-line-items (get-in data keypaths/order))))
                                                                               addon-sku-id)))))

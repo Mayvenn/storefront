@@ -7,11 +7,11 @@
             [catalog.facets :as facets]
             [storefront.events :as events]
             [catalog.category :as category]
+            [catalog.categories :as categories]
             [catalog.products :as products]
             [spice.selector :as selector]
             [storefront.ugc :as ugc]
             [storefront.utils :as utils]
-            [storefront.platform.strings :as strings]
             [storefront.uri :as uri]
             [clojure.string :as string]
             #?@(:clj [[cheshire.core :as json]
@@ -69,14 +69,6 @@
   (let [name-key (if (#{"origin" "color"} facet-slug) :sku/name :option/name)]
     (get-in facets [(keyword "hair" facet-slug) :facet/options option-slug name-key])))
 
-(defn format-with-nil-protection
-  [template & fill-strings]
-  (->> fill-strings
-       distinct
-       ((juxt first second))
-       (map #(if (empty? %) "" (str % " ")))
-       (apply (fnil (partial strings/format template) " " " "))))
-
 (defn ^:private category->allowed-query-params
   [{:keys [selector/electives]}]
   (->> electives
@@ -107,17 +99,15 @@
                                      (mapv (partial facet-option->option-name facets))
                                      (string/join " ")))
 
-        {seo-title        :seo/title
-         seo-filter-title :seo/filter-title
-         :keys            [page/title-template
-                           page.meta/description-template]} category
+        {seo-title :seo/title
+         :keys     [page/title-template
+                    page.meta/description-template]} category
 
-        seo-title             (or seo-filter-title seo-title)
         page-title            (if (and can-use-seo-template? selected-facet-string)
-                                (format-with-nil-protection title-template selected-facet-string seo-title)
+                                (categories/render-template title-template (assoc category :computed/selected-facet-string selected-facet-string))
                                 (:page/title category))
         page-meta-description (if (and can-use-seo-template? selected-facet-string)
-                                (format-with-nil-protection description-template selected-facet-string seo-title)
+                                (categories/render-template description-template (assoc category :computed/selected-facet-string selected-facet-string))
                                 (:page.meta/description category))]
     (cond-> [[:title {} page-title]
              [:meta {:name "description" :content page-meta-description}]
