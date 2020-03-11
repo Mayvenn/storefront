@@ -106,7 +106,7 @@
        (components.header/mobile-nav-header
         {:class "border-bottom border-gray" } nil
         (component/html [:div.center.proxima.content-1 "Add-on Services"])
-        (component/html [:div (ui/button-medium-underline-secondary
+        (component/html [:div (ui/button-medium-underline-primary
                                (merge {:data-test "addon-services-popup-close"}
                                       (utils/fake-href events/control-addon-service-menu-dismiss))
                                "DONE")]))
