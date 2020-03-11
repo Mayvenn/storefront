@@ -136,7 +136,9 @@
         services)]))))
 
 (defmethod transitions/transition-state events/control-browse-addons-button [_ event args app-state]
-  (assoc-in app-state keypaths/addons-popup-displayed? true))
+  (-> app-state
+      (assoc-in keypaths/confetti-mode "fired")
+      (assoc-in keypaths/addons-popup-displayed? true)))
 
 (defmethod transitions/transition-state events/control-addons-popup-done-button [_ event args app-state]
   (assoc-in app-state keypaths/addons-popup-displayed? false))

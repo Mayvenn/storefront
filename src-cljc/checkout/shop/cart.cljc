@@ -753,7 +753,7 @@
                                           (stylists/->display-name servicing-stylist)
                                           " to make your appointment.")})
 
-      applied?
+      (and applied? (not (get-in data keypaths/addons-popup-displayed?)))
       (merge {:confetti-spout/mode (get-in data keypaths/confetti-mode)
               :confetti-spout/id   "confetti-spout"}))))
 
