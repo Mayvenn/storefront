@@ -33,34 +33,17 @@
 
     - strings        => literal values, returned as-is
     - keywords       => lookup the same keyword in ctx map. nil values are empty strings
-    - [key & append] => lookup the same keyword in ctx, appending the evaluation
-                        of `append` if the lookup of key is not empty. For
-                        example [:foo \"abc\"] w/ ctx of
-                          - {:foo \"def\"} produces \"defabc\"
-                          - {} produces \"\"
 
   All parts are string concatenated together.
   "
   [tmpl ctx]
   (transduce (comp (map (fn [form]
-                          (cond
-                            (keyword? form) (get ctx form)
-                            (vector? form)  (let [value (get ctx (first form))]
-                                              (when-not (empty? value)
-                                                (str value (render-template (rest form) ctx))))
-                            :else           form)))
+                          (if (keyword? form)
+                            (get ctx form)
+                            form)))
                    (remove empty?))
              str
              tmpl))
-
-(comment
-  (render-template [[:a " "] "Pizza " :b " | Mayvenn"]
-                   {:a "hello"
-                    :b "world"}) ;; => "hello Pizza world | Mayvenn"
-
-  (render-template [[:a " "] "Pizza " :b " | Mayvenn"]
-                   {:b "world"}) ;; => "Pizza world | Mayvenn"
-  )
 
 (def clip-in-tape-in-templates
   {:page/title-template            [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]
