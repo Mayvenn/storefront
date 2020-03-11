@@ -90,7 +90,7 @@
                                                                                     first
                                                                                     (get hair-family-facet)
                                                                                     :sku/name)]
-                                                                  (str "Only Available with " facet-name " Install" )))))
+                                                                  (str "Only available with " facet-name " Install" )))))
                                                             (assoc :addon-selected?
                                                                    (contains? (set (map :sku (orders/service-line-items (get-in data keypaths/order))))
                                                                               addon-sku-id)))))
