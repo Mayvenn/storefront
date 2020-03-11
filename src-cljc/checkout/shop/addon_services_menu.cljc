@@ -58,7 +58,7 @@
      :addon-service-entry/target             [events/control-addon-checkbox {:sku-id              sku-id
                                                                              :variant-id          variant-id
                                                                              :previously-checked? addon-selected?}]
-     :addon-service-entry/checkbox-spinning? checkbox-spinning?
+     :addon-service-entry/checkbox-spinning? (and checkbox-spinning? (not addon-unavailable-reason))
      :addon-service-entry/disabled?          (or addon-unavailable-reason
                                                  checkbox-spinning?)
      :addon-service-entry/checked?           addon-selected?}))
