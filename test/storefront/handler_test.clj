@@ -661,6 +661,9 @@
 (def human-hair-bundles-category-url
   "https://shop.mayvenn.com/categories/27-human-hair-bundles")
 
+(def hair-extensions-category-url
+  "https://shop.mayvenn.com/categories/28-hair-extensions")
+
 (deftest wig-page-seo
   (with-services {}
     (with-handler handler
@@ -742,7 +745,7 @@
 
         (testing "when 360-wigs is selected,"
           (testing "uses that family's category canonical uri"
-            (-> (mock/request :get "https://shop.mayvenn.com/categories/13-wigs?family=360-wigs")
+            (-> (mock/request :get (str wig-category-url "?family=360-wigs"))
                 handler
                 (validate-title-and-description-and-canonical
                  "360 Lace Wigs: Human Hair 360 Lace Wigs | Mayvenn"
@@ -753,8 +756,7 @@
 
         (testing "when ready-wigs is selected,"
           (testing "uses that family's category canonical uri"
-            (-> (mock/request :get (str "https://shop.mayvenn.com/categories/13-wigs"
-                                        "?family=ready-wigs"))
+            (-> (mock/request :get (str wig-category-url "?family=ready-wigs"))
                 handler
                 (validate-title-and-description-and-canonical
                  "Ready-to-Wear Wigs: Short, Bob, Side-Part & More | Mayvenn"
@@ -762,6 +764,19 @@
                       "switch-up and come in different variations such as Brazilian, straight, and loose wave.")
                  "/categories/25-ready-wear-wigs"
                  nil))))))))
+
+(deftest hair-extensions-category-seo
+  (with-services {}
+    (with-handler handler
+      (testing "hair-extensions"
+        (-> (mock/request :get (str hair-extensions-category-url "?color=%231-jet-black"))
+            handler
+            (validate-title-and-description-and-canonical
+             "#1 Jet Black Virgin Hair Extensions | Mayvenn"
+             (str "Get the hair of your dreams with our #1 Jet Black Hair Extensions."
+                  " Featuring a thin, polyurethane weft that flawlessly blends with your own hair.")
+             "/categories/28-hair-extensions"
+             "color=%231-jet-black"))))))
 
 #_(deftest human-hair-bundles-and-description-templates
   (with-services {}
