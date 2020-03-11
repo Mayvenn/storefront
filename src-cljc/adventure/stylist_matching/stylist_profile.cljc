@@ -36,6 +36,7 @@
    [:div.content-2.proxima secondary]
    [:div.title-2.proxima.shout primary]])
 
+;; fork of molecules/stars-rating-molecule
 (defn stars-rating-molecule
   [{:rating/keys [value review-count]}]
   (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value)]

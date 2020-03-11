@@ -25,7 +25,6 @@
    (when rating
      (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars rating)]
        [:div.flex.items-center.button-font-3.s-color
-        [:span.mr1 rating]
         whole-stars
         partial-star
         empty-stars]))))

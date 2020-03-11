@@ -201,9 +201,21 @@
   [post-purchase?
    wig-customization?
    idx
-   {:keys [review-count salon service-menu gallery-images store-slug store-nickname stylist-id rating] :as stylist}]
-  (let [{salon-name :name :keys [address-1 address-2 city state zipcode]} salon
-
+   {:keys [rating-star-counts
+           salon
+           service-menu
+           gallery-images
+           store-slug
+           store-nickname
+           stylist-id
+           rating] :as stylist}]
+  (let [rating-count                          (->> rating-star-counts vals (reduce +))
+        {salon-name :name
+         :keys      [address-1
+                     address-2
+                     city
+                     state
+                     zipcode]}                salon
         {:keys [specialty-sew-in-leave-out
                 specialty-sew-in-closure
                 specialty-sew-in-360-frontal
@@ -262,9 +274,10 @@
                                                          [(string/join ", "
                                                                        (remove string/blank? [address-1 address-2 city state]))
                                                           zipcode])}
+
       (and (:mayvenn-rating-publishable stylist)
-           (> review-count 0))
-      (merge {:reviews/review-count review-count}))))
+           (> rating-count 0))
+      (merge {:ratings/rating-count rating-count}))))
 
 (defn stylist-cards-query
   [post-purchase? wig-customization? stylists]

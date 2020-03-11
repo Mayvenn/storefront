@@ -101,11 +101,11 @@
                                            72))
        [:div {:style {:height "72px" :width "72px"}}]))))
 
-(defn stylist-review-count-molecule
-  [{:reviews/keys [review-count]}]
-  (when review-count
+(defn stylist-ratings-count-molecule
+  [{:ratings/keys [rating-count]}]
+  (when rating-count
     [:div.flex.items-center.content-3.ml1
-     (ui/pluralize-with-amount review-count "Review")]))
+     "(" rating-count ")"]))
 
 (defn stylist-card-header-molecule
   [{:stylist-card.header/keys [target id] :as data}]
@@ -118,7 +118,7 @@
       (stylist-card-title-molecule data)
       [:div.flex.items-center
        (molecules/stars-rating-molecule data)
-       (stylist-review-count-molecule data)]
+       (stylist-ratings-count-molecule data)]
       (stylist-card-salon-name-molecule data)
       (stylist-card-address-marker-molecule data)
       (stylist-card-services-list-molecule data)]]))
