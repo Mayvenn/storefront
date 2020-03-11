@@ -41,20 +41,27 @@
         boolean)))
 
 (defn addon-service-sku->addon-service-menu-entry
-  [data {:keys [catalog/sku-id sku/price legacy/variant-id copy/description addon-unavailable-reason addon-selected?]
-         sku-name   :sku/name}]
-  {:addon-service-entry/id                 (str "addon-service-" sku-id)
-   :addon-service-entry/disabled-classes   (when addon-unavailable-reason "bg-refresh-gray dark-gray")
-   :addon-service-entry/warning            addon-unavailable-reason
-   :addon-service-entry/primary            sku-name
-   :addon-service-entry/secondary          description
-   :addon-service-entry/tertiary           (mf/as-money price)
-   :addon-service-entry/target             [events/control-addon-checkbox {:sku-id sku-id
-                                                                           :variant-id variant-id
-                                                                           :previously-checked? addon-selected?}]
-   :addon-service-entry/checkbox-spinning? (or (utils/requesting? data (conj request-keys/add-to-bag sku-id))
-                                               (utils/requesting? data (conj request-keys/delete-line-item variant-id)))
-   :addon-service-entry/checked?           addon-selected?})
+  [data {:keys    [catalog/sku-id sku/price legacy/variant-id copy/description addon-unavailable-reason addon-selected?]
+         sku-name :sku/name}]
+  (let [checkbox-spinning? (or (utils/requesting? data (fn [req]
+                                                         (subvec (:request-key req []) 0 1))
+                                                  request-keys/add-to-bag)
+                               (utils/requesting? data (fn [req]
+                                                         (subvec (:request-key req []) 0 1))
+                                                  request-keys/delete-line-item))]
+    {:addon-service-entry/id                 (str "addon-service-" sku-id)
+     :addon-service-entry/disabled-classes   (when addon-unavailable-reason "bg-refresh-gray dark-gray")
+     :addon-service-entry/warning            addon-unavailable-reason
+     :addon-service-entry/primary            sku-name
+     :addon-service-entry/secondary          description
+     :addon-service-entry/tertiary           (mf/as-money price)
+     :addon-service-entry/target             [events/control-addon-checkbox {:sku-id              sku-id
+                                                                             :variant-id          variant-id
+                                                                             :previously-checked? addon-selected?}]
+     :addon-service-entry/checkbox-spinning? checkbox-spinning?
+     :addon-service-entry/disabled?          (or addon-unavailable-reason
+                                                 checkbox-spinning?)
+     :addon-service-entry/checked?           addon-selected?}))
 
 (defn query [data]
   (let [hair-family-facet                   (->> (get-in data keypaths/v2-facets)
@@ -108,17 +115,19 @@
                                             (component/html [:div (ui/button-medium-underline-secondary (merge {:data-test "addon-services-popup-close"}
                                                                                                                (utils/fake-href events/control-addons-popup-done-button)) "DONE")]))
        (mapv
-        (fn [{:addon-service-entry/keys [id disabled-classes primary secondary tertiary warning target checked? checkbox-spinning?]}]
+        (fn [{:addon-service-entry/keys [id disabled? disabled-classes primary secondary tertiary warning target checked? checkbox-spinning?]}]
           [:div.p3.py4.pr4.flex
-           {:key   id
-            :class disabled-classes}
+           (merge
+            {:key   id
+             :class disabled-classes}
+            (when-not disabled?
+              {:on-click (apply utils/send-event-callback target)}))
            (if checkbox-spinning?
              [:div.mt1
               [:div.pr2 {:style {:width "41px"}} ui/spinner]]
              [:div.mt1.pl1 (ui/check-box {:value     checked?
-                                          :disabled  warning
-                                          :data-test id
-                                          :on-change (apply utils/send-event-callback target)})])
+                                          :disabled  disabled?
+                                          :data-test id})])
            [:div.flex-grow-1.mr2
             [:div.proxima.content-2 primary]
             [:div.proxima.content-3 secondary]
