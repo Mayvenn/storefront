@@ -1,4 +1,9 @@
 (ns storefront.components.popup
+  "Not sure whether you want a popup or a modal?
+  1. There is only ever one popup open at a time, modals can be nested.
+
+  2. We have tooling around cleaning up after popups and being able to close them with the escape key."
+
   (:require [storefront.accessors.nav :as nav]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]

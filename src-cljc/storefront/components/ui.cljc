@@ -466,7 +466,10 @@
        [:div.fixed.overlay]
        menu])]))
 
-(defn modal [{:keys [close-attrs bg-class col-class body-style] :or {col-class "col-11 col-7-on-tb col-5-on-dt"}} & body]
+(defn modal
+  "Make sure you don't want a popup to wrap your modal. See popup ns for more
+  details"
+  [{:keys [close-attrs bg-class col-class body-style] :or {col-class "col-11 col-7-on-tb col-5-on-dt"}} & body]
   (component/html
    ;; The scrim
    [:div.z6.fixed.overlay.bg-darken-4

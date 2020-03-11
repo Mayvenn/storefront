@@ -1,35 +1,29 @@
 (ns checkout.shop.addon-services-menu
   (:require
-   #?@(:cljs [[storefront.api :as api]
-              [storefront.browser.scroll :as scroll]
-              [storefront.components.payment-request-button :as payment-request-button]
-              [storefront.components.popup :as popup]
-              [storefront.confetti :as confetti]
-              [storefront.history :as history]
-              [storefront.hooks.quadpay :as quadpay]
-              [storefront.platform.messages :as messages]])
    [spice.maps :as maps]
-   spice.selector
    [storefront.accessors.mayvenn-install :as mayvenn-install]
    [storefront.accessors.orders :as orders]
-   [storefront.component :as component :refer [defcomponent defdynamic-component]]
+   [storefront.api :as api]
+   [storefront.component :as component]
    [storefront.components.header :as components.header]
    [storefront.components.money-formatters :as mf]
+   [storefront.components.popup :as popup]
    [storefront.components.ui :as ui]
    [storefront.effects :as effects]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
+   [storefront.platform.messages :as messages]
    [storefront.request-keys :as request-keys]
-   [storefront.transitions :as transitions]))
-
+   [storefront.transitions :as transitions]
+   spice.selector))
 
 (def addon-sku->addon-specialty
-  {"SRV-DPCU-000" :specialty-addon-hair-deep-conditioning,
-   "SRV-3CU-000"  :specialty-addon-360-frontal-customization,
-   "SRV-TKDU-000" :specialty-addon-weave-take-down,
-   "SRV-CCU-000"  :specialty-addon-closure-customization,
-   "SRV-FCU-000"  :specialty-addon-frontal-customization,
+  {"SRV-DPCU-000" :specialty-addon-hair-deep-conditioning
+   "SRV-3CU-000"  :specialty-addon-360-frontal-customization
+   "SRV-TKDU-000" :specialty-addon-weave-take-down
+   "SRV-CCU-000"  :specialty-addon-closure-customization
+   "SRV-FCU-000"  :specialty-addon-frontal-customization
    "SRV-TRMU-000" :specialty-addon-natural-hair-trim})
 
 (defn stylist-can-perform-addon-service?
@@ -63,7 +57,8 @@
                                                  checkbox-spinning?)
      :addon-service-entry/checked?           addon-selected?}))
 
-(defn query [data]
+(defmethod popup/query :addon-services-menu
+  [data]
   (let [hair-family-facet                   (->> (get-in data keypaths/v2-facets)
                                                  (maps/index-by :facet/slug)
                                                  :hair/family
@@ -90,7 +85,7 @@
                                                                                     first
                                                                                     (get hair-family-facet)
                                                                                     :sku/name)]
-                                                                  (str "Only available with " facet-name " Install" )))))
+                                                                  (str "Only available with " facet-name " Install")))))
                                                             (assoc :addon-selected?
                                                                    (contains? (set (map :sku (orders/service-line-items (get-in data keypaths/order))))
                                                                               addon-sku-id)))))
@@ -102,18 +97,23 @@
     {:addon-services/spinning? (utils/requesting? data request-keys/get-skus)
      :addon-services/services  sorted-addon-services}))
 
-(defn addon-services-popup-template [{:addon-services/keys [spinning? services]}]
+(defmethod popup/component :addon-services-menu
+  [{:addon-services/keys [spinning? services]} _ _]
   (component/html
    (if spinning?
      [:div.py3.h2 ui/spinner]
      (ui/modal
-      {:body-style {:max-width "625px"}
-       :col-class  "col-12"}
+      {:body-style  {:max-width "625px"}
+       :close-attrs (utils/fake-href events/control-addon-service-menu-dismiss)
+       :col-class   "col-12"}
       [:div.bg-white
-       (components.header/mobile-nav-header {:class "border-bottom border-gray" } nil
-                                            (component/html [:div.center.proxima.content-1 "Add-on Services"])
-                                            (component/html [:div (ui/button-medium-underline-secondary (merge {:data-test "addon-services-popup-close"}
-                                                                                                               (utils/fake-href events/control-addons-popup-done-button)) "DONE")]))
+       (components.header/mobile-nav-header
+        {:class "border-bottom border-gray" } nil
+        (component/html [:div.center.proxima.content-1 "Add-on Services"])
+        (component/html [:div (ui/button-medium-underline-secondary
+                               (merge {:data-test "addon-services-popup-close"}
+                                      (utils/fake-href events/control-addon-service-menu-dismiss))
+                               "DONE")]))
        (mapv
         (fn [{:addon-service-entry/keys [id disabled? disabled-classes primary secondary tertiary warning target checked? checkbox-spinning?]}]
           [:div.p3.py4.pr4.flex
@@ -135,28 +135,27 @@
            [:div tertiary]])
         services)]))))
 
-(defmethod transitions/transition-state events/control-browse-addons-button [_ event args app-state]
+(defmethod transitions/transition-state events/control-show-addon-service-menu [_ event args app-state]
   (-> app-state
       (assoc-in keypaths/confetti-mode "fired")
-      (assoc-in keypaths/addons-popup-displayed? true)))
+      (assoc-in keypaths/popup :addon-services-menu)))
 
-(defmethod transitions/transition-state events/control-addons-popup-done-button [_ event args app-state]
-  (assoc-in app-state keypaths/addons-popup-displayed? false))
+(defmethod transitions/transition-state events/control-addon-service-menu-dismiss [_ event args app-state]
+  (assoc-in app-state keypaths/popup nil))
 
 (defmethod effects/perform-effects events/control-addon-checkbox
   [_ event {:keys [sku-id variant-id previously-checked?] :as args} _ app-state]
-  #?(:cljs
-     (let [session-id (get-in app-state keypaths/session-id)
-           order      (get-in app-state keypaths/order)]
-       (if previously-checked?
-         (api/delete-line-item session-id order variant-id)
-         (api/add-sku-to-bag session-id
-                             {:token      (:token order)
-                              :number     (:number order)
-                              :user-id    (get-in app-state keypaths/user-id)
-                              :user-token (get-in app-state keypaths/user-token)
-                              :sku        {:catalog/sku-id sku-id}
-                              :quantity   1}
-                             #(messages/handle-message events/api-success-update-order-add-service-line-item
-                                                       {:order %
-                                                        :shop? (get-in app-state keypaths/store-slug)}))))))
+  (let [session-id (get-in app-state keypaths/session-id)
+        order      (get-in app-state keypaths/order)]
+    (if previously-checked?
+      (api/delete-line-item session-id order variant-id)
+      (api/add-sku-to-bag session-id
+                          {:token      (:token order)
+                           :number     (:number order)
+                           :user-id    (get-in app-state keypaths/user-id)
+                           :user-token (get-in app-state keypaths/user-token)
+                           :sku        {:catalog/sku-id sku-id}
+                           :quantity   1}
+                          #(messages/handle-message events/api-success-update-order-add-service-line-item
+                                                    {:order %
+                                                     :shop? (get-in app-state keypaths/store-slug)})))))

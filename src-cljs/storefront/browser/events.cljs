@@ -72,16 +72,13 @@
   (when (= "Escape" (.-key e))
     (handle-message events/escape-key-pressed)))
 
-(defmethod transitions/transition-state events/escape-key-pressed
-  [_ event args app-state]
-  (assoc-in app-state keypaths/addons-popup-displayed? false))
-
 (def popup-dismiss-events
   {:adventure-free-install         events/control-adventure-free-install-dismiss
    :consolidated-cart-free-install events/control-consolidated-cart-free-install-dismiss
    :v2-homepage                    events/control-v2-homepage-popup-dismiss
    :share-cart                     events/control-popup-hide
-   :design-system                  events/control-design-system-popup-dismiss})
+   :design-system                  events/control-design-system-popup-dismiss
+   :addon-services-menu            events/control-addon-service-menu-dismiss})
 
 (defmethod effects/perform-effects events/escape-key-pressed [_ event args _ app-state]
   (when-let [message-to-handle (get popup-dismiss-events (get-in app-state keypaths/popup))]

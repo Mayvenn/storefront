@@ -348,5 +348,3 @@
   (string/replace (->str keypath) #"^navigate-" "page-"))
 
 (def promo-code-entry-open? (conj ui :promo-code-entry-open?))
-
-(def addons-popup-displayed? (conj ui :cart-addons-popup-displayed?))

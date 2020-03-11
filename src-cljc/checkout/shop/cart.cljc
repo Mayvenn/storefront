@@ -11,7 +11,6 @@
    [catalog.images :as catalog-images]
    [checkout.call-out :as call-out]
    [checkout.header :as header]
-   [checkout.shop.addon-services-menu :as addon-services-menu]
    [checkout.suggestions :as suggestions]
    [checkout.ui.cart-item :as cart-item]
    [checkout.ui.cart-summary :as cart-summary]
@@ -416,7 +415,7 @@
           (and matched?
                addon-services-experiment?)
           (merge {:cart-item-modify-button/id      "browse-addons"
-                  :cart-item-modify-button/target  [events/control-browse-addons-button]
+                  :cart-item-modify-button/target  [events/control-show-addon-service-menu]
                   :cart-item-modify-button/locked? locked?
                   :cart-item-modify-button/content "+ Browse Add-Ons"})
 
@@ -753,7 +752,7 @@
                                           (stylists/->display-name servicing-stylist)
                                           " to make your appointment.")})
 
-      (and applied? (not (get-in data keypaths/addons-popup-displayed?)))
+      applied?
       (merge {:confetti-spout/mode (get-in data keypaths/confetti-mode)
               :confetti-spout/id   "confetti-spout"}))))
 
@@ -782,15 +781,12 @@
    :full-cart                (full-cart-query data)})
 
 (defcomponent template
-  [{:keys [header footer popup promo-banner flash cart data nav-event addon-services-popup? addon-services-menu] :as query-data} _ _]
+  [{:keys [header footer popup promo-banner flash cart data nav-event] :as query-data} _ _]
   [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
    #?(:cljs (popup/built-component popup nil))
 
    (when promo-banner
      (promo-banner/built-static-organism promo-banner nil))
-
-   (when addon-services-popup?
-     (addon-services-menu/addon-services-popup-template addon-services-menu))
 
    (header/built-component header nil)
    [:div.relative.flex.flex-column.flex-auto
@@ -815,6 +811,4 @@
                      :popup                  app-state
                      :flash                  app-state
                      :data                   app-state
-                     :nav-event              nav-event
-                     :addon-services-menu    (addon-services-menu/query app-state)
-                     :addon-services-popup?  (get-in app-state keypaths/addons-popup-displayed?)})))
+                     :nav-event              nav-event})))

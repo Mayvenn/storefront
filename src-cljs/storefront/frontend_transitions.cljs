@@ -178,7 +178,6 @@
         collapse-menus
         add-return-event
         (clean-up-open-category-panels new-nav-message previous-nav-message)
-        (assoc-in keypaths/addons-popup-displayed? false)
         (add-pending-promo-code args)
         (add-affiliate-stylist-id args)
         clear-flash
