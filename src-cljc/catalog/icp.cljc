@@ -60,37 +60,53 @@
                                       (:category/description category))})
 
 (defcomponent ^:private drill-category-list-entry-organism
-  [{:drill-category/keys [id title description image-url target action-id action-label width-class]} _ _]
+  [{:drill-category/keys [id title description image-url target action-id action-label use-three-column-layout?]} _ _]
   (when id
-    [:div.p3.flex.flex-wrap.col-12.content-start
-     {:key       id
-      :data-test id
-      :class     (or width-class "col-4-on-tb-dt")}
-     [:div.col-12-on-tb-dt.col-3
-      [:div.hide-on-tb-dt.flex.justify-end.mr4.mt1
-       (when image-url
-         (ui/ucare-img {:width "62"} image-url))]
-      [:div.hide-on-mb
-       (when image-url
-         (ui/ucare-img {:width "62"} image-url))]]
-     [:div.col-12-on-tb-dt.col-9
-      [:div.title-2.proxima.shout title]
-      [:div.content-2.proxima.py1 description]
-      (when action-id
-        (ui/button-small-underline-primary
-         (assoc (apply utils/route-to target)
-                :data-test  action-id)
-         action-label))]]))
+    (if use-three-column-layout?
+      [:div.p3.flex.flex-wrap.col-12.content-start
+       {:key       id
+        :data-test id
+        :class     "col-4-on-tb-dt"}
+       [:div.col-12-on-tb-dt.col-3
+        [:div.hide-on-tb-dt.flex.justify-end.mr4.mt1
+         (when image-url
+           (ui/ucare-img {:width "62"} image-url))]
+        [:div.hide-on-mb
+         (when image-url
+           (ui/ucare-img {:width "62"} image-url))]]
+       [:div.col-12-on-tb-dt.col-9
+        [:div.title-2.proxima.shout title]
+        [:div.content-2.proxima.py1 description]
+        (when action-id
+          (ui/button-small-underline-primary
+           (assoc (apply utils/route-to target)
+                  :data-test  action-id)
+           action-label))]]
+      [:div.p3.flex.flex-wrap.col-12.content-start
+       {:key       id
+        :data-test id
+        :class     "col-6-on-tb-dt"}
+       [:div.col-3
+        [:div.flex.justify-end.mr4.mt1
+         (when image-url
+           (ui/ucare-img {:width "62"} image-url))]]
+       [:div.col-9
+        [:div.title-2.proxima.shout title]
+        [:div.content-2.proxima.py1 description]
+        (when action-id
+          (ui/button-small-underline-primary
+           (assoc (apply utils/route-to target)
+                  :data-test  action-id)
+           action-label))]])))
 
 (defcomponent ^:private drill-category-list-organism
-  [{:drill-category-list/keys [values tablet-desktop-columns]} _ _]
+  [{:drill-category-list/keys [values use-three-column-layout?]} _ _]
   (when (seq values)
-    (let [width-class (str "col-" (int (/ 12 tablet-desktop-columns)) "-on-tb-dt")]
-      [:div.py8.flex.flex-wrap.justify-center
-       (mapv #(component/build drill-category-list-entry-organism
-                               (assoc % :drill-category/width-class width-class)
-                               {:key (:drill-category/id %)})
-             values)])))
+    [:div.py8.flex.flex-wrap.justify-center
+     (mapv #(component/build drill-category-list-entry-organism
+                             (assoc % :drill-category/use-three-column-layout? use-three-column-layout?)
+                             {:key (:drill-category/id %)})
+           values)]))
 
 (defcomponent ^:private drill-category-grid-entry-organism
   [{:drill-category/keys [title svg-url target]} _ {:keys [id]}]
@@ -244,6 +260,7 @@
       (= :list (:subcategories/layout category))
       (merge (let [values (mapv category->drill-category-list-entry subcategories)]
                {:drill-category-list {:drill-category-list/values values
+                                      :drill-category-list/use-three-column-layout? (>= (count values) 3)
                                       :drill-category-list/tablet-desktop-columns (max 1 (min 3 (count values)))}})))))
 
 (defn page
