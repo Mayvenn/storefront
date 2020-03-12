@@ -201,7 +201,7 @@
 
 (defpath control-create-order-from-shared-cart)
 
-(defpath control-cart-add-freeinstall-coupon)
+(defpath control-cart-add-base-service)
 (defpath control-cart-update-coupon)
 (defpath control-cart-line-item-inc)
 (defpath control-cart-line-item-dec)

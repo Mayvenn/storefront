@@ -14,22 +14,25 @@
    [storefront.platform.messages :as messages]
    [storefront.transitions :as transitions]))
 
-(defmethod effects/perform-effects events/control-cart-add-freeinstall-coupon
+(defmethod effects/perform-effects events/control-cart-add-base-service
   [_ _ _ _ app-state]
   #?(:cljs
-     (api/add-sku-to-bag (get-in app-state keypaths/session-id)
-                         {:token      (get-in app-state keypaths/order-token)
-                          :number     (get-in app-state keypaths/order-number)
-                          :stylist-id (get-in app-state keypaths/store-stylist-id)
-                          :user-id    (get-in app-state keypaths/user-id)
-                          :user-token (get-in app-state keypaths/user-token)
-                          ;; Not necessarily an actual leave-out service, just need to use any install service
-                          ;; line item.  The actual SKU will be calculated by waiter on every cart modification.
-                          :sku        {:catalog/sku-id "SRV-LBI-000"}
-                          :quantity   1}
-                         #(messages/handle-message events/api-success-update-order-add-service-line-item
-                                                   {:order %
-                                                    :shop? (get-in app-state keypaths/store-slug)}))))
+     (let [quantity 1
+           sku      (get-in app-state (conj keypaths/v2-skus "SRV-LBI-000"))]
+       (api/add-sku-to-bag (get-in app-state keypaths/session-id)
+                           {:token      (get-in app-state keypaths/order-token)
+                            :number     (get-in app-state keypaths/order-number)
+                            :stylist-id (get-in app-state keypaths/store-stylist-id)
+                            :user-id    (get-in app-state keypaths/user-id)
+                            :user-token (get-in app-state keypaths/user-token)
+                            ;; Not necessarily an actual leave-out service, just need to use any install service
+                            ;; line item.  The actual SKU will be calculated by waiter on every cart modification.
+                            :sku        sku
+                            :quantity   quantity}
+                           #(messages/handle-message events/api-success-add-sku-to-bag
+                                                     {:order    %
+                                                      :quantity quantity
+                                                      :sku      sku})))))
 
 (defmethod effects/perform-effects events/control-pick-stylist-button
   [_ _ _ _ _]

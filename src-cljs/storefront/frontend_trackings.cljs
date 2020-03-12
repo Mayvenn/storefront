@@ -115,7 +115,7 @@
   (when sku
     (let [line-item-skuers (waiter-line-items->line-item-skuer
                             (get-in app-state keypaths/v2-skus)
-                            (orders/product-items order))
+                            (orders/product-and-service-items order))
 
           cart-items (mapv line-item-skuer->stringer-cart-item line-item-skuers)
           store-slug (get-in app-state keypaths/store-slug)]

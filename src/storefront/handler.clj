@@ -440,7 +440,8 @@
           services-on-order          (mapv :sku (orders/service-line-items order))
           skus-we-have               (keys (get-in-req-state req keypaths/v2-skus))
           needed-skus                (set/difference (set skus-on-order) (set skus-we-have))
-          needed-service-skus        (set/difference (set services-on-order) (set skus-we-have))
+          ;; Include default base service sku for adding a base service to the order
+          needed-service-skus        (set/difference (conj (set services-on-order) "SRV-LBI-000") (set skus-we-have))
           {order-skus     :skus
            order-products :products} (when (seq needed-skus)
                                        (api/fetch-v2-products storeback-config {:selector/sku-ids needed-skus}))

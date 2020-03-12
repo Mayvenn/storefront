@@ -141,7 +141,9 @@
 (defmethod effects/perform-effects events/control-addon-checkbox
   [_ event {:keys [sku-id variant-id previously-checked?] :as args} _ app-state]
   (let [session-id (get-in app-state keypaths/session-id)
-        order      (get-in app-state keypaths/order)]
+        order      (get-in app-state keypaths/order)
+        sku        (get-in app-state (conj keypaths/v2-skus sku-id))
+        quantity   1]
     (if previously-checked?
       (api/delete-line-item session-id order variant-id)
       (api/add-sku-to-bag session-id
@@ -149,8 +151,9 @@
                            :number     (:number order)
                            :user-id    (get-in app-state keypaths/user-id)
                            :user-token (get-in app-state keypaths/user-token)
-                           :sku        {:catalog/sku-id sku-id}
-                           :quantity   1}
-                          #(messages/handle-message events/api-success-update-order-add-service-line-item
-                                                    {:order %
-                                                     :shop? (get-in app-state keypaths/store-slug)})))))
+                           :sku        sku
+                           :quantity   quantity}
+                          #(messages/handle-message events/api-success-add-sku-to-bag
+                                                    {:order    %
+                                                     :quantity quantity
+                                                     :sku      sku})))))

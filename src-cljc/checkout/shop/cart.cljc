@@ -490,7 +490,7 @@
          :freeinstall-informational/primary               "Don't miss out on free Mayvenn Install"
          :freeinstall-informational/secondary             "Save 10% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below."
          :freeinstall-informational/cta-label             "Add Mayvenn Install"
-         :freeinstall-informational/cta-target            [events/control-cart-add-freeinstall-coupon]
+         :freeinstall-informational/cta-target            [events/control-cart-add-base-service]
          :freeinstall-informational/fine-print            "*Mayvenn Install cannot be combined with other promo codes."
          :freeinstall-informational/id                    "freeinstall-informational"
          :freeinstall-informational/secondary-link-id     "cart-learn-more"
