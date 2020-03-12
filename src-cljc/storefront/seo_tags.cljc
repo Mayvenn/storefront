@@ -218,7 +218,7 @@
                                           (#?(:clj (comp safe-hiccup/raw json/generate-string)
                                               :cljs (comp js/JSON.stringify clj->js))
                                            {:url       "https://shop.mayvenn.com/about-us"
-                                            "@context" "https://schema.org"
+                                            "@context" "http://schema.org"
                                             "@type"    "Corporation"
                                             :name      "Mayvenn Hair"
                                             :logo      "https://d6w7wdcyyr51t.cloudfront.net/cdn/images/header_logo.e8e0ffc6.svg"
@@ -226,8 +226,9 @@
                                                         "http://instagram.com/mayvennhair"
                                                         "https://twitter.com/MayvennHair"
                                                         "http://www.pinterest.com/mayvennhair/"]
-                                            :founder   {(symbol "@type") "Person"
-                                                        :name            "Diishan Imira"}})]]
+                                            :founder   {"@context" "http://schema.org"
+                                                        "@type"    "Person"
+                                                        :name      "Diishan Imira"}})]]
 
        events/navigate-shop-by-look (let [album-keyword (get-in data keypaths/selected-album-keyword)]
                                       [[:title {} (-> ugc/album-copy album-keyword :seo-title)]
