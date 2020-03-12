@@ -73,8 +73,8 @@
          [:div value]])]
      (when total
        [:div.flex.mx-auto.col-10.justify-between.p2
-                  [:div.proxima.content-4.shout.bold "total"]
-                  [:div.canela.title-1 total]])]))
+        [:div.proxima.content-4.shout.bold "total"]
+        [:div.canela.title-1 total]])]))
 
 (defn cta-with-secondary-molecule
   [{:cta/keys [id copy target
@@ -113,8 +113,9 @@
    ])
 
 (defn ^:private query [app-state]
-  (let [voucher (or (get-in app-state voucher-keypaths/voucher-redeemed-response)
-                    (get-in app-state voucher-keypaths/voucher-response))]
+  (let [voucher  (or (get-in app-state voucher-keypaths/voucher-redeemed-response)
+                     (get-in app-state voucher-keypaths/voucher-response))
+        services (:services voucher)]
     (cond-> {:spinning?            (utils/requesting? app-state request-keys/fetch-user-stylist-service-menu)
              :notification/content "Voucher redeemed successfully"
              :cta/id               "view-earnings"
@@ -146,16 +147,17 @@
                                    :breakdown-item/value (str payout-amount "*")}]
                 :notification/id (str "voucher-redeemed-" install-type-display-name)}))
 
-      (:services voucher) ;; NOTE: post-deploy, just put these into default map
+      services ;; NOTE: post-deploy, just put these into default map
       (merge {:breakdown/items (mapv (fn [service]
-                                       {:breakdown-item/id   (str (:sku service) "-service")
-                                       :breakdown-item/label (:product-name service)
-                                       :breakdown-item/value (str (mf/as-money (:price service)) "*")})
-                                     (:services voucher))
-              :breakdown/total (->> (:services voucher)
-                                    (map :price)
-                                    (reduce +)
-                                    mf/as-money)
+                                       {:breakdown-item/id    (str (:sku service) "-service")
+                                        :breakdown-item/label (:product-name service)
+                                        :breakdown-item/value (str (mf/as-money (:price service)) "*")})
+                                     services)
+              :breakdown/total (when (< 1 (count services))
+                                 (->> services
+                                      (map :price)
+                                      (reduce +)
+                                      mf/as-money))
               :notification/id "voucher-redeemed-success"}))))
 
 (defn ^:export built-component
