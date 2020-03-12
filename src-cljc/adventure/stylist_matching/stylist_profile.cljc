@@ -264,7 +264,7 @@
    "wig-customization" "Wig Customization"})
 
 (defn reviews-molecule
-  [{:reviews/keys [spinning? cta-target cta-id cta-label id rating review-count reviews]}]
+  [{:reviews/keys [spinning? cta-target cta-id cta-label id review-count reviews]}]
   (when id
     [:div.mx3.my6
      {:key id
@@ -273,7 +273,7 @@
       [:div.flex.items-center
        [:div.h6.title-3.proxima.shout "REVIEWS"]
        [:div.content-3.proxima.ml1
-        "(" rating " - " (ui/pluralize-with-amount review-count "review") ")"]]]
+        (str "(" review-count ")")]]]
 
      (for [{:keys [review-id stars install-type review-content reviewer-name review-date]} reviews]
        [:div.py2.border-bottom.border-cool-gray
