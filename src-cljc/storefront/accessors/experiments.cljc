@@ -1,7 +1,9 @@
 (ns storefront.accessors.experiments
   (:require [storefront.keypaths :as keypaths]
             [spice.date :as date]
-            [catalog.categories :as categories]))
+            [catalog.categories :as categories]
+            [storefront.accessors.orders :as orders]
+            [storefront.accessors.line-items :as line-items]))
 
 #_(defn bucketing-example
     [data]
@@ -102,5 +104,11 @@
   (display-feature? data "show-priority-shipping-method"))
 
 (defn addon-services?
+  "If your order has addon services you should be a part of this feature"
   [data]
-  (display-feature? data "add-on-services"))
+  (or
+   (display-feature? data "add-on-services")
+   (->> (get-in data keypaths/order)
+        orders/service-line-items
+        (filter line-items/addon-service?)
+        seq)))

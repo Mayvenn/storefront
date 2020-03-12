@@ -48,3 +48,6 @@
     :keys [applied-promotions unit-price]}]
   (when line-item
     (= 0 (+ unit-price (->> applied-promotions (keep :amount) (reduce + 0))))))
+
+(defn addon-service? [line-item]
+  (-> line-item :variant-attrs :service/type #{"addon"}))
