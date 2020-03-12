@@ -55,7 +55,9 @@
               [(if-let [ns (namespace k)]
                  (str ns "/" (name k))
                  (name k))
-               v]))
+               (if (coll? v)
+                 (vec v)
+                 v)]))
        (into {})))
 
 (defn fetch-v2-products [storeback-config criteria-or-id]
