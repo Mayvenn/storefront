@@ -397,29 +397,29 @@
         sku-price       (:sku/price selected-sku)
         review-data     (review-component/query data)]
     (cond->
-         (merge
-          {:reviews                            review-data
-         :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
-         :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
-         :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
-         :title/primary                      (:copy/title product)
-         :price-block/primary                sku-price
-         :price-block/secondary              "each"
-         :ugc                                ugc
-         :aladdin?                           (experiments/aladdin-experience? data)
-         :fetching-product?                  (utils/requesting? data (conj request-keys/get-products
-                                                                           (:catalog/product-id product)))
-         :adding-to-bag?                     (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-         :sku-quantity                       (get-in data keypaths/browse-sku-quantity 1)
-         :options                            options
-         :product                            product
-         :selections                         selections
-         :selected-options                   (get-selected-options selections options)
-         :selected-sku                       selected-sku
-         :facets                             facets
-         :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
-         :picker-data                        (picker/query data)
-         :carousel-images                    carousel-images}
+        (merge
+         {:reviews                            review-data
+          :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
+          :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
+          :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
+          :title/primary                      (:copy/title product)
+          :price-block/primary                sku-price
+          :price-block/secondary              "each"
+          :ugc                                ugc
+          :aladdin?                           (experiments/aladdin-experience? data)
+          :fetching-product?                  (utils/requesting? data (conj request-keys/get-products
+                                                                            (:catalog/product-id product)))
+          :adding-to-bag?                     (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+          :sku-quantity                       (get-in data keypaths/browse-sku-quantity 1)
+          :options                            options
+          :product                            product
+          :selections                         selections
+          :selected-options                   (get-selected-options selections options)
+          :selected-sku                       selected-sku
+          :facets                             facets
+          :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
+          :picker-data                        (picker/query data)
+          :carousel-images                    carousel-images}
        (add-to-cart-query data selected-sku sku-price)
        (let [{:keys [copy/description copy/colors copy/weights copy/density copy/materials copy/summary hair/family]} product]
          #:product-description {:summary                   summary
