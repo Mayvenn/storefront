@@ -414,10 +414,11 @@
 
           (and matched?
                addon-services-experiment?)
-          (merge {:cart-item-modify-button/id      "browse-addons"
-                  :cart-item-modify-button/target  [events/control-show-addon-service-menu]
-                  :cart-item-modify-button/locked? locked?
-                  :cart-item-modify-button/content "+ Browse Add-Ons"})
+          (merge {:cart-item-modify-button/id              "browse-addons"
+                  :cart-item-modify-button/target          [events/control-show-addon-service-menu]
+                  :cart-item-modify-button/tracking-target [events/browse-addon-service-menu-button-enabled]
+                  :cart-item-modify-button/locked?         locked?
+                  :cart-item-modify-button/content         "+ Browse Add-Ons"})
 
           (and matched?
                addon-services-experiment?

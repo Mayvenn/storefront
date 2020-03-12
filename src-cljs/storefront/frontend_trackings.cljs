@@ -275,6 +275,10 @@
     (google-tag-manager/track-checkout-initiate {:number order-number})
     (facebook-analytics/track-event "InitiateCheckout")))
 
+(defmethod perform-track events/browse-addon-service-menu-button-enabled
+  [_ event args app-state]
+  (stringer/track-event "display_add_on_services_button"))
+
 (defmethod perform-track events/control-checkout-cart-submit [_ event args app-state]
   (checkout-initiate app-state "mayvenn")
   (convert/track-conversion "checkout"))

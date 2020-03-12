@@ -1,6 +1,6 @@
 (ns checkout.ui.cart-item
   (:require [checkout.suggestions :as suggestions]
-            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component]
             [storefront.events :as events]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -178,15 +178,40 @@
       (apply utils/send-event-callback decrement-target)
       (apply utils/send-event-callback increment-target))]))
 
-(defn cart-item-modify-button
-  [{:cart-item-modify-button/keys [id target content locked?]}]
-  (when id
-    [:div.flex
-     (ui/button-small-secondary (merge {:class     "p-color bold mt1"
-                                        :disabled? locked?
-                                        :data-test id}
-                                       (apply utils/route-to target))
-                                content)]))
+(component/defdynamic-component cart-item-modify-button
+  (did-mount
+   [this]
+   (let [{:cart-item-modify-button/keys [id locked? tracking-target]}
+         (component/get-props this)]
+     (when (and id (false? locked?) tracking-target)
+       (apply messages/handle-message tracking-target))))
+
+  (did-update
+   [this prev-props prev-state snapshot]
+   #?(:cljs
+      (let [{was-locked? :cart-item-modify-button/locked?}       (.-props prev-props)
+            {is-locked?                    :cart-item-modify-button/locked?
+             :cart-item-modify-button/keys [tracking-target id]} (component/get-props this)]
+        (when (and id
+                   was-locked?
+                   (not is-locked?)
+                   tracking-target)
+          (apply messages/handle-message tracking-target)))))
+
+  (render
+   [this]
+   (component/html
+    (let [{:cart-item-modify-button/keys [id target content locked?]}
+          (component/get-props this)]
+      (when id
+        [:div.flex
+         (ui/button-small-secondary (merge {:class     "p-color bold mt1"
+                                            :disabled? locked?
+                                            :data-test id}
+                                           (apply utils/route-to target))
+                                    content)])))))
+
+
 
 (defn cart-item-sub-items-molecule
   [{:cart-item-sub-items/keys [id title items locked?]}]
@@ -209,7 +234,7 @@
                title]
               [:div {:data-test (str "cart-item-sub-items-" sku-id "-price")} price]]) items)]))
 
-(defcomponent organism
+(component/defcomponent organism
   [{:keys [cart-item suggestions]} _ {:keys [id]}]
   [:div.pt1.pb2.m1.flex
    {:key id :data-test id}
@@ -239,6 +264,6 @@
 
     (cart-item-steps-to-complete-molecule cart-item)
     (cart-item-sub-items-molecule cart-item)
-    (cart-item-modify-button cart-item)
+    (component/build cart-item-modify-button cart-item nil)
 
     (component/build suggestions/consolidated-component suggestions nil)]])

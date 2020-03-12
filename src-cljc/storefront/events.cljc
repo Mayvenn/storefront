@@ -446,6 +446,8 @@
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)
 
+(defpath browse-addon-service-menu-button-enabled)
+
 (defpath sign-out)
 
 (defpath viewed-sku)
