@@ -1,5 +1,7 @@
 (ns checkout.shop.addon-services-menu
   (:require
+   [clojure.set :as set]
+   [clojure.string :as string]
    [spice.maps :as maps]
    [storefront.accessors.mayvenn-install :as mayvenn-install]
    [storefront.accessors.orders :as orders]
@@ -11,12 +13,15 @@
    [storefront.components.ui :as ui]
    [storefront.effects :as effects]
    [storefront.events :as events]
+   [storefront.hooks.stringer :as stringer]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
    [storefront.request-keys :as request-keys]
+   [storefront.trackings :as trackings]
    [storefront.transitions :as transitions]
-   spice.selector))
+   spice.selector
+   storefront.utils))
 
 (def addon-sku->addon-specialty
   {"SRV-DPCU-000" :specialty-addon-hair-deep-conditioning
@@ -35,9 +40,10 @@
         boolean)))
 
 (defn addon-service-sku->addon-service-menu-entry
-  [data {:keys    [catalog/sku-id sku/price legacy/variant-id copy/description addon-unavailable-reason addon-selected?]
+  [data {:keys    [catalog/sku-id sku/price legacy/variant-id copy/description addon-unavailable-reason]
          sku-name :sku/name}]
-  (let [any-updates? (or (utils/requesting-from-endpoint? data request-keys/add-to-bag)
+  (let [selected?    (contains? (set (map :sku (orders/service-line-items (get-in data keypaths/order)))) sku-id)
+        any-updates? (or (utils/requesting-from-endpoint? data request-keys/add-to-bag)
                          (utils/requesting-from-endpoint? data request-keys/delete-line-item))]
     {:addon-service-entry/id                 (str "addon-service-" sku-id)
      :addon-service-entry/disabled-classes   (when addon-unavailable-reason "bg-refresh-gray dark-gray")
@@ -47,51 +53,52 @@
      :addon-service-entry/tertiary           (mf/as-money price)
      :addon-service-entry/target             [events/control-addon-checkbox {:sku-id              sku-id
                                                                              :variant-id          variant-id
-                                                                             :previously-checked? addon-selected?}]
+                                                                             :previously-checked? selected?}]
      :addon-service-entry/checkbox-spinning? (or (utils/requesting? data (conj request-keys/add-to-bag sku-id))
                                                  (utils/requesting? data (conj request-keys/delete-line-item variant-id)))
      :addon-service-entry/ready?             (not (or addon-unavailable-reason any-updates?))
-     :addon-service-entry/checked?           addon-selected?}))
+     :addon-service-entry/checked?           selected?}))
+
+(defn ^:private determine-unavailability-reason
+  [facets
+   {:mayvenn-install/keys [stylist service-type]}
+   {addon-service-hair-family :hair/family
+    addon-sku-id              :catalog/sku-id
+    :as                       addon-service}]
+  (let [hair-family-facet (->> facets (maps/index-by :facet/slug) :hair/family :facet/options (maps/index-by :option/slug))]
+    (storefront.utils/?assoc addon-service
+           :addon-unavailable-reason
+           (or
+            (when (not (stylist-can-perform-addon-service? stylist addon-sku-id))
+              "Your stylist does not yet offer this service on Mayvenn")
+            (when (not (contains? (set (map mayvenn-install/hair-family->service-type addon-service-hair-family)) service-type))
+              (let [facet-name (->> addon-service-hair-family first (get hair-family-facet) :sku/name)]
+                (str "Only available with " facet-name " Install")))))))
+
+
+(defn addon-skus-for-stylist-grouped-by-availability
+  [{:keys [facets mayvenn-install skus]}]
+  (let [[available-addon-skus
+         unavailable-addon-skus] (->> skus
+                                      vals
+                                      (spice.selector/match-all {} {:catalog/department "service" :service/type "addon"})
+                                      (map (partial determine-unavailability-reason facets mayvenn-install))
+                                      (sort-by (comp boolean :addon-unavailable-reason))
+                                      (partition-by (comp boolean :addon-unavailable-reason))
+                                      (map (partial sort-by :order.view/addon-sort)))]
+    {:available-addon-skus   available-addon-skus
+     :unavailable-addon-skus unavailable-addon-skus}))
 
 (defmethod popup/query :addon-services-menu
   [data]
-  (let [hair-family-facet                   (->> (get-in data keypaths/v2-facets)
-                                                 (maps/index-by :facet/slug)
-                                                 :hair/family
-                                                 :facet/options
-                                                 (maps/index-by :option/slug))
-        {servicing-stylist :mayvenn-install/stylist
-         :as               mayvenn-install} (mayvenn-install/mayvenn-install data)
-        sorted-addon-services               (->> (get-in data keypaths/v2-skus)
-                                                 vals
-                                                 (spice.selector/match-all {} {:catalog/department "service" :service/type "addon"})
-                                                 (map (fn [{addon-service-hair-family :hair/family
-                                                            addon-sku-id              :catalog/sku-id
-                                                            :as                       addon-service}]
-                                                        (-> addon-service
-                                                            (assoc
-                                                             :addon-unavailable-reason
-                                                             (or
-                                                              (when (not (stylist-can-perform-addon-service? servicing-stylist addon-sku-id))
-                                                                "Your stylist does not yet offer this service on Mayvenn")
-                                                              (when (not (contains?
-                                                                          (set (map mayvenn-install/hair-family->service-type addon-service-hair-family))
-                                                                          (:mayvenn-install/service-type mayvenn-install)))
-                                                                (let [facet-name (->> addon-service-hair-family
-                                                                                    first
-                                                                                    (get hair-family-facet)
-                                                                                    :sku/name)]
-                                                                  (str "Only available with " facet-name " Install")))))
-                                                            (assoc :addon-selected?
-                                                                   (contains? (set (map :sku (orders/service-line-items (get-in data keypaths/order))))
-                                                                              addon-sku-id)))))
-                                                 (sort-by (comp boolean :addon-unavailable-reason))
-                                                 (partition-by (comp boolean :addon-unavailable-reason))
-                                                 (map (partial sort-by :order.view/addon-sort))
-                                                 flatten
-                                                 (map (partial addon-service-sku->addon-service-menu-entry data)))]
+  (let [{:keys [available-addon-skus
+                unavailable-addon-skus]} (addon-skus-for-stylist-grouped-by-availability
+                                          {:facets          (get-in data keypaths/v2-facets)
+                                           :mayvenn-install (mayvenn-install/mayvenn-install data)
+                                           :skus            (get-in data keypaths/v2-skus)})]
     {:addon-services/spinning? (utils/requesting? data request-keys/get-skus)
-     :addon-services/services  sorted-addon-services}))
+     :addon-services/services  (map (partial addon-service-sku->addon-service-menu-entry data)
+                                    (concat available-addon-skus unavailable-addon-skus))}))
 
 (defmethod popup/component :addon-services-menu
   [{:addon-services/keys [spinning? services]} _ _]
@@ -157,3 +164,16 @@
                                                     {:order    %
                                                      :quantity quantity
                                                      :sku      sku})))))
+
+(defmethod trackings/perform-track events/control-show-addon-service-menu [_ event args app-state]
+  (let [{:keys [available-addon-sku-ids
+                unavailable-addon-sku-ids]} (set/rename-keys
+                                             (->> (addon-skus-for-stylist-grouped-by-availability
+                                                   {:facets          (get-in app-state keypaths/v2-facets)
+                                                    :mayvenn-install (mayvenn-install/mayvenn-install app-state)
+                                                    :skus            (get-in app-state keypaths/v2-skus)})
+                                                  (maps/map-values #(string/join "," (mapv :catalog/sku-id %))))
+                                             {:available-addon-skus   :available-addon-sku-ids
+                                              :unavailable-addon-skus :unavailable-addon-sku-ids})]
+    (stringer/track-event "add_on_services_button_pressed" {:available_services   available-addon-sku-ids
+                                                            :unavailable_services unavailable-addon-sku-ids})))
