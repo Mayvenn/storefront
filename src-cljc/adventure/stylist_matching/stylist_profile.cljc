@@ -38,18 +38,17 @@
 
 ;; fork of molecules/stars-rating-molecule
 (defn stars-rating-molecule
-  [{:rating/keys [value review-count]}]
+  [{:rating/keys [value rating-count]}]
   (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value)]
     [:div.flex
-     [:span.s-color.bold.mr1 value]
      whole-stars
      partial-star
      empty-stars
-     (when review-count
+     (when rating-count
        (ui/button-small-underline-secondary
         (merge {:class "mx1 shout"}
                (utils/scroll-href "reviews"))
-        (ui/pluralize-with-amount review-count "REVIEW")))]))
+        (str "(" rating-count ")")))]))
 
 (defn stylist-phone-molecule
   [{:phone-link/keys [target phone-number]}]
@@ -114,7 +113,8 @@
                           :card-index        0}]
         environment     (case (get-in data storefront.keypaths/environment)
                           "production" "mayvenn"
-                          "diva-acceptance")]
+                          "diva-acceptance")
+        rating-count    (reduce + (vals (:rating-star-counts stylist)))]
     (when stylist
       (cond->
           {:header-data (cond-> {:header.title/id               "adventure-title"
@@ -184,7 +184,9 @@
                         :section-details/wig-customization? (experiments/wig-customization? data)})]}
 
         (:mayvenn-rating-publishable stylist)
-        (merge  {:rating/value (:rating stylist)})
+        (merge  {:rating/value (:rating stylist)
+                 :rating/rating-count  (when (> rating-count 0)
+                                         rating-count)})
 
         (and (:mayvenn-rating-publishable stylist)
              (seq stylist-reviews))
@@ -198,10 +200,7 @@
                 :reviews/reviews      (mapv #(assoc % :review-date
                                                     #?(:cljs (-> % :review-date formatters/short-date)
                                                        :clj  ""))
-                                            stylist-reviews)
-                :rating/review-count  (let [review-count (:review-count stylist)]
-                                        (when (> review-count 0)
-                                          review-count))})
+                                            stylist-reviews)})
 
         (and (= (:current-page paginated-reviews)
                 (:pages paginated-reviews)))
