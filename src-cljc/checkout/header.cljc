@@ -1,6 +1,6 @@
 (ns checkout.header
-  (:require [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.orders :as orders]
+  (:require [storefront.accessors.orders :as orders]
+            [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.header :as storefront-header]
             [storefront.components.svg :as svg]
@@ -58,20 +58,13 @@
         (svg/x-sharp {:style {:width  "18px"
                               :height "18px"}})]))]))
 
-(defn determine-site
-  [app-state]
-  (cond
-    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
-    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
-    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
-
 (defn query
   [data]
   (cond-> {:item-count          (orders/product-quantity (get-in data keypaths/order))
            :back                (first (get-in data keypaths/navigation-undo-stack))
            :desktop-header-data (storefront-header/query data)}
 
-    (= :classic (determine-site data))
+    (= :classic (sites/determine-site data))
     (merge {:back-to-shopping-link? true})))
 
 (defn built-component [data opts]

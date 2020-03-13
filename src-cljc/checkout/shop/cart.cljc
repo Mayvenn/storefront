@@ -26,6 +26,7 @@
    [storefront.accessors.products :as products]
    [storefront.accessors.stylists :as stylists]
    [storefront.accessors.shipping :as shipping]
+   [storefront.accessors.sites :as sites]
    [storefront.component :as component :refer [defcomponent defdynamic-component]]
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
@@ -238,13 +239,6 @@
      [:div.col-9.mx-auto
       (empty-cta-molecule queried-data)]]]))
 
-(defn determine-site
-  [app-state]
-  (cond
-    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
-    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
-    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
-
 (defn empty-cart-query
   [data]
   (let [nav-to-mayvenn-install [events/navigate-category
@@ -264,7 +258,7 @@
          :cta/label                 "Browse Stylists"
          :cta/target                [events/navigate-adventure-match-stylist]}
 
-      (= :aladdin (determine-site data))
+      (= :aladdin (sites/determine-site data))
       (merge
        {:cta/id     "start-shopping"
         :cta/label  "Start Shopping"

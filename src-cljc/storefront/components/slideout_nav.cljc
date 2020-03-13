@@ -301,13 +301,6 @@
      (component/build menu/component menu-data nil)
      (component/build root-menu data nil))])
 
-(defn determine-site
-  [app-state]
-  (cond
-    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
-    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
-    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
-
 (defn query [data]
   (-> (header/basic-query data)
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))

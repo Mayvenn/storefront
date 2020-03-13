@@ -45,14 +45,8 @@
             [storefront.components.share-links :as share-links]
             [storefront.components.popup :as popup]
             [spice.core :as spice]
+            [storefront.accessors.sites :as sites]
             [storefront.accessors.promos :as promos]))
-
-(defn determine-site
-  [app-state]
-  (cond
-    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
-    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
-    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
 
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
@@ -286,7 +280,7 @@
   [_ _ _ _ app-state]
   (let [keypaths (into [[:advertisedPromo]
                         [:homepage]]
-                       (case (determine-site app-state)
+                       (case (sites/determine-site app-state)
                          :shop    [[:ugc-collection :free-install-mayvenn]]
                          :aladdin [[:ugc-collection :sleek-and-straight]
                                    [:ugc-collection :waves-and-curly]
@@ -796,7 +790,7 @@
 
 (defmethod effects/perform-effects events/order-completed
   [_ _ order _ app-state]
-  (let [site (determine-site app-state)]
+  (let [site (sites/determine-site app-state)]
     (cookie-jar/save-completed-order (get-in app-state keypaths/cookie)
                                      (get-in app-state keypaths/completed-order))
     (messages/handle-message events/clear-order)

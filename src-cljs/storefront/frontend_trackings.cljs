@@ -15,7 +15,8 @@
             [storefront.routes :as routes]
             [storefront.trackings :refer [perform-track]]
             [storefront.accessors.images :as images]
-            [storefront.accessors.promos :as promos]))
+            [storefront.accessors.promos :as promos]
+            [storefront.accessors.sites :as sites]))
 
 (defn ^:private convert-revenue [{:keys [number total] :as order}]
   {:order-number   number
@@ -332,17 +333,10 @@
 (defmethod perform-track events/api-success-forgot-password [_ events {email :email} app-state]
   (stringer/track-event "request_reset_password" {:email email}))
 
-(defn determine-site
-  [app-state]
-  (cond
-    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
-    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
-    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
-
 (defmethod perform-track events/api-success-update-order-add-promotion-code [_ events {order :order promo-code :promo-code} app-state]
   (stringer/track-event "promo_add" {:order_number (:number order)
                                      :promotion_code promo-code})
-  (when (and (#{:aladdin :shop} (determine-site app-state))
+  (when (and (#{:aladdin :shop} (sites/determine-site app-state))
              (promos/freeinstall? promo-code))
     (track-pseudo-add-default-base-service-to-bag app-state)))
 

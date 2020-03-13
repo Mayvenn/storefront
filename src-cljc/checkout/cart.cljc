@@ -3,6 +3,8 @@
    #?@(:cljs [[cemerick.url :refer [url-encode]]
               [storefront.api :as api]
               [storefront.accessors.orders :as orders]
+              [storefront.accessors.promos :as promos]
+              [storefront.accessors.sites :as sites]
               [storefront.config :as config]
               [storefront.accessors.stylist-urls :as stylist-urls]
               [storefront.history :as history]
@@ -11,8 +13,7 @@
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.messages :as messages]
-   [storefront.transitions :as transitions]
-   [storefront.accessors.promos :as promos]))
+   [storefront.transitions :as transitions]))
 
 (defmethod effects/perform-effects events/add-default-base-service-to-bag
   [_ _ {:keys [added-from-promo?]} _ app-state]
@@ -52,18 +53,11 @@
   [_ _ _ app-state]
   (update-in app-state keypaths/promo-code-entry-open? not))
 
-(defn determine-site
-  [app-state]
-  (cond
-    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
-    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
-    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
-
 (defmethod effects/perform-effects events/control-cart-update-coupon
   [_ _ _ _ app-state]
   #?(:cljs
      (let [coupon-code (get-in app-state keypaths/cart-coupon-code)
-           site        (determine-site app-state)]
+           site        (sites/determine-site app-state)]
        (when-not (empty? coupon-code)
          (if (and (#{:aladdin :shop} site)
                   (promos/freeinstall? coupon-code))

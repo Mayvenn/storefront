@@ -11,6 +11,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.shipping :as shipping]
+            [storefront.accessors.sites :as sites]
             [storefront.api :as api]
             [storefront.config :as config]
             [storefront.browser.cookie-jar :as cookie-jar]
@@ -311,13 +312,6 @@
         (merge {:cart-summary-total-incentive/id    "wig-customization"
                 :cart-summary-total-incentive/label "Includes Wig Customization"})))))
 
-(defn determine-site
-  [app-state]
-  (cond
-    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
-    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
-    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
-
 (defn query
   [data]
   (let [order                                   (get-in data keypaths/order)
@@ -335,7 +329,7 @@
     (cond->
      {:order                        order
       :store-slug                   (get-in data keypaths/store-slug)
-      :site                         (determine-site data)
+      :site                         (sites/determine-site data)
       :requires-additional-payment? (requires-additional-payment? data)
       :promo-banner                 (promo-banner/query data)
       :checkout-steps               (checkout-steps/query data)
@@ -363,7 +357,7 @@
           :cart-item-sub-items/items (map (fn [{:addon-service/keys [title price sku-id]}]
                                             {:cart-item-sub-item/title  title
                                              :cart-item-sub-item/price  price
-                                             :cart-item-sub-item/sku-id sku-id}) 
+                                             :cart-item-sub-item/sku-id sku-id})
                                           addon-services)}}})
 
       applied?

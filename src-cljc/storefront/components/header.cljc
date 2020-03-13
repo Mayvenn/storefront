@@ -4,6 +4,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.sites :as sites]
             [storefront.accessors.stylists :as stylists]
             [storefront.assets :as assets]
             [storefront.community :as community]
@@ -131,7 +132,7 @@
                   [:div.border-top.border-gray
                    ^:inline (drop-down-row (utils/route-to events/navigate-account-referrals) "Refer a friend")]
                   [:div.border-top.border-gray
-                   ^:inline (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]])) 
+                   ^:inline (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
       :stylist (ui/drop-down
                 expanded?
@@ -399,13 +400,6 @@
                                        :copy        "Wavy & Curly Bundle Sets"}]]
    :shop-bundle-sets-menu/expanded? (get-in data keypaths/shop-bundle-sets-menu-expanded)})
 
-(defn determine-site
-  [app-state]
-  (cond
-    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
-    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
-    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
-
 (defn basic-query [data]
   (let [{:keys [match-eligible] :as store} (marquee/query data)
         shop?                              (= "shop" (get-in data keypaths/store-slug))
@@ -421,7 +415,7 @@
      :show-bundle-sets-and-hide-deals? (or aladdin? shop?)
      :vouchers?                        (experiments/dashboard-with-vouchers? data)
      :show-freeinstall-link?           shop?
-     :site                             (determine-site data)}))
+     :site                             (sites/determine-site data)}))
 
 (defn query [data]
   (-> (basic-query data)
@@ -430,7 +424,7 @@
       (merge (shop-looks-query data))
       (merge (shop-bundle-sets-query data))
       (assoc-in [:cart :quantity] (orders/product-quantity (get-in data keypaths/order)))
-      (assoc :site (determine-site data))))
+      (assoc :site (sites/determine-site data))))
 
 (defn built-component [data opts]
   (component/html
