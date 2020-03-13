@@ -255,7 +255,7 @@
 
 (defn section-details-molecule
   [{:section-details/keys [title content]}]
-  [:div.py3 {:key title}
+  [:div.my3 {:key title}
    [:div.title-3.proxima.shout title]
    [:div.content-2 content]])
 
