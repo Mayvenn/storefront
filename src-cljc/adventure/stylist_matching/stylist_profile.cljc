@@ -114,7 +114,8 @@
         environment     (case (get-in data storefront.keypaths/environment)
                           "production" "mayvenn"
                           "diva-acceptance")
-        rating-count    (reduce + (vals (:rating-star-counts stylist)))]
+        rating-count    (reduce + (vals (:rating-star-counts stylist)))
+        booking-count   (:booking-count stylist)]
     (when stylist
       (cond->
           {:header-data (cond-> {:header.title/id               "adventure-title"
@@ -167,20 +168,31 @@
                                                :width  "18px"})
 
            :details [{:section-details/title   "Experience"
-                      :section-details/content (string/join ", " (remove nil?
-                                                                         [(when-let [stylist-since (:stylist-since stylist)]
-                                                                            (ui/pluralize-with-amount
-                                                                             (- (date/year (date/now)) stylist-since)
-                                                                             "year"))
-                                                                          (case (-> stylist :salon :salon-type)
-                                                                            "salon"   "in-salon"
-                                                                            "in-home" "in-home"
-                                                                            nil)
-                                                                          (when (:licensed stylist)
-                                                                            "licensed")]))}
+                      :section-details/content [:div
+                                                [:div (string/join ", "
+                                                                   (remove nil?
+                                                                           [(when-let [stylist-since (:stylist-since stylist)]
+                                                                              (ui/pluralize-with-amount
+                                                                               (- (date/year (date/now)) stylist-since)
+                                                                               "year"))
+                                                                            (case (-> stylist :salon :salon-type)
+                                                                              "salon"   "in-salon"
+                                                                              "in-home" "in-home"
+                                                                              nil)
+                                                                            (when (:licensed stylist)
+                                                                              "licensed")]))]
+                                                [:div (str "Booked " (ui/pluralize-with-amount booking-count "time") " with Mayvenn")]]}
                      (when (-> stylist :service-menu :specialty-sew-in-leave-out)
-                       {:section-details/title              "Specialties"
-                        :section-details/content            (:service-menu stylist)})]}
+                       {:section-details/title   "Specialties"
+                        :section-details/content (let [service-menu (:service-menu stylist)]
+                                                   [:div.mt1.col-12.col
+                                                    [:div.col-6.col
+                                                     (checks-or-x "Leave Out" (:specialty-sew-in-leave-out service-menu))
+                                                     (checks-or-x "360" (:specialty-sew-in-360-frontal service-menu))
+                                                     (checks-or-x "Wig Customization" (:specialty-wig-customization service-menu))]
+                                                    [:div.col-6.col
+                                                     (checks-or-x "Closure" (:specialty-sew-in-closure service-menu))
+                                                     (checks-or-x "Frontal" (:specialty-sew-in-frontal service-menu))]])})]}
 
         (:mayvenn-rating-publishable stylist)
         (merge  {:rating/value              (:rating stylist)
@@ -240,21 +252,12 @@
 
 (defn section-details-molecule
   [{:section-details/keys [title content]}]
-  [:div.py3
+  [:div.my3
    {:key title}
    [:div.title-3.proxima.shout
     title]
    [:div.content-2
-    (if (string? content)
-      content
-      [:div.mt1.col-12.col
-       [:div.col-6.col
-        (checks-or-x "Leave Out" (:specialty-sew-in-leave-out content))
-        (checks-or-x "360" (:specialty-sew-in-360-frontal content))
-        (checks-or-x "Wig Customization" (:specialty-wig-customization content))]
-       [:div.col-6.col
-        (checks-or-x "Closure" (:specialty-sew-in-closure content))
-        (checks-or-x "Frontal" (:specialty-sew-in-frontal content))]])]])
+    content]])
 
 (def install-type->display-name
   {"leave-out"         "Leave Out Install"
@@ -293,7 +296,7 @@
   (when rating-star-counts
     (let [max-ratings-count (apply max (vals rating-star-counts))
           sorted-rating-count (sort-by key > rating-star-counts)]
-      [:div.bg-cool-gray.flex-column.center.py5
+      [:div.bg-cool-gray.flex-column.center.py5.mt3
        [:div.shout.bold.proxima.title-3 "Ratings"]
        [:div.pb2.pt1 (stars-rating-large-molecule data)]
        (for [[star-rating star-count] sorted-rating-count]
