@@ -2,7 +2,6 @@
   "This organism is a stylist profile that includes a map and gallery."
   (:require #?@(:cljs
                 [[storefront.api :as api]
-                 [storefront.browser.scroll :as scroll]
                  [storefront.hooks.facebook-analytics :as facebook-analytics]
                  [storefront.hooks.google-maps :as google-maps]
                  [storefront.platform.maps :as maps]
@@ -11,7 +10,6 @@
             api.orders
             [clojure.string :as string]
             [spice.date :as date]
-            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.formatters :as formatters]
             [storefront.components.svg :as svg]
@@ -27,7 +25,6 @@
             [stylist-directory.stylists :as stylists]
             stylist-directory.keypaths
             [spice.core :as spice]
-            [stylist-matching.ui.header :as header-org]
             [storefront.request-keys :as request-keys]))
 
 (defn transposed-title-molecule
