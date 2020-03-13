@@ -98,6 +98,7 @@
   [data]
   (let [stylist-id                          (get-in data keypaths/stylist-profile-id)
         stylist                             (stylists/by-id data stylist-id)
+        service-menu                        (:service-menu stylist)
         stylist-name                        (stylists/->display-name stylist)
         {stylist-reviews :reviews
          :as             paginated-reviews} (get-in data stylist-directory.keypaths/paginated-reviews)
@@ -182,17 +183,15 @@
                                                                             (when (:licensed stylist)
                                                                               "licensed")]))]
                                                 [:div (str "Booked " (ui/pluralize-with-amount booking-count "time") " with Mayvenn")]]}
-                     (when (-> stylist :service-menu :specialty-sew-in-leave-out)
-                       {:section-details/title   "Specialties"
-                        :section-details/content (let [service-menu (:service-menu stylist)]
-                                                   [:div.mt1.col-12.col
-                                                    [:div.col-6.col
-                                                     (checks-or-x "Leave Out" (:specialty-sew-in-leave-out service-menu))
-                                                     (checks-or-x "360" (:specialty-sew-in-360-frontal service-menu))
-                                                     (checks-or-x "Wig Customization" (:specialty-wig-customization service-menu))]
-                                                    [:div.col-6.col
-                                                     (checks-or-x "Closure" (:specialty-sew-in-closure service-menu))
-                                                     (checks-or-x "Frontal" (:specialty-sew-in-frontal service-menu))]])})]}
+                     (when (:specialty-sew-in-leave-out service-menu)
+                       {:section-details/title              "Specialties"
+                        :section-details/content            [:div.mt1.col-12.col
+                                                             (for [s [["Leave Out"         (:specialty-sew-in-leave-out service-menu)]
+                                                                      ["Closure"           (:specialty-sew-in-closure service-menu)]
+                                                                      ["360"               (:specialty-sew-in-360-frontal service-menu)]
+                                                                      ["Frontal"           (:specialty-sew-in-frontal service-menu)]
+                                                                      ["Wig Customization" (:specialty-wig-customization service-menu)]]]
+                                                               [:div.col-6.col (apply checks-or-x s)])]})]}
 
         (:mayvenn-rating-publishable stylist)
         (merge  {:rating/value              (:rating stylist)
@@ -252,12 +251,9 @@
 
 (defn section-details-molecule
   [{:section-details/keys [title content]}]
-  [:div.my3
-   {:key title}
-   [:div.title-3.proxima.shout
-    title]
-   [:div.content-2
-    content]])
+  [:div.py3 {:key title}
+   [:div.title-3.proxima.shout title]
+   [:div.content-2 content]])
 
 (def install-type->display-name
   {"leave-out"         "Leave Out Install"
