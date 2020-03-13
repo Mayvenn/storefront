@@ -183,10 +183,11 @@
                         :section-details/content            (:service-menu stylist)})]}
 
         (:mayvenn-rating-publishable stylist)
-        (merge  {:rating/value (:rating stylist)
-                 :rating/rating-count  (when (> rating-count 0)
-                                         rating-count)
-                 :rating/rating-star-counts (:rating-star-counts stylist)})
+        (merge  {:rating/value              (:rating stylist)
+                 :rating/rating-count       (when (> rating-count 0)
+                                              rating-count)
+                 :rating/rating-star-counts (when (> rating-count 0)
+                                              (:rating-star-counts stylist))})
 
         (and (:mayvenn-rating-publishable stylist)
              (seq stylist-reviews))
@@ -289,13 +290,14 @@
 
 (defn ratings-bar-chart-molecule
   [{:rating/keys [rating-star-counts] :as data}]
-  (let [max-ratings-count (apply max (vals rating-star-counts))
-        sorted-rating-count (sort-by key > rating-star-counts)]
-    [:div.bg-cool-gray.flex-column.center.py5
-     [:div.shout.bold.proxima.title-3 "Ratings"]
-     [:div.pb2.pt1 (stars-rating-large-molecule data)]
-     (for [[star-rating star-count] sorted-rating-count]
-       (rating-bar-molecule star-rating star-count max-ratings-count))]))
+  (when rating-star-counts
+    (let [max-ratings-count (apply max (vals rating-star-counts))
+          sorted-rating-count (sort-by key > rating-star-counts)]
+      [:div.bg-cool-gray.flex-column.center.py5
+       [:div.shout.bold.proxima.title-3 "Ratings"]
+       [:div.pb2.pt1 (stars-rating-large-molecule data)]
+       (for [[star-rating star-count] sorted-rating-count]
+         (rating-bar-molecule star-rating star-count max-ratings-count))])))
 
 (defn reviews-molecule
   [{:reviews/keys [spinning? cta-target cta-id cta-label id review-count reviews]}]
