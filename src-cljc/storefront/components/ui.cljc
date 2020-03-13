@@ -858,34 +858,34 @@
 (defmethod link :link/sms [link-type tag attrs & body]
   (apply sms-link tag attrs body))
 
-(defn ^:private star [type index]
+(defn ^:private star [type size index]
   (component/html
    [:span.mrp1
     {:key (str (name type) "-" index)}
     (case type
-      :whole         (svg/whole-star {:height "13px" :width "13px"})
-      :three-quarter (svg/three-quarter-star {:height "13px" :width "13px"})
-      :half          (svg/half-star {:height "13px" :width "13px"})
-      :empty         (svg/empty-star {:height "13px" :width "13px"})
+      :whole         (svg/whole-star {:height size :width size})
+      :three-quarter (svg/three-quarter-star {:height size :width size})
+      :half          (svg/half-star {:height size :width size})
+      :empty         (svg/empty-star {:height size :width size})
       nil)]))
 
-(defn rating->stars [rating]
+(defn rating->stars [rating size]
   (let [remainder-rating (mod rating 1)
-        whole-stars      (map (partial star :whole) (range (int rating)))
+        whole-stars      (map (partial star :whole size) (range (int rating)))
         partial-star     (cond
                            (<= remainder-rating 0.2)
                            nil
 
                            (< 0.2 remainder-rating 0.7)
-                           (star :half "half")
+                           (star :half size "half")
 
                            (<= 0.7 remainder-rating)
-                           (star :three-quarter "three-quarter")
+                           (star :three-quarter size "three-quarter")
 
                            :else
                            nil)
         empty-stars (map
-                     (partial star :empty)
+                     (partial star :empty size)
                      (range
                       (- 5
                          (count whole-stars)
@@ -898,7 +898,7 @@
 (defn star-rating
   [rating]
   (component/html
-   (let [{:keys [whole-stars partial-star empty-stars]} (rating->stars rating)]
+   (let [{:keys [whole-stars partial-star empty-stars]} (rating->stars rating "13px")]
      [:div.flex.items-center
       whole-stars
       partial-star

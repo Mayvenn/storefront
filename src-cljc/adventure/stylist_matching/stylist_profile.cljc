@@ -39,7 +39,7 @@
 ;; fork of molecules/stars-rating-molecule
 (defn stars-rating-molecule
   [{:rating/keys [value rating-count]}]
-  (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value)]
+  (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value "13px")]
     [:div.flex
      whole-stars
      partial-star
@@ -186,7 +186,8 @@
         (:mayvenn-rating-publishable stylist)
         (merge  {:rating/value (:rating stylist)
                  :rating/rating-count  (when (> rating-count 0)
-                                         rating-count)})
+                                         rating-count)
+                 :rating/rating-star-counts (:rating-star-counts stylist)})
 
         (and (:mayvenn-rating-publishable stylist)
              (seq stylist-reviews))
@@ -263,6 +264,41 @@
    "360-frontal"       "360° Frontal Install"
    "wig-customization" "Wig Customization"})
 
+(defn stars-rating-large-molecule
+  [{:rating/keys [value rating-count]}]
+  (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value "20px")]
+    (when rating-count
+      [:div.flex.justify-center
+       whole-stars
+       partial-star
+       empty-stars
+       [:div.pl1
+        (str "(" rating-count ")")]])))
+
+(defn rating-bar-molecule [star-rating star-count max-ratings-count]
+  (let [green-bar-percentage (/ star-count max-ratings-count)]
+    [:div.flex.px8.items-center
+     [:div.flex.items-baseline
+      [:div.bold.proxima.title-3 (name star-rating)]
+      [:div.px2 (svg/whole-star {:class  "fill-dark-gray"
+                                 :height "13px"
+                                 :width  "13px"})]]
+     [:div.flex-grow-1.flex
+      [:div.bg-s-color {:style {:width (str (* 100 green-bar-percentage) "%") :height "12px"}} ui/nbsp]
+      [:div.bg-white {:style {:width (str (* 100 (- 1 green-bar-percentage)) "%") :height "12px"}} ui/nbsp]]
+     [:div.proxima.content-3.pl2
+      {:style {:width "20px"}}(str "(" star-count ")")]]))
+
+(defn ratings-bar-chart-molecule
+  [{:rating/keys [rating-star-counts] :as data}]
+  (let [max-ratings-count (apply max (vals rating-star-counts))
+        sorted-rating-count (sort-by key > rating-star-counts)]
+    [:div.bg-cool-gray.flex-column.center.py5
+     [:div.shout.bold.proxima.title-3 "Ratings"]
+     [:div.pb2.pt1 (stars-rating-large-molecule data)]
+     (for [[star-rating star-count] sorted-rating-count]
+       (rating-bar-molecule star-rating star-count max-ratings-count))]))
+
 (defn reviews-molecule
   [{:reviews/keys [spinning? cta-target cta-id cta-label id review-count reviews]}]
   (when id
@@ -279,7 +315,7 @@
        [:div.py2.border-bottom.border-cool-gray
         {:key review-id}
         [:div
-         (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars)]
+         (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "13px")]
            [:div.flex
             whole-stars
             partial-star
@@ -351,6 +387,7 @@
      (for [section-details (:details query)]
        (section-details-molecule section-details))]
     [:div.clearfix]
+    (ratings-bar-chart-molecule query)
 
     (reviews-molecule query)]
 

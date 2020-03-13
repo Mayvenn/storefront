@@ -23,7 +23,7 @@
   [{rating :rating/value}]
   (component/html
    (when rating
-     (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars rating)]
+     (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars rating "13px")]
        [:div.flex.items-center.button-font-3.s-color
         whole-stars
         partial-star
