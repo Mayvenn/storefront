@@ -685,10 +685,7 @@
                                    :sku      sku}))))))
 
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
-  [_ event {:keys [order quantity sku]} app-state]
-  (let [previous-order (get-in app-state keypaths/order)]
-    (-> app-state
-        (update-in keypaths/browse-recently-added-skus
-                   conj
-                   {:quantity quantity :sku sku})
-        (assoc-in keypaths/browse-sku-quantity 1))))
+  [_ event {:keys [quantity sku]} app-state]
+  (-> app-state
+      (update-in keypaths/browse-recently-added-skus conj {:quantity quantity :sku sku})
+      (assoc-in keypaths/browse-sku-quantity 1)))
