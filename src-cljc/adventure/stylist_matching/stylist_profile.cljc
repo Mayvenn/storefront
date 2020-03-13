@@ -182,13 +182,20 @@
                                                 [:div (str "Booked " (ui/pluralize-with-amount booking-count "time") " with Mayvenn")]]}
                      (when (:specialty-sew-in-leave-out service-menu)
                        {:section-details/title              "Specialties"
-                        :section-details/content            [:div.mt1.col-12.col
-                                                             (for [s [["Leave Out"         (:specialty-sew-in-leave-out service-menu)]
-                                                                      ["Closure"           (:specialty-sew-in-closure service-menu)]
-                                                                      ["360"               (:specialty-sew-in-360-frontal service-menu)]
-                                                                      ["Frontal"           (:specialty-sew-in-frontal service-menu)]
-                                                                      ["Wig Customization" (:specialty-wig-customization service-menu)]]]
-                                                               [:div.col-6.col (apply checks-or-x s)])]})]}
+                        :section-details/content
+                        [:div.mt1.col-12.col
+                         (for [s [["Leave Out Install"         (:specialty-sew-in-leave-out service-menu)]
+                                  ["Closure Install"           (:specialty-sew-in-closure service-menu)]
+                                  ["360 Frontal Install"       (:specialty-sew-in-360-frontal service-menu)]
+                                  ["Frontal Install"           (:specialty-sew-in-frontal service-menu)]
+                                  ["Wig Customization"         (:specialty-wig-customization service-menu)]
+                                  ["Natural Hair Trim"         (:specialty-addon-natural-hair-trim service-menu)]
+                                  ["Weave Take Down"           (:specialty-addon-weave-take-down service-menu)]
+                                  ["Hair Deep Conditioning"    (:specialty-addon-hair-deep-conditioning service-menu)]
+                                  ["Closure Customization"     (:specialty-addon-closure-customization service-menu)]
+                                  ["Frontal Customization"     (:specialty-addon-frontal-customization service-menu)]
+                                  ["360 Frontal Customization" (:specialty-addon-360-frontal-customization service-menu)]]]
+                           [:div.col-6.col (apply checks-or-x s)])]})]}
 
         (:mayvenn-rating-publishable stylist)
         (merge  {:rating/value              (:rating stylist)
