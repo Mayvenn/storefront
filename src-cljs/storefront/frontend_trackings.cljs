@@ -14,7 +14,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.trackings :refer [perform-track]]
-            [storefront.accessors.images :as images]))
+            [storefront.accessors.images :as images]
+            [storefront.accessors.promos :as promos]))
 
 (defn ^:private convert-revenue [{:keys [number total] :as order}]
   {:order-number   number
@@ -342,7 +343,7 @@
   (stringer/track-event "promo_add" {:order_number (:number order)
                                      :promotion_code promo-code})
   (when (and (#{:aladdin :shop} (determine-site app-state))
-             (-> promo-code clojure.string/lower-case clojure.string/trim (= "freeinstall")))
+             (promos/freeinstall? promo-code))
     (track-pseudo-add-default-base-service-to-bag app-state)))
 
 (defmethod perform-track events/api-success-update-order-add-service-line-item [_ events {order :order promo-code :promo-code} app-state]

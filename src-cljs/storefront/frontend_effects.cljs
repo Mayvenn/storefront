@@ -3,7 +3,6 @@
             api.orders
             [storefront.accessors.contentful :as contentful]
             [clojure.set :as set]
-            [clojure.string :as string]
             [spice.maps :as maps]
             [lambdaisland.uri :as uri]
             [storefront.accessors.auth :as auth]
@@ -45,7 +44,8 @@
             [storefront.routes :as routes]
             [storefront.components.share-links :as share-links]
             [storefront.components.popup :as popup]
-            [spice.core :as spice]))
+            [spice.core :as spice]
+            [storefront.accessors.promos :as promos]))
 
 (defn determine-site
   [app-state]
@@ -664,7 +664,7 @@
   (api/remove-freeinstall-line-item (get-in app-state keypaths/session-id) (get-in app-state keypaths/order)))
 
 (defmethod effects/perform-effects events/control-checkout-remove-promotion [_ _ {:as args :keys [code]} _ app-state]
-  (if (= code "freeinstall")
+  (if (promos/freeinstall? code)
     (messages/handle-message events/order-remove-freeinstall-line-item)
     (messages/handle-message events/order-remove-promotion args)))
 

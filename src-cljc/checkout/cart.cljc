@@ -11,7 +11,8 @@
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.messages :as messages]
-   [storefront.transitions :as transitions]))
+   [storefront.transitions :as transitions]
+   [storefront.accessors.promos :as promos]))
 
 (defmethod effects/perform-effects events/add-default-base-service-to-bag
   [_ _ {:keys [added-from-promo?]} _ app-state]
@@ -65,7 +66,7 @@
            site        (determine-site app-state)]
        (when-not (empty? coupon-code)
          (if (and (#{:aladdin :shop} site)
-                  (-> coupon-code clojure.string/lower-case clojure.string/trim (= "freeinstall")))
+                  (promos/freeinstall? coupon-code))
            (messages/handle-message events/add-default-base-service-to-bag)
            (api/add-promotion-code {:shop?          (= :shop site)
                                     :session-id     (get-in app-state keypaths/session-id)

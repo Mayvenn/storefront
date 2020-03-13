@@ -10,7 +10,8 @@
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [spice.maps :as maps]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [storefront.accessors.promos :as promos]))
 
 (defn is-rails-style? [resp]
   (or (seq (:error resp))
@@ -856,13 +857,13 @@
   (cond-> error-response
     (and shop?
          (= "ineligible-for-promotion" (-> error-response :response :body :error-code))
-         (= "freeinstall" (some-> promo-code str/trim str/lower-case)))
+         (promos/freeinstall? promo-code))
     (assoc-in [:response :body :error-message]
               "You need at least 3 bundles (closures and frontals included) to use promo code \"freeinstall\"")))
 
 (defn add-promotion-code
   [{:keys [shop? session-id number token promo-code allow-dormant?]}]
-  (let [freeinstall-promo?         (= "freeinstall" (some-> promo-code str str/trim str/lower-case))
+  (let [freeinstall-promo?         (promos/freeinstall? promo-code)
         allow-without-eligibility? (boolean (and shop? freeinstall-promo?))]
     (storeback-api-req
      POST
