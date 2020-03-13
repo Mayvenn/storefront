@@ -331,10 +331,18 @@
 (defmethod perform-track events/api-success-forgot-password [_ events {email :email} app-state]
   (stringer/track-event "request_reset_password" {:email email}))
 
+(defn determine-site
+  [app-state]
+  (cond
+    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
+    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
+    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
+
 (defmethod perform-track events/api-success-update-order-add-promotion-code [_ events {order :order promo-code :promo-code} app-state]
   (stringer/track-event "promo_add" {:order_number (:number order)
                                      :promotion_code promo-code})
-  (when (-> promo-code clojure.string/lower-case clojure.string/trim (= "freeinstall"))
+  (when (and (#{:aladdin :shop} (determine-site app-state))
+             (-> promo-code clojure.string/lower-case clojure.string/trim (= "freeinstall")))
     (track-pseudo-add-default-base-service-to-bag app-state)))
 
 (defmethod perform-track events/api-success-update-order-add-service-line-item [_ events {order :order promo-code :promo-code} app-state]

@@ -51,15 +51,23 @@
   [_ _ _ app-state]
   (update-in app-state keypaths/promo-code-entry-open? not))
 
+(defn determine-site
+  [app-state]
+  (cond
+    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
+    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
+    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
+
 (defmethod effects/perform-effects events/control-cart-update-coupon
   [_ _ _ _ app-state]
   #?(:cljs
      (let [coupon-code (get-in app-state keypaths/cart-coupon-code)
-           shop?       (= "shop" (get-in app-state keypaths/store-slug))]
+           site        (determine-site app-state)]
        (when-not (empty? coupon-code)
-         (if (-> coupon-code clojure.string/lower-case clojure.string/trim (= "freeinstall"))
+         (if (and (#{:aladdin :shop} site)
+                  (-> coupon-code clojure.string/lower-case clojure.string/trim (= "freeinstall")))
            (messages/handle-message events/add-default-base-service-to-bag)
-           (api/add-promotion-code {:shop?          shop?
+           (api/add-promotion-code {:shop?          (= :shop site)
                                     :session-id     (get-in app-state keypaths/session-id)
                                     :number         (get-in app-state keypaths/order-number)
                                     :token          (get-in app-state keypaths/order-token)
