@@ -70,11 +70,12 @@
 (defn refresh-servicing-stylist [app-state]
   (let [order                (get-in app-state keypaths/order)
         servicing-stylist-id (:servicing-stylist-id order)]
-
     (when servicing-stylist-id
       (api/fetch-matched-stylist
        (get-in app-state keypaths/api-cache)
        servicing-stylist-id
+       ;; Remove the servicing stylist from order to avoid 404'ing on every page
+       ;; if stylist leaves program
        {:error-handler #(when (<= 400 (:status %) 499)
                           (api/remove-servicing-stylist servicing-stylist-id
                                                         (:number order)
