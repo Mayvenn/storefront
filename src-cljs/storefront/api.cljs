@@ -1,6 +1,6 @@
 (ns storefront.api
   (:require [ajax.core :refer [GET POST PUT] :as ajax]
-            [clojure.string :as str]
+            [clojure.string :as string]
             [clojure.walk :as walk]
             [storefront.accessors.orders :as orders]
             [storefront.routes :as routes]
@@ -23,7 +23,7 @@
 (defn convert-to-paths [errors]
   (for [[error-key error-messages] errors
         error-message error-messages]
-    {:path (str/split (name error-key) #"\.")
+    {:path (string/split (name error-key) #"\.")
      :long-message error-message}))
 
 (defn rails-style->std-error [{:keys [error errors]}]
@@ -143,7 +143,7 @@
 
 (defn fetch-cms-keypath
   [keypath]
-  (let [uri-path (str "/cms/" (clojure.string/join "/" (map name keypath)))]
+  (let [uri-path (str "/cms/" (string/join "/" (map name keypath)))]
     (api-request GET uri-path
                  request-keys/fetch-cms-keypath
                  {:handler #(messages/handle-message events/api-success-fetch-cms-keypath %)})))
