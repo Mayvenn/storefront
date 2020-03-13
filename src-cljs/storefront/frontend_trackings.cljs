@@ -117,13 +117,13 @@
                             (get-in app-state keypaths/v2-skus)
                             (orders/product-and-service-items order))
 
-          cart-items (mapv line-item-skuer->stringer-cart-item line-item-skuers)
-          store-slug (get-in app-state keypaths/store-slug)]
-
+          cart-items     (mapv line-item-skuer->stringer-cart-item line-item-skuers)
+          store-slug     (get-in app-state keypaths/store-slug)
+          order-quantity (orders/product-and-service-quantity order)]
       (stringer/track-event "add_to_cart" (merge (line-item-skuer->stringer-cart-item sku)
                                                  {:order_number     (:number order)
                                                   :order_total      (:total order)
-                                                  :order_quantity   (orders/product-quantity order)
+                                                  :order_quantity   order-quantity
                                                   :store_experience (get-in app-state keypaths/store-experience)
                                                   :variant_quantity quantity
                                                   :quantity         quantity
@@ -131,7 +131,7 @@
       (google-tag-manager/track-add-to-cart {:number           (:number order)
                                              :store-slug       store-slug
                                              :store-is-stylist (not (#{"store" "shop" "internal"} store-slug))
-                                             :order-quantity   (->> order orders/all-product-items orders/line-item-quantity)
+                                             :order-quantity   order-quantity
                                              :line-item-skuers [(assoc sku :item/quantity quantity)]}))))
 
 (defmethod perform-track events/api-success-shared-cart-create [_ _ {:keys [cart]} app-state]

@@ -223,5 +223,8 @@
        :storefront/all-line-items
        (filter line-items/product-or-service?)))
 
+(defn product-and-service-quantity [order]
+  (line-item-quantity (product-and-service-items order)))
+
 (defn products-and-services-subtotal [order]
   (reduce + 0 (map line-item-subtotal (product-and-service-items order))))
