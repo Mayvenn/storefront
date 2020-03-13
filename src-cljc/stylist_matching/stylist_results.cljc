@@ -4,6 +4,7 @@
                        [storefront.history :as history]
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.stringer :as stringer]
+                       [storefront.frontend-trackings :as frontend-trackings]
                        [storefront.accessors.orders :as orders]
                        [storefront.platform.messages :as messages]])
             [adventure.components.wait-spinner :as wait-spinner]
@@ -156,7 +157,8 @@
                                                 3
                                                 2)
                               :order_number   (:number order)
-                              :stylist_rating (:rating servicing-stylist)})]))
+                              :stylist_rating (:rating servicing-stylist)})
+       (frontend-trackings/track-pseudo-add-default-base-service-to-bag app-state)]))
 
 (defmethod trackings/perform-track events/adventure-stylist-search-results-displayed
   [_ event args app-state]

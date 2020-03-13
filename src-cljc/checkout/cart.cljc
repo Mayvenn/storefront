@@ -1,22 +1,23 @@
 (ns checkout.cart
   (:require
-   #?@(:cljs [[storefront.api :as api]
+   #?@(:cljs [[cemerick.url :refer [url-encode]]
+              [storefront.api :as api]
+              [storefront.accessors.orders :as orders]
+              [storefront.config :as config]
               [storefront.accessors.stylist-urls :as stylist-urls]
               [storefront.history :as history]
               [goog.labs.userAgent.device :as device]])
-   [cemerick.url :refer [url-encode]]
-
-   [storefront.accessors.orders :as orders]
-   [storefront.config :as config]
    [storefront.effects :as effects]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.messages :as messages]
    [storefront.transitions :as transitions]))
 
-(defmethod effects/perform-effects events/control-cart-add-base-service
-  [_ _ _ _ app-state]
+(defmethod effects/perform-effects events/add-default-base-service-to-bag
+  [_ _ {:keys [added-from-promo?]} _ app-state]
   #?(:cljs
+     ;; NOTE: Will be removed once we stop calculating the base
+     ;; mayvenn-install service the user
      (let [quantity 1
            sku      (get-in app-state (conj keypaths/v2-skus "SRV-LBI-000"))]
        (api/add-sku-to-bag (get-in app-state keypaths/session-id)
@@ -33,6 +34,10 @@
                                                      {:order    %
                                                       :quantity quantity
                                                       :sku      sku})))))
+
+(defmethod effects/perform-effects events/control-cart-add-base-service
+  [_ _ _ _ app-state]
+  (messages/handle-message events/add-default-base-service-to-bag))
 
 (defmethod effects/perform-effects events/control-pick-stylist-button
   [_ _ _ _ _]
@@ -52,23 +57,8 @@
      (let [coupon-code (get-in app-state keypaths/cart-coupon-code)
            shop?       (= "shop" (get-in app-state keypaths/store-slug))]
        (when-not (empty? coupon-code)
-         (if (-> coupon-code
-                 clojure.string/lower-case
-                 clojure.string/trim
-                 (= "freeinstall"))
-           (api/add-sku-to-bag (get-in app-state keypaths/session-id)
-                               {:token      (get-in app-state keypaths/order-token)
-                                :number     (get-in app-state keypaths/order-number)
-                                :stylist-id (get-in app-state keypaths/store-stylist-id)
-                                :user-id    (get-in app-state keypaths/user-id)
-                                :user-token (get-in app-state keypaths/user-token)
-                                ;; Not necessarily an actual leave-out service, just need to use any install service
-                                ;; line item.  The actual SKU will be calculated by waiter on every cart modification.
-                                :sku        {:catalog/sku-id "SRV-LBI-000"}
-                                :quantity   1}
-                               #(messages/handle-message events/api-success-update-order-add-service-line-item
-                                                         {:order %
-                                                          :shop? shop?}))
+         (if (-> coupon-code clojure.string/lower-case clojure.string/trim (= "freeinstall"))
+           (messages/handle-message events/add-default-base-service-to-bag)
            (api/add-promotion-code {:shop?          shop?
                                     :session-id     (get-in app-state keypaths/session-id)
                                     :number         (get-in app-state keypaths/order-number)

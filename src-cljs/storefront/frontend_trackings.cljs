@@ -110,6 +110,27 @@
                                                :content_ids  [(:catalog/sku-id sku)]
                                                :num_items    quantity}))
 
+(defn track-pseudo-add-default-base-service-to-bag
+  "Used to show user intent to add install service when associating stylist or
+  adding freeinstall promo from link"
+  [data]
+  (let [quantity         1
+        skus             (get-in data keypaths/v2-skus)
+        order            (get-in data keypaths/order)
+        line-item-skuers (waiter-line-items->line-item-skuer
+                          skus (orders/product-and-service-items order))
+        cart-items       (mapv line-item-skuer->stringer-cart-item line-item-skuers)
+        sku              (get skus "SRV-LBI-000")
+        order-quantity   (orders/product-and-service-quantity order) ]
+    (stringer/track-event "add_to_cart" (merge (line-item-skuer->stringer-cart-item sku)
+                                               {:order_number     (:number order)
+                                                :order_total      (:total order)
+                                                :order_quantity   order-quantity
+                                                :store_experience (get-in data keypaths/store-experience)
+                                                :variant_quantity quantity
+                                                :quantity         quantity
+                                                :context          {:cart-items cart-items}}))))
+
 (defmethod perform-track events/api-success-add-sku-to-bag
   [_ _ {:keys [quantity sku order] :as args} app-state]
   (when sku
@@ -312,7 +333,9 @@
 
 (defmethod perform-track events/api-success-update-order-add-promotion-code [_ events {order :order promo-code :promo-code} app-state]
   (stringer/track-event "promo_add" {:order_number (:number order)
-                                     :promotion_code promo-code}))
+                                     :promotion_code promo-code})
+  (when (-> promo-code clojure.string/lower-case clojure.string/trim (= "freeinstall"))
+    (track-pseudo-add-default-base-service-to-bag app-state)))
 
 (defmethod perform-track events/api-success-update-order-add-service-line-item [_ events {order :order promo-code :promo-code} app-state]
   (stringer/track-event "promo_add" {:order_number (:number order)

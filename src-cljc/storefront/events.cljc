@@ -446,6 +446,7 @@
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)
 
+(defpath add-default-base-service-to-bag)
 (defpath browse-addon-service-menu-button-enabled)
 
 (defpath sign-out)
