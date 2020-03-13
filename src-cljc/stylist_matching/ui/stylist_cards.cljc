@@ -110,10 +110,11 @@
 (defn stylist-card-bookings-count-molecule
   [{:booking/keys [count] }]
   (when count
-    [:div.content-3.col-12.flex.items-center.flex.items-baseline
-     (svg/calendar {:class  "mrp3 fill-p-color"
-                   :width  "12px"
-                   :height "12px"})
+    [:div.content-3.col-12.flex.items-center.flex
+     (svg/calendar {:class "mrp3 fill-p-color"
+                    :style {:margin-bottom "2px"}
+                    :width  "12px"
+                    :height "12px"})
      [:span "Booked " (ui/pluralize-with-amount count "time")]]))
 
 (defn stylist-card-header-molecule
