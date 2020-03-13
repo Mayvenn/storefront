@@ -26,7 +26,7 @@
    :header.back-navigation/id     "adventure-back"
    :header.back-navigation/target [events/navigate-adventure-find-your-stylist]})
 
-(defn shopping-method-choice-query [hide-bundle-sets? wig-customization?]
+(defn shopping-method-choice-query [hide-bundle-sets?]
   {:shopping-method-choice.error-title/id        "stylist-matching-shopping-method-choice"
    :shopping-method-choice.error-title/primary   "We need some time to find you the perfect stylist!"
    :shopping-method-choice.error-title/secondary (str
@@ -43,20 +43,23 @@
                                                              :shopping-method-choice.button/target   [events/navigate-shop-by-look
                                                                                                       {:album-keyword :all-bundle-sets}]
                                                              :shopping-method-choice.button/ucare-id "87b46db7-4c70-4d3a-8fd0-6e99e78d3c96"}])
-                                                   true
+                                                   :always
                                                    (concat [{:shopping-method-choice.button/id       "button-a-la-carte"
                                                              :shopping-method-choice.button/label    "Choose individual bundles"
                                                              :shopping-method-choice.button/target   [events/navigate-category
                                                                                                       {:page/slug           "mayvenn-install"
                                                                                                        :catalog/category-id "23"}]
-                                                             :shopping-method-choice.button/ucare-id "6c39cd72-6fde-4ec2-823c-5e39412a6d54"}])
-                                                   wig-customization?
-                                                   (concat [{:shopping-method-choice.button/id       "button-shop-wigs"
+                                                             :shopping-method-choice.button/ucare-id "6c39cd72-6fde-4ec2-823c-5e39412a6d54"}
+                                                            {:shopping-method-choice.button/id       "button-shop-wigs"
                                                              :shopping-method-choice.button/label    "Shop Virgin Wigs"
                                                              :shopping-method-choice.button/target   [events/navigate-category
                                                                                                       {:page/slug           "wigs"
                                                                                                        :catalog/category-id "13"
-                                                                                                       :query-params        {:family (str "lace-front-wigs" accessors.categories/query-param-separator "360-wigs")}}]
+                                                                                                       :query-params
+                                                                                                       {:family
+                                                                                                        (str "lace-front-wigs"
+                                                                                                             accessors.categories/query-param-separator
+                                                                                                             "360-wigs")}}]
                                                              :shopping-method-choice.button/ucare-id "71dcdd17-f9cc-456f-b763-2c1c047c30b4"}]))})
 
 (defcomponent template
@@ -72,8 +75,6 @@
   (let [current-order (api.orders/current app-state)]
     (component/build template
                      {:shopping-method-choice
-                      (shopping-method-choice-query
-                       (experiments/hide-bundle-sets? app-state)
-                       (experiments/wig-customization? app-state))
+                      (shopping-method-choice-query (experiments/hide-bundle-sets? app-state))
                       :header
                       (header-query current-order)})))

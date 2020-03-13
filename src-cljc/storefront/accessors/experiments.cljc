@@ -91,10 +91,6 @@
   [data]
   (display-feature? data "color-picker-redesign"))
 
-(defn wig-customization?
-  [data]
-  true)
-
 (defn hide-bundle-sets?
   [data]
   (display-feature? data "hide-bundle-sets"))

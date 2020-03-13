@@ -44,14 +44,11 @@
   [app-state]
   (let [order                   (get-in app-state storefront.keypaths/order)
         shipment                (-> order :shipments first)
-        wig-customization?      (experiments/wig-customization? app-state)
-        any-wig?                (and
-                                 wig-customization?
-                                 (->> shipment
-                                      :line-items
-                                      (filter line-items/any-wig?)
-                                      count
-                                      pos?))
+        any-wig?                (->> shipment
+                                     :line-items
+                                     (filter line-items/any-wig?)
+                                     count
+                                     pos?)
         service-type            (product-line-items->service-type (orders/product-items-for-shipment shipment))
         {base-services  :base
          addon-services :addon} (->> order

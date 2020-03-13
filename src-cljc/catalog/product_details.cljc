@@ -374,7 +374,6 @@
                                                       "purchase 3 bundles, closure, or frontals.* ")})
       (and
        shop?
-       (experiments/wig-customization? data)
        (wig-customization-incentive-families sku-family))
       (merge
        {:add-to-cart.incentive-block/id       "add-to-cart-incentive-block"
@@ -438,8 +437,7 @@
                              :image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
                              :show?          (= "shop" (get-in data keypaths/store-slug))})
 
-      (and (experiments/wig-customization? data)
-           (#{"360-wigs" "ready-wigs" "lace-front-wigs"} (-> product :hair/family first)))
+      (#{"360-wigs" "ready-wigs" "lace-front-wigs"} (-> product :hair/family first))
       (merge {:freeinstall-banner/title "Buy any Lace Front or 360 Wig and we'll pay for your wig customization"}))))
 
 (defn ^:export built-component [data opts]

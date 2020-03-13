@@ -201,7 +201,6 @@
 
 (defn stylist-card-query
   [post-purchase?
-   wig-customization?
    idx
    {:keys [rating-star-counts
            salon
@@ -250,8 +249,7 @@
                                             (stylist-cards/checks-or-x-atom "Frontal" (boolean specialty-sew-in-frontal))
                                             (stylist-cards/checks-or-x-atom "360° Frontal"
                                                                             (boolean specialty-sew-in-360-frontal))
-                                            (when wig-customization?
-                                              (stylist-cards/checks-or-x-atom "Wig Customization" (boolean specialty-wig-customization)))]
+                                            (stylist-cards/checks-or-x-atom "Wig Customization" (boolean specialty-wig-customization))]
          :stylist-card.cta/id              (str "select-stylist-" store-slug)
          :stylist-card.cta/label           (str "Select " store-nickname)
          :stylist-card.cta/target          [cta-event
@@ -284,8 +282,8 @@
       (merge {:ratings/rating-count rating-count}))))
 
 (defn stylist-cards-query
-  [post-purchase? wig-customization? stylists]
-  (map-indexed (partial stylist-card-query post-purchase? wig-customization?) stylists))
+  [post-purchase? stylists]
+  (map-indexed (partial stylist-card-query post-purchase?) stylists))
 
 (def call-out-query
   {:call-out-center/bg-class    "bg-cool-gray"
@@ -350,5 +348,4 @@
                         :list/results  (insert-at-pos 3
                                                       call-out-query
                                                       (stylist-cards-query post-purchase?
-                                                                           (experiments/wig-customization? app-state)
                                                                            stylist-search-results))}))))

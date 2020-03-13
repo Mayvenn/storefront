@@ -117,14 +117,13 @@
         aladdin?             (experiments/aladdin-experience? data)
         affiliate?           (= "influencer" (get-in data keypaths/store-experience))
         [navigation-event _] (get-in data keypaths/navigation-message)
-        wig-customization?   (experiments/wig-customization? data)
         wigs?                (or (and (= events/navigate-product-details navigation-event)
                                       (accessors.products/wig-product? (products/current-product data)))
                                  (and (= events/navigate-category navigation-event)
                                       (accessors.categories/wig-category? (accessors.categories/current-category data))))]
     (cond
-      (and wig-customization?
-           (or shop? aladdin? affiliate?) wigs?)
+      (and (or shop? aladdin? affiliate?)
+           wigs?)
       :shop/wigs
 
       shop?

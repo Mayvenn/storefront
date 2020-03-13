@@ -51,11 +51,11 @@
    (category-hero-description data)])
 
 (defn ^:private category-hero-query
-  [category wig-customization?]
+  [category]
   {:category-hero.title/id          "category-hero-title"
    :category-hero.title/value       (:copy/title category)
    :category-hero.description/id    "category-hero-description"
-   :category-hero.description/value (if (->> category :catalog/category-id (= "13") (and wig-customization?))
+   :category-hero.description/value (if (->> category :catalog/category-id (= "13"))
                                       (str (:category/description category) " Get free customization with qualifying purchases.")
                                       (:category/description category))})
 
@@ -245,7 +245,7 @@
     (cond->
         {:header              {}
          :footer              {}
-         :category-hero       (category-hero-query category (experiments/wig-customization? app-state))
+         :category-hero       (category-hero-query category)
          :content-box         (when (:content-block/type category)
                                 {:title    (:content-block/title category)
                                  :header   (:content-block/header category)
