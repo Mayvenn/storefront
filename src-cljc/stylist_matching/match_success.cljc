@@ -77,26 +77,31 @@
                 specialty-sew-in-closure
                 specialty-sew-in-360-frontal
                 specialty-sew-in-frontal]}                    service-menu]
-    {:react/key                        (str "stylist-card-" store-slug)
-     :stylist-card.header/target       (if post-purchase?
-                                         [events/navigate-adventure-stylist-profile-post-purchase {:stylist-id stylist-id
-                                                                                                   :store-slug store-slug}]
-                                         [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
-                                                                                     :store-slug store-slug}])
-     :stylist-card.header/id           (str "stylist-card-header" store-slug)
-     :stylist-card.thumbnail/id        (str "stylist-card-thumbnail-" store-slug)
-     :stylist-card.thumbnail/ucare-id  (-> stylist :portrait :resizable-url)
-     :stylist-card.title/id            "stylist-name"
-     :stylist-card.title/primary       (stylists/->display-name stylist)
-     :rating/value                     rating
-     :stylist-card.services-list/id    (str "stylist-card-services-" store-slug)
-     :stylist-card.services-list/value [(stylist-cards/checks-or-x-atom "Leave Out"
-                                                                        (boolean specialty-sew-in-leave-out))
-                                        (stylist-cards/checks-or-x-atom "Closure"
-                                                                        (boolean specialty-sew-in-closure))
-                                        (stylist-cards/checks-or-x-atom "360° Frontal"
-                                                                        (boolean specialty-sew-in-360-frontal))
-                                        (stylist-cards/checks-or-x-atom "Frontal" (boolean specialty-sew-in-frontal))]
+    {:react/key                         (str "stylist-card-" store-slug)
+     :stylist-card.header/target        (if post-purchase?
+                                          [events/navigate-adventure-stylist-profile-post-purchase {:stylist-id stylist-id
+                                                                                                    :store-slug store-slug}]
+                                          [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
+                                                                                      :store-slug store-slug}])
+     :stylist-card.header/id            (str "stylist-card-header" store-slug)
+     :stylist-card.thumbnail/id         (str "stylist-card-thumbnail-" store-slug)
+     :stylist-card.thumbnail/ucare-id   (-> stylist :portrait :resizable-url)
+     :stylist-card.title/id             "stylist-name"
+     :stylist-card.title/primary        (stylists/->display-name stylist)
+     :rating/value                      rating
+     :stylist-card.services-list/id     (str "stylist-card-services-" store-slug)
+     :stylist-card.services-list/items  [{:id    (str "stylist-service-leave-out-" store-slug)
+                                          :label "Leave Out"
+                                          :value (boolean specialty-sew-in-leave-out)}
+                                         {:id    (str "stylist-service-closure-" store-slug)
+                                          :label "Closure"
+                                          :value (boolean specialty-sew-in-closure)}
+                                         {:id    (str "stylist-service-frontal-" store-slug)
+                                          :label "Frontal"
+                                          :value (boolean specialty-sew-in-frontal)}
+                                         {:id    (str "stylist-service-360-" store-slug)
+                                          :label "360° Frontal"
+                                          :value (boolean specialty-sew-in-360-frontal)}]
      :element/type                      :stylist-card
      :stylist-card.address-marker/id    (str "stylist-card-address-" store-slug)
      :stylist-card.address-marker/value (string/join " "

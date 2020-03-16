@@ -21,11 +21,13 @@
     label]])
 
 (defn stylist-card-services-list-molecule
-  [{:stylist-card.services-list/keys [id value]}]
+  [{:stylist-card.services-list/keys [id items]}]
   (when id
     (component/html
      [:div.h8.col-12
-      value])))
+      (for [{:keys [label value id]} items]
+        [:div.inline {:key id}
+         (checks-or-x-atom label value)])])))
 
 (defn stylist-card-salon-name-molecule
   [{:stylist-card.salon-name/keys [id value]}]
