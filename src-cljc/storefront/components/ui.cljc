@@ -318,6 +318,21 @@
        (button-pill args content)]
       (field-error-message error "input-group")])))
 
+(defn input-with-charm
+  [{:keys [label keypath value errors] :as text-input-attrs :or {class "col-12"}}
+   charm]
+  (component/html
+   (let [error (first errors)]
+     [:div.mb2
+      [:div.flex
+       (plain-text-field label keypath value (not (nil? error))
+                         (-> text-input-attrs
+                             (dissoc :label :keypath :value :errors)
+                             (update :wrapper-class str " x-group-item")
+                             (assoc-in [:wrapper-style :border-right] "none")))
+       charm]
+      (field-error-message error "input-group")])))
+
 (defn text-field-group
   "For grouping many fields on one line. Sets up columns
   and avoids doubling of borders between fields.

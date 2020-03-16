@@ -15,7 +15,7 @@
        (svg/check-mark {:class "black"
                         :style {:width  10
                                 :height 10}})
-       (svg/x-sharp {:class  "black"
+       (svg/x-sharp {:class "black"
                      :style {:width  8
                              :height 8}}))]
     label]])

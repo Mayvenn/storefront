@@ -108,3 +108,7 @@
         orders/service-line-items
         (filter line-items/addon-service?)
         seq)))
+
+(defn stylist-filters?
+  [data]
+  (display-feature? data "stylist-filters"))

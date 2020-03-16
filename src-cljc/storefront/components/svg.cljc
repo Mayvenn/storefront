@@ -407,6 +407,11 @@
    [:svg opts
     ^:inline (svg-xlink "button-facebook-f")]))
 
+(defn magnifying-glass [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "magnifying-glass")]))
+
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.
 

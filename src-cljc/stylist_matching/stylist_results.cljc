@@ -15,6 +15,7 @@
             [storefront.accessors.stylists :as stylists]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.header :as components.header]
+            [storefront.components.svg :as svg]
             [storefront.events :as events]
             [stylist-matching.ui.header :as header]
             [stylist-matching.ui.stylist-cards :as stylist-cards]
@@ -25,7 +26,8 @@
             [spice.core :as spice]
             [storefront.effects :as effects]
             [storefront.trackings :as trackings]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            adventure.keypaths))
 
 (defmethod transitions/transition-state events/control-adventure-stylist-gallery-open
   [_ _event {:keys [ucare-img-urls initially-selected-image-index]} app-state]
@@ -323,17 +325,37 @@
      :gallery-modal/ucare-image-urls gallery-images
      :gallery-modal/initial-index    index}))
 
+(defcomponent location-input-field-molecule
+  [{:stylist.results.location-search-box/keys
+    [id value errors keypath]} _ _]
+  (when id
+    [:div.px3.pt2.bg-white.border-bottom.border-gray
+     (ui/input-with-charm
+      {:errors        errors
+       :value         value
+       :keypath       keypath
+       :data-test     id
+       :id            id
+       :wrapper-class "flex items-center col-12 bg-white border-black"
+       :type          "text"}
+      [:div.flex.items-center.px2.border.border-black
+       {:style {:border-left "none"}}
+       ^:inline (svg/magnifying-glass {:width  "19px"
+                                       :height "19px"
+                                       :class  "fill-gray"})])]))
+
 (defcomponent template
-  [{:keys [gallery-modal header list/results]} _ _]
+  [{:keys [gallery-modal header list/results location-search-box]} _ _]
   [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
    (component/build gallery-modal/organism gallery-modal nil)
    (components.header/adventure-header (:header.back-navigation/target header)
                                        (:header.title/primary header)
                                        {:quantity (:header.cart/value header)})
-   [:div
-    (display-list {:call-out     call-out-center/organism
-                   :stylist-card stylist-cards/organism}
-                  results)]])
+   (component/build location-input-field-molecule location-search-box nil)
+
+   (display-list {:call-out     call-out-center/organism
+                  :stylist-card stylist-cards/organism}
+                 results)])
 
 (def post-purchase? #{events/navigate-adventure-stylist-results-post-purchase})
 
@@ -348,9 +370,16 @@
     (if spinning?
       (component/build wait-spinner/component app-state)
       (component/build template
-                       {:gallery-modal (gallery-modal-query app-state)
-                        :header        (header-query current-order (first (get-in app-state storefront.keypaths/navigation-undo-stack)) post-purchase?)
-                        :list/results  (insert-at-pos 3
-                                                      call-out-query
-                                                      (stylist-cards-query post-purchase?
-                                                                           stylist-search-results))}))))
+                       {:gallery-modal       (gallery-modal-query app-state)
+                        :location-search-box (when (experiments/stylist-filters? app-state)
+                                               {:stylist.results.location-search-box/id      "stylist-search-input"
+                                                :stylist.results.location-search-box/value   (get-in app-state adventure.keypaths/adventure-stylist-match-address)
+                                                :stylist.results.location-search-box/keypath adventure.keypaths/adventure-stylist-match-address
+                                                :stylist.results.location-search-box/errors  []})
+                        :header              (header-query current-order
+                                                           (first (get-in app-state storefront.keypaths/navigation-undo-stack))
+                                                           post-purchase?)
+                        :list/results        (insert-at-pos 3
+                                                            call-out-query
+                                                            (stylist-cards-query post-purchase?
+                                                                                 stylist-search-results))}))))
