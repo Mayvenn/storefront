@@ -306,5 +306,5 @@
   </symbol>
   <symbol id="magnifying-glass" viewBox="0 0 20 20" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
     <path d="M15.763 13.862l-.406.405-2.007-2.007a6.991 6.991 0 10-1.103 1.1l2.008 2.01-.406.405 3.346 3.347 1.914-1.914-3.346-3.346zm-7.87-1.186l-4.774-4.77 4.773-4.774 4.771 4.773-4.77 4.771z" fill="#CCC" fill-rule="evenodd"/>
-  </svg>
+  </symbol>
 </svg>
