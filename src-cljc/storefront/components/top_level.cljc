@@ -10,7 +10,8 @@
                        ;; popups, must be required to load properly
                        adventure.components.program-details-popup
                        storefront.components.share-your-cart
-                       storefront.components.v2-homepage-popup])
+                       storefront.components.v2-homepage-popup
+                       checkout.shop.addon-services-menu])
             #?@(:clj
                 [[design-system.home :as design-system]])
             adventure.checkout.wait
