@@ -206,15 +206,19 @@
                                                                                   :width  "16px"
                                                                                   :height "16px"
                                                                                   :style  {:transform "rotate(-90deg)"}})])]
-      [:div.col.col-12.p1 (ui/input-group
-                           {:type          "text"
-                            :wrapper-class "col-7 pl3 flex items-center bg-white"
-                            :placeholder   "Text"
-                            :focused       false}
-                           {:ui-element ui/button-large-primary
-                            :content    "Button"
-                            :args       (merge button-attrs
-                                               {:class "flex justify-center items-center"})})]]]))
+      [:div.col.col-6.p1
+       (ui/input-group
+        {:type          "text"
+         :wrapper-class "col-7 pl3 flex items-center bg-white"
+         :placeholder   "Text"
+         :focused       false}
+        {:ui-element ui/button-large-primary
+         :content    "Button"
+         :args       (merge button-attrs
+                            {:class "flex justify-center items-center"})})]
+      [:div.col.col-6.p1
+       [:div.col.col-3
+        (ui/button-pill {:class "p1"} "Pill Button")]]]]))
 
 (def ^:private increment->size
   {1 "5px"

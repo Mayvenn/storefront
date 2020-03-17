@@ -132,7 +132,8 @@
 (defn button-medium-facebook-blue       [attrs & content] (button "btn-medium btn-facebook-blue button-font-1 shout" attrs content))
 (defn button-small-primary              [attrs & content] (button "btn-small btn-p-color button-font-4 shout" attrs content))
 (defn button-small-secondary            [attrs & content] (button "btn-small btn-outline bg-white button-font-4 shout" attrs content))
-(defn button-pill                       [attrs & content] (button "btn-pill btn-s-color button-font-3 shout" attrs content))
+(defn button-square                     [attrs & content] (button "btn-square btn-s-color button-font-3 shout" attrs content))
+(defn button-pill                       [attrs & content] (button "btn-pill content-3 black" attrs content))
 (defn button-medium-underline-primary   [attrs & content] (button "p-color button-font-2 shout" attrs [:span.border-bottom.border-width-2.border-p-color content]))
 (defn button-medium-underline-secondary [attrs & content] (button "s-color button-font-2 shout" attrs [:span.border-bottom.border-width-2.border-s-color content]))
 (defn button-medium-underline-black     [attrs & content] (button "black button-font-2 shout" attrs   [:span.border-bottom.border-width-2.border-black content]))
@@ -315,7 +316,7 @@
                              (dissoc :label :keypath :value :errors)
                              (update :wrapper-class str " x-group-item")
                              (assoc-in [:wrapper-style :border-right] "none")))
-       (button-pill args content)]
+       (button-square args content)]
       (field-error-message error "input-group")])))
 
 (defn input-with-charm
