@@ -132,7 +132,13 @@
   (when (= feature "add-on-services") ;; Remove when experiments/add-on-services is removed
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)}))
   (when (redirect-from-deals-page? app-state)
-    (effects/redirect events/navigate-shop-by-look {:album-keyword :all-bundle-sets})))
+    (effects/redirect events/navigate-shop-by-look {:album-keyword :all-bundle-sets}))
+
+  (when (and (= "stylist-filters" feature)
+             ;; TODO: POST PURCHASE
+             (= events/navigate-adventure-stylist-results-pre-purchase
+                (get-in app-state keypaths/navigation-event)))
+    (google-maps/insert)))
 
 (defmethod effects/perform-effects events/ensure-sku-ids
   [_ _ {:keys [sku-ids service-sku-ids]} _ app-state]
@@ -219,7 +225,6 @@
         new-nav-event?                 (not= previous-nav-event current-nav-event)
         video-query-param?             (:video query-params)
         module-load?                   (= caused-by :module-load)]
-
     (messages/handle-message events/control-menu-collapse-all)
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})
 

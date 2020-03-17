@@ -311,6 +311,7 @@
 (defpath api-success-fetch-stylists-within-radius)
 (defpath api-success-fetch-stylists-within-radius-pre-purchase)
 (defpath api-success-fetch-stylists-within-radius-post-purchase)
+(defpath api-success-fetch-stylists-matching-filters)
 
 (defpath api-success-fetch-cms-keypath)
 
@@ -536,6 +537,8 @@
 (defpath control-fetch-stylist-reviews)
 (defpath adventure-stylist-search-results-displayed)
 (defpath adventure-stylist-search-results-post-purchase-displayed)
+(defpath stylist-results-address-component-mounted)
+(defpath stylist-results-address-selected)
 (defpath adventure-stylist-results-delay-completed)
 (defpath adventure-stylist-results-wait-resolved)
 

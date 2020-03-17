@@ -3,31 +3,36 @@
                        [storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.history :as history]
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
+                       [storefront.hooks.google-maps :as google-maps]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.frontend-trackings :as frontend-trackings]
-                       [storefront.accessors.orders :as orders]
-                       [storefront.platform.messages :as messages]])
+                       [storefront.accessors.orders :as orders]])
             [adventure.components.wait-spinner :as wait-spinner]
             adventure.keypaths
             api.orders
             [clojure.string :as string]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.stylists :as stylists]
-            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defdynamic-component defcomponent]]
             [storefront.components.header :as components.header]
             [storefront.components.svg :as svg]
             [storefront.events :as events]
             [stylist-matching.ui.header :as header]
             [stylist-matching.ui.stylist-cards :as stylist-cards]
             [stylist-matching.ui.gallery-modal :as gallery-modal]
+            stylist-directory.keypaths
             [adventure.organisms.call-out-center :as call-out-center]
-            [storefront.keypaths :as storefront.keypaths]
+            storefront.keypaths
             [storefront.components.ui :as ui]
             [spice.core :as spice]
             [storefront.effects :as effects]
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
-            adventure.keypaths))
+            [storefront.platform.messages :as messages]
+            adventure.keypaths
+            [adventure.keypaths :as adventure.keypaths]
+            [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]))
 
 (defmethod transitions/transition-state events/control-adventure-stylist-gallery-open
   [_ _event {:keys [ucare-img-urls initially-selected-image-index]} app-state]
@@ -52,7 +57,42 @@
                                                                      :longitude (spice/parse-double long)})
 
       (nil? (get-in app-state adventure.keypaths/adventure-matched-stylists))
-      (assoc-in adventure.keypaths/adventure-stylist-results-delaying? true))))
+      (assoc-in adventure.keypaths/adventure-stylist-results-delaying? true)
+
+      :always
+      (assoc-in stylist-directory.keypaths/stylist-search-address-input
+                (get-in app-state adventure.keypaths/adventure-stylist-match-address)))))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/stylist-results-address-component-mounted
+     [_ event args _ app-state]
+     (google-maps/attach "geocode"
+                         "stylist-search-input"
+                         stylist-directory.keypaths/stylist-search-selected-location
+                         #(messages/handle-message events/stylist-results-address-selected))))
+
+#?(:cljs
+   (defmethod transitions/transition-state events/stylist-results-address-selected
+     [_ _ _ app-state]
+     (-> app-state
+         (assoc-in stylist-directory.keypaths/stylist-search-address-input
+                    (.-value (.getElementById js/document "stylist-search-input"))))))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/stylist-results-address-selected
+     [_ event args _ app-state]
+     (let [{:keys [latitude longitude] :as location} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)]
+       (api/fetch-stylists-matching-filters {:latitude  latitude
+                                             :longitude longitude
+                                             :radius    "100mi"
+                                             ;; TODO: keep the same tracking?
+                                             :choices   (get-in app-state adventure.keypaths/adventure-choices)}))))
+
+(defmethod transitions/transition-state events/api-success-fetch-stylists-matching-filters
+  [_ event {:keys [stylists]} app-state]
+  #?(:cljs
+     (-> app-state
+         (assoc-in adventure.keypaths/adventure-matched-stylists stylists))))
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-pre-purchase
   [_ _ {:keys [query-params]} _ app-state]
@@ -60,6 +100,9 @@
      (let [{stylist-ids :s}                          query-params
            {:keys [latitude longitude] :as location} (get-in app-state adventure.keypaths/adventure-stylist-match-location)
            matched-stylists                          (get-in app-state adventure.keypaths/adventure-matched-stylists)]
+       ;; TODO: POST PURCHASEEEEE
+       (when (experiments/stylist-filters? app-state)
+         (google-maps/insert))
        (cond
          (seq stylist-ids)
          (do
@@ -92,7 +135,9 @@
 (defmethod effects/perform-effects events/adventure-stylist-results-delay-completed
   [_ _ args _ app-state]
   #?(:cljs
-     (when-not (nil? (get-in app-state adventure.keypaths/adventure-matched-stylists))
+     (when-not (and
+                (not (experiments/stylist-filters? app-state))
+                (nil? (get-in app-state adventure.keypaths/adventure-matched-stylists)))
        (messages/handle-message events/adventure-stylist-results-wait-resolved {}))))
 
 (defmethod effects/perform-effects events/adventure-stylist-results-wait-resolved
@@ -323,37 +368,45 @@
      :gallery-modal/ucare-image-urls gallery-images
      :gallery-modal/initial-index    index}))
 
-(defcomponent location-input-field-molecule
-  [{:stylist.results.location-search-box/keys
-    [id value errors keypath]} _ _]
-  (when id
-    [:div.px3.pt2.bg-white.border-bottom.border-gray
-     (ui/input-with-charm
-      {:errors        errors
-       :value         value
-       :keypath       keypath
-       :data-test     id
-       :id            id
-       :wrapper-class "flex items-center col-12 bg-white border-black"
-       :type          "text"}
-      [:div.flex.items-center.px2.border.border-black
-       {:style {:border-left "none"}}
-       ^:inline (svg/magnifying-glass {:width  "19px"
-                                       :height "19px"
-                                       :class  "fill-gray"})])]))
+(defdynamic-component location-input-field-molecule
+  (did-mount [_]
+             (messages/handle-message events/stylist-results-address-component-mounted))
+  (render [this]
+          (let [{:stylist.results.location-search-box/keys
+                 [id value errors keypath]} (component/get-props this)]
+            (component/html
+             [:div.px3.pt2.bg-white.border-bottom.border-gray
+              (ui/input-with-charm
+               {:errors        errors
+                :value         value
+                :keypath       keypath
+                :data-test     id
+                :id            id
+                :wrapper-class "flex items-center col-12 bg-white border-black"
+                :type          "text"}
+               [:div.flex.items-center.px2.border.border-black
+                {:style {:border-left "none"}}
+                ^:inline (svg/magnifying-glass {:width  "19px"
+                                                :height "19px"
+                                                :class  "fill-gray"})])]))))
 
 (defcomponent template
-  [{:keys [gallery-modal header list/results location-search-box]} _ _]
+  [{:keys [spinning? gallery-modal header list/results location-search-box]} _ _]
   [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
    (component/build gallery-modal/organism gallery-modal nil)
    (components.header/adventure-header (:header.back-navigation/target header)
                                        (:header.title/primary header)
                                        {:quantity (:header.cart/value header)})
-   (component/build location-input-field-molecule location-search-box nil)
 
-   (display-list {:call-out     call-out-center/organism
-                  :stylist-card stylist-cards/organism}
-                 results)])
+
+   (when (:stylist.results.location-search-box/id location-search-box)
+     (component/build location-input-field-molecule location-search-box nil))
+
+   (if spinning?
+     [:div.mt6 ui/spinner]
+     (display-list {:call-out     call-out-center/organism
+                    :stylist-card stylist-cards/organism}
+                   results))])
 
 (def post-purchase? #{events/navigate-adventure-stylist-results-post-purchase})
 
@@ -363,16 +416,22 @@
         stylist-search-results (get-in app-state adventure.keypaths/adventure-matched-stylists)
         nav-event              (get-in app-state storefront.keypaths/navigation-event)
         post-purchase?         (post-purchase? nav-event)
+        ;; NOTE this spinner is from the transition from the
+        ;; find-your-stylist-page to the results on this page
         spinning?              (or (get-in app-state adventure.keypaths/adventure-stylist-results-delaying?)
-                                   (empty? stylist-search-results))]
+                                   (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
+                                   (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-within-radius))]
     (if spinning?
       (component/build wait-spinner/component app-state)
       (component/build template
                        {:gallery-modal       (gallery-modal-query app-state)
-                        :location-search-box (when (experiments/stylist-filters? app-state)
+                        ;; NOTE: this spinner is for when new results are being fetched when filters are applied
+                        :spinning?           (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters)
+                        :location-search-box (when (and (get-in app-state storefront.keypaths/loaded-google-maps)
+                                                        (experiments/stylist-filters? app-state))
                                                {:stylist.results.location-search-box/id      "stylist-search-input"
-                                                :stylist.results.location-search-box/value   (get-in app-state adventure.keypaths/adventure-stylist-match-address)
-                                                :stylist.results.location-search-box/keypath adventure.keypaths/adventure-stylist-match-address
+                                                :stylist.results.location-search-box/value   (get-in app-state stylist-directory.keypaths/stylist-search-address-input)
+                                                :stylist.results.location-search-box/keypath stylist-directory.keypaths/stylist-search-address-input
                                                 :stylist.results.location-search-box/errors  []})
                         :header              (header-query current-order
                                                            (first (get-in app-state storefront.keypaths/navigation-undo-stack))
