@@ -368,14 +368,15 @@
      :gallery-modal/ucare-image-urls gallery-images
      :gallery-modal/initial-index    index}))
 
-(defdynamic-component location-input-field-molecule
+;; TODO this name and query and such
+(defdynamic-component location-input-and-filters-molecule
   (did-mount [_]
              (messages/handle-message events/stylist-results-address-component-mounted))
   (render [this]
           (let [{:stylist.results.location-search-box/keys
                  [id value errors keypath]} (component/get-props this)]
             (component/html
-             [:div.px3.pt2.bg-white.border-bottom.border-gray
+             [:div.px3.py2.bg-white.border-bottom.border-gray.flex.flex-column
               (ui/input-with-charm
                {:errors        errors
                 :value         value
@@ -388,7 +389,14 @@
                 {:style {:border-left "none"}}
                 ^:inline (svg/magnifying-glass {:width  "19px"
                                                 :height "19px"
-                                                :class  "fill-gray"})])]))))
+                                                :class  "fill-gray"})])
+              [:div.col-3
+               (ui/button-pill {:class "p1 mr4"}
+                               [:div.flex.items-center
+                                (svg/funnel {:class  "mrp3"
+                                             :height "9px"
+                                             :width  "10px"})
+                                "Filters"])]]))))
 
 (defcomponent template
   [{:keys [spinning? gallery-modal header list/results location-search-box]} _ _]
@@ -400,7 +408,7 @@
 
 
    (when (:stylist.results.location-search-box/id location-search-box)
-     (component/build location-input-field-molecule location-search-box nil))
+     (component/build location-input-and-filters-molecule location-search-box nil))
 
    (if spinning?
      [:div.mt6 ui/spinner]

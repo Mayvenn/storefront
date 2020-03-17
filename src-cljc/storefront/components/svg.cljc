@@ -412,6 +412,11 @@
    [:svg opts
     ^:inline (svg-xlink "magnifying-glass")]))
 
+(defn funnel [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "funnel")]))
+
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.
 
