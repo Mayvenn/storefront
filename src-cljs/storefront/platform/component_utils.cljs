@@ -98,7 +98,9 @@
     (route-to navigation-event navigation-args)))
 
 (defn requesting?
-  "Look in app-state to see if we are waiting on a request to a particular endpoint. This returns falsey before the request gets made, so it's only useful if you also check to see whether the desired data is fetched."
+  "Look in app-state to see if we are waiting on a request to a particular
+  endpoint. This returns falsey before the request gets made, so it's only
+  useful if you also check to see whether the desired data is fetched."
   ([data request-key] (requesting? data :request-key request-key))
   ([data request-search request-key]
    (query/get
