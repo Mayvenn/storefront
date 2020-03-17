@@ -44,22 +44,23 @@
                    "places-autocomplete")
      #(m/handle-message events/inserted-google-maps))))
 
-(defn- wrapped-callback [autocomplete address-keypath]
-  (fn [e]
-    (m/handle-message events/autocomplete-update-address
-                      {:address (address autocomplete)
-                       :address-keypath address-keypath})))
-
-(defn attach [completion-type address-elem address-keypath]
-  (when (.hasOwnProperty js/window "google")
-    (let [options      (clj->js {"types"                 [completion-type]
-                                 "componentRestrictions" {"country" "us"}})
-          elem         (.getElementById js/document (name address-elem))
-          autocomplete (google.maps.places.Autocomplete. elem options)]
-      (.setFields autocomplete #js ["address_components" "geometry"])
-      (.addListener autocomplete
-                    "place_changed"
-                    (wrapped-callback autocomplete address-keypath)))))
+(defn attach
+  ([completion-type address-elem address-keypath]
+   (attach completion-type address-elem address-keypath (constantly nil)))
+  ([completion-type address-elem address-keypath place-change-callback]
+   (when (.hasOwnProperty js/window "google")
+     (let [options      (clj->js {"types"                 [completion-type]
+                                  "componentRestrictions" {"country" "us"}})
+           elem         (.getElementById js/document (name address-elem))
+           autocomplete (google.maps.places.Autocomplete. elem options)]
+       (.setFields autocomplete #js ["address_components" "geometry"])
+       (.addListener autocomplete
+                     "place_changed"
+                     (fn [_]
+                       (m/handle-message events/autocomplete-update-address
+                                         {:address         (address autocomplete)
+                                          :address-keypath address-keypath})
+                       (place-change-callback)))))))
 
 (defn remove-containers []
   (let [containers (.querySelectorAll js/document ".pac-container")]
