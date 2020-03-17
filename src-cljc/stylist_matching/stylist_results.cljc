@@ -59,13 +59,12 @@
   #?(:cljs
      (let [{stylist-ids :s}                          query-params
            {:keys [latitude longitude] :as location} (get-in app-state adventure.keypaths/adventure-stylist-match-location)
-           matched-stylists                          (get-in app-state adventure.keypaths/adventure-matched-stylists)
-           api-cache                                 (get-in app-state storefront.keypaths/api-cache)]
+           matched-stylists                          (get-in app-state adventure.keypaths/adventure-matched-stylists)]
        (cond
          (seq stylist-ids)
          (do
            (messages/handle-later events/adventure-stylist-results-delay-completed {} 3000)
-           (api/fetch-matched-stylists api-cache
+           (api/fetch-matched-stylists (get-in app-state storefront.keypaths/api-cache)
                                        stylist-ids
                                        #(messages/handle-message events/api-success-fetch-matched-stylists %)))
 
@@ -75,8 +74,7 @@
                       :radius    "100mi"
                       :choices   (get-in app-state adventure.keypaths/adventure-choices)}] ; For trackings purposes only
            (messages/handle-later events/adventure-stylist-results-delay-completed {} 3000)
-           (api/fetch-stylists-within-radius api-cache
-                                             query
+           (api/fetch-stylists-within-radius query
                                              #(messages/handle-message events/api-success-fetch-stylists-within-radius-pre-purchase
                                                                        (merge {:query query} %))))
 

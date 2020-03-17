@@ -1039,8 +1039,7 @@
               :user-token user-token}
     :handler #(messages/handle-message events/api-success-user-stylist-service-menu-fetch %)}))
 
-;; TODO: Perhaps cache
-(defn fetch-stylists-within-radius [cache params handler]
+(defn fetch-stylists-within-radius [params handler]
   (storeback-api-req
    GET
    "/v1/stylist/within-radius"
