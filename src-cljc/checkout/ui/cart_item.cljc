@@ -216,9 +216,8 @@
 (defn cart-item-sub-items-molecule
   [{:cart-item-sub-items/keys [id title items locked?]}]
   (when id
-    [:div {:data-test (str "cart-item-sub-items-" id)
-           :class     (when locked? "gray")
-           :key       id}
+    [:div {:class (when locked? "gray")
+           :key   id}
      [:div.shout.proxima.title-3 title]
      (mapv (fn [{:cart-item-sub-item/keys [sku-id title price]}]
              [:div.flex.justify-between
@@ -232,7 +231,7 @@
                                  :style {:width  "7px"
                                          :height "7px"}})]
                title]
-              [:div {:data-test (str "cart-item-sub-items-" sku-id "-price")} price]]) items)]))
+              [:div {:data-test (str "line-item-price-ea-" sku-id)} price]]) items)]))
 
 (component/defcomponent organism
   [{:keys [cart-item suggestions]} _ {:keys [id]}]
