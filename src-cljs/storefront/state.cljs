@@ -95,13 +95,11 @@
     {:cookie    cookie
      :modules   #{}
      ;; TODO(corey) why is this in 'adventure'?
-     :adventure (merge
-                 {:affiliate-stylist-id
-                  (some-> cookie
-                          cookie-jar/retrieve-affiliate-stylist-id
-                          :affiliate-stylist-id
-                          spice/parse-int)}
-                 (extract-adventure-choices cookie))
+     :adventure {:affiliate-stylist-id (some-> cookie
+                                               cookie-jar/retrieve-affiliate-stylist-id
+                                               :affiliate-stylist-id
+                                               spice/parse-int)
+                 :choices              (extract-adventure-choices cookie)}
      :features  #{}
      :scheme    (apply str (drop-last (.-protocol js/location)))
 
