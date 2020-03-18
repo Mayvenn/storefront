@@ -183,7 +183,8 @@
                                                    :facebook false
                                                    :places   false}
           :confetti-mode                          "ready"
-          :promo-code-entry-open?                 false}
+          :promo-code-entry-open?                 false
+          :stylist-directory                      {:stylist-search {:selected-filters #{}}}}
 
      :v2 {:ui {:dashboard initial-dashboard-state}
           :db {}}}))

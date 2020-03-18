@@ -78,7 +78,8 @@
    :v2-homepage                    events/control-v2-homepage-popup-dismiss
    :share-cart                     events/control-popup-hide
    :design-system                  events/control-design-system-popup-dismiss
-   :addon-services-menu            events/control-addon-service-menu-dismiss})
+   :addon-services-menu            events/control-addon-service-menu-dismiss
+   :stylist-search-filters         events/control-stylist-search-filters-dismiss})
 
 (defmethod effects/perform-effects events/escape-key-pressed [_ event args _ app-state]
   (when-let [message-to-handle (get popup-dismiss-events (get-in app-state keypaths/popup))]

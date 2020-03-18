@@ -539,6 +539,12 @@
 (defpath adventure-stylist-search-results-post-purchase-displayed)
 (defpath stylist-results-address-component-mounted)
 (defpath stylist-results-address-selected)
+
+(defpath control-stylist-search-toggle-filter)
+(defpath control-stylist-search-reset-filters)
+(defpath control-show-stylist-search-filters)
+(defpath control-stylist-search-filters-dismiss)
+
 (defpath adventure-stylist-results-delay-completed)
 (defpath adventure-stylist-results-wait-resolved)
 

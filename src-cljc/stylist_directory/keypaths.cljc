@@ -8,5 +8,6 @@
 
 (def ui (conj keypaths/ui :stylist-directory))
 (def stylist-search (conj ui :stylist-search))
+(def stylist-search-selected-filters (conj stylist-search :selected-filters))
 (def stylist-search-address-input (conj stylist-search :address-input))
 (def stylist-search-selected-location (conj stylist-search :selected-location))

@@ -6,6 +6,7 @@
                        [storefront.hooks.google-maps :as google-maps]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.frontend-trackings :as frontend-trackings]
+                       [storefront.components.popup :as popup]
                        [storefront.accessors.orders :as orders]])
             [adventure.components.wait-spinner :as wait-spinner]
             adventure.keypaths
@@ -29,7 +30,6 @@
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
             [storefront.platform.messages :as messages]
-            adventure.keypaths
             [adventure.keypaths :as adventure.keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]))
@@ -391,7 +391,8 @@
                                                 :height "19px"
                                                 :class  "fill-gray"})])
               [:div.col-3
-               (ui/button-pill {:class "p1 mr4"}
+               (ui/button-pill {:class "p1 mr4"
+                                :on-click (utils/send-event-callback events/control-show-stylist-search-filters)}
                                [:div.flex.items-center
                                 (svg/funnel {:class  "mrp3"
                                              :height "9px"
@@ -399,13 +400,14 @@
                                 "Filters"])]]))))
 
 (defcomponent template
-  [{:keys [spinning? gallery-modal header list/results location-search-box]} _ _]
+  [{:keys [popup spinning? gallery-modal header list/results location-search-box]} _ _]
   [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
+   #?(:cljs (popup/built-component popup nil))
+
    (component/build gallery-modal/organism gallery-modal nil)
    (components.header/adventure-header (:header.back-navigation/target header)
                                        (:header.title/primary header)
                                        {:quantity (:header.cart/value header)})
-
 
    (when (:stylist.results.location-search-box/id location-search-box)
      (component/build location-input-and-filters-molecule location-search-box nil))
@@ -435,6 +437,7 @@
                        {:gallery-modal       (gallery-modal-query app-state)
                         ;; NOTE: this spinner is for when new results are being fetched when filters are applied
                         :spinning?           (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters)
+                        :popup                app-state
                         :location-search-box (when (and (get-in app-state storefront.keypaths/loaded-google-maps)
                                                         (experiments/stylist-filters? app-state))
                                                {:stylist.results.location-search-box/id      "stylist-search-input"
