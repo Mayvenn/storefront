@@ -86,7 +86,7 @@
                                              :longitude longitude
                                              :radius    "100mi"
                                              ;; TODO: keep the same tracking?
-                                             :choices   (get-in app-state adventure.keypaths/adventure-choices)}))))
+                                             :preferred-services   (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)}))))
 
 (defmethod transitions/transition-state events/api-success-fetch-stylists-matching-filters
   [_ event {:keys [stylists]} app-state]
@@ -392,6 +392,7 @@
                                                 :class  "fill-gray"})])
               [:div.col-3
                (ui/button-pill {:class "p1 mr4"
+                                :data-test "button-show-stylist-search-filters"
                                 :on-click (utils/send-event-callback events/control-show-stylist-search-filters)}
                                [:div.flex.items-center
                                 (svg/funnel {:class  "mrp3"

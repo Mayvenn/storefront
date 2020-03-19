@@ -1,12 +1,15 @@
 (ns stylist-matching.search.filters-popup
   (:require
+   [storefront.api :as api]
    [storefront.component :as component]
    [storefront.components.header :as components.header]
    [storefront.components.popup :as popup]
    [storefront.components.ui :as ui]
+   [storefront.effects :as effects]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
+   [storefront.platform.messages :as messages]
    [storefront.request-keys :as request-keys]
    [storefront.transitions :as transitions]))
 
@@ -29,10 +32,10 @@
                                       "qualifying hair from Mayvenn. You buy the hair, we cover the service!")
      :stylist-search-filters/filters
      (mapv (partial specialty->filter selected-filters)
-           [["Leave out Install" :specialty-sew-in-leave-out]
-            ["Closure Install" :specialty-sew-in-closure]
-            ["Frontal Install" :specialty-sew-in-frontal]
-            ["360 Frontal Install" :specialty-sew-in-360-frontal]
+           [["Leave out Install" :leave-out]
+            ["Closure Install" :closure]
+            ["Frontal Install" :frontal]
+            ["360 Frontal Install" :360-frontal]
             ["Wig Customization" :wig-customization]])}))
 
 (defmethod popup/component :stylist-search-filters
@@ -68,6 +71,16 @@
           (ui/check-box {:value     checked?
                          :id        id
                          :data-test id})]])]])))
+
+(defmethod effects/perform-effects events/control-stylist-search-toggle-filter
+  [_ event _ _ app-state]
+  (let [service-filters   (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)
+        selected-location (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
+        params            {:latitude           (:latitude selected-location)
+                           :longitude          (:longitude selected-location)
+                           :radius             "100mi" ; TODO: Heather thinks this gets overwritten in diva to 25mi.
+                           :preferred-services service-filters}]
+    (api/fetch-stylists-matching-filters params)))
 
 (defmethod transitions/transition-state events/control-stylist-search-toggle-filter
   [_ event {:keys [previously-checked? filter]} app-state]
