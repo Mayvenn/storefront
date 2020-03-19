@@ -85,7 +85,6 @@
        (api/fetch-stylists-matching-filters {:latitude  latitude
                                              :longitude longitude
                                              :radius    "100mi"
-                                             ;; TODO: keep the same tracking?
                                              :preferred-services   (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)}))))
 
 (defmethod transitions/transition-state events/api-success-fetch-stylists-matching-filters

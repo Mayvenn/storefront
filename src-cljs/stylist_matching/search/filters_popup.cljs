@@ -78,7 +78,7 @@
         selected-location (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
         params            {:latitude           (:latitude selected-location)
                            :longitude          (:longitude selected-location)
-                           :radius             "100mi" ; TODO: Heather thinks this gets overwritten in diva to 25mi.
+                           :radius             "100mi"
                            :preferred-services service-filters}]
     (api/fetch-stylists-matching-filters params)))
 
