@@ -45,6 +45,16 @@
    [:div.pointer "CONGRATS — Your next install is FREE! "
     [:span.underline "More info"]]])
 
+(defmethod component :shop/covid19 covid19
+  [_ _ {hide-dt? :hide-dt?}]
+  [:a.block.white.p2.bg-s-color.flex.items-top
+   {:href      "https://looks.mayvenn.com/covid19"
+    :data-test (when-not hide-dt? "shop-covid19-promo-banner")}
+   [:div.mtp2.mr1 (svg/info {:height "16px"
+                             :width  "16px"
+                             :class  "mr1"})]
+   [:div.pointer.h6 "Mayvenn is still shipping and booking appointments! Click to learn about the precautions we are taking for COVID-19"]])
+
 (defmethod component :shop/freeinstall shop-freeinstall
   [_ _ {hide-dt? :hide-dt?}]
   [:a.block.white.p2.bg-p-color.flex.justify-center.items-center
@@ -122,10 +132,15 @@
                                  (and (= events/navigate-category navigation-event)
                                       (accessors.categories/wig-category? (accessors.categories/current-category data))))]
     (cond
+      shop?
+      :shop/covid19
+
+      ;; Covid-19: Wigs never triggers on shop (top condition overrides)
       (and (or shop? aladdin? affiliate?)
            wigs?)
       :shop/wigs
 
+      ;; Covid-19: Freeinstall never triggers (top condition overrides)
       shop?
       :shop/freeinstall
 
