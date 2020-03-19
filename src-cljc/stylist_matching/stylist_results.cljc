@@ -146,10 +146,18 @@
        (when (empty? (get-in app-state adventure.keypaths/adventure-matched-stylists))
          (effects/redirect events/navigate-adventure-out-of-area))]))
 
+(defmethod transitions/transition-state events/navigate-adventure-stylist-results-post-purchase
+  [_ _ args app-state]
+  (let [{:keys [address1 address2 city state zipcode]} (get-in app-state storefront.keypaths/completed-order-shipping-address)]
+    (assoc-in app-state stylist-directory.keypaths/stylist-search-address-input
+              (string/join " " [address1 address2 (str city ",") state zipcode]))))
+
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-post-purchase
   [_ _ args _ app-state]
   #?(:cljs
      (let [matched-stylists (get-in app-state adventure.keypaths/adventure-matched-stylists)]
+       (when (experiments/stylist-filters? app-state)
+         (google-maps/insert))
        (if (orders/service-line-item-promotion-applied? (get-in app-state storefront.keypaths/completed-order))
          (if (empty? matched-stylists)
            (messages/handle-message events/api-shipping-address-geo-lookup)
