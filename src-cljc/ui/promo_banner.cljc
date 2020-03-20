@@ -49,7 +49,6 @@
   [_ _ {hide-dt? :hide-dt?}]
   [:a.block.white.p2.bg-s-color.flex.items-top.justify-center
    {:href      "https://looks.mayvenn.com/covid19"
-    :target    "_blank"
     :data-test (when-not hide-dt? "shop-covid19-promo-banner")}
    [:div.mtp2.mr1 (svg/info {:height "16px"
                              :width  "16px"
