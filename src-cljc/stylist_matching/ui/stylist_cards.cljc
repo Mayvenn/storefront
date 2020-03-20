@@ -120,7 +120,7 @@
      [:span "Booked " (ui/pluralize-with-amount count "time")]]))
 
 (defn stylist-card-header-molecule
-  [{:stylist-card.header/keys [target id] :as data}]
+  [{:stylist-card.header/keys [target id hide-stylist-specialty?] :as data}]
   (when id
     [:div.col-12.flex.items-start.pb2.pt4
      (assoc (apply utils/route-to target) :data-test id)
@@ -134,7 +134,8 @@
       (stylist-card-salon-name-molecule data)
       (stylist-card-address-marker-molecule data)
       (stylist-card-bookings-count-molecule data)
-      (stylist-card-services-list-molecule data)]]))
+      (when-not hide-stylist-specialty?
+        (stylist-card-services-list-molecule data))]]))
 
 (defcomponent organism
   [data _ {:keys [id]}]
