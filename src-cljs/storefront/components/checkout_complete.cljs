@@ -74,8 +74,8 @@
    [:div
     (when id
       (list
-       [:div.h6.mbn1 {:key secondary} secondary]
-       [:div.h3
+       [:div.content-3.mbn1 {:key secondary} secondary]
+       [:div.content-1
         {:data-test id
          :key       primary}
         primary]))]))
@@ -96,7 +96,7 @@
     (ui/link :link/phone
              :a.inherit-color
              {:data-test "stylist-phone"
-              :class     "block flex items-center h6"}
+              :class     "block flex items-center content-3"}
              (svg/phone {:style {:width  "9px"
                                  :height "16px"}
                          :class "mr1"})
@@ -108,7 +108,7 @@
     [:div.flex.px6.py4.bg-white.top-lit.rounded
      [:div.flex.justify-center.items-center
       (servicing-stylist-card-thumbnail-molecule data)]
-     [:div.medium.px2.flex-grow
+     [:div.px2.flex-grow
       (servicing-stylist-card-title-molecule data)
       (ui.molecules/svg-star-rating-molecule data)
       (servicing-stylist-phone-molecule data)]]))
@@ -116,9 +116,9 @@
 (defn matched-component-message-molecule
   [{:matched-component.message/keys [id title body]}]
   (when id
-    [:div.center
-     [:div.h5.medium title]
-     [:div.h6.center.my2.px2
+    [:div.center.proxima
+     [:div.content-2 title]
+     [:div.content-3.center.my2.px2
       body]]))
 
 (def get-inspired-cta
@@ -148,9 +148,9 @@
   (ui/narrow-container
    [:div.p3 {:style {:min-height "95vh"}}
     [:div.center
-     [:div.mt5.h1.mb2 {:data-test "checkout-success-message"}
+     [:div.mt5.mb2.canela.title-2 {:data-test "checkout-success-message"}
       "Thank you for your order!"]
-     [:div.h5.col-10.mx-auto
+     [:div.col-10.mx-auto.proxima.content-2
       (copy "We've received your order and will contact you as soon as your package is shipped.")]]
 
     [:div.py2.mx-auto.white.border-bottom
@@ -196,7 +196,7 @@
           :matched-component.message/body  [:span
                                             "A group text message has been sent to "
                                             (if customer-phone
-                                              [:span.medium.black.nowrap (formatters/phone-number customer-phone)]
+                                              [:span.nowrap (formatters/phone-number customer-phone)]
                                               "you")
                                             " and your stylist, "
                                             [:span.nowrap {:data-test "servicing-stylist-name"}
@@ -219,12 +219,16 @@
                                                             :class  "mr1"
                                                             :width  "15px"})
                                           "Let's match you with a stylist!"]
-        :matched-component.message/body  [:div.flex.justify-center.col-12
-                                          (into [:ul.h6.list-img-purple-checkmark.left-align]
-                                                (map (fn [txt] [:li.pl1.mb1 txt]))
-                                                ["Licensed Salon Stylist"
-                                                 "Mayvenn Certified"
-                                                 "In your area"])]
+        :matched-component.message/body  [:div.flex.col-12.justify-center.content-3
+                                          [:div.left-align
+                                           (for [label ["Licensed Salon Stylist"
+                                                        "Mayvenn Certified"
+                                                        "In your area"]] 
+                                             [:div.mb1
+                                              (svg/check-mark {:class "black"
+                                                               :style {:width  10
+                                                                       :height 10}})
+                                              [:span.pl2 label]])]]
         :matched-component.cta/id        (when match-via-web? "pick-a-stylist")
         :matched-component.cta/label     "Pick a Stylist"
         :matched-component.cta/target    [events/navigate-adventure-matching-stylist-wait-post-purchase]}))))

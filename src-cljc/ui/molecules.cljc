@@ -138,5 +138,5 @@
 (defn svg-star-rating-molecule
   [{:rating/keys [value]}]
   (component/html
-   [:div.h6.s-color
+   [:div.content-3.s-color
     (svg-star-rating value)]))
