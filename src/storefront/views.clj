@@ -9,10 +9,12 @@
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
+            [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.asset-mappings :as asset-mappings]
             [storefront.safe-hiccup :refer [html5 raw]]
-            [storefront.seo-tags :as seo])
+            [storefront.seo-tags :as seo]
+            [storefront.platform.component-utils :as utils])
   (:import java.util.zip.GZIPInputStream
            java.io.ByteArrayOutputStream))
 
@@ -248,15 +250,13 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
           favicon-links
           (page/include-css (assets/path "/css/app.css"))]
          [:body.bg-cool-gray
-          [:div.container
+          [:div.container.proxima
            [:div.col-9-on-tb-dt.mx-auto.px2.flex.flex-column.items-center.stretch
             [:img.py2 {:src (assets/path "/images/header_logo.svg")}]
             (ui/ucare-img {:class "mx-auto block"
                            :style "max-width: 80%"} "2c16b22e-2a8c-4ac6-83c8-78e8aff1d558")
-            [:div.h3.mt3.mb2.center "We can't seem to find the page you're looking for."]
-            [:a.mx-auto.btn.btn-primary.col-10
-             {:href "/"}
-             [:div.h4.p1.letter-spacing-1 "Return to Homepage"]]]]]))
+            [:div.content-1.mt3.mb2.center "We can't seem to find the page you're looking for."]
+            (ui/button-large-primary (utils/route-to events/navigate-home) "Return to Homepage")]]]))
 
 (defn error-page [debug? reason]
   (html5 {:lang "en"}
@@ -265,9 +265,9 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
           [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
           [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
           [:title "Something went wrong | Mayvenn"]]
-         [:body
-          [:h3.h4 "Mayvenn Will Be Back Soon"]
-          [:h4.h5 "We apologize for the inconvenience and appreciate your patience. Please check back soon."]
+         [:body.proxima
+          [:h3.content-2 "Mayvenn Will Be Back Soon"]
+          [:h4.content-3 "We apologize for the inconvenience and appreciate your patience. Please check back soon."]
           (when debug?
             [:div
              [:h2 "Debug:"]
