@@ -231,7 +231,7 @@
                                               [:span.pl2 label]])]]
         :matched-component.cta/id        (when match-via-web? "pick-a-stylist")
         :matched-component.cta/label     "Pick a Stylist"
-        :matched-component.cta/target    [events/navigate-adventure-matching-stylist-wait-post-purchase]}))))
+        :matched-component.cta/target    [events/navigate-adventure-stylist-results-post-purchase]}))))
 
 (defn ^:export built-component [data opts]
   (let [{:as queried-data :keys [show-match-component?]} (query data)]

@@ -18,7 +18,6 @@
             adventure.informational.about-our-hair
             adventure.informational.certified-stylists
             adventure.informational.how-it-works
-            adventure.stylist-matching.matching-stylist-wait
 
             adventure.stylist-matching.stylist-profile
             adventure.stylist-matching.stylist-gallery
@@ -115,7 +114,6 @@
 
    events/navigate-adventure-match-stylist                       (constantly stylist-matching.match-stylist/page)
    events/navigate-adventure-find-your-stylist                   (constantly stylist-matching.find-your-stylist/page)
-   events/navigate-adventure-matching-stylist-wait-post-purchase (constantly adventure.stylist-matching.matching-stylist-wait/built-component)
    events/navigate-adventure-stylist-results-pre-purchase        (constantly stylist-matching.stylist-results/page)
    events/navigate-adventure-stylist-results-post-purchase       (constantly stylist-matching.stylist-results/page)
    events/navigate-adventure-out-of-area                         (constantly stylist-matching.out-of-area/page)

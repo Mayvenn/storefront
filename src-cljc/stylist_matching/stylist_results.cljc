@@ -56,9 +56,6 @@
       (assoc-in adventure.keypaths/adventure-stylist-match-location {:latitude  (spice/parse-double lat)
                                                                      :longitude (spice/parse-double long)})
 
-      (nil? (get-in app-state adventure.keypaths/adventure-matched-stylists))
-      (assoc-in adventure.keypaths/adventure-stylist-results-delaying? true)
-
       :always
       (assoc-in stylist-directory.keypaths/stylist-search-address-input
                 (get-in app-state adventure.keypaths/adventure-stylist-match-address)))))
@@ -99,23 +96,19 @@
      (let [{stylist-ids :s}                          query-params
            {:keys [latitude longitude] :as location} (get-in app-state adventure.keypaths/adventure-stylist-match-location)
            matched-stylists                          (get-in app-state adventure.keypaths/adventure-matched-stylists)]
-       ;; TODO: POST PURCHASEEEEE
        (when (experiments/stylist-filters? app-state)
          (google-maps/insert))
        (cond
          (seq stylist-ids)
-         (do
-           (messages/handle-later events/adventure-stylist-results-delay-completed {} 3000)
-           (api/fetch-matched-stylists (get-in app-state storefront.keypaths/api-cache)
-                                       stylist-ids
-                                       #(messages/handle-message events/api-success-fetch-matched-stylists %)))
+         (api/fetch-matched-stylists (get-in app-state storefront.keypaths/api-cache)
+                                     stylist-ids
+                                     #(messages/handle-message events/api-success-fetch-matched-stylists %))
 
          (and location (nil? matched-stylists))
          (let [query {:latitude  latitude
                       :longitude longitude
                       :radius    "100mi"
                       :choices   (get-in app-state adventure.keypaths/adventure-choices)}] ; For trackings purposes only
-           (messages/handle-later events/adventure-stylist-results-delay-completed {} 3000)
            (api/fetch-stylists-within-radius query
                                              #(messages/handle-message events/api-success-fetch-stylists-within-radius-pre-purchase
                                                                        (merge {:query query} %))))
@@ -125,26 +118,6 @@
 
          :else
          (history/enqueue-redirect events/navigate-adventure-find-your-stylist)))))
-
-(defmethod transitions/transition-state events/adventure-stylist-results-delay-completed
-  [_ _ _ app-state]
-  (-> app-state
-      (update-in adventure.keypaths/adventure dissoc :stylist-results-delaying?)))
-
-(defmethod effects/perform-effects events/adventure-stylist-results-delay-completed
-  [_ _ args _ app-state]
-  #?(:cljs
-     (when-not (and
-                (not (experiments/stylist-filters? app-state))
-                (nil? (get-in app-state adventure.keypaths/adventure-matched-stylists)))
-       (messages/handle-message events/adventure-stylist-results-wait-resolved {}))))
-
-(defmethod effects/perform-effects events/adventure-stylist-results-wait-resolved
-  [_ _ args _ app-state]
-  #?@(:cljs
-      [(messages/handle-message events/adventure-stylist-search-results-displayed)
-       (when (empty? (get-in app-state adventure.keypaths/adventure-matched-stylists))
-         (effects/redirect events/navigate-adventure-out-of-area))]))
 
 (defmethod transitions/transition-state events/navigate-adventure-stylist-results-post-purchase
   [_ _ args app-state]
@@ -437,8 +410,7 @@
         post-purchase?         (post-purchase? nav-event)
         ;; NOTE this spinner is from the transition from the
         ;; find-your-stylist-page to the results on this page
-        spinning?              (or (get-in app-state adventure.keypaths/adventure-stylist-results-delaying?)
-                                   (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
+        spinning?              (or (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
                                    (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-within-radius))]
     (if spinning?
       (component/build wait-spinner/component app-state)
