@@ -34,20 +34,6 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]))
 
-(defmethod transitions/transition-state events/control-adventure-stylist-gallery-open
-  [_ _event {:keys [ucare-img-urls initially-selected-image-index]} app-state]
-  (-> app-state
-      (assoc-in adventure.keypaths/adventure-stylist-gallery-image-urls ucare-img-urls)
-      (assoc-in adventure.keypaths/adventure-stylist-gallery-image-index initially-selected-image-index)))
-
-(defmethod transitions/transition-state events/control-adventure-stylist-gallery-close [_ _event _args app-state]
-  (-> app-state
-      (assoc-in adventure.keypaths/adventure-stylist-gallery-image-urls [])))
-
-(defmethod transitions/transition-state events/control-adventure-select-stylist
-  [_ _ {:keys [stylist-id]} app-state]
-  (assoc-in app-state adventure.keypaths/adventure-choices-selected-stylist-id stylist-id))
-
 (defmethod transitions/transition-state events/navigate-adventure-stylist-results-pre-purchase
   [_ _ args app-state]
   (let [{:keys [lat long]} (:query-params args)]
@@ -59,36 +45,6 @@
       :always
       (assoc-in stylist-directory.keypaths/stylist-search-address-input
                 (get-in app-state adventure.keypaths/adventure-stylist-match-address)))))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/stylist-results-address-component-mounted
-     [_ event args _ app-state]
-     (google-maps/attach "geocode"
-                         "stylist-search-input"
-                         stylist-directory.keypaths/stylist-search-selected-location
-                         #(messages/handle-message events/stylist-results-address-selected))))
-
-#?(:cljs
-   (defmethod transitions/transition-state events/stylist-results-address-selected
-     [_ _ _ app-state]
-     (-> app-state
-         (assoc-in stylist-directory.keypaths/stylist-search-address-input
-                   (.-value (.getElementById js/document "stylist-search-input"))))))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/stylist-results-address-selected
-     [_ event args _ app-state]
-     (let [{:keys [latitude longitude] :as location} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)]
-       (api/fetch-stylists-matching-filters {:latitude  latitude
-                                             :longitude longitude
-                                             :radius    "100mi"
-                                             :preferred-services   (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)}))))
-
-(defmethod transitions/transition-state events/api-success-fetch-stylists-matching-filters
-  [_ event {:keys [stylists]} app-state]
-  #?(:cljs
-     (-> app-state
-         (assoc-in adventure.keypaths/adventure-matched-stylists stylists))))
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-pre-purchase
   [_ _ {:keys [query-params]} _ app-state]
@@ -136,6 +92,52 @@
            (messages/handle-message events/api-shipping-address-geo-lookup)
            (messages/handle-message events/adventure-stylist-search-results-post-purchase-displayed))
          (history/enqueue-redirect events/navigate-home)))))
+
+(defmethod transitions/transition-state events/control-adventure-stylist-gallery-open
+  [_ _event {:keys [ucare-img-urls initially-selected-image-index]} app-state]
+  (-> app-state
+      (assoc-in adventure.keypaths/adventure-stylist-gallery-image-urls ucare-img-urls)
+      (assoc-in adventure.keypaths/adventure-stylist-gallery-image-index initially-selected-image-index)))
+
+(defmethod transitions/transition-state events/control-adventure-stylist-gallery-close [_ _event _args app-state]
+  (-> app-state
+      (assoc-in adventure.keypaths/adventure-stylist-gallery-image-urls [])))
+
+(defmethod transitions/transition-state events/control-adventure-select-stylist
+  [_ _ {:keys [stylist-id]} app-state]
+  (assoc-in app-state adventure.keypaths/adventure-choices-selected-stylist-id stylist-id))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/stylist-results-address-component-mounted
+     [_ event args _ app-state]
+     (google-maps/attach "geocode"
+                         "stylist-search-input"
+                         stylist-directory.keypaths/stylist-search-selected-location
+                         #(messages/handle-message events/stylist-results-address-selected))))
+
+#?(:cljs
+   (defmethod transitions/transition-state events/stylist-results-address-selected
+     [_ _ _ app-state]
+     (-> app-state
+         (assoc-in stylist-directory.keypaths/stylist-search-address-input
+                   (.-value (.getElementById js/document "stylist-search-input"))))))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/stylist-results-address-selected
+     [_ event args _ app-state]
+     (let [{:keys [latitude longitude] :as location} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)]
+       (api/fetch-stylists-matching-filters {:latitude  latitude
+                                             :longitude longitude
+                                             :radius    "100mi"
+                                             :preferred-services   (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)}))))
+
+(defmethod transitions/transition-state events/api-success-fetch-stylists-matching-filters
+  [_ event {:keys [stylists]} app-state]
+  #?(:cljs
+     (-> app-state
+         (assoc-in adventure.keypaths/adventure-matched-stylists stylists))))
+
+
 
 (defmethod effects/perform-effects events/control-adventure-select-stylist-pre-purchase
   [_ _ {:keys [card-index servicing-stylist]} _ app-state]
