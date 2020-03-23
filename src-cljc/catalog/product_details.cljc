@@ -27,7 +27,6 @@
             [storefront.accessors.skus :as skus]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.marquee :as marquee]
-            [storefront.components.money-formatters :as mf]
             [storefront.components.picker.picker :as picker]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -43,10 +42,6 @@
             [catalog.ui.add-to-cart :as add-to-cart]
             [catalog.ui.freeinstall-banner :as freeinstall-banner]
             [catalog.keypaths :as catalog.keypaths]))
-
-(defn item-price [price]
-  (when price
-    [:span {:item-prop "price"} (mf/as-money price)]))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2

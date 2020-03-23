@@ -60,7 +60,15 @@
      [:meta {:property "og:title" :content (:opengraph/title product)}]
      [:meta {:property "og:type" :content "product"}]
      [:meta {:property "og:image" :content (str "http:" (:url image))}]
-     [:meta {:property "og:description" :content (:opengraph/description product)}]]))
+     [:meta {:property "og:description" :content (:opengraph/description product)}]
+     [:script {:type "application/ld+json"}
+      (#?(:clj (comp safe-hiccup/raw json/generate-string)
+          :cljs (comp js/JSON.stringify clj->js))
+       {"@context" "http://schema.org"
+        "@type"    "Product"
+        :offers    {"@type"         "Offer"
+                    :price          (str (:sku/price sku))
+                    :price-currency "USD"}})]]))
 
 (defn ^:private facet-option->option-name
   ;; For origin and color, the sku/name is more appropriate than the option name

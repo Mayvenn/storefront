@@ -15,14 +15,11 @@
 (defn ^:private item-price
   [price]
   (when price
-    [:span.proxima.content-2 {:item-prop "price"} (mf/as-money price)]))
+    [:span.proxima.content-2 (mf/as-money price)]))
 
 (defn price-block
   [{:price-block/keys [primary secondary]}]
   [:div.right-align
-   {:item-prop  "offers"
-    :item-scope ""
-    :item-type  "http://schema.org/Offer"}
    (when-let [primary-formatted (item-price primary)]
      [:div
       primary-formatted
