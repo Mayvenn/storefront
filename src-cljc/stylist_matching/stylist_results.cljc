@@ -35,31 +35,42 @@
             [storefront.request-keys :as request-keys]))
 
 (defmethod transitions/transition-state events/navigate-adventure-stylist-results-pre-purchase
-  [_ _ args app-state]
-  (let [{:keys [lat long]} (:query-params args)]
+  [_ _ {:keys [query-params]} app-state]
+  (let [{:keys [lat long]} query-params]
     (cond-> app-state
+      ;; TODO grab preferred services from URI
       (and lat long)
-      (assoc-in adventure.keypaths/adventure-stylist-match-location {:latitude  (spice/parse-double lat)
-                                                                     :longitude (spice/parse-double long)})
+      (assoc-in adventure.keypaths/adventure-stylist-match-location
+                {:latitude  (spice/parse-double lat)
+                 :longitude (spice/parse-double long)})
 
       :always
       (assoc-in stylist-directory.keypaths/stylist-search-address-input
                 (get-in app-state adventure.keypaths/adventure-stylist-match-address)))))
 
+;;  Navigating to the results page causes the effect of searching for stylists
+;;
+;;  This allows:
+;;  - Cold loads of the page, both with lat+long and stylist ids
+;;  - Refining of search results 
+;;
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-pre-purchase
   [_ _ {:keys [query-params]} _ app-state]
   #?(:cljs
+     ;; TODO consider merging with post-purchase
      (let [{stylist-ids :s}                          query-params
            {:keys [latitude longitude] :as location} (get-in app-state adventure.keypaths/adventure-stylist-match-location)
            matched-stylists                          (get-in app-state adventure.keypaths/adventure-matched-stylists)]
        (when (experiments/stylist-filters? app-state)
          (google-maps/insert))
        (cond
+         ;; Predetermined search results
          (seq stylist-ids)
          (api/fetch-matched-stylists (get-in app-state storefront.keypaths/api-cache)
                                      stylist-ids
-                                     #(messages/handle-message events/api-success-fetch-matched-stylists %))
-
+                                     #(messages/handle-message events/api-success-fetch-matched-stylists
+                                                               %))
+         ;; Querying based upon geo location
          (and location (nil? matched-stylists))
          (let [query {:latitude  latitude
                       :longitude longitude
@@ -67,11 +78,14 @@
                       :choices   (get-in app-state adventure.keypaths/adventure-choices)}] ; For trackings purposes only
            (api/fetch-stylists-within-radius query
                                              #(messages/handle-message events/api-success-fetch-stylists-within-radius-pre-purchase
-                                                                       (merge {:query query} %))))
-
+                                                                       (merge {:query query}
+                                                                              %))))
+         ;; Previously performed search results
+         ;; TODO consider removal (uri holds state and effects)
          (seq matched-stylists)
          nil
 
+         ;; TODO consider removal since the result page has a search bar
          :else
          (history/enqueue-redirect events/navigate-adventure-find-your-stylist)))))
 
@@ -136,8 +150,6 @@
   #?(:cljs
      (-> app-state
          (assoc-in adventure.keypaths/adventure-matched-stylists stylists))))
-
-
 
 (defmethod effects/perform-effects events/control-adventure-select-stylist-pre-purchase
   [_ _ {:keys [card-index servicing-stylist]} _ app-state]
