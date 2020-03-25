@@ -139,9 +139,11 @@
 
       (when-not v2-home?
         [:div {:key "promo"}
-         ^:inline (if (= nav-event events/navigate-category)
-                    (promo-banner/built-static-organism data nil)
-                    (promo-banner/built-static-sticky-organism data nil))])
+         ^:inline (promo-banner/built-static-organism data nil)
+         ;; Covid-19: Always use static banner; bring the below back in afterwards
+         #_(if (= nav-event events/navigate-category)
+             (promo-banner/built-static-organism data nil)
+             (promo-banner/built-static-sticky-organism data nil))])
 
       ^:inline (header/built-component data nil)
 

@@ -53,7 +53,7 @@
    [:div.mtp2.mr1 (svg/info {:height "16px"
                              :width  "16px"
                              :class  "mr1"})]
-   [:div.pointer.h6 "Mayvenn is still shipping and booking appointments! Click to learn about the precautions we are taking for COVID-19"]])
+   [:div.pointer.h6 "Mayvenn is still shipping, but limiting appointments to respect safety concerns. Click to learn about the changes we are making for COVID-19."]])
 
 (defmethod component :shop/freeinstall shop-freeinstall
   [_ _ {hide-dt? :hide-dt?}]
