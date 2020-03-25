@@ -770,7 +770,7 @@
       "0.80"])))
 
 
-(defn sitemap [{:keys [storeback-config sitemap-cache]} {:keys [subdomains] :as req}]
+(defn sitemap-pages [{:keys [storeback-config sitemap-cache]} {:keys [subdomains] :as req}]
   (if (seq subdomains)
     (if-let [hit (not-empty @(:atom sitemap-cache))]
       hit
@@ -814,6 +814,22 @@
         (-> (util.response/response "<error />")
             (util.response/content-type "text/xml")
             (util.response/status 502))))
+    (-> (util.response/response "")
+        (util.response/status 404))))
+
+(defn sitemap-index [req]
+  (if (seq (:subdomains req))
+    (-> (xml/emit {:tag     :sitemapindex
+                   :attrs   {:xmlns "http://www.sitemaps.org/schemas/sitemap/0.9"}
+                   :content [{:tag     :sitemap
+                              :content [{:tag     :loc
+                                         :content ["https://shop.mayvenn.com/sitemap-pages.xml"]}]}
+                             {:tag     :sitemap
+                              :content [{:tag     :loc
+                                         :content ["https://shop.mayvenn.com/blog/sitemap-posts.xml"]}]}]})
+        with-out-str
+        util.response/response
+        (util.response/content-type "text/xml"))
     (-> (util.response/response "")
         (util.response/status 404))))
 
@@ -977,7 +993,8 @@
   ([{:keys [logger exception-handler environment contentful] :as ctx}]
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (-> (robots req) util.response/response (util.response/content-type "text/plain")))
-               (GET "/sitemap.xml" req (sitemap ctx req))
+               (GET "/sitemap.xml" req (sitemap-index req))
+               (GET "/sitemap-pages.xml" req (sitemap-pages ctx req))
                (GET "/blog" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/blog/"))))
                (GET "/blog/" req (util.response/redirect (store-url "shop" environment req)))
                (GET "/install" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/"))))

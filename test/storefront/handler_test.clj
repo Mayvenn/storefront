@@ -308,6 +308,25 @@
         (let [resp (handler (mock/request :get "https://mayvenn.com/sitemap.xml"))]
           (is (= 404 (:status resp))))))))
 
+(deftest sitemap-includes-blog-sitemap-and-pages-sitemap
+  (let [[requests handler] (with-requests-chan (constantly {:status 200
+                                                            :body   (generate-string {:skus []
+                                                                                      :products []})}))]
+    (with-services {:storeback-handler handler}
+      (with-handler handler
+        (let [{:keys [body]} (handler (mock/request :get "https://shop.mayvenn.com/sitemap.xml"))
+            parsed-body    (xml/parse (ByteArrayInputStream. (.getBytes ^String body)))
+            urls           (into []
+                                 (comp
+                                  (filter (comp #{:sitemap} :tag))
+                                  (mapcat :content)
+                                  (filter (comp #{:loc} :tag))
+                                  (map (comp string/trim first :content)))
+                                 (:content parsed-body))]
+        (is (= ["https://shop.mayvenn.com/sitemap-pages.xml"
+                "https://shop.mayvenn.com/blog/sitemap-posts.xml"]
+               urls)))))))
+
 (deftest most-sitemap-urls-are-their-own-canonical-url
   "- marketing/branded pages
   - product category ICP
@@ -317,7 +336,7 @@
   - non-parameter /shop/ pages"
   (with-services {}
     (with-handler handler
-      (let [{:keys [body]} (handler (mock/request :get "https://shop.mayvenn.com/sitemap.xml"))
+      (let [{:keys [body]} (handler (mock/request :get "https://shop.mayvenn.com/sitemap-pages.xml"))
             parsed-body    (xml/parse (ByteArrayInputStream. (.getBytes ^String body)))
             urls           (into []
                                  (comp
