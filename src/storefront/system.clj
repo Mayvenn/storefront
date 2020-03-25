@@ -21,6 +21,11 @@
                       :environment environment
                       :project-ns "storefront"})))
 
+(defrecord AtomCache [atom]
+  component/Lifecycle
+  (start [c] (assoc c :atom (clojure.core/atom nil)))
+  (stop [c] (assoc c :atom (clojure.core/atom nil))))
+
 (defn system-map [config]
   (component/system-map
    :logger (logger/create-logger (config :logging))
@@ -30,12 +35,13 @@
                                                       :welcome-config
                                                       :environment
                                                       :client-version]))
+   :sitemap-cache (->AtomCache nil)
    :embedded-server (jetty-server (merge (:server-opts config)
                                          {:configurator jetty/configurator}))
    :exception-handler (exception-handler (config :bugsnag-token) (config :environment))))
 
 (def dependency-map
-  {:app-handler     [:logger :exception-handler :contentful]
+  {:app-handler     [:logger :exception-handler :contentful :sitemap-cache]
    :contentful      [:logger :exception-handler]
    :embedded-server {:app :app-handler}})
 

@@ -87,7 +87,10 @@
 
 (defn category-tags [data]
   (let [categories            (get-in data keypaths/categories)
-        canonical-category-id (accessors.categories/canonical-category-id data)
+        canonical-category-id (accessors.categories/canonical-category-id
+                               (get-in data catalog.keypaths/category-id)
+                               categories
+                               (get-in data keypaths/navigation-uri))
         category              (accessors.categories/id->category canonical-category-id categories)
         allowed-query-params  (category->allowed-query-params category)
         facets                (facets/by-slug data)
@@ -140,13 +143,17 @@
                  category/sort-query-params
                  not-empty))))
 
+;; Figure out if this helps us determine if a category page is its own canonical for sitemap
 (defn ^:private derive-canonical-uri-query-params
   [uri data]
   (let [nav-event             (get-in data keypaths/navigation-event)
-        canonical-category-id (accessors.categories/canonical-category-id data)
         categories            (get-in data keypaths/categories)
+        canonical-category-id (accessors.categories/canonical-category-id
+                               (get-in data catalog.keypaths/category-id)
+                               categories
+                               (get-in data keypaths/navigation-uri))
         {:keys [page/slug]
-         :as category}   (accessors.categories/id->category canonical-category-id categories)]
+         :as   category}      (accessors.categories/id->category canonical-category-id categories)]
     (if (= events/navigate-category nav-event)
       (-> uri
           (assoc :path (str "/categories/" canonical-category-id "-" slug))

@@ -17,7 +17,12 @@
              :as
              common
              :refer
-             [with-handler with-services]]))
+             [with-handler with-services]]
+            [clojure.string :as str]
+            [clojure.xml :as xml]
+            [clojure.java.io :as io]
+            [storefront.config :as config])
+  (:import java.io.ByteArrayInputStream))
 
 (defn set-cookies [req cookies]
   (update req :headers assoc "cookie" (string/join "; " (map (fn [[k v]] (str k "=" v)) cookies))))
@@ -51,6 +56,28 @@
      (is (= 301 (:status resp#)))
      (is (= (format "https://%s.mayvenn.com%s" domain# path#)
             (-> resp# :headers (get "Location"))))))
+
+(defn parse-canonical-url
+  [body]
+  (some->> body
+           (re-find #"<link[^>]+rel=\"canonical[^>]+>")
+           (re-find #"href=\"[^\"]+\"")
+           (re-find #"\"[^\"]+\"")
+           (re-find #"[^\"]+")
+           (#(string/replace % #"&amp;" "&"))))
+
+(defn parse-canonical-uri
+  [body]
+  (some->> body
+           parse-canonical-url
+           uri/uri))
+
+(defn response->canonical-uri-query-string
+  [resp]
+  (->> (:body resp)
+       parse-canonical-uri
+       :query))
+
 
 (deftest affiliate-store-urls-redirect-to-shop
   (with-services {:storeback-handler (routes
@@ -281,6 +308,34 @@
         (let [resp (handler (mock/request :get "https://mayvenn.com/sitemap.xml"))]
           (is (= 404 (:status resp))))))))
 
+(deftest most-sitemap-urls-are-their-own-canonical-url
+  "- marketing/branded pages
+  - product category ICP
+  - child product category
+  - product category URLs with only 1 parameter
+  - non-parameter PDP
+  - non-parameter /shop/ pages"
+  (with-services {}
+    (with-handler handler
+      (let [{:keys [body]} (handler (mock/request :get "https://shop.mayvenn.com/sitemap.xml"))
+            parsed-body    (xml/parse (ByteArrayInputStream. (.getBytes ^String body)))
+            urls           (into []
+                                 (comp
+                                  (filter (comp #{:url} :tag))
+                                  (mapcat :content)
+                                  (filter (comp #{:loc} :tag))
+                                  (map (comp string/trim first :content)))
+                                 (:content parsed-body))
+            excluded-urls #{"https://mayvenn.com/"
+                            (str "https://" config/welcome-subdomain ".mayvenn.com/")}]
+        (is (not-empty urls))
+        (doseq [url urls
+                :when (not (contains? excluded-urls url))]
+          (testing (format "'%s' in is canonical" url)
+            (let [{:keys [body] :as response} (handler (mock/request :get url))]
+              (is (= (parse-canonical-url body) url)
+                  (pr-str response)))))))))
+
 (deftest robots-disallows-content-storefront-pages-on-shop
   (with-services {}
     (with-handler handler
@@ -456,22 +511,6 @@
                                          (filter #(string/starts-with? % "/v2/orders"))))]
             (is (= 200 (:status resp)) (get-in resp [:headers "Location"]))
             (is (= 1 (count requests)))))))))
-
-(defn parse-canonical-uri
-  [body]
-  (some->> body
-           (re-find #"<link[^>]+rel=\"canonical[^>]+>")
-           (re-find #"href=\"[^\"]+\"")
-           (re-find #"\"[^\"]+\"")
-           (re-find #"[^\"]+")
-           (#(string/replace % #"&amp;" "&"))
-           uri/uri))
-
-(defn response->canonical-uri-query-string
-  [resp]
-  (->> (:body resp)
-       parse-canonical-uri
-       :query))
 
 (deftest canonical-uris-query-params
   (with-services {}

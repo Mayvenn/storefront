@@ -26,6 +26,7 @@
             [ring.util.response :as util.response]
             [spice.core :as spice]
             [spice.maps :as maps]
+            [spice.selector :as selector]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.categories :as accessors.categories]
             [storefront.accessors.experiments :as experiments]
@@ -41,7 +42,8 @@
             [storefront.routes :as routes]
             [storefront.system.contentful :as contentful]
             [storefront.transitions :as transitions]
-            [storefront.views :as views]))
+            [storefront.views :as views]
+            [catalog.category :as category]))
 
 (def root-domain-pages-to-preserve-paths-in-redirects
   #{"/mayvenn-made"})
@@ -729,49 +731,89 @@
 (defn robots [{:keys [subdomains]}]
   (string/join "\n" user-specific-disalloweds))
 
-(defn sitemap [{:keys [storeback-config]} {:keys [subdomains] :as req}]
+
+(defn canonical-category-sitemap
+  "As per SEO needs, we're only listing the following categories:
+   - category pages without any filters
+   - category pages with 1 filter applied
+  But only if that category page is self-canonical."
+  [categories products]
+  (concat
+   (for [category categories
+         :let     [category-id (:catalog/category-id category)
+                   slug (:page/slug category)]]
+     [(str "https://shop.mayvenn.com/categories/" category-id "-" slug) "0.80"])
+   (for [category                categories
+         :let                    [category-id (:catalog/category-id category)
+                                  slug (:page/slug category)
+                                  electives (skuers/electives category)
+                                  essentials (skuers/essentials category)
+                                  category-products (selector/match-all {:selector/strict? true}
+                                                                        (merge
+                                                                         electives
+                                                                         essentials)
+                                                                        products)
+                                  facet->values (maps/map-values set (apply merge-with into (map #(skuers/electives category %)
+                                                                                                 category-products)))]
+         [facet-id facet-values] facet->values
+         facet-value             facet-values
+         :let                    [query-params (category/category-selections->query-params {facet-id [facet-value]})
+                                  canonical-category-id (accessors.categories/canonical-category-id
+                                                         category-id
+                                                         categories
+                                                         {:query (codec/form-encode query-params)})]
+         :when (= category-id canonical-category-id)]
+     [(str "https://shop.mayvenn.com" (routes/path-for events/navigate-category
+                                                       {:catalog/category-id category-id
+                                                        :page/slug           slug
+                                                        :query-params        query-params}))
+      "0.80"])))
+
+
+(defn sitemap [{:keys [storeback-config sitemap-cache]} {:keys [subdomains] :as req}]
   (if (seq subdomains)
-    (if-let [launched-products (->> (api/fetch-v2-products storeback-config {})
-                                    :products
-                                    (filter :catalog/launched-at)
-                                    (remove :catalog/discontinued-at)
-                                    (remove :stylist-exclusives/experience)
-                                    (remove :stylist-exclusives/family))]
-      (letfn [(url-xml-elem [[location priority]]
-                {:tag :url :content (cond-> [{:tag :loc :content [(str location)]}]
-                                      priority (conj {:tag :priority :content [(str priority)]}))})]
+    (if-let [hit (not-empty @(:atom sitemap-cache))]
+      hit
+      (if-let [launched-products (->> (api/fetch-v2-products storeback-config {})
+                                      :products
+                                      (filter :catalog/launched-at)
+                                      (remove :catalog/discontinued-at)
+                                      (remove :stylist-exclusives/experience)
+                                      (remove :stylist-exclusives/family))]
+        (let [initial-categories (filter :seo/sitemap categories/initial-categories)]
+          (letfn [(url-xml-elem [[location priority]]
+                    {:tag :url :content (cond-> [{:tag :loc :content [(str location)]}]
+                                          priority (conj {:tag :priority :content [(str priority)]}))})]
 
-        (-> (xml/emit {:tag     :urlset
-                       :attrs   {:xmlns "http://www.sitemaps.org/schemas/sitemap/0.9"}
-                       :content (->> (into [["https://mayvenn.com"]
-                                            [(str "https://" config/welcome-subdomain ".mayvenn.com")       "0.60"]
-                                            ["https://shop.mayvenn.com"                                     "1.00"]
-                                            ["https://shop.mayvenn.com/guarantee"                           "0.60"]
-                                            ["https://shop.mayvenn.com/help"                                "0.60"]
-                                            ["https://shop.mayvenn.com/about-us"                            "0.60"]
-                                            ["https://shop.mayvenn.com/shop/look"                           "0.80"]
-                                            ["https://shop.mayvenn.com/shop/straight-looks"                 "0.80"]
-                                            ["https://shop.mayvenn.com/shop/wavy-curly-looks"               "0.80"]
-                                            ["https://shop.mayvenn.com/shop/all-bundle-sets"                "0.80"]
-                                            ["https://shop.mayvenn.com/shop/straight-bundle-sets"           "0.80"]
-                                            ["https://shop.mayvenn.com/shop/wavy-curly-bundle-sets"         "0.80"]
-                                            ["https://shop.mayvenn.com/how-it-works"                        "0.80"]
-                                            ["https://shop.mayvenn.com/certified-stylists"                  "0.80"]]
+            (-> (xml/emit {:tag     :urlset
+                           :attrs   {:xmlns "http://www.sitemaps.org/schemas/sitemap/0.9"}
+                           :content (->> (into [["https://mayvenn.com/"]
+                                                [(str "https://" config/welcome-subdomain ".mayvenn.com/")      "0.60"]
+                                                ["https://shop.mayvenn.com/"                                    "1.00"]
+                                                ["https://shop.mayvenn.com/guarantee"                           "0.60"]
+                                                ["https://shop.mayvenn.com/help"                                "0.60"]
+                                                ["https://shop.mayvenn.com/about-us"                            "0.60"]
+                                                ["https://shop.mayvenn.com/shop/look"                           "0.80"]
+                                                ["https://shop.mayvenn.com/shop/straight-looks"                 "0.80"]
+                                                ["https://shop.mayvenn.com/shop/wavy-curly-looks"               "0.80"]
+                                                ["https://shop.mayvenn.com/shop/all-bundle-sets"                "0.80"]
+                                                ["https://shop.mayvenn.com/shop/straight-bundle-sets"           "0.80"]
+                                                ["https://shop.mayvenn.com/shop/wavy-curly-bundle-sets"         "0.80"]
+                                                ["https://shop.mayvenn.com/how-it-works"                        "0.80"]
+                                                ["https://shop.mayvenn.com/certified-stylists"                  "0.80"]]
 
-                                           (concat
-                                            (for [{:keys [catalog/category-id page/slug seo/sitemap]} categories/initial-categories
-                                                  :when                                               sitemap]
-                                              [(str "https://shop.mayvenn.com/categories/" category-id "-" slug) "0.80"])
-
-                                            (for [{:keys [catalog/product-id page/slug]} launched-products]
-                                              [(str "https://shop.mayvenn.com/products/" product-id "-" slug) "0.80"])))
-                                     (mapv url-xml-elem))})
-            with-out-str
-            util.response/response
-            (util.response/content-type "text/xml")))
-      (-> (util.response/response "<error />")
-          (util.response/content-type "text/xml")
-          (util.response/status 502)))
+                                               (concat
+                                                (canonical-category-sitemap initial-categories launched-products)
+                                                (for [{:keys [catalog/product-id page/slug]} launched-products]
+                                                  [(str "https://shop.mayvenn.com/products/" product-id "-" slug) "0.80"])))
+                                         (mapv url-xml-elem))})
+                with-out-str
+                util.response/response
+                (util.response/content-type "text/xml")
+                ((partial reset! (:atom sitemap-cache))))))
+        (-> (util.response/response "<error />")
+            (util.response/content-type "text/xml")
+            (util.response/status 502))))
     (-> (util.response/response "")
         (util.response/status 404))))
 
@@ -950,15 +992,15 @@
                (GET "/products/" req (redirect-to-home environment req))
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
                (GET "/cms/*" {uri :uri}
-                 (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
-                   (-> (contentful/read-cache contentful)
-                       (get-in keypath)
-                       ((partial assoc-in {} keypath))
-                       json/generate-string
-                       util.response/response
-                       (util.response/content-type "application/json"))))
+                    (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
+                      (-> (contentful/read-cache contentful)
+                          (get-in keypath)
+                          ((partial assoc-in {} keypath))
+                          json/generate-string
+                          util.response/response
+                          (util.response/content-type "application/json"))))
                (GET "/marketing-site" req
-                 (contentful/marketing-site-redirect req))
+                    (contentful/marketing-site-redirect req))
                (-> (routes (static-routes ctx)
                            (routes-with-orders ctx)
                            (route/not-found views/not-found))

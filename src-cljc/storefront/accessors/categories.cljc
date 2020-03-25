@@ -51,12 +51,11 @@
   "With ICPs, the 'canonical category id' may be different from the ICP category
   id. E.g. 13-wigs with a selected family of 'lace-front-wigs' will have a
   canonical cateogry id of 24, or in other words, lace-front-wigs' category id."
-  [data]
-  (let [current-category  (current-category data)
-        query-selections  (:query (get-in data keypaths/navigation-uri))
+  [category-id categories nav-url] 
+  (let [current-category  (id->category category-id categories)
+        query-selections  (:query nav-url)
         query-map         #?(:clj (cemerick-url/query->map query-selections)
                              :cljs query-selections)
-        categories        (get-in data keypaths/categories)
         single-categories (filter #(= 1 (count (:hair/family %))) categories)
         family-selection  (some-> (get query-map "family")
                                   (string/split #"~"))]
