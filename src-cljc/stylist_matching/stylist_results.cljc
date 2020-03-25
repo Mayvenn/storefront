@@ -55,10 +55,13 @@
 ;;  - Refining of search results 
 ;;
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-pre-purchase
-  [_ _ {:keys [query-params]} _ app-state]
+  [_ _ {:keys [query-params]} prev-app-state app-state]
   #?(:cljs
      ;; TODO consider merging with post-purchase
-     (let [{stylist-ids :s}                          query-params
+     (let [fire-stylists-display-tracking?         (->> (get-in prev-app-state storefront.keypaths/navigation-message)
+                                                          first
+                                                          (not= events/navigate-adventure-stylist-results-pre-purchase))
+           {stylist-ids :s}                          query-params
            {:keys [latitude longitude] :as location} (get-in app-state adventure.keypaths/adventure-stylist-match-location)
            matched-stylists                          (get-in app-state adventure.keypaths/adventure-matched-stylists)]
        (when (experiments/stylist-filters? app-state)
@@ -78,7 +81,8 @@
                       :choices   (get-in app-state adventure.keypaths/adventure-choices)}] ; For trackings purposes only
            (api/fetch-stylists-within-radius query
                                              #(messages/handle-message events/api-success-fetch-stylists-within-radius-pre-purchase
-                                                                       (merge {:query query}
+                                                                       (merge {:query query
+                                                                               :fire-stylists-display-tracking? fire-stylists-display-tracking?}
                                                                               %))))
          ;; Previously performed search results
          ;; TODO consider removal (uri holds state and effects)
