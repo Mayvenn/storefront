@@ -8,6 +8,7 @@
             [storefront.components.header :as header]
             [storefront.effects :as effects]
             [storefront.events :as events]
+            [storefront.platform.messages :as messages]
             storefront.keypaths
             [storefront.transitions :as transitions]
             [stylist-matching.ui.spinner :as spinner]
