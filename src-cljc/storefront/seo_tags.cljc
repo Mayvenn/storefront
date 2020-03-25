@@ -68,7 +68,7 @@
         "@type"    "Product"
         :offers    {"@type"         "Offer"
                     :price          (str (:sku/price sku))
-                    :price-currency "USD"}})]]))
+                    :priceCurrency "USD"}})]]))
 
 (defn ^:private facet-option->option-name
   ;; For origin and color, the sku/name is more appropriate than the option name
