@@ -542,7 +542,7 @@
            :catalog/department    #{"hair"}
            :hair/family           #{"ready-wigs"}
            :selector/essentials   [:hair/family :catalog/department]
-           :selector/electives    [:hair/texture]
+           :selector/electives    [:hair/texture :wig/trait]
            :opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our"
                                         "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                         "your unique look using the built-in combs and adjustable strap.")}
