@@ -20,7 +20,8 @@
    :base-material :hair/base-material
    :color         :hair/color
    :length        :hair/length
-   :color.process :hair/color.process})
+   :color.process :hair/color.process
+   :style         :wig/trait})
 
 (defn query-params->selector-electives [query-params]
   (->> (maps/select-rename-keys query-params query-params->facet-slugs)
