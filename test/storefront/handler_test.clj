@@ -713,6 +713,9 @@
 (def wig-category-url
   "https://shop.mayvenn.com/categories/13-wigs")
 
+(def ready-wig-category-url
+  "https://shop.mayvenn.com/categories/25-ready-wear-wigs")
+
 (def lace-front-wig-category-url
   "https://shop.mayvenn.com/categories/24-virgin-lace-front-wigs")
 
@@ -858,3 +861,18 @@
              "Mayvenn's Indian #2 Chocolate Brown human Virgin Hair Bundles are machine-wefted and made with virgin hair for unbeatable quality. Shop to achieve your desired look!"
              "/categories/27-human-hair-bundles"
              "origin=indian&color=%232-chocolate-brown"))))))
+
+(deftest category-page-facet-url-conversion
+  (with-services {}
+    (with-handler handler
+      (testing "on category pages, url parameters are translateable to facets"
+        (-> (mock/request :get (str ready-wig-category-url
+                                    "?texture=straight&style=center-part"))
+            handler
+            (validate-title-and-description-and-canonical
+             "Center Part Straight Ready-to-Wear Wigs | Mayvenn"
+             (str "Mayvenn’s Center Part Straight Ready-to-Wear Wigs "
+                  "allow you to change up and achieve your desired look. "
+                  "Shop our collection of virgin hair wigs today.")
+             "/categories/25-ready-wear-wigs"
+             "style=center-part&texture=straight"))))))

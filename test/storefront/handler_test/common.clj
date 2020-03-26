@@ -829,7 +829,34 @@
                              {:option/slug  "220g"
                               :option/name  "220g"
                               :sku/name     "220g"
-                              :filter/order 2}]}]})
+                              :filter/order 2}]}
+            {:facet/slug    :wig/trait
+             :facet/name    "Style"
+             :filter/order  3
+             :facet/options [{:option/slug  "center-part"
+                              :option/name  "Center Part"
+                              :sku/name     "Center Part"
+                              :filter/order 0}
+                             {:option/slug  "side-part"
+                              :option/name  "Side Part"
+                              :sku/name     "Side Part"
+                              :filter/order 1}
+                             {:option/slug  "bob"
+                              :option/name  "Bob"
+                              :sku/name     "Bob"
+                              :filter/order 2}
+                             {:option/slug  "lob"
+                              :option/name  "Lob"
+                              :sku/name     "Lob"
+                              :filter/order 3}
+                             {:option/slug  "asymmetrical"
+                              :option/name  "Asymmetrical"
+                              :sku/name     "Asymmetrical"
+                              :filter/order 4}
+                             {:option/slug  "bangs"
+                              :option/name  "Bangs"
+                              :sku/name     "Bangs"
+                              :filter/order 5}]}]})
 
 (def default-storeback-handler
   (routes

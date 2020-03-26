@@ -74,8 +74,8 @@
   ;; For origin and color, the sku/name is more appropriate than the option name
   ;; #169613608
   [facets [facet-slug option-slug :as selection]]
-  (let [name-key (if (#{"origin" "color"} facet-slug) :sku/name :option/name)]
-    (get-in facets [(keyword "hair" facet-slug) :facet/options option-slug name-key])))
+  (let [name-key (if (#{:hair/color :hair/origin} facet-slug) :sku/name :option/name)]
+    (get-in facets [facet-slug :facet/options option-slug name-key])))
 
 (defn ^:private category->allowed-query-params
   [{:keys [selector/electives]}]
@@ -107,12 +107,12 @@
                                    (:page.meta/description-template category))
         selected-facet-string (when (and indexable? (seq selected-options))
                                 (->> selected-options
+                                     (maps/map-keys (comp accessors.categories/query-params->facet-slugs keyword str))
                                      (mapv (partial facet-option->option-name facets))
                                      (string/join " ")))
 
-        {seo-title :seo/title
-         :keys     [page/title-template
-                    page.meta/description-template]} category
+        {:keys [page/title-template
+                page.meta/description-template]} category
 
         page-title            (if (and can-use-seo-template? selected-facet-string)
                                 (categories/render-template title-template (assoc category :computed/selected-facet-string selected-facet-string))

@@ -33,11 +33,12 @@
 
 (def category-query-params-ordering
   {"origin"        0
-   "texture"       1
-   "color"         2
-   "base-material" 3
-   "weight"        4
-   "family"        5})
+   "style"         1
+   "texture"       2
+   "color"         3
+   "base-material" 4
+   "weight"        5
+   "family"        6})
 
 (defn sort-query-params
   [params]
