@@ -590,9 +590,7 @@
      [:div.circle.bg-cool-gray.overflow-hidden.relative
       ^:attrs (merge size
                      (dissoc attrs :width))
-      (if image-id
-        (ucare-img attrs image-id)
-        (svg/missing-portrait size))])))
+      (ucare-img attrs (or image-id "9664879b-07e0-432e-9c09-b2cf4c899b10"))])))
 
 (defn circle-picture
   ([src] (circle-picture {} src))
@@ -603,7 +601,7 @@
                     (dissoc attrs :width :overlay-copy))
      (if src
        [:img {:style {:width width :height width} :src src}]
-       (svg/missing-portrait {:width width :height width}))
+       (ucare-img attrs "9664879b-07e0-432e-9c09-b2cf4c899b10"))
      (when overlay-copy
        [:div.absolute.overlay.bg-darken-2
         [:div.absolute.m-auto.overlay {:style {:height "50%"}} overlay-copy]])])))

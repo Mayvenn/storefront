@@ -57,11 +57,11 @@
       [:div.circle.hide-on-mb-tb
        (if (:resizable-url stylist-portrait)
          (ui/circle-picture {:width "100"} (ui/square-image stylist-portrait 100))
-         (ui/circle-ucare-img {:width "100"} "23440740-c1ed-48a9-9816-7fc01f92ad2c"))]
+         (ui/circle-ucare-img {:width "100"} "9664879b-07e0-432e-9c09-b2cf4c899b10"))]
       [:div.circle.hide-on-dt
        (if (:resizable-url stylist-portrait)
          (ui/circle-picture (ui/square-image stylist-portrait 70))
-         (ui/circle-ucare-img {:width "70"} "23440740-c1ed-48a9-9816-7fc01f92ad2c"))]
+         (ui/circle-ucare-img {:width "70"} "9664879b-07e0-432e-9c09-b2cf4c899b10"))]
       [:div.h5.bold stylist-name]
       [:div.h6
        (when (:licensed store)

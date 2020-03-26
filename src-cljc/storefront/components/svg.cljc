@@ -193,11 +193,6 @@
 (defn mayvenn-on-pinterest []
   (mayvenn-on-social "Follow Mayvenn on Pinterest" "pinterest"))
 
-(defn missing-portrait [svg-options]
-  (component/html
-   [:svg svg-options
-    ^:inline (svg-xlink "mayvenn-wave")]))
-
 (defn white-play-video [opts]
   (component/html
    [:svg opts ^:inline (svg-xlink "white-play-video")]))
