@@ -301,7 +301,7 @@
        {:key "logo"}
        [:div.mb4 ^:inline (ui/clickable-logo {:event     events/navigate-home
                                               :data-test "desktop-header-logo"
-                                              :height    "60px"})]
+                                              :height    "44px"})]
        [:div.mb1 ^:inline (menu data)]]]]
     ^:inline (flyout (:shop-a-la-carte-menu/columns data)
                      (:shop-a-la-carte-menu/expanded? data))

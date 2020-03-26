@@ -24,7 +24,7 @@
       [:div.absolute.bottom-0.left-0.right-0
        [:div.mb4 (ui/clickable-logo {:event events/navigate-home
                                      :data-test "desktop-header-logo"
-                                     :height "60px"})]]]]]))
+                                     :height "44px"})]]]]]))
 
 (defcomponent component
   [{:keys [desktop-header-data
