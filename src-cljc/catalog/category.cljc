@@ -54,7 +54,7 @@
   [category-selections]
   (->> category-selections
        (maps/map-values (fn [s] (string/join accessors.categories/query-param-separator s)))
-       (maps/map-keys (comp name facet-slugs->query-params))
+       (maps/map-keys (comp (fnil name "") facet-slugs->query-params))
        sort-query-params))
 
 (def allowed-query-params
