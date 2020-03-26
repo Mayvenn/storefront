@@ -167,12 +167,12 @@
             #(set/join % shared-cart-skus
                        {:legacy/variant-id :legacy/variant-id}))))
 
-(defn shared-cart-promo->discount
-  [promotions price shared-cart-promo has-service-line-item?]
-  (if (or has-service-line-item?
-          (= "freeinstall" shared-cart-promo))
-    {:discount-text    "10% OFF + FREE Install"
-     :discounted-price (* 0.90 price)}
+(defn shared-cart->discount
+  [{:keys [promotions base-price shared-cart-promo base-service]}]
+  (if base-service
+    (let [service-price (:sku/price base-service)]
+      {:discount-text    "10% OFF + FREE Install"
+       :discounted-price (* 0.90 (- base-price service-price))})
     (let [promotion% (some->> promotions
                               (filter (comp #{shared-cart-promo} str/lower-case :code))
                               first
@@ -186,42 +186,45 @@
                                    (* 0.01)
                                    (+ 0.10) ;; bundle-discount
                                    (- 1.0)  ;; 100% - discount %
-                                   (* price))
-                          price)}))) ;; discounted price was unparsable
+                                   (* base-price))
+                          base-price)}))) ;; discounted price was unparsable
 
-
-(defn has-service-line-item?
-  [{:keys [line-items]}]
-  (let [service-line-item-variant-ids (set (vals api/freeinstall-line-item-name->variant-id))]
-    (some service-line-item-variant-ids (map :legacy/variant-id line-items))))
 
 (defn query [data]
-  (let [skus                  (get-in data keypaths/v2-skus)
-        shared-cart           (get-in data keypaths/shared-cart-current)
-        shared-cart-with-skus (some-> shared-cart
-                                      (put-skus-on-shared-cart skus))
-        navigation-event      (get-in data keypaths/navigation-event)
-        album-keyword         (get-in data keypaths/selected-album-keyword)
+  (let [skus                                     (get-in data keypaths/v2-skus)
+        shared-cart                              (get-in data keypaths/shared-cart-current)
+        {shared-cart-skus :line-items
+         :as              shared-cart-with-skus} (some-> shared-cart
+                                                         (put-skus-on-shared-cart skus))
+        navigation-event                         (get-in data keypaths/navigation-event)
+        album-keyword                            (get-in data keypaths/selected-album-keyword)
 
-        look              (contentful/look->look-detail-social-card navigation-event album-keyword (contentful/selected-look data))
-        album-copy        (get ugc/album-copy album-keyword)
-        base-price        (apply + (map (fn [line-item]
-                                          (* (:item/quantity line-item)
-                                             (:sku/price line-item)))
-                                        (:line-items shared-cart-with-skus)))
-        shared-cart-promo (some-> shared-cart-with-skus :promotion-codes first str/lower-case)
-        discount          (shared-cart-promo->discount (get-in data keypaths/promotions)
-                                                       base-price
-                                                       shared-cart-promo
-                                                       (has-service-line-item? shared-cart))
-        back              (first (get-in data keypaths/navigation-undo-stack))
-        back-event        (:default-back-event album-copy)]
+        look       (contentful/look->look-detail-social-card navigation-event album-keyword
+                                                             (contentful/selected-look data))
+        album-copy (get ugc/album-copy album-keyword)
+
+        base-price (->> shared-cart-skus
+                        (map (fn [line-item]
+                               (* (:item/quantity line-item)
+                                  (:sku/price line-item))))
+                        (apply + 0))
+
+        discount (shared-cart->discount
+                  {:promotions        (get-in data keypaths/promotions)
+                   :shared-cart-promo (some-> shared-cart-with-skus :promotion-codes first str/lower-case)
+                   :base-price        base-price
+                   :base-service      (->> shared-cart-skus
+                                           (filter (comp #(contains? % "base") :service/type))
+                                           first)})
+
+        back       (first (get-in data keypaths/navigation-undo-stack))
+        back-event (:default-back-event album-copy)]
     (merge {:shared-cart           shared-cart-with-skus
             :album-keyword         album-keyword
             :look                  look
             :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
             :skus                  skus
-            :sold-out?             (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
+            :sold-out?             (not-every? :inventory/in-stock? shared-cart-skus)
             :fetching-shared-cart? (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
             :shared-cart-type-copy (:short-name album-copy)
             :look-detail-price?    (not= album-keyword :deals)
