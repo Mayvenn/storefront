@@ -18,7 +18,9 @@
             [storefront.components.header :as components.header]
             [storefront.components.svg :as svg]
             [storefront.events :as events]
+            [stylist-matching.out-of-area :as out-of-area]
             [stylist-matching.ui.header :as header]
+            [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]
             [stylist-matching.ui.stylist-cards :as stylist-cards]
             [stylist-matching.ui.gallery-modal :as gallery-modal]
             stylist-directory.keypaths
@@ -400,7 +402,7 @@
                                 "Filters"])]]))))
 
 (defcomponent template
-  [{:keys [popup spinning? filters-popup gallery-modal header list/results location-search-box]} _ _]
+  [{:keys [popup spinning? filters-popup gallery-modal header list/results location-search-box shopping-method-choice]} _ _]
   [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
   #?(:cljs (component/build filters-popup/component filters-popup nil))
 
@@ -412,11 +414,17 @@
    (when (:stylist.results.location-search-box/id location-search-box)
      (component/build location-input-and-filters-molecule location-search-box nil))
 
-   (if spinning?
+   (cond
+     spinning?
      [:div.mt6 ui/spinner]
+
+     results
      (display-list {:call-out     call-out-center/organism
                     :stylist-card stylist-cards/organism}
-                   results))])
+                   results)
+
+     :else
+     (component/build shopping-method-choice/organism shopping-method-choice nil))])
 
 (def post-purchase? #{events/navigate-adventure-stylist-results-post-purchase})
 
@@ -446,8 +454,10 @@
                         :header              (header-query current-order
                                                            (first (get-in app-state storefront.keypaths/navigation-undo-stack))
                                                            post-purchase?)
-                        :list/results        (insert-at-pos 3
-                                                            call-out-query
-                                                            (stylist-cards-query post-purchase?
-                                                                                 (experiments/hide-stylist-specialty? app-state)
-                                                                                 stylist-search-results))}))))
+                        :list/results        (when (seq (spice.core/spy stylist-search-results))
+                                               (insert-at-pos 3
+                                                             call-out-query
+                                                             (stylist-cards-query post-purchase?
+                                                                                  (experiments/hide-stylist-specialty? app-state)
+                                                                                  stylist-search-results)))
+                        :shopping-method-choice (out-of-area/shopping-method-choice-query (experiments/hide-bundle-sets? app-state))}))))

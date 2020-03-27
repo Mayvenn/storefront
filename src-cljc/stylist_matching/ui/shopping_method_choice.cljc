@@ -45,7 +45,7 @@
 
 (defcomponent organism
   [data _ _]
-  [:div.m5.pt4.px1
+  [:div.m5.p4.bg-white
    (shopping-method-choice-title-molecule data)
    (shopping-method-choice-error-title-molecule data)
    (buttons-list-molecule data)])
