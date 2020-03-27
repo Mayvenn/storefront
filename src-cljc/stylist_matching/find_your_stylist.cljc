@@ -1,18 +1,18 @@
 (ns stylist-matching.find-your-stylist
-  (:require [storefront.accessors.orders :as orders]
+  (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]])
+            adventure.keypaths
+            api.orders
+            [storefront.accessors.orders :as orders]
             [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.flash :as flash]
             [storefront.components.header :as header]
-            [storefront.components.ui :as ui]
-            [storefront.components.svg :as svg]
+            [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
-            [storefront.platform.component-utils :as utils]
-            adventure.keypaths
             storefront.keypaths
-            api.orders
-            [stylist-matching.ui.stylist-search :as stylist-search]
+            [storefront.transitions :as transitions]
             [stylist-matching.ui.spinner :as spinner]
-            [storefront.components.flash :as flash]))
+            [stylist-matching.ui.stylist-search :as stylist-search]))
 
 (defn spinner-query
   [app-state]
@@ -70,3 +70,24 @@
                       :spinner        (spinner-query app-state)
                       :header         (header-query current-order)
                       :cart           {:quantity (orders/product-quantity (get-in app-state storefront.keypaths/order))}})))
+
+(defmethod transitions/transition-state events/navigate-adventure-find-your-stylist
+  [_ event _ app-state]
+  (assoc-in app-state adventure.keypaths/adventure-stylist-match-address nil))
+
+(def find-your-stylist-error-codes
+  {"stylist-not-found"
+   (str
+    "The stylist you are looking for is not available."
+    " Please search for another stylist in your area below.")})
+
+(defmethod effects/perform-effects events/navigate-adventure-find-your-stylist
+  [_ current-nav-event {:keys [query-params] :as args} _ _]
+  #?(:cljs
+     (if-let [error-message (-> query-params :error find-your-stylist-error-codes)]
+       (do
+         (messages/handle-message events/redirect {:nav-message
+                                                   [current-nav-event
+                                                    (update-in args [:query-params] dissoc :error)]})
+         (messages/handle-message events/flash-later-show-failure {:message error-message}))
+       (google-maps/insert))))
