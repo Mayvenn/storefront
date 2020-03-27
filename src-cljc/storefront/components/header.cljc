@@ -294,11 +294,11 @@
         ^:inline (account-info signed-in user vouchers? store)]]]
      [:div.flex.justify-between.px8
       [:div {:style {:width "33px"}}]
-      [:div {:key "logo"}
+      [:div.mb3 {:key "logo"}
        [:div.mb4 ^:inline (ui/clickable-logo {:event     events/navigate-home
                                               :data-test "desktop-header-logo"
                                               :height    "44px"})]
-       [:div.mb1 ^:inline (menu data)]]
+       [:div ^:inline (menu data)]]
       ^:inline (ui/shopping-bag {:style     {:height "44px"
                                              :width  "33px"}
                                  :data-test "desktop-cart"}
