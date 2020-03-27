@@ -787,8 +787,7 @@
 
             (-> (xml/emit {:tag     :urlset
                            :attrs   {:xmlns "http://www.sitemaps.org/schemas/sitemap/0.9"}
-                           :content (->> (into [["https://mayvenn.com/"]
-                                                [(str "https://" config/welcome-subdomain ".mayvenn.com/")      "0.60"]
+                           :content (->> (into [[(str "https://" config/welcome-subdomain ".mayvenn.com/")      "0.60"]
                                                 ["https://shop.mayvenn.com/"                                    "1.00"]
                                                 ["https://shop.mayvenn.com/guarantee"                           "0.60"]
                                                 ["https://shop.mayvenn.com/help"                                "0.60"]
