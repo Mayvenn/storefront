@@ -454,7 +454,7 @@
                         :header              (header-query current-order
                                                            (first (get-in app-state storefront.keypaths/navigation-undo-stack))
                                                            post-purchase?)
-                        :list/results        (when (seq (spice.core/spy stylist-search-results))
+                        :list/results        (when (seq stylist-search-results)
                                                (insert-at-pos 3
                                                              call-out-query
                                                              (stylist-cards-query post-purchase?
