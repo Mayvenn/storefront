@@ -162,10 +162,10 @@
                   [:div.border-top.border-gray
                    ^:inline (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-      :guest [:div.h6
+      :guest [:div
               [:a.inherit-color ^:attrs (utils/route-to events/navigate-sign-in) "Sign in"]
               " | "
-              [:a.inherit-color ^:attrs (utils/route-to events/navigate-sign-up) "No account? Sign up"]]
+              [:a.inherit-color ^:attrs (utils/route-to events/navigate-sign-up) "Create Account"]]
 
       [:div]))))
 
@@ -286,23 +286,23 @@
   [:div
    [:div.hide-on-mb.relative
     {:on-mouse-leave close-header-menus}
-    [:div.relative.border-bottom.border-gray {:style {:height "180px"}}
-     [:div.max-960.mx-auto
-      [:div.left {:key "store-info"} ^:inline (store-info signed-in store)]
-      [:div.right {:key "account-info"}
-       [:div.h6.my2.flex.items-center
-        ^:inline (account-info signed-in user vouchers? store)
-        [:div.pl2
-         ^:inline (ui/shopping-bag {:style     {:height (str ui/header-image-size "px")
-                                                :width  "28px"}
-                                    :data-test "desktop-cart"}
-                                   cart)]]]
-      [:div.absolute.bottom-0.left-0.right-0
-       {:key "logo"}
+    [:div.relative.border-bottom.border-gray {:style {:height "145px"}}
+     [:div.flex.justify-between.px8
+      [:div {:key "store-info"} ^:inline (store-info signed-in store)]
+      [:div {:key "account-info"}
+       [:div.my2
+        ^:inline (account-info signed-in user vouchers? store)]]]
+     [:div.flex.justify-between.px8
+      [:div {:style {:width "33px"}}]
+      [:div {:key "logo"}
        [:div.mb4 ^:inline (ui/clickable-logo {:event     events/navigate-home
                                               :data-test "desktop-header-logo"
                                               :height    "44px"})]
-       [:div.mb1 ^:inline (menu data)]]]]
+       [:div.mb1 ^:inline (menu data)]]
+      ^:inline (ui/shopping-bag {:style     {:height "44px"
+                                             :width  "33px"}
+                                 :data-test "desktop-cart"}
+                                cart)]]
     ^:inline (flyout (:shop-a-la-carte-menu/columns data)
                      (:shop-a-la-carte-menu/expanded? data))
     ^:inline (flyout (:shop-looks-menu/columns data)
