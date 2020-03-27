@@ -22,14 +22,14 @@
                                        :filter              specialty}]
      :stylist-search-filter/checked? (contains? selected-filters specialty)}))
 
-(defmethod popup/query :stylist-search-filters
-  [data]
+(defn query [data]
   (let [selected-filters
         (get-in data stylist-directory.keypaths/stylist-search-selected-filters)]
     {:stylist-search-filters/title   "Free Mayvenn Services"
      :stylist-search-filters/primary (str
                                       "Get Mayvenn services (valued up to $200) for free when purchasing "
                                       "qualifying hair from Mayvenn. You buy the hair, we cover the service!")
+     :stylist-search-filters/show? (get-in data stylist-directory.keypaths/stylist-search-show-filters?)
      :stylist-search-filters/filters
      (mapv (partial specialty->filter selected-filters)
            [["Leave out Install" :leave-out]
@@ -38,15 +38,14 @@
             ["360 Frontal Install" :360-frontal]
             ["Wig Customization" :wig-customization]])}))
 
-(defmethod popup/component :stylist-search-filters
-  [{:stylist-search-filters/keys [filters title primary]} _ _]
-  (component/html
+(component/defcomponent component
+ [{:stylist-search-filters/keys [filters title primary show?]} _ _]
+ (when show?
    (ui/modal
     {:body-style  {:max-width "625px"}
      :close-attrs (utils/fake-href events/control-addon-service-menu-dismiss)
      :col-class   "col-12"}
     [:div.bg-white {:style {:min-height "100vh"}}
-
      (components.header/mobile-nav-header
       {:class "border-bottom border-gray"}
       (component/html [:div (ui/button-medium-underline-black
@@ -91,8 +90,10 @@
   [_ event _ app-state]
   (assoc-in app-state stylist-directory.keypaths/stylist-search-selected-filters #{}))
 
-(defmethod transitions/transition-state events/control-show-stylist-search-filters [_ event args app-state]
-  (assoc-in app-state keypaths/popup :stylist-search-filters))
+(defmethod transitions/transition-state events/control-show-stylist-search-filters
+  [_ event args app-state]
+  (update-in app-state stylist-directory.keypaths/stylist-search-show-filters? not))
 
-(defmethod transitions/transition-state events/control-stylist-search-filters-dismiss [_ event args app-state]
-  (assoc-in app-state keypaths/popup nil))
+(defmethod transitions/transition-state events/control-stylist-search-filters-dismiss
+  [_ event args app-state]
+  (update-in app-state stylist-directory.keypaths/stylist-search-show-filters? not))
