@@ -12,19 +12,22 @@
 (defn desktop-header [{:keys [store user cart signed-in vouchers?]}]
   (component/html
    [:div.hide-on-mb.relative
-    [:div.relative.border-bottom.border-cool-gray {:style {:height "125px"}}
-     [:div.max-960.mx-auto
-      [:div.left (storefront-header/store-info signed-in store)]
-      [:div.right
-       [:div.h6.my2.flex.items-center
-        (storefront-header/account-info signed-in user vouchers?)
-        [:div.pl2 (ui/shopping-bag {:style {:height (str ui/header-image-size "px") :width "28px"}
-                                    :data-test "desktop-cart"}
-                                   cart)]]]
-      [:div.absolute.bottom-0.left-0.right-0
-       [:div.mb4 (ui/clickable-logo {:event events/navigate-home
-                                     :data-test "desktop-header-logo"
-                                     :height "44px"})]]]]]))
+    [:div.relative.border-bottom.border-gray
+     [:div.flex.justify-between.px8
+      [:div {:key "store-info"} ^:inline (storefront-header/store-info signed-in store)]
+      [:div {:key "account-info"}
+       [:div.my2
+        ^:inline (storefront-header/account-info signed-in user vouchers? store)]]]
+     [:div.flex.justify-between.px8.mb4
+      [:div {:style {:width "33px"}}]
+      [:div.flex-grow-1 {:key "logo"}
+       (ui/clickable-logo {:event events/navigate-home
+                           :data-test "desktop-header-logo"
+                           :height "44px"})]
+      ^:inline (ui/shopping-bag {:style     {:height "44px"
+                                             :width  "33px"}
+                                 :data-test "desktop-cart"}
+                                cart)]]]))
 
 (defcomponent component
   [{:keys [desktop-header-data

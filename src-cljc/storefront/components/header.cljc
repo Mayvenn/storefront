@@ -286,7 +286,7 @@
   [:div
    [:div.hide-on-mb.relative
     {:on-mouse-leave close-header-menus}
-    [:div.relative.border-bottom.border-gray {:style {:height "145px"}}
+    [:div.relative.border-bottom.border-gray
      [:div.flex.justify-between.px8
       [:div {:key "store-info"} ^:inline (store-info signed-in store)]
       [:div {:key "account-info"}
