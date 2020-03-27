@@ -6,7 +6,7 @@
                        [storefront.hooks.google-maps :as google-maps]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.frontend-trackings :as frontend-trackings]
-                       [stylist-matching.search.filters-popup :as filters-popup]
+                       [storefront.components.popup :as popup]
                        [storefront.accessors.orders :as orders]])
             [adventure.components.wait-spinner :as wait-spinner]
             adventure.keypaths
@@ -18,9 +18,7 @@
             [storefront.components.header :as components.header]
             [storefront.components.svg :as svg]
             [storefront.events :as events]
-            [stylist-matching.out-of-area :as out-of-area]
             [stylist-matching.ui.header :as header]
-            [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]
             [stylist-matching.ui.stylist-cards :as stylist-cards]
             [stylist-matching.ui.gallery-modal :as gallery-modal]
             stylist-directory.keypaths
@@ -36,83 +34,6 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]))
 
-(defmethod transitions/transition-state events/navigate-adventure-stylist-results-pre-purchase
-  [_ _ {:keys [query-params]} app-state]
-  (let [{:keys [lat long]} query-params]
-    (cond-> app-state
-      ;; TODO grab preferred services from URI
-      (and lat long)
-      (assoc-in adventure.keypaths/adventure-stylist-match-location
-                {:latitude  (spice/parse-double lat)
-                 :longitude (spice/parse-double long)})
-
-      :always
-      (assoc-in stylist-directory.keypaths/stylist-search-address-input
-                (get-in app-state adventure.keypaths/adventure-stylist-match-address)))))
-
-;;  Navigating to the results page causes the effect of searching for stylists
-;;
-;;  This allows:
-;;  - Cold loads of the page, both with lat+long and stylist ids
-;;  - Refining of search results
-;;
-(defmethod effects/perform-effects events/navigate-adventure-stylist-results-pre-purchase
-  [_ _ {:keys [query-params]} prev-app-state app-state]
-  #?(:cljs
-     ;; TODO consider merging with post-purchase
-     (let [initial-load?                             (or (zero? (count (get-in app-state storefront.keypaths/navigation-undo-stack))) ;; Direct Load
-                                                         (not= events/navigate-adventure-stylist-results-pre-purchase
-                                                               (get-in prev-app-state storefront.keypaths/navigation-event)))
-           {stylist-ids :s}                          query-params
-           {:keys [latitude longitude] :as location} (get-in app-state adventure.keypaths/adventure-stylist-match-location)
-           matched-stylists                          (get-in app-state adventure.keypaths/adventure-matched-stylists)]
-       (when (experiments/stylist-filters? app-state)
-         (google-maps/insert))
-       (cond
-         ;; Predetermined search results
-         (seq stylist-ids)
-         (api/fetch-matched-stylists (get-in app-state storefront.keypaths/api-cache)
-                                     stylist-ids
-                                     #(messages/handle-message events/api-success-fetch-matched-stylists
-                                                               %))
-         ;; Querying based upon geo location
-         (and location (nil? matched-stylists))
-         (let [query {:latitude  latitude
-                      :longitude longitude
-                      :radius    "100mi"
-                      :choices   (get-in app-state adventure.keypaths/adventure-choices)}] ; For trackings purposes only
-           (api/fetch-stylists-within-radius query
-                                             #(messages/handle-message events/api-success-fetch-stylists-within-radius-pre-purchase
-                                                                       (merge {:query         query
-                                                                               :initial-load? initial-load?}
-                                                                              %))))
-         ;; Previously performed search results
-         ;; TODO consider removal (uri holds state and effects)
-         (seq matched-stylists)
-         nil
-
-         ;; TODO consider removal since the result page has a search bar
-         :else
-         (history/enqueue-redirect events/navigate-adventure-find-your-stylist)))))
-
-(defmethod transitions/transition-state events/navigate-adventure-stylist-results-post-purchase
-  [_ _ args app-state]
-  (let [{:keys [address1 address2 city state zipcode]} (get-in app-state storefront.keypaths/completed-order-shipping-address)]
-    (assoc-in app-state stylist-directory.keypaths/stylist-search-address-input
-              (string/join " " [address1 address2 (str city ",") state zipcode]))))
-
-(defmethod effects/perform-effects events/navigate-adventure-stylist-results-post-purchase
-  [_ _ args _ app-state]
-  #?(:cljs
-     (let [matched-stylists (get-in app-state adventure.keypaths/adventure-matched-stylists)]
-       (when (experiments/stylist-filters? app-state)
-         (google-maps/insert))
-       (if (orders/service-line-item-promotion-applied? (get-in app-state storefront.keypaths/completed-order))
-         (if (empty? matched-stylists)
-           (messages/handle-message events/api-shipping-address-geo-lookup)
-           (messages/handle-message events/adventure-stylist-search-results-post-purchase-displayed))
-         (history/enqueue-redirect events/navigate-home)))))
-
 (defmethod transitions/transition-state events/control-adventure-stylist-gallery-open
   [_ _event {:keys [ucare-img-urls initially-selected-image-index]} app-state]
   (-> app-state
@@ -126,6 +47,21 @@
 (defmethod transitions/transition-state events/control-adventure-select-stylist
   [_ _ {:keys [stylist-id]} app-state]
   (assoc-in app-state adventure.keypaths/adventure-choices-selected-stylist-id stylist-id))
+
+(defmethod transitions/transition-state events/navigate-adventure-stylist-results-pre-purchase
+  [_ _ args app-state]
+  (let [{:keys [lat long]} (:query-params args)]
+    (cond-> app-state
+      (and lat long)
+      (assoc-in adventure.keypaths/adventure-stylist-match-location {:latitude  (spice/parse-double lat)
+                                                                     :longitude (spice/parse-double long)})
+
+      (nil? (get-in app-state adventure.keypaths/adventure-matched-stylists))
+      (assoc-in adventure.keypaths/adventure-stylist-results-delaying? true)
+
+      :always
+      (assoc-in stylist-directory.keypaths/stylist-search-address-input
+                (get-in app-state adventure.keypaths/adventure-stylist-match-address)))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/stylist-results-address-component-mounted
@@ -156,6 +92,77 @@
   #?(:cljs
      (-> app-state
          (assoc-in adventure.keypaths/adventure-matched-stylists stylists))))
+
+(defmethod effects/perform-effects events/navigate-adventure-stylist-results-pre-purchase
+  [_ _ {:keys [query-params]} _ app-state]
+  #?(:cljs
+     (let [{stylist-ids :s}                          query-params
+           {:keys [latitude longitude] :as location} (get-in app-state adventure.keypaths/adventure-stylist-match-location)
+           matched-stylists                          (get-in app-state adventure.keypaths/adventure-matched-stylists)]
+       ;; TODO: POST PURCHASEEEEE
+       (when (experiments/stylist-filters? app-state)
+         (google-maps/insert))
+       (cond
+         (seq stylist-ids)
+         (do
+           (messages/handle-later events/adventure-stylist-results-delay-completed {} 3000)
+           (api/fetch-matched-stylists (get-in app-state storefront.keypaths/api-cache)
+                                       stylist-ids
+                                       #(messages/handle-message events/api-success-fetch-matched-stylists %)))
+
+         (and location (nil? matched-stylists))
+         (let [query {:latitude  latitude
+                      :longitude longitude
+                      :radius    "100mi"
+                      :choices   (get-in app-state adventure.keypaths/adventure-choices)}] ; For trackings purposes only
+           (messages/handle-later events/adventure-stylist-results-delay-completed {} 3000)
+           (api/fetch-stylists-within-radius query
+                                             #(messages/handle-message events/api-success-fetch-stylists-within-radius-pre-purchase
+                                                                       (merge {:query query} %))))
+
+         (seq matched-stylists)
+         nil
+
+         :else
+         (history/enqueue-redirect events/navigate-adventure-find-your-stylist)))))
+
+(defmethod transitions/transition-state events/adventure-stylist-results-delay-completed
+  [_ _ _ app-state]
+  (-> app-state
+      (update-in adventure.keypaths/adventure dissoc :stylist-results-delaying?)))
+
+(defmethod effects/perform-effects events/adventure-stylist-results-delay-completed
+  [_ _ args _ app-state]
+  #?(:cljs
+     (when-not (and
+                (not (experiments/stylist-filters? app-state))
+                (nil? (get-in app-state adventure.keypaths/adventure-matched-stylists)))
+       (messages/handle-message events/adventure-stylist-results-wait-resolved {}))))
+
+(defmethod effects/perform-effects events/adventure-stylist-results-wait-resolved
+  [_ _ args _ app-state]
+  #?@(:cljs
+      [(messages/handle-message events/adventure-stylist-search-results-displayed)
+       (when (empty? (get-in app-state adventure.keypaths/adventure-matched-stylists))
+         (effects/redirect events/navigate-adventure-out-of-area))]))
+
+(defmethod transitions/transition-state events/navigate-adventure-stylist-results-post-purchase
+  [_ _ args app-state]
+  (let [{:keys [address1 address2 city state zipcode]} (get-in app-state storefront.keypaths/completed-order-shipping-address)]
+    (assoc-in app-state stylist-directory.keypaths/stylist-search-address-input
+              (string/join " " [address1 address2 (str city ",") state zipcode]))))
+
+(defmethod effects/perform-effects events/navigate-adventure-stylist-results-post-purchase
+  [_ _ args _ app-state]
+  #?(:cljs
+     (let [matched-stylists (get-in app-state adventure.keypaths/adventure-matched-stylists)]
+       (when (experiments/stylist-filters? app-state)
+         (google-maps/insert))
+       (if (orders/service-line-item-promotion-applied? (get-in app-state storefront.keypaths/completed-order))
+         (if (empty? matched-stylists)
+           (messages/handle-message events/api-shipping-address-geo-lookup)
+           (messages/handle-message events/adventure-stylist-search-results-post-purchase-displayed))
+         (history/enqueue-redirect events/navigate-home)))))
 
 (defmethod effects/perform-effects events/control-adventure-select-stylist-pre-purchase
   [_ _ {:keys [card-index servicing-stylist]} _ app-state]
@@ -402,9 +409,9 @@
                                 "Filters"])]]))))
 
 (defcomponent template
-  [{:keys [popup spinning? filters-popup gallery-modal header list/results location-search-box shopping-method-choice]} _ _]
+  [{:keys [popup spinning? gallery-modal header list/results location-search-box]} _ _]
   [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
-  #?(:cljs (component/build filters-popup/component filters-popup nil))
+   #?(:cljs (popup/built-component popup nil))
 
    (component/build gallery-modal/organism gallery-modal nil)
    (components.header/adventure-header (:header.back-navigation/target header)
@@ -414,17 +421,11 @@
    (when (:stylist.results.location-search-box/id location-search-box)
      (component/build location-input-and-filters-molecule location-search-box nil))
 
-   (cond
-     spinning?
+   (if spinning?
      [:div.mt6 ui/spinner]
-
-     results
      (display-list {:call-out     call-out-center/organism
                     :stylist-card stylist-cards/organism}
-                   results)
-
-     :else
-     (component/build shopping-method-choice/organism shopping-method-choice nil))])
+                   results))])
 
 (def post-purchase? #{events/navigate-adventure-stylist-results-post-purchase})
 
@@ -436,16 +437,16 @@
         post-purchase?         (post-purchase? nav-event)
         ;; NOTE this spinner is from the transition from the
         ;; find-your-stylist-page to the results on this page
-        spinning?              (or (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
-                                   (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-within-radius)
-                                   (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters))]
+        spinning?              (or (get-in app-state adventure.keypaths/adventure-stylist-results-delaying?)
+                                   (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
+                                   (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-within-radius))]
     (if spinning?
       (component/build wait-spinner/component app-state)
       (component/build template
                        {:gallery-modal       (gallery-modal-query app-state)
                         ;; NOTE: this spinner is for when new results are being fetched when filters are applied
                         :spinning?           (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters)
-                        :filters-popup       (or #?(:cljs (filters-popup/query app-state)))
+                        :popup                app-state
                         :location-search-box (when (and (get-in app-state storefront.keypaths/loaded-google-maps)
                                                         (experiments/stylist-filters? app-state))
                                                {:stylist.results.location-search-box/id      "stylist-search-input"
@@ -455,10 +456,8 @@
                         :header              (header-query current-order
                                                            (first (get-in app-state storefront.keypaths/navigation-undo-stack))
                                                            post-purchase?)
-                        :list/results        (when (seq stylist-search-results)
-                                               (insert-at-pos 3
-                                                             call-out-query
-                                                             (stylist-cards-query post-purchase?
-                                                                                  (experiments/hide-stylist-specialty? app-state)
-                                                                                  stylist-search-results)))
-                        :shopping-method-choice (out-of-area/shopping-method-choice-query (experiments/hide-bundle-sets? app-state))}))))
+                        :list/results        (insert-at-pos 3
+                                                            call-out-query
+                                                            (stylist-cards-query post-purchase?
+                                                                                 (experiments/hide-stylist-specialty? app-state)
+                                                                                 stylist-search-results))}))))

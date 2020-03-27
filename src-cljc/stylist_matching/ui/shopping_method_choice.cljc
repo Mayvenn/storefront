@@ -31,7 +31,6 @@
   (when id
     (component/html
      [:div.center.flex.flex-column.items-center.col-11.mx-auto
-      {:data-test id}
       [:div (svg/alert-icon {:height "47px" :width "47px"})]
       [:div.shout.my2.title-2.proxima.bold primary]
       [:div.h5.mb4.light secondary]])))
@@ -46,7 +45,7 @@
 
 (defcomponent organism
   [data _ _]
-  [:div.m5.p4.bg-white
+  [:div.m5.pt4.px1
    (shopping-method-choice-title-molecule data)
    (shopping-method-choice-error-title-molecule data)
    (buttons-list-molecule data)])

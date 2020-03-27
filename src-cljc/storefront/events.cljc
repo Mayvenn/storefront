@@ -502,6 +502,8 @@
 (defpath navigate-adventure-hair-texture)
 (defpath navigate-adventure-select-new-look)
 (defpath navigate-adventure-look-detail)
+(defpath navigate-adventure-matching-stylist-wait)
+(defpath navigate-adventure-matching-stylist-wait-post-purchase)
 (defpath navigate-adventure-stylist-results-pre-purchase)
 (defpath navigate-adventure-stylist-results-post-purchase)
 (defpath navigate-adventure-stylist-gallery)
@@ -542,6 +544,9 @@
 (defpath control-stylist-search-reset-filters)
 (defpath control-show-stylist-search-filters)
 (defpath control-stylist-search-filters-dismiss)
+
+(defpath adventure-stylist-results-delay-completed)
+(defpath adventure-stylist-results-wait-resolved)
 
 (defpath api-success-remove-servicing-stylist)
 

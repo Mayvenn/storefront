@@ -1,56 +1,10 @@
 (ns stylist-matching.ui.stylist-search
-  (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
-                       [storefront.history :as history]
-                       [storefront.hooks.stringer :as stringer]
-                       [storefront.browser.cookie-jar :as cookie]])
+  (:require [storefront.events :as events]
             adventure.keypaths
-            storefront.keypaths
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
-            [storefront.components.ui :as ui]
-            [storefront.effects :as effects]
-            [storefront.events :as events]
-            [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [storefront.transitions :as transitions]
-            [storefront.trackings :as trackings]))
-
-(defmethod effects/perform-effects events/adventure-address-component-mounted
-  [_ event {:keys [address-elem address-keypath]} _ app-state]
-  #?(:cljs
-     (google-maps/attach "geocode" address-elem address-keypath)))
-
-(defmethod transitions/transition-state events/clear-selected-location
-  [_ event _ app-state]
-  (-> app-state
-      (assoc-in adventure.keypaths/adventure-stylist-match-location nil)))
-
-(defmethod transitions/transition-state events/control-adventure-location-submit
-  [_ event _ app-state]
-  #?(:cljs
-     (-> app-state
-         (assoc-in adventure.keypaths/adventure-matched-stylists nil)
-         (assoc-in adventure.keypaths/adventure-stylist-match-address
-                   (.-value (.getElementById js/document "stylist-match-address"))))))
-
-(defmethod trackings/perform-track events/control-adventure-location-submit
-  [_ event {:keys [current-step]} app-state]
-  #?(:cljs
-     (let [{:keys [latitude longitude city state]} (get-in app-state adventure.keypaths/adventure-stylist-match-location)]
-       (stringer/track-event "adventure_location_submitted"
-                             {:location_submitted (get-in app-state adventure.keypaths/adventure-stylist-match-address)
-                              :current_step       current-step
-                              :city               city
-                              :state              state
-                              :latitude           latitude
-                              :longitude          longitude}))))
-
-(defmethod effects/perform-effects events/control-adventure-location-submit
-  [_ event args _ app-state]
-  #?(:cljs
-     (let [cookie    (get-in app-state storefront.keypaths/cookie)
-           adventure (get-in app-state adventure.keypaths/adventure)]
-       (cookie/save-adventure cookie adventure)
-       (history/enqueue-navigate events/navigate-adventure-stylist-results-pre-purchase args))))
+            [storefront.components.ui :as ui]
+            [storefront.platform.component-utils :as utils]))
 
 (defn ^:private change-state
   [selected-location #?(:cljs ^js/Event e :clj e)]
@@ -109,8 +63,3 @@
                (stylist-search-location-search-box data)]
               [:div
                (stylist-search-button data)]]))))
-
-(defmethod effects/perform-effects events/api-success-fetch-stylists-within-radius
-  [_ _ {:keys [initial-load?]} app-state]
-  (when initial-load?
-    (messages/handle-message events/adventure-stylist-search-results-displayed {})))

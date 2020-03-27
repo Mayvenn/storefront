@@ -11,4 +11,3 @@
 (def stylist-search-selected-filters (conj stylist-search :selected-filters))
 (def stylist-search-address-input (conj stylist-search :address-input))
 (def stylist-search-selected-location (conj stylist-search :selected-location))
-(def stylist-search-show-filters? (conj stylist-search :show-filters?))
