@@ -31,6 +31,7 @@
   (when id
     (component/html
      [:div.center.flex.flex-column.items-center.col-11.mx-auto
+      {:data-test id}
       [:div (svg/alert-icon {:height "47px" :width "47px"})]
       [:div.shout.my2.title-2.proxima.bold primary]
       [:div.h5.mb4.light secondary]])))

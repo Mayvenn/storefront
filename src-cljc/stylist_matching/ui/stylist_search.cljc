@@ -111,6 +111,6 @@
                (stylist-search-button data)]]))))
 
 (defmethod effects/perform-effects events/api-success-fetch-stylists-within-radius
-  [_ _ {:keys [fire-stylists-display-tracking?]} app-state]
-  (when fire-stylists-display-tracking?
+  [_ _ {:keys [initial-load?]} app-state]
+  (when initial-load?
     (messages/handle-message events/adventure-stylist-search-results-displayed {})))

@@ -60,9 +60,9 @@
   [_ _ {:keys [query-params]} prev-app-state app-state]
   #?(:cljs
      ;; TODO consider merging with post-purchase
-     (let [fire-stylists-display-tracking?         (->> (get-in prev-app-state storefront.keypaths/navigation-message)
-                                                          first
-                                                          (not= events/navigate-adventure-stylist-results-pre-purchase))
+     (let [initial-load?                             (or (zero? (count (get-in app-state storefront.keypaths/navigation-undo-stack))) ;; Direct Load
+                                                         (not= events/navigate-adventure-stylist-results-pre-purchase
+                                                               (get-in prev-app-state storefront.keypaths/navigation-event)))
            {stylist-ids :s}                          query-params
            {:keys [latitude longitude] :as location} (get-in app-state adventure.keypaths/adventure-stylist-match-location)
            matched-stylists                          (get-in app-state adventure.keypaths/adventure-matched-stylists)]
@@ -83,8 +83,8 @@
                       :choices   (get-in app-state adventure.keypaths/adventure-choices)}] ; For trackings purposes only
            (api/fetch-stylists-within-radius query
                                              #(messages/handle-message events/api-success-fetch-stylists-within-radius-pre-purchase
-                                                                       (merge {:query query
-                                                                               :fire-stylists-display-tracking? fire-stylists-display-tracking?}
+                                                                       (merge {:query         query
+                                                                               :initial-load? initial-load?}
                                                                               %))))
          ;; Previously performed search results
          ;; TODO consider removal (uri holds state and effects)
@@ -437,7 +437,8 @@
         ;; NOTE this spinner is from the transition from the
         ;; find-your-stylist-page to the results on this page
         spinning?              (or (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
-                                   (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-within-radius))]
+                                   (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-within-radius)
+                                   (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters))]
     (if spinning?
       (component/build wait-spinner/component app-state)
       (component/build template
