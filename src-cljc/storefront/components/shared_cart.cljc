@@ -10,10 +10,11 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [storefront.accessors.experiments :as experiments]))
 
 (defcomponent component
-  [{:keys [shared-cart-id shared-cart-promotion store fetching-products? creating-cart? advertised-promo]}
+  [{:keys [remove-bundle-discount? shared-cart-id shared-cart-promotion store fetching-products? creating-cart? advertised-promo]}
    owner
    opts]
   (let [{:keys [portrait store-nickname]} store]
@@ -33,7 +34,8 @@
      [:div.p3.h4.center
       (or (:description shared-cart-promotion)
           (:description advertised-promo)
-          promos/bundle-discount-description)]
+          (when-not remove-bundle-discount?
+            promos/bundle-discount-description))]
      [:form
       {:on-submit (utils/send-event-callback events/control-create-order-from-shared-cart
                                              {:shared-cart-id shared-cart-id})}
@@ -53,12 +55,13 @@
 
 (defn query
   [data]
-  {:shared-cart-id        (get-in data keypaths/shared-cart-id)
-   :shared-cart-promotion (shared-cart-promotion data)
-   :store                 (get-in data keypaths/store)
-   :advertised-promo      (promos/default-advertised-promotion (get-in data keypaths/promotions))
-   :fetching-products?    (utils/requesting? data (conj request-keys/get-products {}))
-   :creating-cart?        (utils/requesting? data request-keys/create-order-from-shared-cart)})
+  {:remove-bundle-discount? (experiments/remove-bundle-discount? data)
+   :shared-cart-id          (get-in data keypaths/shared-cart-id)
+   :shared-cart-promotion   (shared-cart-promotion data)
+   :store                   (get-in data keypaths/store)
+   :advertised-promo        (promos/default-advertised-promotion (get-in data keypaths/promotions))
+   :fetching-products?      (utils/requesting? data (conj request-keys/get-products {}))
+   :creating-cart?          (utils/requesting? data request-keys/create-order-from-shared-cart)})
 
 (defn ^:export built-component
   [data opts]
