@@ -248,7 +248,7 @@
 (defmethod trackings/perform-track events/adventure-stylist-search-results-post-purchase-displayed
   [_ event args app-state]
   #?(:cljs
-     (let [{:keys [latitude longitude radius]} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
+     (let [{:keys [latitude longitude radius]} (get-in app-state adventure.keypaths/adventure-stylist-match-location)
            results                             (map :stylist-id (get-in app-state adventure.keypaths/adventure-matched-stylists))]
        (stringer/track-event "stylist_search_results_displayed"
                              {:results            results
