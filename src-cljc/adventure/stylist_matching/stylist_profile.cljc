@@ -23,7 +23,7 @@
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
             [stylist-directory.stylists :as stylists]
-            stylist-directory.keypaths
+            [stylist-directory.keypaths]
             [spice.core :as spice]
             [storefront.request-keys :as request-keys]))
 

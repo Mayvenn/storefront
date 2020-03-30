@@ -3,16 +3,17 @@
                        [storefront.history :as history]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.browser.cookie-jar :as cookie]])
-            adventure.keypaths
-            storefront.keypaths
+            [adventure.keypaths]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
+            [storefront.keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.transitions :as transitions]
-            [storefront.trackings :as trackings]))
+            [storefront.trackings :as trackings]
+            [stylist-directory.keypaths]))
 
 (defmethod effects/perform-effects events/adventure-address-component-mounted
   [_ event {:keys [address-elem address-keypath]} _ app-state]

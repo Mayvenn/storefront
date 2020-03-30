@@ -12,7 +12,8 @@
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
    [storefront.request-keys :as request-keys]
-   [storefront.transitions :as transitions]))
+   [storefront.transitions :as transitions]
+   [stylist-directory.keypaths]))
 
 (defn specialty->filter [selected-filters [label specialty]]
   (let [checked? (some #{specialty} selected-filters)]
