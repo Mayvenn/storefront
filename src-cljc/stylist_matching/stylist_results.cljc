@@ -40,7 +40,6 @@
   [_ _ {:keys [query-params]} app-state]
   (let [{:keys [lat long]} query-params]
     (cond-> app-state
-      ;; TODO grab preferred services from URI
       (and lat long)
       (-> (assoc-in adventure.keypaths/adventure-stylist-match-location ;; GROT
                     {:latitude  (spice/parse-double lat)
