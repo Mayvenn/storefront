@@ -112,8 +112,6 @@
   [_ _ args _ app-state]
   #?(:cljs
      (let [matched-stylists (get-in app-state adventure.keypaths/adventure-matched-stylists)]
-       (when (experiments/stylist-filters? app-state)
-         (google-maps/insert))
        (if (orders/service-line-item-promotion-applied? (get-in app-state storefront.keypaths/completed-order))
          (if (empty? matched-stylists)
            (messages/handle-message events/api-shipping-address-geo-lookup)
@@ -473,6 +471,7 @@
                         :spinning?           (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters)
                         :filters-modal       (or #?(:cljs (filters-modal/query app-state)))
                         :location-search-box (when (and (get-in app-state storefront.keypaths/loaded-google-maps)
+                                                        (not post-purchase?)
                                                         (experiments/stylist-filters? app-state))
                                                {:stylist.results.location-search-box/id      "stylist-search-input"
                                                 :stylist.results.location-search-box/value   (get-in app-state stylist-directory.keypaths/stylist-search-address-input)
