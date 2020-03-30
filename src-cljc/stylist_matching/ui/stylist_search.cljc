@@ -29,6 +29,9 @@
   #?(:cljs
      (-> app-state
          (assoc-in adventure.keypaths/adventure-matched-stylists nil)
+         (assoc-in stylist-directory.keypaths/stylist-search-selected-location nil)
+         (assoc-in stylist-directory.keypaths/stylist-search-selected-filters nil)
+         (assoc-in stylist-directory.keypaths/stylist-search-address-input nil)
          (assoc-in adventure.keypaths/adventure-stylist-match-address
                    (.-value (.getElementById js/document "stylist-match-address"))))))
 
@@ -111,6 +114,11 @@
                (stylist-search-button data)]]))))
 
 (defmethod effects/perform-effects events/api-success-fetch-stylists-within-radius
+  [_ _ {:keys [initial-load?]} app-state]
+  (when initial-load?
+    (messages/handle-message events/adventure-stylist-search-results-displayed {})))
+
+(defmethod effects/perform-effects events/api-success-fetch-stylists-matching-filters
   [_ _ {:keys [initial-load?]} app-state]
   (when initial-load?
     (messages/handle-message events/adventure-stylist-search-results-displayed {})))

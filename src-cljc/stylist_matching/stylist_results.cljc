@@ -42,11 +42,15 @@
     (cond-> app-state
       ;; TODO grab preferred services from URI
       (and lat long)
-      (assoc-in adventure.keypaths/adventure-stylist-match-location
-                {:latitude  (spice/parse-double lat)
-                 :longitude (spice/parse-double long)})
+      (-> (assoc-in adventure.keypaths/adventure-stylist-match-location ;; GROT
+                    {:latitude  (spice/parse-double lat)
+                     :longitude (spice/parse-double long)})
+          (assoc-in stylist-directory.keypaths/stylist-search-selected-location
+                    {:latitude  (spice/parse-double lat)
+                     :longitude (spice/parse-double long)
+                     :radius    "100mi"}))
 
-      :always
+      (nil? (get-in app-state stylist-directory.keypaths/stylist-search-address-input))
       (assoc-in stylist-directory.keypaths/stylist-search-address-input
                 (get-in app-state adventure.keypaths/adventure-stylist-match-address)))))
 
@@ -64,8 +68,9 @@
                                                          (not= events/navigate-adventure-stylist-results-pre-purchase
                                                                (get-in prev-app-state storefront.keypaths/navigation-event)))
            {stylist-ids :s}                          query-params
-           {:keys [latitude longitude] :as location} (get-in app-state adventure.keypaths/adventure-stylist-match-location)
-           matched-stylists                          (get-in app-state adventure.keypaths/adventure-matched-stylists)]
+           {:keys [latitude longitude] :as location} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
+           matched-stylists                          (get-in app-state adventure.keypaths/adventure-matched-stylists)
+           preferred-services                        (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)]
        (when (experiments/stylist-filters? app-state)
          (google-maps/insert))
        (cond
@@ -76,16 +81,17 @@
                                      #(messages/handle-message events/api-success-fetch-matched-stylists
                                                                %))
          ;; Querying based upon geo location
-         (and location (nil? matched-stylists))
-         (let [query {:latitude  latitude
-                      :longitude longitude
-                      :radius    "100mi"
-                      :choices   (get-in app-state adventure.keypaths/adventure-choices)}] ; For trackings purposes only
-           (api/fetch-stylists-within-radius query
-                                             #(messages/handle-message events/api-success-fetch-stylists-within-radius-pre-purchase
-                                                                       (merge {:query         query
-                                                                               :initial-load? initial-load?}
-                                                                              %))))
+         location
+         (let [query {:latitude           latitude
+                      :longitude          longitude
+                      :radius             "100mi"
+                      :choices            (get-in app-state adventure.keypaths/adventure-choices) ; For trackings purposes only
+                      :preferred-services preferred-services}]
+           (api/fetch-stylists-matching-filters query
+                                                #(messages/handle-message events/api-success-fetch-stylists-matching-filters
+                                                                          (merge {:query         query
+                                                                                  :initial-load? initial-load?}
+                                                                                 %))))
          ;; Previously performed search results
          ;; TODO consider removal (uri holds state and effects)
          (seq matched-stylists)
@@ -98,8 +104,9 @@
 (defmethod transitions/transition-state events/navigate-adventure-stylist-results-post-purchase
   [_ _ args app-state]
   (let [{:keys [address1 address2 city state zipcode]} (get-in app-state storefront.keypaths/completed-order-shipping-address)]
-    (assoc-in app-state stylist-directory.keypaths/stylist-search-address-input
-              (string/join " " [address1 address2 (str city ",") state zipcode]))))
+    (when (nil? (get-in app-state stylist-directory.keypaths/stylist-search-address-input))
+      (assoc-in app-state stylist-directory.keypaths/stylist-search-address-input
+                (string/join " " [address1 address2 (str city ",") state zipcode])))))
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-post-purchase
   [_ _ args _ app-state]
@@ -142,20 +149,39 @@
          (assoc-in stylist-directory.keypaths/stylist-search-address-input
                    (.-value (.getElementById js/document "stylist-search-input"))))))
 
+;; #?(:cljs
+;;    (defmethod effects/perform-effects events/stylist-results-address-selected
+;;      [_ event args _ app-state]
+;;      (let [{:keys [latitude longitude] :as location} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)]
+;;        (api/fetch-stylists-matching-filters {:latitude  latitude
+;;                                              :longitude longitude
+;;                                              :radius    "100mi"
+;;                                              :preferred-services   (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)}))))
+
 #?(:cljs
    (defmethod effects/perform-effects events/stylist-results-address-selected
      [_ event args _ app-state]
-     (let [{:keys [latitude longitude] :as location} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)]
-       (api/fetch-stylists-matching-filters {:latitude  latitude
-                                             :longitude longitude
-                                             :radius    "100mi"
-                                             :preferred-services   (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)}))))
+     (let [[nav-event nav-args] (get-in app-state storefront.keypaths/navigation-message) ; pre- or post- purchase
+           {:keys [latitude longitude] :as location} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
+           service-filters                           (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)]
+       (history/enqueue-redirect nav-event
+                                 {:query-params
+                                  (merge (:query-params nav-args)
+                                         {:lat                latitude
+                                          :long               longitude
+                                          :preferred-services service-filters})}))))
+
 
 (defmethod transitions/transition-state events/api-success-fetch-stylists-matching-filters
-  [_ event {:keys [stylists]} app-state]
+  [_ event {:keys [stylists query]} app-state]
   #?(:cljs
-     (-> app-state
-         (assoc-in adventure.keypaths/adventure-matched-stylists stylists))))
+     (cond-> (assoc-in app-state adventure.keypaths/adventure-matched-stylists stylists)
+
+         (seq query)
+         (assoc-in stylist-directory.keypaths/stylist-search-selected-location
+                   {:latitude  (:latitude query)
+                    :longitude (:longitude query)
+                    :radius    (:radius query)}))))
 
 (defmethod effects/perform-effects events/control-adventure-select-stylist-pre-purchase
   [_ _ {:keys [card-index servicing-stylist]} _ app-state]
@@ -208,7 +234,7 @@
 (defmethod trackings/perform-track events/adventure-stylist-search-results-displayed
   [_ event args app-state]
   #?(:cljs
-     (let [{:keys [latitude longitude]} (get-in app-state adventure.keypaths/adventure-stylist-match-location)
+     (let [{:keys [latitude longitude radius]} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
            location-submitted           (get-in app-state adventure.keypaths/adventure-stylist-match-address)
            results                      (map :stylist-id (get-in app-state adventure.keypaths/adventure-matched-stylists))]
        (stringer/track-event "stylist_search_results_displayed"
@@ -216,13 +242,13 @@
                               :latitude           latitude
                               :longitude          longitude
                               :location_submitted location-submitted
-                              :radius             "100mi"
+                              :radius             radius
                               :current_step       2}))))
 
 (defmethod trackings/perform-track events/adventure-stylist-search-results-post-purchase-displayed
   [_ event args app-state]
   #?(:cljs
-     (let [{:keys [latitude longitude radius]} (get-in app-state adventure.keypaths/adventure-stylist-match-location)
+     (let [{:keys [latitude longitude radius]} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
            results                             (map :stylist-id (get-in app-state adventure.keypaths/adventure-matched-stylists))]
        (stringer/track-event "stylist_search_results_displayed"
                              {:results            results

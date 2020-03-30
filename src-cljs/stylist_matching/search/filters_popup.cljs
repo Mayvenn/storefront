@@ -7,6 +7,7 @@
    [storefront.components.ui :as ui]
    [storefront.effects :as effects]
    [storefront.events :as events]
+   [storefront.history :as history]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
@@ -14,13 +15,13 @@
    [storefront.transitions :as transitions]))
 
 (defn specialty->filter [selected-filters [label specialty]]
-  (let [checked? (contains? selected-filters specialty)]
+  (let [checked? (some #{specialty} selected-filters)]
     {:stylist-search-filter/label    label
      :stylist-search-filter/id       (str "stylist-filter-" (name specialty))
      :stylist-search-filter/target   [events/control-stylist-search-toggle-filter
-                                      {:previously-checked? checked?
-                                       :filter              specialty}]
-     :stylist-search-filter/checked? (contains? selected-filters specialty)}))
+                                      {:previously-checked?      checked?
+                                       :stylist-filter-selection specialty}]
+     :stylist-search-filter/checked? checked?}))
 
 (defn query [data]
   (let [selected-filters
@@ -71,20 +72,24 @@
                          :id        id
                          :data-test id})]])]])))
 
+(defmethod transitions/transition-state events/control-stylist-search-toggle-filter
+  [_ event {:keys [previously-checked? stylist-filter-selection]} app-state]
+  (update-in app-state stylist-directory.keypaths/stylist-search-selected-filters
+             #(if previously-checked?
+                (remove #{stylist-filter-selection} %)
+                (conj % stylist-filter-selection))))
+
 (defmethod effects/perform-effects events/control-stylist-search-toggle-filter
   [_ event _ _ app-state]
-  (let [service-filters   (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)
-        selected-location (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
-        params            {:latitude           (:latitude selected-location)
-                           :longitude          (:longitude selected-location)
-                           :radius             "100mi"
-                           :preferred-services service-filters}]
-    (api/fetch-stylists-matching-filters params)))
-
-(defmethod transitions/transition-state events/control-stylist-search-toggle-filter
-  [_ event {:keys [previously-checked? filter]} app-state]
-  (update-in app-state stylist-directory.keypaths/stylist-search-selected-filters
-             (if previously-checked? disj conj) filter))
+  (let [[nav-event nav-args] (get-in app-state storefront.keypaths/navigation-message) ; pre- or post- purchase
+        service-filters      (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)
+        selected-location    (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)]
+    (history/enqueue-redirect nav-event
+                              {:query-params
+                               (merge (:query-params nav-args)
+                                      {:lat                (:latitude selected-location)
+                                       :long               (:longitude selected-location)
+                                       :preferred-services service-filters})})))
 
 (defmethod transitions/transition-state events/control-stylist-search-reset-filters
   [_ event _ app-state]

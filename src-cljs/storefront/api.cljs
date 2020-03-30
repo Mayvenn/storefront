@@ -1047,13 +1047,14 @@
    {:params  params
     :handler handler}))
 
-(defn fetch-stylists-matching-filters [params]
+(defn fetch-stylists-matching-filters [params handler]
   (storeback-api-req
    GET
    "/v1/stylist/within-radius"
    request-keys/fetch-stylists-matching-filters
    {:params  params
-    :handler #(messages/handle-message events/api-success-fetch-stylists-matching-filters %)}))
+    :handler (or handler
+                 #(messages/handle-message events/api-success-fetch-stylists-matching-filters %))}))
 
 (defn fetch-matched-stylist
   ([cache stylist-id]
