@@ -435,7 +435,8 @@
 
 (defn regular-cart-summary-query
   "This is for cart's that haven't entered an upsell (free install, wig customization, etc)"
-  [show-priority-shipping-method?
+  [remove-bundle-discount?
+   show-priority-shipping-method?
    {:as order :keys [adjustments tax-total total]} {:mayvenn-install/keys [any-wig?]}]
   (let [subtotal          (orders/products-and-services-subtotal order)
         shipping          (orders/shipping-item order)
@@ -483,7 +484,9 @@
 
          :freeinstall-informational/button-id             "add-mayvenn-install"
          :freeinstall-informational/primary               "Don't miss out on free Mayvenn Install"
-         :freeinstall-informational/secondary             "Save 10% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below."
+         :freeinstall-informational/secondary             (if remove-bundle-discount?
+                                                            "Get a free install by a licensed stylist when you add a Mayvenn Install to your cart below."
+                                                            "Save 10% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below.")
          :freeinstall-informational/cta-label             "Add Mayvenn Install"
          :freeinstall-informational/cta-target            [events/control-cart-add-base-service]
          :freeinstall-informational/fine-print            "*Mayvenn Install cannot be combined with other promo codes."
@@ -606,10 +609,10 @@
               :cart-summary-total-incentive/label "Includes Wig Customization"}))))
 
 (defn cart-summary-query
-  [show-priority-shipping-method? order install]
+  [remove-bundle-discount? show-priority-shipping-method? order install]
   (if (:mayvenn-install/entered? install)
     (upsold-cart-summary-query show-priority-shipping-method? order install)
-    (regular-cart-summary-query show-priority-shipping-method? order install)))
+    (regular-cart-summary-query remove-bundle-discount? show-priority-shipping-method? order install)))
 
 (defn promo-input-query
   [data order entered?]
@@ -718,7 +721,8 @@
              :applied?                  applied?
              :remove-freeinstall-event  [events/control-checkout-remove-promotion {:code "freeinstall"}]
              :cart-summary              (merge
-                                         (cart-summary-query (experiments/show-priority-shipping-method? data)
+                                         (cart-summary-query (experiments/remove-bundle-discount? data)
+                                                             (experiments/show-priority-shipping-method? data)
                                                              order
                                                              mayvenn-install)
                                          {:promo-field-data (promo-input-query data order entered?)})

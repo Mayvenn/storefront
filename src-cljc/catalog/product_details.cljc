@@ -151,14 +151,6 @@
      :data-ref "cart-button"}
     (ui/button-large-primary (utils/route-to events/navigate-cart) "Check out")]))
 
-(def triple-bundle-upsell
-  [:p.center.h6.flex.items-center.justify-center
-   (svg/discount-tag {:class  "mxnp6"
-                      :height "4em"
-                      :width  "4em"})
-   [:span.medium.shout "10% off "] [:span.bold.h5.mx1 "·"]
-   "Buy 3 bundles or more"])
-
 (def shipping-and-guarantee
   (component/html
    [:div.border-top.border-bottom.border-gray.p2.my2.center.shout.medium.h6
@@ -342,7 +334,8 @@
 
 (defn add-to-cart-query
   [data selected-sku sku-price]
-  (let [shop?                                (= "shop" (get-in data keypaths/store-slug))
+  (let [remove-bundle-discount?              (experiments/remove-bundle-discount? data)
+        shop?                                (= "shop" (get-in data keypaths/store-slug))
         sku-family                           (-> selected-sku :hair/family first)
         mayvenn-install-incentive-families   #{"bundles" "closures" "frontals" "360-frontals"}
         wig-customization-incentive-families #{"360-wigs" "lace-front-wigs"}]
@@ -356,20 +349,19 @@
              :quadpay/loaded? (get-in data keypaths/loaded-quadpay)
              :quadpay/price   sku-price}
 
-      (and
-       shop?
-       (mayvenn-install-incentive-families sku-family))
+      (and shop? (mayvenn-install-incentive-families sku-family))
       (merge
        {:add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
         :add-to-cart.incentive-block/footnote    "*Mayvenn Install cannot be combined with other promotions"
         :add-to-cart.incentive-block/link-id     "learn-more-mayvenn-install"
         :add-to-cart.incentive-block/link-label  "Learn more"
         :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
-        :add-to-cart.incentive-block/message     (str "Save 10% & get a free Mayvenn Install when you "
-                                                      "purchase 3 bundles, closure, or frontals.* ")})
-      (and
-       shop?
-       (wig-customization-incentive-families sku-family))
+        :add-to-cart.incentive-block/message     (if remove-bundle-discount?
+                                                   (str "Get a free Mayvenn Install when you "
+                                                        "purchase 3 bundles, closure, or frontals.* ")
+                                                   (str "Save 10% & get a free Mayvenn Install when you "
+                                                        "purchase 3 bundles, closure, or frontals.* "))})
+      (and shop? (wig-customization-incentive-families sku-family))
       (merge
        {:add-to-cart.incentive-block/id       "add-to-cart-incentive-block"
         :add-to-cart.incentive-block/callout  "✋Don't miss out on free Wig Customization"

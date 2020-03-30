@@ -167,7 +167,7 @@
             #(set/join % shared-cart-skus
                        {:legacy/variant-id :legacy/variant-id}))))
 
-(defn shared-cart->discount
+(defn shared-cart->discount-with-bundle-discount
   [{:keys [promotions base-price shared-cart-promo base-service]}]
   (if base-service
     (let [service-price (:sku/price base-service)]
@@ -189,9 +189,33 @@
                                    (* base-price))
                           base-price)}))) ;; discounted price was unparsable
 
+(defn shared-cart->discount
+  [{:keys [promotions base-price shared-cart-promo base-service]}]
+  (if base-service
+    (let [service-price (:sku/price base-service)]
+      {:discount-text    "Hair + FREE Install"
+       :discounted-price (* 0.90 (- base-price service-price))})
+    (let [promotion% (some->> promotions
+                              (filter (comp #{shared-cart-promo} str/lower-case :code))
+                              first
+                              :description
+                              (re-find #"\b(\d\d?\d?)%")
+                              second)]
+      {:discount-text    (some-> promotion% (str "%"))
+       :discounted-price (or
+                          (some->> promotion%
+                                   spice/parse-int
+                                   (* 0.01)
+                                   (- 1.0)  ;; 100% - discount %
+                                   (* base-price))
+                          base-price)})))
+
 
 (defn query [data]
-  (let [skus                                     (get-in data keypaths/v2-skus)
+  (let [shared-cart-discount-parser-fn           (if (experiments/remove-bundle-discount? data)
+                                                   shared-cart->discount
+                                                   shared-cart->discount-with-bundle-discount)
+        skus                                     (get-in data keypaths/v2-skus)
         shared-cart                              (get-in data keypaths/shared-cart-current)
         {shared-cart-skus :line-items
          :as              shared-cart-with-skus} (some-> shared-cart
@@ -209,7 +233,7 @@
                                   (:sku/price line-item))))
                         (apply + 0))
 
-        discount (shared-cart->discount
+        discount (shared-cart-discount-parser-fn
                   {:promotions        (get-in data keypaths/promotions)
                    :shared-cart-promo (some-> shared-cart-with-skus :promotion-codes first str/lower-case)
                    :base-price        base-price
