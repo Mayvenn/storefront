@@ -181,8 +181,29 @@
     ^:attrs (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
     text]))
 
+(defn individual-header-menu-link
+  ([opts text]
+   (individual-header-menu-link opts text nil))
+  ([opts text flyout-content]
+   (component/html
+    [:div.inline.relative
+     [:a.h5.medium.inherit-color.py2
+      ^:attrs (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
+      text]
+     [:div.absolute.left-0.z2
+      {:style {:padding-left "24px"}}
+      (when flyout-content
+        [:div.bg-warm-gray.flex.flex-column.p8
+         (for [{:keys [key nav-message copy new?]} flyout-content]
+           [:a.inherit-color.left-align.nowrap.my1.content-1
+            (merge
+             (apply utils/route-to nav-message)
+             {:key key
+              :id  key})
+            copy])])]])))
+
 (defn menu
-  [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals? site blog?]}]
+  [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals? site]}]
   (component/html
    [:div.center
     (when show-freeinstall-link?
@@ -221,6 +242,67 @@
     ^:inline (header-menu-link {:href           blog-url
                                 :on-mouse-enter close-header-menus}
                                "Blog")]))
+
+(defn individual-flyout-menu
+  [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals? site]
+    :as   queried-data}]
+  (component/html
+   [:div.center
+    (when show-freeinstall-link?
+      ^:inline (individual-header-menu-link
+                (assoc (utils/route-to events/navigate-adventure-match-stylist)
+                       :on-mouse-enter close-header-menus)
+                (component/html [:span [:span.p-color.pr1 "NEW"] "Get a Mayvenn Install"])))
+
+    (when-not show-bundle-sets-and-hide-deals?
+      ^:inline (individual-header-menu-link
+                (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
+                       :on-mouse-enter close-header-menus)
+                "Deals"))
+
+    (if (= :classic site)
+      ^:inline (individual-header-menu-link
+                (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+                       :on-mouse-enter close-header-menus)
+                "Shop by look")
+      [:div.inline (->flyout-handlers keypaths/shop-looks-menu-expanded)
+       ^:inline (individual-header-menu-link
+                 (utils/route-to events/navigate-home)
+                 "Shop by look"
+                 (when (:shop-looks-menu/expanded? queried-data)
+                   ;; TODO: refactor data structure to remove be a single level list of items
+                   (flatten
+                    (:shop-looks-menu/columns queried-data))))])
+
+    (when show-bundle-sets-and-hide-deals?
+      [:div.inline (->flyout-handlers keypaths/shop-bundle-sets-menu-expanded)
+       ^:inline (individual-header-menu-link
+                 (utils/route-to events/navigate-home)
+                 "Shop bundle sets"
+                 (when (:shop-bundle-sets-menu/expanded? queried-data)
+                   ;; TODO: refactor data structure to remove be a single level list of items
+                   (flatten
+                    (:shop-bundle-sets-menu/columns queried-data))))])
+
+    [:div.inline (->flyout-handlers keypaths/shop-a-la-carte-menu-expanded)
+     ^:inline (individual-header-menu-link
+               (utils/route-to events/navigate-home)
+               "Shop hair"
+               (when (:shop-a-la-carte-menu/expanded? queried-data)
+                 ;; TODO: refactor data structure to remove be a single level list of items
+                 (flatten (:shop-a-la-carte-menu/columns queried-data))))]
+    ^:inline (individual-header-menu-link
+              (assoc (utils/route-to events/navigate-content-guarantee)
+                     :on-mouse-enter close-header-menus)
+              "Our Guarantee")
+    ^:inline (individual-header-menu-link
+              (assoc (utils/route-to events/navigate-content-our-hair)
+                     :on-mouse-enter close-header-menus)
+              "Our hair")
+    ^:inline (individual-header-menu-link
+              {:href           blog-url
+               :on-mouse-enter close-header-menus}
+              "Blog")]))
 
 (defn flyout-column [options col-count]
   {:pre [(zero? (mod 12 col-count))]}
@@ -282,7 +364,10 @@
     (ui/shopping-bag {:data-test "mobile-cart"}
                      {:quantity value}))))
 
-(defcomponent component [{:as data :keys [store user cart signed-in vouchers?]} _ _]
+(defcomponent component
+  [{:as   data
+    :keys [new-flyout-menu?
+           store user cart signed-in vouchers?]} _ _]
   [:div
    [:div.hide-on-mb.relative
     {:on-mouse-leave close-header-menus}
@@ -298,17 +383,21 @@
        [:div.mb4 ^:inline (ui/clickable-logo {:event     events/navigate-home
                                               :data-test "desktop-header-logo"
                                               :height    "44px"})]
-       [:div ^:inline (menu data)]]
+       [:div ^:inline (if new-flyout-menu?
+                        (individual-flyout-menu data)
+                        (menu data))]]
       ^:inline (ui/shopping-bag {:style     {:height "44px"
                                              :width  "33px"}
                                  :data-test "desktop-cart"}
                                 cart)]]
-    ^:inline (flyout (:shop-a-la-carte-menu/columns data)
-                     (:shop-a-la-carte-menu/expanded? data))
-    ^:inline (flyout (:shop-looks-menu/columns data)
-                     (:shop-looks-menu/expanded? data))
-    ^:inline (flyout (:shop-bundle-sets-menu/columns data)
-                     (:shop-bundle-sets-menu/expanded? data))]
+    (when-not new-flyout-menu?
+      (list
+       ^:inline (flyout (:shop-a-la-carte-menu/columns data)
+                        (:shop-a-la-carte-menu/expanded? data))
+       ^:inline (flyout (:shop-looks-menu/columns data)
+                        (:shop-looks-menu/expanded? data))
+       ^:inline (flyout (:shop-bundle-sets-menu/columns data)
+                        (:shop-bundle-sets-menu/expanded? data))))]
    (mobile-nav-header
     {:class "border-bottom border-gray hide-on-tb-dt"
      :style {:height "70px"}}
@@ -405,6 +494,7 @@
         shop?                              (= "shop" (get-in data keypaths/store-slug))
         aladdin?                           (experiments/aladdin-experience? data)]
     {:signed-in                        (auth/signed-in data)
+     :new-flyout-menu?                 (experiments/new-flyout-menu? data)
      :on-taxon?                        (get-in data keypaths/current-traverse-nav)
      :promo-banner                     (promo-banner/query data)
      :user                             {:stylist-portrait (get-in data keypaths/user-stylist-portrait)

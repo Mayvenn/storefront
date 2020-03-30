@@ -116,3 +116,7 @@
 (defn hide-stylist-specialty?
   [data]
   (display-feature? data "hide-stylist-specialty"))
+
+(defn new-flyout-menu?
+  [data]
+  (display-feature? data "new-flyout-menu"))
