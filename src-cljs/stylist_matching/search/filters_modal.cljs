@@ -1,9 +1,8 @@
-(ns stylist-matching.search.filters-popup
+(ns stylist-matching.search.filters-modal
   (:require
    [storefront.api :as api]
    [storefront.component :as component]
    [storefront.components.header :as components.header]
-   [storefront.components.popup :as popup]
    [storefront.components.ui :as ui]
    [storefront.effects :as effects]
    [storefront.events :as events]

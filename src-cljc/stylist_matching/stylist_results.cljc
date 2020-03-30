@@ -6,7 +6,7 @@
                        [storefront.hooks.google-maps :as google-maps]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.frontend-trackings :as frontend-trackings]
-                       [stylist-matching.search.filters-popup :as filters-popup]
+                       [stylist-matching.search.filters-modal :as filters-modal]
                        [storefront.accessors.orders :as orders]])
             [adventure.components.wait-spinner :as wait-spinner]
             adventure.keypaths
@@ -428,9 +428,9 @@
                                 "Filters"])]]))))
 
 (defcomponent template
-  [{:keys [popup spinning? filters-popup gallery-modal header list/results location-search-box shopping-method-choice]} _ _]
+  [{:keys [popup spinning? filters-modal gallery-modal header list/results location-search-box shopping-method-choice]} _ _]
   [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
-  #?(:cljs (component/build filters-popup/component filters-popup nil))
+  #?(:cljs (component/build filters-modal/component filters-modal nil))
 
    (component/build gallery-modal/organism gallery-modal nil)
    (components.header/adventure-header (:header.back-navigation/target header)
@@ -471,7 +471,7 @@
                        {:gallery-modal       (gallery-modal-query app-state)
                         ;; NOTE: this spinner is for when new results are being fetched when filters are applied
                         :spinning?           (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters)
-                        :filters-popup       (or #?(:cljs (filters-popup/query app-state)))
+                        :filters-modal       (or #?(:cljs (filters-modal/query app-state)))
                         :location-search-box (when (and (get-in app-state storefront.keypaths/loaded-google-maps)
                                                         (experiments/stylist-filters? app-state))
                                                {:stylist.results.location-search-box/id      "stylist-search-input"
