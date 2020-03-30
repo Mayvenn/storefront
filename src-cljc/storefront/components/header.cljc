@@ -193,7 +193,7 @@
      [:div.absolute.left-0.z2
       {:style {:padding-left "24px"}}
       (when flyout-content
-        [:div.bg-warm-gray.flex.flex-column.p8
+        [:div.bg-cool-gray.flex.flex-column.p8.border.border-pale-purple
          (for [{:keys [key nav-message copy new?]} flyout-content]
            [:a.inherit-color.left-align.nowrap.my1.content-1
             (merge
