@@ -8,7 +8,6 @@
                        [storefront.frontend-trackings :as frontend-trackings]
                        [stylist-matching.search.filters-modal :as filters-modal]
                        [storefront.accessors.orders :as orders]])
-            [adventure.components.wait-spinner :as wait-spinner]
             adventure.keypaths
             api.orders
             [clojure.string :as string]
@@ -449,40 +448,33 @@
      :else
      (component/build shopping-method-choice/organism shopping-method-choice nil))])
 
-(def post-purchase? #{events/navigate-adventure-stylist-results-post-purchase})
-
 (defn page
   [app-state]
   (let [current-order          (api.orders/current app-state)
         stylist-search-results (get-in app-state adventure.keypaths/adventure-matched-stylists)
         nav-event              (get-in app-state storefront.keypaths/navigation-event)
-        post-purchase?         (post-purchase? nav-event)
-        ;; NOTE this spinner is from the transition from the
-        ;; find-your-stylist-page to the results on this page
-        spinning?              (or (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
-                                   (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-within-radius)
-                                   (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters))]
-    (if spinning?
-      (component/build wait-spinner/component app-state)
-      (component/build template
-                       {:gallery-modal       (gallery-modal-query app-state)
-                        ;; NOTE: this spinner is for when new results are being fetched when filters are applied
-                        :spinning?           (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters)
-                        :filters-modal       (or #?(:cljs (filters-modal/query app-state)))
-                        :location-search-box (when (and (get-in app-state storefront.keypaths/loaded-google-maps)
-                                                        (not post-purchase?)
-                                                        (experiments/stylist-filters? app-state))
-                                               {:stylist.results.location-search-box/id      "stylist-search-input"
-                                                :stylist.results.location-search-box/value   (get-in app-state stylist-directory.keypaths/stylist-search-address-input)
-                                                :stylist.results.location-search-box/keypath stylist-directory.keypaths/stylist-search-address-input
-                                                :stylist.results.location-search-box/errors  []})
-                        :header              (header-query current-order
-                                                           (first (get-in app-state storefront.keypaths/navigation-undo-stack))
-                                                           post-purchase?)
-                        :list/results        (when (seq stylist-search-results)
-                                               (insert-at-pos 3
-                                                             call-out-query
-                                                             (stylist-cards-query post-purchase?
-                                                                                  (experiments/hide-stylist-specialty? app-state)
-                                                                                  stylist-search-results)))
-                        :shopping-method-choice (out-of-area/shopping-method-choice-query (experiments/hide-bundle-sets? app-state))}))))
+        post-purchase?         (#{events/navigate-adventure-stylist-results-post-purchase} nav-event)]
+    (component/build template
+                     {:gallery-modal          (gallery-modal-query app-state)
+                      :spinning?              (or (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
+                                                  (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-within-radius)
+                                                  (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters))
+                      :filters-modal          #?(:cljs (filters-modal/query app-state)
+                                                 :clj  nil)
+                      :location-search-box    (when (and (get-in app-state storefront.keypaths/loaded-google-maps)
+                                                         (not post-purchase?)
+                                                         (experiments/stylist-filters? app-state))
+                                                {:stylist.results.location-search-box/id      "stylist-search-input"
+                                                 :stylist.results.location-search-box/value   (get-in app-state stylist-directory.keypaths/stylist-search-address-input)
+                                                 :stylist.results.location-search-box/keypath stylist-directory.keypaths/stylist-search-address-input
+                                                 :stylist.results.location-search-box/errors  []})
+                      :header                 (header-query current-order
+                                                            (first (get-in app-state storefront.keypaths/navigation-undo-stack))
+                                                            post-purchase?)
+                      :list/results           (when (seq stylist-search-results)
+                                                (insert-at-pos 3
+                                                               call-out-query
+                                                               (stylist-cards-query post-purchase?
+                                                                                    (experiments/hide-stylist-specialty? app-state)
+                                                                                    stylist-search-results)))
+                      :shopping-method-choice (out-of-area/shopping-method-choice-query (experiments/hide-bundle-sets? app-state))})))
