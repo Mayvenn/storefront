@@ -99,8 +99,7 @@
                               {:query-params
                                (merge (:query-params nav-args)
                                       {:lat                (:latitude selected-location)
-                                       :long               (:longitude selected-location)
-                                       :preferred-services nil})})))
+                                       :long               (:longitude selected-location)})})))
 
 (defmethod transitions/transition-state events/control-show-stylist-search-filters
   [_ event args app-state]
