@@ -195,12 +195,12 @@
       (when flyout-content
         [:div.bg-cool-gray.flex.flex-column.p8.border.border-pale-purple
          (for [{:keys [key nav-message copy new?]} flyout-content]
-           [:a.inherit-color.left-align.nowrap.my1.content-1
+           [:a.inherit-color.left-align.nowrap.my1.content-1.hover-menu-item
             (merge
              (apply utils/route-to nav-message)
              {:key key
               :id  key})
-            copy])])]])))
+            [:span copy]])])]])))
 
 (defn menu
   [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals? site]}]

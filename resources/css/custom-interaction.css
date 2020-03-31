@@ -20,6 +20,11 @@
 .hoverable:hover .show-on-hover { display: block; }
 .hoverable .show-on-hover { display: none; }
 
+.hover-menu-item:hover > span {
+    margin-left: 10px;
+    color: var(--p-color);
+}
+
 @keyframes lineItemGlow {
     25% {
         background-color: var(--s-color);
