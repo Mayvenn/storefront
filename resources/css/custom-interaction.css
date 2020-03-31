@@ -23,6 +23,7 @@
 .hover-menu-item:hover > span {
     margin-left: 10px;
     color: var(--p-color);
+    margin-right: -10px;
 }
 
 @keyframes lineItemGlow {
