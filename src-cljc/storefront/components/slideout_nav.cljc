@@ -5,7 +5,6 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
             [storefront.assets :as assets]
-            [storefront.community :as community]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.marquee :as marquee]
             [storefront.components.header :as header]
@@ -82,7 +81,7 @@
         email]]])))
 
 (defn ^:private stylist-actions
-  [vouchers? show-community?]
+  [vouchers?]
   (component/html
    [:div
     (when vouchers?
@@ -102,10 +101,7 @@
      (ui/button-small-secondary (assoc (utils/route-to events/navigate-v2-stylist-dashboard-orders)
                                        :data-test "dashboard"
                                        :class "mr2 mt2")
-                                "Dashboard")
-     (when show-community?
-       (ui/button-small-secondary community/community-url
-                                  "Community"))]]))
+                                "Dashboard")]]))
 
 (def ^:private user-actions
   (component/html
@@ -130,9 +126,9 @@
       "Or sign up now, get offers!")]]))
 
 (defn ^:private actions-marquee
-  [signed-in vouchers? show-community?]
+  [signed-in vouchers?]
   (case (-> signed-in ::auth/as)
-    :stylist (stylist-actions vouchers? show-community?)
+    :stylist (stylist-actions vouchers?)
     :user    user-actions
     :guest   guest-actions))
 
@@ -275,14 +271,14 @@
     "Edit Gallery")))
 
 (defcomponent ^:private root-menu
-  [{:keys [user signed-in show-community? vouchers?] :as data} owner opts]
+  [{:keys [user signed-in vouchers?] :as data} owner opts]
   [:div
    [:div.bg-cool-gray.p4
     (when (auth/stylist? signed-in)
       [:div.flex.items-center (stylist-portrait user) gallery-link])
     (account-info-marquee signed-in user)
     [:div.my3
-     (actions-marquee signed-in vouchers? show-community?)]]
+     (actions-marquee signed-in vouchers?)]]
    [:div.px3
     (menu-area data)]
    (when (-> signed-in ::auth/at-all)

@@ -59,20 +59,13 @@
    :optional-keys [:storefront/utm-source :storefront/utm-medium :storefront/utm-campaign :storefront/utm-content :storefront/utm-term]
    :required-keys []})
 
-(def telligent-session
-  {:domain        (root-domain)
-   :max-age       nil ;; determined dynamically
-   :secure        config/telligent-community-secured?
-   :optional-keys []
-   :required-keys ["AuthenticatedUser"]})
-
 (def affiliate-stylist-id
   {:domain        (root-domain)
    :max-age       four-weeks
    :optional-keys []
    :required-keys [:affiliate-stylist-id]})
 
-(def account-specs [user order pending-promo telligent-session])
+(def account-specs [user order pending-promo])
 
 (defn all-keys [spec]
   (concat (:optional-keys spec) (:required-keys spec)))
@@ -106,7 +99,6 @@
 (def clear-order (partial clear-cookie order))
 (def clear-pending-promo-code (partial clear-cookie pending-promo))
 (def clear-utm-params (partial clear-cookie utm-params))
-(def clear-telligent-session (partial clear-cookie telligent-session))
 (defn clear-account [cookie]
   (doseq [spec account-specs]
     (clear-cookie spec cookie)))
@@ -164,9 +156,6 @@
   (save-cookie pending-promo cookie {:pending-promo-code promo-code}))
 
 (def save-utm-params (partial save-cookie utm-params))
-
-(defn save-telligent-cookie [cookie contents max-age]
-  (save-cookie (assoc telligent-session :max-age max-age) cookie {"AuthenticatedUser" contents}))
 
 (def clear-adventure (partial clear-cookie adventure))
 

@@ -14,7 +14,6 @@
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.events :as browser-events]
             [storefront.browser.scroll :as scroll]
-            [storefront.community :as community]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.history :as history]
@@ -471,31 +470,28 @@
   (apply effects/redirect
          (get-in app-state keypaths/return-navigation-message)))
 
-(defn redirect-when-signed-in [app-state]
+(defn redirect-when-signed-in
+  [app-state]
   (when (get-in app-state keypaths/user-email)
-    (if (get-in app-state keypaths/telligent-community-url)
-      (community/redirect-to-telligent-as-user app-state)
-      (do
-        (redirect-to-return-navigation app-state)
-        (messages/handle-message events/flash-later-show-success
-                                 {:message "You are already signed in."})))))
+    (redirect-to-return-navigation app-state)
+    (messages/handle-message events/flash-later-show-success
+                             {:message "You are already signed in."})))
 
 (defmethod effects/perform-effects events/navigate-sign-in [_ event args _ app-state]
   (facebook/insert)
   (redirect-when-signed-in app-state))
 
-(defmethod effects/perform-effects events/navigate-sign-out [_ _ {{:keys [telligent-url]} :query-params} _ app-state]
-  (if telligent-url
-    (do
-      (cookie-jar/clear-telligent-session (get-in app-state keypaths/cookie))
-      (messages/handle-message events/external-redirect-telligent))
-    (messages/handle-message events/sign-out)))
+(defmethod effects/perform-effects events/navigate-sign-out [_ _ _ _ app-state]
+  (messages/handle-message events/sign-out))
+
 (defmethod effects/perform-effects events/navigate-sign-up [_ event args _ app-state]
   (facebook/insert)
   (redirect-when-signed-in app-state))
+
 (defmethod effects/perform-effects events/navigate-forgot-password [_ event args _ app-state]
   (facebook/insert)
   (redirect-when-signed-in app-state))
+
 (defmethod effects/perform-effects events/navigate-reset-password [_ event args _ app-state]
   (facebook/insert)
   (redirect-when-signed-in app-state))
@@ -721,10 +717,8 @@
 
 (defmethod effects/perform-effects events/api-success-auth-sign-in
   [_ _ _ _ app-state]
-  (if (get-in app-state keypaths/telligent-community-url)
-    (community/redirect-to-telligent-as-user app-state)
-    (messages/handle-message events/flash-later-show-success
-                             {:message "Logged in successfully"})))
+  (messages/handle-message events/flash-later-show-success
+                           {:message "Logged in successfully"}))
 
 (defmethod effects/perform-effects events/api-success-auth-sign-up [dispatch event args _ app-state]
   (messages/handle-message events/flash-later-show-success {:message "Welcome! You have signed up successfully."}))

@@ -17,7 +17,6 @@
 
 (def features [:features])
 (def welcome-url [:welcome-url])
-(def telligent-community-url [:telligent-community-url])
 
 (def session-id [:session-id])
 

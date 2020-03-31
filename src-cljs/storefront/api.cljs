@@ -1008,16 +1008,6 @@
                                        {:id      static-content-id
                                         :content %})}))
 
-(defn telligent-sign-in [session-id user-id token]
-  (storeback-api-req
-   POST
-   "/v2/login/telligent"
-   request-keys/login-telligent
-   {:params {:session-id session-id
-             :token token
-             :user-id user-id}
-    :handler #(messages/handle-message events/api-success-telligent-login (set/rename-keys % {:max_age :max-age}))}))
-
 (defn voucher-redemption [voucher-code stylist-id]
   (storeback-api-req
    POST

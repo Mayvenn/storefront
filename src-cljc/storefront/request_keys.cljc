@@ -62,8 +62,6 @@
 
 (def stripe-create-token [:stripe-create-token])
 
-(def login-telligent [:login-telligent])
-
 (def fetch-cms-keypath [:fetch-cms-keypath])
 (def voucher-redemption [:voucher-redemption])
 (def fetch-user-stylist-service-menu [:fetch-user-stylist-service-menu])

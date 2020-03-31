@@ -196,12 +196,6 @@
 
 (def ^:private hostname (comp :host url/url))
 
-(defn assoc-valid-telligent-url [app-state telligent-url]
-  (if telligent-url
-    (when (= (hostname telligent-url) (hostname config/telligent-community-url))
-      (assoc-in app-state keypaths/telligent-community-url telligent-url))
-    (assoc-in app-state keypaths/telligent-community-url nil)))
-
 (defn assoc-valid-path [app-state path]
   (let [[event msg] (routes/navigation-message-for path)]
     (if (not= event events/navigate-not-found)
@@ -215,13 +209,9 @@
       (assoc-in keypaths/promo-code-entry-open? false)))
 
 (defmethod transition-state events/navigate-sign-in
-  [_ event {{:keys [telligent-url path]} :query-params} app-state]
+  [_ event {{:keys [path]} :query-params} app-state]
   (-> app-state
-      (assoc-valid-telligent-url telligent-url)
       (assoc-valid-path path)))
-
-(defmethod transition-state events/navigate-sign-out [_ event {{:keys [telligent-url]} :query-params} app-state]
-  (assoc-valid-telligent-url app-state telligent-url))
 
 (defmethod transition-state events/navigate-reset-password [_ event {:keys [reset-token]} app-state]
   (assoc-in app-state keypaths/reset-password-token reset-token))
