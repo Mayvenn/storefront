@@ -442,7 +442,7 @@
                                   [:div.flex.pl1
                                    (preference-key preference->pill-button-copy)
                                    [:div.flex.items-center.pl1
-                                    ^:attrs (merge {:data-test (str "button-" preference-key)}
+                                    ^:attrs (merge {:data-test (str "remove-preference-button-" (name preference-key))}
                                                    (apply utils/fake-href [events/control-stylist-search-toggle-filter
                                                                            {:previously-checked?      true
                                                                             :stylist-filter-selection preference-key}]))
