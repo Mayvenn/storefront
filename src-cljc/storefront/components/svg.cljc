@@ -116,9 +116,9 @@
    [:svg opts
     ^:inline (svg-xlink "x-sharp")]))
 
-(defn close-x [{:keys [class]}]
+(defn close-x [{:keys [class height width]}]
   (component/html
-   [:svg.rotate-45 {:class class :style {:width "1.2em" :height "1.2em"}}
+   [:svg.rotate-45 {:class class :style {:width (or width "1.2em") :height (or height "1.2em")}}
     ^:inline (svg-xlink "counter-inc")]))
 
 ;; NOTE (deprecated): Let's not use this rounded-cornered x. See x-sharp above ^^^.

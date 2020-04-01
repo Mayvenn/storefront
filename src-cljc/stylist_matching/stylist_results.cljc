@@ -33,7 +33,8 @@
             [storefront.platform.messages :as messages]
             [adventure.keypaths :as adventure.keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [clojure.string :as str]))
 
 (defmethod transitions/transition-state events/navigate-adventure-stylist-results-pre-purchase
   [_ _ {:keys [query-params]} app-state]
@@ -391,13 +392,21 @@
      :gallery-modal/ucare-image-urls gallery-images
      :gallery-modal/initial-index    index}))
 
+(def preference->pill-button-copy
+  {:leave-out "Leave out Install"
+   :closure "Closure Install"
+   :frontal "Frontal Install"
+   :360-frontal "360 Frontal Install"
+   :wig-customization "Wig Customization"})
+
 ;; TODO this name and query and such
 (defdynamic-component location-input-and-filters-molecule
   (did-mount [_]
              (messages/handle-message events/stylist-results-address-component-mounted))
   (render [this]
           (let [{:stylist.results.location-search-box/keys
-                 [id value errors keypath filter-count]} (component/get-props this)]
+                 [id value errors keypath preferences]} (component/get-props this)
+                preference-count                        (count preferences)]
             (component/html
              [:div.px3.py2.bg-white.border-bottom.border-gray.flex.flex-column
               (ui/input-with-charm
@@ -413,17 +422,29 @@
                 ^:inline (svg/magnifying-glass {:width  "19px"
                                                 :height "19px"
                                                 :class  "fill-gray"})])
-              [:div.col-3
-               (ui/button-pill {:class "p1 mr4"
-                                :data-test "button-show-stylist-search-filters"
-                                :on-click (utils/send-event-callback events/control-show-stylist-search-filters)}
-                               [:div.flex.items-center
-                                (svg/funnel {:class  "mrp3"
-                                             :height "9px"
-                                             :width  "10px"})
-                                (if (= 0 filter-count)
-                                  "Filters"
-                                  (str "- " filter-count))])]]))))
+              [:div.flex.flex-wrap
+               [:div
+                (ui/button-pill {:class     "p1 mr1"
+                                 :data-test "button-show-stylist-search-filters"
+                                 :on-click  (utils/send-event-callback events/control-show-stylist-search-filters)}
+                                [:div.flex.items-center.px3
+                                 (svg/funnel {:class  "mrp3"
+                                              :height "9px"
+                                              :width  "10px"})
+                                 (if (= 0 preference-count)
+                                   "Filters"
+                                   (str "- " preference-count))])]
+               (for [preference-key preferences]
+                 [:div.pb1
+                  (ui/button-pill {:class     "p1 mr1"
+                                   :key       preference-key
+                                   :data-test (str "button-" preference-key)
+                                   :on-click  identity}
+                                  [:div.flex.pl1
+                                   (preference-key preference->pill-button-copy)
+                                   [:div.flex.items-center.pl1 (svg/close-x {:class  "stroke-white fill-gray"
+                                                                             :width  "13px"
+                                                                             :height "13px"})]])])]]))))
 
 (defcomponent template
   [{:keys [popup spinning? filters-modal gallery-modal header list/results location-search-box shopping-method-choice]} _ _]
@@ -466,11 +487,11 @@
                       :location-search-box    (when (and (get-in app-state storefront.keypaths/loaded-google-maps)
                                                          (not post-purchase?)
                                                          (experiments/stylist-filters? app-state))
-                                                {:stylist.results.location-search-box/id      "stylist-search-input"
-                                                 :stylist.results.location-search-box/value   (get-in app-state stylist-directory.keypaths/stylist-search-address-input)
-                                                 :stylist.results.location-search-box/keypath stylist-directory.keypaths/stylist-search-address-input
-                                                 :stylist.results.location-search-box/errors  []
-                                                 :stylist.results.location-search-box/filter-count (count (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters))})
+                                                {:stylist.results.location-search-box/id          "stylist-search-input"
+                                                 :stylist.results.location-search-box/value       (get-in app-state stylist-directory.keypaths/stylist-search-address-input)
+                                                 :stylist.results.location-search-box/keypath     stylist-directory.keypaths/stylist-search-address-input
+                                                 :stylist.results.location-search-box/errors      []
+                                                 :stylist.results.location-search-box/preferences (vec (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters))})
                       :header                 (header-query current-order
                                                             (first (get-in app-state storefront.keypaths/navigation-undo-stack))
                                                             post-purchase?)
