@@ -397,7 +397,7 @@
              (messages/handle-message events/stylist-results-address-component-mounted))
   (render [this]
           (let [{:stylist.results.location-search-box/keys
-                 [id value errors keypath]} (component/get-props this)]
+                 [id value errors keypath filter-count]} (component/get-props this)]
             (component/html
              [:div.px3.py2.bg-white.border-bottom.border-gray.flex.flex-column
               (ui/input-with-charm
@@ -421,7 +421,9 @@
                                 (svg/funnel {:class  "mrp3"
                                              :height "9px"
                                              :width  "10px"})
-                                "Filters"])]]))))
+                                (if (= 0 filter-count)
+                                  "Filters"
+                                  (str "- " filter-count))])]]))))
 
 (defcomponent template
   [{:keys [popup spinning? filters-modal gallery-modal header list/results location-search-box shopping-method-choice]} _ _]
@@ -467,7 +469,8 @@
                                                 {:stylist.results.location-search-box/id      "stylist-search-input"
                                                  :stylist.results.location-search-box/value   (get-in app-state stylist-directory.keypaths/stylist-search-address-input)
                                                  :stylist.results.location-search-box/keypath stylist-directory.keypaths/stylist-search-address-input
-                                                 :stylist.results.location-search-box/errors  []})
+                                                 :stylist.results.location-search-box/errors  []
+                                                 :stylist.results.location-search-box/filter-count (count (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters))})
                       :header                 (header-query current-order
                                                             (first (get-in app-state storefront.keypaths/navigation-undo-stack))
                                                             post-purchase?)
