@@ -5,7 +5,8 @@
             [storefront.effects :as effects]
             [storefront.transitions :as transitions]
             [storefront.keypaths :as keypaths]
-            [storefront.events :as events]))
+            [storefront.events :as events]
+            [stylist-directory.keypaths]))
 
 (def ^:private browser-event-listener js/HTMLElement.prototype.addEventListener)
 (def ^:private callbacks-for-ready-state
