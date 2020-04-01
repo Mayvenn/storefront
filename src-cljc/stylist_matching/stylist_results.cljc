@@ -438,13 +438,17 @@
                  [:div.pb1
                   (ui/button-pill {:class     "p1 mr1"
                                    :key       preference-key
-                                   :data-test (str "button-" preference-key)
                                    :on-click  identity}
                                   [:div.flex.pl1
                                    (preference-key preference->pill-button-copy)
-                                   [:div.flex.items-center.pl1 (svg/close-x {:class  "stroke-white fill-gray"
-                                                                             :width  "13px"
-                                                                             :height "13px"})]])])]]))))
+                                   [:div.flex.items-center.pl1
+                                    ^:attrs (merge {:data-test (str "button-" preference-key)}
+                                                   (apply utils/fake-href [events/control-stylist-search-toggle-filter
+                                                                           {:previously-checked?      true
+                                                                            :stylist-filter-selection preference-key}]))
+                                    (svg/close-x {:class  "stroke-white fill-gray"
+                                                  :width  "13px"
+                                                  :height "13px"})]])])]]))))
 
 (defcomponent template
   [{:keys [popup spinning? filters-modal gallery-modal header list/results location-search-box shopping-method-choice]} _ _]
