@@ -81,8 +81,15 @@
    :addon-services-menu            events/control-addon-service-menu-dismiss
    :stylist-search-filters         events/control-stylist-search-filters-dismiss})
 
+(defn dismiss-stylist-filter-modal-event
+  [app-state]
+  (when (get-in app-state stylist-directory.keypaths/stylist-search-show-filters?)
+    events/control-stylist-search-filters-dismiss))
+
 (defmethod effects/perform-effects events/escape-key-pressed [_ event args _ app-state]
   (when-let [message-to-handle (get popup-dismiss-events (get-in app-state keypaths/popup))]
+    (handle-message message-to-handle))
+  (when-let [message-to-handle (dismiss-stylist-filter-modal-event app-state)]
     (handle-message message-to-handle)))
 
 (defn attach-esc-key-listener
