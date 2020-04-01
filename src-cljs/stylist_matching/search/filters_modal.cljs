@@ -91,15 +91,20 @@
                                        :long               (:longitude selected-location)
                                        :preferred-services service-filters})})))
 
+(defmethod transitions/transition-state events/control-stylist-search-reset-filters
+  [_ event _ app-state]
+  (update-in app-state stylist-directory.keypaths/stylist-search dissoc :selected-filters))
+
 (defmethod effects/perform-effects events/control-stylist-search-reset-filters
   [_ event _ _ app-state]
   (let [[nav-event nav-args] (get-in app-state storefront.keypaths/navigation-message) ; pre- or post- purchase
         selected-location    (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)]
     (history/enqueue-redirect nav-event
                               {:query-params
-                               (merge (:query-params nav-args)
-                                      {:lat                (:latitude selected-location)
-                                       :long               (:longitude selected-location)})})))
+                               (-> (merge (:query-params nav-args)
+                                         {:lat                (:latitude selected-location)
+                                          :long               (:longitude selected-location)})
+                                   (dissoc :preferred-services))})))
 
 (defmethod transitions/transition-state events/control-show-stylist-search-filters
   [_ event args app-state]
