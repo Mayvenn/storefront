@@ -64,7 +64,8 @@
       (for [{:stylist-search-filter/keys
              [id label target checked?]} filters]
         [:div.col-12.my1.flex.justify-between
-         {:on-click (apply utils/send-event-callback target)}
+         {:on-click (apply utils/send-event-callback target)
+          :key (str "preference-" id)}
          [:div.col-10 label]
          [:div.flex.justify-end
           {:style {:margin-right "-15px"}}

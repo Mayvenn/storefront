@@ -430,6 +430,7 @@
               [:div.flex.flex-wrap
                [:div
                 (ui/button-pill {:class     "p1 mr1"
+                                 :key       "filters-key"
                                  :data-test "button-show-stylist-search-filters"
                                  :on-click  (utils/send-event-callback events/control-show-stylist-search-filters)}
                                 [:div.flex.items-center.px3
@@ -441,8 +442,8 @@
                                    (str "- " preference-count))])]
                (for [preference-key preferences]
                  [:div.pb1
+                  {:key preference-key}
                   (ui/button-pill {:class     "p1 mr1"
-                                   :key       preference-key
                                    :on-click  identity}
                                   [:div.flex.pl1
                                    (preference-key preference->pill-button-copy)
