@@ -37,12 +37,11 @@
                    (.-value (.getElementById js/document "stylist-match-address"))))))
 
 (defmethod trackings/perform-track events/control-adventure-location-submit
-  [_ event {:keys [current-step]} app-state]
+  [_ event _ app-state]
   #?(:cljs
      (let [{:keys [latitude longitude city state]} (get-in app-state adventure.keypaths/adventure-stylist-match-location)]
        (stringer/track-event "adventure_location_submitted"
                              {:location_submitted (get-in app-state adventure.keypaths/adventure-stylist-match-address)
-                              :current_step       current-step
                               :city               city
                               :state              state
                               :latitude           latitude

@@ -146,14 +146,16 @@
          (assoc-in stylist-directory.keypaths/stylist-search-address-input
                    (.-value (.getElementById js/document "stylist-search-input"))))))
 
-;; #?(:cljs
-;;    (defmethod effects/perform-effects events/stylist-results-address-selected
-;;      [_ event args _ app-state]
-;;      (let [{:keys [latitude longitude] :as location} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)]
-;;        (api/fetch-stylists-matching-filters {:latitude  latitude
-;;                                              :longitude longitude
-;;                                              :radius    "100mi"
-;;                                              :preferred-services   (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)}))))
+#?(:cljs
+   (defmethod trackings/perform-track events/stylist-results-address-selected
+     [_ event _ app-state]
+     (let [{:keys [latitude longitude city state]} (get-in app-state adventure.keypaths/adventure-stylist-match-location)]
+       (stringer/track-event "adventure_location_submitted"
+                             {:location_submitted (get-in app-state adventure.keypaths/adventure-stylist-match-address)
+                              :city               city
+                              :state              state
+                              :latitude           latitude
+                              :longitude          longitude})) ))
 
 #?(:cljs
    (defmethod effects/perform-effects events/stylist-results-address-selected
