@@ -310,21 +310,26 @@
          :rating/value                     rating
          :booking/count                    booking-count
          :stylist-card.services-list/id    (str "stylist-card-services-" store-slug)
-         :stylist-card.services-list/items [{:id    (str "stylist-service-leave-out-" store-slug)
-                                             :label "Leave Out"
-                                             :value (boolean specialty-sew-in-leave-out)}
-                                            {:id    (str "stylist-service-closure-" store-slug)
-                                             :label "Closure"
-                                             :value (boolean specialty-sew-in-closure)}
-                                            {:id    (str "stylist-service-frontal-" store-slug)
-                                             :label "Frontal"
-                                             :value (boolean specialty-sew-in-frontal)}
-                                            {:id    (str "stylist-service-360-" store-slug)
-                                             :label "360° Frontal"
-                                             :value (boolean specialty-sew-in-360-frontal)}
-                                            {:id    (str "stylist-service-wig-customization-" store-slug)
-                                             :label "Wig Customization"
-                                             :value (boolean specialty-wig-customization)}]
+         :stylist-card.services-list/items [{:id         (str "stylist-service-leave-out-" store-slug)
+                                             :label      "Leave Out"
+                                             :value      (boolean specialty-sew-in-leave-out)
+                                             :preference :leave-out}
+                                            {:id         (str "stylist-service-closure-" store-slug)
+                                             :label      "Closure"
+                                             :value      (boolean specialty-sew-in-closure)
+                                             :preference :closure}
+                                            {:id         (str "stylist-service-frontal-" store-slug)
+                                             :label      "Frontal"
+                                             :value      (boolean specialty-sew-in-frontal)
+                                             :preference :frontal}
+                                            {:id         (str "stylist-service-360-" store-slug)
+                                             :label      "360° Frontal"
+                                             :value      (boolean specialty-sew-in-360-frontal)
+                                             :preference :360-frontal}
+                                            {:id         (str "stylist-service-wig-customization-" store-slug)
+                                             :label      "Wig Customization"
+                                             :value      (boolean specialty-wig-customization)
+                                             :preference :wig-customization}]
          :stylist-card.cta/id              (str "select-stylist-" store-slug)
          :stylist-card.cta/label           (str "Select " store-nickname)
          :stylist-card.cta/target          [cta-event
@@ -450,6 +455,18 @@
                                                   :width  "13px"
                                                   :height "13px"})]])])]]))))
 
+(defcomponent matching-count-organism
+  [{:keys [stylist-count-content]} _ _]
+  [:div.content-3.mt2.mb1.left.mx3
+   {:key "stylist-count-content"}
+   stylist-count-content])
+
+(defcomponent non-matching-breaker
+  [{:keys [breaker-content]} _ _]
+  [:div.my5.content-2
+   {:key "breaker"}
+   breaker-content])
+
 (defcomponent template
   [{:keys [popup spinning? filters-modal gallery-modal header list/results location-search-box shopping-method-choice]} _ _]
   [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
@@ -469,18 +486,34 @@
 
      results
      (display-list {:call-out     call-out-center/organism
-                    :stylist-card stylist-cards/organism}
+                    :stylist-card stylist-cards/organism
+                    :matching-stylist-count matching-count-organism
+                    :non-matching-breaker non-matching-breaker}
                    results)
 
      :else
      (component/build shopping-method-choice/organism shopping-method-choice nil))])
+
+(defn stylist-results-arranged
+  [partition-results]
+  (let [[matching not-matching] partition-results
+        count-matching          (count matching)]
+    [[{:stylist-count-content (str count-matching " Stylists Found")
+       :element/type          :matching-stylist-count}]
+     (insert-at-pos 3 call-out-query matching)
+     (when (seq not-matching)
+       [{:breaker-content "Other stylists in your area"
+         :element/type    :non-matching-breaker}])
+     not-matching]))
 
 (defn page
   [app-state]
   (let [current-order          (api.orders/current app-state)
         stylist-search-results (get-in app-state adventure.keypaths/adventure-matched-stylists)
         nav-event              (get-in app-state storefront.keypaths/navigation-event)
-        post-purchase?         (#{events/navigate-adventure-stylist-results-post-purchase} nav-event)]
+        post-purchase?         (#{events/navigate-adventure-stylist-results-post-purchase} nav-event)
+        stylist-filters?       (experiments/stylist-filters? app-state)
+        preferences            (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)]
     (component/build template
                      {:gallery-modal          (gallery-modal-query app-state)
                       :spinning?              (or (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
@@ -500,9 +533,19 @@
                                                             (first (get-in app-state storefront.keypaths/navigation-undo-stack))
                                                             post-purchase?)
                       :list/results           (when (seq stylist-search-results)
-                                                (insert-at-pos 3
-                                                               call-out-query
-                                                               (stylist-cards-query post-purchase?
-                                                                                    (experiments/hide-stylist-specialty? app-state)
-                                                                                    stylist-search-results)))
+                                                (if stylist-filters?
+                                                  (->> stylist-search-results
+                                                       (stylist-cards-query post-purchase?
+                                                                            (experiments/hide-stylist-specialty? app-state))
+                                                       ;; Add Breaker
+                                                       (partition-by
+                                                        (fn matches-preferences?
+                                                          [{:keys [stylist-card.services-list/items :stylist-card.title/primary]}]
+                                                          (every? :value
+                                                                  (filter (comp preferences :preference) items))))
+                                                       stylist-results-arranged
+                                                       (mapcat identity))
+                                                  (->> stylist-search-results
+                                                       (stylist-cards-query post-purchase? (experiments/hide-stylist-specialty? app-state))
+                                                       (insert-at-pos 3 call-out-query))))
                       :shopping-method-choice (out-of-area/shopping-method-choice-query (experiments/hide-bundle-sets? app-state))})))
