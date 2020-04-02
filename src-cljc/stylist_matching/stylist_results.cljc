@@ -149,11 +149,9 @@
 #?(:cljs
    (defmethod trackings/perform-track events/stylist-results-address-selected
      [_ event _ app-state]
-     (let [{:keys [latitude longitude city state]} (get-in app-state adventure.keypaths/adventure-stylist-match-location)]
+     (let [{:keys [latitude longitude]} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)]
        (stringer/track-event "adventure_location_submitted"
-                             {:location_submitted (get-in app-state adventure.keypaths/adventure-stylist-match-address)
-                              :city               city
-                              :state              state
+                             {:location_submitted (get-in app-state stylist-directory.keypaths/stylist-search-address-input)
                               :latitude           latitude
                               :longitude          longitude})) ))
 
@@ -516,7 +514,11 @@
         nav-event              (get-in app-state storefront.keypaths/navigation-event)
         post-purchase?         (#{events/navigate-adventure-stylist-results-post-purchase} nav-event)
         stylist-filters?       (experiments/stylist-filters? app-state)
-        preferences            (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)]
+        preferences            (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)
+        matches-preferences?   (fn matches-preferences?
+                                 [{:keys [stylist-card.services-list/items :stylist-card.title/primary]}]
+                                 (every? :value
+                                         (filter (comp preferences :preference) items)))]
     (component/build template
                      {:gallery-modal          (gallery-modal-query app-state)
                       :spinning?              (or (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
@@ -541,11 +543,7 @@
                                                        (stylist-cards-query post-purchase?
                                                                             (experiments/hide-stylist-specialty? app-state))
                                                        ;; Add Breaker
-                                                       (partition-by
-                                                        (fn matches-preferences?
-                                                          [{:keys [stylist-card.services-list/items :stylist-card.title/primary]}]
-                                                          (every? :value
-                                                                  (filter (comp preferences :preference) items))))
+                                                       (partition-by matches-preferences?)
                                                        stylist-results-arranged
                                                        (mapcat identity))
                                                   (->> stylist-search-results

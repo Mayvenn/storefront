@@ -76,9 +76,9 @@
 (defmethod transitions/transition-state events/control-stylist-search-toggle-filter
   [_ event {:keys [previously-checked? stylist-filter-selection]} app-state]
   (update-in app-state stylist-directory.keypaths/stylist-search-selected-filters
-             #(if previously-checked?
-                (remove #{stylist-filter-selection} %)
-                (conj % stylist-filter-selection))))
+             #(set (if previously-checked?
+                     (remove #{stylist-filter-selection} %)
+                     (conj % stylist-filter-selection)))))
 
 (defmethod effects/perform-effects events/control-stylist-search-toggle-filter
   [_ event _ _ app-state]
