@@ -534,7 +534,7 @@
                                                             (first (get-in app-state storefront.keypaths/navigation-undo-stack))
                                                             post-purchase?)
                       :list/results           (when (seq stylist-search-results)
-                                                (if stylist-filters?
+                                                (if (and stylist-filters? (seq preferences))
                                                   (->> stylist-search-results
                                                        (stylist-cards-query post-purchase?
                                                                             (experiments/hide-stylist-specialty? app-state))
