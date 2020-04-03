@@ -124,3 +124,7 @@
 (defn remove-bundle-discount?
   [data]
   (display-feature? data "remove-bundle-discount"))
+
+(defn stylist-results-sort?
+  [data]
+  (display-feature? data "stylist-results-sort"))

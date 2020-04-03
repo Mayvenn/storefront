@@ -1,5 +1,6 @@
 (ns adventure.checkout.wait
   (:require [clojure.string :as string]
+            [storefront.accessors.experiments :as experiments]
             [storefront.components.ui :as ui]
             #?@(:cljs [[storefront.api :as api]
                        [storefront.browser.cookie-jar :as cookie-jar]
@@ -90,10 +91,13 @@
            query                        {:latitude     latitude
                                          :longitude    longitude
                                          :radius       "100mi"
-                                         :choices      choices}] ; For trackings purposes only
-       (api/fetch-stylists-within-radius query
-                                         #(messages/handle-message events/api-success-fetch-stylists-within-radius-post-purchase
-                                                                   (merge {:query query} %))))))
+                                         :choices      choices} ; For trackings purposes only
+           api-fetch-stylists           (if (experiments/stylist-results-sort? app-state)
+                                          api/fetch-stylists-within-radius-v2
+                                          api/fetch-stylists-within-radius)]
+       (api-fetch-stylists query #(messages/handle-message
+                                   events/api-success-fetch-stylists-within-radius-post-purchase
+                                  (merge {:query query} %))))))
 
 (defmethod effects/perform-effects events/api-success-fetch-stylists-within-radius-post-purchase [_ event _ _ app-state]
   #?(:cljs
