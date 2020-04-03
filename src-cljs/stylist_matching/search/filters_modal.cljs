@@ -75,10 +75,11 @@
 
 (defmethod transitions/transition-state events/control-stylist-search-toggle-filter
   [_ event {:keys [previously-checked? stylist-filter-selection]} app-state]
-  (update-in app-state stylist-directory.keypaths/stylist-search-selected-filters
-             #(set (if previously-checked?
-                     (remove #{stylist-filter-selection} %)
-                     (conj % stylist-filter-selection)))))
+  (-> (update-in app-state stylist-directory.keypaths/stylist-search-selected-filters
+                #(set (if previously-checked?
+                        (remove #{stylist-filter-selection} %)
+                        (conj % stylist-filter-selection))))
+      (assoc-in stylist-directory.keypaths/user-toggled-preference true)))
 
 (defmethod effects/perform-effects events/control-stylist-search-toggle-filter
   [_ event _ _ app-state]
@@ -111,6 +112,11 @@
   [_ event args app-state]
   (update-in app-state stylist-directory.keypaths/stylist-search-show-filters? not))
 
+(defmethod effects/perform-effects events/control-stylist-search-filters-dismiss
+  [_ event _ _ app-state]
+  (messages/handle-message events/adventure-stylist-search-results-displayed {}))
+
 (defmethod transitions/transition-state events/control-stylist-search-filters-dismiss
   [_ event args app-state]
-  (update-in app-state stylist-directory.keypaths/stylist-search-show-filters? not))
+  (-> (update-in app-state stylist-directory.keypaths/stylist-search-show-filters? not)
+      (update-in stylist-directory.keypaths/user-toggled-preference not)))

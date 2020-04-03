@@ -229,16 +229,17 @@
 (defmethod trackings/perform-track events/adventure-stylist-search-results-displayed
   [_ event args app-state]
   #?(:cljs
-     (let [{:keys [latitude longitude radius]} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
-           location-submitted           (get-in app-state adventure.keypaths/adventure-stylist-match-address)
-           results                      (map :stylist-id (get-in app-state adventure.keypaths/adventure-matched-stylists))]
-       (stringer/track-event "stylist_search_results_displayed"
-                             {:results            results
-                              :latitude           latitude
-                              :longitude          longitude
-                              :location_submitted location-submitted
-                              :radius             radius
-                              :current_step       2}))))
+     (when-not (get-in app-state stylist-directory.keypaths/user-toggled-preference)
+       (let [{:keys [latitude longitude radius]} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
+             location-submitted                  (get-in app-state adventure.keypaths/adventure-stylist-match-address)
+             results                             (map :stylist-id (get-in app-state adventure.keypaths/adventure-matched-stylists))]
+         (stringer/track-event "stylist_search_results_displayed"
+                               {:results            results
+                                :latitude           latitude
+                                :longitude          longitude
+                                :location_submitted location-submitted
+                                :radius             radius
+                                :current_step       2})))))
 
 (defmethod trackings/perform-track events/adventure-stylist-search-results-post-purchase-displayed
   [_ event args app-state]
