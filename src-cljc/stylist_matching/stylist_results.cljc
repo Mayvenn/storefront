@@ -501,11 +501,11 @@
        :react/key             "stylist-count-content"
        :element/type          :matching-stylist-count}]
      (insert-at-pos 3 call-out-query matching)
-     (when (seq not-matching)
+     (when (seq non-matching)
        [{:breaker-content "Other stylists in your area"
          :react/key       "non-matching-breaker"
          :element/type    :non-matching-breaker}])
-     not-matching]))
+     non-matching]))
 
 (defn page
   [app-state]
