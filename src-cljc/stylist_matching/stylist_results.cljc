@@ -459,13 +459,11 @@
 (defcomponent matching-count-organism
   [{:keys [stylist-count-content]} _ _]
   [:div.content-3.mt2.mb1.left.mx3
-   {:key "stylist-count-content"}
    stylist-count-content])
 
 (defcomponent non-matching-breaker
   [{:keys [breaker-content]} _ _]
   [:div.my5.content-2
-   {:key "breaker"}
    breaker-content])
 
 (defcomponent template
@@ -486,10 +484,10 @@
      [:div.mt6 ui/spinner]
 
      results
-     (display-list {:call-out     call-out-center/organism
-                    :stylist-card stylist-cards/organism
+     (display-list {:call-out               call-out-center/organism
+                    :stylist-card           stylist-cards/organism
                     :matching-stylist-count matching-count-organism
-                    :non-matching-breaker non-matching-breaker}
+                    :non-matching-breaker   non-matching-breaker}
                    results)
 
      :else
@@ -500,10 +498,12 @@
   (let [[matching not-matching] partition-results
         count-matching          (count matching)]
     [[{:stylist-count-content (str count-matching " Stylists Found")
+       :react/key             "stylist-count-content"
        :element/type          :matching-stylist-count}]
      (insert-at-pos 3 call-out-query matching)
      (when (seq not-matching)
        [{:breaker-content "Other stylists in your area"
+         :react/key       "non-matching-breaker"
          :element/type    :non-matching-breaker}])
      not-matching]))
 
