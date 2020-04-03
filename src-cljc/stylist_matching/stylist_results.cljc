@@ -63,10 +63,7 @@
   [_ _ {:keys [query-params]} prev-app-state app-state]
   #?(:cljs
      ;; TODO consider merging with post-purchase
-     (let [initial-load?                             (or (zero? (count (get-in app-state storefront.keypaths/navigation-undo-stack))) ;; Direct Load
-                                                         (not= events/navigate-adventure-stylist-results-pre-purchase
-                                                               (get-in prev-app-state storefront.keypaths/navigation-event)))
-           {stylist-ids :s}                          query-params
+     (let [{stylist-ids :s}                          query-params
            {:keys [latitude longitude] :as location} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
            matched-stylists                          (get-in app-state adventure.keypaths/adventure-matched-stylists)
            preferred-services                        (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)]
@@ -88,9 +85,7 @@
                       :preferred-services preferred-services}]
            (api/fetch-stylists-matching-filters query
                                                 #(messages/handle-message events/api-success-fetch-stylists-matching-filters
-                                                                          (merge {:query         query
-                                                                                  :initial-load? initial-load?}
-                                                                                 %))))
+                                                                          (merge {:query query} %))))
          ;; Previously performed search results
          ;; TODO consider removal (uri holds state and effects)
          (seq matched-stylists)
