@@ -495,7 +495,7 @@
 
 (defn stylist-results-arranged
   [partition-results]
-  (let [[matching not-matching] partition-results
+  (let [{matching true non-matching false} partition-results
         count-matching          (count matching)]
     [[{:stylist-count-content (str count-matching " Stylists Found")
        :react/key             "stylist-count-content"
@@ -543,7 +543,7 @@
                                                        (stylist-cards-query post-purchase?
                                                                             (experiments/hide-stylist-specialty? app-state))
                                                        ;; Add Breaker
-                                                       (partition-by matches-preferences?)
+                                                       (group-by matches-preferences?)
                                                        stylist-results-arranged
                                                        (mapcat identity))
                                                   (->> stylist-search-results
