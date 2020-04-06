@@ -95,8 +95,8 @@
    (ui/screen-aware hero-image-component data nil)])
 
 (defcomponent video-overlay
-  [data _ _]
-  (when-let [video (:video data)]
+  [{:keys [close-nav-event video] :as data} _ _]
+  (when video
     (component/build video/component
                      video
                      ;; NOTE(jeff): we use an invalid video slug to preserve back behavior. There probably should be
@@ -104,7 +104,7 @@
                      ;;             (B is removed from history).
                      {:opts
                       {:close-attrs
-                       (utils/route-to events/navigate-home
+                       (utils/route-to close-nav-event
                                        {:query-params {:video "0"}})}})))
 
 (defcomponent find-out-more

@@ -283,6 +283,14 @@
     (doseq [keypath keypaths]
       (effects/fetch-cms-keypath app-state keypath))))
 
+(defmethod effects/perform-effects events/navigate-about-mayvenn-install
+  [_ _ _ _ app-state]
+  (doseq [keypath [[:advertisedPromo]
+                   [:homepage]
+                   [:ugc-collection]
+                   [:free-install-mayvenn]]]
+    (effects/fetch-cms-keypath app-state keypath)))
+
 (defmethod effects/perform-effects events/navigate-info
   [_ _ _ _ app-state]
   (effects/fetch-cms-keypath app-state [:ugc-collection :free-install-mayvenn]))

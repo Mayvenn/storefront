@@ -28,6 +28,8 @@
             stylist-matching.stylist-results
             stylist-matching.match-success
 
+            mayvenn-install.about
+
             [storefront.components.ui :as ui]
             [mayvenn-made.home :as mayvenn-made.home]
             checkout.classic-cart
@@ -85,6 +87,7 @@
         events/navigate-need-match-order-complete                  #(ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-need-match-order-complete)])
 
    events/navigate-home                    (constantly home/built-component)
+   events/navigate-about-mayvenn-install   (constantly mayvenn-install.about/built-component)
    events/navigate-category                #(ui/lazy-load-component :catalog 'catalog.category/built-component events/navigate-category)
    events/navigate-product-details         #(ui/lazy-load-component :catalog 'catalog.product-details/built-component events/navigate-product-details)
    events/navigate-shared-cart             #(ui/lazy-load-component :catalog 'storefront.components.shared-cart/built-component events/navigate-shared-cart)
@@ -112,17 +115,17 @@
    events/navigate-info-about-our-hair     (constantly adventure.informational.about-our-hair/built-component)
    events/navigate-info-how-it-works       (constantly adventure.informational.how-it-works/built-component)
 
-   events/navigate-adventure-match-stylist                       (constantly stylist-matching.match-stylist/page)
-   events/navigate-adventure-find-your-stylist                   (constantly stylist-matching.find-your-stylist/page)
-   events/navigate-adventure-stylist-results-pre-purchase        (constantly stylist-matching.stylist-results/page)
-   events/navigate-adventure-stylist-results-post-purchase       (constantly stylist-matching.stylist-results/page)
-   events/navigate-adventure-out-of-area                         (constantly stylist-matching.out-of-area/page)
-   events/navigate-adventure-match-success-pre-purchase          (constantly stylist-matching.match-success/page)
-   events/navigate-adventure-match-success-post-purchase         (constantly stylist-matching.match-success/page)
-   events/navigate-adventure-checkout-wait                       #(ui/lazy-load-component :checkout 'adventure.checkout.wait/built-component events/navigate-adventure-checkout-wait)
-   events/navigate-adventure-stylist-profile                     (constantly adventure.stylist-matching.stylist-profile/built-component)
-   events/navigate-adventure-stylist-profile-post-purchase       (constantly adventure.stylist-matching.stylist-profile/built-component)
-   events/navigate-adventure-stylist-gallery                     (constantly adventure.stylist-matching.stylist-gallery/built-component)})
+   events/navigate-adventure-match-stylist                 (constantly stylist-matching.match-stylist/page)
+   events/navigate-adventure-find-your-stylist             (constantly stylist-matching.find-your-stylist/page)
+   events/navigate-adventure-stylist-results-pre-purchase  (constantly stylist-matching.stylist-results/page)
+   events/navigate-adventure-stylist-results-post-purchase (constantly stylist-matching.stylist-results/page)
+   events/navigate-adventure-out-of-area                   (constantly stylist-matching.out-of-area/page)
+   events/navigate-adventure-match-success-pre-purchase    (constantly stylist-matching.match-success/page)
+   events/navigate-adventure-match-success-post-purchase   (constantly stylist-matching.match-success/page)
+   events/navigate-adventure-checkout-wait                 #(ui/lazy-load-component :checkout 'adventure.checkout.wait/built-component events/navigate-adventure-checkout-wait)
+   events/navigate-adventure-stylist-profile               (constantly adventure.stylist-matching.stylist-profile/built-component)
+   events/navigate-adventure-stylist-profile-post-purchase (constantly adventure.stylist-matching.stylist-profile/built-component)
+   events/navigate-adventure-stylist-gallery               (constantly adventure.stylist-matching.stylist-gallery/built-component)})
 
 (defn main-component [nav-event]
   (doto ((nav-table nav-event (constantly home/built-component)))

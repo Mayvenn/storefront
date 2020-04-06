@@ -157,6 +157,9 @@
     (assoc-in app-state adventure.keypaths/adventure-home-video (adventure-slug->video (:video query-params)))
     (assoc-in app-state keypaths/v2-ui-home-video (v2-slug->video (:video query-params)))))
 
+(defmethod transition-state events/navigate-about-mayvenn-install
+  [_ event {:keys [query-params]} app-state]
+  (assoc-in app-state adventure.keypaths/adventure-home-video (adventure-slug->video (:video query-params))))
 
 (defn clean-up-open-category-panels
   [app-state

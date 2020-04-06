@@ -123,6 +123,8 @@
 
 (defpath navigate-mayvenn-made)
 
+(defpath navigate-about-mayvenn-install)
+
 (defpath menu-traverse-root)
 (defpath menu-traverse-ascend)
 (defpath menu-traverse-descend)

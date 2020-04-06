@@ -1,4 +1,4 @@
-(ns adventure.shop-home
+(ns mayvenn-install.about
   (:require [adventure.components.layered :as layered]
             [adventure.faq :as faq]
             adventure.handlers
@@ -57,7 +57,7 @@
                       "Paid for by Mayvenn"]
        :divider-img  "url('//ucarecdn.com/2d3a98e3-b49a-4f0f-9340-828d12865315/-/resize/x24/')"}
       {:layer/type      :video-overlay
-       :close-nav-event events/navigate-home
+       :close-nav-event events/navigate-about-mayvenn-install
        :video           (get-in data adventure.keypaths/adventure-home-video)}
       {:layer/type     :shop-bulleted-explainer
        :layer/id       "heres-how-it-works"
@@ -74,7 +74,7 @@
        :cta/value      "Watch Video"
        :cta/icon       (svg/play-video {:width  "30px"
                                         :height "30px"})
-       :cta/target     [events/navigate-home {:query-params {:video "free-install"}}]}
+       :cta/target     [events/navigate-about-mayvenn-install {:query-params {:video "free-install"}}]}
       {:layer/type   :shop-text-block
        :header/value [:div.py1.shout
                       ;; NOTE: this is a design exception
