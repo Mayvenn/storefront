@@ -270,7 +270,12 @@
 (defn info [opts]
   (component/html
    [:svg opts
-    ^:inline (svg-xlink "info")]))
+    ^:inline (svg-xlink "info-outlined")]))
+
+(defn info-filled [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "info-filled")]))
 
 (defn lock [opts]
   (component/html

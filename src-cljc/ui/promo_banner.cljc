@@ -31,12 +31,12 @@
   [_ _ {hide-dt? :hide-dt?}]
   [:a {:on-click  (utils/send-event-callback events/popup-show-v2-homepage)
        :data-test (when-not hide-dt? "v2-free-install-promo-banner")}
-   [:div.white.center.pp5.bg-p-color.h5.bold.pointer
+   [:div.inherit-color.center.pp5.bg-warm-gray.h5.bold.pointer
     "Mayvenn will pay for your install! " [:span.underline "Learn more"]]])
 
 (defmethod component :v2-freeinstall/applied v2-freeinstall-applied
   [_ _ {hide-dt? :hide-dt?}]
-  [:a.white.center.p2.bg-p-color.mbnp5.h6.bold.flex.items-center.justify-center
+  [:a.inherit-color.center.p2.bg-warm-gray.mbnp5.h6.bold.flex.items-center.justify-center
    {:on-click  (utils/send-event-callback events/popup-show-v2-homepage)
     :data-test (when-not hide-dt? "v2-free-install-promo-banner")}
    (svg/celebration-horn {:height "1.6em"
@@ -47,17 +47,16 @@
 
 (defmethod component :shop/covid19 covid19
   [_ _ {hide-dt? :hide-dt?}]
-  [:a.block.white.p2.bg-s-color.flex.items-top.justify-center
+  [:a.block.inherit-color.p2.bg-warm-gray.flex.items-top.justify-center
    {:href      "https://looks.mayvenn.com/covid19"
     :data-test (when-not hide-dt? "shop-covid19-promo-banner")}
-   [:div.mtp2.mr1 (svg/info {:height "16px"
-                             :width  "16px"
-                             :class  "mr1"})]
+   [:div.mtp2.mr1 (svg/info-filled {:height "16px"
+                                    :width  "16px"})]
    [:div.pointer.h6 "Mayvenn is still shipping, but limiting appointments to respect safety concerns. Click to learn about the changes we are making for COVID-19."]])
 
 (defmethod component :shop/freeinstall shop-freeinstall
   [_ _ {hide-dt? :hide-dt?}]
-  [:a.block.white.p2.bg-p-color.flex.justify-center.items-center
+  [:a.block.inherit-color.p2.bg-warm-gray.flex.justify-center.items-center
    {:on-click  (utils/send-event-callback events/popup-show-consolidated-cart-free-install)
     :data-test (when-not hide-dt? "shop-freeinstall-promo-banner")}
    (svg/info {:height "14px"
@@ -69,7 +68,7 @@
 
 (defmethod component :shop/wigs shop-wigs
   [_ _ {hide-dt? :hide-dt?}]
-  [:a.block.white.p2.bg-p-color.flex.justify-center.items-center
+  [:a.block.inherit-color.p2.bg-warm-gray.flex.justify-center.items-center
    {:on-click  (utils/send-event-callback events/popup-show-wigs-customization)
     :data-test (when-not hide-dt? "wig-customization-promo-banner")}
    (svg/info {:height "14px"
@@ -81,7 +80,7 @@
 
 (defmethod component :basic basic
   [{:keys [promo]} _ {hide-dt? :hide-dt?}]
-  [:div.white.center.pp5.bg-p-color.h5.bold
+  [:div.inherit-color.center.pp5.bg-warm-gray.h5.bold
    {:data-test (when-not hide-dt? "promo-banner")}
    (:description promo)])
 
