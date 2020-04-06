@@ -546,9 +546,9 @@
     :or   {retina-quality  "lightest"
            default-quality "normal"}}
    image-id]
-  {:pre [(or (spice.core/parse-int width) (nil? width))]}
+  {:pre [(-> width str spice.core/parse-int)]}
   (component/html
-   (let [width       (spice/parse-int width)
+   (let [width       (-> width str spice/parse-int)
          image-id    (ucare-img-id image-id)
          retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" retina-quality "/")
                        width (str "-/resize/" (* 2 width) "x/"))
@@ -564,23 +564,6 @@
                           (dissoc :width :retina-quality :default-quality :picture-classses)
                           (assoc :src default-url))]]
        [:picture ^:attrs picture-attrs]))))
-
-(defn ucare-gif2video
-  [{:as   attrs
-    :keys [width]}
-   uuid]
-  {:pre [(or (spice.core/parse-int width) (nil? width))]}
-  (component/html
-   [:video.hide-chromecast-icon
-    ^:attrs (merge {:autoPlay              true
-                    :loop                  true
-                    :muted                 true
-                    :webkitplaysinline     "true"
-                    :playsInline           true
-                    :disableRemotePlayback true} attrs)
-    (for [format ["mp4", "webm"]]
-      [:source {:src  (str "https://ucarecdn.com/" uuid "/gif2video/-/format/" format "/")
-                :type (str "video/" format)}])]))
 
 (defn circle-ucare-img
   [{:keys [width] :as attrs :or {width "4em"}} image-id]
