@@ -24,7 +24,6 @@
 
             stylist-matching.match-stylist
             stylist-matching.find-your-stylist
-            stylist-matching.out-of-area
             stylist-matching.stylist-results
             stylist-matching.match-success
 
@@ -119,7 +118,6 @@
    events/navigate-adventure-find-your-stylist             (constantly stylist-matching.find-your-stylist/page)
    events/navigate-adventure-stylist-results-pre-purchase  (constantly stylist-matching.stylist-results/page)
    events/navigate-adventure-stylist-results-post-purchase (constantly stylist-matching.stylist-results/page)
-   events/navigate-adventure-out-of-area                   (constantly stylist-matching.out-of-area/page)
    events/navigate-adventure-match-success-pre-purchase    (constantly stylist-matching.match-success/page)
    events/navigate-adventure-match-success-post-purchase   (constantly stylist-matching.match-success/page)
    events/navigate-adventure-checkout-wait                 #(ui/lazy-load-component :checkout 'adventure.checkout.wait/built-component events/navigate-adventure-checkout-wait)

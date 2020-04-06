@@ -11,13 +11,13 @@
             adventure.keypaths
             api.orders
             [clojure.string :as string]
+            [storefront.accessors.categories :as accessors.categories]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.stylists :as stylists]
             [storefront.component :as component :refer [defdynamic-component defcomponent]]
             [storefront.components.header :as components.header]
             [storefront.components.svg :as svg]
             [storefront.events :as events]
-            [stylist-matching.out-of-area :as out-of-area]
             [stylist-matching.ui.header :as header]
             [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]
             [stylist-matching.ui.stylist-cards :as stylist-cards]
@@ -520,6 +520,42 @@
          :element/type    :non-matching-breaker}])
      non-matching]))
 
+(defn shopping-method-choice-query [hide-bundle-sets?]
+  {:shopping-method-choice.error-title/id        "stylist-matching-shopping-method-choice"
+   :shopping-method-choice.error-title/primary   "We need some time to find you the perfect stylist!"
+   :shopping-method-choice.error-title/secondary (str
+                                                  "A Mayvenn representative will contact you soon "
+                                                  "to help select a Certified Mayvenn Stylist. In the meantime…")
+   :list/buttons                                 (cond-> [{:shopping-method-choice.button/id       "button-looks"
+                                                           :shopping-method-choice.button/label    "Shop by look"
+                                                           :shopping-method-choice.button/target   [events/navigate-shop-by-look
+                                                                                                    {:album-keyword :look}]
+                                                           :shopping-method-choice.button/ucare-id "a9009728-efd3-4917-9541-b4514b8e4776"}]
+                                                   (not hide-bundle-sets?)
+                                                   (concat [{:shopping-method-choice.button/id       "button-bundle-sets"
+                                                             :shopping-method-choice.button/label    "Pre-made bundle sets"
+                                                             :shopping-method-choice.button/target   [events/navigate-shop-by-look
+                                                                                                      {:album-keyword :all-bundle-sets}]
+                                                             :shopping-method-choice.button/ucare-id "87b46db7-4c70-4d3a-8fd0-6e99e78d3c96"}])
+                                                   :always
+                                                   (concat [{:shopping-method-choice.button/id       "button-a-la-carte"
+                                                             :shopping-method-choice.button/label    "Choose individual bundles"
+                                                             :shopping-method-choice.button/target   [events/navigate-category
+                                                                                                      {:page/slug           "mayvenn-install"
+                                                                                                       :catalog/category-id "23"}]
+                                                             :shopping-method-choice.button/ucare-id "6c39cd72-6fde-4ec2-823c-5e39412a6d54"}
+                                                            {:shopping-method-choice.button/id       "button-shop-wigs"
+                                                             :shopping-method-choice.button/label    "Shop Virgin Wigs"
+                                                             :shopping-method-choice.button/target   [events/navigate-category
+                                                                                                      {:page/slug           "wigs"
+                                                                                                       :catalog/category-id "13"
+                                                                                                       :query-params
+                                                                                                       {:family
+                                                                                                        (str "lace-front-wigs"
+                                                                                                             accessors.categories/query-param-separator
+                                                                                                             "360-wigs")}}]
+                                                             :shopping-method-choice.button/ucare-id "71dcdd17-f9cc-456f-b763-2c1c047c30b4"}]))})
+
 (defn page
   [app-state]
   (let [current-order          (api.orders/current app-state)
@@ -560,4 +596,4 @@
                                                   (->> stylist-search-results
                                                        (stylist-cards-query post-purchase? (experiments/hide-stylist-specialty? app-state))
                                                        (insert-at-pos 3 call-out-query))))
-                      :shopping-method-choice (out-of-area/shopping-method-choice-query (experiments/hide-bundle-sets? app-state))})))
+                      :shopping-method-choice (shopping-method-choice-query (experiments/hide-bundle-sets? app-state))})))

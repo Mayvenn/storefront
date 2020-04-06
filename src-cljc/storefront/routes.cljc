@@ -47,7 +47,6 @@
    "/adv/find-your-stylist"                                            (edn->bidi events/navigate-adventure-find-your-stylist)
    "/adv/stylist-results"                                              (edn->bidi events/navigate-adventure-stylist-results-pre-purchase)
    "/adv/stylist-results-post-purchase"                                (edn->bidi events/navigate-adventure-stylist-results-post-purchase)
-   "/adv/out-of-area"                                                  (edn->bidi events/navigate-adventure-out-of-area)
    "/adv/match-success"                                                (edn->bidi events/navigate-adventure-match-success-pre-purchase)
    "/adv/match-success-post-purchase"                                  (edn->bidi events/navigate-adventure-match-success-post-purchase)
    "/adv/checkout-wait"                                                (edn->bidi events/navigate-adventure-checkout-wait)

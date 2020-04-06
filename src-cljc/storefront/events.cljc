@@ -504,7 +504,6 @@
 (defpath navigate-adventure-stylist-results-pre-purchase)
 (defpath navigate-adventure-stylist-results-post-purchase)
 (defpath navigate-adventure-stylist-gallery)
-(defpath navigate-adventure-out-of-area)
 (defpath navigate-adventure-match-success)
 (defpath navigate-adventure-match-success-pre-purchase)
 (defpath navigate-adventure-match-success-post-purchase)
