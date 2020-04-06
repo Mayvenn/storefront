@@ -91,7 +91,7 @@
                                (merge (:query-params nav-args)
                                       {:lat                (:latitude selected-location)
                                        :long               (:longitude selected-location)
-                                       :preferred-services service-filters})})))
+                                       :preferred-services (clojure.string/join "~" (map name service-filters))})})))
 
 (defmethod transitions/transition-state events/control-stylist-search-reset-filters
   [_ event _ app-state]

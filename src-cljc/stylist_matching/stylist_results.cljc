@@ -36,10 +36,21 @@
             [storefront.request-keys :as request-keys]
             [clojure.string :as str]))
 
+(def preferred-filters?
+  #{:leave-out :360-frontal :closure :frontal :wig-customization})
+
+(defn sanitize-preferred-filters
+  [query-preferred-services]
+  (filter preferred-filters? query-preferred-services))
+
 (defmethod transitions/transition-state events/navigate-adventure-stylist-results-pre-purchase
   [_ _ {:keys [query-params]} app-state]
-  (let [{:keys [lat long]} query-params]
+  (let [{:keys [lat long preferred-services]} query-params]
     (cond-> app-state
+      (seq preferred-services)
+      (assoc-in stylist-directory.keypaths/stylist-search-selected-filters
+                (set (sanitize-preferred-filters (map keyword (string/split preferred-services "~")))))
+
       (and lat long)
       (-> (assoc-in adventure.keypaths/adventure-stylist-match-location ;; GROT
                     {:latitude  (spice/parse-double lat)
@@ -156,7 +167,7 @@
 #?(:cljs
    (defmethod effects/perform-effects events/stylist-results-address-selected
      [_ event args _ app-state]
-     (let [[nav-event nav-args] (get-in app-state storefront.keypaths/navigation-message) ; pre- or post- purchase
+     (let [[nav-event nav-args]                      (get-in app-state storefront.keypaths/navigation-message) ; pre- or post- purchase
            {:keys [latitude longitude] :as location} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
            service-filters                           (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)]
        (history/enqueue-redirect nav-event
@@ -164,7 +175,7 @@
                                   (merge (:query-params nav-args)
                                          {:lat                latitude
                                           :long               longitude
-                                          :preferred-services service-filters})}))))
+                                          :preferred-services (clojure.string/join "~" (map name service-filters))})}))))
 
 
 (defmethod transitions/transition-state events/api-success-fetch-stylists-matching-filters
