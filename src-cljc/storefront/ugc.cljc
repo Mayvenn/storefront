@@ -14,16 +14,7 @@
 
 ;; Looking for adventure? See adventure.select-new-look/album-keyword->prompt-image
 (def album-copy
-  {:deals                {:title             "Shop Deals"
-                          :description       (str "Save more when you bundle up! "
-                                                  "We wrapped our most popular textures into "
-                                                  "packaged bundle deals so you can shop with ease.")
-                          :button-copy       "View this deal"
-                          :short-name        "deal"
-                          :seo-title         "Shop Deals | Mayvenn"
-                          :og-title          (str "Shop Deals - "
-                                                  "Find and Buy your favorite Mayvenn bundles!")}
-   :look                 shop-by-look-default
+  {:look                 shop-by-look-default
    :aladdin-free-install shop-by-look-default ; TODO Rename aladdin-free-install album
    :sleek-and-straight   (assoc shop-by-look-default ; TODO Get proper copy
                                 :default-back-event events/navigate-home)
@@ -76,7 +67,6 @@
   #{:sleek-and-straight    ;; Aladdin Home - Straight
     :waves-and-curly       ;; Aladdin Home - Wavy
     :free-install-mayvenn  ;; Aladdin & Shop Home - #mayvennfreeinstall
-    :deals
     :email-deals
     :aladdin-free-install  ;; rename to free-install "Aladdin shop by look"
     :look                  ;; Shop by Look on classic/non-aladdin

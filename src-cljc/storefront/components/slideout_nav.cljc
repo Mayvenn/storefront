@@ -159,18 +159,13 @@
                                 :height 16})]))
 
 (defn shopping-rows
-  [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals? site]}]
+  [{:keys [show-freeinstall-link? show-bundle-sets? site]}]
   (concat
    (when show-freeinstall-link?
      [{:link-attrs  (utils/route-to events/navigate-adventure-match-stylist)
        :data-test   "menu-shop-freeinstall"
        :new-content "NEW"
        :content     [[:span.medium "Get a Mayvenn Install"]]}])
-
-   (when-not show-bundle-sets-and-hide-deals?
-     [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
-       :data-test  "menu-shop-by-deals"
-       :content    [[:span.medium "Deals"]]}])
 
    (if (= :classic site)
      [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
@@ -181,7 +176,7 @@
        :data-test  "menu-shop-by-look"
        :content    [(caretize-content "Shop By Look")]}])
 
-   (when show-bundle-sets-and-hide-deals?
+   (when show-bundle-sets?
      [{:link-attrs (utils/fake-href events/menu-list {:menu-type :shop-bundle-sets})
        :data-test  "menu-shop-by-bundle-sets"
        :content    [(caretize-content "Shop Bundle Sets")]}])

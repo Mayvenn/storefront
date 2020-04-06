@@ -131,9 +131,9 @@
 
 (defn query
   [data]
-  (let [shop?     (= (get-in data keypaths/store-slug) "shop")
-        classic?  (= "mayvenn-classic" (get-in data keypaths/store-experience))
-        sort-key  :footer/order
+  (let [shop?             (= (get-in data keypaths/store-slug) "shop")
+        classic?          (= "mayvenn-classic" (get-in data keypaths/store-experience))
+        sort-key          :footer/order
         sorted-categories (->> (get-in data keypaths/categories)
                                (into []
                                      (comp (filter sort-key)
@@ -149,11 +149,6 @@
                              :id          "shop-by-look"
                              :new-link?   false
                              :nav-message [events/navigate-shop-by-look {:album-keyword :look}]}
-                            (when classic?
-                              {:title       "Deals"
-                               :id          "shop-deals"
-                               :new-link?   false
-                               :nav-message [events/navigate-shop-by-look {:album-keyword :deals}]})
                             (when (not classic?)
                               {:title       "Shop Bundle Sets"
                                :id          "shop-bundle-sets"

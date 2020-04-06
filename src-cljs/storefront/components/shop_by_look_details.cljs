@@ -251,7 +251,6 @@
             :sold-out?             (not-every? :inventory/in-stock? shared-cart-skus)
             :fetching-shared-cart? (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
             :shared-cart-type-copy (:short-name album-copy)
-            :look-detail-price?    (not= album-keyword :deals)
             :base-price            base-price
             :discounted-price      (:discounted-price discount)
             :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)

@@ -7,7 +7,7 @@
             [spice.maps :as maps]
             [storefront.ugc :as ugc]))
 
-(defcomponent component [{:keys [looks deals? copy spinning?]} owner opts]
+(defcomponent component [{:keys [looks copy spinning?]} owner opts]
   (if spinning?
     (ui/large-spinner {:style {:height "4em"}})
     [:div.bg-warm-gray
@@ -35,8 +35,7 @@
                                color-details)
                       looks)
      :copy      (actual-album-kw ugc/album-copy)
-     :spinning? (empty? looks)
-     :deals?    (= selected-album-kw :deals)}))
+     :spinning? (empty? looks)}))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))

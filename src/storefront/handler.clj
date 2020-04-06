@@ -951,13 +951,6 @@
                                 :moved-permanently)
         (h req)))))
 
-(defn wrap-redirect-inconsistent-subdomain-bundle-sets-routes
-  [h]
-  (fn [{:keys [subdomains uri] :as req}]
-    (if (= ["shop" "/shop/deals"] [(first subdomains) uri])
-      (util.response/redirect "/shop/all-bundle-sets")
-      (h req))))
-
 (defn prepare-cms-query-params [query-params]
   (maps/map-values
    (fn [v] (mapv keyword
@@ -1001,6 +994,7 @@
                (GET "/stylist/edit" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/account" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/commissions" [] (util.response/redirect "/stylist/earnings" :moved-permanently))
+               (GET "/shop/deals" req (redirect-to-home environment req))
                (GET "/freeinstall-share" req (redirect-to-home environment req))
                (GET "/categories" req (redirect-to-home environment req))
                (GET "/categories/" req (redirect-to-home environment req))
@@ -1023,7 +1017,6 @@
                    (wrap-resource "public")
                    (wrap-content-type {:mime-types extra-mimetypes})))
        (wrap-redirect-legacy-routes ctx)
-       (wrap-redirect-inconsistent-subdomain-bundle-sets-routes)
        (wrap-add-nav-message)
        (wrap-add-domains)
        (wrap-logging logger)

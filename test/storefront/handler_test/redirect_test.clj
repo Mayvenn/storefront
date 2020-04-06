@@ -424,16 +424,6 @@
                 (is (= "/adv/find-your-stylist?error=stylist-not-found"
                        (get-in resp [:headers "Location"])))))))))))
 
-(deftest redirects-inconsistent-subdomain-bundle-sets
-  (testing "When a request comes for an invalid combination of subdomain and bundle set"
-    (let [[_ storeback-handler]
-          (with-requests-chan (routes common/default-storeback-handler))]
-      (with-services {:storeback-handler storeback-handler}
-        (with-handler handler
-          (let [resp (handler (mock/request :get "https://shop.mayvenn.com/shop/deals"))]
-            (is (= 302 (:status resp)) (pr-str resp))
-            (is (= "/shop/all-bundle-sets" (get-in resp [:headers "Location"])))))))))
-
 (defn is-redirected-from-freeinstall-to-shop [source-path dest-path]
   (with-handler handler
     (let [source-path source-path
@@ -495,3 +485,10 @@
       (let [resp (handler (mock/request :get "https://shop.mayvenn.com/products/59-indian-deep-wave-lace-frontals"))]
         (is (= 301 (:status resp)) (pr-str resp))
         (is (= "https://shop.mayvenn.com/categories/1-virgin-frontals" (get-in resp [:headers "Location"])))))))
+
+(deftest redirects-deals-page-to-homepage
+  (with-services {}
+    (with-handler handler
+      (let [resp (handler (mock/request :get "https://classic.mayvenn.com/shop/deals"))]
+        (is (= 301 (:status resp)) (pr-str resp))
+        (is (= "https://classic.mayvenn.com/" (get-in resp [:headers "Location"])))))))

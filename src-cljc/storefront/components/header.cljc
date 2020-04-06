@@ -199,7 +199,7 @@
             [:span copy]])])]])))
 
 (defn menu
-  [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals? site]}]
+  [{:keys [show-freeinstall-link? show-bundle-sets? site]}]
   (component/html
    [:div.center
     (when show-freeinstall-link?
@@ -207,11 +207,6 @@
                 (assoc (utils/route-to events/navigate-adventure-match-stylist)
                        :on-mouse-enter close-header-menus)
                 (component/html [:span [:span.p-color.pr1 "NEW"] "Get a Mayvenn Install"])))
-
-    (when-not show-bundle-sets-and-hide-deals?
-      ^:inline (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
-                                        :on-mouse-enter close-header-menus)
-                                 "Deals"))
 
     (if (= :classic site)
       ^:inline (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
@@ -221,7 +216,7 @@
                                         (->flyout-handlers keypaths/shop-looks-menu-expanded))
                                  "Shop by look"))
 
-    (when show-bundle-sets-and-hide-deals?
+    (when show-bundle-sets?
       ^:inline (header-menu-link (merge (utils/route-to events/navigate-home)
                                         (->flyout-handlers keypaths/shop-bundle-sets-menu-expanded))
                                  "Shop bundle sets"))
@@ -240,7 +235,7 @@
                                "Blog")]))
 
 (defn individual-flyout-menu
-  [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals? site]
+  [{:keys [show-freeinstall-link? show-bundle-sets? site]
     :as   queried-data}]
   (component/html
    [:div.center
@@ -249,12 +244,6 @@
                 (assoc (utils/route-to events/navigate-adventure-match-stylist)
                        :on-mouse-enter close-header-menus)
                 (component/html [:span [:span.p-color.pr1 "NEW"] "Get a Mayvenn Install"])))
-
-    (when-not show-bundle-sets-and-hide-deals?
-      ^:inline (individual-header-menu-link
-                (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
-                       :on-mouse-enter close-header-menus)
-                "Deals"))
 
     (if (= :classic site)
       ^:inline (individual-header-menu-link
@@ -270,7 +259,7 @@
                    (flatten
                     (:shop-looks-menu/columns queried-data))))])
 
-    (when show-bundle-sets-and-hide-deals?
+    (when show-bundle-sets?
       [:div.inline (->flyout-handlers keypaths/shop-bundle-sets-menu-expanded)
        ^:inline (individual-header-menu-link
                  (utils/route-to events/navigate-home)
@@ -489,17 +478,17 @@
   (let [{:keys [match-eligible] :as store} (marquee/query data)
         shop?                              (= "shop" (get-in data keypaths/store-slug))
         aladdin?                           (experiments/aladdin-experience? data)]
-    {:signed-in                        (auth/signed-in data)
-     :new-flyout-menu?                 (experiments/new-flyout-menu? data)
-     :on-taxon?                        (get-in data keypaths/current-traverse-nav)
-     :promo-banner                     (promo-banner/query data)
-     :user                             {:stylist-portrait (get-in data keypaths/user-stylist-portrait)
-                                        :email            (get-in data keypaths/user-email)}
-     :store                            store
-     :show-bundle-sets-and-hide-deals? (or aladdin? shop?)
-     :vouchers?                        (experiments/dashboard-with-vouchers? data)
-     :show-freeinstall-link?           shop?
-     :site                             (sites/determine-site data)}))
+    {:signed-in              (auth/signed-in data)
+     :new-flyout-menu?       (experiments/new-flyout-menu? data)
+     :on-taxon?              (get-in data keypaths/current-traverse-nav)
+     :promo-banner           (promo-banner/query data)
+     :user                   {:stylist-portrait (get-in data keypaths/user-stylist-portrait)
+                              :email            (get-in data keypaths/user-email)}
+     :store                  store
+     :show-bundle-sets?      (or aladdin? shop?)
+     :vouchers?              (experiments/dashboard-with-vouchers? data)
+     :show-freeinstall-link? shop?
+     :site                   (sites/determine-site data)}))
 
 (defn query [data]
   (-> (basic-query data)

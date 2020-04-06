@@ -119,19 +119,9 @@
   (browser-events/unattach-capture-late-readystatechange-callbacks)
   (browser-events/detach-esc-key-listener))
 
-(defn redirect-from-deals-page? [app-state]
-  (let [[current-nav-event current-nav-args] (get-in app-state keypaths/navigation-message)
-        shop-or-aladdin?                     (or (= "shop" (get-in app-state keypaths/store-slug))
-                                                 (experiments/aladdin-experience? app-state))
-        on-deals-page?                       (= [events/navigate-shop-by-look {:album-keyword :deals}]
-                                                [current-nav-event (select-keys current-nav-args [:album-keyword])])]
-    (and shop-or-aladdin? on-deals-page?)))
-
 (defmethod effects/perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
   (when (= feature "add-on-services") ;; Remove when experiments/add-on-services is removed
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)}))
-  (when (redirect-from-deals-page? app-state)
-    (effects/redirect events/navigate-shop-by-look {:album-keyword :all-bundle-sets}))
 
   (when (and (= "stylist-filters" feature)
              ;; TODO: POST PURCHASE
@@ -314,13 +304,6 @@
            (not= (get-in app-state keypaths/store-slug) "shop")
            (not= "aladdin" (get-in app-state keypaths/store-experience)))
       (effects/redirect events/navigate-shop-by-look {:album-keyword :look})
-
-      (redirect-from-deals-page? app-state)
-      (effects/redirect events/navigate-shop-by-look {:album-keyword :all-bundle-sets})
-
-      (and (experiments/aladdin-experience? app-state)
-           (= album-keyword :deals))
-      (effects/redirect events/navigate-home) ; redirect to home page from /shop/deals for v2-experience
 
       (= :ugc/unknown-album actual-album-kw)
       (effects/page-not-found)
