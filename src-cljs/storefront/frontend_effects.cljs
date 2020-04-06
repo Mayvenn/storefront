@@ -121,13 +121,7 @@
 
 (defmethod effects/perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
   (when (= feature "add-on-services") ;; Remove when experiments/add-on-services is removed
-    (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)}))
-
-  (when (and (= "stylist-filters" feature)
-             ;; TODO: POST PURCHASE
-             (= events/navigate-adventure-stylist-results-pre-purchase
-                (get-in app-state keypaths/navigation-event)))
-    (google-maps/insert)))
+    (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})))
 
 (defmethod effects/perform-effects events/ensure-sku-ids
   [_ _ {:keys [sku-ids service-sku-ids]} _ app-state]

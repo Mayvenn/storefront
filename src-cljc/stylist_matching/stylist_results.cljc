@@ -64,6 +64,11 @@
       (assoc-in stylist-directory.keypaths/stylist-search-address-input
                 (get-in app-state adventure.keypaths/adventure-stylist-match-address)))))
 
+(defmethod effects/perform-effects events/navigate-adventure-stylist-results
+  [_ _ {:keys [query-params]} prev-app-state app-state]
+  #?(:cljs
+     (google-maps/insert)))
+
 ;;  Navigating to the results page causes the effect of searching for stylists
 ;;
 ;;  This allows:
@@ -78,8 +83,6 @@
            {:keys [latitude longitude] :as location} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
            matched-stylists                          (get-in app-state adventure.keypaths/adventure-matched-stylists)
            preferred-services                        (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)]
-       (when (experiments/stylist-filters? app-state)
-         (google-maps/insert))
        (cond
          ;; Predetermined search results
          (seq stylist-ids)
@@ -523,7 +526,6 @@
         stylist-search-results (get-in app-state adventure.keypaths/adventure-matched-stylists)
         nav-event              (get-in app-state storefront.keypaths/navigation-event)
         post-purchase?         (#{events/navigate-adventure-stylist-results-post-purchase} nav-event)
-        stylist-filters?       (experiments/stylist-filters? app-state)
         preferences            (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)
         matches-preferences?   (fn matches-preferences?
                                  [{:keys [stylist-card.services-list/items :stylist-card.title/primary]}]
@@ -537,8 +539,7 @@
                       :filters-modal          #?(:cljs (filters-modal/query app-state)
                                                  :clj  nil)
                       :location-search-box    (when (and (get-in app-state storefront.keypaths/loaded-google-maps)
-                                                         (not post-purchase?)
-                                                         (experiments/stylist-filters? app-state))
+                                                         (not post-purchase?))
                                                 {:stylist.results.location-search-box/id          "stylist-search-input"
                                                  :stylist.results.location-search-box/value       (get-in app-state stylist-directory.keypaths/stylist-search-address-input)
                                                  :stylist.results.location-search-box/keypath     stylist-directory.keypaths/stylist-search-address-input
@@ -548,7 +549,7 @@
                                                             (first (get-in app-state storefront.keypaths/navigation-undo-stack))
                                                             post-purchase?)
                       :list/results           (when (seq stylist-search-results)
-                                                (if (and stylist-filters? (seq preferences))
+                                                (if (seq preferences)
                                                   (->> stylist-search-results
                                                        (stylist-cards-query post-purchase?
                                                                             (experiments/hide-stylist-specialty? app-state))

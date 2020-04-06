@@ -500,6 +500,7 @@
 (defpath navigate-adventure-hair-texture)
 (defpath navigate-adventure-select-new-look)
 (defpath navigate-adventure-look-detail)
+(defpath navigate-adventure-stylist-results)
 (defpath navigate-adventure-stylist-results-pre-purchase)
 (defpath navigate-adventure-stylist-results-post-purchase)
 (defpath navigate-adventure-stylist-gallery)

@@ -109,10 +109,6 @@
         (filter line-items/addon-service?)
         seq)))
 
-(defn stylist-filters?
-  [data]
-  true)
-
 (defn hide-stylist-specialty?
   [data]
   (display-feature? data "hide-stylist-specialty"))
