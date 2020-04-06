@@ -50,11 +50,6 @@
     background-color: var(--cool-gray);
 }
 
-:root {
-    --s-color:   #6bc8ad;
-    --cool-gray: #EEEFEF;
-}
-
 .picker-enter, .picker-leave.picker-leave-active {
     top: 100%;
 }
@@ -73,4 +68,10 @@
 
 video.hide-chromecast-icon::-internal-media-controls-overlay-cast-button {
     display: none;
+}
+
+:root {
+    --p-color:   #4427c1;
+    --s-color:   #6bc8ad;
+    --cool-gray: #EEEFEF;
 }
