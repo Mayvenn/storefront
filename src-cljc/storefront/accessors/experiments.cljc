@@ -111,7 +111,7 @@
 
 (defn stylist-filters?
   [data]
-  (display-feature? data "stylist-filters"))
+  true)
 
 (defn hide-stylist-specialty?
   [data]
