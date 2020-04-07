@@ -2,6 +2,7 @@
   (:require [clojure.set :as set]
             [clojure.string :as str]
             [spice.core :as spice]
+            [spice.selector :as selector]
             [storefront.accessors.images :as images]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
@@ -56,16 +57,32 @@
                                :controls    true
                                :items       1}}))
 
-(defn distinct-product-imgs [{:keys [line-items]}]
-  (->> line-items
-       (map (partial images/image-by-use-case "carousel"))
-       (remove nil?)
-       distinct
-       (map (fn [img] [:img.col-12 img]))))
+(defn get-model-image
+  [{:keys [selector/images copy/title]}]
+  (when-let [image (->> images
+                        (selector/match-all {:selector/strict? true}
+                                            {:image/of #{"model"}})
+                        first)]
+    [:img.col-12
+     {:src (str (:url image) "-/format/auto/")
+      :alt title}]))
 
-(defn imgs [look shared-cart]
-  (cons [:img.col-12 {:src (str (:image-url look)) :alt ""}]
-        (distinct-product-imgs shared-cart)))
+(defn get-product-image
+  [{:keys [selector/images copy/title]}]
+  (when-let [image (->> images
+                        (selector/match-all {:selector/strict? true}
+                                            {:use-case #{"carousel"}
+                                             :image/of #{"product"}})
+                        first)]
+    [:img.col-12
+     {:src (str (:url image) "-/format/auto/")
+      :alt title}]))
+
+(defn imgs [look {:keys [line-items]}]
+  (list
+   [:img.col-12 {:src (str (:image-url look)) :alt ""}]
+   (get-model-image (first line-items))
+   (get-product-image (first line-items))))
 
 (defn ^:private display-line-item
   [line-item {:keys [catalog/sku-id] :as sku} thumbnail quantity]
