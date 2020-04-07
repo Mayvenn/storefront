@@ -285,9 +285,11 @@
                                  :data-test "account-form-submit"})]]])
 
 (defn payout-methods [original-payout-method]
-  (cond-> [["Venmo" "venmo"]
-           ["PayPal" "paypal"]
+  (cond-> [["PayPal" "paypal"]
            ["Mayvenn InstaPay" "green_dot"]]
+
+    (= original-payout-method "venmo")
+    (conj ["Venmo" "venmo"])
 
     (= original-payout-method "check")
     (conj ["Check" "check"])
