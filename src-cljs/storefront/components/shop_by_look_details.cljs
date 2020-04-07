@@ -53,6 +53,7 @@
   (component/build carousel/component
                    {:slides   imgs
                     :settings {:nav         true
+                               :center      true
                                :edgePadding 0
                                :controls    true
                                :items       1}}))
