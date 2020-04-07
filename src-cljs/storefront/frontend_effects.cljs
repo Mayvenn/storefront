@@ -281,8 +281,7 @@
   [_ _ _ _ app-state]
   (doseq [keypath [[:advertisedPromo]
                    [:homepage]
-                   [:ugc-collection]
-                   [:free-install-mayvenn]]]
+                   [:ugc-collection :free-install-mayvenn]]]
     (effects/fetch-cms-keypath app-state keypath)))
 
 (defmethod effects/perform-effects events/navigate-info
