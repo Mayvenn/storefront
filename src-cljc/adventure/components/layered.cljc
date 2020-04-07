@@ -443,16 +443,30 @@
   [:div.border-bottom.border-width-1.hide-on-dt
    {:style {:border-color "#EEEEEE"}}])
 
+(defcomponent divider-img
+  [{:keys [divider-img]} _ _]
+  [:div {:style {:background-image    divider-img
+                 :background-position "center"
+                 :background-repeat   "repeat-x"
+                 :height              "24px"}}])
+
 (defcomponent unified-text-block
   [{anchor-name :anchor/name
     title       :header/value
+    new?        :header/new?
     body        :body/value
     :as         data} _ _]
   [:div.center.col-6-on-dt.mx-auto.my5.pt4
    (when anchor-name
      [:a {:name anchor-name}])
    (when title
-     [:div.title-1.canela.mb3 title])
+     [:div.mb3
+      (when new?
+        [:div.col-12.mx-auto.mb1
+         (svg/purple-diamond {:height "9px" :width "9px"})
+         [:span.proxima.title-3.shout.mx1 "New"]
+         (svg/purple-diamond {:height "9px" :width "9px"})])
+      [:div.title-1.canela title]])
    (when body
      [:div.col-9.mx-auto body])])
 
@@ -492,6 +506,7 @@
      :unified-text-block       unified-text-block
      :unified-framed-checklist unified-framed-checklist
      :unified-image-block      unified-image-block
+     :divider-img              divider-img
 
      ;; REBRAND
      :shop-text-block         shop-text-block

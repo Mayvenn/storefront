@@ -417,6 +417,11 @@
    [:svg opts
     ^:inline (svg-xlink "funnel")]))
 
+(defn purple-diamond [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "purple-diamond")]))
+
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.
 

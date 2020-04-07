@@ -88,10 +88,8 @@
       {:layer/type   :unified-text-block
        :header/value "Free Mayvenn Install"
        :body/value   (str "Purchase 3+ bundles or closure and get a mayvenn install "
-
                           "valued up to $200 for absolutely free!")}
       {:layer/type :unified-image-block
-       :unboxed?   true
        :ucare?     true
 
        :mob-uuid  "625b63a0-5724-4a57-ad79-c9e7a72a7f5b"
@@ -99,7 +97,6 @@
        :file-name "who-shop-hair"}
       {:layer/type   :unified-framed-checklist
        :header/value "What's included?"
-       :unboxed?     true
        :bullets      ["Shampoo"
                       "Braid down"
                       "Sew-in and style"]
@@ -108,10 +105,37 @@
        :cta/id       "browse-stylists"
        :cta/target   [events/navigate-adventure-find-your-stylist]}
       {:layer/type :horizontal-rule}
+
+      {:layer/type   :unified-text-block
+       :header/new?  true
+       :header/value "Free Wig Customization"
+       :body/value   (str "Purchase any of our virgin lace front wigs or virgin 360 "
+                          "lace wigs and we’ll customize it for free.")}
+      {:layer/type :unified-image-block
+       :ucare?     true
+
+       :mob-uuid  "beaa9641-35dd-4811-8f57-a10481c5132d"
+       :dsk-uuid  "beaa9641-35dd-4811-8f57-a10481c5132d"
+       :file-name "wig-customization"}
+
+      {:layer/type   :unified-framed-checklist
+       :header/value "What's included?"
+       :bullets      ["Bleaching the knots"
+                      "Tinting the lace"
+                      "Cutting the lace"
+                      "Customize your hairline"]
+       :cta/button?  true
+       :cta/value    "Shop Wigs"
+       :cta/id       "show-wigs"
+       :cta/target   [events/navigate-category {:catalog/category-id "13"
+                                                :page/slug           "wigs"}]}
+
+      {:layer/type  :divider-img
+       :divider-img "url('//ucarecdn.com/2d3a98e3-b49a-4f0f-9340-828d12865315/-/resize/x24/')"}
       {:layer/type      :video-overlay
        :close-nav-event events/navigate-home
        :video           (get-in data adventure.keypaths/adventure-home-video)}
-      {:layer/type   :unified-text-block
+      {:layer/type   :shop-text-block
        :header/value [:div.py1.shout
                       ;; NOTE: this is a design exception
                       [:div.title-1.proxima {:style {:font-size "34px"}} "Sit back and"]
