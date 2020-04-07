@@ -213,12 +213,7 @@
         :quote/text                  "You deserve quality extensions & exceptional service without the unreasonable price tag."
         :quote/primary-attribution   "— Diishan Imira"
         :quote/secondary-attribution "CEO of Mayvenn"}
-       shop-contact-query
-       {:layer/type             :sticky-footer
-        :layer/id               "sticky-footer-get-started"
-        :sticky/content         "It’s true, we are paying for your install! "
-        :cta/label              "Get started"
-        :cta/navigation-message [events/navigate-adventure-match-stylist]}])}))
+       shop-contact-query])}))
 
 (defn built-component
   [data opts]
