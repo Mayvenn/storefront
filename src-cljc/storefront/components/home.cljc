@@ -334,14 +334,11 @@
 
 (defn built-component [data opts]
   (cond
+    (experiments/unified-homepage? data)
+    (unified-home/built-component data opts)
+
     (experiments/v2-homepage? data)
     (v2-home/built-component data opts)
-
-
-    (and
-     (experiments/unified-homepage? data)
-     (= "shop" (get-in data keypaths/store-slug)))
-    (unified-home/built-component data opts)
 
     (= "shop" (get-in data keypaths/store-slug))
     (adventure.shop-home/built-component data opts)
