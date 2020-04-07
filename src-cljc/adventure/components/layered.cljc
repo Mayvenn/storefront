@@ -430,7 +430,7 @@
 (defcomponent box-grid
   [{:keys                  [items title]
     {:keys [height width]} :aspect-ratio} _ _]
-  [:div.my3.px2
+  [:div.my3.px2.pb4
    [:div.my3.center.mx-auto.title-1.canela title]
    [:div.container
     (for [{:keys [id content target]} items]
@@ -438,13 +438,60 @@
        ^:inline (ui/aspect-ratio width height
                                  [:a (apply utils/fake-href target) content])])]])
 
+(defcomponent horizontal-rule
+  [data _ _]
+  [:div.border-bottom.border-width-1.hide-on-dt
+   {:style {:border-color "#EEEEEE"}}])
+
+(defcomponent unified-text-block
+  [{anchor-name :anchor/name
+    title       :header/value
+    body        :body/value
+    :as         data} _ _]
+  [:div.center.col-6-on-dt.mx-auto.my5.pt4
+   (when anchor-name
+     [:a {:name anchor-name}])
+   (when title
+     [:div.title-1.canela.mb3 title])
+   (when body
+     [:div.col-9.mx-auto body])])
+
+(defcomponent unified-image-block
+  [data _ _]
+  [:div.col-12.col-6-on-dt.my5 {:key (str (:mob-uuid data))}
+   (ui/screen-aware hero-image-component data nil)])
+
+(defcomponent unified-framed-checklist
+  [{:keys        [bullets divider-img]
+    header-value :header/value
+    button?      :cta/button?
+    :as          data} _ _]
+  [:div.mb6
+   [:div.col-10.col-6-on-dt.mx-auto.border.border-framed.flex.justify-center.mt8.pt3
+    [:div.col-12.flex.flex-column.items-center.m5.py4
+     {:style {:width "max-content"}}
+     (when header-value
+       [:div.proxima.title-2.shout.pt1.mb
+        header-value])
+     [:ul.col-12.list-purple-diamond
+      {:style {:padding-left "15px"}}
+      (for [[i b] (map-indexed vector bullets)]
+        [:li.py1 {:key (str i)} b])]]]
+   [:div.col-9.mx-auto.py6
+    (if button?
+      ^:inline (shop-cta data)
+      ^:inline (shop-cta-with-icon data))] ])
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (component/build
    (case type
 
      ;; UNIFIED HOMEPAGE
-     :box-grid                box-grid
+     :box-grid                 box-grid
+     :horizontal-rule          horizontal-rule
+     :unified-text-block       unified-text-block
+     :unified-framed-checklist unified-framed-checklist
+     :unified-image-block      unified-image-block
 
      ;; REBRAND
      :shop-text-block         shop-text-block

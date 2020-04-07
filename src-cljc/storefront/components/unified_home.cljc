@@ -75,24 +75,43 @@
        :title        "Shop Hair"
        :aspect-ratio {:height 210 :width 171}
        :items        (conj (->> (get-in data storefront.keypaths/categories)
-                              (filter :unified.home/order)
-                              (sort-by :unified.home/order)
-                              (mapv category->box-grid-item))
+                                (filter :unified.home/order)
+                                (sort-by :unified.home/order)
+                                (mapv category->box-grid-item))
                            {:id      "need-inspiration"
                             :target  [events/navigate-shop-by-look {:album-keyword :look}]
                             :content [:div.p2.flex.justify-around.items-center.bg-pale-purple.dark-gray.inherit-color.canela.title-2.center
                                       {:style {:height "100%"
                                                :width  "100%"}}
                                       "Need Inspiration?" [:br] "Try shop by look."]})}
-      {:layer/type   :shop-framed-checklist
+      {:layer/type :horizontal-rule}
+      {:layer/type   :unified-text-block
+       :header/value "Free Mayvenn Install"
+       :body/value   (str "Purchase 3+ bundles or closure and get a mayvenn install "
+
+                          "valued up to $200 for absolutely free!")}
+      {:layer/type :unified-image-block
+       :unboxed?   true
+       :ucare?     true
+
+       :mob-uuid  "625b63a0-5724-4a57-ad79-c9e7a72a7f5b"
+       :dsk-uuid  "625b63a0-5724-4a57-ad79-c9e7a72a7f5b"
+       :file-name "who-shop-hair"}
+      {:layer/type   :unified-framed-checklist
        :header/value "What's included?"
+       :unboxed?     true
        :bullets      ["Shampoo"
                       "Braid down"
-                      "Sew-in and style"]}
+                      "Sew-in and style"]
+       :cta/button?  true
+       :cta/value    "Browse Stylists"
+       :cta/id       "browse-stylists"
+       :cta/target   [events/navigate-adventure-find-your-stylist]}
+      {:layer/type :horizontal-rule}
       {:layer/type      :video-overlay
        :close-nav-event events/navigate-home
        :video           (get-in data adventure.keypaths/adventure-home-video)}
-      {:layer/type   :shop-text-block
+      {:layer/type   :unified-text-block
        :header/value [:div.py1.shout
                       ;; NOTE: this is a design exception
                       [:div.title-1.proxima {:style {:font-size "34px"}} "Sit back and"]
@@ -106,7 +125,7 @@
        :mob-uuid   "a6a607e6-aeb4-4b61-8bc7-60fd17d15abe"
        :dsk-uuid   "f2d82c41-2051-47d8-86c5-1c82568e324d"
        :file-name  "who-shop-hair"}
-      {:layer/type   :shop-text-block
+      {:layer/type   :unified-text-block
        :header/value [:div.py1.shout
                       ;; NOTE: this is a design exception
                       [:div.title-1.proxima {:style {:font-size "19px"}} "Hold your hair"]
