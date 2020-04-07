@@ -57,7 +57,8 @@
                                :items       1}}))
 
 (defn distinct-product-imgs [{:keys [line-items]}]
-  (->> (map (partial images/image-by-use-case "carousel") line-items)
+  (->> line-items
+       (map (partial images/image-by-use-case "carousel"))
        (remove nil?)
        distinct
        (map (fn [img] [:img.col-12 img]))))

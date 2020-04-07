@@ -54,7 +54,8 @@
      :variant_color    (-> line-item-skuer :hair/color first)
      :variant_length   (-> line-item-skuer :hair/length first)
      :variant_material (-> line-item-skuer :hair/base-material first)
-     :variant_image    (update image :src (partial str "https:"))}))
+     :variant_image    (when image
+                         (update image :src (partial str "https:")))}))
 
 (defmethod perform-track events/app-start [_ event args app-state]
   (when (get-in app-state keypaths/user-id)

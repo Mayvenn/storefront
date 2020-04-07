@@ -8,7 +8,7 @@
 
 (defn image-by-use-case [use-case skuer]
   ;;TODO fix this!!! PLEASE!!! (should be using selector and doing something more clever than this.)
-  (let [image (->> skuer
+  (when-let [image (->> skuer
                    :selector/images
                    (filter #(= (:use-case %) use-case))
                    first)]
