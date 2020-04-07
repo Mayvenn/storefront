@@ -565,23 +565,6 @@
                           (assoc :src default-url))]]
        [:picture ^:attrs picture-attrs]))))
 
-(defn ucare-gif2video
-  [{:as   attrs
-    :keys [width]}
-   uuid]
-  {:pre [(or (spice.core/parse-int width) (nil? width))]}
-  (component/html
-   [:video.hide-chromecast-icon
-    ^:attrs (merge {:autoPlay              true
-                    :loop                  true
-                    :muted                 true
-                    :webkitplaysinline     "true"
-                    :playsInline           true
-                    :disableRemotePlayback true} attrs)
-    (for [format ["mp4", "webm"]]
-      [:source {:src  (str "https://ucarecdn.com/" uuid "/gif2video/-/format/" format "/")
-                :type (str "video/" format)}])]))
-
 (defn circle-ucare-img
   [{:keys [width] :as attrs :or {width "4em"}} image-id]
   (component/html
