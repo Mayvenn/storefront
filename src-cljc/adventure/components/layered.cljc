@@ -436,7 +436,7 @@
     (for [{:keys [id content target]} items]
       [:div.col.col-6.col-4-on-tb-dt.px1.my1 {:key id}
        ^:inline (ui/aspect-ratio width height
-                                 [:a (apply utils/fake-href target) content])])]])
+                                 [:a (apply utils/route-to target) content])])]])
 
 (defcomponent horizontal-rule
   [data _ _]
