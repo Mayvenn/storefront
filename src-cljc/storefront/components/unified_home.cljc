@@ -66,152 +66,159 @@
   [data]
   (let [cms-homepage-hero  (some-> data (get-in storefront.keypaths/cms-homepage) :unified :hero)
         cms-ugc-collection (get-in data storefront.keypaths/cms-ugc-collection)
-        current-nav-event  (get-in data storefront.keypaths/navigation-event)]
+        current-nav-event  (get-in data storefront.keypaths/navigation-event)
+        shop?              (= "shop" (get-in data storefront.keypaths/store-slug))
+        {freeinstall-specialty?       :specialty-sew-in-leave-out
+         wig-customization-specialty? :specialty-wig-customization}
+        (get-in data storefront.keypaths/store-service-menu)]
     {:layers
-     [(merge {:layer/type :hero}
-             (assoc (homepage-hero/query cms-homepage-hero)
-                    :file-name "free-install-hero"))
-      {:layer/type :free-standard-shipping-bar}
-      {:layer/type   :box-grid
-       :title        "Shop Hair"
-       :aspect-ratio {:height 210 :width 171}
-       :items        (conj (->> (get-in data storefront.keypaths/categories)
-                                (filter :unified.home/order)
-                                (sort-by :unified.home/order)
-                                (mapv category->box-grid-item))
-                           {:id      "need-inspiration"
-                            :target  [events/navigate-shop-by-look {:album-keyword :look}]
-                            :content [:div.p2.flex.justify-around.items-center.bg-pale-purple.dark-gray.inherit-color.canela.title-2.center
-                                      {:style {:height "100%"
-                                               :width  "100%"}}
-                                      "Need Inspiration?" [:br] "Try shop by look."]})}
-      {:layer/type :horizontal-rule}
-      {:layer/type   :unified-text-block
-       :header/value "Free Mayvenn Install"
-       :body/value   (str "Purchase 3+ bundles or closure and get a mayvenn install "
-                          "valued up to $200 for absolutely free!")}
-      {:layer/type :unified-image-block
-       :ucare?     true
+     (concat
+      [(merge {:layer/type :hero}
+              (assoc (homepage-hero/query cms-homepage-hero)
+                     :file-name "free-install-hero"))
+       {:layer/type :free-standard-shipping-bar}
+       {:layer/type   :box-grid
+        :title        "Shop Hair"
+        :aspect-ratio {:height 210 :width 171}
+        :items        (conj (->> (get-in data storefront.keypaths/categories)
+                                 (filter :unified.home/order)
+                                 (sort-by :unified.home/order)
+                                 (mapv category->box-grid-item))
+                            {:id      "need-inspiration"
+                             :target  [events/navigate-shop-by-look {:album-keyword :look}]
+                             :content [:div.p2.flex.justify-around.items-center.bg-pale-purple.dark-gray.inherit-color.canela.title-2.center
+                                       {:style {:height "100%"
+                                                :width  "100%"}}
+                                       "Need Inspiration?" [:br] "Try shop by look."]})}
+       {:layer/type :horizontal-rule}]
 
-       :mob-uuid  "625b63a0-5724-4a57-ad79-c9e7a72a7f5b"
-       :dsk-uuid  "625b63a0-5724-4a57-ad79-c9e7a72a7f5b"
-       :file-name "who-shop-hair"}
-      {:layer/type   :unified-framed-checklist
-       :header/value "What's included?"
-       :bullets      ["Shampoo"
-                      "Braid down"
-                      "Sew-in and style"]
-       :cta/button?  true
-       :cta/value    "Browse Stylists"
-       :cta/id       "browse-stylists"
-       :cta/target   [events/navigate-adventure-find-your-stylist]}
-      {:layer/type :horizontal-rule}
+      (when (or shop? freeinstall-specialty?)
+        [{:layer/type   :unified-text-block
+          :header/value "Free Mayvenn Install"
+          :body/value   (str "Purchase 3+ bundles or closure and get a mayvenn install "
+                             "valued up to $200 for absolutely free!")}
+         {:layer/type :unified-image-block
+          :ucare?     true
 
-      {:layer/type   :unified-text-block
-       :header/new?  true
-       :header/value "Free Wig Customization"
-       :body/value   (str "Purchase any of our virgin lace front wigs or virgin 360 "
-                          "lace wigs and we’ll customize it for free.")}
-      {:layer/type :unified-image-block
-       :ucare?     true
+          :mob-uuid  "625b63a0-5724-4a57-ad79-c9e7a72a7f5b"
+          :dsk-uuid  "625b63a0-5724-4a57-ad79-c9e7a72a7f5b"
+          :file-name "who-shop-hair"}
+         {:layer/type   :unified-framed-checklist
+          :header/value "What's included?"
+          :bullets      ["Shampoo"
+                         "Braid down"
+                         "Sew-in and style"]
+          :cta/button?  true
+          :cta/value    "Browse Stylists"
+          :cta/id       "browse-stylists"
+          :cta/target   [events/navigate-adventure-find-your-stylist]}
+         {:layer/type :horizontal-rule}])
 
-       :mob-uuid  "beaa9641-35dd-4811-8f57-a10481c5132d"
-       :dsk-uuid  "beaa9641-35dd-4811-8f57-a10481c5132d"
-       :file-name "wig-customization"}
+      (when (or shop? wig-customization-specialty?)
+        [{:layer/type   :unified-text-block
+          :header/new?  true
+          :header/value "Free Wig Customization"
+          :body/value   (str "Purchase any of our virgin lace front wigs or virgin 360 "
+                             "lace wigs and we’ll customize it for free.")}
+         {:layer/type :unified-image-block
+          :ucare?     true
 
-      {:layer/type   :unified-framed-checklist
-       :header/value "What's included?"
-       :bullets      ["Bleaching the knots"
-                      "Tinting the lace"
-                      "Cutting the lace"
-                      "Customize your hairline"]
-       :cta/button?  true
-       :cta/value    "Shop Wigs"
-       :cta/id       "show-wigs"
-       :cta/target   [events/navigate-category {:catalog/category-id "13"
-                                                :page/slug           "wigs"
-                                                :query-params {:family
-                                                               (string/join
-                                                                categories/query-param-separator
-                                                                ["360-wigs" "lace-front-wigs"])}}]}
+          :mob-uuid  "beaa9641-35dd-4811-8f57-a10481c5132d"
+          :dsk-uuid  "beaa9641-35dd-4811-8f57-a10481c5132d"
+          :file-name "wig-customization"}
+         {:layer/type   :unified-framed-checklist
+          :header/value "What's included?"
+          :bullets      ["Bleaching the knots"
+                         "Tinting the lace"
+                         "Cutting the lace"
+                         "Customize your hairline"]
+          :cta/button?  true
+          :cta/value    "Shop Wigs"
+          :cta/id       "show-wigs"
+          :cta/target   [events/navigate-category {:catalog/category-id "13"
+                                                   :page/slug           "wigs"
+                                                   :query-params        {:family
+                                                                         (string/join
+                                                                          categories/query-param-separator
+                                                                          ["360-wigs" "lace-front-wigs"])}}]}])
 
-      {:layer/type  :divider-img
-       :divider-img "url('//ucarecdn.com/2d3a98e3-b49a-4f0f-9340-828d12865315/-/resize/x24/')"}
-      {:layer/type      :video-overlay
-       :close-nav-event events/navigate-home
-       :video           (get-in data adventure.keypaths/adventure-home-video)}
-      {:layer/type   :shop-text-block
-       :header/value [:div.py1.shout
-                      ;; NOTE: this is a design exception
-                      [:div.title-1.proxima {:style {:font-size "34px"}} "Sit back and"]
-                      [:div.light.canela.mt2.mb4 {:style {:font-size "54px"}} "relax"]]
-       :body/value   "We’ve rounded up the best stylists in the country so you can be sure your hair is in really, really good hands."
-       :cta/value    "Learn more"
-       :cta/id       "info-certified-stylists"
-       :cta/target   [events/navigate-info-certified-stylists]}
-      {:layer/type :unified-image-block
-       :ucare?     true
-       :mob-uuid   "7a58ec9e-11b2-447c-8230-de70798decf8"
-       :dsk-uuid   "7a58ec9e-11b2-447c-8230-de70798decf8"
-       :file-name  "who-shop-hair"}
-      {:layer/type   :unified-text-block
-       :header/value [:div.py1.shout
-                      ;; NOTE: this is a design exception
-                      [:div.title-1.proxima {:style {:font-size "19px"}} "Hold your hair"]
-                      [:div.canela.mt2.mb4 {:style {:font-size "72px"}} "high"]]
-       :body/value   "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
-       :cta/id       "info-about-our-hair"
-       :cta/value    "shop hair"
-       :cta/target   [events/navigate-category {:page/slug           "mayvenn-install"
-                                                :catalog/category-id "23"}]}
-      {:layer/type   :shop-ugc
-       :header/value "#MayvennFreeInstall"
-       :images       (->> cms-ugc-collection
-                          :free-install-mayvenn
-                          :looks
-                          (mapv (partial contentful/look->homepage-social-card
-                                         current-nav-event
-                                         :free-install-mayvenn)))
-       :cta/id       "see-more-looks"
-       :cta/value    "see more looks"
-       :cta/target   [events/navigate-shop-by-look {:album-keyword :look}]}
-      (merge {:layer/type :faq} (faq/free-install-query data) {:background-color "bg-pale-purple"})
-      {:layer/type     :shop-iconed-list
-       :layer/id       "more-than-a-hair-company"
-       :title/value    [[:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "29px"}}]]
-       :subtitle/value ["guarantees"]
-       :bullets        [{:icon/body    (svg/heart {:class  "fill-p-color"
-                                                   :width  "32px"
-                                                   :height "29px"})
-                         :header/value "Top-Notch Customer Service"
-                         :body/value   "Our team is made up of hair experts ready to help you by phone, text, and email."}
-                        {:icon/body    (svg/calendar {:class  "fill-p-color"
-                                                      :width  "30px"
-                                                      :height "33px"})
-                         :header/value "30 Day Guarantee"
-                         :body/value   "Wear it, dye it, even cut it! If you're not satisfied we'll exchange it within 30 days."}
-                        {:icon/body    (svg/worry-free {:class  "fill-p-color"
-                                                        :width  "35px"
-                                                        :height "36px"})
-                         :header/value "100% Virgin Hair"
-                         :body/value   "Our hair is gently steam-processed and can last up to a year. Available in 8 textures and 5 shades."}
-                        {:icon/body    (svg/mirror {:class  "fill-p-color"
-                                                    :width  "30px"
-                                                    :height "34px"})
-                         :header/value "Certified Stylists"
-                         :body/value   "Our stylists are chosen because of their industry-leading standards. Both our hair and service are quality guaranteed."}]}
-      {:layer/type                  :shop-quote-img
-       :quote/dsk-ucare-id          "3208fac6-c974-4c80-8e88-3244ee50226b"
-       :quote/mob-ucare-id          "befce648-98b6-45a2-90f0-6199119bfffb"
-       :quote/text                  "You deserve quality extensions & exceptional service without the unreasonable price tag."
-       :quote/primary-attribution   "— Diishan Imira"
-       :quote/secondary-attribution "CEO of Mayvenn"}
-      shop-contact-query
-      {:layer/type             :sticky-footer
-       :layer/id               "sticky-footer-get-started"
-       :sticky/content         "It’s true, we are paying for your install! "
-       :cta/label              "Get started"
-       :cta/navigation-message [events/navigate-adventure-match-stylist]}]}))
+      [{:layer/type  :divider-img
+        :divider-img "url('//ucarecdn.com/2d3a98e3-b49a-4f0f-9340-828d12865315/-/resize/x24/')"}
+       {:layer/type      :video-overlay
+        :close-nav-event events/navigate-home
+        :video           (get-in data adventure.keypaths/adventure-home-video)}
+       {:layer/type   :shop-text-block
+        :header/value [:div.py1.shout
+                       ;; NOTE: this is a design exception
+                       [:div.title-1.proxima {:style {:font-size "34px"}} "Sit back and"]
+                       [:div.light.canela.mt2.mb4 {:style {:font-size "54px"}} "relax"]]
+        :body/value   "We’ve rounded up the best stylists in the country so you can be sure your hair is in really, really good hands."
+        :cta/value    "Learn more"
+        :cta/id       "info-certified-stylists"
+        :cta/target   [events/navigate-info-certified-stylists]}
+       {:layer/type :unified-image-block
+        :ucare?     true
+        :mob-uuid   "7a58ec9e-11b2-447c-8230-de70798decf8"
+        :dsk-uuid   "7a58ec9e-11b2-447c-8230-de70798decf8"
+        :file-name  "who-shop-hair"}
+       {:layer/type   :unified-text-block
+        :header/value [:div.py1.shout
+                       ;; NOTE: this is a design exception
+                       [:div.title-1.proxima {:style {:font-size "19px"}} "Hold your hair"]
+                       [:div.canela.mt2.mb4 {:style {:font-size "72px"}} "high"]]
+        :body/value   "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
+        :cta/id       "info-about-our-hair"
+        :cta/value    "shop hair"
+        :cta/target   [events/navigate-category {:page/slug           "mayvenn-install"
+                                                 :catalog/category-id "23"}]}
+       {:layer/type   :shop-ugc
+        :header/value "#MayvennFreeInstall"
+        :images       (->> cms-ugc-collection
+                           :free-install-mayvenn
+                           :looks
+                           (mapv (partial contentful/look->homepage-social-card
+                                          current-nav-event
+                                          :free-install-mayvenn)))
+        :cta/id       "see-more-looks"
+        :cta/value    "see more looks"
+        :cta/target   [events/navigate-shop-by-look {:album-keyword :look}]}
+       (merge {:layer/type :faq} (faq/free-install-query data) {:background-color "bg-pale-purple"})
+       {:layer/type     :shop-iconed-list
+        :layer/id       "more-than-a-hair-company"
+        :title/value    [[:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "29px"}}]]
+        :subtitle/value ["guarantees"]
+        :bullets        [{:icon/body    (svg/heart {:class  "fill-p-color"
+                                                    :width  "32px"
+                                                    :height "29px"})
+                          :header/value "Top-Notch Customer Service"
+                          :body/value   "Our team is made up of hair experts ready to help you by phone, text, and email."}
+                         {:icon/body    (svg/calendar {:class  "fill-p-color"
+                                                       :width  "30px"
+                                                       :height "33px"})
+                          :header/value "30 Day Guarantee"
+                          :body/value   "Wear it, dye it, even cut it! If you're not satisfied we'll exchange it within 30 days."}
+                         {:icon/body    (svg/worry-free {:class  "fill-p-color"
+                                                         :width  "35px"
+                                                         :height "36px"})
+                          :header/value "100% Virgin Hair"
+                          :body/value   "Our hair is gently steam-processed and can last up to a year. Available in 8 textures and 5 shades."}
+                         {:icon/body    (svg/mirror {:class  "fill-p-color"
+                                                     :width  "30px"
+                                                     :height "34px"})
+                          :header/value "Certified Stylists"
+                          :body/value   "Our stylists are chosen because of their industry-leading standards. Both our hair and service are quality guaranteed."}]}
+       {:layer/type                  :shop-quote-img
+        :quote/dsk-ucare-id          "3208fac6-c974-4c80-8e88-3244ee50226b"
+        :quote/mob-ucare-id          "befce648-98b6-45a2-90f0-6199119bfffb"
+        :quote/text                  "You deserve quality extensions & exceptional service without the unreasonable price tag."
+        :quote/primary-attribution   "— Diishan Imira"
+        :quote/secondary-attribution "CEO of Mayvenn"}
+       shop-contact-query
+       {:layer/type             :sticky-footer
+        :layer/id               "sticky-footer-get-started"
+        :sticky/content         "It’s true, we are paying for your install! "
+        :cta/label              "Get started"
+        :cta/navigation-message [events/navigate-adventure-match-stylist]}])}))
 
 (defn built-component
   [data opts]
