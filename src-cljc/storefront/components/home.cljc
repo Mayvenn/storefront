@@ -1,18 +1,19 @@
 (ns storefront.components.home
-  (:require [clojure.string :as string]
+  (:require adventure.shop-home
+            [clojure.string :as string]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
             [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.marquee :as marquee]
-            [storefront.components.v2-home :as v2-home]
             [storefront.components.homepage-hero :as homepage-hero]
+            [storefront.components.marquee :as marquee]
             [storefront.components.ui :as ui]
+            [storefront.components.unified-home :as unified-home]
+            [storefront.components.v2-home :as v2-home]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.routes :as routes]
-            adventure.shop-home
             [ui.molecules :as ui.M]))
 
 (defn product-image
@@ -335,6 +336,12 @@
   (cond
     (experiments/v2-homepage? data)
     (v2-home/built-component data opts)
+
+
+    (and
+     (experiments/unified-homepage? data)
+     (= "shop" (get-in data keypaths/store-slug)))
+    (unified-home/built-component data opts)
 
     (= "shop" (get-in data keypaths/store-slug))
     (adventure.shop-home/built-component data opts)

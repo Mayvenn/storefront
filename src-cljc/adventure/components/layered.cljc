@@ -427,9 +427,25 @@
         nil)])]
    (shop-cta-with-icon data)])
 
+(defcomponent box-grid
+  [{:keys                  [items title]
+    {:keys [height width]} :aspect-ratio} _ _]
+  [:div.my3.px2
+   [:div.my3.center.mx-auto.title-1.canela title]
+   [:div.container
+    (for [{:keys [id content target]} items]
+      [:div.col.col-6.col-4-on-tb-dt.px1.my1 {:key id}
+       ^:inline (ui/aspect-ratio width height
+                                 [:a (apply utils/fake-href target) content])])]])
+
+
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (component/build
    (case type
+
+     ;; UNIFIED HOMEPAGE
+     :box-grid                box-grid
+
      ;; REBRAND
      :shop-text-block         shop-text-block
      :shop-framed-checklist   shop-framed-checklist
