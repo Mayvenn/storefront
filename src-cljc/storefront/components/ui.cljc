@@ -546,7 +546,6 @@
     :or   {retina-quality  "lightest"
            default-quality "normal"}}
    image-id]
-  {:pre [(or (spice.core/parse-int width) (nil? width))]}
   (component/html
    (let [width       (spice/parse-int width)
          image-id    (ucare-img-id image-id)
