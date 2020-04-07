@@ -149,10 +149,10 @@
        :cta/value    "Learn more"
        :cta/id       "info-certified-stylists"
        :cta/target   [events/navigate-info-certified-stylists]}
-      {:layer/type :image-block
+      {:layer/type :unified-image-block
        :ucare?     true
-       :mob-uuid   "a6a607e6-aeb4-4b61-8bc7-60fd17d15abe"
-       :dsk-uuid   "f2d82c41-2051-47d8-86c5-1c82568e324d"
+       :mob-uuid   "7a58ec9e-11b2-447c-8230-de70798decf8"
+       :dsk-uuid   "7a58ec9e-11b2-447c-8230-de70798decf8"
        :file-name  "who-shop-hair"}
       {:layer/type   :unified-text-block
        :header/value [:div.py1.shout
