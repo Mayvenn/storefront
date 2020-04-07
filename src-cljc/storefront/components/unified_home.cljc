@@ -4,6 +4,7 @@
             adventure.handlers
             adventure.keypaths
             [storefront.accessors.contentful :as contentful]
+            [storefront.accessors.categories :as categories]
             [storefront.component :as component]
             [storefront.components.homepage-hero :as homepage-hero]
             [storefront.components.svg :as svg]
@@ -128,7 +129,11 @@
        :cta/value    "Shop Wigs"
        :cta/id       "show-wigs"
        :cta/target   [events/navigate-category {:catalog/category-id "13"
-                                                :page/slug           "wigs"}]}
+                                                :page/slug           "wigs"
+                                                :query-params {:family
+                                                               (string/join
+                                                                categories/query-param-separator
+                                                                ["360-wigs" "lace-front-wigs"])}}]}
 
       {:layer/type  :divider-img
        :divider-img "url('//ucarecdn.com/2d3a98e3-b49a-4f0f-9340-828d12865315/-/resize/x24/')"}
