@@ -62,15 +62,24 @@
                [:div.absolute.white.proxima.title-2.bottom-0.shout.ml3.mb2-on-mb.mb4-on-tb-dt
                 [:span first-word [:br] (string/join " " rest-of-words)]])}))
 
+(def wig-customizations [:specialty-wig-customization])
+(def mayvenn-installs [:specialty-sew-in-360-frontal
+                       :specialty-sew-in-closure
+                       :specialty-sew-in-frontal
+                       :specialty-sew-in-leave-out])
+(def services (into mayvenn-installs wig-customizations))
+
+(defn offers?
+  [services menu]
+  (->> ((apply juxt services) menu) (some identity) boolean))
+
 (defn query
   [data]
   (let [cms-homepage-hero  (some-> data (get-in storefront.keypaths/cms-homepage) :unified :hero)
         cms-ugc-collection (get-in data storefront.keypaths/cms-ugc-collection)
         current-nav-event  (get-in data storefront.keypaths/navigation-event)
         shop?              (= "shop" (get-in data storefront.keypaths/store-slug))
-        {freeinstall-specialty?       :specialty-sew-in-leave-out
-         wig-customization-specialty? :specialty-wig-customization}
-        (get-in data storefront.keypaths/store-service-menu)]
+        menu               (get-in data storefront.keypaths/store-service-menu)]
     {:layers
      (concat
       [(merge {:layer/type :hero}
@@ -92,7 +101,8 @@
                                        "Need Inspiration?" [:br] "Try shop by look."]})}
        {:layer/type :horizontal-rule}]
 
-      (when (or shop? freeinstall-specialty?)
+      (when (or shop?
+                (offers? mayvenn-installs menu))
         [{:layer/type   :unified-text-block
           :header/value "Free Mayvenn Install"
           :body/value   (str "Purchase 3+ bundles or closure and get a mayvenn install "
@@ -114,7 +124,8 @@
           :cta/target   [events/navigate-adventure-find-your-stylist]}
          {:layer/type :horizontal-rule}])
 
-      (when (or shop? wig-customization-specialty?)
+      (when (or shop?
+                (offers? wig-customizations menu))
         [{:layer/type   :unified-text-block
           :header/new?  true
           :header/value "Free Wig Customization"
@@ -182,7 +193,9 @@
         :cta/id       "see-more-looks"
         :cta/value    "see more looks"
         :cta/target   [events/navigate-shop-by-look {:album-keyword :look}]}
-       (merge {:layer/type :faq} (faq/free-install-query data) {:background-color "bg-pale-purple"})
+       (when (or shop?
+                 (offers? services menu))
+         (merge {:layer/type :faq} (faq/free-install-query data) {:background-color "bg-pale-purple"}))
        {:layer/type     :shop-iconed-list
         :layer/id       "more-than-a-hair-company"
         :title/value    [[:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "29px"}}]]
