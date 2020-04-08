@@ -88,16 +88,15 @@
   #?(:cljs
      (let [{:keys [latitude longitude]} (get-in app-state adventure.keypaths/adventure-stylist-match-location)
            choices                      (get-in app-state adventure.keypaths/adventure-choices)
-           query                        {:latitude     latitude
-                                         :longitude    longitude
-                                         :radius       "100mi"
-                                         :choices      choices} ; For trackings purposes only
-           api-fetch-stylists           (if (experiments/stylist-results-sort? app-state)
-                                          api/fetch-stylists-within-radius-v2
-                                          api/fetch-stylists-within-radius)]
-       (api-fetch-stylists query #(messages/handle-message
-                                   events/api-success-fetch-stylists-within-radius-post-purchase
-                                  (merge {:query query} %))))))
+           query                        {:latitude  latitude
+                                         :longitude longitude
+                                         :radius    "100mi"
+                                         :choices   choices}] ; For trackings purposes only
+       (api/fetch-stylists-within-radius-v2 query
+                                            #(messages/handle-message
+                                              events/api-success-fetch-stylists-within-radius-post-purchase
+                                              (merge {:query query}
+                                                     %))))))
 
 (defmethod effects/perform-effects events/api-success-fetch-stylists-within-radius-post-purchase [_ event _ _ app-state]
   #?(:cljs

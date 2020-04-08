@@ -96,13 +96,12 @@
                       :longitude          longitude
                       :radius             "100mi"
                       :choices            (get-in app-state adventure.keypaths/adventure-choices) ; For trackings purposes only
-                      :preferred-services preferred-services}
-               api-fetch-stylists (if (experiments/stylist-results-sort? app-state)
-                                    api/fetch-stylists-matching-filters-v2
-                                    api/fetch-stylists-matching-filters)]
-           (api-fetch-stylists query
-                               #(messages/handle-message events/api-success-fetch-stylists-matching-filters
-                                                         (merge {:query query} %))))
+                      :preferred-services preferred-services}]
+           (api/fetch-stylists-matching-filters-v2 query
+                                                   #(messages/handle-message
+                                                     events/api-success-fetch-stylists-matching-filters
+                                                     (merge {:query query}
+                                                            %))))
          ;; Previously performed search results
          ;; TODO consider removal (uri holds state and effects)
          (seq matched-stylists)

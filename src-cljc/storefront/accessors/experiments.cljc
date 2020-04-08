@@ -117,10 +117,6 @@
   [data]
   (display-feature? data "remove-bundle-discount"))
 
-(defn stylist-results-sort?
-  [data]
-  (display-feature? data "stylist-results-sort"))
-
 (defn unified-homepage?
   [data]
   (display-feature? data "unified-homepage"))
