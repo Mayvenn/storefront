@@ -113,11 +113,6 @@
   [data]
   (display-feature? data "hide-stylist-specialty"))
 
-(defn new-flyout-menu?
-  [data]
-  true
-  #_(display-feature? data "new-flyout-menu"))
-
 (defn remove-bundle-discount?
   [data]
   (display-feature? data "remove-bundle-discount"))

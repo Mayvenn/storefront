@@ -198,42 +198,6 @@
               :id  key})
             [:span copy]])])]])))
 
-(defn menu
-  [{:keys [show-freeinstall-link? show-bundle-sets? site]}]
-  (component/html
-   [:div.center
-    (when show-freeinstall-link?
-      ^:inline (header-menu-link
-                (assoc (utils/route-to events/navigate-adventure-match-stylist)
-                       :on-mouse-enter close-header-menus)
-                (component/html [:span [:span.p-color.pr1 "NEW"] "Get a Mayvenn Install"])))
-
-    (if (= :classic site)
-      ^:inline (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                                        :on-mouse-enter close-header-menus)
-                                 "Shop by look")
-      ^:inline (header-menu-link (merge (utils/route-to events/navigate-home)
-                                        (->flyout-handlers keypaths/shop-looks-menu-expanded))
-                                 "Shop by look"))
-
-    (when show-bundle-sets?
-      ^:inline (header-menu-link (merge (utils/route-to events/navigate-home)
-                                        (->flyout-handlers keypaths/shop-bundle-sets-menu-expanded))
-                                 "Shop bundle sets"))
-
-    ^:inline (header-menu-link (merge (utils/route-to events/navigate-home)
-                                      (->flyout-handlers keypaths/shop-a-la-carte-menu-expanded))
-                               "Shop hair")
-    ^:inline (header-menu-link (assoc (utils/route-to events/navigate-content-guarantee)
-                                      :on-mouse-enter close-header-menus)
-                               "Our Guarantee")
-    ^:inline (header-menu-link (assoc (utils/route-to events/navigate-content-our-hair)
-                                      :on-mouse-enter close-header-menus)
-                               "Our hair")
-    ^:inline (header-menu-link {:href           blog-url
-                                :on-mouse-enter close-header-menus}
-                               "Blog")]))
-
 (defn individual-flyout-menu
   [{:keys [show-freeinstall-link? show-bundle-sets? site]
     :as   queried-data}]
@@ -351,8 +315,7 @@
 
 (defcomponent component
   [{:as   data
-    :keys [new-flyout-menu?
-           store user cart signed-in vouchers?]} _ _]
+    :keys [store user cart signed-in vouchers?]} _ _]
   [:div
    [:div.hide-on-mb.relative
     {:on-mouse-leave close-header-menus}
@@ -368,21 +331,11 @@
        [:div.mb4 ^:inline (ui/clickable-logo {:event     events/navigate-home
                                               :data-test "desktop-header-logo"
                                               :height    "44px"})]
-       [:div ^:inline (if new-flyout-menu?
-                        (individual-flyout-menu data)
-                        (menu data))]]
+       [:div ^:inline (individual-flyout-menu data)]]
       ^:inline (ui/shopping-bag {:style     {:height "44px"
                                              :width  "33px"}
                                  :data-test "desktop-cart"}
-                                cart)]]
-    (when-not new-flyout-menu?
-      (list
-       ^:inline (flyout (:shop-a-la-carte-menu/columns data)
-                        (:shop-a-la-carte-menu/expanded? data))
-       ^:inline (flyout (:shop-looks-menu/columns data)
-                        (:shop-looks-menu/expanded? data))
-       ^:inline (flyout (:shop-bundle-sets-menu/columns data)
-                        (:shop-bundle-sets-menu/expanded? data))))]
+                                cart)]]]
    (mobile-nav-header
     {:class "border-bottom border-gray hide-on-tb-dt"
      :style {:height "70px"}}
@@ -479,7 +432,6 @@
         shop?                              (= "shop" (get-in data keypaths/store-slug))
         aladdin?                           (experiments/aladdin-experience? data)]
     {:signed-in              (auth/signed-in data)
-     :new-flyout-menu?       (experiments/new-flyout-menu? data)
      :on-taxon?              (get-in data keypaths/current-traverse-nav)
      :promo-banner           (promo-banner/query data)
      :user                   {:stylist-portrait (get-in data keypaths/user-stylist-portrait)
