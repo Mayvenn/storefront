@@ -156,7 +156,7 @@
            :subsections/category-selector :hair/texture
            :subsections                   texture-subsections
            :selector/essentials           [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives            [:hair/origin :hair/texture :hair/color :hair/base-material]
+           :selector/electives            [:hair/origin :hair/texture]
 
            :copy/description "Mayvenn’s hair 360 frontals got you covered and come in different variations such as Brazilian, Malaysian, straight, and deep wave."
            :header/title     "Virgin 360 Frontals"}
