@@ -185,7 +185,7 @@
        {:layer/type  :divider-img
         :divider-img "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"}
        {:layer/type   :shop-ugc
-        :header/value "#MayvennFreeInstall"
+        :header/value "#MayvennHair"
         :images       (->> cms-ugc-collection
                            :free-install-mayvenn
                            :looks
