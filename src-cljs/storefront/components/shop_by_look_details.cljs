@@ -78,11 +78,19 @@
      {:src (str (:url image) "-/format/auto/")
       :alt title}]))
 
+(defn- sort-by-depart-and-price
+  [items]
+  (sort-by (fn [{:keys [catalog/department sku/price]}]
+             (prn price)
+             [(first department) price])
+           items))
+
 (defn imgs [look {:keys [line-items]}]
-  (list
-   [:img.col-12 {:src (str (:image-url look)) :alt ""}]
-   (get-model-image (first line-items))
-   (get-cart-product-image (first line-items))))
+  (let [sorted-line-items (sort-by-depart-and-price line-items)]
+    (list
+     [:img.col-12 {:src (str (:image-url look)) :alt ""}]
+     (get-model-image (first sorted-line-items))
+     (get-cart-product-image (first sorted-line-items)))))
 
 (defn ^:private display-line-item
   [line-item {:keys [catalog/sku-id] :as sku} thumbnail quantity]
@@ -139,7 +147,7 @@
    (if fetching-shared-cart?
      [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
      (when shared-cart
-       (let [line-items (:line-items shared-cart)
+       (let [line-items (->> shared-cart :line-items sort-by-depart-and-price)
              item-count (->> line-items (map :item/quantity) (reduce + 0))]
          [:div.px2
           {:class
