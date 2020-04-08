@@ -64,7 +64,7 @@
                         (selector/match-all {:selector/strict? true}
                                             {:image/of #{"model"}})
                         first)]
-    [:img.col-12
+    [:img.col-12.mb4
      {:src (str (:url image) "-/format/auto/")
       :alt title}]))
 
@@ -75,7 +75,7 @@
                                             {:use-case #{"carousel"}
                                              :image/of #{"product"}})
                         first)]
-    [:img.col-12
+    [:img.col-12.mb4
      {:src (str (:url image) "-/format/auto/")
       :alt title}]))
 
