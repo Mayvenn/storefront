@@ -358,8 +358,8 @@
     [event :as target]
     :cta/target}]
   (when id
-    [:div.col-7.mx-auto
-     (ui/button-medium-underline-primary
+    [:div.col-5.mx-auto
+     (ui/button-small-secondary
       (merge {:data-test id}
              (if (= :navigate (first event))
                (apply utils/route-to target)
