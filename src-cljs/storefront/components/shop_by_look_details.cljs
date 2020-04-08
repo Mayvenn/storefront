@@ -53,7 +53,6 @@
   (component/build carousel/component
                    {:slides   imgs
                     :settings {:nav         true
-                               :center      true
                                :edgePadding 0
                                :controls    true
                                :items       1}}))
@@ -121,7 +120,7 @@
            discount-text desktop-two-column? yotpo-data-attributes]}]
   [:div.clearfix
    (when look
-     [:div.bg-cool-gray
+     [:div.bg-cool-gray.slides-middle
       (when desktop-two-column?
         {:class "col-on-tb-dt col-6-on-tb-dt px3-on-tb-dt"})
       (when shared-cart

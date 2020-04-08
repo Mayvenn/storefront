@@ -26,6 +26,9 @@
 .tns-nav>.tns-nav-active:focus {
     outline: var(--p-color) auto 1px;
 }
+.slides-middle .tns-item {
+    vertical-align: middle !important;
+}
 
 /* Carousel Arrows */
 /* Adapted from Slick css*/
