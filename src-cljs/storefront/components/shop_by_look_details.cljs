@@ -68,11 +68,11 @@
      {:src (str (:url image) "-/format/auto/")
       :alt title}]))
 
-(defn get-product-image
+(defn get-cart-product-image
   [{:keys [selector/images copy/title]}]
   (when-let [image (->> images
                         (selector/match-all {:selector/strict? true}
-                                            {:use-case #{"carousel"}
+                                            {:use-case #{"cart"}
                                              :image/of #{"product"}})
                         first)]
     [:img.col-12.mb4
@@ -83,7 +83,7 @@
   (list
    [:img.col-12 {:src (str (:image-url look)) :alt ""}]
    (get-model-image (first line-items))
-   (get-product-image (first line-items))))
+   (get-cart-product-image (first line-items))))
 
 (defn ^:private display-line-item
   [line-item {:keys [catalog/sku-id] :as sku} thumbnail quantity]
