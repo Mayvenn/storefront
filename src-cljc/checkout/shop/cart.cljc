@@ -766,7 +766,7 @@
                     empty-cart
                     full-cart)]
     [:div
-     [:div.border-bottom.border-gray.border-width-1
+     [:div.border-bottom.border-gray.border-width-1.m-auto.col-7-on-dt
       [:div.px2.my2 (ui-molecules/return-link cart-data)]]
      [:div.col-7-on-dt.mx-auto
       (component/build (if empty?
