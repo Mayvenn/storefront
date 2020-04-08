@@ -81,7 +81,6 @@
 (defn- sort-by-depart-and-price
   [items]
   (sort-by (fn [{:keys [catalog/department sku/price]}]
-             (prn price)
              [(first department) price])
            items))
 
