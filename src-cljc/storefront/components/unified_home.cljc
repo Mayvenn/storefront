@@ -180,8 +180,10 @@
         :body/value   "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
         :cta/id       "info-about-our-hair"
         :cta/value    "shop hair"
-        :cta/target   [events/navigate-category {:page/slug           "mayvenn-install"
-                                                 :catalog/category-id "23"}]}
+        :cta/target   [events/navigate-category {:page/slug           "human-hair-bundles"
+                                                 :catalog/category-id "27"}]}
+       {:layer/type  :divider-img
+        :divider-img "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"}
        {:layer/type   :shop-ugc
         :header/value "#MayvennFreeInstall"
         :images       (->> cms-ugc-collection

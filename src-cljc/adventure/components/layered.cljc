@@ -455,6 +455,7 @@
     title       :header/value
     new?        :header/new?
     body        :body/value
+    cta-value   :cta/value
     :as         data} _ _]
   [:div.center.col-6-on-dt.mx-auto.my5.pt4
    (when anchor-name
@@ -468,7 +469,9 @@
          (svg/purple-diamond {:height "9px" :width "9px"})])
       [:div.title-1.canela title]])
    (when body
-     [:div.col-9.mx-auto body])])
+     [:div.col-9.mx-auto body])
+   (when cta-value
+     [:div.pt3 (shop-cta-with-icon data)])])
 
 (defcomponent unified-image-block
   [data _ _]
