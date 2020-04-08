@@ -20,6 +20,35 @@
    [storefront.platform.messages :as messages]
    [spice.maps :as maps]))
 
+(defn subsections-query
+  [facets
+   {:keys [subsections/category-selector subsections]}
+   products-matching-criteria
+   data]
+  (let [subsection-facet-options (when category-selector
+                                   (->> facets
+                                        (filter (comp #{category-selector} :facet/slug))
+                                        first
+                                        :facet/options
+                                        (maps/index-by :option/slug)))
+        subsection-order         (->> (map-indexed vector subsections)
+                                      (into {})
+                                      clojure.set/map-invert)]
+    (->> products-matching-criteria
+         (group-by (if category-selector
+                     (comp first category-selector)
+                     (constantly :no-subsections)))
+         (sequence
+          (comp
+           (map (fn [[subsection-key products]]
+                  {:title/primary (:option/name (get subsection-facet-options subsection-key))
+                   :products       products
+                   :subsection-key subsection-key}))
+           (map #(update % :products (partial map (partial product-card/query data))))
+           (map #(clojure.set/rename-keys % {:products :product-cards}))
+           (map #(update % :product-cards (partial sort-by :sort/value)))))
+         (sort-by (comp subsection-order :subsection-key)))))
+
 (defn- hacky-fix-of-bad-slugs-on-facets [slug]
   (string/replace (str slug) #"#" ""))
 
@@ -172,24 +201,6 @@
                                                          (component/component-id (str "subsection-" subsection-key))))
                                       subsections))])
 
-(defn subsections-query
-  [{:keys [subsections/category-selector subsections]}
-   products-matching-criteria
-   data]
-  (->> products-matching-criteria
-       (group-by (if category-selector
-                   (comp first category-selector)
-                   (constantly :no-subsections)))
-       (sequence
-        (comp
-         (map (fn [[subsection-key products]] (assoc (get subsections subsection-key)
-                                                     :products products
-                                                     :subsection-key subsection-key)))
-         (map #(update % :products (partial map (partial product-card/query data))))
-         (map #(set/rename-keys % {:products :product-cards}))
-         (map #(update % :product-cards (partial sort-by :sort/value)))))
-       (sort-by :order)))
-
 (defn query
   [app-state category products selections]
   (let [products-matching-category (selector/match-all {:selector/strict? true}
@@ -202,12 +213,14 @@
                                                         (skuers/essentials category)
                                                         selections)
                                                        products-matching-category)
-        subsections                (subsections-query category
-                                                      products-matching-criteria
-                                                      app-state)
+        facets                     (maps/index-by :facet/slug (get-in app-state keypaths/v2-facets))
+        subsections                (subsections-query
+                                    (vals facets)
+                                    category
+                                    products-matching-criteria
+                                    app-state)
         product-cards              (mapcat :product-cards subsections)
-        open-panel                 (get-in app-state catalog.keypaths/category-panel)
-        facets                     (maps/index-by :facet/slug (get-in app-state keypaths/v2-facets))]
+        open-panel                 (get-in app-state catalog.keypaths/category-panel)]
     {:title             (:product-list/title category)
      :subsections       subsections
      :all-product-cards (mapcat :product-cards subsections)

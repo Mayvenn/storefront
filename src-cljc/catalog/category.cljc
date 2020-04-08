@@ -14,6 +14,7 @@
    [storefront.component :as component :refer [defcomponent defdynamic-component]]
    [storefront.accessors.categories :as accessors.categories]
    [catalog.categories :as categories]
+   [catalog.ui.product-list :as product-list]
    [catalog.icp :as icp]
    [storefront.assets :as assets]
    [storefront.components.ui :as ui]
@@ -27,7 +28,7 @@
    [catalog.skuers :as skuers]
    [spice.maps :as maps]
    [spice.selector :as selector]
-   [clojure.set :as set]
+   clojure.set
    [clojure.string :as string]
    [catalog.ui.product-card :as product-card]))
 
@@ -49,7 +50,7 @@
         params))
 
 (def ^:private facet-slugs->query-params
-  (set/map-invert accessors.categories/query-params->facet-slugs))
+  (clojure.set/map-invert accessors.categories/query-params->facet-slugs))
 
 (defn category-selections->query-params
   [category-selections]
@@ -237,23 +238,7 @@
        (product-cards-empty-state loading-products?)
        (map subsection-component subsections))]]])
 
-(defn subsections-query
-  [{:keys [subsections/category-selector subsections]}
-   products-matching-criteria
-   data]
-  (->> products-matching-criteria
-       (group-by (if category-selector
-                   (comp first category-selector)
-                   (constantly :no-subsections)))
-       (sequence
-        (comp
-         (map (fn [[subsection-key products]] (assoc (get subsections subsection-key)
-                                                     :products products
-                                                     :subsection-key subsection-key)))
-         (map #(update % :products (partial map (partial product-card/query data))))
-         (map #(set/rename-keys % {:products :product-cards}))
-         (map #(update % :product-cards (partial sort-by :sort/value)))))
-       (sort-by :order)))
+
 
 (defn ^:private query
   [data]
@@ -269,9 +254,11 @@
                                                         (skuers/essentials category)
                                                         selections)
                                                        products-matching-category)
-        subsections                (subsections-query category
-                                                      products-matching-criteria
-                                                      data)
+        subsections                (product-list/subsections-query
+                                    (get-in data keypaths/v2-facets)
+                                    category
+                                    products-matching-criteria
+                                    data)
         product-cards              (mapcat :product-cards subsections)
         facets                     (maps/index-by :facet/slug (get-in data keypaths/v2-facets))
         open-panel                 (get-in data catalog.keypaths/category-panel)]
@@ -282,7 +269,7 @@
                                                         (concat (:selector/essentials category)
                                                                 (:selector/electives category)))
                                            (maps/map-values set))))
-                               (reduce (partial merge-with set/union) {}))
+                               (reduce (partial merge-with clojure.set/union) {}))
      :facets              facets
      :selections          selections
      :all-product-cards   product-cards
@@ -377,12 +364,12 @@
 
 (defmethod transitions/transition-state events/control-category-option-select
   [_ _ {:keys [facet option]} app-state]
-  (update-in app-state (conj catalog.keypaths/category-selections facet) set/union #{option}))
+  (update-in app-state (conj catalog.keypaths/category-selections facet) clojure.set/union #{option}))
 
 (defmethod transitions/transition-state events/control-category-option-unselect
   [_ _ {:keys [facet option]} app-state]
   (let [facet-path       (conj catalog.keypaths/category-selections facet)
-        facet-selections (set/difference (get-in app-state facet-path)
+        facet-selections (clojure.set/difference (get-in app-state facet-path)
                                          #{option})]
     (if (empty? facet-selections)
       (update-in app-state catalog.keypaths/category-selections dissoc facet)

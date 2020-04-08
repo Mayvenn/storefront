@@ -45,6 +45,16 @@
              str
              tmpl))
 
+(def texture-subsections
+  ["straight"
+   "yaki-straight"
+   "kinky-straight"
+   "body-wave"
+   "loose-wave"
+   "water-wave"
+   "deep-wave"
+   "curly"])
+
 (def clip-in-tape-in-templates
   {:page/title-template            [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]
    :page.meta/description-template ["Get the hair of your dreams with our "
@@ -100,28 +110,30 @@
                                     " hair for unbeatable quality. Shop to achieve your desired look!"]})
 
 (def closures
-  [(merge {:catalog/category-id      "0"
-           :copy/title               "Hair Closures"
-           :page/slug                "virgin-closures"
-           :seo/title                "Hair Closures"
-           :legacy/named-search-slug "closures"
-           :catalog/department       #{"hair"}
-           :hair/family              #{"closures"}
-           :hair/color.process       #{"natural" "dyed"}
-           :hair/source              #{"virgin"}
-           :category/tags            #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
-           :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives       [:hair/origin :hair/texture :hair/color :hair/base-material]
-           :header/title             "Virgin Hair Closures"
-           :flyout-menu/title        "Closures"
-           :flyout-menu/order        1
-           :unified.home/order       2
-           :unified.home/image-id    "27e942b0-136c-4f7d-8b7b-ca98869fa272"
-           :footer/order             1
-           :footer/title             "Closures"
-           :copy/description         (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                           "Our collection of closures blend seamlessly with our bundles"
-                                           "and can be customized to fit your unique look.")}
+  [(merge {:catalog/category-id           "0"
+           :copy/title                    "Hair Closures"
+           :page/slug                     "virgin-closures"
+           :seo/title                     "Hair Closures"
+           :legacy/named-search-slug      "closures"
+           :catalog/department            #{"hair"}
+           :hair/family                   #{"closures"}
+           :hair/color.process            #{"natural" "dyed"}
+           :hair/source                   #{"virgin"}
+           :category/tags                 #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
+           :selector/essentials           [:catalog/department :hair/family :hair/color.process :hair/source]
+           :selector/electives            [:hair/origin :hair/texture :hair/color :hair/base-material]
+           :subsections/category-selector :hair/texture
+           :subsections                   texture-subsections
+           :header/title                  "Virgin Hair Closures"
+           :flyout-menu/title             "Closures"
+           :flyout-menu/order             1
+           :unified.home/order            2
+           :unified.home/image-id         "27e942b0-136c-4f7d-8b7b-ca98869fa272"
+           :footer/order                  1
+           :footer/title                  "Closures"
+           :copy/description              (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                                "Our collection of closures blend seamlessly with our bundles"
+                                                "and can be customized to fit your unique look.")}
           (category->seo "Closures"
                          (copy "Mayvenn’s hair closures allow you to close off"
                                "any unit or install and come in a variety of different"
@@ -185,10 +197,7 @@
            :subcategories/ids             ["10" "29"]
            :subcategories/layout          :list
            :subsections/category-selector :hair/family
-           :subsections                   {"360-frontals" {:order         0
-                                                           :title/primary "360 Lace Frontals"}
-                                           "frontals"     {:order         1
-                                                           :title/primary "Virgin Lace Frontals"}}}
+           :subsections                   ["360-frontals" "frontals"]}
           (category->seo "Frontals"
                          "Mayvenn’s hair frontals blend in seamlessly with our bundles and come in a variety of different combinations. Shop now to create your look."
                          "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")
@@ -481,12 +490,7 @@
            :subcategories/ids             ["24" "26" "25"]
            :subcategories/layout          :list
            :subsections/category-selector :hair/family
-           :subsections                   {"lace-front-wigs" {:order         0
-                                                              :title/primary "Lace Front Wigs"}
-                                           "360-wigs"        {:order         1
-                                                              :title/primary "360 Wigs"}
-                                           "ready-wigs"      {:order         2
-                                                              :title/primary "Ready to Wear Wigs"}}
+           :subsections                   ["lace-front-wigs" "360-wigs" "ready-wigs"]
            :content-block/type            :about-attributes ;; incase we have different templates in the future
            :content-block/title           "Wigs 101:"
            :content-block/header          "How to Choose"
@@ -606,22 +610,7 @@
     :selector/electives             [:hair/texture :hair/family :hair/origin :hair/color]
     :selector/essentials            [:catalog/department :promo.mayvenn-install/eligible]
     :subsections/category-selector  :hair/texture
-    :subsections                    {"straight"       {:title/primary "Straight"
-                                                       :order         1}
-                                     "yaki-straight"  {:title/primary "Yaki Straight"
-                                                       :order         2}
-                                     "kinky-straight" {:title/primary "Kinky Straight"
-                                                       :order         3}
-                                     "body-wave"      {:title/primary "Body Wave"
-                                                       :order         4}
-                                     "loose-wave"     {:title/primary "Loose Wave"
-                                                       :order         5}
-                                     "water-wave"     {:title/primary "Water Wave"
-                                                       :order         6}
-                                     "deep-wave"      {:title/primary "Deep Wave"
-                                                       :order         7}
-                                     "curly"          {:title/primary "Curly"
-                                                       :order         8}}}])
+    :subsections                    texture-subsections}])
 
 (def human-hair-bundles
   [(merge {:catalog/category-id           "27"
@@ -655,22 +644,7 @@
            :subcategories/ids             ["2" "3" "4" "5" "6" "7" "8" "9"]
            :subcategories/title           "Textures"
            :subsections/category-selector :hair/texture
-           :subsections                   {"straight"       {:order         0
-                                                             :title/primary "Straight"}
-                                           "yaki-straight"  {:order         1
-                                                             :title/primary "Yaki Straight"}
-                                           "kinky-straight" {:order         2
-                                                             :title/primary "Kinky Straight"}
-                                           "body-wave"      {:order         3
-                                                             :title/primary "Body Wave"}
-                                           "loose-wave"     {:order         4
-                                                             :title/primary "Loose Wave"}
-                                           "water-wave"     {:order         5
-                                                             :title/primary "Water Wave"}
-                                           "deep-wave"      {:order         6
-                                                             :title/primary "Deep Wave"}
-                                           "curly"          {:order         7
-                                                             :title/primary "Curly"}}
+           :subsections                   texture-subsections
            :seo/sitemap                   true
            :seo/title                     "Virgin Hair Bundles"
            :content-block/type            :about-attributes ;; incase we have different templates in the future
@@ -854,10 +828,8 @@
      :subsections/category-selector :hair/family
      :subcategories/ids             ["21" "22"]
      :subcategories/layout          :list
-     :subsections                   {"seamless-clip-ins" {:order         0
-                                                          :title/primary "Clip-in Hair Extensions"}
-                                     "tape-ins"          {:order         1
-                                                          :title/primary "Tape-in Hair Extensions"}}
+     :subsections                   ["seamless-clip-ins"
+                                     "tape-ins"]
      :content-block/type            :about-attributes ;; incase we have different templates in the future
      :content-block/title           "Hair Extensions 101:"
      :content-block/header          "How to Choose"
@@ -884,4 +856,3 @@
           seamless-clip-ins-category
           tape-ins-category
           human-hair-bundles))
-
