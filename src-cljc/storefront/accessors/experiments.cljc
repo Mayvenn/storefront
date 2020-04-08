@@ -115,7 +115,8 @@
 
 (defn new-flyout-menu?
   [data]
-  (display-feature? data "new-flyout-menu"))
+  true
+  #_(display-feature? data "new-flyout-menu"))
 
 (defn remove-bundle-discount?
   [data]
