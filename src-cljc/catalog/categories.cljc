@@ -148,13 +148,15 @@
            :legacy/named-search-slug "360-frontals"
            :subcategory/image-uri    "//ucarecdn.com/e6a42693-73a2-4cda-8ad8-bc16b7d8b5f4/-/format/auto/-/resize/124x/"
 
-           :catalog/department  #{"hair"}
-           :hair/family         #{"360-frontals"}
-           :hair/color.process  #{"natural" "dyed"}
-           :hair/source         #{"virgin"}
-           :category/tags       #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
-           :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives  [:hair/origin :hair/texture :hair/color :hair/base-material]
+           :catalog/department            #{"hair"}
+           :hair/family                   #{"360-frontals"}
+           :hair/color.process            #{"natural" "dyed"}
+           :hair/source                   #{"virgin"}
+           :category/tags                 #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
+           :subsections/category-selector :hair/texture
+           :subsections                   texture-subsections
+           :selector/essentials           [:catalog/department :hair/family :hair/color.process :hair/source]
+           :selector/electives            [:hair/origin :hair/texture :hair/color :hair/base-material]
 
            :copy/description "Mayvenn’s hair 360 frontals got you covered and come in different variations such as Brazilian, Malaysian, straight, and deep wave."
            :header/title     "Virgin 360 Frontals"}
@@ -177,11 +179,11 @@
                                            "frontals blend seamlessly with our bundles and can be customized to"
                                            "fit your unique look.")
 
-           :catalog/department            #{"hair"}
-           :hair/family                   #{"frontals" "360-frontals"}
-           :hair/color.process            #{"natural" "dyed"}
-           :flyout-menu/title             "Frontals"
-           :flyout-menu/order             2
+           :catalog/department #{"hair"}
+           :hair/family        #{"frontals" "360-frontals"}
+           :hair/color.process #{"natural" "dyed"}
+           :flyout-menu/title  "Frontals"
+           :flyout-menu/order  2
 
            :unified.home/order            3
            :unified.home/image-id         "b6dc646c-039f-48a8-b932-bd03350a3beb"
