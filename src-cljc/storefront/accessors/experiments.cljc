@@ -124,4 +124,4 @@
 (defn show-quadpay?
   [data]
   (boolean (or (get-in data keypaths/order-cart-payments-quadpay)
-               (not (display-feature? data "hide-quadpay")))))
+               (display-feature? data "show-quadpay"))))
