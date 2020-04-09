@@ -44,7 +44,6 @@
 (def order-cart-payments-paypal (conj order-cart-payments :paypal))
 (def order-cart-payments-paypal-redirect-url (conj order-cart-payments-paypal :redirect-url))
 (def order-cart-payments-stripe (conj order-cart-payments :stripe))
-(def order-cart-payments-quadpay (conj order-cart-payments :quadpay))
 (def order-shipping-address (conj order :shipping-address))
 (def order-token (conj order :token))
 (def order-number (conj order :number))

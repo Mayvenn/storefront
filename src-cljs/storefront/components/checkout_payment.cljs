@@ -61,7 +61,6 @@
            saving?
            disabled?
            loaded-quadpay?
-           show-quadpay?
            loaded-stripe?
            store-credit
            field-errors
@@ -135,34 +134,32 @@
                                    :field-errors field-errors})
                  [:div.h5
                   "You can review your order on the next page before we charge your card."]]]))
-           (when show-quadpay?
-             (list
-              (ui/radio-section
-               (merge {:name         "payment-method"
-                       :id           "payment-method-quadpay"
-                       :data-test    "payment-method"
-                       :data-test-id "quadpay"
-                       :on-click     (utils/send-event-callback events/control-checkout-payment-select
-                                                                {:payment-method :quadpay})}
-                      (when selected-quadpay? {:checked "checked"}))
+           (ui/radio-section
+            (merge {:name         "payment-method"
+                    :id           "payment-method-quadpay"
+                    :data-test    "payment-method"
+                    :data-test-id "quadpay"
+                    :on-click     (utils/send-event-callback events/control-checkout-payment-select
+                                                             {:payment-method :quadpay})}
+                   (when selected-quadpay? {:checked "checked"}))
 
-               [:div.overflow-hidden
-                [:div.flex
-                 [:div.mr1 "Pay with "]
-                 [:div.mt1 {:style {:width "85px" :height "17px"}}
-                  ^:inline (svg/quadpay-logo)]]
-                [:div.h6 "4 interest-free payments with QuadPay. "
-                 [:a.blue.block {:href "#"
-                                 :on-click (fn [e]
-                                             (.preventDefault e)
-                                             (quadpay/show-modal))}
-                  "Learn more."]
-                 (when loaded-quadpay?
-                   [:div.hide (component/build quadpay/widget-component {} nil)])]])
+            [:div.overflow-hidden
+             [:div.flex
+              [:div.mr1 "Pay with "]
+              [:div.mt1 {:style {:width "85px" :height "17px"}}
+               ^:inline (svg/quadpay-logo)]]
+             [:div.h6 "4 interest-free payments with QuadPay. "
+              [:a.blue.block {:href "#"
+                              :on-click (fn [e]
+                                          (.preventDefault e)
+                                          (quadpay/show-modal))}
+               "Learn more."]
+              (when loaded-quadpay?
+                [:div.hide (component/build quadpay/widget-component {} nil)])]])
 
-              (when selected-quadpay?
-                [:div.h6.px2.ml5
-                 "Before completing your purchase, you will be redirected to Quadpay to securely set up your payment plan."])))]))
+           (when selected-quadpay?
+             [:div.h6.px2.ml5
+              "Before completing your purchase, you will be redirected to Quadpay to securely set up your payment plan."])]))
 
       (when loaded-stripe?
         [:div.my4.col-6-on-tb-dt.mx-auto
@@ -199,8 +196,7 @@
       :step-bar                 (checkout-steps/query data)
       :field-errors             (:field-errors (get-in data keypaths/errors))
       :selected-payment-methods selected-payment-methods
-      :loaded-quadpay?          (get-in data keypaths/loaded-quadpay)
-      :show-quadpay?            (experiments/show-quadpay? data)}
+      :loaded-quadpay?          (get-in data keypaths/loaded-quadpay)}
      (cc/query data))))
 
 (defn ^:private built-non-auth-component [data opts]
