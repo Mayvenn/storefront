@@ -103,6 +103,7 @@
 
       (when (or shop?
                 (offers? mayvenn-installs menu))
+        ;; MAYVENN INFO
         [{:layer/type   :unified-text-block
           :header/value "Free Mayvenn Install"
           :body/value   (str "Purchase 3+ bundles or closure and get a mayvenn install "
@@ -126,6 +127,7 @@
 
       (when (or shop?
                 (offers? wig-customizations menu))
+        ;; WIG CUSTOMIZATION
         [{:layer/type   :unified-text-block
           :header/new?  true
           :header/value "Free Wig Customization"

@@ -120,3 +120,8 @@
 (defn unified-homepage?
   [data]
   (display-feature? data "unified-homepage"))
+
+(defn show-quadpay?
+  [data]
+  (boolean (or (get-in data keypaths/order-cart-payments-quadpay)
+               (display-feature? data "show-quadpay"))))
