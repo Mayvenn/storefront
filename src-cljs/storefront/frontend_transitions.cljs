@@ -245,19 +245,12 @@
         billing-address          (get-in app-state (conj keypaths/order :billing-address))
         user                     (get-in app-state keypaths/user)
         covered-by-store-credit? (orders/fully-covered-by-store-credit? order user)]
-    (-> app-state
-        (default-credit-card-name billing-address)
-        (assoc-in keypaths/checkout-selected-payment-methods
-                  (cond
-                    (and covered-by-store-credit?
-                         (orders/can-use-store-credit? order user))
-                    {:store-credit {}}
-
-                    (not (experiments/show-quadpay? app-state))
-                    {:stripe {}}
-
-                    :else
-                    {})))))
+    (assoc-in (default-credit-card-name app-state billing-address)
+              keypaths/checkout-selected-payment-methods
+              (if (and covered-by-store-credit?
+                       (orders/can-use-store-credit? order user))
+                {:store-credit {}}
+                {}))))
 
 (defn ensure-cart-has-shipping-method [app-state]
   (-> app-state
