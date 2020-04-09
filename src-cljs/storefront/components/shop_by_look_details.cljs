@@ -62,6 +62,7 @@
   (when-let [image (->> images
                         (selector/match-all {:selector/strict? true}
                                             {:image/of #{"model"}})
+                        (sort-by :order)
                         first)]
     [:img.col-12.mb4
      {:src (str (:url image) "-/format/auto/")
@@ -73,6 +74,7 @@
                         (selector/match-all {:selector/strict? true}
                                             {:use-case #{"cart"}
                                              :image/of #{"product"}})
+                        (sort-by :order)
                         first)]
     [:img.col-12.mb4
      {:src (str (:url image) "-/format/auto/")
