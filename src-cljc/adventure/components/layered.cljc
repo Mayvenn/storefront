@@ -500,36 +500,37 @@
       ^:inline (shop-cta-with-icon data))] ])
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
-  (component/build
-   (case type
+  (when type
+    (component/build
+     (case type
 
-     ;; UNIFIED HOMEPAGE
-     :box-grid                 box-grid
-     :horizontal-rule          horizontal-rule
-     :unified-text-block       unified-text-block
-     :unified-framed-checklist unified-framed-checklist
-     :unified-image-block      unified-image-block
-     :divider-img              divider-img
+       ;; UNIFIED HOMEPAGE
+       :box-grid                 box-grid
+       :horizontal-rule          horizontal-rule
+       :unified-text-block       unified-text-block
+       :unified-framed-checklist unified-framed-checklist
+       :unified-image-block      unified-image-block
+       :divider-img              divider-img
 
-     ;; REBRAND
-     :shop-text-block         shop-text-block
-     :shop-framed-checklist   shop-framed-checklist
-     :shop-bulleted-explainer shop-bulleted-explainer
-     :shop-ugc                shop-ugc
-     :shop-iconed-list        shop-iconed-list
-     :shop-quote-img          shop-quote-img
-     :shop-contact            shop-contact
-     :video-overlay           video-overlay
+       ;; REBRAND
+       :shop-text-block         shop-text-block
+       :shop-framed-checklist   shop-framed-checklist
+       :shop-bulleted-explainer shop-bulleted-explainer
+       :shop-ugc                shop-ugc
+       :shop-iconed-list        shop-iconed-list
+       :shop-quote-img          shop-quote-img
+       :shop-contact            shop-contact
+       :video-overlay           video-overlay
 
-     ;; LEGACY
-     :image-block                image-block
-     :hero                       layer-hero
-     :free-standard-shipping-bar free-standard-shipping-bar
-     :find-out-more              find-out-more
-     :ugc                        ugc
-     :faq                        faq
-     :sticky-footer              sticky-footer)
-   view-data opts))
+       ;; LEGACY
+       :image-block                image-block
+       :hero                       layer-hero
+       :free-standard-shipping-bar free-standard-shipping-bar
+       :find-out-more              find-out-more
+       :ugc                        ugc
+       :faq                        faq
+       :sticky-footer              sticky-footer)
+     view-data opts)))
 
 (defcomponent component [{:keys [layers]} owner opts]
   [:div
