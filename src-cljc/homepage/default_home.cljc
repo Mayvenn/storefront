@@ -22,7 +22,7 @@
             [homepage.ui.guarantees :as guarantees]
             [homepage.ui.faq :as faq]
             [homepage.ui.mayvenn-hair :as mayvenn-hair]
-            [homepage.ui.hair-high :as hair-high]
+            [homepage.ui.hair-quality :as hair-quality]
             [ui.molecules :as ui.M]))
 
 ;; TODO can this use ucare-img utilities / picture tag?
@@ -40,7 +40,7 @@
 
 (c/defcomponent template
   [{:keys [homepage-hero shop-hair mayvenn-install wig-customization
-           sit-back-relax-hold-hair-high mayvenn-hair faq
+           sit-back-relax-hold-hair-high hair-quality mayvenn-hair faq
            guarantees diishan]} _ opts]
   [:div
    ;; TODO move to homepage ns
@@ -64,9 +64,9 @@
               sit-back-relax-hold-hair-high]
      [:div
       (c/build layered/shop-text-block shop-text-block)
-      (c/build layered/unified-image-block unified-image-block)
-      (c/build layered/unified-text-block unified-text-block)])
+      (c/build layered/unified-image-block unified-image-block)])
 
+   (c/build hair-quality/organism hair-quality)
    (divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
    (c/build mayvenn-hair/organism mayvenn-hair)
    (c/build faq/organism faq)
@@ -164,6 +164,16 @@
                                                                categories/query-param-separator
                                                                ["360-wigs" "lace-front-wigs"])}}]})
 
+(def hair-quality-query
+  {:hair-high.title/primary "Hold your hair"
+   :hair-high.title/secondary "high"
+
+   :hair-high.body/primary   "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
+   :hair-high.cta/id       "info-about-our-hair"
+   :hair-high.cta/label    "shop hair"
+   :hair-high.cta/target   [e/navigate-category {:page/slug           "human-hair-bundles"
+                                       :catalog/category-id "27"}]})
+
 (def sit-back-relax-hold-hair-high-query
   {:shop-text-block
    {:header/value [:div.py1.shout
@@ -178,17 +188,7 @@
    {:ucare?    true
     :mob-uuid  "7a58ec9e-11b2-447c-8230-de70798decf8"
     :dsk-uuid  "7a58ec9e-11b2-447c-8230-de70798decf8"
-    :file-name "who-shop-hair"}
-   :unified-text-block
-   {:header/value [:div.py1.shout
-                   ;; NOTE: this is a design exception
-                   [:div.title-1.proxima {:style {:font-size "19px"}} "Hold your hair"]
-                   [:div.canela.mt2.mb4 {:style {:font-size "72px"}} "high"]]
-    :body/value   "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
-    :cta/id       "info-about-our-hair"
-    :cta/value    "shop hair"
-    :cta/target   [e/navigate-category {:page/slug           "human-hair-bundles"
-                                        :catalog/category-id "27"}]}})
+    :file-name "who-shop-hair"}})
 
 (defn mayvenn-hair-query
   [ugc-collection current-nav-event]
@@ -284,6 +284,7 @@
          {:homepage-hero                 (homepage-hero-query cms)
           :shop-hair                     (shop-hair-query categories)
           :sit-back-relax-hold-hair-high sit-back-relax-hold-hair-high-query
+          :hair-quality                  hair-quality-query
           :mayvenn-hair                  (mayvenn-hair-query ugc-collection
                                                              current-nav-event)
           :guarantees                    guarantees-query
@@ -297,5 +298,3 @@
 
        (or shop? (offers? services menu))
        (merge {:faq (faq-query expanded-index)})))))
-
-
