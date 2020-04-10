@@ -5,8 +5,10 @@
             [homepage.ui.diishan :as diishan]
             [homepage.ui.faq :as faq]
             [homepage.ui.guarantees :as guarantees]
+            [homepage.ui.hair-quality :as hair-quality]
             [homepage.ui.mayvenn-hair :as mayvenn-hair]
             [homepage.ui.mayvenn-install :as mayvenn-install]
+            [homepage.ui.quality-image :as quality-image]
             [homepage.ui.shopping-categories :as shopping-categories]
             [homepage.ui.wig-customization :as wig-customization]
             [storefront.accessors.categories :as categories]
@@ -16,15 +18,6 @@
             [storefront.components.svg :as svg]
             [storefront.events :as e]
             [storefront.keypaths :as k]
-            [clojure.string :as string]
-            [homepage.ui.mayvenn-install :as mayvenn-install]
-            [homepage.ui.wig-customization :as wig-customization]
-            [homepage.ui.diishan :as diishan]
-            [homepage.ui.guarantees :as guarantees]
-            [homepage.ui.faq :as faq]
-            [homepage.ui.mayvenn-hair :as mayvenn-hair]
-            [homepage.ui.hair-quality :as hair-quality]
-            [homepage.ui.quality-image :as quality-image]
             [ui.molecules :as ui.M]))
 
 ;; TODO can this use ucare-img utilities / picture tag?
