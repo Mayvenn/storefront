@@ -1,6 +1,5 @@
 (ns homepage.default-home
   (:require [adventure.components.layered :as layered]
-            [adventure.faq :as faq]
             adventure.handlers
             adventure.keypaths
             [storefront.accessors.contentful :as contentful]
@@ -10,14 +9,19 @@
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
-            [storefront.keypaths :as storefront.keypaths]
+            [storefront.keypaths :as k]
             [clojure.string :as string]
+            [homepage.ui.diishan :as diishan]
+            [homepage.ui.guarantees :as guarantees]
+            [homepage.ui.faq :as faq]
             [ui.molecules :as ui.M]))
+
+
 
 (defcomponent template
   [{:keys [homepage-hero shop-hair mayvenn-install wig-customization
            sit-back-relax-hold-hair-high mayvenn-hair faq
-           mayvenn-guarantees]} _ opts]
+           guarantees diishan]} _ opts]
   [:div
    ;; TODO move to homepage ns
    (component/build ui.M/hero (merge homepage-hero
@@ -56,9 +60,9 @@
                     {:divider-img "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"})
 
    (component/build layered/shop-ugc mayvenn-hair)
-   (component/build layered/faq faq)
-   (component/build layered/shop-iconed-list mayvenn-guarantees)
-   ])
+   (component/build faq/organism faq)
+   (component/build guarantees/organism guarantees)
+   (component/build diishan/organism diishan)])
 
 (defn homepage-hero-query
   "TODO homepage hero query is reused and complected
@@ -205,76 +209,101 @@
                                      :free-install-mayvenn)))
    :cta/id       "see-more-looks"
    :cta/value    "see more looks"
-   :cta/target   [events/navigate-shop-by-look {:album-keyword :look}]}  )
+   :cta/target   [events/navigate-shop-by-look {:album-keyword :look}]})
 
 (defn faq-query
   [expanded-index]
-  {:expanded-index expanded-index
-   :sections       [{:title      "Who is going to do my hair?",
-                     :paragraphs ["Mayvenn Certified Stylists have been chosen because of their professionalism, skillset, and client ratings. We’ve got a network of licensed stylists across the country who are all committed to providing you with amazing service and quality hair extensions."]}
-                    {:title      "What kind of hair do you offer?"
-                     :paragraphs ["We’ve got top of the line virgin hair in 8 different textures. In the event that you’d like to switch it up, we have pre-colored options available as well. The best part? All of our hair is quality-guaranteed."]}
-                    {:title      "What happens after I choose my hair?"
-                     :paragraphs ["After you choose your hair, you’ll be matched with a Certified Stylist of your choice. You can see the stylist’s work and their salon’s location. We’ll help you book an appointment and answer any questions you may have."]}
-                    {:title      "Is Mayvenn Install really a better deal?"
-                     :paragraphs ["Yes! It’s basically hair and service for the price of one. You can buy any 3 bundles, closures and frontals from Mayvenn, and we’ll pay for you to get your hair installed by a local stylist. That means that you’re paying $0 for your next sew-in, with no catch!"]}
-                    {:title      "How does this process actually work?"
-                     :paragraphs ["It’s super simple — after you purchase your hair, we’ll send you a pre-paid voucher that you’ll use during your appointment. When your stylist scans it, they get paid instantly by Mayvenn."]}
-                    {:title      "What if I want to get my hair done by another stylist? Can I still get the Mayvenn Install?"
-                     :paragraphs ["You must get your hair done from a Certified Stylist in order to get your hair installed for free."]}]})
+  {:faq/expanded-index expanded-index
+   :list/sections
+   [{:faq/title      "Who is going to do my hair?",
+     :faq/paragraphs ["Mayvenn Certified Stylists have been chosen because of their professionalism, skillset, and client ratings. We’ve got a network of licensed stylists across the country who are all committed to providing you with amazing service and quality hair extensions."]}
+    {:faq/title      "What kind of hair do you offer?"
+     :faq/paragraphs ["We’ve got top of the line virgin hair in 8 different textures. In the event that you’d like to switch it up, we have pre-colored options available as well. The best part? All of our hair is quality-guaranteed."]}
+    {:faq/title      "What happens after I choose my hair?"
+     :faq/paragraphs ["After you choose your hair, you’ll be matched with a Certified Stylist of your choice. You can see the stylist’s work and their salon’s location. We’ll help you book an appointment and answer any questions you may have."]}
+    {:faq/title      "Is Mayvenn Install really a better deal?"
+     :faq/paragraphs ["Yes! It’s basically hair and service for the price of one. You can buy any 3 bundles, closures and frontals from Mayvenn, and we’ll pay for you to get your hair installed by a local stylist. That means that you’re paying $0 for your next sew-in, with no catch!"]}
+    {:faq/title      "How does this process actually work?"
+     :faq/paragraphs ["It’s super simple — after you purchase your hair, we’ll send you a pre-paid voucher that you’ll use during your appointment. When your stylist scans it, they get paid instantly by Mayvenn."]}
+    {:faq/title      "What if I want to get my hair done by another stylist? Can I still get the Mayvenn Install?"
+     :faq/paragraphs ["You must get your hair done from a Certified Stylist in order to get your hair installed for free."]}]})
 
-(def mayvenn-guarantees-query
-  {:layer/id       "mayvenn-guarantees"
-   :title/value    [[:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "29px"}}]]
-   :subtitle/value ["guarantees"]
-   :bullets        [{:icon/body    (svg/heart {:class  "fill-p-color"
-                                               :width  "32px"
-                                               :height "29px"})
-                     :header/value "Top-Notch Customer Service"
-                     :body/value   "Our team is made up of hair experts ready to help you by phone, text, and email."}
-                    {:icon/body    (svg/calendar {:class  "fill-p-color"
-                                                  :width  "30px"
-                                                  :height "33px"})
-                     :header/value "30 Day Guarantee"
-                     :body/value   "Wear it, dye it, even cut it! If you're not satisfied we'll exchange it within 30 days."}
-                    {:icon/body    (svg/worry-free {:class  "fill-p-color"
-                                                    :width  "35px"
-                                                    :height "36px"})
-                     :header/value "100% Virgin Hair"
-                     :body/value   "Our hair is gently steam-processed and can last up to a year. Available in 8 textures and 5 shades."}
-                    {:icon/body    (svg/mirror {:class  "fill-p-color"
-                                                :width  "30px"
-                                                :height "34px"})
-                     :header/value "Certified Stylists"
-                     :body/value   "Our stylists are chosen because of their industry-leading standards. Both our hair and service are quality guaranteed."}]})
+(def guarantees-query
+  {:list/icons
+   [{:guarantees.icon/image (svg/heart {:class  "fill-p-color"
+                                        :width  "32px"
+                                        :height "29px"})
+     :guarantees.icon/title "Top-Notch Customer Service"
+     :guarantees.icon/body  "Our team is made up of hair experts ready to help you by phone, text, and email."}
+    {:guarantees.icon/image (svg/calendar {:class  "fill-p-color"
+                                           :width  "30px"
+                                           :height "33px"})
+     :guarantees.icon/title "30 Day Guarantee"
+     :guarantees.icon/body  "Wear it, dye it, even cut it! If you're not satisfied we'll exchange it within 30 days."}
+    {:guarantees.icon/image (svg/worry-free {:class  "fill-p-color"
+                                             :width  "35px"
+                                             :height "36px"})
+     :guarantees.icon/title "100% Virgin Hair"
+     :guarantees.icon/body  "Our hair is gently steam-processed and can last up to a year. Available in 8 textures and 5 shades."}
+    {:guarantees.icon/image (svg/mirror {:class  "fill-p-color"
+                                         :width  "30px"
+                                         :height "34px"})
+     :guarantees.icon/title "Certified Stylists"
+     :guarantees.icon/body  "Our stylists are chosen because of their industry-leading standards. Both our hair and service are quality guaranteed."}]})
 
 (def diishan-query
-  {:quote/dsk-ucare-id          "3208fac6-c974-4c80-8e88-3244ee50226b"
-   :quote/mob-ucare-id          "befce648-98b6-45a2-90f0-6199119bfffb"
-   :quote/text                  "You deserve quality extensions & exceptional service without the unreasonable price tag."
-   :quote/primary-attribution   "— Diishan Imira"
-   :quote/secondary-attribution "CEO of Mayvenn"})
+  {:diishan.quote/text            "You deserve quality extensions & exceptional service without the unreasonable price tag."
+   :diishan.attribution/ucare-ids {:desktop "3208fac6-c974-4c80-8e88-3244ee50226b"
+                                   :mobile  "befce648-98b6-45a2-90f0-6199119bfffb" }
+   :diishan.attribution/primary   "— Diishan Imira"
+   :diishan.attribution/secondary "CEO of Mayvenn"})
+
+;;;; TODO -> model.stylists
+
+(def ^:private wig-customizations
+  [:specialty-wig-customization])
+(def ^:private mayvenn-installs
+  [:specialty-sew-in-360-frontal
+   :specialty-sew-in-closure
+   :specialty-sew-in-frontal
+   :specialty-sew-in-leave-out])
+(def ^:private services
+  (into mayvenn-installs wig-customizations))
+
+(defn ^:private offers?
+  [services menu]
+  (->> ((apply juxt services) menu) (some identity) boolean))
+
+;;;;
 
 (defn page
   [app-state]
-  (let [cms               (get-in app-state storefront.keypaths/cms)
-        categories        (get-in app-state storefront.keypaths/categories)
+  (let [cms               (get-in app-state k/cms)
+        categories        (get-in app-state k/categories)
         video             (get-in app-state adventure.keypaths/adventure-home-video)
-        ugc-collection    (get-in app-state storefront.keypaths/cms-ugc-collection)
-        current-nav-event (get-in app-state storefront.keypaths/navigation-event)
-        expanded-index    (get-in app-state storefront.keypaths/faq-expanded-section)]
-    (->> {:homepage-hero                 (homepage-hero-query cms)
+        ugc-collection    (get-in app-state k/cms-ugc-collection)
+        current-nav-event (get-in app-state k/navigation-event)
+        expanded-index    (get-in app-state k/faq-expanded-section)
+        shop?             (= "shop" (get-in app-state k/store-slug))
+        menu              (get-in app-state k/store-service-menu)]
+    (component/build
+     template
+     (cond->
+         {:homepage-hero                 (homepage-hero-query cms)
           :shop-hair                     (shop-hair-query categories)
-          ;; TODO conditional
-          :mayvenn-install               mayvenn-install-query
-          ;; TODO conditional
-          :wig-customization             wig-customization-query
           :sit-back-relax-hold-hair-high sit-back-relax-hold-hair-high-query
-          :mayvenn-hair                  (mayvenn-hair-query ugc-collection current-nav-event)
-          ;; TODO conditional
-          :faq                           (faq-query expanded-index)
-          :mayvenn-guarantees            mayvenn-guarantees-query
-          :diishan diishan-query}
-         (component/build template))))
+          :mayvenn-hair                  (mayvenn-hair-query ugc-collection
+                                                             current-nav-event)
+          :guarantees                    guarantees-query
+          :diishan                       diishan-query}
+
+       (or shop? (offers? mayvenn-installs menu))
+       (merge {:mayvenn-install mayvenn-install-query})
+
+       (or shop? (offers? wig-customizations menu))
+       (merge {:wig-customization wig-customization-query})
+
+       (or shop? (offers? services menu))
+       (merge {:faq (faq-query expanded-index)})))))
 
 
