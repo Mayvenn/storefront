@@ -15,6 +15,14 @@
             [storefront.components.svg :as svg]
             [storefront.events :as e]
             [storefront.keypaths :as k]
+            [clojure.string :as string]
+            [homepage.ui.mayvenn-install :as mayvenn-install]
+            [homepage.ui.wig-customization :as wig-customization]
+            [homepage.ui.diishan :as diishan]
+            [homepage.ui.guarantees :as guarantees]
+            [homepage.ui.faq :as faq]
+            [homepage.ui.mayvenn-hair :as mayvenn-hair]
+            [homepage.ui.hair-high :as hair-high]
             [ui.molecules :as ui.M]))
 
 ;; TODO can this use ucare-img utilities / picture tag?
@@ -184,15 +192,15 @@
 
 (defn mayvenn-hair-query
   [ugc-collection current-nav-event]
-  {:looks/images (->> ugc-collection
+  {:mayvenn-hair.looks/images (->> ugc-collection
                       :free-install-mayvenn
                       :looks
                       (mapv (partial contentful/look->homepage-social-card
                                      current-nav-event
                                      :free-install-mayvenn)))
-   :cta/id       "see-more-looks"
-   :cta/label    "see more looks"
-   :cta/target   [e/navigate-shop-by-look {:album-keyword :look}]})
+   :mayvenn-hair.cta/id       "see-more-looks"
+   :mayvenn-hair.cta/label    "see more looks"
+   :mayvenn-hair.cta/target   [e/navigate-shop-by-look {:album-keyword :look}]})
 
 (defn faq-query
   [expanded-index]

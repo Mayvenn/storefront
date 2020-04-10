@@ -13,7 +13,7 @@
      :else          [:div.col-12 " "])))
 
 (defn ^:private more-looks-cta
-  [{:cta/keys [target label id]}]
+  [{:mayvenn-hair.cta/keys [target label id]}]
   (ui/button-small-underline-primary
    (assoc (apply utils/route-to target)
           :data-test  id
@@ -24,7 +24,7 @@
   [:div.title-2.proxima.shout.bold "#MayvennHair"])
 
 (defn ^:private looks-images-molecule
-  [{:looks/keys [images]}]
+  [{:mayvenn-hair.looks/keys [images]}]
   (for [{:keys [image-url]} images]
     [:a.col-6.col-3-on-tb-dt.p1
      {:key (str image-url)}
