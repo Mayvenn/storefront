@@ -7,6 +7,7 @@
             [homepage.ui.guarantees :as guarantees]
             [homepage.ui.mayvenn-hair :as mayvenn-hair]
             [homepage.ui.mayvenn-install :as mayvenn-install]
+            [homepage.ui.shopping-categories :as shopping-categories]
             [homepage.ui.wig-customization :as wig-customization]
             [storefront.accessors.categories :as categories]
             [storefront.accessors.contentful :as contentful]
@@ -40,9 +41,17 @@
    {:style {:border-color "#EEEEEE"}}])
 
 (c/defcomponent template
-  [{:keys [homepage-hero shop-hair mayvenn-install wig-customization
-           sit-back-relax-hold-hair-high hair-quality quality-image
-           mayvenn-hair faq guarantees diishan]} _ opts]
+  [{:keys [diishan
+           faq
+           guarantees
+           hair-quality
+           homepage-hero
+           mayvenn-hair
+           mayvenn-install
+           quality-image
+           shopping-categories
+           sit-back-relax-hold-hair-high
+           wig-customization]} _ _]
   [:div
    ;; TODO move to homepage ns
    (c/build ui.M/hero (merge homepage-hero
@@ -50,7 +59,7 @@
                                      :style     {:min-height "300px"}
                                      :data-test "hero-link"}}))
    (c/build layered/free-standard-shipping-bar {})
-   (c/build layered/box-grid shop-hair)
+   (c/build shopping-categories/organism shopping-categories)
    horizontal-rule-atom
    (when mayvenn-install
      [:div
@@ -80,7 +89,7 @@
 
   decomplect:
   - handles extraction from cms
-  - schematizes accoring to reused componet"
+  - schematizes according to reused component"
   [cms]
   (let [hero-content
         (or
@@ -89,51 +98,25 @@
          {})]
     (homepage-hero/query hero-content)))
 
-;; For shop hair
-(defn ^:private category-image
-  [{:keys [image-id filename alt]}]
-  ;; Assumptions: 2 up on mobile, 3 up on tablet/desktop, within a .container. Does not account for 1px border.
-  [:img.block.col-12
-   {:src     (str "//ucarecdn.com/" image-id "/-/format/auto/-/resize/640x/-/quality/lightest/" filename)
-    :src-set (str "//ucarecdn.com/" image-id "/-/format/auto/-/resize/640x/-/quality/lightest/" filename " 640w, "
-                  "//ucarecdn.com/" image-id "/-/format/auto/-/resize/544x/-/quality/lightest/" filename " 544w")
-    :sizes   "100%"
-    :alt     alt}])
-
-;; For shop hair
-(defn ^:private category->box-grid-item
-  [{:keys [page/slug
-           copy/title
-           catalog/category-id
-           unified.home/image-id]}]
-  (let [[first-word & rest-of-words] (string/split title #" ")]
-    {:id      slug
-     :target  [e/navigate-category {:page/slug           slug
-                                    :catalog/category-id category-id}]
-     :content (list
-               (category-image {:filename slug
-                                :alt      slug
-                                :image-id image-id})
-               [:div.absolute.white.proxima.title-2.bottom-0.shout.ml3.mb2-on-mb.mb4-on-tb-dt
-                [:span first-word [:br] (string/join " " rest-of-words)]])}))
-
-(defn shop-hair-query
-  "TODO make this solely about data"
+(defn shopping-categories-query
   [categories]
-  (let [categories-for-homepage (->> categories
-                                     (filter :unified.home/order)
-                                     (sort-by :unified.home/order)
-                                     (mapv category->box-grid-item))]
-    {:title        "Shop Hair"
-     :aspect-ratio {:height 210 :width 171}
-     :items       (conj categories-for-homepage
-                        ;; TODO use the inner query here
-                        {:id      "need-inspiration"
-                         :target  [e/navigate-shop-by-look {:album-keyword :look}]
-                         :content [:div.p2.flex.justify-around.items-center.bg-pale-purple.dark-gray.inherit-color.canela.title-2.center
-                                   {:style {:height "100%"
-                                            :width  "100%"}}
-                                   "Need Inspiration?" [:br] "Try shop by look."]})}))
+  {:shopping-categories.title/primary "Shop Hair"
+   :list/boxes
+   (conj
+    ;; TODO rename category keys for consistency
+    (->> categories (filter :unified.home/order) (sort-by :unified.home/order)
+         (mapv
+          (fn category->box
+            [{:keys [page/slug copy/title catalog/category-id unified.home/image-id]}]
+            {:shopping-categories.box/id       slug
+             :shopping-categories.box/target   [e/navigate-category
+                                                {:page/slug           slug
+                                                 :catalog/category-id category-id}]
+             :shopping-categories.box/ucare-id image-id
+             :shopping-categories.box/label    title})))
+    {:shopping-categories.box/id       "need-inspiration"
+     :shopping-categories.box/target   [e/navigate-shop-by-look {:album-keyword :look}]
+     :shopping-categories.box/label    ["Need Inspiration?" "Try shop by look."]})})
 
 (def mayvenn-install-query
   {:mayvenn-install.title/primary   "Free Mayvenn Install"
@@ -285,7 +268,7 @@
      template
      (cond->
          {:homepage-hero                 (homepage-hero-query cms)
-          :shop-hair                     (shop-hair-query categories)
+          :shopping-categories           (shopping-categories-query categories)
           :sit-back-relax-hold-hair-high sit-back-relax-hold-hair-high-query
           :hair-quality                  hair-quality-query
           :quality-image                 quality-image-query
