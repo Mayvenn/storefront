@@ -8,7 +8,6 @@
             [storefront.components.homepage-hero :as homepage-hero]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.events :as events]
             [storefront.events :as e]
             [storefront.keypaths :as k]
             [clojure.string :as string]
@@ -16,6 +15,7 @@
             [homepage.ui.diishan :as diishan]
             [homepage.ui.guarantees :as guarantees]
             [homepage.ui.faq :as faq]
+            [homepage.ui.mayvenn-hair :as mayvenn-hair]
             [ui.molecules :as ui.M]))
 
 (defcomponent template
@@ -53,7 +53,7 @@
    (component/build layered/divider-img
                     {:divider-img "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"})
 
-   (component/build layered/shop-ugc mayvenn-hair)
+   (component/build mayvenn-hair/organism mayvenn-hair)
    (component/build faq/organism faq)
    (component/build guarantees/organism guarantees)
    (component/build diishan/organism diishan)])
@@ -185,15 +185,14 @@
 
 (defn mayvenn-hair-query
   [ugc-collection current-nav-event]
-  {:header/value "#MayvennHair"
-   :images       (->> ugc-collection
+  {:looks/images (->> ugc-collection
                       :free-install-mayvenn
                       :looks
                       (mapv (partial contentful/look->homepage-social-card
                                      current-nav-event
                                      :free-install-mayvenn)))
    :cta/id       "see-more-looks"
-   :cta/value    "see more looks"
+   :cta/label    "see more looks"
    :cta/target   [e/navigate-shop-by-look {:album-keyword :look}]})
 
 (defn faq-query
