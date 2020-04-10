@@ -3,8 +3,13 @@
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]))
 
-;; TODO
-(defn ^:private vertical-squiggle-atom [height])
+;; TODO why do we need to adjust the top?
+(defn ^:private vertical-squiggle-atom
+  [top]
+  [:div.absolute.col-12.flex.justify-center
+   {:style {:top top}}
+   (svg/vertical-squiggle
+    {:style {:height "72px"}})])
 
 (def ^:private mayvenn-logo-atom
   [:div.flex.justify-center
