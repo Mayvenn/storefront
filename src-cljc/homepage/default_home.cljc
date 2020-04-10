@@ -9,14 +9,14 @@
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
+            [storefront.events :as e]
             [storefront.keypaths :as k]
             [clojure.string :as string]
+            [homepage.ui.mayvenn-install :as mayvenn-install]
             [homepage.ui.diishan :as diishan]
             [homepage.ui.guarantees :as guarantees]
             [homepage.ui.faq :as faq]
             [ui.molecules :as ui.M]))
-
-
 
 (defcomponent template
   [{:keys [homepage-hero shop-hair mayvenn-install wig-customization
@@ -31,14 +31,8 @@
    (component/build layered/free-standard-shipping-bar {})
    (component/build layered/box-grid shop-hair)
    (component/build layered/horizontal-rule)
-   ;; TODO consider merge into one organism
-   (when-let [{:keys [unified-text-block unified-image-block unified-framed-checklist]}
-              mayvenn-install]
-     [:div
-      (component/build layered/unified-text-block unified-text-block)
-      (component/build layered/unified-image-block unified-image-block)
-      (component/build layered/unified-framed-checklist unified-framed-checklist)
-      (component/build layered/horizontal-rule)])
+   (when mayvenn-install
+     (component/build mayvenn-install/organism mayvenn-install))
    (when-let [{:keys [unified-text-block unified-image-block unified-framed-checklist]}
               wig-customization]
      [:div
@@ -97,8 +91,8 @@
            unified.home/image-id]}]
   (let [[first-word & rest-of-words] (string/split title #" ")]
     {:id      slug
-     :target  [events/navigate-category {:page/slug           slug
-                                         :catalog/category-id category-id}]
+     :target  [e/navigate-category {:page/slug           slug
+                                    :catalog/category-id category-id}]
      :content (list
                (category-image {:filename slug
                                 :alt      slug
@@ -118,31 +112,22 @@
      :items       (conj categories-for-homepage
                         ;; TODO use the inner query here
                         {:id      "need-inspiration"
-                         :target  [events/navigate-shop-by-look {:album-keyword :look}]
+                         :target  [e/navigate-shop-by-look {:album-keyword :look}]
                          :content [:div.p2.flex.justify-around.items-center.bg-pale-purple.dark-gray.inherit-color.canela.title-2.center
                                    {:style {:height "100%"
                                             :width  "100%"}}
                                    "Need Inspiration?" [:br] "Try shop by look."]})}))
 
 (def mayvenn-install-query
-  {:unified-text-block
-   {:header/value "Free Mayvenn Install"
-    :body/value   (str "Purchase 3+ bundles or closure and get a mayvenn install "
-                       "valued up to $200 for absolutely free!")}
-   :unified-image-block
-   {:ucare?     true
-    :mob-uuid  "625b63a0-5724-4a57-ad79-c9e7a72a7f5b"
-    :dsk-uuid  "625b63a0-5724-4a57-ad79-c9e7a72a7f5b"
-    :file-name "who-shop-hair"}
-   :unified-framed-checklist
-   {:header/value "What's included?"
-    :bullets      ["Shampoo"
-                   "Braid down"
-                   "Sew-in and style"]
-    :cta/button?  true
-    :cta/value    "Browse Stylists"
-    :cta/id       "browse-stylists"
-    :cta/target   [events/navigate-adventure-find-your-stylist]}})
+  {:mayvenn-install.title/primary   "Free Mayvenn Install"
+   :mayvenn-install.title/secondary (str "Purchase 3+ bundles or closure and get a mayvenn install "
+                                         "valued up to $200 for absolutely free!")
+   :mayvenn-install.image/ucare-id  "625b63a0-5724-4a57-ad79-c9e7a72a7f5b"
+   :mayvenn-install.list/primary    "What's included?"
+   :list/bullets                    ["Shampoo" "Braid down" "Sew-in and style"]
+   :mayvenn-install.cta/id          "browse-stylists"
+   :mayvenn-install.cta/value       "Browse Stylists"
+   :mayvenn-install.cta/target      [e/navigate-adventure-find-your-stylist]})
 
 (def wig-customization-query
   {:unified-text-block
@@ -164,7 +149,7 @@
     :cta/button?  true
     :cta/value    "Shop Wigs"
     :cta/id       "show-wigs"
-    :cta/target   [events/navigate-category
+    :cta/target   [e/navigate-category
                    {:catalog/category-id "13"
                     :page/slug           "wigs"
                     :query-params        {:family
@@ -181,7 +166,7 @@
     :body/value   "We’ve rounded up the best stylists in the country so you can be sure your hair is in really, really good hands."
     :cta/value    "Learn more"
     :cta/id       "info-certified-stylists"
-    :cta/target   [events/navigate-info-certified-stylists]}
+    :cta/target   [e/navigate-info-certified-stylists]}
    :unified-image-block
    {:ucare?    true
     :mob-uuid  "7a58ec9e-11b2-447c-8230-de70798decf8"
@@ -195,7 +180,7 @@
     :body/value   "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
     :cta/id       "info-about-our-hair"
     :cta/value    "shop hair"
-    :cta/target   [events/navigate-category {:page/slug           "human-hair-bundles"
+    :cta/target   [e/navigate-category {:page/slug           "human-hair-bundles"
                                              :catalog/category-id "27"}]}})
 
 (defn mayvenn-hair-query
@@ -209,7 +194,7 @@
                                      :free-install-mayvenn)))
    :cta/id       "see-more-looks"
    :cta/value    "see more looks"
-   :cta/target   [events/navigate-shop-by-look {:album-keyword :look}]})
+   :cta/target   [e/navigate-shop-by-look {:album-keyword :look}]})
 
 (defn faq-query
   [expanded-index]
