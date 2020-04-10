@@ -1,22 +1,20 @@
 (ns homepage.default-home
   (:require [adventure.components.layered :as layered]
-            adventure.handlers
             adventure.keypaths
-            [storefront.accessors.contentful :as contentful]
-            [storefront.accessors.categories :as categories]
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.homepage-hero :as homepage-hero]
-            [storefront.components.svg :as svg]
-            [storefront.components.ui :as ui]
-            [storefront.events :as e]
-            [storefront.keypaths :as k]
             [clojure.string :as string]
+            [homepage.ui.diishan :as diishan]
+            [homepage.ui.faq :as faq]
+            [homepage.ui.guarantees :as guarantees]
+            [homepage.ui.mayvenn-hair :as mayvenn-hair]
             [homepage.ui.mayvenn-install :as mayvenn-install]
             [homepage.ui.wig-customization :as wig-customization]
-            [homepage.ui.diishan :as diishan]
-            [homepage.ui.guarantees :as guarantees]
-            [homepage.ui.faq :as faq]
-            [homepage.ui.mayvenn-hair :as mayvenn-hair]
+            [storefront.accessors.categories :as categories]
+            [storefront.accessors.contentful :as contentful]
+            [storefront.component :as c]
+            [storefront.components.homepage-hero :as homepage-hero]
+            [storefront.components.svg :as svg]
+            [storefront.events :as e]
+            [storefront.keypaths :as k]
             [ui.molecules :as ui.M]))
 
 ;; TODO can this use ucare-img utilities / picture tag?
@@ -32,40 +30,40 @@
   [:div.border-bottom.border-width-1.hide-on-dt
    {:style {:border-color "#EEEEEE"}}])
 
-(defcomponent template
+(c/defcomponent template
   [{:keys [homepage-hero shop-hair mayvenn-install wig-customization
            sit-back-relax-hold-hair-high mayvenn-hair faq
            guarantees diishan]} _ opts]
   [:div
    ;; TODO move to homepage ns
-   (component/build ui.M/hero (merge homepage-hero
-                                     {:opts {:class     "block"
-                                             :style     {:min-height "300px"}
-                                             :data-test "hero-link"}}))
-   (component/build layered/free-standard-shipping-bar {})
-   (component/build layered/box-grid shop-hair)
+   (c/build ui.M/hero (merge homepage-hero
+                             {:opts {:class     "block"
+                                     :style     {:min-height "300px"}
+                                     :data-test "hero-link"}}))
+   (c/build layered/free-standard-shipping-bar {})
+   (c/build layered/box-grid shop-hair)
    horizontal-rule-atom
    (when mayvenn-install
      [:div
-      (component/build mayvenn-install/organism mayvenn-install)
+      (c/build mayvenn-install/organism mayvenn-install)
       horizontal-rule-atom])
    (when wig-customization
      [:div
-      (component/build wig-customization/organism wig-customization)
+      (c/build wig-customization/organism wig-customization)
       horizontal-rule-atom])
    (divider-atom "2d3a98e3-b49a-4f0f-9340-828d12865315")
    (when-let [{:keys [shop-text-block unified-image-block unified-text-block]}
               sit-back-relax-hold-hair-high]
      [:div
-      (component/build layered/shop-text-block shop-text-block)
-      (component/build layered/unified-image-block unified-image-block)
-      (component/build layered/unified-text-block unified-text-block)])
+      (c/build layered/shop-text-block shop-text-block)
+      (c/build layered/unified-image-block unified-image-block)
+      (c/build layered/unified-text-block unified-text-block)])
 
    (divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
-   (component/build mayvenn-hair/organism mayvenn-hair)
-   (component/build faq/organism faq)
-   (component/build guarantees/organism guarantees)
-   (component/build diishan/organism diishan)])
+   (c/build mayvenn-hair/organism mayvenn-hair)
+   (c/build faq/organism faq)
+   (c/build guarantees/organism guarantees)
+   (c/build diishan/organism diishan)])
 
 (defn homepage-hero-query
   "TODO homepage hero query is reused and complected
@@ -265,13 +263,14 @@
   [app-state]
   (let [cms               (get-in app-state k/cms)
         categories        (get-in app-state k/categories)
+        ;; TODO ?
         video             (get-in app-state adventure.keypaths/adventure-home-video)
         ugc-collection    (get-in app-state k/cms-ugc-collection)
         current-nav-event (get-in app-state k/navigation-event)
         expanded-index    (get-in app-state k/faq-expanded-section)
         shop?             (= "shop" (get-in app-state k/store-slug))
         menu              (get-in app-state k/store-service-menu)]
-    (component/build
+    (c/build
      template
      (cond->
          {:homepage-hero                 (homepage-hero-query cms)
