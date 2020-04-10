@@ -28,6 +28,10 @@
                    :background-repeat   "repeat-x"
                    :height              "24px"}}]))
 
+(def ^:private horizontal-rule-atom
+  [:div.border-bottom.border-width-1.hide-on-dt
+   {:style {:border-color "#EEEEEE"}}])
+
 (defcomponent template
   [{:keys [homepage-hero shop-hair mayvenn-install wig-customization
            sit-back-relax-hold-hair-high mayvenn-hair faq
@@ -40,11 +44,15 @@
                                              :data-test "hero-link"}}))
    (component/build layered/free-standard-shipping-bar {})
    (component/build layered/box-grid shop-hair)
-   (component/build layered/horizontal-rule)
+   horizontal-rule-atom
    (when mayvenn-install
-     (component/build mayvenn-install/organism mayvenn-install))
+     [:div
+      (component/build mayvenn-install/organism mayvenn-install)
+      horizontal-rule-atom])
    (when wig-customization
-     (component/build wig-customization/organism wig-customization))
+     [:div
+      (component/build wig-customization/organism wig-customization)
+      horizontal-rule-atom])
    (divider-atom "2d3a98e3-b49a-4f0f-9340-828d12865315")
    (when-let [{:keys [shop-text-block unified-image-block unified-text-block]}
               sit-back-relax-hold-hair-high]

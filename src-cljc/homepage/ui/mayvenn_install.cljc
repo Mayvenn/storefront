@@ -5,10 +5,6 @@
             [storefront.platform.component-utils :as utils]
             [storefront.components.ui :as ui]))
 
-(def ^:private mayvenn-install-horizontal-rule-atom
-  [:div.border-bottom.border-width-1.hide-on-dt
-   {:style {:border-color "#EEEEEE"}}])
-
 (defn ^:private mayvenn-install-cta-molecule
   [{:mayvenn-install.cta/keys [id value target]}]
   [:div.col-9.mx-auto.py6
@@ -49,10 +45,8 @@
 
 (c/defcomponent organism
   [data _ _]
-  [:div
-   [:div.mb6
-    (mayvenn-install-title-molecule data)
-    (mayvenn-install-image-molecule data)
-    (mayvenn-install-list-molecule data)
-    (mayvenn-install-cta-molecule data)]
-   mayvenn-install-horizontal-rule-atom])
+  [:div.mb6
+   (mayvenn-install-title-molecule data)
+   (mayvenn-install-image-molecule data)
+   (mayvenn-install-list-molecule data)
+   (mayvenn-install-cta-molecule data)])

@@ -6,10 +6,6 @@
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]))
 
-(def ^:private wig-customization-horizontal-rule-atom
-  [:div.border-bottom.border-width-1.hide-on-dt
-   {:style {:border-color "#EEEEEE"}}])
-
 (defn ^:private wig-customization-cta-molecule
   [{:wig-customization.cta/keys [id value target]}]
   [:div.col-9.mx-auto.py6
@@ -54,10 +50,8 @@
 
 (c/defcomponent organism
   [data _ _]
-  [:div
-   [:div.mb6
-    (wig-customization-title-molecule data)
-    (wig-customization-image-molecule data)
-    (wig-customization-list-molecule data)
-    (wig-customization-cta-molecule data)]
-   wig-customization-horizontal-rule-atom])
+  [:div.mb6
+   (wig-customization-title-molecule data)
+   (wig-customization-image-molecule data)
+   (wig-customization-list-molecule data)
+   (wig-customization-cta-molecule data)])
