@@ -221,7 +221,7 @@
   (if base-service
     (let [service-price (:sku/price base-service)]
       {:discount-text    "Hair + FREE Install"
-       :discounted-price (* 0.90 (- base-price service-price))})
+       :discounted-price (- base-price service-price)})
     (let [promotion% (some->> promotions
                               (filter (comp #{shared-cart-promo} str/lower-case :code))
                               first
