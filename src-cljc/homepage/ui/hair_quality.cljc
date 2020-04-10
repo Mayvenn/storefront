@@ -1,8 +1,7 @@
 (ns homepage.ui.hair-quality
   (:require [storefront.component :as c]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
-            [storefront.components.svg :as svg]))
+            [storefront.platform.component-utils :as utils]))
 
 (defn ^:private hair-high-cta-molecule
   [{:hair-high.cta/keys [target label id]}]

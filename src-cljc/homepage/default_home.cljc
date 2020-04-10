@@ -23,6 +23,7 @@
             [homepage.ui.faq :as faq]
             [homepage.ui.mayvenn-hair :as mayvenn-hair]
             [homepage.ui.hair-quality :as hair-quality]
+            [homepage.ui.quality-image :as quality-image]
             [ui.molecules :as ui.M]))
 
 ;; TODO can this use ucare-img utilities / picture tag?
@@ -40,8 +41,8 @@
 
 (c/defcomponent template
   [{:keys [homepage-hero shop-hair mayvenn-install wig-customization
-           sit-back-relax-hold-hair-high hair-quality mayvenn-hair faq
-           guarantees diishan]} _ opts]
+           sit-back-relax-hold-hair-high hair-quality quality-image
+           mayvenn-hair faq guarantees diishan]} _ opts]
   [:div
    ;; TODO move to homepage ns
    (c/build ui.M/hero (merge homepage-hero
@@ -63,10 +64,11 @@
    (when-let [{:keys [shop-text-block unified-image-block unified-text-block]}
               sit-back-relax-hold-hair-high]
      [:div
-      (c/build layered/shop-text-block shop-text-block)
-      (c/build layered/unified-image-block unified-image-block)])
+      (c/build layered/shop-text-block shop-text-block)])
 
+   (c/build quality-image/molecule quality-image)
    (c/build hair-quality/organism hair-quality)
+
    (divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
    (c/build mayvenn-hair/organism mayvenn-hair)
    (c/build faq/organism faq)
@@ -164,6 +166,12 @@
                                                                categories/query-param-separator
                                                                ["360-wigs" "lace-front-wigs"])}}]})
 
+(def quality-image-query
+  {:ucare?    true
+   :mob-uuid  "7a58ec9e-11b2-447c-8230-de70798decf8"
+   :dsk-uuid  "484cc089-8aa1-4199-af07-05d72271d3a3"
+   :file-name "who-shop-hair"})
+
 (def hair-quality-query
   {:hair-high.title/primary "Hold your hair"
    :hair-high.title/secondary "high"
@@ -183,12 +191,7 @@
     :body/value   "We’ve rounded up the best stylists in the country so you can be sure your hair is in really, really good hands."
     :cta/value    "Learn more"
     :cta/id       "info-certified-stylists"
-    :cta/target   [e/navigate-info-certified-stylists]}
-   :unified-image-block
-   {:ucare?    true
-    :mob-uuid  "7a58ec9e-11b2-447c-8230-de70798decf8"
-    :dsk-uuid  "7a58ec9e-11b2-447c-8230-de70798decf8"
-    :file-name "who-shop-hair"}})
+    :cta/target   [e/navigate-info-certified-stylists]}})
 
 (defn mayvenn-hair-query
   [ugc-collection current-nav-event]
@@ -285,6 +288,7 @@
           :shop-hair                     (shop-hair-query categories)
           :sit-back-relax-hold-hair-high sit-back-relax-hold-hair-high-query
           :hair-quality                  hair-quality-query
+          :quality-image                 quality-image-query
           :mayvenn-hair                  (mayvenn-hair-query ugc-collection
                                                              current-nav-event)
           :guarantees                    guarantees-query
