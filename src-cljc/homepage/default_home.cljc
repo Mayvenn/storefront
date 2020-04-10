@@ -19,6 +19,15 @@
             [homepage.ui.mayvenn-hair :as mayvenn-hair]
             [ui.molecules :as ui.M]))
 
+;; TODO can this use ucare-img utilities / picture tag?
+(defn ^:private divider-atom
+  [ucare-id]
+  (let [uri (str "url('//ucarecdn.com/" ucare-id "/-/resize/x24/')")]
+    [:div {:style {:background-image    uri
+                   :background-position "center"
+                   :background-repeat   "repeat-x"
+                   :height              "24px"}}]))
+
 (defcomponent template
   [{:keys [homepage-hero shop-hair mayvenn-install wig-customization
            sit-back-relax-hold-hair-high mayvenn-hair faq
@@ -36,9 +45,7 @@
      (component/build mayvenn-install/organism mayvenn-install))
    (when wig-customization
      (component/build wig-customization/organism wig-customization))
-
-   (component/build layered/divider-img
-                    {:divider-img "url('//ucarecdn.com/2d3a98e3-b49a-4f0f-9340-828d12865315/-/resize/x24/')"})
+   (divider-atom "2d3a98e3-b49a-4f0f-9340-828d12865315")
    (when-let [{:keys [shop-text-block unified-image-block unified-text-block]}
               sit-back-relax-hold-hair-high]
      [:div
@@ -46,9 +53,7 @@
       (component/build layered/unified-image-block unified-image-block)
       (component/build layered/unified-text-block unified-text-block)])
 
-   (component/build layered/divider-img
-                    {:divider-img "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"})
-
+   (divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
    (component/build mayvenn-hair/organism mayvenn-hair)
    (component/build faq/organism faq)
    (component/build guarantees/organism guarantees)
