@@ -12,6 +12,7 @@
             [storefront.keypaths :as k]
             [clojure.string :as string]
             [homepage.ui.mayvenn-install :as mayvenn-install]
+            [homepage.ui.wig-customization :as wig-customization]
             [homepage.ui.diishan :as diishan]
             [homepage.ui.guarantees :as guarantees]
             [homepage.ui.faq :as faq]
@@ -33,13 +34,8 @@
    (component/build layered/horizontal-rule)
    (when mayvenn-install
      (component/build mayvenn-install/organism mayvenn-install))
-   (when-let [{:keys [unified-text-block unified-image-block unified-framed-checklist]}
-              wig-customization]
-     [:div
-      (component/build layered/unified-text-block unified-text-block)
-      (component/build layered/unified-image-block unified-image-block)
-      (component/build layered/unified-framed-checklist unified-framed-checklist)
-      (component/build layered/horizontal-rule)])
+   (when wig-customization
+     (component/build wig-customization/organism wig-customization))
 
    (component/build layered/divider-img
                     {:divider-img "url('//ucarecdn.com/2d3a98e3-b49a-4f0f-9340-828d12865315/-/resize/x24/')"})
@@ -130,32 +126,24 @@
    :mayvenn-install.cta/target      [e/navigate-adventure-find-your-stylist]})
 
 (def wig-customization-query
-  {:unified-text-block
-   {:header/new?  true
-    :header/value "Free Wig Customization"
-    :body/value   (str "Purchase any of our virgin lace front wigs or virgin 360 "
-                       "lace wigs and we’ll customize it for free.")}
-   :unified-image-block
-   {:ucare?     true
-    :mob-uuid  "beaa9641-35dd-4811-8f57-a10481c5132d"
-    :dsk-uuid  "beaa9641-35dd-4811-8f57-a10481c5132d"
-    :file-name "wig-customization"}
-   :unified-framed-checklist
-   {:header/value "What's included?"
-    :bullets      ["Bleaching the knots"
-                   "Tinting the lace"
-                   "Cutting the lace"
-                   "Customize your hairline"]
-    :cta/button?  true
-    :cta/value    "Shop Wigs"
-    :cta/id       "show-wigs"
-    :cta/target   [e/navigate-category
-                   {:catalog/category-id "13"
-                    :page/slug           "wigs"
-                    :query-params        {:family
-                                          (string/join
-                                           categories/query-param-separator
-                                           ["360-wigs" "lace-front-wigs"])}}]}})
+  {:wig-customization.title/primary   "Free Wig Customization"
+   :wig-customization.title/secondary (str "Purchase any of our virgin lace front wigs or virgin 360 "
+                                           "lace wigs and we’ll customize it for free.")
+   :wig-customization.image/ucare-id  "beaa9641-35dd-4811-8f57-a10481c5132d"
+   :wig-customization.list/primary    "What's included?"
+   :list/bullets                      ["Bleaching the knots"
+                                       "Tinting the lace"
+                                       "Cutting the lace"
+                                       "Customize your hairline"]
+   :wig-customization.cta/id          "show-wigs"
+   :wig-customization.cta/value       "Shop Wigs"
+   :wig-customization.cta/target      [e/navigate-category
+                                       {:catalog/category-id "13"
+                                        :page/slug           "wigs"
+                                        :query-params        {:family
+                                                              (string/join
+                                                               categories/query-param-separator
+                                                               ["360-wigs" "lace-front-wigs"])}}]})
 
 (def sit-back-relax-hold-hair-high-query
   {:shop-text-block
@@ -181,7 +169,7 @@
     :cta/id       "info-about-our-hair"
     :cta/value    "shop hair"
     :cta/target   [e/navigate-category {:page/slug           "human-hair-bundles"
-                                             :catalog/category-id "27"}]}})
+                                        :catalog/category-id "27"}]}})
 
 (defn mayvenn-hair-query
   [ugc-collection current-nav-event]
