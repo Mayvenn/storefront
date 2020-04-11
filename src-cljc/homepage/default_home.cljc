@@ -5,10 +5,11 @@
             [homepage.ui.diishan :as diishan]
             [homepage.ui.faq :as faq]
             [homepage.ui.guarantees :as guarantees]
-            [homepage.ui.hair-quality :as hair-quality]
             [homepage.ui.mayvenn-hair :as mayvenn-hair]
             [homepage.ui.mayvenn-install :as mayvenn-install]
+            [homepage.ui.quality-hair :as quality-hair]
             [homepage.ui.quality-image :as quality-image]
+            [homepage.ui.quality-stylists :as quality-stylists]
             [homepage.ui.shopping-categories :as shopping-categories]
             [homepage.ui.wig-customization :as wig-customization]
             [storefront.accessors.categories :as categories]
@@ -19,15 +20,6 @@
             [storefront.events :as e]
             [storefront.keypaths :as k]
             [clojure.string :as string]
-            [homepage.ui.mayvenn-install :as mayvenn-install]
-            [homepage.ui.wig-customization :as wig-customization]
-            [homepage.ui.diishan :as diishan]
-            [homepage.ui.guarantees :as guarantees]
-            [homepage.ui.faq :as faq]
-            [homepage.ui.mayvenn-hair :as mayvenn-hair]
-            [homepage.ui.hair-quality :as hair-quality]
-            [homepage.ui.quality-image :as quality-image]
-            [homepage.ui.quality-stylists :as quality-stylists]
             [ui.molecules :as ui.M]))
 
 ;; TODO can this use ucare-img utilities / picture tag?
@@ -47,7 +39,7 @@
   [{:keys [diishan
            faq
            guarantees
-           hair-quality
+           quality-hair
            homepage-hero
            mayvenn-hair
            mayvenn-install
@@ -76,7 +68,7 @@
    (c/build quality-stylists/organism quality-stylists)
 
    (c/build quality-image/molecule quality-image)
-   (c/build hair-quality/organism hair-quality)
+   (c/build quality-hair/organism quality-hair)
 
    (divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
    (c/build mayvenn-hair/organism mayvenn-hair)
@@ -155,13 +147,13 @@
    :dsk-uuid  "484cc089-8aa1-4199-af07-05d72271d3a3"
    :file-name "who-shop-hair"})
 
-(def hair-quality-query
-  {:hair-high.title/primary   "Hold your hair"
-   :hair-high.title/secondary "high"
-   :hair-high.body/primary    "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
-   :hair-high.cta/id          "info-about-our-hair"
-   :hair-high.cta/label       "shop hair"
-   :hair-high.cta/target      [e/navigate-category {:page/slug           "human-hair-bundles"
+(def quality-hair-query
+  {:quality-hair.title/primary   "Hold your hair"
+   :quality-hair.title/secondary "high"
+   :quality-hair.body/primary    "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
+   :quality-hair.cta/id          "info-about-our-hair"
+   :quality-hair.cta/label       "shop hair"
+   :quality-hair.cta/target      [e/navigate-category {:page/slug           "human-hair-bundles"
                                                     :catalog/category-id "27"}]})
 
 (def quality-stylists-query
@@ -265,8 +257,7 @@
      (cond->
          {:homepage-hero                 (homepage-hero-query cms)
           :shopping-categories           (shopping-categories-query categories)
-          :shop-hair                     (shop-hair-query categories)
-          :hair-quality                  hair-quality-query
+          :quality-hair                  quality-hair-query
           :quality-image                 quality-image-query
           :quality-stylists              quality-stylists-query
           :mayvenn-hair                  (mayvenn-hair-query ugc-collection

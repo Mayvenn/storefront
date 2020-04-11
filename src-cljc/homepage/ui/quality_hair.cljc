@@ -1,10 +1,10 @@
-(ns homepage.ui.hair-quality
+(ns homepage.ui.quality-hair
   (:require [storefront.component :as c]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]))
 
-(defn ^:private hair-high-cta-molecule
-  [{:hair-high.cta/keys [target label id]}]
+(defn ^:private quality-hair-cta-molecule
+  [{:quality-hair.cta/keys [target label id]}]
   [:div.pt3
    (ui/button-small-underline-primary
     (assoc (apply utils/route-to target)
@@ -12,12 +12,12 @@
            :data-ref id)
     label)])
 
-(defn ^:private hair-high-body-atom
-  [{:hair-high.body/keys [primary]}]
+(defn ^:private quality-hair-body-atom
+  [{:quality-hair.body/keys [primary]}]
   [:div.col-9.mx-auto.title-2.canela primary])
 
-(defn ^:private hair-high-title-molecule
-  [{:hair-high.title/keys [primary secondary]}]
+(defn ^:private quality-hair-title-molecule
+  [{:quality-hair.title/keys [primary secondary]}]
   [:div.title-1.canela
    [:div.py1.shout
     [:div.title-1.proxima {:style {:font-size "19px"}} primary]
@@ -26,6 +26,6 @@
 (c/defcomponent organism
   [data _ _]
   [:div.center.col-6-on-dt.mx-auto.my5.pt4
-   (hair-high-title-molecule data)
-   (hair-high-body-atom data)
-   (hair-high-cta-molecule data)])
+   (quality-hair-title-molecule data)
+   (quality-hair-body-atom data)
+   (quality-hair-cta-molecule data)])
