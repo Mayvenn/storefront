@@ -18,6 +18,16 @@
             [storefront.components.svg :as svg]
             [storefront.events :as e]
             [storefront.keypaths :as k]
+            [clojure.string :as string]
+            [homepage.ui.mayvenn-install :as mayvenn-install]
+            [homepage.ui.wig-customization :as wig-customization]
+            [homepage.ui.diishan :as diishan]
+            [homepage.ui.guarantees :as guarantees]
+            [homepage.ui.faq :as faq]
+            [homepage.ui.mayvenn-hair :as mayvenn-hair]
+            [homepage.ui.hair-quality :as hair-quality]
+            [homepage.ui.quality-image :as quality-image]
+            [homepage.ui.quality-stylists :as quality-stylists]
             [ui.molecules :as ui.M]))
 
 ;; TODO can this use ucare-img utilities / picture tag?
@@ -43,7 +53,7 @@
            mayvenn-install
            quality-image
            shopping-categories
-           sit-back-relax-hold-hair-high
+           quality-stylists
            wig-customization]} _ _]
   [:div
    ;; TODO move to homepage ns
@@ -63,10 +73,7 @@
       (c/build wig-customization/organism wig-customization)
       horizontal-rule-atom])
    (divider-atom "2d3a98e3-b49a-4f0f-9340-828d12865315")
-   (when-let [{:keys [shop-text-block unified-image-block unified-text-block]}
-              sit-back-relax-hold-hair-high]
-     [:div
-      (c/build layered/shop-text-block shop-text-block)])
+   (c/build quality-stylists/organism quality-stylists)
 
    (c/build quality-image/molecule quality-image)
    (c/build hair-quality/organism hair-quality)
@@ -149,25 +156,21 @@
    :file-name "who-shop-hair"})
 
 (def hair-quality-query
-  {:hair-high.title/primary "Hold your hair"
+  {:hair-high.title/primary   "Hold your hair"
    :hair-high.title/secondary "high"
+   :hair-high.body/primary    "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
+   :hair-high.cta/id          "info-about-our-hair"
+   :hair-high.cta/label       "shop hair"
+   :hair-high.cta/target      [e/navigate-category {:page/slug           "human-hair-bundles"
+                                                    :catalog/category-id "27"}]})
 
-   :hair-high.body/primary   "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
-   :hair-high.cta/id       "info-about-our-hair"
-   :hair-high.cta/label    "shop hair"
-   :hair-high.cta/target   [e/navigate-category {:page/slug           "human-hair-bundles"
-                                       :catalog/category-id "27"}]})
-
-(def sit-back-relax-hold-hair-high-query
-  {:shop-text-block
-   {:header/value [:div.py1.shout
-                   ;; NOTE: this is a design exception
-                   [:div.title-1.proxima {:style {:font-size "34px"}} "Sit back and"]
-                   [:div.light.canela.mt2.mb4 {:style {:font-size "54px"}} "relax"]]
-    :body/value   "We’ve rounded up the best stylists in the country so you can be sure your hair is in really, really good hands."
-    :cta/value    "Learn more"
-    :cta/id       "info-certified-stylists"
-    :cta/target   [e/navigate-info-certified-stylists]}})
+(def quality-stylists-query
+  {:quality-stylists.title/primary   "Sit back and"
+   :quality-stylists.title/secondary "relax"
+   :quality-stylists.body/primary    "We’ve rounded up the best stylists in the country so you can be sure your hair is in really, really good hands."
+   :quality-stylists.cta/label       "Learn more"
+   :quality-stylists.cta/id          "info-certified-stylists"
+   :quality-stylists.cta/target      [e/navigate-info-certified-stylists]})
 
 (defn mayvenn-hair-query
   [ugc-collection current-nav-event]
@@ -262,9 +265,10 @@
      (cond->
          {:homepage-hero                 (homepage-hero-query cms)
           :shopping-categories           (shopping-categories-query categories)
-          :sit-back-relax-hold-hair-high sit-back-relax-hold-hair-high-query
+          :shop-hair                     (shop-hair-query categories)
           :hair-quality                  hair-quality-query
           :quality-image                 quality-image-query
+          :quality-stylists              quality-stylists-query
           :mayvenn-hair                  (mayvenn-hair-query ugc-collection
                                                              current-nav-event)
           :guarantees                    guarantees-query
