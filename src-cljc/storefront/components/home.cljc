@@ -9,7 +9,6 @@
             [storefront.components.homepage-hero :as homepage-hero]
             [storefront.components.marquee :as marquee]
             [storefront.components.ui :as ui]
-            [storefront.components.unified-home :as unified-home]
             [storefront.components.v2-home :as v2-home]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]

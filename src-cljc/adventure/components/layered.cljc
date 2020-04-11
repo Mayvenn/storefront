@@ -78,7 +78,7 @@
        value]]
      [:span])))
 
-(defn divider
+(defn ^:private divider
   [divider-img]
   (component/html
    [:div {:style {:background-image    divider-img
@@ -86,7 +86,7 @@
                   :background-repeat   "repeat-x"
                   :height              "24px"}}]))
 
-(defcomponent hero-image-component [{:screen/keys [seen?] :as data} owner opts]
+(defcomponent ^:private hero-image-component [{:screen/keys [seen?] :as data} owner opts]
   [:div (component/build ui.M/hero (merge data {:off-screen? (not seen?)}) nil)])
 
 (defcomponent image-block
@@ -427,90 +427,14 @@
         nil)])]
    (shop-cta-with-icon data)])
 
-(defcomponent box-grid
-  [{:keys                  [items title]
-    {:keys [height width]} :aspect-ratio} _ _]
-  [:div.my3.px2.pb4
-   [:div.my3.center.mx-auto.title-1.canela title]
-   [:div.container
-    (for [{:keys [id content target]} items]
-      [:div.col.col-6.col-4-on-tb-dt.px1.my1 {:key id}
-       ^:inline (ui/aspect-ratio width height
-                                 [:a (apply utils/route-to target) content])])]])
-
-(defcomponent horizontal-rule
-  [data _ _]
-  [:div.border-bottom.border-width-1.hide-on-dt
-   {:style {:border-color "#EEEEEE"}}])
-
-(defcomponent divider-img
-  [{:keys [divider-img]} _ _]
-  [:div {:style {:background-image    divider-img
-                 :background-position "center"
-                 :background-repeat   "repeat-x"
-                 :height              "24px"}}])
-
-(defcomponent unified-text-block
-  [{anchor-name :anchor/name
-    title       :header/value
-    new?        :header/new?
-    body        :body/value
-    cta-value   :cta/value
-    :as         data} _ _]
-  [:div.center.col-6-on-dt.mx-auto.my5.pt4
-   (when anchor-name
-     [:a {:name anchor-name}])
-   (when title
-     [:div.mb3
-      (when new?
-        [:div.col-12.mx-auto.mb1
-         (svg/purple-diamond {:height "9px" :width "9px"})
-         [:span.proxima.title-3.shout.mx1 "New"]
-         (svg/purple-diamond {:height "9px" :width "9px"})])
-      [:div.title-1.canela title]])
-   (when body
-     [:div.col-9.mx-auto body])
-   (when cta-value
-     [:div.pt3 (shop-cta-with-icon data)])])
-
-(defcomponent unified-image-block
-  [data _ _]
-  [:div.col-12.col-6-on-dt.my5 {:key (str (:mob-uuid data))}
-   (ui/screen-aware hero-image-component data nil)])
-
-(defcomponent unified-framed-checklist
-  [{:keys        [bullets divider-img]
-    header-value :header/value
-    button?      :cta/button?
-    :as          data} _ _]
-  [:div.mb6
-   [:div.col-10.col-6-on-dt.mx-auto.border.border-framed.flex.justify-center.mt8.pt3
-    [:div.col-12.flex.flex-column.items-center.m5.py4
-     {:style {:width "max-content"}}
-     (when header-value
-       [:div.proxima.title-2.shout.pt1.mb
-        header-value])
-     [:ul.col-12.list-purple-diamond
-      {:style {:padding-left "15px"}}
-      (for [[i b] (map-indexed vector bullets)]
-        [:li.py1 {:key (str i)} b])]]]
-   [:div.col-9.mx-auto.py6
-    (if button?
-      ^:inline (shop-cta data)
-      ^:inline (shop-cta-with-icon data))] ])
-
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
     (component/build
      (case type
 
-       ;; UNIFIED HOMEPAGE
        :box-grid                 box-grid
        :horizontal-rule          horizontal-rule
-       :unified-text-block       unified-text-block
-       :unified-framed-checklist unified-framed-checklist
-       :unified-image-block      unified-image-block
-       :divider-img              divider-img
+       ;; :divider-img              divider-img
 
        ;; REBRAND
        :shop-text-block         shop-text-block
