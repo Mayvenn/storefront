@@ -65,14 +65,16 @@
       (c/build wig-customization/organism wig-customization)
       horizontal-rule-atom])
    (divider-atom "2d3a98e3-b49a-4f0f-9340-828d12865315")
-   (c/build quality-stylists/organism quality-stylists)
+   (when mayvenn-install 
+     (c/build quality-stylists/organism quality-stylists))
 
    (c/build quality-image/molecule quality-image)
    (c/build quality-hair/organism quality-hair)
 
    (divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
    (c/build mayvenn-hair/organism mayvenn-hair)
-   (c/build faq/organism faq)
+   (when mayvenn-install 
+     (c/build faq/organism faq))
    (c/build guarantees/organism guarantees)
    (c/build diishan/organism diishan)])
 
