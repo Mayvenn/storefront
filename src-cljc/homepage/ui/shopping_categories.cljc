@@ -35,13 +35,14 @@
     [:div.col.col-6.col-4-on-tb-dt.px1.my1
      {:key react-key :data-test id}
      (ui/aspect-ratio width height
-      (list
-       (when ucare-id
-         (shopping-categories-image-atom ucare-id id label))
-       [:a (apply utils/route-to target)
-        (if label
-          (shopping-categories-label-atom label)
-          (shopping-categories-alt-label-atom alt-label))]))]))
+                      [:a (apply utils/route-to target)
+                       (when ucare-id
+                         (shopping-categories-image-atom ucare-id
+                                                         id
+                                                         (or label (join alt-label))))
+                       (if label
+                         (shopping-categories-label-atom label)
+                         (shopping-categories-alt-label-atom alt-label))])]))
 
 (defn ^:private boxes-list-molecule
   [{:list/keys [boxes]}]

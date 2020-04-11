@@ -1,7 +1,7 @@
 (ns homepage.default-home
   (:require [adventure.components.layered :as layered]
             adventure.keypaths
-            [clojure.string :as string]
+            [clojure.string :refer [join]]
             [homepage.ui.diishan :as diishan]
             [homepage.ui.faq :as faq]
             [homepage.ui.guarantees :as guarantees]
@@ -12,7 +12,7 @@
             [homepage.ui.quality-stylists :as quality-stylists]
             [homepage.ui.shopping-categories :as shopping-categories]
             [homepage.ui.wig-customization :as wig-customization]
-            [storefront.accessors.categories :as categories]
+            [storefront.accessors.categories :refer [query-param-separator]]
             [storefront.accessors.contentful :as contentful]
             [storefront.component :as c]
             [storefront.components.homepage-hero :as homepage-hero]
@@ -108,9 +108,9 @@
                                                  :catalog/category-id category-id}]
              :shopping-categories.box/ucare-id image-id
              :shopping-categories.box/label    title})))
-    {:shopping-categories.box/id       "need-inspiration"
-     :shopping-categories.box/target   [e/navigate-shop-by-look {:album-keyword :look}]
-     :shopping-categories.box/label    ["Need Inspiration?" "Try shop by look."]})})
+    {:shopping-categories.box/id        "need-inspiration"
+     :shopping-categories.box/target    [e/navigate-shop-by-look {:album-keyword :look}]
+     :shopping-categories.box/alt-label ["Need Inspiration?" "Try shop by look."]})})
 
 (def mayvenn-install-query
   {:mayvenn-install.title/primary   "Free Mayvenn Install"
@@ -135,13 +135,12 @@
                                        "Customize your hairline"]
    :wig-customization.cta/id          "show-wigs"
    :wig-customization.cta/value       "Shop Wigs"
-   :wig-customization.cta/target      [e/navigate-category
-                                       {:catalog/category-id "13"
-                                        :page/slug           "wigs"
-                                        :query-params        {:family
-                                                              (string/join
-                                                               categories/query-param-separator
-                                                               ["360-wigs" "lace-front-wigs"])}}]})
+   :wig-customization.cta/target      (let [family (join query-param-separator
+                                                         ["360-wigs" "lace-front-wigs"])]
+                                        [e/navigate-category
+                                         {:catalog/category-id "13"
+                                          :page/slug           "wigs"
+                                          :query-params        {:family family}}])})
 
 (def quality-image-query
   {:ucare?    true
