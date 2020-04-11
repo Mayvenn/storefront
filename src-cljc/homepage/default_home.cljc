@@ -1,7 +1,6 @@
 (ns homepage.default-home
-  (:require [adventure.components.layered :as layered]
-            adventure.keypaths
-            [clojure.string :refer [join]]
+  (:require adventure.keypaths
+            [clojure.string :as string]
             [homepage.ui.diishan :as diishan]
             [homepage.ui.faq :as faq]
             [homepage.ui.guarantees :as guarantees]
@@ -17,6 +16,7 @@
             [storefront.component :as c]
             [storefront.components.homepage-hero :as homepage-hero]
             [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
             [storefront.events :as e]
             [storefront.keypaths :as k]
             [clojure.string :as string]
@@ -34,6 +34,18 @@
 (def ^:private horizontal-rule-atom
   [:div.border-bottom.border-width-1.hide-on-dt
    {:style {:border-color "#EEEEEE"}}])
+
+(def ^:private free-standard-shipping-bar
+  [:div.mx-auto {:style {:height "3em"}}
+   [:div.bg-black.flex.items-center.justify-center
+    {:style {:height "2.25em"
+             :margin-top "-1px"
+             :padding-top "1px"}}
+    [:div.px2
+     (ui/ucare-img {:alt "" :height "25"}
+                   "38d0a770-2dcd-47a3-a035-fc3ccad11037")]
+    [:div.h7.white.medium
+     "FREE standard shipping"]]])
 
 (c/defcomponent template
   [{:keys [diishan
@@ -53,7 +65,7 @@
                              {:opts {:class     "block"
                                      :style     {:min-height "300px"}
                                      :data-test "hero-link"}}))
-   (c/build layered/free-standard-shipping-bar {})
+   free-standard-shipping-bar
    (c/build shopping-categories/organism shopping-categories)
    horizontal-rule-atom
    (when mayvenn-install
