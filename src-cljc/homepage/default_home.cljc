@@ -19,7 +19,6 @@
             [storefront.components.ui :as ui]
             [storefront.events :as e]
             [storefront.keypaths :as k]
-            [clojure.string :as string]
             [ui.molecules :as ui.M]))
 
 ;; TODO can this use ucare-img utilities / picture tag?
