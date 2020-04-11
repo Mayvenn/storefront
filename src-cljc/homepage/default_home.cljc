@@ -1,5 +1,6 @@
 (ns homepage.default-home
   (:require adventure.keypaths
+            [clojure.string :refer [join]]
             [homepage.ui.diishan :as diishan]
             [homepage.ui.faq :as faq]
             [homepage.ui.guarantees :as guarantees]
