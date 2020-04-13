@@ -431,11 +431,6 @@
   (when type
     (component/build
      (case type
-
-       :box-grid                 box-grid
-       :horizontal-rule          horizontal-rule
-       ;; :divider-img              divider-img
-
        ;; REBRAND
        :shop-text-block         shop-text-block
        :shop-framed-checklist   shop-framed-checklist
