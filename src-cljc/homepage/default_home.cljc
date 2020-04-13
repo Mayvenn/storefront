@@ -34,25 +34,17 @@
            wig-customization]} _ _]
   [:div
    (c/build hero/organism hero)
-
    (c/build shopping-categories/organism shopping-categories)
    A/horizontal-rule-atom
-
-   (when mayvenn-install
-     (c/build mayvenn-install/organism mayvenn-install))
-   (when wig-customization
-     (c/build wig-customization/organism wig-customization))
+   (when mayvenn-install (c/build mayvenn-install/organism mayvenn-install))
+   (when wig-customization (c/build wig-customization/organism wig-customization))
    (A/divider-atom "2d3a98e3-b49a-4f0f-9340-828d12865315")
-   (when mayvenn-install
-     (c/build quality-stylists/organism quality-stylists))
-
+   (when quality-stylists (c/build quality-stylists/organism quality-stylists))
    (c/build quality-image/molecule quality-image)
    (c/build quality-hair/organism quality-hair)
-
    (A/divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
    (c/build mayvenn-hair/organism mayvenn-hair)
-   (when mayvenn-install 
-     (c/build faq/organism faq))
+   (when faq (c/build faq/organism faq))
    (c/build guarantees/organism guarantees)
    (c/build diishan/organism diishan)])
 
@@ -234,15 +226,14 @@
     (c/build
      template
      (cond->
-         {:hero                (hero-query cms)
-          :shopping-categories (shopping-categories-query categories)
-          :quality-hair        quality-hair-query
-          :quality-image       quality-image-query
-          :quality-stylists    quality-stylists-query
+         {:diishan             diishan-query
+          :guarantees          guarantees-query
+          :hero                (hero-query cms)
           :mayvenn-hair        (mayvenn-hair-query ugc-collection
                                                    current-nav-event)
-          :guarantees          guarantees-query
-          :diishan             diishan-query}
+          :quality-hair        quality-hair-query
+          :quality-image       quality-image-query
+          :shopping-categories (shopping-categories-query categories)}
 
        (or shop? (offers? mayvenn-installs menu))
        (merge {:mayvenn-install mayvenn-install-query})
@@ -251,4 +242,5 @@
        (merge {:wig-customization wig-customization-query})
 
        (or shop? (offers? services menu))
-       (merge {:faq (faq-query expanded-index)})))))
+       (merge {:quality-stylists quality-stylists-query
+               :faq              (faq-query expanded-index)})))))
