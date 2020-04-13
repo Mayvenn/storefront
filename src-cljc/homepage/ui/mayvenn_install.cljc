@@ -1,9 +1,8 @@
 (ns homepage.ui.mayvenn-install
   (:require [storefront.component :as c]
-            ;; TODO free from this namespace
-            [adventure.components.layered :as layered]
+            [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.ui :as ui]))
+            [ui.molecules :refer [hero]]))
 
 (defn ^:private mayvenn-install-cta-molecule
   [{:mayvenn-install.cta/keys [id value target]}]
@@ -24,12 +23,20 @@
            :let [id (str "mayvenn-install.list" idx)]]
        [:li.py1 {:key id} bullet])]]])
 
+;; TODO all this hero business is real funny!
+(c/defcomponent hero-image-component
+  [{:screen/keys [seen?] :as data} owner opts]
+  [:div (c/build hero
+                 (merge data
+                        {:off-screen? (not seen?)})
+                 nil)])
+
 ;; TODO refactor layered/hero-image-component into system
 (defn ^:private mayvenn-install-image-molecule
   [{:mayvenn-install.image/keys [ucare-id]}]
   [:div.col-12.col-6-on-dt.my5
    {:key ucare-id}
-   (ui/screen-aware layered/hero-image-component
+   (ui/screen-aware hero-image-component
                     {:ucare?     true
                      :mob-uuid  ucare-id
                      :dsk-uuid  ucare-id

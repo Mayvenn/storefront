@@ -19,7 +19,8 @@
             [storefront.components.ui :as ui]
             [storefront.events :as e]
             [storefront.keypaths :as k]
-            [ui.molecules :as ui.M]))
+            ;; TODO need a hero atom
+            [ui.molecules :refer [hero]]))
 
 ;; TODO can this use ucare-img utilities / picture tag?
 (defn ^:private divider-atom
@@ -60,10 +61,10 @@
            wig-customization]} _ _]
   [:div
    ;; TODO move to homepage ns
-   (c/build ui.M/hero (merge homepage-hero
-                             {:opts {:class     "block"
-                                     :style     {:min-height "300px"}
-                                     :data-test "hero-link"}}))
+   (c/build hero (merge homepage-hero
+                        {:opts {:class     "block"
+                                :style     {:min-height "300px"}
+                                :data-test "hero-link"}}))
    free-standard-shipping-bar
    (c/build shopping-categories/organism shopping-categories)
    horizontal-rule-atom

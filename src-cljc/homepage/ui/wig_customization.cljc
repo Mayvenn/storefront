@@ -4,7 +4,8 @@
             [adventure.components.layered :as layered]
             [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]
-            [storefront.components.ui :as ui]))
+            [storefront.components.ui :as ui]
+            [ui.molecules :refer [hero]]))
 
 (defn ^:private wig-customization-cta-molecule
   [{:wig-customization.cta/keys [id value target]}]
@@ -25,12 +26,20 @@
            :let [id (str "wig-customization.list" idx)]]
        [:li.py1 {:key id} bullet])]]])
 
+;; TODO all this hero business is real funny!
+(c/defcomponent hero-image-component
+  [{:screen/keys [seen?] :as data} owner opts]
+  [:div (c/build hero
+                 (merge data
+                        {:off-screen? (not seen?)})
+                 nil)])
+
 ;; TODO refactor layered/hero-image-component into system
 (defn ^:private wig-customization-image-molecule
   [{:wig-customization.image/keys [ucare-id]}]
   [:div.col-12.col-6-on-dt.my5
    {:key ucare-id}
-   (ui/screen-aware layered/hero-image-component
+   (ui/screen-aware hero-image-component
                     {:ucare?     true
                      :mob-uuid  ucare-id
                      :dsk-uuid  ucare-id
