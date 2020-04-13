@@ -1,6 +1,7 @@
 (ns storefront.components.home
   (:require adventure.shop-home
             [clojure.string :as string]
+            [homepage.default-home :as default-home]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
@@ -8,7 +9,6 @@
             [storefront.components.homepage-hero :as homepage-hero]
             [storefront.components.marquee :as marquee]
             [storefront.components.ui :as ui]
-            [storefront.components.unified-home :as unified-home]
             [storefront.components.v2-home :as v2-home]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -334,8 +334,9 @@
 
 (defn built-component [data opts]
   (cond
+    ;; TODO move up high so that we can kick away dead code easier
     (experiments/unified-homepage? data)
-    (unified-home/built-component data opts)
+    (default-home/page data)
 
     (experiments/v2-homepage? data)
     (v2-home/built-component data opts)
