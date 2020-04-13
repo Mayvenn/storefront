@@ -1,5 +1,6 @@
 (ns homepage.ui.mayvenn-install
-  (:require [storefront.component :as c]
+  (:require [homepage.ui.atoms :as A]
+            [storefront.component :as c]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
             [ui.molecules :refer [hero]]))
@@ -52,8 +53,10 @@
 
 (c/defcomponent organism
   [data _ _]
-  [:div.mb6
-   (mayvenn-install-title-molecule data)
-   (mayvenn-install-image-molecule data)
-   (mayvenn-install-list-molecule data)
-   (mayvenn-install-cta-molecule data)])
+  [:div
+   [:div.mb6
+    (mayvenn-install-title-molecule data)
+    (mayvenn-install-image-molecule data)
+    (mayvenn-install-list-molecule data)
+    (mayvenn-install-cta-molecule data)]
+   A/horizontal-rule-atom])

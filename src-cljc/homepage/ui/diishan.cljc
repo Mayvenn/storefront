@@ -1,7 +1,7 @@
 (ns homepage.ui.diishan
   (:require [storefront.component :as c]
-            [storefront.components.ui :as ui]
-            [storefront.components.svg :as svg]))
+            [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]))
 
 ;; TODO why do we need to adjust the top?
 (defn ^:private vertical-squiggle-atom

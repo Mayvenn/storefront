@@ -1,8 +1,8 @@
 (ns homepage.ui.shopping-categories
-  (:require [clojure.string :refer [split join]]
+  (:require [clojure.string :refer [join split]]
             [storefront.component :as c]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils] ))
+            [storefront.platform.component-utils :as utils]))
 
 (defn ^:private shopping-categories-image-atom
   "Assumptions: 2 up on mobile, 3 up on tablet/desktop, within a .container.

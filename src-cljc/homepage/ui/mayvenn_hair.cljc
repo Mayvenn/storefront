@@ -1,10 +1,10 @@
 (ns homepage.ui.mayvenn-hair
   (:require [storefront.component :as c]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
-            [storefront.components.svg :as svg]))
+            [storefront.platform.component-utils :as utils]))
 
-(c/defcomponent ^:private ugc-image [{:screen/keys [seen?] :keys [image-url]} owner opts]
+(c/defcomponent ^:private ugc-image
+  [{:screen/keys [seen?] :keys [image-url]} owner opts]
   (ui/aspect-ratio
    1 1
    (cond
@@ -28,10 +28,7 @@
   (for [{:keys [image-url]} images]
     [:a.col-6.col-3-on-tb-dt.p1
      {:key (str image-url)}
-     (ui/screen-aware
-      ugc-image
-      {:image-url image-url}
-      nil)]))
+     (ui/screen-aware ugc-image {:image-url image-url} nil)]))
 
 (c/defcomponent organism
   [data _ _]

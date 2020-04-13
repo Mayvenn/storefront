@@ -1,6 +1,5 @@
 (ns homepage.default-home
-  (:require adventure.keypaths
-            [clojure.string :refer [join]]
+  (:require [clojure.string :refer [join]]
             [homepage.ui.atoms :as A]
             [homepage.ui.diishan :as diishan]
             [homepage.ui.faq :as faq]
@@ -35,16 +34,14 @@
            wig-customization]} _ _]
   [:div
    (c/build hero/organism hero)
+
    (c/build shopping-categories/organism shopping-categories)
    A/horizontal-rule-atom
+
    (when mayvenn-install
-     [:div
-      (c/build mayvenn-install/organism mayvenn-install)
-      A/horizontal-rule-atom])
+     (c/build mayvenn-install/organism mayvenn-install))
    (when wig-customization
-     [:div
-      (c/build wig-customization/organism wig-customization)
-      A/horizontal-rule-atom])
+     (c/build wig-customization/organism wig-customization))
    (A/divider-atom "2d3a98e3-b49a-4f0f-9340-828d12865315")
    (when mayvenn-install
      (c/build quality-stylists/organism quality-stylists))
@@ -229,8 +226,6 @@
   [app-state]
   (let [cms               (get-in app-state k/cms)
         categories        (get-in app-state k/categories)
-        ;; TODO ?
-        video             (get-in app-state adventure.keypaths/adventure-home-video)
         ugc-collection    (get-in app-state k/cms-ugc-collection)
         current-nav-event (get-in app-state k/navigation-event)
         expanded-index    (get-in app-state k/faq-expanded-section)

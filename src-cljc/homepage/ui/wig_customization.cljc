@@ -1,10 +1,9 @@
 (ns homepage.ui.wig-customization
-  (:require [storefront.component :as c]
-            ;; TODO free from this namespace
-            [adventure.components.layered :as layered]
-            [storefront.platform.component-utils :as utils]
+  (:require [homepage.ui.atoms :as A]
+            [storefront.component :as c]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.platform.component-utils :as utils]
             [ui.molecules :refer [hero]]))
 
 (defn ^:private wig-customization-cta-molecule
@@ -59,8 +58,10 @@
 
 (c/defcomponent organism
   [data _ _]
-  [:div.mb6
-   (wig-customization-title-molecule data)
-   (wig-customization-image-molecule data)
-   (wig-customization-list-molecule data)
-   (wig-customization-cta-molecule data)])
+  [:div
+   [:div.mb6
+    (wig-customization-title-molecule data)
+    (wig-customization-image-molecule data)
+    (wig-customization-list-molecule data)
+    (wig-customization-cta-molecule data)]
+   A/horizontal-rule-atom])
