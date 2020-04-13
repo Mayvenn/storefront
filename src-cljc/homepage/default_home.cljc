@@ -1,6 +1,7 @@
 (ns homepage.default-home
   (:require adventure.keypaths
             [clojure.string :refer [join]]
+            [homepage.ui.atoms :as A]
             [homepage.ui.diishan :as diishan]
             [homepage.ui.faq :as faq]
             [homepage.ui.guarantees :as guarantees]
@@ -18,22 +19,7 @@
             [storefront.components.homepage-hero :as homepage-hero]
             [storefront.components.svg :as svg]
             [storefront.events :as e]
-            [storefront.keypaths :as k]
-            ;; TODO need a hero atom
-            [ui.molecules :refer [hero]]))
-
-;; TODO can this use ucare-img utilities / picture tag?
-(defn ^:private divider-atom
-  [ucare-id]
-  (let [uri (str "url('//ucarecdn.com/" ucare-id "/-/resize/x24/')")]
-    [:div {:style {:background-image    uri
-                   :background-position "center"
-                   :background-repeat   "repeat-x"
-                   :height              "24px"}}]))
-
-(def ^:private horizontal-rule-atom
-  [:div.border-bottom.border-width-1.hide-on-dt
-   {:style {:border-color "#EEEEEE"}}])
+            [storefront.keypaths :as k]))
 
 (c/defcomponent template
   [{:keys [diishan
@@ -50,23 +36,23 @@
   [:div
    (c/build hero/organism hero)
    (c/build shopping-categories/organism shopping-categories)
-   horizontal-rule-atom
+   A/horizontal-rule-atom
    (when mayvenn-install
      [:div
       (c/build mayvenn-install/organism mayvenn-install)
-      horizontal-rule-atom])
+      A/horizontal-rule-atom])
    (when wig-customization
      [:div
       (c/build wig-customization/organism wig-customization)
-      horizontal-rule-atom])
-   (divider-atom "2d3a98e3-b49a-4f0f-9340-828d12865315")
-   (when mayvenn-install 
+      A/horizontal-rule-atom])
+   (A/divider-atom "2d3a98e3-b49a-4f0f-9340-828d12865315")
+   (when mayvenn-install
      (c/build quality-stylists/organism quality-stylists))
 
    (c/build quality-image/molecule quality-image)
    (c/build quality-hair/organism quality-hair)
 
-   (divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
+   (A/divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
    (c/build mayvenn-hair/organism mayvenn-hair)
    (when mayvenn-install 
      (c/build faq/organism faq))
