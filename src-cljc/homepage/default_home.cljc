@@ -4,6 +4,7 @@
             [homepage.ui.diishan :as diishan]
             [homepage.ui.faq :as faq]
             [homepage.ui.guarantees :as guarantees]
+            [homepage.ui.hero :as hero]
             [homepage.ui.mayvenn-hair :as mayvenn-hair]
             [homepage.ui.mayvenn-install :as mayvenn-install]
             [homepage.ui.quality-hair :as quality-hair]
@@ -16,7 +17,6 @@
             [storefront.component :as c]
             [storefront.components.homepage-hero :as homepage-hero]
             [storefront.components.svg :as svg]
-            [storefront.components.ui :as ui]
             [storefront.events :as e]
             [storefront.keypaths :as k]
             ;; TODO need a hero atom
@@ -35,37 +35,20 @@
   [:div.border-bottom.border-width-1.hide-on-dt
    {:style {:border-color "#EEEEEE"}}])
 
-(def ^:private free-standard-shipping-bar
-  [:div.mx-auto {:style {:height "3em"}}
-   [:div.bg-black.flex.items-center.justify-center
-    {:style {:height "2.25em"
-             :margin-top "-1px"
-             :padding-top "1px"}}
-    [:div.px2
-     (ui/ucare-img {:alt "" :height "25"}
-                   "38d0a770-2dcd-47a3-a035-fc3ccad11037")]
-    [:div.h7.white.medium
-     "FREE standard shipping"]]])
-
 (c/defcomponent template
   [{:keys [diishan
            faq
            guarantees
-           quality-hair
-           homepage-hero
+           hero
            mayvenn-hair
            mayvenn-install
+           quality-hair
            quality-image
-           shopping-categories
            quality-stylists
+           shopping-categories
            wig-customization]} _ _]
   [:div
-   ;; TODO move to homepage ns
-   (c/build hero (merge homepage-hero
-                        {:opts {:class     "block"
-                                :style     {:min-height "300px"}
-                                :data-test "hero-link"}}))
-   free-standard-shipping-bar
+   (c/build hero/organism hero)
    (c/build shopping-categories/organism shopping-categories)
    horizontal-rule-atom
    (when mayvenn-install
@@ -90,7 +73,7 @@
    (c/build guarantees/organism guarantees)
    (c/build diishan/organism diishan)])
 
-(defn homepage-hero-query
+(defn hero-query
   "TODO homepage hero query is reused and complected
 
   decomplect:
@@ -102,7 +85,9 @@
          (some-> cms :homepage :unified :hero)
          ;; TODO handle cms failure fallback
          {})]
-    (homepage-hero/query hero-content)))
+    (assoc-in (homepage-hero/query hero-content)
+              [:opts :data-test]
+              "hero-link")))
 
 (defn shopping-categories-query
   [categories]
@@ -268,15 +253,15 @@
     (c/build
      template
      (cond->
-         {:homepage-hero                 (homepage-hero-query cms)
-          :shopping-categories           (shopping-categories-query categories)
-          :quality-hair                  quality-hair-query
-          :quality-image                 quality-image-query
-          :quality-stylists              quality-stylists-query
-          :mayvenn-hair                  (mayvenn-hair-query ugc-collection
-                                                             current-nav-event)
-          :guarantees                    guarantees-query
-          :diishan                       diishan-query}
+         {:hero                (hero-query cms)
+          :shopping-categories (shopping-categories-query categories)
+          :quality-hair        quality-hair-query
+          :quality-image       quality-image-query
+          :quality-stylists    quality-stylists-query
+          :mayvenn-hair        (mayvenn-hair-query ugc-collection
+                                                   current-nav-event)
+          :guarantees          guarantees-query
+          :diishan             diishan-query}
 
        (or shop? (offers? mayvenn-installs menu))
        (merge {:mayvenn-install mayvenn-install-query})
