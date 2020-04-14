@@ -239,9 +239,7 @@
 
 
 (defn query [data]
-  (let [shared-cart-discount-parser-fn           (if (experiments/remove-bundle-discount? data)
-                                                   shared-cart->discount
-                                                   shared-cart->discount-with-bundle-discount)
+  (let [shared-cart-discount-parser-fn           shared-cart->discount
         skus                                     (get-in data keypaths/v2-skus)
         shared-cart                              (get-in data keypaths/shared-cart-current)
         {shared-cart-skus :line-items

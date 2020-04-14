@@ -169,7 +169,7 @@
                                                       :height "24px"})
                                     "Share your bag"])])]]])
 
-(defcomponent empty-component [{:keys [remove-bundle-discount? promotions]} owner _]
+(defcomponent empty-component [{:keys [promotions]} owner _]
   (ui/narrow-container
    [:div.p2
     [:.center {:data-test "empty-cart"}
@@ -180,9 +180,7 @@
 
      [:div.m2
       (if-let [promo (promos/default-advertised-promotion promotions)]
-        (:description promo)
-        (when-not remove-bundle-discount?
-          promos/bundle-discount-description))]]
+        (:description promo))]]
 
     (ui/button-large-primary (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
                              "Shop Our Looks")]))
@@ -245,8 +243,7 @@
 
 (defn empty-cart-query
   [data]
-  {:remove-bundle-discount? (experiments/remove-bundle-discount? data)
-   :promotions              (get-in data keypaths/promotions)})
+  {:promotions              (get-in data keypaths/promotions)})
 
 (defcomponent component
   [{:keys [fetching-order?

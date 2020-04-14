@@ -334,8 +334,7 @@
 
 (defn add-to-cart-query
   [data selected-sku sku-price]
-  (let [remove-bundle-discount?              (experiments/remove-bundle-discount? data)
-        shop?                                (= "shop" (get-in data keypaths/store-slug))
+  (let [shop?                                (= "shop" (get-in data keypaths/store-slug))
         sku-family                           (-> selected-sku :hair/family first)
         mayvenn-install-incentive-families   #{"bundles" "closures" "frontals" "360-frontals"}
         wig-customization-incentive-families #{"360-wigs" "lace-front-wigs"}]
@@ -356,11 +355,8 @@
         :add-to-cart.incentive-block/link-id     "learn-more-mayvenn-install"
         :add-to-cart.incentive-block/link-label  "Learn more"
         :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
-        :add-to-cart.incentive-block/message     (if remove-bundle-discount?
-                                                   (str "Get a free Mayvenn Install when you "
-                                                        "purchase 3 bundles, closure, or frontals.* ")
-                                                   (str "Save 10% & get a free Mayvenn Install when you "
-                                                        "purchase 3 bundles, closure, or frontals.* "))})
+        :add-to-cart.incentive-block/message     (str "Get a free Mayvenn Install when you "
+                                                      "purchase 3 bundles, closure, or frontals.* ")})
       (and shop? (wig-customization-incentive-families sku-family))
       (merge
        {:add-to-cart.incentive-block/id       "add-to-cart-incentive-block"

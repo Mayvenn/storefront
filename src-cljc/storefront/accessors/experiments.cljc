@@ -113,10 +113,6 @@
   [data]
   (display-feature? data "hide-stylist-specialty"))
 
-(defn remove-bundle-discount?
-  [data]
-  (display-feature? data "remove-bundle-discount"))
-
 (defn unified-homepage?
   [data]
   (display-feature? data "unified-homepage"))

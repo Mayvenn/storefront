@@ -14,7 +14,7 @@
             [storefront.accessors.experiments :as experiments]))
 
 (defcomponent component
-  [{:keys [remove-bundle-discount? shared-cart-id shared-cart-promotion store fetching-products? creating-cart? advertised-promo]}
+  [{:keys [shared-cart-id shared-cart-promotion store fetching-products? creating-cart? advertised-promo]}
    owner
    opts]
   (let [{:keys [portrait store-nickname]} store]
@@ -33,9 +33,7 @@
         "If you do not love your Mayvenn hair we will exchange it within 30 days of purchase!"]]]
      [:div.p3.h4.center
       (or (:description shared-cart-promotion)
-          (:description advertised-promo)
-          (when-not remove-bundle-discount?
-            promos/bundle-discount-description))]
+          (:description advertised-promo))]
      [:form
       {:on-submit (utils/send-event-callback events/control-create-order-from-shared-cart
                                              {:shared-cart-id shared-cart-id})}
@@ -55,8 +53,7 @@
 
 (defn query
   [data]
-  {:remove-bundle-discount? (experiments/remove-bundle-discount? data)
-   :shared-cart-id          (get-in data keypaths/shared-cart-id)
+  {:shared-cart-id          (get-in data keypaths/shared-cart-id)
    :shared-cart-promotion   (shared-cart-promotion data)
    :store                   (get-in data keypaths/store)
    :advertised-promo        (promos/default-advertised-promotion (get-in data keypaths/promotions))
