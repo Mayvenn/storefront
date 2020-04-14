@@ -63,10 +63,12 @@
                      :seo-title         "Shop Wavy and Curly Bundle Sets | Mayvenn"
                      :og-title          (str "Shop Wavy and Curly Bundle Sets - "
                                              "Find and Buy your favorite Mayvenn bundles!")}})
+
+;; TODO audit this, looks out of date - April 2020
 (def albums
   #{:sleek-and-straight    ;; Aladdin Home - Straight
     :waves-and-curly       ;; Aladdin Home - Wavy
-    :free-install-mayvenn  ;; Aladdin & Shop Home - #mayvennfreeinstall
+    :free-install-mayvenn  ;; Aladdin & Shop Home - #MAYVENNHAIR
     :email-deals
     :aladdin-free-install  ;; rename to free-install "Aladdin shop by look"
     :look                  ;; Shop by Look on classic/non-aladdin

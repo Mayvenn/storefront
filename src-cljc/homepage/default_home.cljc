@@ -140,11 +140,11 @@
 (defn mayvenn-hair-query
   [ugc-collection current-nav-event]
   {:mayvenn-hair.looks/images (->> ugc-collection
-                      :free-install-mayvenn
-                      :looks
-                      (mapv (partial contentful/look->homepage-social-card
-                                     current-nav-event
-                                     :free-install-mayvenn)))
+                                   :free-install-mayvenn
+                                   :looks
+                                   (mapv (partial contentful/look->homepage-social-card
+                                                  current-nav-event
+                                                  :free-install-mayvenn)))
    :mayvenn-hair.cta/id       "see-more-looks"
    :mayvenn-hair.cta/label    "see more looks"
    :mayvenn-hair.cta/target   [e/navigate-shop-by-look {:album-keyword :look}]})

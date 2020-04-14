@@ -365,6 +365,7 @@
 
                                           (= events/navigate-home nav-event)
                                           (-> {}
+                                              (update-data [:ugc-collection :free-install-mayvenn])
                                               (update-data [:homepage]))
 
                                           (contains? #{events/navigate-shop-by-look events/navigate-shop-by-look-details} nav-event)

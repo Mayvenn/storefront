@@ -267,12 +267,12 @@
 (defmethod effects/perform-effects events/navigate-home
   [_ _ _ _ app-state]
   (let [keypaths (into [[:advertisedPromo]
-                        [:homepage]]
+                        [:homepage]
+                        [:ugc-collection :free-install-mayvenn]]
                        (case (sites/determine-site app-state)
-                         :shop    [[:ugc-collection :free-install-mayvenn]]
+                         :shop    nil
                          :aladdin [[:ugc-collection :sleek-and-straight]
-                                   [:ugc-collection :waves-and-curly]
-                                   [:ugc-collection :free-install-mayvenn]]
+                                   [:ugc-collection :waves-and-curly]]
                          nil))]
     (doseq [keypath keypaths]
       (effects/fetch-cms-keypath app-state keypath))))
