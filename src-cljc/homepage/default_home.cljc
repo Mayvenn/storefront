@@ -209,7 +209,7 @@
   (into mayvenn-installs wig-customizations))
 
 (defn ^:private offers?
-  [services menu]
+  [menu services]
   (->> ((apply juxt services) menu) (some identity) boolean))
 
 ;;;;
@@ -235,12 +235,12 @@
           :quality-image       quality-image-query
           :shopping-categories (shopping-categories-query categories)}
 
-       (or shop? (offers? mayvenn-installs menu))
+       (or shop? (offers? menu mayvenn-installs))
        (merge {:mayvenn-install mayvenn-install-query})
 
-       (or shop? (offers? wig-customizations menu))
+       (or shop? (offers? menu wig-customizations))
        (merge {:wig-customization wig-customization-query})
 
-       (or shop? (offers? services menu))
+       (or shop? (offers? menu services))
        (merge {:quality-stylists quality-stylists-query
                :faq              (faq-query expanded-index)})))))
