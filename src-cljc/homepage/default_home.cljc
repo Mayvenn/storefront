@@ -121,8 +121,6 @@
                                           :page/slug           "wigs"
                                           :query-params        {:family family}}])})
 
-
-
 (def quality-hair-query
   {:quality-hair.title/primary   "Hold your hair"
    :quality-hair.title/secondary "high"

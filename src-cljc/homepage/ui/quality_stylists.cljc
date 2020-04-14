@@ -15,12 +15,12 @@
 ;; TODO refactor layered/hero-image-component into system
 (defn quality-stylists-image-molecule
   [{:quality-stylists.image/keys [ucare-ids]}]
-  [:div.col-12.my5
+  [:div.col-12.mt5
    (ui/screen-aware hero-image-component
-                    {:ucare?      true
-                     :mob-uuid    (:mobile ucare-ids)
-                     :dsk-uuid    (:desktop ucare-ids)
-                     :file-name   "quality-stylists"}
+                    {:ucare?    true
+                     :mob-uuid  (:mobile ucare-ids)
+                     :dsk-uuid  (:desktop ucare-ids)
+                     :file-name "quality-stylists"}
                     nil)])
 
 (defn ^:private quality-stylists-cta-molecule
@@ -28,31 +28,34 @@
   [:div.pt3
    (ui/button-small-underline-primary
     (assoc (apply utils/route-to target)
-           :data-test  id
-           :data-ref id)
+           :data-test id
+           :data-ref  id)
     label)])
 
 (defn ^:private quality-stylists-body-atom
   [{:quality-stylists.body/keys [primary]}]
-  [:div.col-9.mx-auto.title-2.canela primary])
+  [:div.title-2.canela primary])
 
 (defn ^:private quality-stylists-title-molecule
   [{:quality-stylists.title/keys [primary secondary]}]
-  [:div.title-1.canela
-   [:div.py1.shout
-    [:div.title-1.proxima {:style {:font-size "19px"}} primary]
-    [:div.canela.mt2.mb4 {:style {:font-size "72px"}} secondary]]])
+  [:div.py1.shout
+   [:div.title-1.proxima
+    {:style {:font-size "19px"}}
+    primary]
+   [:div.title-1.canela.mt2.mb4
+    {:style {:font-size "72px"}}
+    secondary]])
 
 (c/defcomponent organism
   [data _ _]
   (when (seq data)
     (list
-     [:div.col-6-on-dt
-      [:div.center.mx-auto.my5.pt4
+     [:div.col-6-on-dt.col-9.mx-auto.my5.pt4
+      [:div.col-9-on-dt.mx-auto.flex.flex-column.center.left-align-on-dt
        (quality-stylists-title-molecule data)
        (quality-stylists-body-atom data)
        (quality-stylists-cta-molecule data)]]
-     [:div
+     [:div.pt2
       ;; HACK: Let adjacent organism fit between when flexed
       {:style {:order 3}}
       (quality-stylists-image-molecule data)])))

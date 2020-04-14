@@ -119,6 +119,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .font-style-normal { font-style: normal; }
 
+@media (--on-desktop) {
+    .left-align-on-dt  { text-align: left; }
+}
+
 :root {
     --serif: serif;
     --sans-serif: sans-serif;
