@@ -1,4 +1,4 @@
-(1ns storefront.frontend-effects
+(ns storefront.frontend-effects
   (:require [ajax.core :as ajax]
             api.orders
             [storefront.accessors.contentful :as contentful]
