@@ -25,7 +25,8 @@
 
 (c/defcomponent organism
   [data _ _]
-  [:div.center.col-6-on-dt.mx-auto.my5.pt4
-   (quality-hair-title-molecule data)
-   (quality-hair-body-atom data)
-   (quality-hair-cta-molecule data)])
+  [:div.col-6-on-dt
+   [:div.center.my5.pt4
+    (quality-hair-title-molecule data)
+    (quality-hair-body-atom data)
+    (quality-hair-cta-molecule data)]])

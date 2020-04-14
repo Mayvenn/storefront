@@ -8,7 +8,6 @@
             [homepage.ui.mayvenn-hair :as mayvenn-hair]
             [homepage.ui.mayvenn-install :as mayvenn-install]
             [homepage.ui.quality-hair :as quality-hair]
-            [homepage.ui.quality-image :as quality-image]
             [homepage.ui.quality-stylists :as quality-stylists]
             [homepage.ui.shopping-categories :as shopping-categories]
             [homepage.ui.wig-customization :as wig-customization]
@@ -28,21 +27,28 @@
            mayvenn-hair
            mayvenn-install
            quality-hair
-           quality-image
            quality-stylists
            shopping-categories
            wig-customization]} _ _]
   [:div
    (c/build hero/organism hero)
    (c/build shopping-categories/organism shopping-categories)
+
    A/horizontal-rule-atom
+
    (c/build mayvenn-install/organism mayvenn-install)
    (c/build wig-customization/organism wig-customization)
+
    (A/divider-atom "2d3a98e3-b49a-4f0f-9340-828d12865315")
-   (c/build quality-stylists/organism quality-stylists)
-   (c/build quality-image/molecule quality-image)
-   (c/build quality-hair/organism quality-hair)
+
+   ;; nota bene: This is to get (1 3 2) ordering per design
+   ;; because 1 and 3 only show when services are on menu
+   [:div.flex-on-dt.flex-wrap.justify-center
+    (c/build quality-stylists/organism quality-stylists)
+    (c/build quality-hair/organism quality-hair)]
+
    (A/divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
+
    (c/build mayvenn-hair/organism mayvenn-hair)
    (c/build faq/organism faq)
    (c/build guarantees/organism guarantees)
@@ -114,11 +120,7 @@
                                           :page/slug           "wigs"
                                           :query-params        {:family family}}])})
 
-(def quality-image-query
-  {:ucare?    true
-   :mob-uuid  "7a58ec9e-11b2-447c-8230-de70798decf8"
-   :dsk-uuid  "484cc089-8aa1-4199-af07-05d72271d3a3"
-   :file-name "who-shop-hair"})
+
 
 (def quality-hair-query
   {:quality-hair.title/primary   "Hold your hair"
@@ -127,15 +129,17 @@
    :quality-hair.cta/id          "info-about-our-hair"
    :quality-hair.cta/label       "shop hair"
    :quality-hair.cta/target      [e/navigate-category {:page/slug           "human-hair-bundles"
-                                                    :catalog/category-id "27"}]})
+                                                       :catalog/category-id "27"}]})
 
 (def quality-stylists-query
   {:quality-stylists.title/primary   "Sit back and"
    :quality-stylists.title/secondary "relax"
    :quality-stylists.body/primary    "We’ve rounded up the best stylists in the country so you can be sure your hair is in really, really good hands."
-   :quality-stylists.cta/label       "Learn more"
    :quality-stylists.cta/id          "info-certified-stylists"
-   :quality-stylists.cta/target      [e/navigate-info-certified-stylists]})
+   :quality-stylists.cta/label       "Learn more"
+   :quality-stylists.cta/target      [e/navigate-info-certified-stylists]
+   :quality-stylists.image/ucare-ids {:desktop  "484cc089-8aa1-4199-af07-05d72271d3a3"
+                                      :mobile  "7a58ec9e-11b2-447c-8230-de70798decf8"}})
 
 (defn mayvenn-hair-query
   [ugc-collection current-nav-event]
@@ -232,7 +236,6 @@
           :mayvenn-hair        (mayvenn-hair-query ugc-collection
                                                    current-nav-event)
           :quality-hair        quality-hair-query
-          :quality-image       quality-image-query
           :shopping-categories (shopping-categories-query categories)}
 
        (or shop? (offers? menu mayvenn-installs))
@@ -242,5 +245,5 @@
        (merge {:wig-customization wig-customization-query})
 
        (or shop? (offers? menu services))
-       (merge {:quality-stylists quality-stylists-query
-               :faq              (faq-query expanded-index)})))))
+       (merge {:faq              (faq-query expanded-index)
+               :quality-stylists quality-stylists-query})))))
