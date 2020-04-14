@@ -4,8 +4,8 @@
             [homepage.ui.diishan :as diishan]
             [homepage.ui.faq :as faq]
             [homepage.ui.guarantees :as guarantees]
+            [homepage.ui.hashtag-mayvenn-hair :as hashtag-mayvenn-hair]
             [homepage.ui.hero :as hero]
-            [homepage.ui.mayvenn-hair :as mayvenn-hair]
             [homepage.ui.mayvenn-install :as mayvenn-install]
             [homepage.ui.quality-hair :as quality-hair]
             [homepage.ui.quality-stylists :as quality-stylists]
@@ -23,8 +23,8 @@
   [{:keys [diishan
            faq
            guarantees
+           hashtag-mayvenn-hair
            hero
-           mayvenn-hair
            mayvenn-install
            quality-hair
            quality-stylists
@@ -41,15 +41,16 @@
 
    (A/divider-atom "2d3a98e3-b49a-4f0f-9340-828d12865315")
 
-   ;; nota bene: This is to get (1 3 2) ordering per design
-   ;; because 1 and 3 only show when services are on menu
+   ;; HACK:
+   ;; This is to get desktop (1 3 2) and mobile (1 2 3) ordering
+   ;; Orthogonally, 1 and 3 only show when services are on menu
    [:div.flex-on-dt.flex-wrap.justify-center
     (c/build quality-stylists/organism quality-stylists)
     (c/build quality-hair/organism quality-hair)]
 
    (A/divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
 
-   (c/build mayvenn-hair/organism mayvenn-hair)
+   (c/build hashtag-mayvenn-hair/organism hashtag-mayvenn-hair)
    (c/build faq/organism faq)
    (c/build guarantees/organism guarantees)
    (c/build diishan/organism diishan)])
@@ -141,17 +142,16 @@
    :quality-stylists.image/ucare-ids {:desktop  "484cc089-8aa1-4199-af07-05d72271d3a3"
                                       :mobile  "7a58ec9e-11b2-447c-8230-de70798decf8"}})
 
-(defn mayvenn-hair-query
-  [ugc-collection current-nav-event]
-  {:mayvenn-hair.looks/images (->> ugc-collection
-                                   :free-install-mayvenn
-                                   :looks
-                                   (mapv (partial contentful/look->homepage-social-card
-                                                  current-nav-event
-                                                  :free-install-mayvenn)))
-   :mayvenn-hair.cta/id       "see-more-looks"
-   :mayvenn-hair.cta/label    "see more looks"
-   :mayvenn-hair.cta/target   [e/navigate-shop-by-look {:album-keyword :look}]})
+(defn hashtag-mayvenn-hair-query
+  [ugc]
+  (let [images (->> ugc :free-install-mayvenn :looks
+                    (mapv (partial contentful/look->homepage-social-card
+                                   e/navigate-home
+                                   :free-install-mayvenn)))]
+    {:hashtag-mayvenn-hair.looks/images images
+     :hashtag-mayvenn-hair.cta/id       "see-more-looks"
+     :hashtag-mayvenn-hair.cta/label    "see more looks"
+     :hashtag-mayvenn-hair.cta/target   [e/navigate-shop-by-look {:album-keyword :look}]}))
 
 (defn faq-query
   [expanded-index]
@@ -170,6 +170,7 @@
     {:faq/title      "What if I want to get my hair done by another stylist? Can I still get the Mayvenn Install?"
      :faq/paragraphs ["You must get your hair done from a Certified Stylist in order to get your hair installed for free."]}]})
 
+;; TODO svg ns is full of undiffable components
 (def guarantees-query
   {:list/icons
    [{:guarantees.icon/image (svg/heart {:class  "fill-p-color"
@@ -220,23 +221,21 @@
 
 (defn page
   [app-state]
-  (let [cms               (get-in app-state k/cms)
-        categories        (get-in app-state k/categories)
-        ugc-collection    (get-in app-state k/cms-ugc-collection)
-        current-nav-event (get-in app-state k/navigation-event)
-        expanded-index    (get-in app-state k/faq-expanded-section)
-        shop?             (= "shop" (get-in app-state k/store-slug))
-        menu              (get-in app-state k/store-service-menu)]
+  (let [cms            (get-in app-state k/cms)
+        categories     (get-in app-state k/categories)
+        ugc            (get-in app-state k/cms-ugc-collection)
+        expanded-index (get-in app-state k/faq-expanded-section)
+        shop?          (= "shop" (get-in app-state k/store-slug))
+        menu           (get-in app-state k/store-service-menu)]
     (c/build
      template
      (cond->
-         {:diishan             diishan-query
-          :guarantees          guarantees-query
-          :hero                (hero-query cms)
-          :mayvenn-hair        (mayvenn-hair-query ugc-collection
-                                                   current-nav-event)
-          :quality-hair        quality-hair-query
-          :shopping-categories (shopping-categories-query categories)}
+         {:diishan              diishan-query
+          :guarantees           guarantees-query
+          :hero                 (hero-query cms)
+          :hashtag-mayvenn-hair (hashtag-mayvenn-hair-query ugc)
+          :quality-hair         quality-hair-query
+          :shopping-categories  (shopping-categories-query categories)}
 
        (or shop? (offers? menu mayvenn-installs))
        (merge {:mayvenn-install mayvenn-install-query})

@@ -1,4 +1,4 @@
-(ns homepage.ui.mayvenn-hair
+(ns homepage.ui.hashtag-mayvenn-hair
   (:require [storefront.component :as c]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]))
@@ -13,18 +13,18 @@
      :else          [:div.col-12 " "])))
 
 (defn ^:private more-looks-cta
-  [{:mayvenn-hair.cta/keys [target label id]}]
+  [{:hashtag-mayvenn-hair.cta/keys [target label id]}]
   (ui/button-small-underline-primary
    (assoc (apply utils/route-to target)
           :data-test  id
           :data-ref id)
    label))
 
-(def ^:private mayvenn-hair-title-atom
+(def ^:private hashtag-mayvenn-hair-title-atom
   [:div.title-2.proxima.shout.bold "#MayvennHair"])
 
 (defn ^:private looks-images-molecule
-  [{:mayvenn-hair.looks/keys [images]}]
+  [{:hashtag-mayvenn-hair.looks/keys [images]}]
   (for [{:keys [image-url]} images]
     [:a.col-6.col-3-on-tb-dt.p1
      {:key (str image-url)}
@@ -33,7 +33,7 @@
 (c/defcomponent organism
   [data _ _]
   [:div.py8.col-10.mx-auto.center
-   mayvenn-hair-title-atom
+   hashtag-mayvenn-hair-title-atom
    [:div.flex.flex-wrap.py3
     (looks-images-molecule data)]
    (more-looks-cta data)])

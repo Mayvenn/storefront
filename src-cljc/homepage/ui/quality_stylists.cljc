@@ -53,5 +53,6 @@
        (quality-stylists-body-atom data)
        (quality-stylists-cta-molecule data)]]
      [:div
+      ;; HACK: Let adjacent organism fit between when flexed
       {:style {:order 3}}
       (quality-stylists-image-molecule data)])))
