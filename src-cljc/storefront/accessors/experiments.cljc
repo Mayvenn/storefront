@@ -91,10 +91,6 @@
   [data]
   (display-feature? data "color-picker-redesign"))
 
-(defn show-priority-shipping-method?
-  [data]
-  (display-feature? data "show-priority-shipping-method"))
-
 (defn addon-services?
   "If your order has addon services you should be a part of this feature"
   [data]
