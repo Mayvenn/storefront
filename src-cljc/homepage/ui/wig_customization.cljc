@@ -58,10 +58,11 @@
 
 (c/defcomponent organism
   [data _ _]
-  [:div
-   [:div.mb6
-    (wig-customization-title-molecule data)
-    (wig-customization-image-molecule data)
-    (wig-customization-list-molecule data)
-    (wig-customization-cta-molecule data)]
-   A/horizontal-rule-atom])
+  (when (seq data)
+    [:div
+     [:div.mb6
+      (wig-customization-title-molecule data)
+      (wig-customization-image-molecule data)
+      (wig-customization-list-molecule data)
+      (wig-customization-cta-molecule data)]
+     A/horizontal-rule-atom]))

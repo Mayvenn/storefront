@@ -25,7 +25,8 @@
 
 (c/defcomponent organism
   [data _ _]
-  [:div.center.col-6-on-dt.mx-auto.my5.pt4
-   (quality-stylists-title-molecule data)
-   (quality-stylists-body-atom data)
-   (quality-stylists-cta-molecule data)])
+  (when (seq data)
+    [:div.center.col-6-on-dt.mx-auto.my5.pt4
+     (quality-stylists-title-molecule data)
+     (quality-stylists-body-atom data)
+     (quality-stylists-cta-molecule data)]))
