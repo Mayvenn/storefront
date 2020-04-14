@@ -12,6 +12,7 @@
             catalog.keypaths
             [storefront.config :as config]
             [storefront.events :as events]
+            [storefront.hooks.stripe :as stripe]
             [storefront.hooks.talkable :as talkable]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
@@ -240,16 +241,27 @@
 (defmethod transition-state events/navigate-checkout-sign-in [_ event args app-state]
   (ensure-direct-load-of-checkout-auth-advances-to-checkout-flow app-state))
 
+;; When you navigate to the checkout payment and are fully covered by store
+;; credit (and can use it) Choose store-credit as your payment method (changing
+;; to a different payment method is guarded in the UI)
 (defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
   (let [order                    (get-in app-state keypaths/order)
         billing-address          (get-in app-state (conj keypaths/order :billing-address))
         user                     (get-in app-state keypaths/user)
-        covered-by-store-credit? (orders/fully-covered-by-store-credit? order user)]
+        covered-by-store-credit-and-can-use-store-credit?
+        (and (orders/fully-covered-by-store-credit? order user)
+             (orders/can-use-store-credit? order user))]
     (assoc-in (default-credit-card-name app-state billing-address)
               keypaths/checkout-selected-payment-methods
-              (if (and covered-by-store-credit?
-                       (orders/can-use-store-credit? order user))
+              (cond
+                covered-by-store-credit-and-can-use-store-credit?
                 {:store-credit {}}
+
+                (and (not covered-by-store-credit-and-can-use-store-credit?)
+                     (not (experiments/show-quadpay? app-state)))
+                (orders/form-payment-methods order user)
+
+                :else
                 {}))))
 
 (defn ensure-cart-has-shipping-method [app-state]

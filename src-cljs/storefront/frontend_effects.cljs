@@ -1,4 +1,4 @@
-(ns storefront.frontend-effects
+(1ns storefront.frontend-effects
   (:require [ajax.core :as ajax]
             api.orders
             [storefront.accessors.contentful :as contentful]
@@ -370,7 +370,9 @@
         (messages/handle-message events/bucketed-for {:experiment experiment :variation variation})
         (messages/handle-message events/enable-feature {:experiment experiment :feature (:feature variation)})))))
 
-(defmethod effects/perform-effects events/navigate-checkout [_ event args _ app-state]
+(defmethod effects/perform-effects events/navigate-checkout [_ event {:keys [navigate/caused-by]} _ app-state]
+  (when (not= :module-load caused-by)
+    (stripe/insert))
   (google-maps/insert)
   (let [have-cart? (get-in app-state keypaths/order-number)]
     (when (not have-cart?)
@@ -407,14 +409,12 @@
   (when (empty? (get-in app-state keypaths/order-shipping-address))
     (effects/redirect events/navigate-checkout-address))
   (fetch-saved-cards app-state)
-  (stripe/insert)
   (quadpay/insert))
 
 (defmethod effects/perform-effects events/navigate-checkout-confirmation [_ event args _ app-state]
   ;; TODO: get the credit card component to function correctly on direct page load
   (when (empty? (get-in app-state keypaths/order-cart-payments))
     (effects/redirect events/navigate-checkout-payment))
-  (stripe/insert)
   (api/get-shipping-methods))
 
 (defmethod effects/perform-effects events/navigate-order-complete [_ event {{:keys [paypal order-token]} :query-params number :number} _ app-state]

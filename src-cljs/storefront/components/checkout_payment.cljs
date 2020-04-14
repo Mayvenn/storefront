@@ -35,8 +35,11 @@
                                                  (and user-is-stylist?
                                                       service-line-item-promotion-applied?
                                                       not-quadpay-selected?))
-        selected-saved-card-id               (when must-use-card? (get-in app-state keypaths/checkout-credit-card-selected-id))
-        needs-stripe-token?                  (and (or (nil? selected-saved-card-id) (= "add-new-card" selected-saved-card-id))
+        selected-saved-card-id               (when must-use-card?
+                                               (get-in app-state keypaths/checkout-credit-card-selected-id))
+        needs-stripe-token?                  (and (or
+                                                   (nil? selected-saved-card-id)
+                                                   (= "add-new-card" selected-saved-card-id))
                                                   must-use-card?)]
     (if needs-stripe-token?
       (create-stripe-token app-state {:place-order? false})
@@ -56,21 +59,95 @@
                                                     (get-in app-state keypaths/user))
               :quadpay {:quadpay {}})))
 
+(defn store-credit-note
+  [{:credit-note/keys [id color content subcontent]}]
+  (when id
+    (ui/note-box
+     {:color     color
+      :data-test id}
+     [:div.p2
+      content
+      subcontent])))
+
+(defn credit-card-entry
+  [{:credit-card-entry/keys [id credit-card field-errors]
+    :as data}]
+  (when id
+    [:div.p2 (store-credit-note data)
+     [:div (component/build cc/component
+                            {:credit-card  credit-card
+                             :field-errors field-errors})
+      [:div.mt2.h5 "You can review your order on the next page before we charge your card."]]]))
+
+(def credit-card-label
+  [:div.overflow-hidden
+   [:div "Pay with Credit/Debit Card"]
+   [:p.h6 "All transactions are secure and encrypted."]])
+
+(defn payment-method-selection
+  [{:payment-method/keys
+    [show-quadpay-component?
+     selected-stripe-or-store-credit?
+     selected-quadpay?]
+    :as                  data}]
+  [:div
+   (ui/radio-section
+    (merge {:name         "payment-method"
+            :id           "payment-method-credit-card"
+            :data-test    "payment-method"
+            :data-test-id "credit-card"
+            :on-click     (utils/send-event-callback events/control-checkout-payment-select {:payment-method :stripe})}
+           (when selected-stripe-or-store-credit?
+             {:checked "checked"}))
+    credit-card-label)
+
+
+   (when selected-stripe-or-store-credit?
+     [:div.ml5
+      (credit-card-entry data)])
+
+   (ui/radio-section
+    (merge {:name         "payment-method"
+            :id           "payment-method-quadpay"
+            :data-test    "payment-method"
+            :data-test-id "quadpay"
+            :on-click     (utils/send-event-callback events/control-checkout-payment-select
+                                                     {:payment-method :quadpay})}
+           (when selected-quadpay?
+             {:checked "checked"}))
+
+    [:div.overflow-hidden
+     [:div.flex
+      [:div.mr1 "Pay with "]
+      [:div.mt1 {:style {:width "85px" :height "17px"}}
+       ^:inline (svg/quadpay-logo)]]
+     [:div.h6 "4 interest-free payments with QuadPay. "
+      [:a.blue.block {:href     "#"
+                      :on-click (fn [e]
+                                  (.preventDefault e)
+                                  (quadpay/show-modal))}
+       "Learn more."]
+      (when show-quadpay-component?
+        [:div.hide (component/build quadpay/widget-component {} nil)])]])
+
+   (when selected-quadpay?
+     [:div.h6.px2.ml5
+      "Before completing your purchase, you will be redirected to Quadpay to securely set up your payment plan."])])
+
+(defn cta-submit [{:cta/keys [id saving? disabled? label]}]
+  (when id
+    [:div.my4.col-6-on-tb-dt.mx-auto
+     (ui/submit-button label {:spinning? saving?
+                              :disabled? disabled?
+                              :data-test id})]) )
+
 (defcomponent component
   [{:keys [step-bar
-           saving?
-           disabled?
-           loaded-quadpay?
-           show-quadpay?
+           show-quadpay-feature-flag-on?
            loaded-stripe?
-           store-credit
-           field-errors
-           credit-card
-           promo-code
-           selected-payment-methods
-           can-use-store-credit?
-           freeinstall-applied?
-           promo-banner]}
+           promo-banner]
+    :store-credit/keys [fully-covered? can-use-store-credit?]
+    :as data}
    owner _]
   [:div.container.p2
    (component/build promo-banner/sticky-organism promo-banner nil)
@@ -83,92 +160,24 @@
       {:on-submit (utils/send-event-callback events/control-checkout-choose-payment-method-submit)
        :data-test "payment-form"}
 
-      (let [{:keys [credit-applicable fully-covered?]} store-credit
-            selected-stripe-or-store-credit?           (and (seq selected-payment-methods)
-                                                            (set/subset? selected-payment-methods #{:stripe :store-credit}))
-            selected-quadpay?                          (contains? selected-payment-methods :quadpay)]
-        (if (and fully-covered? can-use-store-credit?)
-          (ui/note-box
-           {:color     "p-color"
-            :data-test "store-credit-note"}
-           [:.p2
-            [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]])
-          [:div
-           (ui/radio-section
-            (merge {:name         "payment-method"
-                    :id           "payment-method-credit-card"
-                    :data-test    "payment-method"
-                    :data-test-id "credit-card"
-                    :on-click     (utils/send-event-callback events/control-checkout-payment-select {:payment-method :stripe})}
-                   (when selected-stripe-or-store-credit? {:checked "checked"}))
-            [:div.overflow-hidden
-             [:div "Pay with Credit/Debit Card"]
-             [:p.h6 "All transactions are secure and encrypted."]])
+      (cond
+        (and fully-covered? can-use-store-credit?)
+        (store-credit-note data)
 
-           (when selected-stripe-or-store-credit?
-             (let [{:keys [credit-available credit-applicable]} store-credit]
-               [:div.p2.ml5
-                (when (pos? credit-available)
-                  (if can-use-store-credit?
-                    (ui/note-box
-                     {:color     "p-color"
-                      :data-test "store-credit-note"}
-                     [:.p2
-                      [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
-                      [:.h6.mt1
-                       "Please enter an additional payment method below for the remaining total on your order."]])
-                    (ui/note-box
-                     {:color     "s-color"
-                      :data-test "store-credit-note"}
-                     [:div.p2.black
-                      [:div "Your "
-                       [:span.medium (as-money credit-applicable)]
-                       " in store credit "
-                       [:span.medium "cannot"]
-                       " be used with " [:span.shout freeinstall-applied?] " orders."]
-                      [:div.h6.mt1
-                       "To use store credit, please remove promo code " [:span.shout freeinstall-applied?] " from your bag."]])))
+        show-quadpay-feature-flag-on?
+        (payment-method-selection data)
 
-                [:div
-                 (component/build cc/component
-                                  {:credit-card  credit-card
-                                   :field-errors field-errors})
-                 [:div.h5
-                  "You can review your order on the next page before we charge your card."]]]))
-           (when show-quadpay?
-             (list
-              (ui/radio-section
-               (merge {:name         "payment-method"
-                       :id           "payment-method-quadpay"
-                       :data-test    "payment-method"
-                       :data-test-id "quadpay"
-                       :on-click     (utils/send-event-callback events/control-checkout-payment-select
-                                                                {:payment-method :quadpay})}
-                      (when selected-quadpay? {:checked "checked"}))
+        :else
+        [:div
+         [:div.ml2 credit-card-label]
+         (credit-card-entry data)])
 
-               [:div.overflow-hidden
-                [:div.flex
-                 [:div.mr1 "Pay with "]
-                 [:div.mt1 {:style {:width "85px" :height "17px"}}
-                  ^:inline (svg/quadpay-logo)]]
-                [:div.h6 "4 interest-free payments with QuadPay. "
-                 [:a.blue.block {:href "#"
-                                 :on-click (fn [e]
-                                             (.preventDefault e)
-                                             (quadpay/show-modal))}
-                  "Learn more."]
-                 (when loaded-quadpay?
-                   [:div.hide (component/build quadpay/widget-component {} nil)])]])
+      (cta-submit data)]])])
 
-              (when selected-quadpay?
-                [:div.h6.px2.ml5
-                 "Before completing your purchase, you will be redirected to Quadpay to securely set up your payment plan."])))]))
-
-      (when loaded-stripe?
-        [:div.my4.col-6-on-tb-dt.mx-auto
-         (ui/submit-button "Review Order" {:spinning? saving?
-                                           :disabled? disabled?
-                                           :data-test "payment-form-submit"})])]])])
+(defn store-credit-content
+  [credit]
+  [:div [:span.medium (as-money credit)]
+   " in store credit will be applied to this order."])
 
 (defn query [data]
   (let [available-store-credit   (get-in data keypaths/user-total-available-store-credit)
@@ -179,29 +188,51 @@
                                   (get-in data keypaths/user))
         selected-payment-methods (set (keys (get-in data keypaths/checkout-selected-payment-methods)))
         freeinstall-applied?     (orders/service-line-item-promotion-applied? order)
-        user                     (get-in data keypaths/user)]
+        user                     (get-in data keypaths/user)
+        can-use-store-credit?    (orders/can-use-store-credit? order user)
+        loaded-stripe?           (get-in data keypaths/loaded-stripe)
+        selected-quadpay?        (some #{:quadpay} selected-payment-methods)]
     (merge
-     {:store-credit          {:credit-available  available-store-credit
-                              :credit-applicable credit-to-use
-                              :fully-covered?    fully-covered?}
-      :promo-banner          (promo-banner/query data)
-      :promo-code            (first (get-in data keypaths/order-promotion-codes))
-      :saving?               (cc/saving-card? data)
-      :disabled?             (or (and (utils/requesting? data request-keys/get-saved-cards)
-                                      ;; Requesting cards, no existing cards, or not fully covered
-                                      (empty? (get-in data keypaths/checkout-credit-card-existing-cards))
-                                      (not fully-covered?))
-                                 (empty? selected-payment-methods))
-      :freeinstall-applied?  freeinstall-applied?
-      :can-use-store-credit? (orders/can-use-store-credit? order user)
+     {:credit-note/id         (when (pos? available-store-credit) "store-credit-note")
+      :credit-note/color      (if can-use-store-credit? "p-color" "s-color")
+      :credit-note/content    (store-credit-content credit-to-use)
+      :credit-note/subcontent (cond
+                                (and fully-covered? can-use-store-credit?)
+                                nil
+                                can-use-store-credit?
+                                [:div.h6.mt1
+                                 "Please enter an additional payment method below for the remaining total on your order."]
+                                :else
+                                [:div.h6.mt1
+                                 "To use store credit, please remove promo code "
+                                 [:span.shout freeinstall-applied?]
+                                 " from your bag."])}
 
-      :loaded-stripe?           (get-in data keypaths/loaded-stripe)
-      :step-bar                 (checkout-steps/query data)
-      :field-errors             (:field-errors (get-in data keypaths/errors))
-      :selected-payment-methods selected-payment-methods
-      :loaded-quadpay?          (get-in data keypaths/loaded-quadpay)
-      :show-quadpay?            (experiments/show-quadpay? data)}
-     (cc/query data))))
+     {:credit-card-entry/credit-card  (:credit-card (cc/query data))
+      :credit-card-entry/id           (when loaded-stripe?
+                                        "credit-card-entry")
+      :credit-card-entry/field-errors (:field-errors (get-in data keypaths/errors))}
+
+     {:store-credit/fully-covered?        fully-covered?
+      :store-credit/can-use-store-credit? can-use-store-credit?}
+
+     {:payment-method/show-quadpay-component?          (get-in data keypaths/loaded-quadpay)
+      :payment-method/selected-stripe-or-store-credit? (some #{:stripe :store-credit} selected-payment-methods)
+      :payment-method/selected-quadpay?                selected-quadpay?}
+
+     {:cta/disabled? (or (and (utils/requesting? data request-keys/get-saved-cards)
+                              ;; Requesting cards, no existing cards, or not fully covered
+                              (empty? (get-in data keypaths/checkout-credit-card-existing-cards))
+                              (not fully-covered?))
+                         (empty? selected-payment-methods))
+      :cta/spinning? (cc/saving-card? data)
+      :cta/label     "Review Order"
+      :cta/id        (when loaded-stripe?
+                       "payment-form-submit")}
+     {:step-bar                      (checkout-steps/query data)
+      :show-quadpay-feature-flag-on? (experiments/show-quadpay? data)
+      :loaded-stripe?                loaded-stripe?
+      :promo-banner                  (promo-banner/query data)})))
 
 (defn ^:private built-non-auth-component [data opts]
   (component/build component (query data) opts))

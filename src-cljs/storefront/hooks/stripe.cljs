@@ -11,9 +11,9 @@
     (insert-tag-with-callback
      (src-tag "https://js.stripe.com/v3/" "stripe-v3")
      (fn []
-       (handle-message events/inserted-stripe {:version :v3})
        (let [stripe (js/Stripe. config/stripe-publishable-key)]
-         (set! (.-stripe js/window) stripe))))))
+         (set! (.-stripe js/window) stripe))
+       (handle-message events/inserted-stripe {:version :v3})))))
 
 (def fonts {:fonts
             [{:family "Proxima Nova"
