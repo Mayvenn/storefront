@@ -8,17 +8,17 @@
 
 (defn ^:private wig-customization-cta-molecule
   [{:wig-customization.cta/keys [id value target]}]
-  [:div.col-9.mx-auto.py6
+  [:div.col-9.col-9-on-dt.mx-auto.py6
    (ui/button-large-primary (-> (apply utils/route-to target)
                                 (assoc :data-test id))
                             value)])
 
 (defn ^:private wig-customization-list-molecule
   [{:wig-customization.list/keys [primary] :list/keys [bullets]}]
-  [:div.col-10.col-6-on-dt.mx-auto.border.border-framed.flex.justify-center.mt8.pt3
-   [:div.col-12.flex.flex-column.items-center.m5.py4
+  [:div.col-10.col-8-on-dt.mx-auto.border.border-framed.flex.justify-center.mt8.pt3
+   [:div.col-12.flex.flex-column.items-center.m5.py4.py5-on-dt
     {:style {:width "max-content"}} ;; TODO -> class for css rule
-    [:div.proxima.title-2.shout.pt1.mb primary]
+    [:div.proxima.title-2.shout.pt1.mb.mb3-on-dt primary]
     [:ul.col-12.list-purple-diamond
      {:style {:padding-left "15px"}}
      (for [[idx bullet] (map-indexed vector bullets)
@@ -62,7 +62,10 @@
     [:div
      [:div.mb6
       (wig-customization-title-molecule data)
-      (wig-customization-image-molecule data)
-      (wig-customization-list-molecule data)
-      (wig-customization-cta-molecule data)]
+      [:div.flex-on-dt
+       {:style {:flex-direction "row-reverse"}}
+       (wig-customization-image-molecule data)
+       [:div.col-6-on-dt.col-12
+        (wig-customization-list-molecule data)
+        (wig-customization-cta-molecule data)]]]
      A/horizontal-rule-atom]))

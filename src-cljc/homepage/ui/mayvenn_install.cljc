@@ -7,17 +7,17 @@
 
 (defn ^:private mayvenn-install-cta-molecule
   [{:mayvenn-install.cta/keys [id value target]}]
-  [:div.col-9.mx-auto.py6
+  [:div.col-9.col-6-on-dt.mx-auto.py6
    (ui/button-large-primary (-> (apply utils/route-to target)
                                 (assoc :data-test id))
                             value)])
 
 (defn ^:private mayvenn-install-list-molecule
   [{:mayvenn-install.list/keys [primary] :list/keys [bullets]}]
-  [:div.col-10.col-6-on-dt.mx-auto.border.border-framed.flex.justify-center.mt8.pt3
-   [:div.col-12.flex.flex-column.items-center.m5.py4
+  [:div.col-10.col-8-on-dt.mx-auto.border.border-framed.flex.justify-center.mt8.pt3
+   [:div.col-12.flex.flex-column.items-center.m5.py4.py5-on-dt
     {:style {:width "max-content"}} ;; TODO -> class for css rule
-    [:div.proxima.title-2.shout.pt1.mb primary]
+    [:div.proxima.title-2.shout.pt1.mb.mb3-on-dt primary]
     [:ul.col-12.list-purple-diamond
      {:style {:padding-left "15px"}}
      (for [[idx bullet] (map-indexed vector bullets)
@@ -57,7 +57,9 @@
     [:div
      [:div.mb6
       (mayvenn-install-title-molecule data)
-      (mayvenn-install-image-molecule data)
-      (mayvenn-install-list-molecule data)
-      (mayvenn-install-cta-molecule data)]
+      [:div.flex-on-dt
+       (mayvenn-install-image-molecule data)
+       [:div.col-6-on-dt.col-12
+        (mayvenn-install-list-molecule data)
+        (mayvenn-install-cta-molecule data)]]]
      A/horizontal-rule-atom]))
