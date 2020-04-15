@@ -44,6 +44,8 @@
 
    ;; HACK:
    ;; This is to get desktop (1 3 2) and mobile (1 2 3) ordering
+   ;; The when is needed for the conditional divider, as it's unclear
+   ;; whether this is an organism together or not
    (when quality-stylists
      [:div
       (A/divider-atom "2d3a98e3-b49a-4f0f-9340-828d12865315")
@@ -135,15 +137,18 @@
    :quality-hair.cta/target      [e/navigate-category {:page/slug           "human-hair-bundles"
                                                        :catalog/category-id "27"}]})
 
-(def quality-stylists-query
-  {:quality-stylists.title/primary   "Sit back and"
-   :quality-stylists.title/secondary "relax"
-   :quality-stylists.body/primary    "We’ve rounded up the best stylists in the country so you can be sure your hair is in really, really good hands."
-   :quality-stylists.cta/id          "info-certified-stylists"
-   :quality-stylists.cta/label       "Learn more"
-   :quality-stylists.cta/target      [e/navigate-info-certified-stylists]
-   :quality-stylists.image/ucare-ids {:desktop "ac46cdbc-fe7f-469e-bcb8-1efe5e65ea97"
-                                      :mobile  "8f14c17b-ffef-4178-8915-640573a8bf3a"}})
+(defn quality-stylists-query
+  [shop?]
+  (cond-> {:quality-stylists.title/primary   "Sit back and"
+           :quality-stylists.title/secondary "relax"
+           :quality-stylists.body/primary    "We’ve rounded up the best stylists in the country so you can be sure your hair is in really, really good hands."
+           :quality-stylists.image/ucare-ids {:desktop "ac46cdbc-fe7f-469e-bcb8-1efe5e65ea97"
+                                              :mobile  "8f14c17b-ffef-4178-8915-640573a8bf3a"}}
+    shop?
+    (merge
+     {:quality-stylists.cta/id          "info-certified-stylists"
+      :quality-stylists.cta/label       "Learn more"
+      :quality-stylists.cta/target      [e/navigate-info-certified-stylists]})))
 
 (defn hashtag-mayvenn-hair-query
   [ugc]
@@ -261,7 +266,6 @@
           :guarantees           guarantees-query
           :hero                 (hero-query cms)
           :hashtag-mayvenn-hair (hashtag-mayvenn-hair-query ugc)
-          :quality-hair         quality-hair-query
           :shopping-categories  (shopping-categories-query categories)}
 
        (or shop? (offers? menu mayvenn-installs))
@@ -272,4 +276,5 @@
 
        (or shop? (offers? menu services))
        (merge {:faq              (faq-query expanded-index)
-               :quality-stylists quality-stylists-query})))))
+               :quality-hair     quality-hair-query
+               :quality-stylists (quality-stylists-query shop?)})))))
