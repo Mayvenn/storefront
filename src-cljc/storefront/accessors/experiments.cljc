@@ -107,7 +107,7 @@
 
 (defn unified-homepage?
   [data]
-  (display-feature? data "unified-homepage"))
+  true)
 
 (defn show-quadpay?
   [data]
