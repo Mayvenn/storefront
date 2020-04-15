@@ -25,12 +25,13 @@
 
 (defn ^:private quality-stylists-cta-molecule
   [{:quality-stylists.cta/keys [target label id]}]
-  [:div.pt3
-   (ui/button-medium-underline-primary
-    (assoc (apply utils/route-to target)
-           :data-test id
-           :data-ref  id)
-    label)])
+  (when (and id target label)
+    [:div.pt3
+     (ui/button-medium-underline-primary
+      (assoc (apply utils/route-to target)
+             :data-test id
+             :data-ref  id)
+      label)]))
 
 (defn ^:private quality-stylists-body-atom
   [{:quality-stylists.body/keys [primary]}]
