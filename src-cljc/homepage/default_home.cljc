@@ -1,6 +1,7 @@
 (ns homepage.default-home
   (:require [clojure.string :refer [join]]
             [homepage.ui.atoms :as A]
+            [homepage.ui.contact-us :as contact-us]
             [homepage.ui.diishan :as diishan]
             [homepage.ui.faq :as faq]
             [homepage.ui.guarantees :as guarantees]
@@ -16,11 +17,13 @@
             [storefront.component :as c]
             [storefront.components.homepage-hero :as homepage-hero]
             [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
             [storefront.events :as e]
             [storefront.keypaths :as k]))
 
 (c/defcomponent template
-  [{:keys [diishan
+  [{:keys [contact-us
+           diishan
            faq
            guarantees
            hashtag-mayvenn-hair
@@ -41,7 +44,6 @@
 
    ;; HACK:
    ;; This is to get desktop (1 3 2) and mobile (1 2 3) ordering
-   ;; Orthogonally, 1 and 3 only show when services are on menu
    (when quality-stylists
      [:div
       (A/divider-atom "2d3a98e3-b49a-4f0f-9340-828d12865315")
@@ -54,7 +56,8 @@
    (c/build hashtag-mayvenn-hair/organism hashtag-mayvenn-hair)
    (c/build faq/organism faq)
    (c/build guarantees/organism guarantees)
-   (c/build diishan/organism diishan)])
+   (c/build diishan/organism diishan)
+   (c/build contact-us/organism contact-us)])
 
 (defn hero-query
   "TODO homepage hero query is reused and complected
@@ -169,7 +172,7 @@
     {:faq/title      "What if I want to get my hair done by another stylist? Can I still get the Mayvenn Install?"
      :faq/paragraphs ["You must get your hair done from a Certified Stylist in order to get your hair installed for free."]}]})
 
-;; TODO svg ns is full of undiffable components
+;; TODO svg ns returns components full of undiffable data
 (def guarantees-query
   {:list/icons
    [{:guarantees.icon/image (svg/heart {:class  "fill-p-color"
@@ -200,6 +203,29 @@
    :diishan.attribution/primary   "— Diishan Imira"
    :diishan.attribution/secondary "CEO of Mayvenn"})
 
+;; TODO svg ns returns components full of undiffable data
+(def contact-us-query
+  {:contact-us.title/primary   "Contact Us"
+   :contact-us.title/secondary "We're here to help"
+   :contact-us.body/primary    "Have Questions?"
+   :list/contact-methods
+   [{:contact-us.contact-method/uri   (ui/sms-url "346-49")
+     :contact-us.contact-method/svg   (svg/icon-sms {:height 51
+                                                     :width  56})
+     :contact-us.contact-method/title "Live Chat"
+     :contact-us.contact-method/copy  "Text: 346-49"}
+    {:contact-us.contact-method/uri   (ui/phone-url "1 (855) 287-6868")
+     :contact-us.contact-method/svg   (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
+                                                      :height 57
+                                                      :width  57})
+     :contact-us.contact-method/title "Call Us"
+     :contact-us.contact-method/copy  "1 (855) 287-6868"}
+    {:contact-us.contact-method/uri   (ui/email-url "help@mayvenn.com")
+     :contact-us.contact-method/svg   (svg/icon-email {:height 39
+                                                       :width  56})
+     :contact-us.contact-method/title "Email Us"
+     :contact-us.contact-method/copy  "help@mayvenn.com"}]})
+
 ;;;; TODO -> model.stylists
 
 (def ^:private wig-customizations
@@ -229,7 +255,8 @@
     (c/build
      template
      (cond->
-         {:diishan              diishan-query
+         {:contact-us           contact-us-query
+          :diishan              diishan-query
           :guarantees           guarantees-query
           :hero                 (hero-query cms)
           :hashtag-mayvenn-hair (hashtag-mayvenn-hair-query ugc)
