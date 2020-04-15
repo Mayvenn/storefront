@@ -17,9 +17,13 @@
 
 (defn ^:private shopping-categories-label-atom
   [label]
-  (let [[first-word & rest-of-words] (split label #" ")]
-    [:div.absolute.white.proxima.title-2.bottom-0.shout.ml3.mb2-on-mb.mb4-on-tb-dt
-     first-word [:br] (join " " rest-of-words)]))
+  (let [[first-word & rest-of-words :as words]
+        (split label #" ")]
+    [:div.absolute.white.bottom-0.shout.ml3.mb2
+     [:div.hide-on-mb-tb.proxima.title-2
+      (join " " words)]
+     [:div.hide-on-dt.proxima.title-2
+      first-word [:br] (join " " rest-of-words)]]))
 
 (defn ^:private shopping-categories-alt-label-atom
   [[first-line last-line]]
@@ -56,7 +60,7 @@
 
 (c/defcomponent organism
   [data _ _]
-  [:div.my3.px2.pb4
+  [:div.p2.pb2.my5
    (shopping-categories-title-molecule data)
-   [:div.container
+   [:div.col-8-on-dt.container
     (boxes-list-molecule data)]])

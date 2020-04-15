@@ -8,7 +8,7 @@
     {:key id}
     [:div image]
     [:div.title-2.proxima.py1.shout title]
-    [:p.content-2.py1.col-10-on-tb-dt.mx-auto body]]))
+    [:p.content-2.py1.col-9-on-tb-dt.mx-auto body]]))
 
 (defn ^:private icons-list-molecule
   [{:list/keys [icons]} breakpoint]
@@ -25,10 +25,10 @@
 
 (c/defcomponent organism
   [{:as data :keys [icons]} _ _]
-  [:div.center.bg-cool-gray
+  [:div.center.bg-cool-gray.p6-on-dt
    [:div.col-12.flex.flex-column.items-center.py6
     guarantees-title-molecule
     [:div.col-8.flex.flex-column.items-center.hide-on-dt
      (icons-list-molecule data :mobile)]
-    [:div.col-7.flex.flex-wrap.justify-between.hide-on-mb-tb
+    [:div.col-10.flex.flex-wrap.justify-between.hide-on-mb-tb
      (icons-list-molecule data :desktop)]]])

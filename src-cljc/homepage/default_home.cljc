@@ -39,14 +39,15 @@
    (c/build mayvenn-install/organism mayvenn-install)
    (c/build wig-customization/organism wig-customization)
 
-   (A/divider-atom "2d3a98e3-b49a-4f0f-9340-828d12865315")
-
    ;; HACK:
    ;; This is to get desktop (1 3 2) and mobile (1 2 3) ordering
    ;; Orthogonally, 1 and 3 only show when services are on menu
-   [:div.flex-on-dt.flex-wrap.justify-center
-    (c/build quality-stylists/organism quality-stylists)
-    (c/build quality-hair/organism quality-hair)]
+   (when quality-stylists
+     [:div
+      (A/divider-atom "2d3a98e3-b49a-4f0f-9340-828d12865315")
+      [:div.flex-on-dt.flex-wrap.justify-center
+       (c/build quality-stylists/organism quality-stylists)
+       (c/build quality-hair/organism quality-hair)]])
 
    (A/divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
 

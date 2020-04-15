@@ -26,7 +26,7 @@
 (defn ^:private quality-stylists-cta-molecule
   [{:quality-stylists.cta/keys [target label id]}]
   [:div.pt3
-   (ui/button-small-underline-primary
+   (ui/button-medium-underline-primary
     (assoc (apply utils/route-to target)
            :data-test id
            :data-ref  id)
@@ -51,7 +51,7 @@
   (when (seq data)
     (list
      [:div.col-6-on-dt.col-9.mx-auto.my5.pt4
-      [:div.col-9-on-dt.mx-auto.flex.flex-column.center.left-align-on-dt
+      [:div.col-9-on-dt.mx-auto.flex.flex-column.center.left-align-on-dt.mt5.pt3
        (quality-stylists-title-molecule data)
        (quality-stylists-body-atom data)
        (quality-stylists-cta-molecule data)]]

@@ -14,7 +14,7 @@
 
 (defn ^:private more-looks-cta
   [{:hashtag-mayvenn-hair.cta/keys [target label id]}]
-  (ui/button-small-underline-primary
+  (ui/button-medium-underline-primary
    (assoc (apply utils/route-to target)
           :data-test  id
           :data-ref id)
