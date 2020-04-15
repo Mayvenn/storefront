@@ -102,9 +102,10 @@
    :mayvenn-install.image/ucare-id  "625b63a0-5724-4a57-ad79-c9e7a72a7f5b"
    :mayvenn-install.list/primary    "What's included?"
    :list/bullets                    ["Shampoo" "Braid down" "Sew-in and style"]
-   :mayvenn-install.cta/id          "browse-stylists"
-   :mayvenn-install.cta/value       "Browse Stylists"
-   :mayvenn-install.cta/target      [e/navigate-adventure-find-your-stylist]})
+   :mayvenn-install.cta/id          "shop-now"
+   :mayvenn-install.cta/value       "Shop Now"
+   :mayvenn-install.cta/target      [e/navigate-category {:page/slug           "human-hair-bundles"
+                                                          :catalog/category-id "27"}]})
 
 (def wig-customization-query
   {:wig-customization.title/primary   "Free Wig Customization"
@@ -129,7 +130,7 @@
   {:quality-hair.title/primary   "Hold your hair"
    :quality-hair.title/secondary "high"
    :quality-hair.body/primary    "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
-   :quality-hair.cta/id          "info-about-our-hair"
+   :quality-hair.cta/id          "shop-hair"
    :quality-hair.cta/label       "shop hair"
    :quality-hair.cta/target      [e/navigate-category {:page/slug           "human-hair-bundles"
                                                        :catalog/category-id "27"}]})
