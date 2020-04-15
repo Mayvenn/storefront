@@ -142,8 +142,8 @@
    :quality-stylists.cta/id          "info-certified-stylists"
    :quality-stylists.cta/label       "Learn more"
    :quality-stylists.cta/target      [e/navigate-info-certified-stylists]
-   :quality-stylists.image/ucare-ids {:desktop  "484cc089-8aa1-4199-af07-05d72271d3a3"
-                                      :mobile  "7a58ec9e-11b2-447c-8230-de70798decf8"}})
+   :quality-stylists.image/ucare-ids {:desktop "ac46cdbc-fe7f-469e-bcb8-1efe5e65ea97"
+                                      :mobile  "8f14c17b-ffef-4178-8915-640573a8bf3a"}})
 
 (defn hashtag-mayvenn-hair-query
   [ugc]
