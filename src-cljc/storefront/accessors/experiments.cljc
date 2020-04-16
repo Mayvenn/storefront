@@ -20,7 +20,6 @@
                   (= bucket-offset 2)    #{"kinky-straight-2-control"}))))
 
 (defn determine-features [data]
-  #_(bucketing-example data)
   data)
 
 (defn ^:private str->int [s radix]

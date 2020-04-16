@@ -1,7 +1,6 @@
 (ns storefront.components.homepage-hero
   (:require [storefront.routes :as routes]
-            [storefront.events :as events]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.events :as events]))
 
 (defn query
   [cms-hero-data]

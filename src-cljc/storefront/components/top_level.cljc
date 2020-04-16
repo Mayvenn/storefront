@@ -41,7 +41,7 @@
             [storefront.components.gallery :as gallery]
             [storefront.components.gallery-edit :as gallery-edit]
             [storefront.components.header :as header]
-            [storefront.components.home :as home]
+            homepage.default-home
             [ui.promo-banner :as promo-banner]
             [storefront.components.sign-in :as sign-in]
             [storefront.components.sign-up :as sign-up]
@@ -50,6 +50,10 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [checkout.shop.cart :as shop-cart]))
+
+;; HACK until the day there are no more built-components
+(defn ^:private first-arg-only [inner-fn]
+  (fn [& args] (inner-fn (first args))))
 
 (def nav-table
   {#?@(:cljs
@@ -85,7 +89,7 @@
         events/navigate-order-complete                             #(ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-order-complete)
         events/navigate-need-match-order-complete                  #(ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-need-match-order-complete)])
 
-   events/navigate-home                    (constantly home/built-component)
+   events/navigate-home                    (constantly (first-arg-only homepage.default-home/page))
    events/navigate-about-mayvenn-install   (constantly mayvenn-install.about/built-component)
    events/navigate-category                #(ui/lazy-load-component :catalog 'catalog.category/built-component events/navigate-category)
    events/navigate-product-details         #(ui/lazy-load-component :catalog 'catalog.product-details/built-component events/navigate-product-details)
@@ -126,35 +130,32 @@
    events/navigate-adventure-stylist-gallery               (constantly adventure.stylist-matching.stylist-gallery/built-component)})
 
 (defn main-component [nav-event]
-  (doto ((nav-table nav-event (constantly home/built-component)))
+  (doto ((get nav-table nav-event (constantly (first-arg-only homepage.default-home/page))))
     (assert (str "Expected main-component to return a component, but did not: " (pr-str nav-event)))))
 
 (defn main-layout
   [data nav-event]
   (component/html
-   (let [v2-home?         (and (experiments/v2-homepage? data)
-                               (#{events/navigate-home} nav-event))]
-     [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
-      [:div {:key "popup"}
-       #?(:cljs (popup/built-component data nil))]
+   [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
+    [:div {:key "popup"}
+     #?(:cljs (popup/built-component data nil))]
 
-      (when-not v2-home?
-        [:div {:key "promo"}
-         ^:inline (promo-banner/built-static-organism data nil)
-         ;; Covid-19: Always use static banner; bring the below back in afterwards
-         #_(if (= nav-event events/navigate-category)
-             (promo-banner/built-static-organism data nil)
-             (promo-banner/built-static-sticky-organism data nil))])
+    [:div {:key "promo"}
+     ^:inline (promo-banner/built-static-organism data nil)
+     ;; Covid-19: Always use static banner; bring the below back in afterwards
+     #_(if (= events/navigate-category nav-event)
+         (promo-banner/built-static-organism data nil)
+         (promo-banner/built-static-sticky-organism data nil))]
 
-      ^:inline (header/built-component data nil)
+    ^:inline (header/built-component data nil)
 
-      [:div.relative.flex.flex-column.flex-auto
-       ^:inline (flash/built-component data nil)
+    [:div.relative.flex.flex-column.flex-auto
+     ^:inline (flash/built-component data nil)
 
-       [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-        ((main-component nav-event) data nil)]
+     [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+      ((main-component nav-event) data nil)]
 
-       [:footer (footer/built-component data nil)]]])))
+     [:footer (footer/built-component data nil)]]]))
 
 (defn classic-site
   [data owner opts]
@@ -169,24 +170,12 @@
       :else
       (main-layout data nav-event))))
 
-(defn aladdin-site
-  [data owner opts]
-  (let [nav-event (get-in data keypaths/navigation-event)]
-    (cond
-      (get-in data keypaths/menu-expanded) ; Slideout nav
-      (slideout-nav/built-component data nil)
-
-      (routes/sub-page? [nav-event] [events/navigate-cart]) ; Cart pages
-      (shop-cart/page data nav-event)
-
-      :else
-      (main-layout data nav-event))))
-
 (defn shop-site
   [data owner opts]
   (component/html
    (let [nav-event (get-in data keypaths/navigation-event)]
-     (cond ; Design System
+     (cond
+       ;; Design System
        (routes/sub-page? [nav-event] [events/navigate-design-system])
        #?(:clj
           (design-system.home/built-top-level data nil)
@@ -196,13 +185,16 @@
                                    (get-in data keypaths/navigation-event))
            data nil))
 
-       (get-in data keypaths/menu-expanded) ; Slideout nav
+       ;; Slideout nav
+       (boolean (get-in data keypaths/menu-expanded))
        (slideout-nav/built-component data nil)
 
-       (routes/sub-page? [nav-event] [events/navigate-cart]) ; Cart pages
+       ;; Cart pages for Shop
+       (routes/sub-page? [nav-event] [events/navigate-cart])
        (shop-cart/page data nav-event)
 
        ;; TODO this should be moved into the UI domain of stylist-matching
+       ;; Reminder, these are guarded by routing for Aladdin
        (routes/sub-page? [nav-event] [events/navigate-adventure])
        [:div {:data-test (keypaths/->component-str nav-event)}
         [:div {:key "popup"}
@@ -217,12 +209,7 @@
 
 (defcomponent top-level-component
   [data owner opts]
-  (cond
-    (= "shop" (get-in data keypaths/store-slug))
+  (if (or (= "shop" (get-in data keypaths/store-slug))
+          (= "aladdin" (get-in data keypaths/store-experience)))
     (shop-site data owner opts)
-
-    (= "aladdin" (get-in data keypaths/store-experience))
-    (aladdin-site data owner opts)
-
-    :else
     (classic-site data owner opts)))

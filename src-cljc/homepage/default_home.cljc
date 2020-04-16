@@ -137,6 +137,7 @@
    :quality-hair.cta/target      [e/navigate-category {:page/slug           "human-hair-bundles"
                                                        :catalog/category-id "27"}]})
 
+;; HACK shop? is required because link on aladdin is missing
 (defn quality-stylists-query
   [shop?]
   (cond-> {:quality-stylists.title/primary   "Sit back and"
@@ -277,4 +278,5 @@
        (or shop? (offers? menu services))
        (merge {:faq              (faq-query expanded-index)
                :quality-hair     quality-hair-query
+               ;; HACK shop? is required because link on aladdin is missing
                :quality-stylists (quality-stylists-query shop?)})))))
