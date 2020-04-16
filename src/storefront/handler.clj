@@ -296,88 +296,46 @@
            {album-keyword :album-keyword
             product-id    :catalog/product-id}] (:nav-message req)
           update-data                           (partial copy-cms-to-data @(:cache contentful))]
-      (h (update-in-req-state req keypaths/cms merge
+      (h (update-in-req-state req keypaths/cms
+                              merge
                               (update-data {} [:advertisedPromo])
-                              (cond shop?
-                                    (cond (= events/navigate-mayvenn-made nav-event)
-                                          (-> {}
-                                              (update-data [:mayvennMadePage]))
+                              (cond (= events/navigate-mayvenn-made nav-event)
+                                    (-> {}
+                                        (update-data [:mayvennMadePage]))
 
-                                          (= events/navigate-home nav-event)
-                                          (-> {}
-                                              (update-data [:homepage])
-                                              (update-data [:ugc-collection :free-install-mayvenn])
-                                              contentful/derive-all-looks)
+                                    (= events/navigate-home nav-event)
+                                    (-> {}
+                                        (update-data [:homepage :unified])
+                                        (update-data [:ugc-collection :free-install-mayvenn])
+                                        contentful/derive-all-looks)
 
-                                          (contains? #{events/navigate-shop-by-look events/navigate-shop-by-look-details} nav-event)
-                                          (-> {}
-                                              (update-data [:ugc-collection (if (= :look album-keyword)
-                                                                              :aladdin-free-install
-                                                                              album-keyword)])
-                                              contentful/derive-all-looks)
+                                    (contains? #{events/navigate-shop-by-look events/navigate-shop-by-look-details} nav-event)
+                                    (-> {}
+                                        (update-data (let [override-keyword (when (and (or shop? aladdin?)
+                                                                                       (= :look album-keyword))
+                                                                              :aladdin-free-install)]
+                                                       [:ugc-collection (or override-keyword album-keyword)]))
+                                        contentful/derive-all-looks)
 
-                                          (= events/navigate-product-details nav-event)
-                                          (-> {}
-                                              (update-data [:ugc-collection (some->> (conj keypaths/v2-products product-id :legacy/named-search-slug)
-                                                                                     (get-in-req-state req)
-                                                                                     keyword)])
-                                              contentful/derive-all-looks)
+                                    (= events/navigate-product-details nav-event)
+                                    (-> {}
+                                        (update-data [:ugc-collection (some->> (conj keypaths/v2-products product-id :legacy/named-search-slug)
+                                                                               (get-in-req-state req)
+                                                                               keyword)])
+                                        contentful/derive-all-looks)
 
-                                          (routes/sub-page? [nav-event] [events/navigate-info])
-                                          (-> {}
-                                              (update-data [:ugc-collection :free-install-mayvenn])
-                                              contentful/derive-all-looks)
+                                    (routes/sub-page? [nav-event] [events/navigate-info])
+                                    (-> {}
+                                        (update-data [:ugc-collection :free-install-mayvenn])
+                                        contentful/derive-all-looks)
 
-                                          :else nil)
+                                    (= events/navigate-about-mayvenn-install nav-event)
+                                    (-> {}
+                                        (update-data [:homepage :shop])
+                                        (update-data [:ugc-collection :free-install-mayvenn])
+                                        contentful/derive-all-looks)
 
-                                    aladdin?
-                                    (cond (= events/navigate-mayvenn-made nav-event)
-                                          (-> {}
-                                              (update-data [:mayvennMadePage]))
-
-                                          (= events/navigate-home nav-event)
-                                          (-> {}
-                                              (update-data [:homepage])
-                                              (update-data [:ugc-collection :sleek-and-straight])
-                                              (update-data [:ugc-collection :waves-and-curly])
-                                              (update-data [:ugc-collection :free-install-mayvenn])
-                                              contentful/derive-all-looks)
-
-                                          (contains? #{events/navigate-shop-by-look events/navigate-shop-by-look-details} nav-event)
-                                          (-> {}
-                                              (update-data [:ugc-collection (if (= :look album-keyword)
-                                                                              :aladdin-free-install
-                                                                              album-keyword)])
-                                              contentful/derive-all-looks)
-
-                                          (= events/navigate-product-details nav-event)
-                                          (-> {}
-                                              (update-data [:ugc-collection (some->> (conj keypaths/v2-products product-id :legacy/named-search-slug)
-                                                                                     (get-in-req-state req)
-                                                                                     keyword)])
-                                              contentful/derive-all-looks)
-                                          :else nil)
-
-                                    :else
-                                    (cond (= events/navigate-mayvenn-made nav-event)
-                                          (-> {}
-                                              (update-data [:mayvennMadePage]))
-
-                                          (= events/navigate-home nav-event)
-                                          (-> {}
-                                              (update-data [:ugc-collection :free-install-mayvenn])
-                                              (update-data [:homepage]))
-
-                                          (contains? #{events/navigate-shop-by-look events/navigate-shop-by-look-details} nav-event)
-                                          (-> {}
-                                              (update-data [:ugc-collection album-keyword]))
-
-                                          (= events/navigate-product-details nav-event)
-                                          (-> {}
-                                              (update-data [:ugc-collection (some->> (conj keypaths/v2-products product-id :legacy/named-search-slug)
-                                                                                     (get-in-req-state req)
-                                                                                     keyword)]))
-                                          :else nil)))))))
+                                    :else nil))))))
 
 (defn wrap-set-welcome-url [h welcome-config]
   (fn [req]
