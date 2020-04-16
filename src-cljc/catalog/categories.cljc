@@ -249,12 +249,8 @@
                                       "straight, our collection of 100% virgin straight hair"
                                       "is your go-to for a sleek look with"
                                       "minimal effort.")
-           :images              {:home {:filename "StraightExtensionsMayvenn.jpg",
-                                        :url      "//ucarecdn.com/f4addde0-3c0e-40f8-85b0-fe2e2e96a7b5/",
-                                        :alt      "Straight Hair Extensions Mayvenn"}}
            :icon                "/images/categories/straight-icon.svg"
            :subcategory/title   "Straight"
-           :home/order          0
            :header/title        "Virgin Straight"}
           (category->seo "Natural Straight Extensions"
                          (copy "Straight Brazilian weave, straight Indian hair and straight Peruvian hair."
@@ -281,12 +277,8 @@
                                       "your natural hair that's been pressed straight or"
                                       "freshly relaxed. Your flat iron has been officially"
                                       "cancelled.")
-           :images              {:home {:filename "YakiStraightExtensionsMayvenn.jpg",
-                                        :url      "//ucarecdn.com/d4b4aa87-fd32-4ff3-b60a-fd1118beab05/",
-                                        :alt      "Yaki Straight Hair Extensions Mayvenn"}}
            :icon                "/images/categories/yaki-straight-icon.svg"
            :subcategory/title   "Yaki Straight"
-           :home/order          4
            :header/title        "Virgin Yaki Straight"}
           (category->seo "Yaki Straight Extensions"
                          (copy "Our Yaki Straight hair collection features both Peruvian and Brazilian straight hair bundles."
@@ -332,12 +324,8 @@
            :selector/electives       [:hair/family :hair/origin :hair/color :hair/base-material]
            :copy/description         (copy "Step into the spotlight with our collection of luscious Body Wave hair."
                                            "Body Wave is unbelievably soft and goes from straight to wavy and back again with ease.")
-           :images                   {:home {:filename "BodyWaveExtensionsMayvenn.jpg",
-                                             :url      "//ucarecdn.com/cbf5424f-3bab-4c6b-9fd1-328e9d94e564/",
-                                             :alt      "Body Wave Hair Extensions Mayvenn"}}
            :icon                     "/images/categories/body-wave-icon.svg"
            :subcategory/title        "Body Wave"
-           :home/order               1
            :header/title             "Virgin Body Wave"}
           (category->seo "Body Wave Extensions"
                          (copy "Malaysian and Peruvian body wave silk, lace and 360 frontal bundles."
@@ -360,12 +348,8 @@
                                            "our collection of 100% virgin Loose Wave hair"
                                            "is the perfect foundation for all your carefree,"
                                            "flirty, wavy looks.")
-           :images                   {:home {:filename "LooseWaveExtensionsMayvenn.jpg",
-                                             :url      "//ucarecdn.com/c935b035-3b7d-4262-a750-a5fa3b559721/",
-                                             :alt      "Loose Wave Hair Extensions Mayvenn"}}
            :icon                     "/images/categories/loose-wave-icon.svg"
            :subcategory/title        "Loose Wave"
-           :home/order               2
            :header/title             "Virgin Loose Wave"}
           (category->seo "Loose Wave Extensions"
                          (copy "Mayvenn’s Brazilian, Peruvian and Indian loose wave bundles."
@@ -413,12 +397,8 @@
            :copy/description         (copy "Reigning supreme in versatility, the Deep Wave hair collection features"
                                            "a soft, spiral wave full of body and bounce. Our deep wave hair is perfect"
                                            "for those who want big waves that make an even bigger splash.")
-           :images                   {:home {:filename "DeepWaveExtensionsMayvenn.jpg",
-                                             :url      "//ucarecdn.com/2574ca60-0336-4c42-9087-159740bafdd2/",
-                                             :alt      "Deep Wave Hair Extensions Mayvenn"}}
            :icon                     "/images/categories/deep-wave-icon.svg"
            :subcategory/title        "Deep Wave"
-           :home/order               3
            :header/title             "Virgin Deep Wave"}
           (category->seo "Deep Wave Extensions"
                          (copy "Deep Wave bundles and closures, including Brazilian, Peruvian and Indian Deep Wave."
