@@ -108,10 +108,6 @@
   [data]
   (display-feature? data "hide-stylist-specialty"))
 
-(defn unified-homepage?
-  [data]
-  true)
-
 (defn show-quadpay?
   [data]
   (boolean (or (get-in data keypaths/order-cart-payments-quadpay)

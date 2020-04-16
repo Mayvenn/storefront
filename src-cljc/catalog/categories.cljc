@@ -127,8 +127,8 @@
            :header/title                  "Virgin Hair Closures"
            :flyout-menu/title             "Closures"
            :flyout-menu/order             1
-           :unified.home/order            2
-           :unified.home/image-id         "27e942b0-136c-4f7d-8b7b-ca98869fa272"
+           :homepage.v2020-04/order       2
+           :homepage.v2020-04/image-id    "27e942b0-136c-4f7d-8b7b-ca98869fa272"
            :footer/order                  1
            :footer/title                  "Closures"
            :copy/description              (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
@@ -178,15 +178,13 @@
                                            "the ultimate tool in protective weave styling. Our collection of"
                                            "frontals blend seamlessly with our bundles and can be customized to"
                                            "fit your unique look.")
-
-           :catalog/department #{"hair"}
-           :hair/family        #{"frontals" "360-frontals"}
-           :hair/color.process #{"natural" "dyed"}
-           :flyout-menu/title  "Frontals"
-           :flyout-menu/order  2
-
-           :unified.home/order            3
-           :unified.home/image-id         "b6dc646c-039f-48a8-b932-bd03350a3beb"
+           :catalog/department            #{"hair"}
+           :hair/family                   #{"frontals" "360-frontals"}
+           :hair/color.process            #{"natural" "dyed"}
+           :flyout-menu/title             "Frontals"
+           :flyout-menu/order             2
+           :homepage.v2020-04/order       3
+           :homepage.v2020-04/image-id    "b6dc646c-039f-48a8-b932-bd03350a3beb"
            :footer/order                  2
            :footer/title                  "Frontals"
            :hair/source                   #{"virgin"}
@@ -208,7 +206,7 @@
    (merge {:catalog/category-id      "29"
            :copy/title               "Virgin Lace Frontals"
            :page/slug                "virgin-lace-frontals"
-           :seo/title                "Virgin Hair Frontals"     ; TODO what should this be?
+           :seo/title                "Virgin Hair Frontals"
            :legacy/named-search-slug "frontals"
            :catalog/department       #{"hair"}
            :hair/family              #{"frontals"}
@@ -453,8 +451,8 @@
 
 (def wigs
   [(merge {:catalog/category-id   "13"
-           :unified.home/order    0
-           :unified.home/image-id "5457be03-d25b-41d6-a5e3-ef28b4fda2f5"
+           :homepage.v2020-04/order    0
+           :homepage.v2020-04/image-id "5457be03-d25b-41d6-a5e3-ef28b4fda2f5"
            :footer/order          3
            :footer/title          "Wigs"
            :flyout-menu/order     3
@@ -621,8 +619,8 @@
            :category/new?                 false
            :flyout-menu/title             "Hair Bundles"
            :flyout-menu/order             0
-           :unified.home/order            1
-           :unified.home/image-id         "2013a836-9fc8-4530-8696-884400fad880"
+           :homepage.v2020-04/order       1
+           :homepage.v2020-04/image-id    "2013a836-9fc8-4530-8696-884400fad880"
            :footer/order                  0
            :footer/title                  "Hair Bundles"
            :category/description          (copy "Have a hairstyle in mind and want more volume, length, and texture? Add our 100% Virgin hair bundles."
@@ -805,10 +803,11 @@
      :flyout-menu/title "Hair Extensions"
      :flyout-menu/order 4
 
-     :unified.home/order    4
-     :unified.home/image-id "978c91a9-9931-40f3-abec-ca7ccefa8240"
-     :footer/order          4
-     :footer/title          "Hair Extensions"
+     :homepage.v2020-04/order    4
+     :homepage.v2020-04/image-id "978c91a9-9931-40f3-abec-ca7ccefa8240"
+
+     :footer/order 4
+     :footer/title "Hair Extensions"
 
      :copy/title         "Hair Extensions"
      :product-list/title "Shop All Hair Extensions"
@@ -860,8 +859,8 @@
      ;; :flyout-menu/title "Salon Services"
      ;; :flyout-menu/order 6
 
-     ;; :unified.home/order    5
-     ;; :unified.home/image-id "978c91a9-9931-40f3-abec-ca7ccefa8240"
+     ;; :homepage.v2020-04/order    5
+     ;; :homepage.v2020-04/image-id "978c91a9-9931-40f3-abec-ca7ccefa8240"
      ;; :footer/order          5
      ;; :footer/title          "Salon Services"
 

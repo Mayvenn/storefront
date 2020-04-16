@@ -82,11 +82,13 @@
   {:shopping-categories.title/primary "Shop Hair"
    :list/boxes
    (conj
-    ;; TODO rename category keys for consistency
-    (->> categories (filter :unified.home/order) (sort-by :unified.home/order)
+    (->> categories
+         (filter ::order)
+         (sort-by ::order)
          (mapv
           (fn category->box
-            [{:keys [page/slug copy/title catalog/category-id unified.home/image-id]}]
+            [{:keys [page/slug copy/title catalog/category-id]
+              ::keys [image-id]}]
             {:shopping-categories.box/id       slug
              :shopping-categories.box/target   [e/navigate-category
                                                 {:page/slug           slug
