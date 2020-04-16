@@ -41,7 +41,7 @@
             [storefront.components.gallery :as gallery]
             [storefront.components.gallery-edit :as gallery-edit]
             [storefront.components.header :as header]
-            homepage.default-home
+            homepage.core
             [ui.promo-banner :as promo-banner]
             [storefront.components.sign-in :as sign-in]
             [storefront.components.sign-up :as sign-up]
@@ -89,7 +89,7 @@
         events/navigate-order-complete                             #(ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-order-complete)
         events/navigate-need-match-order-complete                  #(ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-need-match-order-complete)])
 
-   events/navigate-home                    (constantly (first-arg-only homepage.default-home/page))
+   events/navigate-home                    (constantly (first-arg-only homepage.core/page))
    events/navigate-about-mayvenn-install   (constantly mayvenn-install.about/built-component)
    events/navigate-category                #(ui/lazy-load-component :catalog 'catalog.category/built-component events/navigate-category)
    events/navigate-product-details         #(ui/lazy-load-component :catalog 'catalog.product-details/built-component events/navigate-product-details)
@@ -130,7 +130,7 @@
    events/navigate-adventure-stylist-gallery               (constantly adventure.stylist-matching.stylist-gallery/built-component)})
 
 (defn main-component [nav-event]
-  (doto ((get nav-table nav-event (constantly (first-arg-only homepage.default-home/page))))
+  (doto ((get nav-table nav-event (constantly (first-arg-only homepage.core/page))))
     (assert (str "Expected main-component to return a component, but did not: " (pr-str nav-event)))))
 
 (defn main-layout

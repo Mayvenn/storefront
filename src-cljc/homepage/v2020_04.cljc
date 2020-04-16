@@ -1,4 +1,4 @@
-(ns homepage.default-home
+(ns homepage.v2020-04
   (:require [clojure.string :refer [join]]
             [homepage.ui.atoms :as A]
             [homepage.ui.contact-us :as contact-us]
@@ -247,11 +247,14 @@
 
 (defn ^:private offers?
   [menu services]
-  (->> ((apply juxt services) menu) (some identity) boolean))
+  (->> ((apply juxt services) menu) ; i.e. select-vals
+       (some identity)
+       boolean))
 
 ;;;;
 
 (defn page
+  "Binds app-state to template"
   [app-state]
   (let [cms            (get-in app-state k/cms)
         categories     (get-in app-state k/categories)
