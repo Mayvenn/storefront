@@ -345,8 +345,7 @@
                                       :cart-item-remove-action/id                     (str "line-item-remove-" sku-id)
                                       :cart-item-remove-action/spinning?              removing?
                                       :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]})
-        matched?                   (boolean stylist)
-        addon-services-experiment? (experiments/addon-services? app-state)]
+        matched?                   (boolean stylist)]
 
     (cond-> cart-items
       entered?
@@ -407,8 +406,7 @@
                     :cart-item-copy/value    "You’re all set! Shampoo, braiding and basic styling included."
                     :cart-item-copy/id       "congratulations"}))
 
-          (and matched?
-               addon-services-experiment?)
+          matched?
           (merge {:cart-item-modify-button/id              "browse-addons"
                   :cart-item-modify-button/target          [events/control-show-addon-service-menu]
                   :cart-item-modify-button/tracking-target [events/browse-addon-service-menu-button-enabled]
@@ -416,7 +414,6 @@
                   :cart-item-modify-button/content         "+ Browse Add-Ons"})
 
           (and matched?
-               addon-services-experiment?
                (seq addon-services))
           (merge {:cart-item-sub-items/id      "addon-services"
                   :cart-item-sub-items/title   "Add-On Services"

@@ -94,16 +94,6 @@
   [data]
   (display-feature? data "show-priority-shipping-method"))
 
-(defn addon-services?
-  "If your order has addon services you should be a part of this feature"
-  [data]
-  (or
-   (display-feature? data "add-on-services")
-   (->> (get-in data keypaths/order)
-        orders/service-line-items
-        (filter line-items/addon-service?)
-        seq)))
-
 (defn hide-stylist-specialty?
   [data]
   (display-feature? data "hide-stylist-specialty"))
