@@ -687,9 +687,8 @@
    events/navigate-checkout-processing       generic-server-render
    events/navigate-mayvenn-made              generic-server-render})
 
-(defn robots [{:keys [subdomains]}]
+(defn robots [_]
   (string/join "\n" user-specific-disalloweds))
-
 
 (defn canonical-category-sitemap
   "As per SEO needs, we're only listing the following categories:
@@ -716,7 +715,7 @@
                                                                                                  category-products)))]
          [facet-id facet-values] facet->values
          facet-value             facet-values
-         :let                    [query-params (category/category-selections->query-params {facet-id [facet-value]})
+         :let                    [query-params (accessors.categories/category-selections->query-params {facet-id [facet-value]})
                                   canonical-category-id (accessors.categories/canonical-category-id
                                                          category-id
                                                          categories
@@ -727,7 +726,6 @@
                                                         :page/slug           slug
                                                         :query-params        query-params}))
       "0.80"])))
-
 
 (defn sitemap-pages [{:keys [storeback-config sitemap-cache]} {:keys [subdomains] :as req}]
   (if (seq subdomains)

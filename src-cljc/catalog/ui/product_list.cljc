@@ -1,24 +1,27 @@
 (ns catalog.ui.product-list
   (:require
-   #?@(:cljs [[goog.dom]
-              [goog.events]
+   #?@(:cljs [goog.events
               [goog.events.EventType :as EventType]
+              [storefront.effects :as effects]
+              [storefront.history :as history]
+              [storefront.accessors.categories :as accessors.categories]
               [goog.object :as object]])
+   [catalog.categories :as categories]
    [catalog.keypaths]
    [catalog.skuers :as skuers]
    [catalog.ui.product-card :as product-card]
-   [clojure.set :as set]
    [clojure.string :as string]
+   [spice.maps :as maps]
+   [spice.selector :as selector]
    [storefront.component :as component :refer [defcomponent defdynamic-component]]
    [storefront.components.ui :as ui]
    [storefront.events :as events]
-   [storefront.platform.component-utils :as utils]
-   [storefront.request-keys :as request-keys]
-   [catalog.categories :as categories]
-   [spice.selector :as selector]
    [storefront.keypaths :as keypaths]
+   [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
-   [spice.maps :as maps]))
+   [storefront.request-keys :as request-keys]
+   [storefront.transitions :as transitions]
+   clojure.set))
 
 (defn subsections-query
   [facets
@@ -236,8 +239,48 @@
                                                                             (concat (:selector/essentials category)
                                                                                     (:selector/electives category)))
                                                                (maps/map-values set))))
-                                                   (reduce (partial merge-with set/union) {}))
+                                                   (reduce (partial merge-with clojure.set/union) {}))
                          :selections-count    (->> (apply dissoc selections (:selector/essentials category))
                                                    (map (comp count val))
                                                    (apply +))
                          :facets              facets}}))
+
+(defmethod transitions/transition-state events/control-category-panel-open
+  [_ _ {:keys [selected]} app-state]
+  (-> app-state
+      (assoc-in keypaths/hide-header? selected)
+      (assoc-in catalog.keypaths/category-panel selected)))
+
+(defmethod transitions/transition-state events/control-category-panel-close
+  [_ _ _ app-state]
+  (-> app-state
+      (assoc-in keypaths/hide-header? nil)
+      (assoc-in catalog.keypaths/category-panel nil)))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/control-category-option
+     [_ _ _ _ app-state]
+     (let [{:keys [catalog/category-id page/slug]} (accessors.categories/current-category app-state)]
+       (->> (get-in app-state catalog.keypaths/category-selections)
+            accessors.categories/category-selections->query-params
+            (assoc {:catalog/category-id category-id
+                    :page/slug           slug}
+                   :query-params)
+            (history/enqueue-redirect events/navigate-category)))))
+
+(defmethod transitions/transition-state events/control-category-option-select
+  [_ _ {:keys [facet option]} app-state]
+  (update-in app-state (conj catalog.keypaths/category-selections facet) clojure.set/union #{option}))
+
+(defmethod transitions/transition-state events/control-category-option-unselect
+  [_ _ {:keys [facet option]} app-state]
+  (let [facet-path       (conj catalog.keypaths/category-selections facet)
+        facet-selections (clojure.set/difference (get-in app-state facet-path)
+                                                 #{option})]
+    (if (empty? facet-selections)
+      (update-in app-state catalog.keypaths/category-selections dissoc facet)
+      (assoc-in app-state facet-path facet-selections))))
+
+(defmethod transitions/transition-state events/control-category-option-clear
+  [_ _ _ app-state]
+  (assoc-in app-state catalog.keypaths/category-selections {}))

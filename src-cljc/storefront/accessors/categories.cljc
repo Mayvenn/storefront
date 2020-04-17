@@ -5,6 +5,7 @@
             [cemerick.url :as cemerick-url]
             [clojure.walk :refer [keywordize-keys]]
             [clojure.string :as string]
+            clojure.set
             [spice.maps :as maps]
             [spice.selector :as selector]
             [storefront.keypaths :as keypaths]))
@@ -22,6 +23,31 @@
    :length        :hair/length
    :color.process :hair/color.process
    :style         :wig/trait})
+
+(defn sort-query-params
+  [params]
+  (let [ordering {"origin"        0
+                  "style"         1
+                  "texture"       2
+                  "color"         3
+                  "base-material" 4
+                  "weight"        5
+                  "family"        6}]
+    (into (sorted-map-by
+           (fn [key1 key2]
+             (compare (get ordering key1 100)
+                      (get ordering key2 100))))
+          params)))
+
+(def ^:private facet-slugs->query-params
+  (clojure.set/map-invert query-params->facet-slugs))
+
+(defn category-selections->query-params
+  [category-selections]
+  (->> category-selections
+       (maps/map-values (fn [s] (string/join query-param-separator s)))
+       (maps/map-keys (comp (fnil name "") facet-slugs->query-params))
+       sort-query-params))
 
 (defn query-params->selector-electives [query-params]
   (->> (maps/select-rename-keys query-params query-params->facet-slugs)
@@ -52,7 +78,7 @@
   "With ICPs, the 'canonical category id' may be different from the ICP category
   id. E.g. 13-wigs with a selected family of 'lace-front-wigs' will have a
   canonical cateogry id of 24, or in other words, lace-front-wigs' category id."
-  [category-id categories nav-url] 
+  [category-id categories nav-url]
   (let [current-category  (id->category category-id categories)
         query-selections  (:query nav-url)
         query-map         #?(:clj (cemerick-url/query->map query-selections)

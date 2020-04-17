@@ -1,21 +1,20 @@
 (ns storefront.seo-tags
-  (:require [storefront.assets :as assets]
+  (:require #?@(:clj [[cheshire.core :as json]
+                      [storefront.uri :as uri]
+                      [storefront.safe-hiccup :as safe-hiccup]])
+            [storefront.assets :as assets]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.categories :as accessors.categories]
             [cemerick.url :as cemerick-url]
             [catalog.keypaths :as k]
             [catalog.facets :as facets]
             [storefront.events :as events]
-            [catalog.category :as category]
             [catalog.categories :as categories]
             [catalog.products :as products]
             [spice.selector :as selector]
             [storefront.ugc :as ugc]
             [storefront.utils :as utils]
-            [storefront.uri :as uri]
             [clojure.string :as string]
-            #?@(:clj [[cheshire.core :as json]
-                      [storefront.safe-hiccup :as safe-hiccup]])
             [clojure.set :as set]
             [spice.maps :as maps]))
 
@@ -98,7 +97,7 @@
         selected-options      (cond-> uri-query
                                 (string? uri-query) cemerick-url/query->map
                                 :always             (select-keys allowed-query-params)
-                                :always             category/sort-query-params)
+                                :always             accessors.categories/sort-query-params)
         indexable?            (and
                                (not-any? #(string/includes? % accessors.categories/query-param-separator)
                                          (vals selected-options))
@@ -135,12 +134,12 @@
     #?(:clj (-> query ;; string in clj
                 cemerick-url/query->map
                 (select-keys allowed-query-params)
-                category/sort-query-params
+                accessors.categories/sort-query-params
                 uri/map->query
                 not-empty)
        :cljs (-> query ;; map in cljs
                  (select-keys allowed-query-params)
-                 category/sort-query-params
+                 accessors.categories/sort-query-params
                  not-empty))))
 
 ;; Figure out if this helps us determine if a category page is its own canonical for sitemap
