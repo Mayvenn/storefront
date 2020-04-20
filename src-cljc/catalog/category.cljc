@@ -57,7 +57,7 @@
 
 (defn ^:export built-component
   [app-state opts]
-  (let [{:icp/keys [icp?]} (accessors.categories/current-category app-state)]
+  (let [{:page/keys [icp?]} (accessors.categories/current-category app-state)]
     ((if icp? icp/page page) app-state opts)))
 
 (defmethod transitions/transition-state e/navigate-category
