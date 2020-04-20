@@ -6,6 +6,7 @@
    [catalog.icp :as icp]
    catalog.keypaths
    [catalog.skuers :as skuers]
+   [catalog.ui.how-it-works :as how-it-works]
    [catalog.ui.product-list :as product-list]
    [storefront.accessors.auth :as auth]
    [storefront.accessors.categories :as accessors.categories]
@@ -38,21 +39,45 @@
 
 (c/defcomponent ^:private template
   [{:keys [category-header
+           how-it-works
            product-list]} _ _]
   [:div
    (c/build category-header-organism category-header)
+
    [:div.max-960.mx-auto
-    (c/build product-list/organism product-list)]])
+    (c/build product-list/organism product-list)]
+   [:div.col-10.mx-auto
+    (c/build how-it-works/organism how-it-works)]])
+
+(defn how-it-works-query
+  [{:keys [catalog/category-id]}]
+  (when (= "30" category-id)
+    {:how-it-works.title/primary   "Your hair deserves a Mayvenn–Certified Stylist."
+     :how-it-works.title/secondary "Here’s how it works."
+     :how-it-works.step/elements
+     [{:how-it-works.step.title/primary   "01"
+       :how-it-works.step.title/secondary "Pick your service"
+       :how-it-works.step.body/primary    (str "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+                                               "Ut sollicitudin massa sit amet efficitur sagittis.")}
+      {:how-it-works.step.title/primary   "02"
+       :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
+       :how-it-works.step.body/primary    (str "We've hand-picked thousands of talented stylists around the country. "
+                                               "We'll cover the cost of your salon appointment or wig customization with any qualifying purchase.") }
+      {:how-it-works.step.title/primary  "03"
+       :how-it-works.step.title/secondary "Schedule your appointment"
+       :how-it-works.step.body/primary    (str " We’ll connect you with your stylist to set up your service. "
+                                               "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}))
 
 (defn page
   [app-state opts]
-  (let [category        (accessors.categories/current-category app-state)
+  (let [current        (accessors.categories/current-category app-state)
         loaded-products (vals (get-in app-state k/v2-products))
         selections      (get-in app-state catalog.keypaths/category-selections) ]
     (c/build template
-             {:category-header category
+             {:category-header current
+              :how-it-works    (how-it-works-query current)
               :product-list    (product-list/query app-state
-                                                   category loaded-products selections)}
+                                                   current loaded-products selections)}
              opts)))
 
 (defn ^:export built-component
