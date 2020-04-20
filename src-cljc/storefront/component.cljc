@@ -104,9 +104,9 @@
 (defn component-id
   "This helper creates a map with a react-key and makes that
    value also available to the component itself through opts"
-  [value]
-  {:opts {:id value}
-   :key value})
+  [& strs]
+  (let [id (apply str strs)]
+    {:opts {:id id} :key id}))
 
 (defn ^:private element? [v]
   (and (vector? v) (keyword? (first v))))
