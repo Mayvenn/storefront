@@ -133,13 +133,19 @@
                          :cta/label   "Browse Stylists"
                          :cta/target  [events/navigate-adventure-find-your-stylist]}
 
+           :rating/value              stylist-rating
+           :rating/rating-count       (when (> rating-count 0)
+                                        rating-count)
+           :rating/rating-content     (str "(" stylist-rating ")")
+           :rating/rating-star-counts (when (> rating-count 0)
+                                        (:rating-star-counts stylist))
+
            :google-map-data #?(:cljs (maps/map-query data)
                                :clj  nil)
            :cta/id          "select-stylist"
            :cta/target      main-cta-target
            :cta/label       (str "Select " stylist-name)
 
-           :rating/value                 stylist-rating
            :transposed-title/id          "stylist-name"
            :transposed-title/primary     stylist-name
            :transposed-title/secondary   (-> stylist :salon :name)
@@ -180,7 +186,7 @@
                                                                               nil)
                                                                             (when (:licensed stylist)
                                                                               "licensed")]))]
-                                                (when rating-count
+                                                (when (> rating-count 0)
                                                   [:div (str "Booked " (ui/pluralize-with-amount rating-count "time") " with Mayvenn")])]}
                      (when (:specialty-sew-in-leave-out service-menu)
                        {:section-details/title              "Specialties"
@@ -198,14 +204,6 @@
                                   ["Frontal Customization"     (:specialty-addon-frontal-customization service-menu)]
                                   ["360 Frontal Customization" (:specialty-addon-360-frontal-customization service-menu)]]]
                            [:div.col-6.col (apply checks-or-x s)])]})]}
-
-        (:mayvenn-rating-publishable stylist)
-        (merge  {:rating/value              stylist-rating
-                 :rating/rating-count       (when (> rating-count 0)
-                                              rating-count)
-                 :rating/rating-content     (str "(" stylist-rating ")")
-                 :rating/rating-star-counts (when (> rating-count 0)
-                                              (:rating-star-counts stylist))})
 
         (and (:mayvenn-rating-publishable stylist)
              (seq stylist-reviews))
