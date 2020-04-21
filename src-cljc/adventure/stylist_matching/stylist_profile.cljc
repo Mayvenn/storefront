@@ -25,7 +25,8 @@
             [stylist-directory.stylists :as stylists]
             [stylist-directory.keypaths]
             [spice.core :as spice]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn transposed-title-molecule
   [{:transposed-title/keys [id primary secondary]}]
@@ -35,17 +36,17 @@
 
 ;; fork of molecules/stars-rating-molecule
 (defn stars-rating-molecule
-  [{:rating/keys [value rating-count]}]
+  [{:rating/keys [value rating-content]}]
   (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value "13px")]
     [:div.flex
      whole-stars
      partial-star
      empty-stars
-     (when rating-count
+     (when rating-content
        (ui/button-small-underline-secondary
         (merge {:class "mx1 shout"}
                (utils/scroll-href "reviews"))
-        (str "(" rating-count ")")))]))
+        rating-content))]))
 
 (defn stylist-phone-molecule
   [{:phone-link/keys [target phone-number]}]
@@ -96,6 +97,7 @@
   (let [stylist-id                          (get-in data keypaths/stylist-profile-id)
         stylist                             (stylists/by-id data stylist-id)
         service-menu                        (:service-menu stylist)
+        stylist-rating                      (:rating stylist)
         stylist-name                        (stylists/->display-name stylist)
         {stylist-reviews :reviews
          :as             paginated-reviews} (get-in data stylist-directory.keypaths/paginated-reviews)
@@ -138,7 +140,7 @@
            :cta/target      main-cta-target
            :cta/label       (str "Select " stylist-name)
 
-           :rating/value                 (:rating stylist)
+           :rating/value                 stylist-rating
            :transposed-title/id          "stylist-name"
            :transposed-title/primary     stylist-name
            :transposed-title/secondary   (-> stylist :salon :name)
@@ -198,9 +200,13 @@
                            [:div.col-6.col (apply checks-or-x s)])]})]}
 
         (:mayvenn-rating-publishable stylist)
-        (merge  {:rating/value              (:rating stylist)
+        (merge  {:rating/value              stylist-rating
                  :rating/rating-count       (when (> rating-count 0)
                                               rating-count)
+                 :rating/rating-content     (if (experiments/show-stylist-ratings-and-bookings? data)
+                                              (str "(" stylist-rating ")")
+                                              (when (> rating-count 0)
+                                                (str "(" rating-count ")")))
                  :rating/rating-star-counts (when (> rating-count 0)
                                               (:rating-star-counts stylist))})
 
