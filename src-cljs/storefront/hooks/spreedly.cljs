@@ -30,8 +30,9 @@
                                                  :cvvEl    (str cvv-id)})))))
 
 (defn tokenize [spreedly-frame {:keys [first-name last-name exp-month exp-year zip]}]
-  (.tokenizeCreditCard spreedly-frame (clj->js {:first_name first-name
-                                                :last_name  last-name
-                                                :month      exp-month
-                                                :year       exp-year
-                                                :zip        zip})))
+  (when spreedly-frame
+    (.tokenizeCreditCard spreedly-frame (clj->js {:first_name first-name
+                                                  :last_name  last-name
+                                                  :month      exp-month
+                                                  :year       exp-year
+                                                  :zip        zip}))))
