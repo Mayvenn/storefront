@@ -319,7 +319,9 @@
      :stylist-card.title/id            "stylist-name"
      :stylist-card.title/primary       (stylists/->display-name stylist)
      :rating/value                     rating
-     :booking/count                    booking-count
+     :rating/count                    (if show-stylist-ratings-and-bookings?
+                                        rating-count
+                                        booking-count)
      :stylist-ratings/content          (cond
                                          show-stylist-ratings-and-bookings?
                                          rating

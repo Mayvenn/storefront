@@ -110,7 +110,7 @@
      content]))
 
 (defn stylist-card-bookings-count-molecule
-  [{:booking/keys [count] }]
+  [{:rating/keys [count] }]
   (when count
     [:div.content-3.col-12.flex.items-center.flex
      (svg/calendar {:class "mrp3 fill-p-color"
