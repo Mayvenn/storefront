@@ -181,7 +181,7 @@
                                                                               nil)
                                                                             (when (:licensed stylist)
                                                                               "licensed")]))]
-                                                (when (or booking-count (and (experiments/show-stylist-ratings-and-bookings data) rating-count))
+                                                (when (or booking-count (and (experiments/show-stylist-ratings-and-bookings? data) rating-count))
                                                   [:div (str "Booked " (ui/pluralize-with-amount (if (experiments/show-stylist-ratings-and-bookings data)
                                                                                                    rating-count
                                                                                                    booking-count) "time") " with Mayvenn")])]}
