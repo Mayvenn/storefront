@@ -825,16 +825,15 @@
 
 (def standalone-services
   [(merge
-    {:catalog/category-id "30"
-     :catalog/department  #{"service"}
-     :category/new?       true
-     :service/type        #{"addon"}
+    {:catalog/category-id                "30"
+     :catalog/department                 #{"service"}
+     :service/type                       #{"base"}
+     :promo.mayvenn-install/discountable #{false}
+     :selector/essentials                [:catalog/department :service/type :promo.mayvenn-install/discountable]
+     :selector/electives                 []
 
-     :page/icp? false
-
-     :hair/family         #{"bundles" "closures" "frontals" "360-frontals" "lace-front-wigs" "360-wigs"}
-     :selector/essentials [:catalog/department :service/type :service/category :service/preparation]
-     :selector/electives  []
+     :page/icp?     false
+     :category/new? true
 
      ;; :flyout-menu/title "Salon Services"
      ;; :flyout-menu/order 6
