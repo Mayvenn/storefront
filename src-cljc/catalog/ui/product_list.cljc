@@ -173,36 +173,45 @@
    [:div.flex.flex-wrap
     (map product-card/organism product-cards)]])
 
+(defcomponent tabs-organism
+  [{:keys [filter-tabs-data]} _ _]
+  [:div.px1.bg-white.sticky.z1
+   ;; The -5px prevents a sliver of the background from being visible above the filters
+   ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
+   {:style {:top "-5px"}}
+   (let [tabs                                                       (component/build filter-tabs filter-tabs-data nil)
+         {:keys [open-panel facets selections represented-options]} filter-tabs-data]
+     (if open-panel
+       [:div
+        [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
+         tabs (filter-panel facets represented-options selections open-panel)]
+        [:div.hide-on-mb-tb
+         tabs (filter-panel facets represented-options selections open-panel)]]
+       [:div
+        [:div.hide-on-dt tabs]
+        [:div.hide-on-mb-tb tabs]]))])
+
+(defcomponent subsections-organism
+  [{:keys [subsections all-product-cards loading-products?]} _ _]
+  (cond
+    loading-products?          [:div.col-12.my8.py4.center (ui/large-spinner {:style {:height "4em"}})]
+
+    (empty? all-product-cards) (component/build product-cards-empty-state {} {})
+
+    :else                      (mapv (fn build [{:as subsection :keys [subsection-key]}]
+                                       (component/build product-list-subsection-component
+                                                        subsection
+                                                        (component/component-id (str "subsection-" subsection-key))))
+                                     subsections)))
+
 (defcomponent organism
-  [{:keys [title subsections all-product-cards loading-products? filter-tabs-data]} _ _]
+  [data _ _]
   [:div.px2.py4
-   [:div.canela.title-1.center.mt3.py4 title]
-   [:div.px1.bg-white.sticky.z1
-    ;; The -5px prevents a sliver of the background from being visible above the filters
-    ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
-    {:style {:top "-5px"}}
-    (let [tabs                                                       (component/build filter-tabs filter-tabs-data nil)
-          {:keys [open-panel facets selections represented-options]} filter-tabs-data]
-      (if open-panel
-        [:div
-         [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
-          tabs (filter-panel facets represented-options selections open-panel)]
-         [:div.hide-on-mb-tb
-          tabs (filter-panel facets represented-options selections open-panel)]]
-        [:div
-         [:div.hide-on-dt tabs]
-         [:div.hide-on-mb-tb tabs]]))]
-
-   (cond
-     loading-products?          [:div.col-12.my8.py4.center (ui/large-spinner {:style {:height "4em"}})]
-
-     (empty? all-product-cards) (component/build product-cards-empty-state {} {})
-
-     :else                      (mapv (fn build [{:as subsection :keys [subsection-key]}]
-                                        (component/build product-list-subsection-component
-                                                         subsection
-                                                         (component/component-id (str "subsection-" subsection-key))))
-                                      subsections))])
+   [:div.canela.title-1.center.mt3.py4 (:title data)]
+   (component/build tabs-organism (select-keys data [:filter-tabs-data]) {})
+   (component/build subsections-organism
+                    (select-keys data [:subsections :all-product-cards :loading-products?])
+                    {})])
 
 (defn query
   [app-state category products selections]
