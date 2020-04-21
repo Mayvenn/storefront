@@ -102,3 +102,7 @@
   [data]
   (boolean (or (get-in data keypaths/order-cart-payments-quadpay)
                (display-feature? data "show-quadpay"))))
+
+(defn show-stylist-ratings-and-bookings?
+  [data]
+  (display-feature? data "show-stylist-ratings-and-bookings"))

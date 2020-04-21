@@ -103,11 +103,11 @@
                                            72))
        [:div {:style {:height "72px" :width "72px"}}]))))
 
-(defn stylist-ratings-count-molecule
-  [{:ratings/keys [rating-count]}]
-  (when rating-count
+(defn stylist-ratings-molecule
+  [{:stylist-ratings/keys [content]}]
+  (when content
     [:div.flex.items-center.content-3.ml1
-     "(" rating-count ")"]))
+     content]))
 
 (defn stylist-card-bookings-count-molecule
   [{:booking/keys [count] }]
@@ -130,7 +130,7 @@
       (stylist-card-title-molecule data)
       [:div.flex.items-center
        (molecules/stars-rating-molecule data)
-       (stylist-ratings-count-molecule data)]
+       (stylist-ratings-molecule data)]
       (stylist-card-salon-name-molecule data)
       (stylist-card-address-marker-molecule data)
       (stylist-card-bookings-count-molecule data)

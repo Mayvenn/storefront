@@ -280,7 +280,7 @@
             :header.cart/color "white"})))
 
 (defn stylist-card-query
-  [post-purchase? hide-stylist-specialty? idx stylist]
+  [post-purchase? hide-stylist-specialty? show-stylist-ratings-and-bookings? idx stylist]
   (let [{:keys [rating-star-counts
                 salon
                 service-menu
@@ -305,76 +305,77 @@
         cta-event                             (if post-purchase?
                                                 events/control-adventure-select-stylist-post-purchase
                                                 events/control-adventure-select-stylist-pre-purchase)]
-    (cond->
-        {:react/key                           (str "stylist-card-" store-slug)
-         :stylist-card.header/hide-stylist-specialty? hide-stylist-specialty?
-         :stylist-card.header/target          (if post-purchase?
-                                                [events/navigate-adventure-stylist-profile-post-purchase {:stylist-id stylist-id
-                                                                                                          :store-slug store-slug}]
-                                                [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
-                                                                                            :store-slug store-slug}])
-         :stylist-card.header/id              (str "stylist-card-header-" store-slug)
-         :stylist-card.thumbnail/id           (str "stylist-card-thumbnail-" store-slug)
-         :stylist-card.thumbnail/ucare-id     (-> stylist :portrait :resizable-url)
+    {:react/key                           (str "stylist-card-" store-slug)
+     :stylist-card.header/hide-stylist-specialty? hide-stylist-specialty?
+     :stylist-card.header/target          (if post-purchase?
+                                            [events/navigate-adventure-stylist-profile-post-purchase {:stylist-id stylist-id
+                                                                                                      :store-slug store-slug}]
+                                            [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
+                                                                                        :store-slug store-slug}])
+     :stylist-card.header/id              (str "stylist-card-header-" store-slug)
+     :stylist-card.thumbnail/id           (str "stylist-card-thumbnail-" store-slug)
+     :stylist-card.thumbnail/ucare-id     (-> stylist :portrait :resizable-url)
 
-         :stylist-card.title/id            "stylist-name"
-         :stylist-card.title/primary       (stylists/->display-name stylist)
-         :rating/value                     rating
-         :booking/count                    booking-count
-         :stylist-card.services-list/id    (str "stylist-card-services-" store-slug)
-         :stylist-card.services-list/items [{:id         (str "stylist-service-leave-out-" store-slug)
-                                             :label      "Leave Out"
-                                             :value      (boolean specialty-sew-in-leave-out)
-                                             :preference :leave-out}
-                                            {:id         (str "stylist-service-closure-" store-slug)
-                                             :label      "Closure"
-                                             :value      (boolean specialty-sew-in-closure)
-                                             :preference :closure}
-                                            {:id         (str "stylist-service-frontal-" store-slug)
-                                             :label      "Frontal"
-                                             :value      (boolean specialty-sew-in-frontal)
-                                             :preference :frontal}
-                                            {:id         (str "stylist-service-360-" store-slug)
-                                             :label      "360° Frontal"
-                                             :value      (boolean specialty-sew-in-360-frontal)
-                                             :preference :360-frontal}
-                                            {:id         (str "stylist-service-wig-customization-" store-slug)
-                                             :label      "Wig Customization"
-                                             :value      (boolean specialty-wig-customization)
-                                             :preference :wig-customization}]
-         :stylist-card.cta/id              (str "select-stylist-" store-slug)
-         :stylist-card.cta/label           (str "Select " store-nickname)
-         :stylist-card.cta/target          [cta-event
-                                            {:servicing-stylist stylist
-                                             :card-index        idx}]
+     :stylist-card.title/id            "stylist-name"
+     :stylist-card.title/primary       (stylists/->display-name stylist)
+     :rating/value                     rating
+     :booking/count                    booking-count
+     :stylist-ratings/content          (cond
+                                         show-stylist-ratings-and-bookings?
+                                         rating
+                                         (and (:mayvenn-rating-publishable stylist)
+                                              (> rating-count 0))
+                                         (str "(" rating-count ")"))
+     :stylist-card.services-list/id    (str "stylist-card-services-" store-slug)
+     :stylist-card.services-list/items [{:id         (str "stylist-service-leave-out-" store-slug)
+                                         :label      "Leave Out"
+                                         :value      (boolean specialty-sew-in-leave-out)
+                                         :preference :leave-out}
+                                        {:id         (str "stylist-service-closure-" store-slug)
+                                         :label      "Closure"
+                                         :value      (boolean specialty-sew-in-closure)
+                                         :preference :closure}
+                                        {:id         (str "stylist-service-frontal-" store-slug)
+                                         :label      "Frontal"
+                                         :value      (boolean specialty-sew-in-frontal)
+                                         :preference :frontal}
+                                        {:id         (str "stylist-service-360-" store-slug)
+                                         :label      "360° Frontal"
+                                         :value      (boolean specialty-sew-in-360-frontal)
+                                         :preference :360-frontal}
+                                        {:id         (str "stylist-service-wig-customization-" store-slug)
+                                         :label      "Wig Customization"
+                                         :value      (boolean specialty-wig-customization)
+                                         :preference :wig-customization}]
+     :stylist-card.cta/id              (str "select-stylist-" store-slug)
+     :stylist-card.cta/label           (str "Select " store-nickname)
+     :stylist-card.cta/target          [cta-event
+                                        {:servicing-stylist stylist
+                                         :card-index        idx}]
 
-         :stylist-card.gallery/id           (str "stylist-card-gallery-" store-slug)
-         :element/type                      :stylist-card
-         :stylist-card.gallery/items        (let [ucare-img-urls (map :resizable-url gallery-images)]
-                                              (map-indexed
-                                               (fn [j ucare-img-url]
-                                                 {:stylist-card.gallery-item/id       (str "gallery-img-" stylist-id "-" j)
-                                                  :stylist-card.gallery-item/target   [events/navigate-adventure-stylist-gallery
-                                                                                       {:store-slug   store-slug
-                                                                                        :stylist-id   stylist-id
-                                                                                        :query-params {:offset j}}]
-                                                  :stylist-card.gallery-item/ucare-id ucare-img-url})
-                                               ucare-img-urls))
-         :stylist-card.salon-name/id        salon-name
-         :stylist-card.salon-name/value     salon-name
-         :stylist-card.address-marker/id    (str "stylist-card-address-" store-slug)
-         :stylist-card.address-marker/value (string/join " "
-                                                         [(string/join ", "
-                                                                       (remove string/blank? [address-1 address-2 city state]))
-                                                          zipcode])}
-
-      (and (:mayvenn-rating-publishable stylist)
-           (> rating-count 0))
-      (merge {:ratings/rating-count rating-count}))))
+     :stylist-card.gallery/id           (str "stylist-card-gallery-" store-slug)
+     :element/type                      :stylist-card
+     :stylist-card.gallery/items        (let [ucare-img-urls (map :resizable-url gallery-images)]
+                                          (map-indexed
+                                           (fn [j ucare-img-url]
+                                             {:stylist-card.gallery-item/id       (str "gallery-img-" stylist-id "-" j)
+                                              :stylist-card.gallery-item/target   [events/navigate-adventure-stylist-gallery
+                                                                                   {:store-slug   store-slug
+                                                                                    :stylist-id   stylist-id
+                                                                                    :query-params {:offset j}}]
+                                              :stylist-card.gallery-item/ucare-id ucare-img-url})
+                                           ucare-img-urls))
+     :stylist-card.salon-name/id        salon-name
+     :stylist-card.salon-name/value     salon-name
+     :stylist-card.address-marker/id    (str "stylist-card-address-" store-slug)
+     :stylist-card.address-marker/value (string/join " "
+                                                     [(string/join ", "
+                                                                   (remove string/blank? [address-1 address-2 city state]))
+                                                      zipcode])}))
 
 (defn stylist-cards-query
-  [post-purchase? hide-stylist-specialty? stylists]
-  (map-indexed (partial stylist-card-query post-purchase? hide-stylist-specialty?) stylists))
+  [post-purchase? hide-stylist-specialty? show-stylist-ratings-and-bookings? stylists]
+  (map-indexed (partial stylist-card-query post-purchase? hide-stylist-specialty? show-stylist-ratings-and-bookings?) stylists))
 
 (def call-out-query
   {:call-out-center/bg-class    "bg-cool-gray"
@@ -585,12 +586,15 @@
                                                 (if (seq preferences)
                                                   (->> stylist-search-results
                                                        (stylist-cards-query post-purchase?
-                                                                            (experiments/hide-stylist-specialty? app-state))
+                                                                            (experiments/hide-stylist-specialty? app-state)
+                                                                            (experiments/show-stylist-ratings-and-bookings? app-state))
                                                        ;; Add Breaker
                                                        (group-by matches-preferences?)
                                                        stylist-results-arranged
                                                        (mapcat identity))
                                                   (->> stylist-search-results
-                                                       (stylist-cards-query post-purchase? (experiments/hide-stylist-specialty? app-state))
+                                                       (stylist-cards-query post-purchase?
+                                                                            (experiments/hide-stylist-specialty? app-state)
+                                                                            (experiments/show-stylist-ratings-and-bookings? app-state))
                                                        (insert-at-pos 3 call-out-query))))
                       :shopping-method-choice (shopping-method-choice-query)})))
