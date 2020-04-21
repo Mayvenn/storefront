@@ -114,8 +114,7 @@
         environment     (case (get-in data storefront.keypaths/environment)
                           "production" "mayvenn"
                           "diva-acceptance")
-        rating-count    (reduce + (vals (:rating-star-counts stylist)))
-        booking-count   (:booking-count stylist)]
+        rating-count    (reduce + (vals (:rating-star-counts stylist)))]
     (when stylist
       (cond->
           {:header-data (cond-> {:header.title/id               "adventure-title"
@@ -181,10 +180,8 @@
                                                                               nil)
                                                                             (when (:licensed stylist)
                                                                               "licensed")]))]
-                                                (when (or booking-count (and (experiments/show-stylist-ratings-and-bookings? data) rating-count))
-                                                  [:div (str "Booked " (ui/pluralize-with-amount (if (experiments/show-stylist-ratings-and-bookings data)
-                                                                                                   rating-count
-                                                                                                   booking-count) "time") " with Mayvenn")])]}
+                                                (when rating-count
+                                                  [:div (str "Booked " (ui/pluralize-with-amount rating-count "time") " with Mayvenn")])]}
                      (when (:specialty-sew-in-leave-out service-menu)
                        {:section-details/title              "Specialties"
                         :section-details/content
@@ -206,10 +203,7 @@
         (merge  {:rating/value              stylist-rating
                  :rating/rating-count       (when (> rating-count 0)
                                               rating-count)
-                 :rating/rating-content     (if (experiments/show-stylist-ratings-and-bookings? data)
-                                              (str "(" stylist-rating ")")
-                                              (when (> rating-count 0)
-                                                (str "(" rating-count ")")))
+                 :rating/rating-content     (str "(" stylist-rating ")")
                  :rating/rating-star-counts (when (> rating-count 0)
                                               (:rating-star-counts stylist))})
 

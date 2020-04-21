@@ -280,7 +280,7 @@
             :header.cart/color "white"})))
 
 (defn stylist-card-query
-  [post-purchase? hide-stylist-specialty? show-stylist-ratings-and-bookings? idx stylist]
+  [post-purchase? hide-stylist-specialty? idx stylist]
   (let [{:keys [rating-star-counts
                 salon
                 service-menu
@@ -288,8 +288,7 @@
                 store-slug
                 store-nickname
                 stylist-id
-                rating
-                booking-count]}               stylist
+                rating]}               stylist
         rating-count                          (->> rating-star-counts vals (reduce +))
         {salon-name :name
          :keys      [address-1
@@ -319,15 +318,8 @@
      :stylist-card.title/id            "stylist-name"
      :stylist-card.title/primary       (stylists/->display-name stylist)
      :rating/value                     rating
-     :rating/count                    (if show-stylist-ratings-and-bookings?
-                                        rating-count
-                                        booking-count)
-     :stylist-ratings/content          (cond
-                                         show-stylist-ratings-and-bookings?
-                                         rating
-                                         (and (:mayvenn-rating-publishable stylist)
-                                              (> rating-count 0))
-                                         (str "(" rating-count ")"))
+     :rating/count                    rating-count
+     :stylist-ratings/content          rating
      :stylist-card.services-list/id    (str "stylist-card-services-" store-slug)
      :stylist-card.services-list/items [{:id         (str "stylist-service-leave-out-" store-slug)
                                          :label      "Leave Out"
@@ -376,8 +368,8 @@
                                                       zipcode])}))
 
 (defn stylist-cards-query
-  [post-purchase? hide-stylist-specialty? show-stylist-ratings-and-bookings? stylists]
-  (map-indexed (partial stylist-card-query post-purchase? hide-stylist-specialty? show-stylist-ratings-and-bookings?) stylists))
+  [post-purchase? hide-stylist-specialty? stylists]
+  (map-indexed (partial stylist-card-query post-purchase? hide-stylist-specialty?) stylists))
 
 (def call-out-query
   {:call-out-center/bg-class    "bg-cool-gray"
@@ -588,15 +580,13 @@
                                                 (if (seq preferences)
                                                   (->> stylist-search-results
                                                        (stylist-cards-query post-purchase?
-                                                                            (experiments/hide-stylist-specialty? app-state)
-                                                                            (experiments/show-stylist-ratings-and-bookings? app-state))
+                                                                            (experiments/hide-stylist-specialty? app-state))
                                                        ;; Add Breaker
                                                        (group-by matches-preferences?)
                                                        stylist-results-arranged
                                                        (mapcat identity))
                                                   (->> stylist-search-results
                                                        (stylist-cards-query post-purchase?
-                                                                            (experiments/hide-stylist-specialty? app-state)
-                                                                            (experiments/show-stylist-ratings-and-bookings? app-state))
+                                                                            (experiments/hide-stylist-specialty? app-state))
                                                        (insert-at-pos 3 call-out-query))))
                       :shopping-method-choice (shopping-method-choice-query)})))
