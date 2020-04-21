@@ -181,7 +181,10 @@
                                                                               nil)
                                                                             (when (:licensed stylist)
                                                                               "licensed")]))]
-                                                [:div (str "Booked " (ui/pluralize-with-amount booking-count "time") " with Mayvenn")]]}
+                                                (when (or booking-count (and (experiments/show-stylist-ratings-and-bookings data) rating-count))
+                                                  [:div (str "Booked " (ui/pluralize-with-amount (if (experiments/show-stylist-ratings-and-bookings data)
+                                                                                                   rating-count
+                                                                                                   booking-count) "time") " with Mayvenn")])]}
                      (when (:specialty-sew-in-leave-out service-menu)
                        {:section-details/title              "Specialties"
                         :section-details/content
