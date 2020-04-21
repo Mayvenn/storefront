@@ -703,7 +703,7 @@
              nil))))))
 
 (def default-wig-title
-  "Human Hair Wigs: Natural Hair Lace Wigs | Mayvenn")
+  "Human Hair Wigs: 100% Human Hair Wigs | Mayvenn")
 
 (def default-wig-description
   (str "Mayvenn’s virgin human hair wigs allow you to achieve a new "
@@ -743,7 +743,7 @@
                                         "?family=lace-front-wigs"))
                 handler
                 (validate-title-and-description-and-canonical
-                 "Lace Front Wigs: Human Hair Lace Front Wigs | Mayvenn"
+                 "Lace Front Wigs: Virgin Lace Front Wigs | Mayvenn"
                  (str "Mayvenn’s human hair lace front wigs mimic a natural hairline and come "
                       "in different variations such as Brazilian, Malaysian, straight, and deep wave.")
                  "/categories/24-virgin-lace-front-wigs"
@@ -809,7 +809,7 @@
             (-> (mock/request :get (str wig-category-url "?family=360-wigs"))
                 handler
                 (validate-title-and-description-and-canonical
-                 "360 Lace Wigs: Human Hair 360 Lace Wigs | Mayvenn"
+                 "360 Lace Wigs: Virgin 360 Lace Frontal Wigs | Mayvenn"
                  (str "Mayvenn’s human hair 360 lace wigs give you all around protection and "
                       "come in different variations such as Brazilian, Malaysian, straight, and deep wave.")
                  "/categories/26-virgin-360-wigs"

@@ -457,7 +457,7 @@
            :hair/family                   #{"360-wigs" "lace-front-wigs" "ready-wigs"}
            :selector/essentials           [:hair/family :catalog/department]
            :selector/electives            [:hair/family :hair/texture :hair/origin]
-           :page/title                    "Human Hair Wigs: Natural Hair Lace Wigs | Mayvenn"
+           :page/title                    "Human Hair Wigs: 100% Human Hair Wigs | Mayvenn"
            :page.meta/description         (copy "Mayvenn’s virgin human hair wigs allow you to achieve a new look in minutes"
                                                 "& come in different variations such as Brazilian, Malaysian, straight,"
                                                 "& deep wave.")
@@ -512,7 +512,7 @@
            :opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our"
                                         "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                         "your unique look using the built-in combs and adjustable strap.")}
-          (category->seo "Lace Front Wigs: Human Hair Lace Front Wigs"
+          (category->seo "Lace Front Wigs: Virgin Lace Front Wigs"
                          (copy "Mayvenn’s human hair lace front wigs mimic a natural hairline"
                                "and come in different variations such as Brazilian, Malaysian,"
                                "straight, and deep wave.")
@@ -560,7 +560,7 @@
            :opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our"
                                         "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                         "your unique look using the built-in combs and adjustable strap.")}
-          (category->seo "360 Lace Wigs: Human Hair 360 Lace Wigs"
+          (category->seo "360 Lace Wigs: Virgin 360 Lace Frontal Wigs"
                          (copy "Mayvenn’s human hair 360 lace wigs give you all around protection and"
                                "come in different variations such as Brazilian, Malaysian, straight,"
                                "and deep wave.")
@@ -611,7 +611,7 @@
            :hair/family                   #{"bundles"}
            :page/icp?                     true
            :page/slug                     "human-hair-bundles"
-           :page/title                    "Hair Bundles: Sew-In Hair Bundles | Mayvenn"
+           :page/title                    "Hair Bundles: Sew-In Weave Bundles | Mayvenn"
            :page.meta/description         (copy "Mayvenn’s real human hair bundles come in different variations such as"
                                                 "Brazilian, Malaysian, straight, deep wave, and loose wave. Create your look today.")
            :product-list/title            "Shop All Bundles"
