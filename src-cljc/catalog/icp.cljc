@@ -1,20 +1,19 @@
 (ns catalog.icp
-  (:require catalog.keypaths
+  (:require [adventure.components.layered :as layered]
+            catalog.keypaths
+            [catalog.ui.category-filters :as category-filters]
             [catalog.ui.category-hero :as category-hero]
-            [catalog.ui.product-list :as product-list]
-            [spice.core :as spice]
+            [catalog.ui.product-card-listing :as product-card-listing]
+            [spice.maps :as maps]
             [storefront.accessors.categories :as accessors.categories]
             [storefront.assets :as assets]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
-            [storefront.accessors.experiments :as experiments]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
-            [adventure.components.layered :as layered]
-            [spice.maps :as maps]))
+            [storefront.platform.component-utils :as utils]))
 
 (def ^:private contact-query
   {:layer/type         :shop-contact
@@ -216,7 +215,14 @@
 
 (defcomponent ^:private template
   "This lays out different ux pieces to form a cohesive ux experience"
-  [{:keys [header footer category-hero content-box drill-category-list drill-category-grid product-list]} _ _]
+  [{:keys [category-filters
+           category-hero
+           content-box
+           drill-category-grid
+           drill-category-list
+           footer
+           header
+           product-card-listing]} _ _]
   [:div
    (component/build header-organism header)
    [:div
@@ -227,7 +233,8 @@
      (component/build drill-category-grid-organism drill-category-grid)]
     purple-divider-atom
     [:div.max-960.mx-auto
-     (component/build product-list/organism product-list)]
+     (component/build category-filters/organism category-filters {})
+     (component/build product-card-listing/organism product-card-listing {})]
     (when content-box green-divider-atom)
     (when content-box (component/build content-box-organism content-box))
     (component/build layered/shop-contact contact-query)]
@@ -244,30 +251,33 @@
 
 (defn query
   [app-state]
-  (let [category      (accessors.categories/current-category app-state)
-        subcategories (category->subcategories (get-in app-state keypaths/categories) category)
-        selections    (get-in app-state catalog.keypaths/category-selections)
-        products      (vals (get-in app-state keypaths/v2-products))]
+  (let [current         (accessors.categories/current-category app-state)
+        subcategories   (category->subcategories (get-in app-state keypaths/categories) current)
+        selections      (get-in app-state catalog.keypaths/category-selections)
+        loaded-products (vals (get-in app-state keypaths/v2-products))]
     (cond->
-        {:header              {}
-         :footer              {}
-         :category-hero       (category-hero-query category)
-         :content-box         (when (:content-block/type category)
-                                {:title    (:content-block/title category)
-                                 :header   (:content-block/header category)
-                                 :summary  (:content-block/summary category)
-                                 :sections (:content-block/sections category)})
-         :product-list        (product-list/query app-state category products selections)}
+        {:header               {}
+         :footer               {}
+         :category-hero        (category-hero-query current)
+         :content-box          (when (:content-block/type current)
+                                 {:title    (:content-block/title current)
+                                  :header   (:content-block/header current)
+                                  :summary  (:content-block/summary current)
+                                  :sections (:content-block/sections current)})
+         :category-filters     (category-filters/query app-state
+                                                       current loaded-products selections)
+         :product-card-listing (product-card-listing/query app-state
+                                                           current loaded-products selections)}
 
-      (= :grid (:subcategories/layout category))
+      (= :grid (:subcategories/layout current))
       (merge {:drill-category-grid {:drill-category-grid/values (mapv category->drill-category-grid-entry subcategories)
-                                    :drill-category-grid/title  (:subcategories/title category)}})
+                                    :drill-category-grid/title  (:subcategories/title current)}})
 
-      (= :list (:subcategories/layout category))
+      (= :list (:subcategories/layout current))
       (merge (let [values (mapv category->drill-category-list-entry subcategories)]
-               {:drill-category-list {:drill-category-list/values values
+               {:drill-category-list {:drill-category-list/values                   values
                                       :drill-category-list/use-three-column-layout? (>= (count values) 3)
-                                      :drill-category-list/tablet-desktop-columns (max 1 (min 3 (count values)))}})))))
+                                      :drill-category-list/tablet-desktop-columns   (max 1 (min 3 (count values)))}})))))
 
 (defn page
   [app-state opts]

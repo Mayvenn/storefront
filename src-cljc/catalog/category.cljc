@@ -1,36 +1,36 @@
 (ns catalog.category
   (:require
    #?@(:cljs [[storefront.api :as api]
+              [storefront.accessors.auth :as auth]
+              [storefront.platform.messages :as messages]
+              [catalog.skuers :as skuers]
               [storefront.browser.scroll :as scroll]
               [storefront.hooks.facebook-analytics :as facebook-analytics]])
    [catalog.icp :as icp]
    catalog.keypaths
-   [catalog.skuers :as skuers]
+   [catalog.ui.category-filters :as category-filters]
    [catalog.ui.category-hero :as category-hero]
    [catalog.ui.how-it-works :as how-it-works]
-   [catalog.ui.product-list :as product-list]
-   [storefront.accessors.auth :as auth]
+   [catalog.ui.product-card-listing :as product-card-listing]
    [storefront.accessors.categories :as accessors.categories]
    [storefront.assets :as assets]
    [storefront.component :as c]
-   [storefront.components.ui :as ui]
    [storefront.effects :as effects]
    [storefront.events :as e]
    [storefront.keypaths :as k]
-   [storefront.platform.component-utils :as utils]
-   [storefront.platform.messages :as messages]
    [storefront.trackings :as trackings]
    [storefront.transitions :as transitions]))
 
 (c/defcomponent ^:private template
   [{:keys [category-hero
            how-it-works
-           product-list]} _ _]
+           category-filters
+           product-card-listing]} _ _]
   [:div
    (c/build category-hero/organism category-hero)
-
    [:div.max-960.mx-auto
-    (c/build product-list/organism product-list)]
+    (c/build category-filters/organism category-filters {})
+    (c/build product-card-listing/organism product-card-listing {})]
    [:div.col-10.mx-auto
     (c/build how-it-works/organism how-it-works)]])
 
@@ -67,7 +67,7 @@
 
     ;; TODO(corey) image handling reconciliation: svg as uri
     (seq icon-uri)
-    (merge {:category-hero.icon/image-src (assets/path icon-uri)}) 
+    (merge {:category-hero.icon/image-src (assets/path icon-uri)})
 
     new?
     (merge {:category-hero.tag/primary "New"})))
@@ -78,10 +78,12 @@
         loaded-products (vals (get-in app-state k/v2-products))
         selections      (get-in app-state catalog.keypaths/category-selections) ]
     (c/build template
-             {:category-hero (category-hero-query current)
-              :how-it-works  (how-it-works-query current)
-              :product-list  (product-list/query app-state
-                                                   current loaded-products selections)}
+             {:category-hero        (category-hero-query current)
+              :category-filters     (category-filters/query app-state
+                                                            current loaded-products selections)
+              :how-it-works         (how-it-works-query current)
+              :product-card-listing (product-card-listing/query app-state
+                                                                current loaded-products selections)}
              opts)))
 
 (defn ^:export built-component

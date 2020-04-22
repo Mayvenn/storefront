@@ -1,66 +1,34 @@
-(ns catalog.ui.product-list
+(ns catalog.ui.category-filters
   (:require
    #?@(:cljs [goog.events
               [goog.events.EventType :as EventType]
               [storefront.effects :as effects]
-              [storefront.history :as history]
               [storefront.accessors.categories :as accessors.categories]
               [goog.object :as object]])
    [catalog.categories :as categories]
-   [catalog.keypaths]
+   catalog.keypaths
    [catalog.skuers :as skuers]
-   [catalog.ui.product-card :as product-card]
+   clojure.set
    [clojure.string :as string]
    [spice.maps :as maps]
    [spice.selector :as selector]
-   [storefront.component :as component :refer [defcomponent defdynamic-component]]
+   [storefront.component :as c]
    [storefront.components.ui :as ui]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
-   [storefront.request-keys :as request-keys]
-   [storefront.transitions :as transitions]
-   clojure.set))
-
-(defn subsections-query
-  [facets
-   {:keys [subsections/category-selector subsections]}
-   products-matching-criteria
-   data]
-  (let [subsection-facet-options (when category-selector
-                                   (->> facets
-                                        (filter (comp #{category-selector} :facet/slug))
-                                        first
-                                        :facet/options
-                                        (maps/index-by :option/slug)))
-        subsection-order         (->> (map-indexed vector subsections)
-                                      (into {})
-                                      clojure.set/map-invert)]
-    (->> products-matching-criteria
-         (group-by (if category-selector
-                     (comp first category-selector)
-                     (constantly :no-subsections)))
-         (sequence
-          (comp
-           (map (fn [[subsection-key products]]
-                  {:title/primary (:option/name (get subsection-facet-options subsection-key))
-                   :products       products
-                   :subsection-key subsection-key}))
-           (map #(update % :products (partial map (partial product-card/query data))))
-           (map #(clojure.set/rename-keys % {:products :product-cards}))
-           (map #(update % :product-cards (partial sort-by :sort/value)))))
-         (sort-by (comp subsection-order :subsection-key)))))
+   [storefront.transitions :as transitions]))
 
 (defn- hacky-fix-of-bad-slugs-on-facets [slug]
   (string/replace (str slug) #"#" ""))
 
-(defdynamic-component ^:private filter-tabs
+(c/defdynamic-component ^:private filter-tabs
   (constructor [this props]
-               (component/create-ref! this "filter-tabs")
+               (c/create-ref! this "filter-tabs")
                #?(:cljs
                   (set! (.-handle-scroll this)
-                        (fn [e] (component/set-state! this :stuck? (-> (component/get-ref this "filter-tabs")
+                        (fn [e] (c/set-state! this :stuck? (-> (c/get-ref this "filter-tabs")
                                                                        .getBoundingClientRect
                                                                        (object/get "top")
                                                                        (<= 0))))))
@@ -71,15 +39,15 @@
    #?(:cljs (goog.events/unlisten js/window EventType/SCROLL (.-handle-scroll this))))
   (render
    [this]
-   (let [{:keys [stuck?]}     (component/get-state this)
+   (let [{:keys [stuck?]}     (c/get-state this)
          {:keys [open-panel
                  electives
                  selections-count
                  product-count
-                 facets]} (component/get-props this)]
-     (component/html
+                 facets]} (c/get-props this)]
+     (c/html
       [:div.p2.pt3.mxn3.bg-white
-       (merge {:ref (component/use-ref this "filter-tabs")}
+       (merge {:ref (c/use-ref this "filter-tabs")}
               (when (and (not open-panel) stuck?)
                 {:class "border-black border-bottom top-lit"}))
        (when (seq electives)
@@ -155,63 +123,24 @@
              {:data-test "filters-done"})
       "Done")]]])
 
-(defcomponent ^:private product-cards-empty-state
-  [_ _ _]
-  [:div.col-12.my8.py4.center
-   [:p.h1.py4 "😞"]
-   [:p.h2.py6 "Sorry, we couldn’t find any matches."]
-   [:p.h4.mb10.pb10
-    [:a.p-color (utils/fake-href events/control-category-option-clear) "Clear all filters"]
-    " to see more hair."]])
-
-(defcomponent ^:private product-list-subsection-component
-  [{:keys [product-cards subsection-key] primary-title :title/primary} _ {:keys [id]}]
-  [:div
-   {:id id :data-test id}
-   (when primary-title
-     [:div.canela.title-2.center.mt8.mb2 primary-title])
-   [:div.flex.flex-wrap
-    (map product-card/organism product-cards)]])
-
-(defcomponent tabs-organism
-  [{:keys [filter-tabs-data]} _ _]
-  [:div.px1.bg-white.sticky.z1
-   ;; The -5px prevents a sliver of the background from being visible above the filters
-   ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
-   {:style {:top "-5px"}}
-   (let [tabs                                                       (component/build filter-tabs filter-tabs-data nil)
-         {:keys [open-panel facets selections represented-options]} filter-tabs-data]
-     (if open-panel
-       [:div
-        [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
-         tabs (filter-panel facets represented-options selections open-panel)]
-        [:div.hide-on-mb-tb
-         tabs (filter-panel facets represented-options selections open-panel)]]
-       [:div
-        [:div.hide-on-dt tabs]
-        [:div.hide-on-mb-tb tabs]]))])
-
-(defcomponent subsections-organism
-  [{:keys [subsections all-product-cards loading-products?]} _ _]
-  (cond
-    loading-products?          [:div.col-12.my8.py4.center (ui/large-spinner {:style {:height "4em"}})]
-
-    (empty? all-product-cards) (component/build product-cards-empty-state {} {})
-
-    :else                      (mapv (fn build [{:as subsection :keys [subsection-key]}]
-                                       (component/build product-list-subsection-component
-                                                        subsection
-                                                        (component/component-id (str "subsection-" subsection-key))))
-                                     subsections)))
-
-(defcomponent organism
-  [data _ _]
-  [:div.px2.py4
-   [:div.canela.title-1.center.mt3.py4 (:title data)]
-   (component/build tabs-organism (select-keys data [:filter-tabs-data]) {})
-   (component/build subsections-organism
-                    (select-keys data [:subsections :all-product-cards :loading-products?])
-                    {})])
+(c/defcomponent organism
+  [{:as data :keys [title open-panel facets selections represented-options]} _ _]
+  [:div.px2.pt4
+   [:div.canela.title-1.center.mt3.py4 title]
+   [:div.px1.bg-white.sticky.z1
+    ;; The -5px prevents a sliver of the background from being visible above the filters
+    ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
+    {:style {:top "-5px"}}
+    (let [tabs (c/build filter-tabs data nil)]
+      (if open-panel
+        [:div
+         [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
+          tabs (filter-panel facets represented-options selections open-panel)]
+         [:div.hide-on-mb-tb
+          tabs (filter-panel facets represented-options selections open-panel)]]
+        [:div
+         [:div.hide-on-dt tabs]
+         [:div.hide-on-mb-tb tabs]]))]])
 
 (defn query
   [app-state category products selections]
@@ -225,34 +154,25 @@
                                                         (skuers/essentials category)
                                                         selections)
                                                        products-matching-category)
-        facets                     (maps/index-by :facet/slug (get-in app-state keypaths/v2-facets))
-        subsections                (subsections-query
-                                    (vals facets)
-                                    category
-                                    products-matching-criteria
-                                    app-state)
-        product-cards              (mapcat :product-cards subsections)
-        open-panel                 (get-in app-state catalog.keypaths/category-panel)]
-    {:title             (:product-list/title category)
-     :subsections       subsections
-     :all-product-cards (mapcat :product-cards subsections)
-     :loading-products? (utils/requesting? app-state (conj request-keys/get-products
-                                                           (skuers/essentials category)))
-     :filter-tabs-data  {:open-panel          open-panel
-                         :selections          selections
-                         :electives           (:selector/electives category)
-                         :product-count       (count product-cards)
-                         :represented-options (->> products-matching-category
-                                                   (map (fn [product]
-                                                          (->> (select-keys product
-                                                                            (concat (:selector/essentials category)
-                                                                                    (:selector/electives category)))
-                                                               (maps/map-values set))))
-                                                   (reduce (partial merge-with clojure.set/union) {}))
-                         :selections-count    (->> (apply dissoc selections (:selector/essentials category))
-                                                   (map (comp count val))
-                                                   (apply +))
-                         :facets              facets}}))
+        facets                     (maps/index-by :facet/slug (get-in app-state keypaths/v2-facets))]
+    (merge
+     (when-let [filter-title (:product-list/title category)]
+       {:title filter-title})
+     {:open-panel          (get-in app-state catalog.keypaths/category-panel)
+      :selections          selections
+      :electives           (:selector/electives category)
+      :product-count       (count products-matching-criteria)
+      :represented-options (->> products-matching-category
+                                (map (fn [product]
+                                       (->> (select-keys product
+                                                         (concat (:selector/essentials category)
+                                                                 (:selector/electives category)))
+                                            (maps/map-values set))))
+                                (reduce (partial merge-with clojure.set/union) {}))
+      :selections-count    (->> (apply dissoc selections (:selector/essentials category))
+                                (map (comp count val))
+                                (apply +))
+      :facets              facets})))
 
 (defmethod transitions/transition-state events/control-category-panel-open
   [_ _ {:keys [selected]} app-state]
@@ -274,8 +194,7 @@
             accessors.categories/category-selections->query-params
             (assoc {:catalog/category-id category-id
                     :page/slug           slug}
-                   :query-params)
-            (history/enqueue-redirect events/navigate-category)))))
+                   :query-params)))))
 
 (defmethod transitions/transition-state events/control-category-option-select
   [_ _ {:keys [facet option]} app-state]
