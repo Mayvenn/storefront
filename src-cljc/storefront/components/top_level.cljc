@@ -49,6 +49,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
+            [checkout.shop.cart-v202004 :as shop-cart-v202004]
             [checkout.shop.cart :as shop-cart]))
 
 ;; HACK until the day there are no more built-components
@@ -191,7 +192,9 @@
 
        ;; Cart pages for Shop
        (routes/sub-page? [nav-event] [events/navigate-cart])
-       (shop-cart/page data nav-event)
+       (if (experiments/new-cart? data)
+         (shop-cart-v202004/page data nav-event)
+         (shop-cart/page data nav-event))
 
        ;; TODO this should be moved into the UI domain of stylist-matching
        ;; Reminder, these are guarded by routing for Aladdin

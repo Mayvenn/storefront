@@ -5,7 +5,8 @@
             [storefront.accessors.orders :as orders]
             storefront.keypaths
             [storefront.accessors.images :as images]
-            [storefront.components.money-formatters :as mf]))
+            [storefront.components.money-formatters :as mf]
+            [clojure.string :as str]))
 
 (defn ^:private family->ordering
   [family]
@@ -78,7 +79,8 @@
         freeinstall-entered?        (boolean (orders/freeinstall-entered? order))
         servicing-stylist           (if (= "aladdin" (get-in app-state storefront.keypaths/store-experience))
                                       (get-in app-state storefront.keypaths/store)
-                                      (get-in app-state adventure-keypaths/adventure-servicing-stylist))]
+                                      (get-in app-state adventure-keypaths/adventure-servicing-stylist))
+        sku-title                   (:sku/title base-service-sku)]
     {:mayvenn-install/entered?           freeinstall-entered?
      :mayvenn-install/locked?            (and base-service-line-item
                                               (not (line-items/fully-discounted? base-service-line-item)))
@@ -87,7 +89,8 @@
      :mayvenn-install/quantity-remaining items-remaining-for-install
      :mayvenn-install/quantity-added     items-added-for-install
      :mayvenn-install/stylist            servicing-stylist
-     :mayvenn-install/service-title      (:sku/title base-service-sku)
+     :mayvenn-install/service-title      sku-title
+     :mayvenn-install/add-service-ttitle (str/join " " (butlast (str/split sku-title " ")))
      :mayvenn-install/service-discount   (- (line-items/service-line-item-price base-service-line-item))
      :mayvenn-install/any-wig?           any-wig?
      :mayvenn-install/service-image-url  (->> base-service-sku (images/skuer->image "cart") :url)

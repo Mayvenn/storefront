@@ -102,3 +102,7 @@
   [data]
   (boolean (or (get-in data keypaths/order-cart-payments-quadpay)
                (display-feature? data "show-quadpay"))))
+
+(defn new-cart?
+  [data]
+  (display-feature? data "new-cart"))

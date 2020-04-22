@@ -217,6 +217,11 @@
    [:svg opts
     ^:inline (svg-xlink "consolidated-trash-can")]))
 
+(defn line-item-delete [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "line-item-delete")]))
+
 (defn discount-tag [opts]
   (component/html
    [:svg.fill-s-color opts
@@ -282,10 +287,20 @@
    [:svg opts
     ^:inline (svg-xlink "lock")]))
 
+(defn stylist-lock [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "stylist-lock")]))
+
 (defn swap-person [opts]
   (component/html
    [:svg opts
     ^:inline (svg-xlink "swap-person")]))
+
+(defn swap-arrows [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "swap-arrows")]))
 
 (defn forward-arrow [opts]
   (component/html
