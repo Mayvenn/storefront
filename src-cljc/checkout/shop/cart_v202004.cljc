@@ -127,22 +127,23 @@
    [:div.clearfix.mxn3
     [:div
      [:div.bg-cool-gray.p3
-      [:div
-       [:div.title-2.proxima "Services"]
-       [:div
-        (new-servicing-stylist-banner-component queried-data)
+      (when (seq service-line-items )
+        [:div
+         [:div.title-2.proxima "Services"]
+         [:div
+          (new-servicing-stylist-banner-component queried-data)
 
-        (for [[index service-line-item] (map-indexed vector service-line-items)
-              :let                      [react-key (:react/key service-line-item)]
-              :when                     react-key]
-          [:div
-           {:key (str index "-cart-item-" react-key)}
-           (when-not (zero? index)
-             [:div.flex
-              [:div.ml2 {:style {:width "78px"}}]
-              [:div.flex-grow-1.border-bottom.border-gray.ml-auto]])
-           (component/build cart-item-v202004/organism {:cart-item service-line-item}
-                            (component/component-id (str index "-cart-item-" react-key)))])]]]]
+          (for [[index service-line-item] (map-indexed vector service-line-items)
+                :let                      [react-key (:react/key service-line-item)]
+                :when                     react-key]
+            [:div
+             {:key (str index "-cart-item-" react-key)}
+             (when-not (zero? index)
+               [:div.flex
+                [:div.ml2 {:style {:width "78px"}}]
+                [:div.flex-grow-1.border-bottom.border-gray.ml-auto]])
+             (component/build cart-item-v202004/organism {:cart-item service-line-item}
+                              (component/component-id (str index "-cart-item-" react-key)))])]])]]
 
     [:div.col-on-tb-dt.col-6-on-tb-dt
      (component/build cart-summary/organism cart-summary nil)
