@@ -1,5 +1,6 @@
 (ns catalog.icp
   (:require catalog.keypaths
+            [catalog.ui.category-hero :as category-hero]
             [catalog.ui.product-list :as product-list]
             [spice.core :as spice]
             [storefront.accessors.categories :as accessors.categories]
@@ -53,32 +54,16 @@
   [_ _ _]
   [:div])
 
-(defn category-hero-title
-  [{:category-hero.title/keys [id value]}]
-  (when id
-    [:div.title-1.canela.pt5 value]))
-
-(defn category-hero-description
-  "A ui element"
-  [{:category-hero.description/keys [id value]}]
-  (when id
-    [:div.content-2.proxima.py5.col-6-on-dt.mx-auto value]))
-
-(defcomponent ^:private category-hero-organism
-  "This uses ui elements to build a piece of UX"
-  [data _ _]
-  [:div.bg-warm-gray.center.py5.px6
-   (category-hero-title data)
-   (category-hero-description data)])
-
 (defn ^:private category-hero-query
   [category]
-  {:category-hero.title/id          "category-hero-title"
-   :category-hero.title/value       (:copy/title category)
-   :category-hero.description/id    "category-hero-description"
-   :category-hero.description/value (if (->> category :catalog/category-id (= "13"))
-                                      (str (:category/description category) " Get free customization with qualifying purchases.")
-                                      (:category/description category))})
+  ;; TODO(corey) icp heroes use #:category not #:copy for :description
+  (cond-> {:category-hero.title/primary (:copy/title category)
+           :category-hero.body/primary  (:category/description category)}
+
+    ;; TODO(corey) why can't this be data?
+    (= "13" (:catalog/category-id category))
+    (update :category-hero.body/primary
+            str " Get free customization with qualifying purchases.")))
 
 (defcomponent ^:private drill-category-list-entry-organism
   [{:drill-category/keys [id title description image-url target action-id action-label use-three-column-layout?]} _ _]
@@ -235,7 +220,7 @@
   [:div
    (component/build header-organism header)
    [:div
-    (component/build category-hero-organism category-hero)
+    (component/build category-hero/organism category-hero)
     (vertical-squiggle-atom "-36px")
     [:div.max-960.mx-auto
      (component/build drill-category-list-organism drill-category-list)

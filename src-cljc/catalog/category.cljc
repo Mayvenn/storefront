@@ -6,6 +6,7 @@
    [catalog.icp :as icp]
    catalog.keypaths
    [catalog.skuers :as skuers]
+   [catalog.ui.category-hero :as category-hero]
    [catalog.ui.how-it-works :as how-it-works]
    [catalog.ui.product-list :as product-list]
    [storefront.accessors.auth :as auth]
@@ -21,28 +22,12 @@
    [storefront.trackings :as trackings]
    [storefront.transitions :as transitions]))
 
-(c/defcomponent ^:private category-header-organism
-  [category _ _]
-  [:div.center.px2.py10.bg-warm-gray.max-960.mx-auto
-   (when (:category/new? category)
-     [:div.s-color.title-3.proxima.bold.shout "New"])
-   [:div.h1.title-1.canela (:copy/title category)]
-   (when-let [icon-url (:icon category)]
-     [:div.mt4 [:img {:src   (assets/path icon-url)
-                      :style {:width "54px"}}]])
-   [:div.my3.mx6-on-mb.col-8-on-tb-dt.mx-auto-on-tb-dt
-    (:copy/description category)
-    (when-let [learn-more-event (:copy/learn-more category)]
-      [:div.mt3
-       (ui/button-small-underline-black {:on-click (apply utils/send-event-callback learn-more-event)}
-                                        "Learn more")])]])
-
 (c/defcomponent ^:private template
-  [{:keys [category-header
+  [{:keys [category-hero
            how-it-works
            product-list]} _ _]
   [:div
-   (c/build category-header-organism category-header)
+   (c/build category-hero/organism category-hero)
 
    [:div.max-960.mx-auto
     (c/build product-list/organism product-list)]
@@ -68,15 +53,34 @@
        :how-it-works.step.body/primary    (str " We’ll connect you with your stylist to set up your service. "
                                                "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}))
 
+(defn category-hero-query
+  [{:copy/keys [title description learn-more]
+    icon-uri   :icon
+    new?       :category/new?}]
+  (cond-> {:category-hero.title/primary title
+           :category-hero.body/primary  description}
+
+    ;; TODO(corey) this key is in #:copy
+    (seq learn-more)
+    (merge {:category-hero.action/label  "Learn more"
+            :category-hero.action/target [learn-more]})
+
+    ;; TODO(corey) image handling reconciliation: svg as uri
+    (seq icon-uri)
+    (merge {:category-hero.icon/image-src (assets/path icon-uri)}) 
+
+    new?
+    (merge {:category-hero.tag/primary "New"})))
+
 (defn page
   [app-state opts]
-  (let [current        (accessors.categories/current-category app-state)
+  (let [current         (accessors.categories/current-category app-state)
         loaded-products (vals (get-in app-state k/v2-products))
         selections      (get-in app-state catalog.keypaths/category-selections) ]
     (c/build template
-             {:category-header current
-              :how-it-works    (how-it-works-query current)
-              :product-list    (product-list/query app-state
+             {:category-hero (category-hero-query current)
+              :how-it-works  (how-it-works-query current)
+              :product-list  (product-list/query app-state
                                                    current loaded-products selections)}
              opts)))
 
