@@ -36,17 +36,19 @@
 
 ;; fork of molecules/stars-rating-molecule
 (defn stars-rating-molecule
-  [{:rating/keys [value rating-content]}]
+  [{:rating/keys [value rating-content rating-count]}]
   (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value "13px")]
-    [:div.flex
+    [:div.flex.items-center.mtn1
      whole-stars
      partial-star
      empty-stars
      (when rating-content
-       (ui/button-small-underline-secondary
-        (merge {:class "mx1 shout"}
-               (utils/scroll-href "reviews"))
-        rating-content))]))
+       (if (> rating-count 0)
+         (ui/button-small-underline-secondary
+          (merge {:class "mx1 shout"}
+                 (utils/scroll-href "reviews"))
+          rating-content)
+         [:div.s-color.proxima.title-3.ml1 rating-content]))]))
 
 (defn stylist-phone-molecule
   [{:phone-link/keys [target phone-number]}]
