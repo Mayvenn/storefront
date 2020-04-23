@@ -110,8 +110,7 @@
            share-carts?
            show-browser-pay?
            suggestions
-           mayvenn-install
-           new-cart?]
+           mayvenn-install]
     :as   queried-data}
    _ _]
   [:div.container.px2
@@ -133,17 +132,13 @@
          [:div
           (new-servicing-stylist-banner-component queried-data)
 
-          (for [[index service-line-item] (map-indexed vector service-line-items)
-                :let                      [react-key (:react/key service-line-item)]
-                :when                     react-key]
+          (let [service-line-item (first service-line-items)]
             [:div
-             {:key (str index "-cart-item-" react-key)}
-             (when-not (zero? index)
-               [:div.flex
-                [:div.ml2 {:style {:width "78px"}}]
-                [:div.flex-grow-1.border-bottom.border-gray.ml-auto]])
+             (when-not (:mayvenn-install/stylist mayvenn-install)
+               (component/build cart-item-v202004/service-organism service-line-item
+                                (component/component-id "stylist-item")))
              (component/build cart-item-v202004/organism {:cart-item service-line-item}
-                              (component/component-id (str index "-cart-item-" react-key)))])]])]]
+                              (component/component-id "service-item"))])]])]]
 
     [:div.col-on-tb-dt.col-6-on-tb-dt
      (component/build cart-summary/organism cart-summary nil)
@@ -352,11 +347,6 @@
                                                                      (map inc))
                      :cart-item-steps-to-complete/current-step  quantity-added
                      :cart-item-service-thumbnail/locked?       true}))
-
-          (and applied? (not matched?))
-          (merge {:cart-item-modify-button/id      "pick-a-stylist"
-                  :cart-item-modify-button/target  [events/control-pick-stylist-button]
-                  :cart-item-modify-button/content "pick stylist"})
 
           applied?
           (merge (if wig-customization?

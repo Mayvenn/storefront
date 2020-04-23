@@ -247,8 +247,23 @@
                title]
               [:div {:data-test (str "line-item-price-ea-" sku-id)} price]]) items)]))
 
+
+(component/defcomponent service-organism
+  [service-item _ _]
+  [:div.bg-white.flex.items-center
+   [:div.m2
+    (ui/ucare-img {:width "56px"
+                   :class "mtp3"}
+                  "//ucarecdn.com/123d4b51-dd60-46d3-9db4-f932c124d6da/")]
+   [:div.ml1
+    [:div "No Stylist Selected"]
+    [:div (ui/button-small-underline-primary
+           (merge {:data-test "pick-stylist"}
+                  (utils/fake-href events/control-pick-stylist-button))
+           "Pick Your Stylist")]]])
+
 (component/defcomponent organism
-  [{:keys [cart-item suggestions new-cart?]} _ {:keys [id]}]
+  [{:keys [cart-item suggestions]} _ {:keys [id]}]
   [:div.p3.mt2.flex.bg-white
    {:key id :data-test id}
    ;; image group
