@@ -142,22 +142,25 @@
               (component/build cart-item-v202004/organism {:cart-item service-line-item}
                                (component/component-id "service-item"))]])]])
 
-      [:div.mt5
-       [:div.title-2.proxima "Items"]
-       (for [[index cart-item] (map-indexed vector cart-items)
-             :let [react-key (:react/key cart-item)]
-             :when react-key]
-         [:div
-          {:key (str index "-cart-item-" react-key)}
-          (when-not (zero? index)
-            [:div.flex
-             [:div.ml2 {:style {:width "78px"}}]
-             [:div.flex-grow-1.border-bottom.border-gray.ml-auto]])
-          (component/build cart-item-v202004/organism {:cart-item   cart-item
-                                               :suggestions (when (zero? index)
-                                                              suggestions)}
-                           (component/component-id (str index "-cart-item-" react-key)))])
-       ]]]
+      [:div.mt3
+       [:div.title-2.proxima.my2 "Items"]
+       (if (seq cart-items )
+         (for [[index cart-item] (map-indexed vector cart-items)
+               :let [react-key (:react/key cart-item)]
+               :when react-key]
+           [:div
+            {:key (str index "-cart-item-" react-key)}
+            (when-not (zero? index)
+              [:div.flex
+               [:div.ml2 {:style {:width "78px"}}]
+               [:div.flex-grow-1.border-bottom.border-gray.ml-auto]])
+            (component/build cart-item-v202004/organism {:cart-item   cart-item
+                                                         :suggestions (when (zero? index)
+                                                                        suggestions)}
+                             (component/component-id (str index "-cart-item-" react-key)))])
+         [:div.mt2
+          (component/build cart-item-v202004/no-items {}
+                           (component/component-id "no-items"))])]]]
 
     [:div.col-on-tb-dt.col-6-on-tb-dt
      (component/build cart-summary/organism cart-summary nil)

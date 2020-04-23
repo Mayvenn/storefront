@@ -262,6 +262,11 @@
                   (utils/fake-href events/control-pick-stylist-button))
            "Pick Your Stylist")]]])
 
+(component/defcomponent no-items
+  [_ _ _]
+  [:div.bg-white.dark-gray.title-2.canela.center.py3
+   "No Items in Your Cart"])
+
 (component/defcomponent organism
   [{:keys [cart-item suggestions]} _ {:keys [id]}]
   [:div.p3.flex.bg-white
