@@ -264,7 +264,7 @@
 
 (component/defcomponent organism
   [{:keys [cart-item suggestions]} _ {:keys [id]}]
-  [:div.p3.mt2.flex.bg-white
+  [:div.p3.flex.bg-white
    {:key id :data-test id}
    ;; image group
    [:div.relative.pt3

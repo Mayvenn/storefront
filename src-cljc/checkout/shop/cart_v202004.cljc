@@ -96,6 +96,7 @@
 (defcomponent full-component
   [{:keys [call-out
            service-line-items
+           cart-items
            cart-summary
            checkout-caption-copy
            checkout-disabled?
@@ -137,8 +138,26 @@
              (when-not (:mayvenn-install/stylist mayvenn-install)
                (component/build cart-item-v202004/stylist-organism {}
                                 (component/component-id "stylist-item")))
-             (component/build cart-item-v202004/organism {:cart-item service-line-item}
-                              (component/component-id "service-item"))])]])]]
+             [:div.mt2
+              (component/build cart-item-v202004/organism {:cart-item service-line-item}
+                               (component/component-id "service-item"))]])]])
+
+      [:div.mt5
+       [:div.title-2.proxima "Items"]
+       (for [[index cart-item] (map-indexed vector cart-items)
+             :let [react-key (:react/key cart-item)]
+             :when react-key]
+         [:div
+          {:key (str index "-cart-item-" react-key)}
+          (when-not (zero? index)
+            [:div.flex
+             [:div.ml2 {:style {:width "78px"}}]
+             [:div.flex-grow-1.border-bottom.border-gray.ml-auto]])
+          (component/build cart-item-v202004/organism {:cart-item   cart-item
+                                               :suggestions (when (zero? index)
+                                                              suggestions)}
+                           (component/component-id (str index "-cart-item-" react-key)))])
+       ]]]
 
     [:div.col-on-tb-dt.col-6-on-tb-dt
      (component/build cart-summary/organism cart-summary nil)
@@ -428,86 +447,8 @@
                                       :cart-item-adjustable-quantity/increment-target [events/control-cart-line-item-inc qty-adjustment-args]
                                       :cart-item-remove-action/id                     (str "line-item-remove-" sku-id)
                                       :cart-item-remove-action/spinning?              removing?
-                                      :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]})
-        matched?                   (boolean stylist)]
-
-    ;; TODO: split this query. Everyting below here is service-related. Everything above is physical product-related
-    (cond-> cart-items
-      entered?
-      (concat
-       [(cond-> {:react/key                                "freeinstall-line-item-freeinstall"
-                 :cart-item-title/id                       "line-item-title-upsell-free-service"
-                 :cart-item-floating-box/id                "line-item-freeinstall-price"
-                 :cart-item-floating-box/value             (some-> service-discount - mf/as-money)
-                 :cart-item-remove-action/id               "line-item-remove-freeinstall"
-                 :cart-item-remove-action/spinning?        (utils/requesting? app-state request-keys/remove-freeinstall-line-item)
-                 :cart-item-remove-action/target           [events/control-checkout-remove-promotion {:code "freeinstall"}]
-                 :cart-item-service-thumbnail/id           "freeinstall"
-                 :cart-item-service-thumbnail/image-url    (or service-image-url ; GROT: when cellar deploy is done with service image
-                                                               "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/")
-                 :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)
-                 :confetti-mode                            (get-in app-state keypaths/confetti-mode)}
-
-          ;; Locked basically means the freeinstall coupon code was entered, yet not all the requirements
-          ;; of a free install order to generate a voucher have been satisfied.
-          locked?
-          (merge  (if any-wig?
-                    {:cart-item-title/primary                   "Wig Customization (locked)"
-                     :cart-item-title/id                        "line-item-title-locked-wig-customization"
-                     :cart-item-copy/value                      "Add a Virgin Lace Front or a Virgin 360 Wig to unlock this service"
-                     :cart-item-steps-to-complete/action-target add-items-action
-                     :cart-item-floating-box/value              (mf/as-money 75)
-                     :cart-item-steps-to-complete/action-label  "Add Wig"
-                     :cart-item-steps-to-complete/id            "add-wig"
-                     :cart-item-steps-to-complete/steps         {}
-                     :cart-item-steps-to-complete/current-step  0
-                     :cart-item-service-thumbnail/locked?       true}
-                    {:cart-item-title/primary                   (str service-title " (locked)")
-                     :cart-item-title/id                        "line-item-title-locked-mayvenn-install"
-                     :cart-item-copy/value                      (str "Add " quantity-remaining
-                                                                     " or more items to receive your free Mayvenn Install")
-                     :cart-item-steps-to-complete/action-target add-items-action
-                     :cart-item-steps-to-complete/action-label  "add items"
-                     :cart-item-steps-to-complete/id            "add-items"
-                     :cart-item-steps-to-complete/steps         (->> quantity-required
-                                                                     range
-                                                                     (map inc))
-                     :cart-item-steps-to-complete/current-step  quantity-added
-                     :cart-item-service-thumbnail/locked?       true}))
-
-          (and applied? (not matched?))
-          (merge {:cart-item-modify-button/id      "pick-a-stylist"
-                  :cart-item-modify-button/target  [events/control-pick-stylist-button]
-                  :cart-item-modify-button/content "pick stylist"})
-
-          applied?
-          (merge (if wig-customization?
-                   {:cart-item-title/id      "line-item-title-applied-wig-customization"
-                    :cart-item-title/primary "Wig Customization"
-                    :cart-item-copy/value    "You're all set! Bleaching knots, tinting & cutting lace and hairline customization included."
-                    :cart-item-copy/id       "congratulations"}
-                   {:cart-item-title/id      "line-item-title-applied-mayvenn-install"
-                    :cart-item-title/primary service-title
-                    :cart-item-copy/value    "You’re all set! Shampoo, braiding and basic styling included."
-                    :cart-item-copy/id       "congratulations"}))
-
-          matched?
-          (merge {:cart-item-modify-button/id              "browse-addons"
-                  :cart-item-modify-button/target          [events/control-show-addon-service-menu]
-                  :cart-item-modify-button/tracking-target [events/browse-addon-service-menu-button-enabled]
-                  :cart-item-modify-button/locked?         locked?
-                  :cart-item-modify-button/content         "+ Browse Add-Ons"})
-
-          (and matched?
-               (seq addon-services))
-          (merge {:cart-item-sub-items/id      "addon-services"
-                  :cart-item-sub-items/title   "Add-On Services"
-                  :cart-item-sub-items/locked? locked?
-                  :cart-item-sub-items/items   (map (fn [{:addon-service/keys [title price sku-id]}]
-                                                      {:cart-item-sub-item/title  title
-                                                       :cart-item-sub-item/price  price
-                                                       :cart-item-sub-item/sku-id sku-id})
-                                                    addon-services)}))]))))
+                                      :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]})]
+    cart-items))
 
 (defn coupon-code->remove-promo-action [coupon-code]
   {:cart-summary-line/action-id     "cart-remove-promo"
