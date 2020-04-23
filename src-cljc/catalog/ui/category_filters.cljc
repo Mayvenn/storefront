@@ -125,22 +125,20 @@
 
 (c/defcomponent organism
   [{:as data :keys [title open-panel facets selections represented-options]} _ _]
-  [:div.px2.pt4
-   [:div.canela.title-1.center.mt3.py4 title]
-   [:div.px1.bg-white.sticky.z1
-    ;; The -5px prevents a sliver of the background from being visible above the filters
-    ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
-    {:style {:top "-5px"}}
-    (let [tabs (c/build filter-tabs data nil)]
-      (if open-panel
-        [:div
-         [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
-          tabs (filter-panel facets represented-options selections open-panel)]
-         [:div.hide-on-mb-tb
-          tabs (filter-panel facets represented-options selections open-panel)]]
-        [:div
-         [:div.hide-on-dt tabs]
-         [:div.hide-on-mb-tb tabs]]))]])
+  [:div.px3.bg-white.sticky.z1
+   ;; The -5px prevents a sliver of the background from being visible above the filters
+   ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
+   {:style {:top "-5px"}}
+   (let [tabs (c/build filter-tabs data nil)]
+     (if open-panel
+       [:div
+        [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
+         tabs (filter-panel facets represented-options selections open-panel)]
+        [:div.hide-on-mb-tb
+         tabs (filter-panel facets represented-options selections open-panel)]]
+       [:div
+        [:div.hide-on-dt tabs]
+        [:div.hide-on-mb-tb tabs]]))])
 
 (defn query
   [app-state category products selections]

@@ -233,6 +233,9 @@
      (component/build drill-category-grid-organism drill-category-grid)]
     purple-divider-atom
     [:div.max-960.mx-auto
+     [:div.pt4]
+     (when-let [title (:title category-filters)]
+       [:div.canela.title-1.center.mt3.py4 title])
      (component/build category-filters/organism category-filters {})
      (component/build product-card-listing/organism product-card-listing {})]
     (when content-box green-divider-atom)

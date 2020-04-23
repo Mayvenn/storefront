@@ -29,6 +29,9 @@
   [:div
    (c/build category-hero/organism category-hero)
    [:div.max-960.mx-auto
+    [:div.pt4]
+    (when-let [title (:title category-filters)]
+      [:div.canela.title-1.center.mt3.py4 title])
     (c/build category-filters/organism category-filters {})
     (c/build product-card-listing/organism product-card-listing {})]
    [:div.col-10.mx-auto
@@ -137,4 +140,3 @@
                (accessors.categories/id->category (get-in app-state k/categories))
                accessors.categories/wig-category?)
        (facebook-analytics/track-event "wig_content_fired"))))
-
