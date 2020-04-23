@@ -135,7 +135,7 @@
           (let [service-line-item (first service-line-items)]
             [:div
              (when-not (:mayvenn-install/stylist mayvenn-install)
-               (component/build cart-item-v202004/service-organism service-line-item
+               (component/build cart-item-v202004/stylist-organism {}
                                 (component/component-id "stylist-item")))
              (component/build cart-item-v202004/organism {:cart-item service-line-item}
                               (component/component-id "service-item"))])]])]]

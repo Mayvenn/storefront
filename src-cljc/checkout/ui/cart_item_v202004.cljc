@@ -248,8 +248,8 @@
               [:div {:data-test (str "line-item-price-ea-" sku-id)} price]]) items)]))
 
 
-(component/defcomponent service-organism
-  [service-item _ _]
+(component/defcomponent stylist-organism
+  [_ _ _]
   [:div.bg-white.flex.items-center
    [:div.m2
     (ui/ucare-img {:width "56px"
@@ -258,7 +258,7 @@
    [:div.ml1
     [:div "No Stylist Selected"]
     [:div (ui/button-small-underline-primary
-           (merge {:data-test "pick-stylist"}
+           (merge {:data-test "pick-a-stylist"}
                   (utils/fake-href events/control-pick-stylist-button))
            "Pick Your Stylist")]]])
 
