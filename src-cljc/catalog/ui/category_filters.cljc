@@ -17,11 +17,21 @@
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
-   [storefront.platform.messages :as messages]
    [storefront.transitions :as transitions]))
 
 (defn- hacky-fix-of-bad-slugs-on-facets [slug]
   (string/replace (str slug) #"#" ""))
+
+(c/defcomponent ^:private filter-tab
+  [{:filter-tab/keys [any-selected? selected? target id label]} _ _]
+  [:a.flex-auto.x-group-item.border.border-black.py1.whisper.black
+   (assoc (apply utils/fake-href target)
+          :data-test id
+          :key       id
+          :style     (when selected? {:background "linear-gradient(to bottom, #4427c1 4px, #ffffff 4px)"})
+          :class     (when any-selected? "bg-cool-gray"))
+   ;; This extra div is for pixel-pushing
+   [:div.pyp2 label]])
 
 (c/defdynamic-component ^:private filter-tabs
   (constructor [this props]
@@ -29,9 +39,9 @@
                #?(:cljs
                   (set! (.-handle-scroll this)
                         (fn [e] (c/set-state! this :stuck? (-> (c/get-ref this "filter-tabs")
-                                                                       .getBoundingClientRect
-                                                                       (object/get "top")
-                                                                       (<= 0))))))
+                                                               .getBoundingClientRect
+                                                               (object/get "top")
+                                                               (<= 0))))))
                {:stuck? false})
   (did-mount [this]
    #?(:cljs (goog.events/listen js/window EventType/SCROLL (.-handle-scroll this))))
@@ -39,78 +49,49 @@
    #?(:cljs (goog.events/unlisten js/window EventType/SCROLL (.-handle-scroll this))))
   (render
    [this]
-   (let [{:keys [stuck?]}     (c/get-state this)
-         {:keys [open-panel
-                 electives
-                 selections-count
-                 product-count
-                 facets]} (c/get-props this)]
+   (let [{:keys [stuck?]} (c/get-state this)
+         {:tabs/keys [open-panel
+                      open?
+                      primary
+                      secondary
+                      elements]} (c/get-props this)]
      (c/html
-      [:div.p2.pt3.mxn3.bg-white
-       (merge {:ref (c/use-ref this "filter-tabs")}
-              (when (and (not open-panel) stuck?)
-                {:class "border-black border-bottom top-lit"}))
-       (when (seq electives)
+      (if (empty? elements)
+        [:div]
+        [:div.p2.pt3.mxn3.bg-white
+         (merge {:ref (c/use-ref this "filter-tabs")}
+                (when (and (not open?) stuck?)
+                  {:class "border-black border-bottom top-lit"}))
          [:div
           [:div.flex.justify-between.items-baseline
            [:div.title-3.proxima.shout.bold
-            (case selections-count
-              0 "Filter by"
-              1 "1 filter applied"
-              (str selections-count " filters applied"))]
-           [:p.content-3 (str product-count " item" (when (not= 1 product-count) "s"))]]
+            primary]
+           [:p.content-3 secondary]]
           (into [:div.content-2.flex.center]
-                (map
-                 (fn [elective]
-                   (let [facet     (elective facets)
-                         selected? (= open-panel elective)
-                         title     (:facet/name facet)]
-                     [:a.flex-auto.x-group-item.border.border-black.py1.whisper.black
-                      (merge
-                       (if selected?
-                         (utils/fake-href events/control-category-panel-close)
-                         (utils/fake-href events/control-category-panel-open {:selected elective}))
-                       {:data-test (str "filter-" (name elective))
-                        :key       elective
-                        :style     (when selected? {:background "linear-gradient(to bottom, #4427c1 4px, #ffffff 4px)"})
-                        :class     (when open-panel "bg-cool-gray")})
-                      ;; This extra div is for pixel-pushing
-                      [:div.pyp2 title]]))
-                 electives))])]))))
+                (for [e elements]
+                  (c/build filter-tab e)))]])))))
 
 (defn ^:private filter-panel
-  [facets represented-options selections open-panel]
+  [filter-options]
   [:div
    [:div.content-1.proxima.py6.pl10.pr1
-    (for [[i options] (->> facets
-                           open-panel
-                           :facet/options
-                           (sort-by :option/order)
-                           (partition-all 4)
-                           (map-indexed vector))]
+    (for [[i options] filter-options]
       [:div.flex-on-dt.justify-between.items-center
        {:key (str "filter-panel-" i)}
-       (for [option options]
-         (let [selected?    (contains? (open-panel selections)
-                                       (:option/slug option))
-               slug         (:option/slug option)
-               represented? (contains? (open-panel represented-options) slug)]
-           [:div.py1.mr4.col-3-on-dt
-            {:key       (str "filter-option-" slug)
-             :data-test (str "filter-option-" (hacky-fix-of-bad-slugs-on-facets slug))
-             :disabled  (not represented?)}
-           (ui/check-box {:label     [:span
-                                      (when (categories/new-facet? [open-panel slug])
-                                        [:span.mr1.p-color "NEW"])
-                                      (:option/name option)]
-                          :value     selected?
-                          :disabled  (not represented?)
-                          :on-change #(let [event-handler (if selected?
-                                                            events/control-category-option-unselect
-                                                            events/control-category-option-select)]
-                                        (messages/handle-message event-handler
-                                                                 {:facet  open-panel
-                                                                  :option slug}))})]))])]
+       (for [{:filter-option/keys
+              [selected?
+               disabled?
+               id
+               target
+               label]} options]
+         [:div.py1.mr4.col-3-on-dt
+          {:key       id
+           :data-test id
+           :disabled  disabled?}
+          (ui/check-box {:label     label
+                         :value     selected?
+                         :disabled  disabled?
+                         :on-change (apply utils/send-event-callback target)})])])]
    [:div.clearfix.mxn3.mb2.hide-on-dt.flex.justify-around.items-center
     [:div.col-6.center.px5
      (ui/button-medium-underline-primary
@@ -124,21 +105,64 @@
       "Done")]]])
 
 (c/defcomponent organism
-  [{:as data :keys [title open-panel facets selections represented-options]} _ _]
+  [{:as data :keys [title open-panel tabs filter-options]} _ _]
   [:div.px3.bg-white.sticky.z1
    ;; The -5px prevents a sliver of the background from being visible above the filters
    ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
    {:style {:top "-5px"}}
-   (let [tabs (c/build filter-tabs data nil)]
+   (let [tabs (c/build filter-tabs tabs nil)]
      (if open-panel
        [:div
         [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
-         tabs (filter-panel facets represented-options selections open-panel)]
+         tabs (filter-panel filter-options)]
         [:div.hide-on-mb-tb
-         tabs (filter-panel facets represented-options selections open-panel)]]
+         tabs (filter-panel filter-options)]]
        [:div
         [:div.hide-on-dt tabs]
         [:div.hide-on-mb-tb tabs]]))])
+
+(defn filter-option-query
+  [{facet-slug :facet/slug}
+   selections
+   represented-options
+   {facet-option-slug :option/slug
+    facet-option-name :option/name}]
+  (let [selected?    (contains? selections facet-option-slug)
+        represented? (contains? represented-options facet-option-slug)]
+    {:filter-option/selected? selected?
+     :filter-option/disabled? (not represented?)
+     :filter-option/id        (str "filter-option-" (hacky-fix-of-bad-slugs-on-facets facet-option-slug))
+     :filter-option/target    [(if selected?
+                                    events/control-category-option-unselect
+                                    events/control-category-option-select)
+                               {:facet  facet-slug
+                                :option facet-option-slug}]
+     :filter-option/label     [:span
+                               (when (categories/new-facet? [facet-slug facet-option-slug])
+                                   [:span.mr1.p-color "NEW"])
+                                 facet-option-name]}))
+
+(defn filter-options-query
+  [selections represented-options facet]
+  (->> facet
+       :facet/options
+       (sort-by :option/order)
+       (mapv (partial filter-option-query facet selections represented-options))
+       (partition-all 4)
+       (map-indexed vector)))
+
+(defn tab-query
+  [open-panel
+   {facet-slug :facet/slug
+    facet-name :facet/name}]
+  (let [selected? (= open-panel facet-slug)]
+    {:filter-tab/id            (str "filter-" (name facet-slug))
+     :filter-tab/label         facet-name
+     :filter-tab/target        (if selected?
+                                 [events/control-category-panel-close]
+                                 [events/control-category-panel-open {:selected facet-slug}])
+     :filter-tab/any-selected? open-panel
+     :filter-tab/selected?     selected?}))
 
 (defn query
   [app-state category products selections]
@@ -152,25 +176,33 @@
                                                         (skuers/essentials category)
                                                         selections)
                                                        products-matching-category)
-        facets                     (maps/index-by :facet/slug (get-in app-state keypaths/v2-facets))]
+        indexed-facets             (-> (maps/index-by :facet/slug (get-in app-state keypaths/v2-facets))
+                                       (select-keys (:selector/electives category)))
+        open-panel                 (get-in app-state catalog.keypaths/category-panel)
+        product-count              (count products-matching-criteria)
+        selections-count           (->> (apply dissoc selections (:selector/essentials category))
+                                        (map (comp count val))
+                                        (apply +))]
     (merge
      (when-let [filter-title (:product-list/title category)]
        {:title filter-title})
-     {:open-panel          (get-in app-state catalog.keypaths/category-panel)
-      :selections          selections
-      :electives           (:selector/electives category)
-      :product-count       (count products-matching-criteria)
-      :represented-options (->> products-matching-category
-                                (map (fn [product]
-                                       (->> (select-keys product
-                                                         (concat (:selector/essentials category)
-                                                                 (:selector/electives category)))
-                                            (maps/map-values set))))
-                                (reduce (partial merge-with clojure.set/union) {}))
-      :selections-count    (->> (apply dissoc selections (:selector/essentials category))
-                                (map (comp count val))
-                                (apply +))
-      :facets              facets})))
+     {:open-panel     open-panel
+      :tabs           {:tabs/elements  (mapv (partial tab-query open-panel) (vals indexed-facets))
+                       :tabs/open?     (boolean open-panel)
+                       :tabs/primary   (case selections-count
+                                         0 "Filter by"
+                                         1 "1 filter applied"
+                                         (str selections-count " filters applied"))
+                       :tabs/secondary (str product-count " item" (when (not= 1 product-count) "s"))}
+      :filter-options (when open-panel
+                        (let [represented-options (->> products-matching-category
+                                                       (map (fn [product] (->> (get product open-panel) set)))
+                                                       (reduce clojure.set/union #{}))]
+                          (filter-options-query
+                           (open-panel selections)
+                           represented-options
+                           (open-panel indexed-facets))))
+      :selections     selections})))
 
 (defmethod transitions/transition-state events/control-category-panel-open
   [_ _ {:keys [selected]} app-state]
