@@ -52,7 +52,7 @@
     :data-test (when-not hide-dt? "shop-covid19-promo-banner")}
    [:div.mtp2.mr1 (svg/info-filled {:height "16px"
                                     :width  "16px"})]
-   [:div.pointer.h6 "Mayvenn is still shipping, but scheduling appointments for later dates. Click to learn about the changes we are making for COVID-19."]])
+   [:div.pointer.h6 "Mayvenn is still shipping, but strictly adhering to each state’s requirements for booking appointments. Click to learn about the changes we are making for COVID-19."]])
 
 (defmethod component :shop/freeinstall shop-freeinstall
   [_ _ {hide-dt? :hide-dt?}]
