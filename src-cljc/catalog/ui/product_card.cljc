@@ -68,8 +68,9 @@
                    (filter (comp #{"catalog"} :use-case))
                    first)]
     {:sort/value                   (:sku/price cheapest-sku)
+     :card/type                    :product
      :react/key                    (str "product-" product-slug)
-     :product-card-title/id        (str "product-card-title-" product-slug)
+     :product-card-title/id        (some->> product-slug (str "product-card-title-")) ;; TODO: better display-decision id
      :product-card-title/primary   (:copy/title product)
      :product-card/target          [events/navigate-product-details
                                     {:catalog/product-id (:catalog/product-id product)
@@ -159,4 +160,3 @@
      (ui/screen-aware card-image-molecule data)
      (product-card-title-molecule data)
      (product-card-details-molecule data)]]))
-
