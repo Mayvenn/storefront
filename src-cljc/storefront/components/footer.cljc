@@ -160,7 +160,7 @@
                                 (remove nil?))]
     {:contacts     (contacts-query data)
      :link-columns (split-evenly links)
-     :essence-copy (str "Included is a one year subscription to ESSENCE Magazine - a $10 value! "
+     :essence-copy (str "All orders include a one year subscription to ESSENCE Magazine - a $10 value! "
                         "Offer and refund details will be included with your confirmation.")}))
 
 (defn built-component
