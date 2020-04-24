@@ -3,10 +3,10 @@
    #?@(:cljs [[storefront.api :as api]
               [storefront.accessors.auth :as auth]
               [storefront.platform.messages :as messages]
-              [catalog.skuers :as skuers]
               [storefront.browser.scroll :as scroll]
               [storefront.hooks.facebook-analytics :as facebook-analytics]])
    [catalog.icp :as icp]
+   [catalog.skuers :as skuers]
    catalog.keypaths
    [catalog.ui.category-filters :as category-filters]
    [catalog.ui.category-hero :as category-hero]
@@ -19,7 +19,8 @@
    [storefront.events :as e]
    [storefront.keypaths :as k]
    [storefront.trackings :as trackings]
-   [storefront.transitions :as transitions]))
+   [storefront.transitions :as transitions]
+   [spice.selector :as selector]))
 
 (c/defcomponent ^:private template
   [{:keys [category-hero
@@ -77,16 +78,31 @@
 
 (defn page
   [app-state opts]
-  (let [current         (accessors.categories/current-category app-state)
-        loaded-products (vals (get-in app-state k/v2-products))
-        selections      (get-in app-state catalog.keypaths/category-selections) ]
+  (let [current                  (accessors.categories/current-category app-state)
+        selections               (get-in app-state catalog.keypaths/category-selections)
+        loaded-category-products (selector/match-all
+                                  {:selector/strict? true}
+                                  (merge
+                                   (skuers/electives current)
+                                   (skuers/essentials current))
+                                  (vals (get-in app-state k/v2-products)))
+        category-products-matching-criteria
+        (selector/match-all {:selector/strict? true}
+                            (merge
+                             (skuers/essentials current)
+                             selections)
+                            loaded-category-products)]
     (c/build template
              {:category-hero        (category-hero-query current)
               :category-filters     (category-filters/query app-state
-                                                            current loaded-products selections)
+                                                            current
+                                                            loaded-category-products
+                                                            category-products-matching-criteria
+                                                            selections)
               :how-it-works         (how-it-works-query current)
               :product-card-listing (product-card-listing/query app-state
-                                                                current loaded-products selections)}
+                                                                current
+                                                                category-products-matching-criteria)}
              opts)))
 
 (defn ^:export built-component

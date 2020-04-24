@@ -7,11 +7,9 @@
               [goog.object :as object]])
    [catalog.categories :as categories]
    catalog.keypaths
-   [catalog.skuers :as skuers]
    clojure.set
    [clojure.string :as string]
    [spice.maps :as maps]
-   [spice.selector :as selector]
    [storefront.component :as c]
    [storefront.components.ui :as ui]
    [storefront.events :as events]
@@ -112,11 +110,12 @@
    {:style {:top "-5px"}}
    (let [tabs (c/build filter-tabs tabs nil)]
      (if open-panel
-       [:div
-        [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
-         tabs (filter-panel filter-options)]
-        [:div.hide-on-mb-tb
-         tabs (filter-panel filter-options)]]
+       (let [panel (filter-panel filter-options)]
+         [:div
+          [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
+           tabs panel]
+          [:div.hide-on-mb-tb
+           tabs panel]])
        [:div
         [:div.hide-on-dt tabs]
         [:div.hide-on-mb-tb tabs]]))])
@@ -165,24 +164,14 @@
      :filter-tab/selected?     selected?}))
 
 (defn query
-  [app-state category products selections]
-  (let [products-matching-category (selector/match-all {:selector/strict? true}
-                                                       (merge
-                                                        (skuers/electives category)
-                                                        (skuers/essentials category))
-                                                       products)
-        products-matching-criteria (selector/match-all {:selector/strict? true}
-                                                       (merge
-                                                        (skuers/essentials category)
-                                                        selections)
-                                                       products-matching-category)
-        indexed-facets             (-> (maps/index-by :facet/slug (get-in app-state keypaths/v2-facets))
-                                       (select-keys (:selector/electives category)))
-        open-panel                 (get-in app-state catalog.keypaths/category-panel)
-        product-count              (count products-matching-criteria)
-        selections-count           (->> (apply dissoc selections (:selector/essentials category))
-                                        (map (comp count val))
-                                        (apply +))]
+  [app-state category category-products category-products-matching-filter-selections selections]
+  (let [indexed-facets   (-> (maps/index-by :facet/slug (get-in app-state keypaths/v2-facets))
+                             (select-keys (:selector/electives category)))
+        open-panel       (get-in app-state catalog.keypaths/category-panel)
+        product-count    (count category-products-matching-filter-selections)
+        selections-count (->> (apply dissoc selections (:selector/essentials category))
+                              (map (comp count val))
+                              (apply +))]
     (merge
      (when-let [filter-title (:product-list/title category)]
        {:title filter-title})
@@ -195,7 +184,7 @@
                                          (str selections-count " filters applied"))
                        :tabs/secondary (str product-count " item" (when (not= 1 product-count) "s"))}
       :filter-options (when open-panel
-                        (let [represented-options (->> products-matching-category
+                        (let [represented-options (->> category-products
                                                        (map (fn [product] (->> (get product open-panel) set)))
                                                        (reduce clojure.set/union #{}))]
                           (filter-options-query

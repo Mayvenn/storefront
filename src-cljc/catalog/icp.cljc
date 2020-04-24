@@ -1,10 +1,12 @@
 (ns catalog.icp
   (:require [adventure.components.layered :as layered]
             catalog.keypaths
+            [catalog.skuers :as skuers]
             [catalog.ui.category-filters :as category-filters]
             [catalog.ui.category-hero :as category-hero]
             [catalog.ui.product-card-listing :as product-card-listing]
             [spice.maps :as maps]
+            [spice.selector :as selector]
             [storefront.accessors.categories :as accessors.categories]
             [storefront.assets :as assets]
             [storefront.component :as component :refer [defcomponent]]
@@ -254,10 +256,21 @@
 
 (defn query
   [app-state]
-  (let [current         (accessors.categories/current-category app-state)
-        subcategories   (category->subcategories (get-in app-state keypaths/categories) current)
-        selections      (get-in app-state catalog.keypaths/category-selections)
-        loaded-products (vals (get-in app-state keypaths/v2-products))]
+  (let [current                  (accessors.categories/current-category app-state)
+        subcategories            (category->subcategories (get-in app-state keypaths/categories) current)
+        selections               (get-in app-state catalog.keypaths/category-selections)
+        loaded-category-products (selector/match-all
+                                  {:selector/strict? true}
+                                  (merge
+                                   (skuers/electives current)
+                                   (skuers/essentials current))
+                                  (vals (get-in app-state keypaths/v2-products)))
+        category-products-matching-criteria
+        (selector/match-all {:selector/strict? true}
+                            (merge
+                             (skuers/essentials current)
+                             selections)
+                            loaded-category-products)]
     (cond->
         {:header               {}
          :footer               {}
@@ -268,9 +281,13 @@
                                   :summary  (:content-block/summary current)
                                   :sections (:content-block/sections current)})
          :category-filters     (category-filters/query app-state
-                                                       current loaded-products selections)
+                                                       current
+                                                       loaded-category-products
+                                                       category-products-matching-criteria
+                                                       selections)
          :product-card-listing (product-card-listing/query app-state
-                                                           current loaded-products selections)}
+                                                           current
+                                                           category-products-matching-criteria)}
 
       (= :grid (:subcategories/layout current))
       (merge {:drill-category-grid {:drill-category-grid/values (mapv category->drill-category-grid-entry subcategories)

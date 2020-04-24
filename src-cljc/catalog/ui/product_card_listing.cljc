@@ -4,7 +4,6 @@
             [catalog.ui.service-card :as service-card]
             clojure.set
             [spice.maps :as maps]
-            [spice.selector :as selector]
             [storefront.component :as c]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
@@ -88,22 +87,12 @@
                              subsections))])
 
 (defn query
-  [app-state category products selections]
-  (let [products-matching-category (selector/match-all {:selector/strict? true}
-                                                       (merge
-                                                        (skuers/electives category)
-                                                        (skuers/essentials category))
-                                                       products)
-        products-matching-criteria (selector/match-all {:selector/strict? true}
-                                                       (merge
-                                                        (skuers/essentials category)
-                                                        selections)
-                                                       products-matching-category)
-        facets                     (maps/index-by :facet/slug (get-in app-state keypaths/v2-facets))
+  [app-state category products-matching-filter-selections]
+  (let [facets                     (maps/index-by :facet/slug (get-in app-state keypaths/v2-facets))
         subsections                (subsections-query
                                     (vals facets)
                                     category
-                                    products-matching-criteria
+                                    products-matching-filter-selections
                                     app-state)]
     {:subsections       subsections
      :no-product-cards? (empty? (mapcat :product-cards subsections))
