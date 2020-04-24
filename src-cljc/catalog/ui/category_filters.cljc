@@ -15,7 +15,9 @@
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
-   [storefront.transitions :as transitions]))
+   [storefront.transitions :as transitions]
+   [spice.core :as spice]
+   [storefront.platform.messages :as messages]))
 
 (defn- hacky-fix-of-bad-slugs-on-facets [slug]
   (string/replace (str slug) #"#" ""))
@@ -69,19 +71,21 @@
                 (for [e elements]
                   (c/build filter-tab e)))]])))))
 
-(defn ^:private filter-panel
-  [filter-options]
+(c/defcomponent ^:private filter-panel
+  [{:keys [options]} _ _]
   [:div
    [:div.content-1.proxima.py6.pl10.pr1
-    (for [[i options] filter-options]
+    (for [[i options] (->> options
+                           (partition-all 4)
+                           (map-indexed vector))]
       [:div.flex-on-dt.justify-between.items-center
        {:key (str "filter-panel-" i)}
        (for [{:filter-option/keys
-              [selected?
-               disabled?
-               id
-               target
-               label]} options]
+             [selected?
+              disabled?
+              id
+              target
+              label]} options]
          [:div.py1.mr4.col-3-on-dt
           {:key       id
            :data-test id
@@ -89,7 +93,7 @@
           (ui/check-box {:label     label
                          :value     selected?
                          :disabled  disabled?
-                         :on-change (apply utils/send-event-callback target)})])])]
+                         :on-change #(apply messages/handle-message target)})])])]
    [:div.clearfix.mxn3.mb2.hide-on-dt.flex.justify-around.items-center
     [:div.col-6.center.px5
      (ui/button-medium-underline-primary
@@ -103,14 +107,14 @@
       "Done")]]])
 
 (c/defcomponent organism
-  [{:as data :keys [title open-panel tabs filter-options]} _ _]
+  [{:keys [title open-panel tabs filter-panel]} _ _]
   [:div.px3.bg-white.sticky.z1
    ;; The -5px prevents a sliver of the background from being visible above the filters
    ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
    {:style {:top "-5px"}}
    (let [tabs (c/build filter-tabs tabs nil)]
      (if open-panel
-       (let [panel (filter-panel filter-options)]
+       (let [panel (c/build filter-panel filter-panel)]
          [:div
           [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
            tabs panel]
@@ -132,23 +136,21 @@
      :filter-option/disabled? (not represented?)
      :filter-option/id        (str "filter-option-" (hacky-fix-of-bad-slugs-on-facets facet-option-slug))
      :filter-option/target    [(if selected?
-                                    events/control-category-option-unselect
-                                    events/control-category-option-select)
+                                 events/control-category-option-unselect
+                                 events/control-category-option-select)
                                {:facet  facet-slug
                                 :option facet-option-slug}]
      :filter-option/label     [:span
                                (when (categories/new-facet? [facet-slug facet-option-slug])
-                                   [:span.mr1.p-color "NEW"])
-                                 facet-option-name]}))
+                                 [:span.mr1.p-color "NEW"])
+                               facet-option-name]}))
 
 (defn filter-options-query
   [selections represented-options facet]
   (->> facet
        :facet/options
        (sort-by :option/order)
-       (mapv (partial filter-option-query facet selections represented-options))
-       (partition-all 4)
-       (map-indexed vector)))
+       (mapv (partial filter-option-query facet selections represented-options))))
 
 (defn tab-query
   [open-panel
@@ -175,23 +177,24 @@
     (merge
      (when-let [filter-title (:product-list/title category)]
        {:title filter-title})
-     {:open-panel     open-panel
-      :tabs           {:tabs/elements  (mapv (partial tab-query open-panel) (vals indexed-facets))
-                       :tabs/open?     (boolean open-panel)
-                       :tabs/primary   (case selections-count
-                                         0 "Filter by"
-                                         1 "1 filter applied"
-                                         (str selections-count " filters applied"))
-                       :tabs/secondary (str product-count " item" (when (not= 1 product-count) "s"))}
-      :filter-options (when open-panel
-                        (let [represented-options (->> category-products
-                                                       (map (fn [product] (->> (get product open-panel) set)))
-                                                       (reduce clojure.set/union #{}))]
-                          (filter-options-query
-                           (open-panel selections)
-                           represented-options
-                           (open-panel indexed-facets))))
-      :selections     selections})))
+     {:open-panel   open-panel
+      :tabs         {:tabs/elements  (mapv (partial tab-query open-panel) (vals indexed-facets))
+                     :tabs/open?     (boolean open-panel)
+                     :tabs/primary   (case selections-count
+                                       0 "Filter by"
+                                       1 "1 filter applied"
+                                       (str selections-count " filters applied"))
+                     :tabs/secondary (str product-count " item" (when (not= 1 product-count) "s"))}
+      :filter-panel {:options (when open-panel
+                                (let [represented-options
+                                      (->> category-products
+                                           (map (fn [product] (->> (get product open-panel) set)))
+                                           (reduce clojure.set/union #{}))]
+                                  (filter-options-query
+                                   (open-panel selections)
+                                   represented-options
+                                   (open-panel indexed-facets))))}
+      :selections   selections})))
 
 (defmethod transitions/transition-state events/control-category-panel-open
   [_ _ {:keys [selected]} app-state]
