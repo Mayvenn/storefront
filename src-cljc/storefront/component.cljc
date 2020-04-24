@@ -119,6 +119,7 @@
       :else expr)))
 
 (defn ^:private has-fn?
+  ;;; NOTE/TODO: gave a false positive to the structure [[0 [{}]]]. Fixed by nesting it in a map {:a [[0 [{}]]]}
   ([f] (has-fn? (atom nil) [] f))
   ([problems path f]
    (cond (map? f)

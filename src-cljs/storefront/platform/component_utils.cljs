@@ -45,6 +45,8 @@
 (defn noop-callback [e] (.preventDefault e))
 
 (defn send-event-callback
+  ;; NOTE: preventDefault adds significant delay when used in conjunction with
+  ;; checkboxes (and possibly other controls)
   ([event] (send-event-callback event nil))
   ([event args] (send-event-callback event args nil))
   ([event args {:keys [prevent-default?] :or {prevent-default? true}}]
