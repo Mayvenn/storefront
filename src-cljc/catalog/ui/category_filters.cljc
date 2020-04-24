@@ -107,14 +107,14 @@
       "Done")]]])
 
 (c/defcomponent organism
-  [{:keys [title open-panel tabs filter-panel]} _ _]
+  [{:keys [title open-panel tabs filter-panel-data]} _ _]
   [:div.px3.bg-white.sticky.z1
    ;; The -5px prevents a sliver of the background from being visible above the filters
    ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
    {:style {:top "-5px"}}
    (let [tabs (c/build filter-tabs tabs nil)]
      (if open-panel
-       (let [panel (c/build filter-panel filter-panel)]
+       (let [panel (c/build filter-panel filter-panel-data)]
          [:div
           [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
            tabs panel]
@@ -177,24 +177,24 @@
     (merge
      (when-let [filter-title (:product-list/title category)]
        {:title filter-title})
-     {:open-panel   open-panel
-      :tabs         {:tabs/elements  (mapv (partial tab-query open-panel) (vals indexed-facets))
-                     :tabs/open?     (boolean open-panel)
-                     :tabs/primary   (case selections-count
-                                       0 "Filter by"
-                                       1 "1 filter applied"
-                                       (str selections-count " filters applied"))
-                     :tabs/secondary (str product-count " item" (when (not= 1 product-count) "s"))}
-      :filter-panel {:options (when open-panel
-                                (let [represented-options
-                                      (->> category-products
-                                           (map (fn [product] (->> (get product open-panel) set)))
-                                           (reduce clojure.set/union #{}))]
-                                  (filter-options-query
-                                   (open-panel selections)
-                                   represented-options
-                                   (open-panel indexed-facets))))}
-      :selections   selections})))
+     {:open-panel        open-panel
+      :tabs              {:tabs/elements  (mapv (partial tab-query open-panel) (vals indexed-facets))
+                          :tabs/open?     (boolean open-panel)
+                          :tabs/primary   (case selections-count
+                                            0 "Filter by"
+                                            1 "1 filter applied"
+                                            (str selections-count " filters applied"))
+                          :tabs/secondary (str product-count " item" (when (not= 1 product-count) "s"))}
+      :filter-panel-data {:options (when open-panel
+                                     (let [represented-options
+                                           (->> category-products
+                                                (map (fn [product] (->> (get product open-panel) set)))
+                                                (reduce clojure.set/union #{}))]
+                                       (filter-options-query
+                                        (open-panel selections)
+                                        represented-options
+                                        (open-panel indexed-facets))))}
+      :selections        selections})))
 
 (defmethod transitions/transition-state events/control-category-panel-open
   [_ _ {:keys [selected]} app-state]
