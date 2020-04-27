@@ -135,7 +135,7 @@
 
           (let [service-line-item (first service-line-items)]
             [:div
-             (when-not (:mayvenn-install/stylist mayvenn-install)
+             (when-not (:mayvenn-install/stylist mayvenn-install) ;; missing stylist
                (component/build cart-item-v202004/stylist-organism {}
                                 (component/component-id "stylist-item")))
              [:div.mt2
@@ -398,9 +398,6 @@
                                                        :cart-item-sub-item/price  price
                                                        :cart-item-sub-item/sku-id sku-id})
                                                     addon-services)}))]))))
-
-(defn physical-line-items-query
-  [])
 
 (defn cart-items-query
   [app-state
@@ -801,12 +798,6 @@
                          empty-component
                          full-component) cart-data opts)]]))
 
-(defn query [data]
-  {:fetching-order?          (utils/requesting? data request-keys/get-order)
-   :item-count               (orders/product-quantity (get-in data keypaths/order))
-   :empty-cart               (empty-cart-query data)
-   :full-cart                (full-cart-query data)})
-
 (defcomponent template
   [{:keys [header footer popup promo-banner flash cart data nav-event] :as query-data} _ _]
   [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
@@ -825,17 +816,27 @@
     [:footer
      (storefront.footer/built-component footer nil)]]])
 
+(defn cart-query
+  [data]
+  {:fetching-order?          (utils/requesting? data request-keys/get-order)
+   :item-count               (orders/product-quantity (get-in data keypaths/order))
+   :empty-cart               (empty-cart-query data)
+   :full-cart                (full-cart-query data)})
+
 (defn page
   [app-state nav-event]
-  (component/build template
-                   (merge
-                    (when (and (zero? (orders/product-quantity (get-in app-state keypaths/order)))
-                               (-> app-state mayvenn-install/mayvenn-install :mayvenn-install/entered? not))
-                      {:promo-banner app-state})
-                    {:cart                   (query app-state)
-                     :header                 app-state
-                     :footer                 app-state
-                     :popup                  app-state
-                     :flash                  app-state
-                     :data                   app-state
-                     :nav-event              nav-event})))
+  (let [install-entered    (-> app-state mayvenn-install/mayvenn-install :mayvenn-install/entered?)
+        order              (get-in app-state keypaths/order)
+        show-promo-banner? (and (zero? (orders/product-quantity order))
+                                (not install-entered))]
+    (component/build template
+                     (merge
+                      (when show-promo-banner?
+                        {:promo-banner app-state})
+                      {:cart      (cart-query app-state)
+                       :header    app-state
+                       :footer    app-state
+                       :popup     app-state
+                       :flash     app-state
+                       :data      app-state
+                       :nav-event nav-event}))))

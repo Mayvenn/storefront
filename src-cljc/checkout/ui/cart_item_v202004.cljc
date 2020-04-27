@@ -132,10 +132,8 @@
         [:div
          [:div.absolute.z1.col-12.flex.items-center.justify-center
           {:style {:height "100%"}}
-          [:div.absolute.z2.col-12.flex.items-center.justify-center
-           {:style {:height "100%"}}
-           (svg/stylist-lock {:style {:width   "18px"
-                                      :height  "25px"}})]]
+          (svg/stylist-lock {:style {:width   "18px"
+                                     :height  "25px"}})]
          (ui/ucare-img {:width "56px"
                         :class "mtp3"
                         :style {:filter "contrast(0.1) brightness(1.75)"}} image-url)]

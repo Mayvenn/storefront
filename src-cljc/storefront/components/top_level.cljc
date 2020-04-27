@@ -49,6 +49,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
+            [checkout.cart-v2020-04 :as cart-v2020-04]
             [checkout.shop.cart-v202004 :as shop-cart-v202004]
             [checkout.shop.cart :as shop-cart]))
 
@@ -193,7 +194,7 @@
        ;; Cart pages for Shop
        (routes/sub-page? [nav-event] [events/navigate-cart])
        (if (experiments/new-cart? data)
-         (shop-cart-v202004/page data nav-event)
+         (cart-v2020-04/page data nil)
          (shop-cart/page data nav-event))
 
        ;; TODO this should be moved into the UI domain of stylist-matching
