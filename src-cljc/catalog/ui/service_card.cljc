@@ -1,15 +1,10 @@
 (ns catalog.ui.service-card
   (:require [storefront.component :as c]
-            [storefront.platform.component-utils :as utils]
+            [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [catalog.keypaths :as catalog.keypaths]
-            [catalog.facets :as facets]
-            [spice.selector :as selector]
-            [storefront.platform.messages :as messages]
-            [storefront.components.money-formatters :as mf]))
-
+            [storefront.platform.component-utils :as utils]))
 
 (defn query
   [data product]
@@ -46,14 +41,12 @@
                    640 580
                    (ui/ucare-img
                     {:class "block col-12 container-height"
-                     :style {:border-radius "5px 5px 0 0"}
                      :alt   alt}
                     src))]
     seen?        (ui/aspect-ratio
                   640 580
                   (ui/ucare-img
                    {:class "block col-12 container-height"
-                    :style {:border-radius "5px 5px 0 0"}
                     :alt   alt}
                    src))
     :else        (ui/aspect-ratio
