@@ -874,6 +874,57 @@
      ;;                                  {:title "Human Hair Extensions"
      ;;                                   :body  "Our human hair extensions are a must-have for creating the hair you’ve always wanted. Our high-quality extensions are easy to install and available in many textures like Straight, Yaki Straight, Kinky Straight, Body Wave, Loose Wave, Water Wave, Deep Wave, and Curly, plus multiple lengths for all kinds of hairstyles."}]
      ;; clip-in-tape-in-templates)
+     })
+
+   (merge
+    {:catalog/category-id                "31"
+     :catalog/department                 #{"service"}
+     :service/type                       #{"base"}
+     :promo.mayvenn-install/discountable #{true}
+     :selector/essentials                [:catalog/department :service/type :promo.mayvenn-install/discountable]
+     :selector/electives                 []
+
+     :page/icp?     false
+     :category/new? true
+
+     ;; :flyout-menu/title "Salon Services"
+     ;; :flyout-menu/order 6
+
+     ;; :homepage.v2020-04/order    5
+     ;; :homepage.v2020-04/image-id "978c91a9-9931-40f3-abec-ca7ccefa8240"
+     ;; :footer/order          5
+     ;; :footer/title          "Salon Services"
+
+     :copy/title       "FREE Mayvenn Services"
+
+     :page/slug        "free-mayvenn-services"
+     :copy/description "Lorem ipsum dolor sit amet, consectetur adipiscing
+      elit. Ut sollicitudin massa sit amet efficitur sagittis."
+
+     ;;  :category/description          (str "Ditch the tracks and opt for hair that blends in seamlessly. "
+     ;;                                      "Mayvenn human hair extensions are made with a thin polyurethane "
+     ;;                                      "weft that blends with your hair for a natural look.")
+     ;;  :seo/sitemap                   true
+     ;;  :seo/title                     "Hair Extensions"
+     ;;  :page/title                    "Hair Extensions: Real Human Hair Extensions | Mayvenn"
+     ;;  :page.meta/description         (str "Mayvenn’s real human hair extensions come in different variations"
+     ;;                                      " such as Brazilian and Malaysian, straight, deep wave and loose wave."
+     ;;                                      " Shop now.")
+     ;;  :category/image-url            "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
+     ;;  :opengraph/title               "Real Human Hair Extensions - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
+     ;;  :opengraph/description         "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in and tape-in extensions are the best quality products on the market and ships free!"
+     ;;  :subsections/category-selector :hair/family
+     ;;  :content-block/type            :about-attributes ;; incase we have different templates in the future
+     ;;  :content-block/title           "Hair Extensions 101:"
+     ;;  :content-block/header          "How to Choose"
+     ;;  :content-block/summary         "No matter what kind of transformation you’re looking for, our seamless clip-in & tape-in hair extensions will help you achieve your desired look in an instant. Our clip-ins & tape-ins are perfect for when you want a natural-looking appearance that complements your own hair while giving that much coveted oomph-factor."
+     ;;  :content-block/sections        [{:title "Tape-In Hair Extensions"
+     ;;                                   :body  "Our seamless tape-in hair extensions have a thin weft that flawlessly blends with your own hair, so you can have the hair of your dreams."}
+     ;;                                  {:title "Clip-In Hair Extensions"
+     ;;                                   :body  "With a thin weft that blends into your hair seamlessly, our clip-in human hair extensions help you create the hair of your dreams."}
+     ;;                                  {:title "Human Hair Extensions"
+     ;;                                   :body  "Our human hair extensions are a must-have for creating the hair you’ve always wanted. Our high-quality extensions are easy to install and available in many textures like Straight, Yaki Straight, Kinky Straight, Body Wave, Loose Wave, Water Wave, Deep Wave, and Curly, plus multiple lengths for all kinds of hairstyles."}]
+     ;; clip-in-tape-in-templates)
      })])
 
 (def menu-categories
