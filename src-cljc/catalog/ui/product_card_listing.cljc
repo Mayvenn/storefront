@@ -2,6 +2,7 @@
   (:require [catalog.skuers :as skuers]
             [catalog.ui.product-card :as product-card]
             [catalog.ui.service-card :as service-card]
+            [catalog.ui.horizontal-direct-to-cart-card :as horizontal-direct-to-cart-card]
             clojure.set
             [spice.maps :as maps]
             [storefront.component :as c]
@@ -11,10 +12,20 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]))
 
-(defn product->card [data product]
-  (if (and (-> product :catalog/department (contains? "service"))
-           (not (-> product :promo.mayvenn-install/discountable (contains? true))))
+(defn product->card
+  [data {:as                          product
+         catalog-department           :catalog/department
+         mayvenn-install-discountable :promo.mayvenn-install/discountable}]
+  (cond
+    (and (contains? catalog-department "service")
+         (contains? mayvenn-install-discountable true)) ;; Free services
+    (horizontal-direct-to-cart-card/query data product)
+
+    (and (contains? catalog-department "service")
+         (contains? mayvenn-install-discountable false))
     (service-card/query data product)
+
+    :else
     (product-card/query data product)))
 
 (defn subsections-query
@@ -60,8 +71,9 @@
   [{:as       card
     card-type :card/type}]
   (case card-type
-    :service (service-card/organism card)
-    :product (product-card/organism card)))
+    :service                        (service-card/organism card)
+    :product                        (product-card/organism card)
+    :horizontal-direct-to-cart-card (horizontal-direct-to-cart-card/organism card)))
 
 (c/defcomponent ^:private product-list-subsection-component
   [{:keys [product-cards subsection-key] primary-title :title/primary} _ {:keys [id]}]
