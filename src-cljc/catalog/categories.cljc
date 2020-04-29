@@ -844,7 +844,6 @@
      ;; :footer/title          "Salon Services"
 
      :copy/title         "Salon Services"
-     :product-list/title "Shop All Salon Services"
 
      :page/slug        "salon-services"
      :copy/description "Lorem ipsum dolor sit amet, consectetur adipiscing

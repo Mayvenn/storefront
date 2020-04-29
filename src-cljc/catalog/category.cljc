@@ -35,12 +35,12 @@
       [:div.canela.title-1.center.mt3.py4 title])
     (c/build category-filters/organism category-filters {})
     (c/build product-card-listing/organism product-card-listing {})]
-   [:div.col-10.mx-auto
+   [:div.col-10.mx-auto.mt6
     (c/build how-it-works/organism how-it-works)]])
 
 (defn how-it-works-query
   [{:keys [catalog/category-id]}]
-  (when (= "30" category-id)
+  (when (#{"30" "31"} category-id)
     {:how-it-works.title/primary   "Your hair deserves a Mayvenn–Certified Stylist."
      :how-it-works.title/secondary "Here’s how it works."
      :how-it-works.step/elements

@@ -58,20 +58,18 @@
   [{:as       data
     react-key :react/key
     :vertical-direct-to-cart-card/keys
-    [primary secondary cta-target card-target]}]
+    [id primary secondary cta-target card-target]}]
   (c/html
-   [:div.inherit-color.col.col-6.col-4-on-tb-dt.p1
-    [:div.border.border-cool-gray.container-height.center.flex.flex-column.justify-between
-     [:a.inherit-color
-      (merge (apply utils/route-to card-target)
-             {:key       react-key
-              :data-test react-key})
-      (ui/screen-aware card-image-molecule data)
-      [:div.mx3.my2
-       [:div primary]
-       [:div secondary]]]
-     [:div.my2.mx5
-      (ui/button-small-secondary (merge (apply utils/fake-href cta-target)
-                                        {:key       react-key
-                                         :data-test react-key})
-                                 "Add To Cart")]]]))
+   (let [non-cta-action (merge (apply utils/route-to card-target)
+                               {:key       id
+                                :data-test id})]
+     [:div.inherit-color.col.col-6.col-4-on-tb-dt.p1
+      [:div.border.border-cool-gray.container-height.center.flex.flex-column.justify-between
+       [:a.inherit-color.mb2 non-cta-action (ui/screen-aware card-image-molecule data)]
+       [:div.pointer non-cta-action primary]
+       [:div.pointer non-cta-action secondary]
+       [:div.my2.mx5
+        (ui/button-small-secondary (merge (apply utils/fake-href cta-target)
+                                          {:key       react-key
+                                           :data-test react-key})
+                                   "Add To Cart")]]])))
