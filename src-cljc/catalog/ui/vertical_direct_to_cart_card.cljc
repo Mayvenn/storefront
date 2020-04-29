@@ -1,4 +1,4 @@
-(ns catalog.ui.service-card
+(ns catalog.ui.vertical-direct-to-cart-card
   (:require [storefront.component :as c]
             [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
@@ -17,19 +17,19 @@
                           (filter (comp #{"catalog"} :use-case))
                           first)
         product-slug (:page/slug product)]
-    {:card-image/src           (str (:url image) "-/format/auto/" (:filename image))
-     :card/type                :service
-     :card-image/alt           (:alt image)
-     :react/key                (str "product-" product-slug)
-     :service-card-title/id    (some->> product-slug (str "product-card-title-")) ;; TODO: better display-decision id
-     :service-card/primary     (:copy/title product)
-     :service-card/secondary   (mf/as-money (:sku/price service-sku))
-     :service-card/card-target [events/navigate-product-details
-                                {:catalog/product-id (:catalog/product-id product)
-                                 :page/slug          product-slug
-                                 :query-params       {:SKU (:catalog/sku-id service-sku)}}]
-     :service-card/cta-target  [events/control-add-sku-to-bag {:sku      service-sku
-                                                               :quantity 1}]}))
+    {:card-image/src                           (str (:url image) "-/format/auto/" (:filename image))
+     :card/type                                :vertical-direct-to-cart-card
+     :card-image/alt                           (:alt image)
+     :react/key                                (str "product-" product-slug)
+     :vertical-direct-to-cart-card-title/id    (some->> product-slug (str "product-card-title-"))
+     :vertical-direct-to-cart-card/primary     (:copy/title product)
+     :vertical-direct-to-cart-card/secondary   (mf/as-money (:sku/price service-sku))
+     :vertical-direct-to-cart-card/card-target [events/navigate-product-details
+                                                {:catalog/product-id (:catalog/product-id product)
+                                                 :page/slug          product-slug
+                                                 :query-params       {:SKU (:catalog/sku-id service-sku)}}]
+     :vertical-direct-to-cart-card/cta-target  [events/control-add-sku-to-bag {:sku      service-sku
+                                                                               :quantity 1}]}))
 
 (c/defcomponent card-image-molecule
   [{:keys [card-image/src card-image/alt screen/seen?]}
@@ -55,8 +55,10 @@
                    {:style {:height "100%"}}])))
 
 (defn organism
-  [{:as                data react-key :react/key
-    :service-card/keys [primary secondary cta-target card-target]}]
+  [{:as       data
+    react-key :react/key
+    :vertical-direct-to-cart-card/keys
+    [primary secondary cta-target card-target]}]
   (c/html
    [:div.inherit-color.col.col-6.col-4-on-tb-dt.p1
     [:div.border.border-cool-gray.container-height.center.flex.flex-column.justify-between

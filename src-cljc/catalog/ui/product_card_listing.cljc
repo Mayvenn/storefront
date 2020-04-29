@@ -1,7 +1,7 @@
 (ns catalog.ui.product-card-listing
   (:require [catalog.skuers :as skuers]
             [catalog.ui.product-card :as product-card]
-            [catalog.ui.service-card :as service-card]
+            [catalog.ui.vertical-direct-to-cart-card :as vertical-direct-to-cart-card]
             [catalog.ui.horizontal-direct-to-cart-card :as horizontal-direct-to-cart-card]
             clojure.set
             [spice.maps :as maps]
@@ -23,7 +23,7 @@
 
     (and (contains? catalog-department "service")
          (contains? mayvenn-install-discountable false))
-    (service-card/query data product)
+    (vertical-direct-to-cart-card/query data product)
 
     :else
     (product-card/query data product)))
@@ -71,8 +71,8 @@
   [{:as       card
     card-type :card/type}]
   (case card-type
-    :service                        (service-card/organism card)
     :product                        (product-card/organism card)
+    :vertical-direct-to-cart-card   (vertical-direct-to-cart-card/organism card)
     :horizontal-direct-to-cart-card (horizontal-direct-to-cart-card/organism card)))
 
 (c/defcomponent ^:private product-list-subsection-component
