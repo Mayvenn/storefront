@@ -14,7 +14,7 @@
    [checkout.suggestions :as suggestions]
    [checkout.ui.cart-item :as cart-item]
    [checkout.ui.cart-item-v202004 :as cart-item-v202004]
-   [checkout.ui.cart-summary :as cart-summary]
+   [checkout.ui.cart-summary-v202004 :as cart-summary-v202004]
    [clojure.string :as string]
    [clojure.set :as set]
    [spice.maps :as maps]
@@ -54,20 +54,25 @@
 (defn ^:private new-servicing-stylist-banner-component
   [{:servicing-stylist-banner/keys [id name image-url rating action-id target]}]
   (when id
-    [:div.flex.bg-white.pl3.pr3.py2 {:data-test id}
-     [:div.flex.flex-grow-1.items-center
-      (ui/circle-picture {:width 50} (ui/square-image {:resizable-url image-url} 50))
-      [:div.ml3
-       [:div.content-2.proxima.flex.justify-between name]
-       [:div.content-3.proxima "Your Certified Mayvenn Stylist"]
-       [:div.mt1 (ui.molecules/stars-rating-molecule rating)]]]
-     (when action-id
-       [:a.block.gray.medium.m1
-        (merge {:data-test action-id
-                :href (routes/path-for events/navigate-adventure-find-your-stylist)
-                :on-click (apply utils/send-event-callback target)})
-        (svg/swap-arrows {:width "16px"
-                          :height "20px"})])]))
+    [:div.flex.bg-white.pl3 {:data-test id}
+     [:div.py2
+      {:style {:min-width "70px"}}
+      (ui/circle-picture {:width 56} (ui/square-image {:resizable-url image-url} 50))]
+     [:div.flex-auto
+      [:div.flex.flex-auto.pr3.py2
+       [:div.flex.flex-grow-1.items-center
+        [:div
+         [:div.content-2.proxima.flex.justify-between name]
+         [:div.content-3.proxima "Your Certified Mayvenn Stylist"]
+         [:div.mt1 (ui.molecules/stars-rating-molecule rating)]]]
+       (when action-id
+         [:a.block.gray.medium.m1
+          (merge {:data-test action-id
+                  :href (routes/path-for events/navigate-adventure-find-your-stylist)
+                  :on-click (apply utils/send-event-callback target)})
+          (svg/swap-arrows {:width "16px"
+                            :height "20px"})])]
+      [:div.mt1.border-bottom.border-cool-gray.hide-on-mb]]]))
 
 (defdynamic-component ^:private confetti-spout
   (constructor [this props]
@@ -126,7 +131,7 @@
 
    [:div.clearfix.mxn3
     [:div
-     [:div.bg-cool-gray.p3
+     [:div.bg-cool-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
       (when (seq service-line-items )
         [:div
          [:div.title-2.proxima "Services"]
@@ -138,9 +143,10 @@
              (when-not (:mayvenn-install/stylist mayvenn-install)
                (component/build cart-item-v202004/stylist-organism {}
                                 (component/component-id "stylist-item")))
-             [:div.mt2
+             [:div.mt2-on-mb
               (component/build cart-item-v202004/organism {:cart-item service-line-item}
-                               (component/component-id "service-item"))]])]])
+                               (component/component-id "service-item"))]])]
+         [:div.mt3.border-bottom.border-gray.hide-on-mb]])
 
       [:div.mt3
        [:div.title-2.proxima.my2 "Items"]
@@ -151,9 +157,9 @@
            [:div
             {:key (str index "-cart-item-" react-key)}
             (when-not (zero? index)
-              [:div.flex
-               [:div.ml2 {:style {:width "78px"}}]
-               [:div.flex-grow-1.border-bottom.border-gray.ml-auto]])
+              [:div.flex.bg-white
+               [:div.ml2 {:style {:width "75px"}}]
+               [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
             (component/build cart-item-v202004/organism {:cart-item   cart-item
                                                          :suggestions (when (zero? index)
                                                                         suggestions)}
@@ -162,10 +168,10 @@
           (component/build cart-item-v202004/no-items {}
                            (component/component-id "no-items"))])]]]
 
-    [:div.col-on-tb-dt.col-6-on-tb-dt
-     (component/build cart-summary/organism cart-summary nil)
+    [:div.col-on-tb-dt.col-6-on-tb-dt.bg-cool-gray
+     (component/build cart-summary-v202004/organism cart-summary nil)
 
-     [:div.px4.center ; Checkout buttons
+     [:div.px4.center.bg-white-on-mb ; Checkout buttons
       #?@(:cljs
           [(component/build quadpay/component queried-data nil)])
 
@@ -612,10 +618,10 @@
 
       locked?
       (merge {:cart-summary-total-line/value (if any-wig?
-                                               [:div.h7.light
+                                               [:div.h7.content-4
                                                 "Add a Lace Front or 360 Wig"
                                                 [:br] "to calculate total price"]
-                                               [:div.h7.light
+                                               [:div.h7.content-4
                                                 "Add " quantity-remaining
                                                 " more " (ui/pluralize quantity-remaining "item")
                                                 " to "
@@ -794,8 +800,12 @@
                     empty-cart
                     full-cart)]
     [:div
-     [:div.border-bottom.border-gray.border-width-1.m-auto.col-7-on-dt
-      [:div.px2.my2 (ui-molecules/return-link cart-data)]]
+     [:div.hide-on-tb-dt
+      [:div.border-bottom.border-gray.border-width-1.m-auto.col-7-on-dt
+       [:div.px2.my2 (ui-molecules/return-link cart-data)]]]
+     [:div.hide-on-mb
+      [:div.m-auto.container
+       [:div.px2.my2 (ui-molecules/return-link cart-data)]]]
      [:div.col-7-on-dt.mx-auto
       (component/build (if empty?
                          empty-component

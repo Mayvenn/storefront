@@ -38,28 +38,29 @@
                                                  events/navigate-home)]
     [:div
      (desktop-header desktop-header-data)
-     (storefront-header/mobile-nav-header
-      {:class "border-bottom border-gray border-width-1 m-auto col-7-on-dt"}
+     [:div.hide-on-tb-dt
+      (storefront-header/mobile-nav-header
+       {:class "border-bottom border-gray border-width-1 m-auto col-7-on-dt"}
 
-      (when back-to-shopping-link?
-        (component/html
-         [:a.pointer.inherit-color.flex.items-center.ml1.content-3.proxima
-          close-cart-route
-          [:div (ui/back-caret {:width 16 :height 16})]
-          [:div "Back to Shopping"]]))
+       (when back-to-shopping-link?
+         (component/html
+          [:a.pointer.inherit-color.flex.items-center.ml1.content-3.proxima
+           close-cart-route
+           [:div (ui/back-caret {:width 16 :height 16})]
+           [:div "Back to Shopping"]]))
 
-      (component/html
-       [:div.content-1.proxima.center
-        {:data-test "mobile-cart"}
-        "Shopping Cart ( " [:span.bold item-count] " )"])
+       (component/html
+        [:div.content-1.proxima.center
+         {:data-test "mobile-cart"}
+         "Shopping Bag ( " [:span.bold item-count] " )"])
 
-      (component/html
-       [:a.flex.pointer
-        (merge close-cart-route
-               {:data-test "cart-close"
-                :title     "Close"})
-        (svg/x-sharp {:style {:width  "18px"
-                              :height "18px"}})]))]))
+       (component/html
+        [:a.flex.pointer
+         (merge close-cart-route
+                {:data-test "cart-close"
+                 :title     "Close"})
+         (svg/x-sharp {:style {:width  "18px"
+                               :height "18px"}})]))]]))
 
 (defn query
   [data]

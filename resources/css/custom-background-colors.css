@@ -23,6 +23,19 @@
 .bg-alternate-refresh-gray-white:nth-child(odd) { background-color: var(--refresh-gray); }
 .bg-alternate-refresh-gray-white:nth-child(even) { background-color: var(--white); }
 
+@media (--on-tablet-and-desktop) {
+    .bg-white-on-tb-dt { background-color: var(--white); }
+}
+
+@media (--on-mobile) {
+    .bg-white-on-mb  { background-color: var(--white); }
+}
+
+@custom-media --on-mobile             (max-width: 749px);
+@custom-media --on-tablet             (min-width: 750px) and (max-width: 999px);
+@custom-media --on-tablet-and-desktop (min-width: 750px);
+@custom-media --on-desktop            (min-width: 1000px);
+
 :root {
     --facebook-blue:          #3b5998;
     --quadpay-blue:           #1d73ec;
@@ -49,4 +62,3 @@
     --warm-gray:    #ece6e2;
     --black:        #000000;
 }
-

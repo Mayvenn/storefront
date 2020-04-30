@@ -251,16 +251,19 @@
 (component/defcomponent stylist-organism
   [_ _ _]
   [:div.bg-white.flex.items-center
-   [:div.m2
+   [:div.ml3.py3
+    {:style {:min-width "70px"}}
     (ui/ucare-img {:width "56px"
                    :class "mtp3"}
                   "//ucarecdn.com/123d4b51-dd60-46d3-9db4-f932c124d6da/")]
-   [:div.ml1
-    [:div "No Stylist Selected"]
-    [:div (ui/button-small-underline-primary
-           (merge {:data-test "pick-a-stylist"}
-                  (utils/fake-href events/control-pick-stylist-button))
-           "Pick Your Stylist")]]])
+   [:div.flex-auto
+    [:div.py3
+     [:div "No Stylist Selected"]
+     [:div (ui/button-small-underline-primary
+            (merge {:data-test "pick-a-stylist"}
+                   (utils/fake-href events/control-pick-stylist-button))
+            "Pick Your Stylist")]]
+    [:div.mt1.border-bottom.border-cool-gray.hide-on-mb]]])
 
 (component/defcomponent no-items
   [_ _ _]
