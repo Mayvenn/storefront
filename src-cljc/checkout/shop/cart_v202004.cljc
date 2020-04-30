@@ -558,7 +558,10 @@
     (cond->
         {:cart-summary/id                 "cart-summary"
          :cart-summary-total-line/id      "total"
-         :cart-summary-total-line/label   "Total"
+         :cart-summary-total-line/label   (if (and install
+                                                   (not wig-customization?))
+                                            "Hair + Install Total"
+                                            "Total")
          :cart-summary-total-line/value   [:div (some-> total mf/as-money)]
          :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
                                        :cart-summary-line/label "Subtotal"
