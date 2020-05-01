@@ -55,7 +55,7 @@
          addon-services :addon} (->> order
                                      orders/service-line-items
                                      (group-by (comp keyword :service/type :variant-attrs)))
-        base-service-line-item  (first base-services)
+        base-service-line-item  (first (filter #(:promo.mayvenn-install/discountable (:variant-attrs %)) base-services))
 
         sku-catalog                 (get-in app-state storefront.keypaths/v2-skus)
         base-service-sku            (get sku-catalog (:sku base-service-line-item))

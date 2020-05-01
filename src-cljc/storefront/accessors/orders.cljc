@@ -132,10 +132,14 @@
    (some (comp service-line-item-promotion? :promotion)
          (mapcat :applied-promotions (service-line-items order)))))
 
+(defn discountable-service-bases
+  [order]
+  (filter (comp :promo.mayvenn-install/discountable :variant-attrs) (service-line-items order)))
+
 (defn freeinstall-entered?
   [order]
   (boolean
-   (seq (service-line-items order))))
+   (seq (discountable-service-bases order))))
 
 (defn non-store-credit-payment-amount [order]
   (->> order
