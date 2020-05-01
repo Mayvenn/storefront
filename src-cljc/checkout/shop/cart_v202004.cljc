@@ -797,11 +797,9 @@
            item-count
            empty-cart
            full-cart]} owner opts]
-  (let [empty?    (and (zero? item-count)
-                       (not (:entered? full-cart)))
-        cart-data (if empty?
-                    empty-cart
-                    full-cart)]
+  (let [cart-empty?    (and (zero? item-count)
+                            (not (:entered? full-cart)))
+        cart-data (if cart-empty? empty-cart full-cart)]
     [:div
      [:div.hide-on-tb-dt
       [:div.border-bottom.border-gray.border-width-1.m-auto.col-7-on-dt
@@ -810,7 +808,7 @@
       [:div.m-auto.container
        [:div.px2.my2 (ui-molecules/return-link cart-data)]]]
      [:div.col-7-on-dt.mx-auto
-      (component/build (if empty?
+      (component/build (if cart-empty?
                          empty-component
                          full-component) cart-data opts)]]))
 
