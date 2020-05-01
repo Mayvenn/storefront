@@ -168,7 +168,7 @@
           (component/build cart-item-v202004/no-items {}
                            (component/component-id "no-items"))])]]]
 
-    [:div.col-on-tb-dt.col-6-on-tb-dt.bg-cool-gray
+    [:div.col-on-tb-dt.col-6-on-tb-dt.bg-refresh-gray
      (component/build cart-summary-v202004/organism cart-summary nil)
 
      [:div.px4.center.bg-white-on-mb ; Checkout buttons

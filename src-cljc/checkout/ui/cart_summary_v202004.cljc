@@ -11,7 +11,7 @@
     :as query
     :keys [promo-field-data]} owner _]
   [:div {:data-test id}
-   [:div.py1.bg-cool-gray.px4
+   [:div.py1.bg-refresh-gray.px4
     [:div.title-2.proxima.my2.hide-on-mb "Order Summary"]
     [:table.col-12
      [:tbody
