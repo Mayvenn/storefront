@@ -84,7 +84,7 @@
     [id ucare-id sku-id sticker-label highlighted?]}]
   (when id
     (let [sticker-id (str "line-item-length-" sku-id)]
-      [:div.relative
+      [:div.relative.pt1
        {:style {:height "45px"
                 :width  "48px"}}
        (when sticker-label
@@ -94,9 +94,9 @@
            {:key       sticker-id
             :data-test sticker-id
             :style     {:height "26px"
-                        :width "26px"
-                        :right -10
-                        :top   -10}})
+                        :width  "26px"
+                        :right  -10
+                        :top    -5}})
           sticker-label])
        [:div.flex.items-center.justify-center
         (css-transitions/background-fade
@@ -118,12 +118,12 @@
   [{confetti-mode :confetti-mode
     :cart-item-service-thumbnail/keys [id highlighted? image-url locked?]}]
   (when id
-    [:div.flex.justify-center.mtn2
+    [:div.flex.justify-center
      (css-transitions/background-fade
       highlighted?
       {:style {:border-radius "50%"
-               :width         "56px"
-               :height        "56px"}
+               :width         "60px"
+               :height        "60px"}
        ;; QUESTION(jeff): is this an appropriate place for click handler inside css-transition?
        :on-click #(confetti-handler confetti-mode)})
 
@@ -137,10 +137,10 @@
            (svg/stylist-lock {:style {:width   "18px"
                                       :height  "25px"}})]]
          (ui/ucare-img {:width "56px"
-                        :class "mtp3"
+                        :class "mtp2"
                         :style {:filter "contrast(0.1) brightness(1.75)"}} image-url)]
         (ui/ucare-img {:width "56px"
-                       :class "mtp3"} image-url))]]))
+                       :class "mtp2"} image-url))]]))
 
 (defn cart-item-remove-action-molecule
   [{:cart-item-remove-action/keys [id target spinning?]}]
@@ -272,17 +272,17 @@
 
 (component/defcomponent organism
   [{:keys [cart-item suggestions]} _ {:keys [id]}]
-  [:div.p3.flex.bg-white
+  [:div.p3.flex.bg-white.items-center
    {:key id :data-test id}
    ;; image group
-   [:div.relative.pt3
+   [:div.relative.self-start
     {:style {:min-width "70px"}}
     (cart-item-square-thumbnail-molecule cart-item)
     (new-cart-item-service-thumbnail-molecule cart-item)]
 
    ;; info group
    [:div.flex-grow-1
-    [:div.flex
+    [:div.flex.items-center
      [:div.flex-grow-1
       (cart-item-title-molecule cart-item)
 
@@ -292,7 +292,7 @@
        (cart-item-adjustable-quantity-molecule cart-item)]]
 
      ;; price group
-     [:div.right.right-align.pt1.flex.flex-column.items-end
+     [:div.right-align.pt1.flex.flex-column.items-end
       {:style {:min-width "67px"}}
       (new-cart-item-remove-action-molecule cart-item)
       (cart-item-floating-box-molecule cart-item)]]
