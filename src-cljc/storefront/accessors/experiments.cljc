@@ -110,3 +110,7 @@
 (defn service-category-page?
   [data]
   (display-feature? data "service-category-page"))
+
+(defn hide-bookings?
+  [data]
+  (display-feature? data "hide-bookings"))

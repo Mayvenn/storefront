@@ -188,7 +188,8 @@
                                                                               nil)
                                                                             (when (:licensed stylist)
                                                                               "licensed")]))]
-                                                (when (> rating-count 0)
+                                                (when (and (> rating-count 0)
+                                                           (not (experiments/hide-bookings? data)))
                                                   [:div (str "Booked " (ui/pluralize-with-amount rating-count "time") " with Mayvenn")])]}
                      (when (:specialty-sew-in-leave-out service-menu)
                        {:section-details/title              "Specialties"
