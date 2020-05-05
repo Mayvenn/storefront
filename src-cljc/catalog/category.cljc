@@ -58,16 +58,16 @@
                                                "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}))
 
 (defn category-hero-query
-  [{:copy/keys [title description learn-more]
+  [{:copy/keys [title description learn-more-target]
     icon-uri   :icon
     new?       :category/new?}]
   (cond-> {:category-hero.title/primary title
            :category-hero.body/primary  description}
 
     ;; TODO(corey) this key is in #:copy
-    (seq learn-more)
+    (seq learn-more-target)
     (merge {:category-hero.action/label  "Learn more"
-            :category-hero.action/target [learn-more]})
+            :category-hero.action/target learn-more-target})
 
     ;; TODO(corey) image handling reconciliation: svg as uri
     (seq icon-uri)
