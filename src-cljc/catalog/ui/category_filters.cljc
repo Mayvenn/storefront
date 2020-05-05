@@ -3,6 +3,7 @@
    #?@(:cljs [goog.events
               [goog.events.EventType :as EventType]
               [storefront.effects :as effects]
+              [storefront.history :as history]
               [storefront.accessors.categories :as accessors.categories]
               [goog.object :as object]])
    [catalog.categories :as categories]
@@ -216,7 +217,8 @@
             accessors.categories/category-selections->query-params
             (assoc {:catalog/category-id category-id
                     :page/slug           slug}
-                   :query-params)))))
+                   :query-params)
+            (history/enqueue-redirect events/navigate-category)))))
 
 (defmethod transitions/transition-state events/control-category-option-select
   [_ _ {:keys [facet option]} app-state]
