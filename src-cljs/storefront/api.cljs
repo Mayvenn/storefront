@@ -2,6 +2,7 @@
   (:require [ajax.core :refer [GET POST PUT] :as ajax]
             [clojure.string :as string]
             [clojure.walk :as walk]
+            [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
             [storefront.routes :as routes]
             [storefront.cache :as c]
@@ -693,22 +694,19 @@
                :quantity 1}
    handler))
 
-(def freeinstall-line-item-name->variant-id
-  {"leave-out"         1036
-   "closure"           1037
-   "frontal"           1038
-   "three-sixty"       1039
-   "wig-customization" 1040})
-
 (defn remove-freeinstall-line-item
   ([session-id order]
    (remove-freeinstall-line-item session-id order
                                  #(messages/handle-message events/api-success-remove-from-bag {:order %})))
-  ([session-id {:keys [install-type number token]} success-handler]
-   (let [variant-id (get freeinstall-line-item-name->variant-id install-type)]
+  ([session-id {:keys [install-type number token] :as order} success-handler]
+   (let [mayvenn-install-line-item-variant-id (->> order
+                                                   orders/service-line-items
+                                                   (filter line-items/mayvenn-install-service?)
+                                                   first
+                                                   :id)]
      (remove-from-bag
       request-keys/remove-freeinstall-line-item
-      session-id {:variant-id variant-id
+      session-id {:variant-id mayvenn-install-line-item-variant-id
                   :number     number
                   :token      token
                   :quantity   1}

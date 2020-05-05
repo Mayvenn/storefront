@@ -17,6 +17,28 @@
    (product? line-item)
    (service? line-item)))
 
+(defn base-service?
+  [line-item]
+  (and (service? line-item)
+       (-> line-item :variant-attrs :service/type #{"base"})))
+
+(defn addon-service?
+  [line-item]
+  (and (service? line-item)
+       (-> line-item :variant-attrs :service/type #{"add-on"})))
+
+(defn mayvenn-install-service?
+  [line-item]
+  (and (service? line-item)
+       (-> line-item :variant-attrs :service/type #{"base"})
+       (comp true? :promo.mayvenn-install/discountable :variant-attrs)))
+
+(defn standalone-service?
+  [line-item]
+  (and (service? line-item)
+       (-> line-item :variant-attrs :service/type #{"base"})
+       (comp false? :promo.mayvenn-install/discountable :variant-attrs)))
+
 (defn any-wig?
   [line-item]
   (-> line-item :variant-attrs :hair/family #{"ready-wigs" "360-wigs" "lace-front-wigs"}))
@@ -48,6 +70,3 @@
     :keys [applied-promotions unit-price]}]
   (when line-item
     (= 0 (+ unit-price (->> applied-promotions (keep :amount) (reduce + 0))))))
-
-(defn addon-service? [line-item]
-  (-> line-item :variant-attrs :service/type #{"addon"}))
