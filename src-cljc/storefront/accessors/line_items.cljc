@@ -25,7 +25,7 @@
 (defn addon-service?
   [line-item]
   (and (service? line-item)
-       (-> line-item :variant-attrs :service/type #{"add-on"})))
+       (-> line-item :variant-attrs :service/type #{"addon"})))
 
 (defn mayvenn-install-service?
   [line-item]

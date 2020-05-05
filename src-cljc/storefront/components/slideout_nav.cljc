@@ -295,7 +295,7 @@
 (defn query [data]
   (-> (header/basic-query data)
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
-      (assoc-in [:cart :quantity] (orders/product-quantity (get-in data keypaths/order)))
+      (assoc-in [:cart :quantity] (orders/displayed-cart-count (get-in data keypaths/order)))
       (assoc-in [:menu-data] (case (get-in data keypaths/current-traverse-nav-menu-type)
                                :category         (menu/category-query data)
                                :shop-looks       (menu/shop-looks-query data)

@@ -64,7 +64,7 @@
 
 (defn query
   [data]
-  (cond-> {:item-count          (orders/product-quantity (get-in data keypaths/order))
+  (cond-> {:item-count          (orders/displayed-cart-count (get-in data keypaths/order))
            :back                (first (get-in data keypaths/navigation-undo-stack))
            :desktop-header-data (storefront-header/query data)}
 

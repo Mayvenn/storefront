@@ -60,6 +60,19 @@
   [order]
   (->> order line-items (filter line-items/product?)))
 
+(defn displayed-cart-count
+  "# of product items plus standalone services"
+  [order]
+  (->> order
+       :shipments
+       first
+       :storefront/all-line-items
+       (remove (some-fn line-items/mayvenn-install-service?
+                        line-items/addon-service?
+                        line-items/shipping-method?))
+       (mapv :quantity)
+       (reduce +)))
+
 (defn shipping-item
   "Returns the first shipping line-item from an order hashmap.
   Includes only items added by waiter.
@@ -132,10 +145,15 @@
    (some (comp service-line-item-promotion? :promotion)
          (mapcat :applied-promotions (service-line-items order)))))
 
+
+(defn discountable-service-bases
+  [order]
+  (filter (comp :promo.mayvenn-install/discountable :variant-attrs) (service-line-items order)))
+
 (defn freeinstall-entered?
   [order]
   (boolean
-   (seq (service-line-items order))))
+   (seq (discountable-service-bases order))))
 
 (defn non-store-credit-payment-amount [order]
   (->> order

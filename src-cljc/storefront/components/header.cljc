@@ -448,7 +448,7 @@
       (merge (shop-a-la-carte-flyout-query data))
       (merge (shop-looks-query data))
       (merge (shop-bundle-sets-query data))
-      (assoc-in [:cart :quantity] (orders/product-quantity (get-in data keypaths/order)))
+      (assoc-in [:cart :quantity] (orders/displayed-cart-count (get-in data keypaths/order)))
       (assoc :site (sites/determine-site data))))
 
 (defn built-component [data opts]

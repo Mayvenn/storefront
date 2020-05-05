@@ -812,10 +812,10 @@
                          full-component) cart-data opts)]]))
 
 (defn query [data]
-  {:fetching-order?          (utils/requesting? data request-keys/get-order)
-   :item-count               (orders/product-quantity (get-in data keypaths/order))
-   :empty-cart               (empty-cart-query data)
-   :full-cart                (full-cart-query data)})
+  {:fetching-order? (utils/requesting? data request-keys/get-order)
+   :item-count      (orders/displayed-cart-count (get-in data keypaths/order))
+   :empty-cart      (empty-cart-query data)
+   :full-cart       (full-cart-query data)})
 
 (defcomponent template
   [{:keys [header footer popup promo-banner flash cart data nav-event] :as query-data} _ _]
@@ -839,7 +839,7 @@
   [app-state nav-event]
   (component/build template
                    (merge
-                    (when (and (zero? (orders/product-quantity (get-in app-state keypaths/order)))
+                    (when (and (zero? (orders/displayed-cart-count (get-in app-state keypaths/order)))
                                (-> app-state mayvenn-install/mayvenn-install :mayvenn-install/entered? not))
                       {:promo-banner app-state})
                     {:cart                   (query app-state)
