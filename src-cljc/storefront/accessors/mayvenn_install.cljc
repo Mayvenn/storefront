@@ -55,10 +55,13 @@
          addon-services :addon} (->> order
                                      orders/service-line-items
                                      (group-by (comp keyword :service/type :variant-attrs)))
-        base-service-line-item  (first base-services)
+
+        mayvenn-install-line-item (->> base-services
+                                       (filter #(:promo.mayvenn-install/discountable (:variant-attrs %)))
+                                       first)
 
         sku-catalog                 (get-in app-state storefront.keypaths/v2-skus)
-        base-service-sku            (get sku-catalog (:sku base-service-line-item))
+        mayvenn-install-sku         (get sku-catalog (:sku mayvenn-install-line-item))
         addon-services-skus         (->> addon-services
                                          (map (fn [addon-service] (get sku-catalog (:sku addon-service))))
                                          (map (fn [addon-sku] {:addon-service/title  (:sku/title addon-sku)
@@ -80,10 +83,10 @@
         servicing-stylist           (if (= "aladdin" (get-in app-state storefront.keypaths/store-experience))
                                       (get-in app-state storefront.keypaths/store)
                                       (get-in app-state adventure-keypaths/adventure-servicing-stylist))
-        sku-title                   (:sku/title base-service-sku)]
+        sku-title                   (:sku/title mayvenn-install-sku)]
     {:mayvenn-install/entered?           freeinstall-entered?
-     :mayvenn-install/locked?            (and base-service-line-item
-                                              (not (line-items/fully-discounted? base-service-line-item)))
+     :mayvenn-install/locked?            (and mayvenn-install-line-item
+                                              (not (line-items/fully-discounted? mayvenn-install-line-item)))
      :mayvenn-install/applied?           (orders/service-line-item-promotion-applied? order)
      :mayvenn-install/quantity-required  install-items-required
      :mayvenn-install/quantity-remaining items-remaining-for-install
@@ -91,8 +94,8 @@
      :mayvenn-install/stylist            servicing-stylist
      :mayvenn-install/service-title      sku-title
      :mayvenn-install/add-service-ttitle (str/join " " (butlast (str/split sku-title " ")))
-     :mayvenn-install/service-discount   (- (line-items/service-line-item-price base-service-line-item))
+     :mayvenn-install/service-discount   (- (line-items/service-line-item-price mayvenn-install-line-item))
      :mayvenn-install/any-wig?           any-wig?
-     :mayvenn-install/service-image-url  (->> base-service-sku (images/skuer->image "cart") :url)
+     :mayvenn-install/service-image-url  (->> mayvenn-install-sku (images/skuer->image "cart") :url)
      :mayvenn-install/addon-services     addon-services-skus
      :mayvenn-install/service-type       service-type}))
