@@ -207,7 +207,7 @@
 (defn picker-rows
   "individual elements as in: https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b21aa0352b1d5e31a32ac53"
   [data]
-  [:div.mxn2
+  [:div.mxn2.mt2
    [:div.px3
     (mobile-color-picker-row data)
     (desktop-color-picker-row data)]
@@ -407,8 +407,9 @@
                                                                   :checked?      (= quantity sku-quantity)
                                                                   :quantity      quantity}))})
           nil)))
-     (when (seq options)
-       (picker-rows data))]))
+     (if (seq options)
+       (picker-rows data)
+       [:div.py2])]))
 
 (defn query
   [data]

@@ -23,6 +23,7 @@
             [spice.selector :as selector]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as accessors.products]
             [storefront.accessors.skus :as skus]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
@@ -187,9 +188,9 @@
   "Product Details organism"
   [data _ _]
   [:div.mt3.mx3
-   [:div.flex.items-center
+   [:div.flex.items-center.justify-between
     (catalog.M/product-title data)
-    [:div.col-4 (catalog.M/price-block data)]]
+    (catalog.M/price-block data)]
    (catalog.M/yotpo-reviews-summary data)])
 
 (defcomponent component
@@ -337,14 +338,17 @@
   (let [shop?                                (= "shop" (get-in data keypaths/store-slug))
         sku-family                           (-> selected-sku :hair/family first)
         mayvenn-install-incentive-families   #{"bundles" "closures" "frontals" "360-frontals"}
-        wig-customization-incentive-families #{"360-wigs" "lace-front-wigs"}]
+        wig-customization-incentive-families #{"360-wigs" "lace-front-wigs"}
+        base-service-already-in-cart?        (boolean (some #(= (:catalog/sku-id selected-sku) (:sku %))
+                                                            (orders/service-line-items (get-in data keypaths/order))))]
     (cond-> {:cta/id          "add-to-cart"
-             :cta/label       "Add to Cart"
+             :cta/label       (if base-service-already-in-cart? "Already In Cart" "Add to Cart")
              :cta/target      [events/control-add-sku-to-bag
                                {:sku      selected-sku
                                 :quantity (get-in data keypaths/browse-sku-quantity 1)}]
              :cta/spinning?   (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-             :cta/disabled?   (not (:inventory/in-stock? selected-sku))}
+             :cta/disabled?   (or (not (:inventory/in-stock? selected-sku))
+                                  base-service-already-in-cart?)}
 
       (experiments/show-quadpay? data)
       (assoc

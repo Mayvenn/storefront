@@ -8,7 +8,7 @@
 (defn product-title
   "TODO empty state"
   [{:title/keys [id primary secondary]}]
-  [:div {:data-test id}
+  [:div.flex-grow {:data-test id}
    [:h3.proxima.title-2.shout {:item-prop "name"} primary]
    [:div.medium secondary]])
 

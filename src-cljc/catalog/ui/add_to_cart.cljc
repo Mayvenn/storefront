@@ -21,7 +21,7 @@
   [{:add-to-cart.incentive-block/keys
     [id callout message link-id link-label link-target footnote]}]
   (when id
-    [:div.pb1
+    [:div.pb1.pt2
      [:div.proxima.content-2.line-height-1.bold callout]
      [:div.pl4.pr1
       [:div.proxima.content-3.mb1
@@ -36,8 +36,8 @@
 (defcomponent organism
   "Add to Cart organism"
   [data _ _]
-  [:div.px3.pt3.pb1
-   {:class "bg-cool-gray"}
+  [:div.px3.py1
+   {:class "bg-refresh-gray"}
    (add-to-cart-incentive-block-molecule data)
    (cta-molecule data)
    #?(:cljs
