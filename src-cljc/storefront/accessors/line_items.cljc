@@ -31,7 +31,7 @@
   [line-item]
   (and (service? line-item)
        (-> line-item :variant-attrs :service/type #{"base"})
-       (comp true? :promo.mayvenn-install/discountable :variant-attrs)))
+       (-> line-item :variant-attrs :promo.mayvenn-install/discountable true?)))
 
 (defn standalone-service?
   [line-item]
