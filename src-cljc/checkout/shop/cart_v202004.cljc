@@ -344,8 +344,7 @@
                  :cart-item-remove-action/spinning?        (utils/requesting? app-state request-keys/remove-freeinstall-line-item)
                  :cart-item-remove-action/target           [events/control-checkout-remove-promotion {:code "freeinstall"}]
                  :cart-item-service-thumbnail/id           "freeinstall"
-                 :cart-item-service-thumbnail/image-url    (or service-image-url ; GROT: when cellar deploy is done with service image
-                                                               "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/")
+                 :cart-item-service-thumbnail/image-url    service-image-url
                  :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)
                  :confetti-mode                            (get-in app-state keypaths/confetti-mode)}
 
