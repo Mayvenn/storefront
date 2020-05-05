@@ -7,7 +7,7 @@
 (defn cta-molecule
   [{:cta/keys [id label target spinning? disabled?]}]
   (when (and id label target)
-    [:div.my1
+    [:div
      (ui/button-large-primary
       (merge
        {:data-test id
@@ -21,7 +21,8 @@
   [{:add-to-cart.incentive-block/keys
     [id callout message link-id link-label link-target footnote]}]
   (when id
-    [:div.pb1.pt2
+    [:div.py2.mb2
+     {:class "bg-refresh-gray"}
      [:div.proxima.content-2.line-height-1.bold callout]
      [:div.pl4.pr1
       [:div.proxima.content-3.mb1
@@ -36,14 +37,14 @@
 (defcomponent organism
   "Add to Cart organism"
   [data _ _]
-  [:div.px3.py1
-   {:class "bg-refresh-gray"}
+  [:div
    (add-to-cart-incentive-block-molecule data)
-   (cta-molecule data)
-   #?(:cljs
-      [:div
-       (component/build quadpay/component
-                        {:quadpay/order-total (:quadpay/price data)
-                         :quadpay/show?       (:quadpay/loaded? data)
-                         :quadpay/directive   :just-select}
-                        nil)])])
+   [:div.px3.py1
+    (cta-molecule data)
+    #?(:cljs
+       [:div
+        (component/build quadpay/component
+                         {:quadpay/order-total (:quadpay/price data)
+                          :quadpay/show?       (:quadpay/loaded? data)
+                          :quadpay/directive   :just-select}
+                         nil)])]])
