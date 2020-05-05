@@ -23,7 +23,6 @@
             [stylist-matching.ui.stylist-cards :as stylist-cards]
             [stylist-matching.ui.gallery-modal :as gallery-modal]
             stylist-directory.keypaths
-            [adventure.organisms.call-out-center :as call-out-center]
             storefront.keypaths
             [storefront.components.ui :as ui]
             [spice.core :as spice]
@@ -374,22 +373,6 @@
   [post-purchase? hide-stylist-specialty? hide-bookings? stylists]
   (map-indexed (partial stylist-card-query post-purchase? hide-stylist-specialty? hide-bookings?) stylists))
 
-(def call-out-query
-  {:call-out-center/bg-class    "bg-cool-gray"
-   :call-out-center/title       "Want to book with your own stylist?"
-   :call-out-center/subtitle    "Recommend them to become Mayvenn Certified"
-   :cta/id                      "recommend-stylist"
-   :cta/target                  [events/external-redirect-typeform-recommend-stylist]
-   :cta/label                   "Submit Your Stylist"
-   :element/type                :call-out
-   :react/key                   :recommend-stylist})
-
-(defn ^:private insert-at-pos
-  "TODO this needs to be refined"
-  [position i coll]
-  (let [[h & r] (partition-all position coll)]
-    (flatten (into [h] (concat [i] r)))))
-
 (defn ^:private display-list
   "TODO this needs to be refined"
   [dispatches items & fall-back]
@@ -494,8 +477,7 @@
      [:div.mt6 ui/spinner]
 
      results
-     (display-list {:call-out               call-out-center/organism
-                    :stylist-card           stylist-cards/organism
+     (display-list {:stylist-card           stylist-cards/organism
                     :matching-stylist-count matching-count-organism
                     :non-matching-breaker   non-matching-breaker}
                    results)
@@ -510,7 +492,6 @@
     [[{:stylist-count-content (str count-matching " Stylists Found")
        :react/key             "stylist-count-content"
        :element/type          :matching-stylist-count}]
-     (insert-at-pos 3 call-out-query matching)
      (when (seq non-matching)
        [{:breaker-content "Other stylists in your area"
          :react/key       "non-matching-breaker"
@@ -591,5 +572,5 @@
                                                          (group-by matches-preferences?)
                                                          stylist-results-arranged
                                                          (mapcat identity))
-                                                    (insert-at-pos 3 call-out-query stylist-cards))))
+                                                    stylist-cards)))
                       :shopping-method-choice (shopping-method-choice-query)})))

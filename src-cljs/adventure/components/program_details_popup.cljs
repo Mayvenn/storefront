@@ -10,8 +10,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.transitions :as transitions]
-            [storefront.browser.scroll :as scroll]
-            [adventure.organisms.call-out-center :as call-out-center]))
+            [storefront.browser.scroll :as scroll]))
 
 (def get-a-free-install
   (let [step (fn [{:keys [icon-uuid icon-width title description]}]
@@ -227,7 +226,7 @@
    (svg/vertical-squiggle {:style {:height "72px"}})])
 
 (defmethod popup/component :consolidated-cart-free-install
-  [{:keys [faq-data call-out-data] :as queried-data} owner _]
+  [{:keys [faq-data] :as queried-data} owner _]
   (ui/modal {:col-class   "col-12 col-10-on-tb col-10-on-dt my8-on-tb-dt flex justify-center"
              :close-attrs (utils/fake-href events/control-consolidated-cart-free-install-dismiss)
              :bg-class    "bg-darken-4"}
@@ -250,9 +249,7 @@
               [:div.bg-white.relative (vertical-squiggle "-50px")]
 
               [:div.bg-warm-gray
-               (faq/component (assoc faq-data :modal? true))]
-
-              (component/build call-out-center/organism call-out-data nil)]]))
+               (faq/component (assoc faq-data :modal? true))]]]))
 
 (defmethod transitions/transition-state events/popup-show-consolidated-cart-free-install
   [_ event args app-state]
@@ -268,12 +265,4 @@
 
 (defmethod popup/query :consolidated-cart-free-install
   [data]
-  {:faq-data      (faq/free-install-query data)
-   :call-out-data {:call-out-center/bg-class "bg-white"
-                   :call-out-center/title    "Want to book with your own stylist?"
-                   :call-out-center/subtitle "Recommend them to become Mayvenn Certified"
-                   :cta/id                   "recommend-stylist"
-                   :cta/target               [events/external-redirect-typeform-recommend-stylist]
-                   :cta/label                "Submit Your Stylist"
-                   :element/type             :call-out
-                   :react/key                :recommend-stylist}})
+  {:faq-data (faq/free-install-query data)})

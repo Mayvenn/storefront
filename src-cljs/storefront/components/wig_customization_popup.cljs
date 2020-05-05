@@ -1,8 +1,7 @@
 (ns storefront.components.wig-customization-popup
-  (:require [storefront.component :as component :refer [defcomponent]]
+  (:require [storefront.component :as component]
             [adventure.faq :as faq]
             [storefront.components.accordion :as accordion]
-            [storefront.components.footer-modal :as footer-modal]
             [storefront.components.popup :as popup]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -11,8 +10,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.transitions :as transitions]
-            [storefront.browser.scroll :as scroll]
-            [adventure.organisms.call-out-center :as call-out-center]))
+            [storefront.browser.scroll :as scroll]))
 
 (defn ^:private shop-step
   [key-prefix
@@ -150,7 +148,7 @@
     {:opts {:section-click-event events/faq-section-selected}})])
 
 (defmethod popup/component :wigs-customization
-  [{:keys [call-out-data] :as queried-data} owner _]
+  [{:keys [whats-included-data] :as queried-data} owner _]
   (ui/modal {:col-class   "col-12 col-10-on-tb col-10-on-dt my8-on-tb-dt flex justify-center"
              :close-attrs (utils/fake-href events/control-consolidated-cart-free-install-dismiss)
              :bg-class    "bg-darken-4"}
@@ -168,17 +166,14 @@
               [:div.mb10
                you-buy-the-hair]
 
-
               [:div.pb6.bg-white
-               (whats-included call-out-data)
+               (whats-included whats-included-data)
                mayvenn-guarantees]
 
               [:div.bg-white.relative (vertical-squiggle "-50px")]
 
               [:div.bg-warm-gray
-               (faq-molecule queried-data)]
-
-              (component/build call-out-center/organism call-out-data nil)]]))
+               (faq-molecule queried-data)]]]))
 
 (defmethod transitions/transition-state events/popup-show-wigs-customization
   [_ event args app-state]
@@ -194,30 +189,21 @@
 
 (defmethod popup/query :wigs-customization
   [data]
-  {:faq-data           (faq/free-install-query data)
-   :call-out-data      {:call-out-center/bg-class    "bg-white"
-                        :call-out-center/title       "Want to book with your own stylist?"
-                        :call-out-center/subtitle    "Recommend them to become Mayvenn Certified"
-                        :whats-included/header-value "What's Included?"
-                        :whats-included/bullets      ["Bleaching the knots" "Tinting the lace" "Cutting the lace" "Customize your hairline"]
-                        :cta/id                      "recommend-stylist"
-                        :cta/target                  [events/external-redirect-typeform-recommend-stylist]
-                        :cta/label                   "Submit Your Stylist"
-                        :element/type                :call-out
-                        :react/key                   :recommend-stylist}
-   :faq/sections       [{:title      "How does Free Customization work?",
-                         :paragraphs ["It’s simple: when you buy any lace front or 360 frontal wig from Mayvenn, we’ll pay for the wig customization. You’ll pick the Mayvenn Certified Stylist you want to work with and they’ll bleach, pluck, and cut until it’s personalized for you."]}
-                        {:title      "What kind of hair is it? Can I apply heat to it?"
-                         :paragraphs ["All of our products use 100% virgin human hair, which can be heat-styled. To protect and care for your unit, we recommend using a heat protectant spray or serum with tools."]}
-                        {:title      "How do I drop the wig off to the stylist?"
-                         :paragraphs ["After you complete your wig purchase, Mayvenn Concierge will reach out and connect you to a Certified Stylist for your Wig Customization appointment."]}
-                        {:title      "How long does it take to customize the wig?"
-                         :paragraphs ["After you drop it off, the stylist has one week to complete the wig customization."]}
-                        {:title      "What does the Wig Customization include?"
-                         :paragraphs ["The stylist will be plucking the hairline, bleaching the knots, tinting and cutting the lace."]}
-                        {:title      "What doesn’t the Wig Customization include?"
-                         :paragraphs ["Add-on services and installation are not included in the free wig customization, and will require an extra fee. Non-covered add-on services can include: braiding, sewing, coloring, styling."]}
-                        {:title      "What if I want to get my wig customized by another stylist? Can I still get a Mayvenn Wig Customization?"
-                         :paragraphs ["You must get your wig customized by a Certified Stylist in order to receive this complimentary service."]}]
-   :faq/expanded-index (get-in data keypaths/faq-expanded-section)})
-
+  {:faq-data            (faq/free-install-query data)
+   :whats-included-data {:whats-included/header-value "What's Included?"
+                         :whats-included/bullets      ["Bleaching the knots" "Tinting the lace" "Cutting the lace" "Customize your hairline"]}
+   :faq/sections        [{:title      "How does Free Customization work?",
+                          :paragraphs ["It’s simple: when you buy any lace front or 360 frontal wig from Mayvenn, we’ll pay for the wig customization. You’ll pick the Mayvenn Certified Stylist you want to work with and they’ll bleach, pluck, and cut until it’s personalized for you."]}
+                         {:title      "What kind of hair is it? Can I apply heat to it?"
+                          :paragraphs ["All of our products use 100% virgin human hair, which can be heat-styled. To protect and care for your unit, we recommend using a heat protectant spray or serum with tools."]}
+                         {:title      "How do I drop the wig off to the stylist?"
+                          :paragraphs ["After you complete your wig purchase, Mayvenn Concierge will reach out and connect you to a Certified Stylist for your Wig Customization appointment."]}
+                         {:title      "How long does it take to customize the wig?"
+                          :paragraphs ["After you drop it off, the stylist has one week to complete the wig customization."]}
+                         {:title      "What does the Wig Customization include?"
+                          :paragraphs ["The stylist will be plucking the hairline, bleaching the knots, tinting and cutting the lace."]}
+                         {:title      "What doesn’t the Wig Customization include?"
+                          :paragraphs ["Add-on services and installation are not included in the free wig customization, and will require an extra fee. Non-covered add-on services can include: braiding, sewing, coloring, styling."]}
+                         {:title      "What if I want to get my wig customized by another stylist? Can I still get a Mayvenn Wig Customization?"
+                          :paragraphs ["You must get your wig customized by a Certified Stylist in order to receive this complimentary service."]}]
+   :faq/expanded-index  (get-in data keypaths/faq-expanded-section)})
