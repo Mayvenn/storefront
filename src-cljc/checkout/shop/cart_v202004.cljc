@@ -131,10 +131,10 @@
 
    [:div.clearfix.mxn3
     [:div
-     [:div.bg-cool-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
-      (when (seq service-line-items )
-        [:div
-         [:div.title-2.proxima "Services"]
+     [:div.bg-refresh-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
+      (when (seq service-line-items)
+        [:div.mb3
+         [:div.title-2.proxima.mb1 "Services"]
          [:div
           (new-servicing-stylist-banner-component queried-data)
 
@@ -146,10 +146,10 @@
              [:div.mt2-on-mb
               (component/build cart-item-v202004/organism {:cart-item service-line-item}
                                (component/component-id "service-item"))]])]
-         [:div.mt3.border-bottom.border-gray.hide-on-mb]])
+         [:div.border-bottom.border-gray.hide-on-mb]])
 
-      [:div.mt3
-       [:div.title-2.proxima.my2 "Items"]
+      [:div
+       [:div.title-2.proxima.mb1 "Items"]
        (if (seq cart-items )
          (for [[index cart-item] (map-indexed vector cart-items)
                :let [react-key (:react/key cart-item)]
