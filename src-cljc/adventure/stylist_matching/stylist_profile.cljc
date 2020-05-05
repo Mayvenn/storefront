@@ -36,7 +36,7 @@
 
 ;; fork of molecules/stars-rating-molecule
 (defn stars-rating-molecule
-  [{:rating/keys [value rating-content rating-count]}]
+  [{:star-rating/keys [value rating-content rating-count]}]
   (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value "13px")]
     [:div.flex.items-center.mtn1
      whole-stars
@@ -135,12 +135,16 @@
                          :cta/label   "Browse Stylists"
                          :cta/target  [events/navigate-adventure-find-your-stylist]}
 
-           :rating/value              stylist-rating
-           :rating/rating-count       (when (> rating-count 0)
-                                        rating-count)
-           :rating/rating-content     (str "(" stylist-rating ")")
-           :rating/rating-star-counts (when (> rating-count 0)
-                                        (:rating-star-counts stylist))
+           :star-rating/value          stylist-rating
+           :star-rating/rating-count   (when (> rating-count 0)
+                                         rating-count)
+           :star-rating/rating-content (str "(" stylist-rating ")")
+
+           :ratings-bar-chart/id                 (when (and (> rating-count 0)
+                                                            (not (experiments/hide-star-distribution? data)))
+                                                   "star-distribution-table")
+           :ratings-bar-chart/rating-star-counts (when (> rating-count 0)
+                                                   (:rating-star-counts stylist))
 
            :google-map-data #?(:cljs (maps/map-query data)
                                :clj  nil)
@@ -192,7 +196,7 @@
                                                            (not (experiments/hide-bookings? data)))
                                                   [:div (str "Booked " (ui/pluralize-with-amount rating-count "time") " with Mayvenn")])]}
                      (when (:specialty-sew-in-leave-out service-menu)
-                       {:section-details/title              "Specialties"
+                       {:section-details/title "Specialties"
                         :section-details/content
                         [:div.mt1.col-12.col
                          (for [s [["Leave Out Install"         (:specialty-sew-in-leave-out service-menu)]
@@ -296,9 +300,9 @@
       {:style {:width "20px"}}(str "(" star-count ")")]]))
 
 (defn ratings-bar-chart-molecule
-  [{:rating/keys [rating-star-counts] :as data}]
-  (when rating-star-counts
-    (let [max-ratings-count (apply max (vals rating-star-counts))
+  [{:ratings-bar-chart/keys [id rating-star-counts] :as data}]
+  (when id
+    (let [max-ratings-count   (apply max (vals rating-star-counts))
           sorted-rating-count (sort-by key > rating-star-counts)]
       [:div.bg-cool-gray.flex-column.center.py5.mt3
        [:div.shout.bold.proxima.title-3 "Ratings"]

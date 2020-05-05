@@ -114,3 +114,7 @@
 (defn hide-bookings?
   [data]
   (display-feature? data "hide-bookings"))
+
+(defn hide-star-distribution?
+  [data]
+  (display-feature? data "hide-star-distribution"))
