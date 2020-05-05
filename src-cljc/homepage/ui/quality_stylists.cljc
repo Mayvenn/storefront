@@ -50,7 +50,7 @@
 (c/defcomponent organism
   [data _ _]
   (when (seq data)
-    (list
+    [:div
      [:div.col-6-on-dt.col-9.mx-auto.my5.pt4
       [:div.col-9-on-dt.mx-auto.flex.flex-column.center.left-align-on-dt.mt5.pt3
        (quality-stylists-title-molecule data)
@@ -59,4 +59,4 @@
      [:div.pt2
       ;; HACK: Let adjacent organism fit between when flexed
       {:style {:order 3}}
-      (quality-stylists-image-molecule data)])))
+      (quality-stylists-image-molecule data)]]))
