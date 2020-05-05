@@ -159,7 +159,7 @@
                                 :height 16})]))
 
 (defn shopping-rows
-  [{:keys [show-freeinstall-link? show-bundle-sets? site] :as data}]
+  [{:keys [show-freeinstall-link? show-bundle-sets? site service-category-page?] :as data}]
   (concat
    (when show-freeinstall-link?
      [{:link-attrs  (utils/route-to events/navigate-adventure-match-stylist)
@@ -167,7 +167,7 @@
        :new-content "NEW"
        :content     [[:span.medium "Get a Mayvenn Install"]]}])
 
-   (when (experiments/service-category-page? data)
+   (when service-category-page?
      [{:link-attrs  (utils/route-to events/navigate-category
                                     {:page/slug           "salon-services"
                                      :catalog/category-id "30"})
@@ -301,6 +301,7 @@
 
 (defn query [data]
   (-> (header/basic-query data)
+      (assoc :service-category-page? (experiments/service-category-page? data))
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
       (assoc-in [:cart :quantity] (orders/displayed-cart-count (get-in data keypaths/order)))
       (assoc-in [:menu-data] (case (get-in data keypaths/current-traverse-nav-menu-type)
