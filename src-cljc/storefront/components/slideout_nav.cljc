@@ -159,7 +159,7 @@
                                 :height 16})]))
 
 (defn shopping-rows
-  [{:keys [show-freeinstall-link? show-bundle-sets? site]}]
+  [{:keys [show-freeinstall-link? show-bundle-sets? site] :as data}]
   (concat
    (when show-freeinstall-link?
      [{:link-attrs  (utils/route-to events/navigate-adventure-match-stylist)
@@ -167,6 +167,13 @@
        :new-content "NEW"
        :content     [[:span.medium "Get a Mayvenn Install"]]}])
 
+   (when (experiments/service-category-page? data)
+     [{:link-attrs  (utils/route-to events/navigate-category
+                                    {:page/slug           "salon-services"
+                                     :catalog/category-id "30"})
+       :data-test   "menu-shop-salon-services"
+       :new-content "NEW"
+       :content     [[:span.medium "Shop Salon Services"]]}])
    (if (= :classic site)
      [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
        :data-test  "menu-shop-by-look"

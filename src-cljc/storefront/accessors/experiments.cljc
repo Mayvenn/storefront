@@ -106,3 +106,7 @@
 (defn new-cart?
   [data]
   (display-feature? data "new-cart"))
+
+(defn service-category-page?
+  [data]
+  (display-feature? data "service-category-page"))

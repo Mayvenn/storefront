@@ -63,12 +63,13 @@
    (let [non-cta-action (merge (apply utils/route-to card-target)
                                {:data-test id})]
      [:div.inherit-color.col.col-6.col-4-on-tb-dt.p1
-      {:key react-key}
+      {:key react-key
+       :data-test react-key}
       [:div.border.border-cool-gray.container-height.center.flex.flex-column.justify-between
        [:a.inherit-color.mb2 non-cta-action (ui/screen-aware card-image-molecule data)]
        [:div.pointer non-cta-action primary]
        [:div.pointer non-cta-action secondary]
        [:div.my2.mx5
         (ui/button-small-secondary (merge (apply utils/fake-href cta-target)
-                                          {:data-test react-key})
+                                          {:data-test (str "add-to-cart-" react-key)})
                                    "Add To Cart")]]])))
