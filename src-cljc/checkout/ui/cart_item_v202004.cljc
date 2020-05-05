@@ -7,7 +7,8 @@
             [storefront.css-transitions :as css-transitions]
             [storefront.platform.component-utils :as utils]
             ui.molecules
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            [storefront.routes :as routes]))
 
 (defn cart-item-floating-box-molecule
   [{:cart-item-floating-box/keys [id value]}]
@@ -249,21 +250,46 @@
 
 
 (component/defcomponent stylist-organism
-  [_ _ _]
-  [:div.bg-white.flex.items-center
-   [:div.ml3.py3
-    {:style {:min-width "70px"}}
-    (ui/ucare-img {:width "56px"
-                   :class "mtp3"}
-                  "//ucarecdn.com/123d4b51-dd60-46d3-9db4-f932c124d6da/")]
-   [:div.flex-auto
-    [:div.py3
-     [:div "No Stylist Selected"]
-     [:div (ui/button-small-underline-primary
-            (merge {:data-test "pick-a-stylist"}
-                   (utils/fake-href events/control-pick-stylist-button))
-            "Pick Your Stylist")]]
-    [:div.mt1.border-bottom.border-cool-gray.hide-on-mb]]])
+  [{:servicing-stylist-banner/keys [id name image-url rating action-id target]} _ _]
+  (when id
+    [:div.flex.bg-white.pl3 {:data-test id}
+     [:div.py2
+      {:style {:min-width "70px"}}
+      (ui/circle-picture {:width 56} (ui/square-image {:resizable-url image-url} 50))]
+     [:div.flex-auto
+      [:div.flex.flex-auto.pr3.py2
+       [:div.flex.flex-grow-1.items-center
+        [:div
+         [:div.content-2.proxima.flex.justify-between name]
+         [:div.content-3.proxima "Your Certified Mayvenn Stylist"]
+         [:div.mt1 (ui.molecules/stars-rating-molecule rating)]]]
+       (when action-id
+         [:a.block.gray.medium.m1
+          (merge {:data-test action-id
+                  :href (routes/path-for events/navigate-adventure-find-your-stylist)
+                  :on-click (apply utils/send-event-callback target)})
+          (svg/swap-arrows {:width "16px"
+                            :height "20px"})])]
+      [:div.mt1.border-bottom.border-cool-gray.hide-on-mb]]]))
+
+
+(component/defcomponent no-stylist-organism
+  [{:stylist-organism/keys [id]} _ _]
+  (when id
+    [:div.bg-white.flex.items-center
+     [:div.ml3.py3
+      {:style {:min-width "70px"}}
+      (ui/ucare-img {:width "56px"
+                     :class "mtp3"}
+                    "//ucarecdn.com/123d4b51-dd60-46d3-9db4-f932c124d6da/")]
+     [:div.flex-auto
+      [:div.py3
+       [:div "No Stylist Selected"]
+       [:div (ui/button-small-underline-primary
+              (merge {:data-test "pick-a-stylist"}
+                     (utils/fake-href events/control-pick-stylist-button))
+              "Pick Your Stylist")]]
+      [:div.mt1.border-bottom.border-cool-gray.hide-on-mb]]]))
 
 (component/defcomponent no-items
   [_ _ _]
@@ -272,7 +298,7 @@
 
 (component/defcomponent organism
   [{:keys [cart-item suggestions]} _ {:keys [id]}]
-  [:div.p3.flex.bg-white.items-center
+  [:div.p2.flex.bg-white.items-center
    {:key id :data-test id}
    ;; image group
    [:div.relative.self-start

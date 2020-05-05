@@ -40,7 +40,6 @@
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.request-keys :as request-keys]
-   [storefront.routes :as routes]
    [storefront.transitions :as transitions]
    [ui.molecules :as ui-molecules]
    [ui.promo-banner :as promo-banner]))
@@ -50,29 +49,6 @@
    [:div.flex-grow-1.border-bottom.border-gray]
    [:div.mx2 "or"]
    [:div.flex-grow-1.border-bottom.border-gray]])
-
-(defn ^:private new-servicing-stylist-banner-component
-  [{:servicing-stylist-banner/keys [id name image-url rating action-id target]}]
-  (when id
-    [:div.flex.bg-white.pl3 {:data-test id}
-     [:div.py2
-      {:style {:min-width "70px"}}
-      (ui/circle-picture {:width 56} (ui/square-image {:resizable-url image-url} 50))]
-     [:div.flex-auto
-      [:div.flex.flex-auto.pr3.py2
-       [:div.flex.flex-grow-1.items-center
-        [:div
-         [:div.content-2.proxima.flex.justify-between name]
-         [:div.content-3.proxima "Your Certified Mayvenn Stylist"]
-         [:div.mt1 (ui.molecules/stars-rating-molecule rating)]]]
-       (when action-id
-         [:a.block.gray.medium.m1
-          (merge {:data-test action-id
-                  :href (routes/path-for events/navigate-adventure-find-your-stylist)
-                  :on-click (apply utils/send-event-callback target)})
-          (svg/swap-arrows {:width "16px"
-                            :height "20px"})])]
-      [:div.mt1.border-bottom.border-cool-gray.hide-on-mb]]]))
 
 (defdynamic-component ^:private confetti-spout
   (constructor [this props]
@@ -136,16 +112,16 @@
         [:div.mb3
          [:div.title-2.proxima.mb1 "Services"]
          [:div
-          (new-servicing-stylist-banner-component queried-data)
+          [:div.mbn1
+           (component/build cart-item-v202004/stylist-organism queried-data nil)
+           (component/build cart-item-v202004/no-stylist-organism queried-data nil)]
 
-          (let [service-line-item (first service-line-items)]
+          ;; TODO: Separate mayvenn install base into its own service line item key
+          (for [service-line-item service-line-items]
             [:div
-             (when-not (:mayvenn-install/stylist mayvenn-install)
-               (component/build cart-item-v202004/stylist-organism {}
-                                (component/component-id "stylist-item")))
              [:div.mt2-on-mb
               (component/build cart-item-v202004/organism {:cart-item service-line-item}
-                               (component/component-id "service-item"))]])]
+                               (component/component-id (:react/key service-line-item)))]])]
          [:div.border-bottom.border-gray.hide-on-mb]])
 
       [:div
@@ -331,8 +307,17 @@
      applied? stylist service-discount
      quantity-remaining quantity-required quantity-added any-wig?]}
    add-items-action]
-  (let [wig-customization?        (= service-type :wig-customization)
-        matched?                   (boolean stylist)]
+  (let [skus                      (get-in app-state keypaths/v2-skus)
+        wig-customization?        (= service-type :wig-customization)
+        matched?                  (boolean stylist)
+        service-line-items        (orders/service-line-items (get-in app-state keypaths/order))
+        delete-line-item-requests (variants-requests app-state request-keys/delete-line-item (map :id service-line-items))
+
+        ;; TODO better name and partitioning
+        other-service-line-items (filter #(and
+                                           (-> % :variant-attrs :service/type #{"base"})
+                                           (-> % :variant-attrs :promo.mayvenn-install/discountable false?))
+                                         service-line-items)]
     (cond-> []
       entered?
       (concat
@@ -402,60 +387,70 @@
                                                       {:cart-item-sub-item/title  title
                                                        :cart-item-sub-item/price  price
                                                        :cart-item-sub-item/sku-id sku-id})
-                                                    addon-services)}))]))))
-
-(defn physical-line-items-query
-  [])
+                                                    addon-services)}))])
+      :always
+      (concat
+       (for [{sku-id :sku variant-id :id :as service-line-item} other-service-line-items
+             :let
+             [price                (or (:sku/price service-line-item)
+                                       (:unit-price service-line-item))
+              removing?            (get delete-line-item-requests variant-id)
+              just-added-to-order? (some #(= sku-id %) (get-in app-state keypaths/cart-recently-added-skus))]]
+         {:react/key                                sku-id
+          :cart-item-title/primary                  (or (:product-title service-line-item)
+                                                        (:product-name service-line-item))
+          :cart-item-title/id                       (str "line-item-" sku-id)
+          :cart-item-floating-box/id                (str "line-item-" sku-id "-price")
+          :cart-item-floating-box/value             (some-> price mf/as-money)
+          :cart-item-remove-action/id               (str "line-item-remove-" sku-id)
+          :cart-item-remove-action/spinning?        removing?
+          :cart-item-remove-action/target           [events/control-cart-remove (:id service-line-item)]
+          :cart-item-service-thumbnail/id           sku-id
+          :cart-item-service-thumbnail/image-url    (or service-image-url
+                                                        "//ucarecdn.com/9664879b-07e0-432e-9c09-b2cf4c899b10/default.png")
+          :cart-item-service-thumbnail/highlighted? just-added-to-order?})))))
 
 (defn cart-items-query
-  [app-state
-   {:mayvenn-install/keys
-    [service-title
-     addon-services
-     service-image-url service-type entered? locked? applied? stylist service-discount quantity-remaining quantity-required quantity-added any-wig?]}
-   line-items
-   skus
-   add-items-action]
-  (let [wig-customization?        (= service-type :wig-customization)
-        update-line-item-requests (merge-with
+  [app-state line-items skus]
+  (let [update-line-item-requests (merge-with
                                    #(or %1 %2)
                                    (variants-requests app-state request-keys/add-to-bag (map :sku line-items))
                                    (variants-requests app-state request-keys/update-line-item (map :sku line-items)))
         delete-line-item-requests (variants-requests app-state request-keys/delete-line-item (map :id line-items))
 
-        cart-items                 (for [{sku-id :sku variant-id :id :as line-item} line-items
-                                         :let
-                                         [sku                  (get skus sku-id)
-                                          price                (or (:sku/price line-item)
-                                                                   (:unit-price line-item))
-                                          qty-adjustment-args {:variant (select-keys line-item [:id :sku])}
-                                          removing?            (get delete-line-item-requests variant-id)
-                                          updating?            (get update-line-item-requests sku-id)
-                                          just-added-to-order? (some #(= sku-id %) (get-in app-state keypaths/cart-recently-added-skus))]]
-                                     {:react/key                                      (str sku-id "-" (:quantity line-item))
-                                      :cart-item-title/id                             (str "line-item-title-" sku-id)
-                                      :cart-item-title/primary                        (or (:product-title line-item)
-                                                                                          (:product-name line-item))
-                                      :cart-item-title/secondary                      (:color-name line-item)
-                                      :cart-item-floating-box/id                      (str "line-item-price-ea-with-label-" sku-id)
-                                      :cart-item-floating-box/value                   [:div {:data-test (str "line-item-price-ea-" sku-id)}
-                                                                                       (mf/as-money price)
-                                                                                       [:div.proxima.content-4 " each"]]
-                                      :cart-item-square-thumbnail/id                  sku-id
-                                      :cart-item-square-thumbnail/sku-id              sku-id
-                                      :cart-item-square-thumbnail/highlighted?        just-added-to-order?
-                                      :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
-                                                                                        (str length-circle-value "”"))
-                                      :cart-item-square-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)
-                                      :cart-item-adjustable-quantity/id               (str "line-item-quantity-" sku-id)
-                                      :cart-item-adjustable-quantity/spinning?        updating?
-                                      :cart-item-adjustable-quantity/value            (:quantity line-item)
-                                      :cart-item-adjustable-quantity/id-suffix        sku-id
-                                      :cart-item-adjustable-quantity/decrement-target [events/control-cart-line-item-dec qty-adjustment-args]
-                                      :cart-item-adjustable-quantity/increment-target [events/control-cart-line-item-inc qty-adjustment-args]
-                                      :cart-item-remove-action/id                     (str "line-item-remove-" sku-id)
-                                      :cart-item-remove-action/spinning?              removing?
-                                      :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]})]
+        cart-items (for [{sku-id :sku variant-id :id :as line-item} line-items
+                         :let
+                         [sku                  (get skus sku-id)
+                          price                (or (:sku/price line-item)
+                                                   (:unit-price line-item))
+                          qty-adjustment-args {:variant (select-keys line-item [:id :sku])}
+                          removing?            (get delete-line-item-requests variant-id)
+                          updating?            (get update-line-item-requests sku-id)
+                          just-added-to-order? (some #(= sku-id %) (get-in app-state keypaths/cart-recently-added-skus))]]
+                     {:react/key                                      (str sku-id "-" (:quantity line-item))
+                      :cart-item-title/id                             (str "line-item-title-" sku-id)
+                      :cart-item-title/primary                        (or (:product-title line-item)
+                                                                          (:product-name line-item))
+                      :cart-item-title/secondary                      (:color-name line-item)
+                      :cart-item-floating-box/id                      (str "line-item-price-ea-with-label-" sku-id)
+                      :cart-item-floating-box/value                   [:div {:data-test (str "line-item-price-ea-" sku-id)}
+                                                                       (mf/as-money price)
+                                                                       [:div.proxima.content-4 " each"]]
+                      :cart-item-square-thumbnail/id                  sku-id
+                      :cart-item-square-thumbnail/sku-id              sku-id
+                      :cart-item-square-thumbnail/highlighted?        just-added-to-order?
+                      :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
+                                                                        (str length-circle-value "”"))
+                      :cart-item-square-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)
+                      :cart-item-adjustable-quantity/id               (str "line-item-quantity-" sku-id)
+                      :cart-item-adjustable-quantity/spinning?        updating?
+                      :cart-item-adjustable-quantity/value            (:quantity line-item)
+                      :cart-item-adjustable-quantity/id-suffix        sku-id
+                      :cart-item-adjustable-quantity/decrement-target [events/control-cart-line-item-dec qty-adjustment-args]
+                      :cart-item-adjustable-quantity/increment-target [events/control-cart-line-item-inc qty-adjustment-args]
+                      :cart-item-remove-action/id                     (str "line-item-remove-" sku-id)
+                      :cart-item-remove-action/spinning?              removing?
+                      :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]})]
     cart-items))
 
 (defn coupon-code->remove-promo-action [coupon-code]
@@ -757,9 +752,8 @@
                                                              order
                                                              mayvenn-install)
                                          {:promo-field-data (promo-input-query data order entered?)})
-             :cart-items                (cart-items-query data mayvenn-install line-items skus add-items-action)
+             :cart-items                (cart-items-query data line-items skus)
              :service-line-items        (service-line-items-query data mayvenn-install add-items-action)
-        ;;     :physical-line-items-query  (physical-line-items-query data)
              :mayvenn-install           mayvenn-install
              :new-cart?                 (experiments/new-cart? data)}
 
@@ -781,6 +775,9 @@
               :servicing-stylist-banner/target    [events/control-change-stylist {:stylist-id (:stylist-id servicing-stylist)}]
               :servicing-stylist-banner/action-id "stylist-swap"
               :servicing-stylist-portrait-url     (-> servicing-stylist :portrait :resizable-url)})
+
+      (and entered? (not servicing-stylist))
+      (merge {:stylist-organism/id "stylist-organism"})
 
       (and entered? servicing-stylist (not shop?))
       (merge {:checkout-caption-copy (str "After you place your order, please contact "
