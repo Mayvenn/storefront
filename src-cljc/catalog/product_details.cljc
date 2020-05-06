@@ -170,11 +170,6 @@
                     :settings {:edgePadding 0
                                :items       1}}))
 
-(defn reviews-summary [reviews opts]
-  [:div.h6
-   {:style {:min-height "18px"}}
-   (component/build review-component/reviews-summary-dropdown-experiment-component reviews opts)])
-
 (defn get-selected-options [selections options]
   (reduce
    (fn [acc selection]
