@@ -2,17 +2,17 @@
   (:require [storefront.components.money-formatters :as mf]))
 
 (def unit-type->menu-kw
-  {"Freeinstall (with Closure)" :install-sew-in-closure
-   "Freeinstall (with 360)"     :install-sew-in-360-frontal
-   "Freeinstall (with Frontal)" :install-sew-in-frontal
-   "Freeinstall (Leave Out)"    :install-sew-in-leave-out
+  {"Free Install (with Closure)" :install-sew-in-closure
+   "Free Install (with 360)"     :install-sew-in-360-frontal
+   "Free Install (with Frontal)" :install-sew-in-frontal
+   "Free Install (Leave Out)"    :install-sew-in-leave-out
    "Wig Customization"          :wig-customization})
 
 (def unit-type->campaign-name
-  {"Freeinstall (with Closure)" "Free Install - Closure"
-   "Freeinstall (with 360)"     "Free Install - 360"
-   "Freeinstall (with Frontal)" "Free Install - Frontal"
-   "Freeinstall (Leave Out)"    "Free Install - Leave Out"
+  {"Free Install (with Closure)" "Free Install - Closure"
+   "Free Install (with 360)"     "Free Install - 360"
+   "Free Install (with Frontal)" "Free Install - Frontal"
+   "Free Install (Leave Out)"    "Free Install - Leave Out"
    "Wig Customization"          "Wig Customization"})
 
 (def default-service-menu

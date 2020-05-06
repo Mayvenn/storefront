@@ -22,7 +22,9 @@
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [voucher.keypaths :as voucher-keypaths]
-            [storefront.accessors.auth :as auth]))
+            [storefront.accessors.auth :as auth]
+            [storefront.accessors.service-menu :as service-menu]
+            [storefront.components.money-formatters :as mf]))
 
 (def tabs
   [{:id :orders
@@ -52,7 +54,7 @@
 (defcomponent component
   [{:keys [stats-cards activity-ledger-tab
            balance-transfers balance-transfers-pagination fetching-balance-transfers?
-           pending-voucher service-menu
+           pending-voucher-row
            orders-data] :as data} owner opts]
   (let [{:keys [active-tab-name]} activity-ledger-tab]
     [:div.col-6-on-dt.col-9-on-tb.mx-auto
@@ -61,7 +63,10 @@
 
      (case active-tab-name
        :payments
-       (stylist.dashboard-payments-tab/payments-table pending-voucher service-menu balance-transfers balance-transfers-pagination fetching-balance-transfers?)
+       (stylist.dashboard-payments-tab/payments-table
+        pending-voucher-row
+        balance-transfers
+        balance-transfers-pagination fetching-balance-transfers?)
 
        :orders
        (component/build stylist.dashboard-orders-tab/component orders-data nil))]))
@@ -73,14 +78,45 @@
    events/navigate-v2-stylist-dashboard-orders   {:active-tab-name :orders
                                                   :empty-copy      "Orders from your store will appear here."
                                                   :empty-title     "No orders yet"}})
+
+(defn voucher-response->pending-voucher-row
+  "v2-vouchers are vouchers that can potentially have multiple services under a
+  :service key"
+  [skus service-menu {:as voucher-response :keys [services date redemption-date discount]}]
+  (let [v2-voucher?          (nil? discount)
+        voucher-service-base (->> (map :sku services)
+                                  (select-keys skus )
+                                  vals
+                                  (filter (comp (partial = #{"base"}) :service/type))
+                                  first)]
+    {:id                 (str "pending-voucher-" 1)
+     :icon               "68e6bcb0-a236-46fe-a8e7-f846fff0f464"
+     :title              "Service Payment"
+     :date               (if v2-voucher?
+                           redemption-date
+                           date)
+     ;;definition
+     :subtitle           (if v2-voucher?
+                           (:sku/name voucher-service-base)
+                           (service-menu/discount->campaign-name discount))
+     :amount             (if v2-voucher?
+                           (some->> services (keep :price) (reduce + 0.0) mf/as-money)
+                           (service-menu/display-voucher-amount service-menu mf/as-money voucher-response))
+     :amount-description "Pending"
+     :styles             {:background   ""
+                          :title-color  "black"
+                          :amount-color "s-color"}
+     :non-clickable?     true}) )
+
 (defn query
   [data]
   (let [get-balance-transfer second
         balance-transfers    (get-in data keypaths/v2-dashboard-balance-transfers-elements)]
     {:stats-cards         (stylist.dashboard-stats/query data)
      :activity-ledger-tab (determine-active-tab (get-in data keypaths/navigation-event))
-     :service-menu        (get-in data keypaths/user-stylist-service-menu)
-     :pending-voucher     (get-in data voucher-keypaths/voucher-response)
+     :pending-voucher-row (some->> (get-in data voucher-keypaths/voucher-redeemed-response)
+                                  (voucher-response->pending-voucher-row (get-in data keypaths/v2-skus)
+                                                                         (get-in data keypaths/user-stylist-service-menu)))
 
      :balance-transfers            (into []
                                          (comp
@@ -92,7 +128,7 @@
      :fetching-balance-transfers?  (or (utils/requesting? data request-keys/get-stylist-dashboard-balance-transfers)
                                        (utils/requesting? data request-keys/fetch-user-stylist-service-menu))
      :balance-transfers-pagination (get-in data keypaths/v2-dashboard-balance-transfers-pagination)
-     :orders-data (stylist.dashboard-orders-tab/query data)}))
+     :orders-data                  (stylist.dashboard-orders-tab/query data)}))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))

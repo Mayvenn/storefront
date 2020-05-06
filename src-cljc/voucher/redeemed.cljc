@@ -113,9 +113,9 @@
    ])
 
 (defn ^:private query [app-state]
-  (let [voucher  (or (get-in app-state voucher-keypaths/voucher-redeemed-response)
-                     (get-in app-state voucher-keypaths/voucher-response))
-        services (:services voucher)]
+  (let [voucher     (get-in app-state voucher-keypaths/voucher-redeemed-response)
+        v2-voucher? (nil? (:discount voucher))
+        services    (:services voucher)]
     (cond-> {:spinning?            (utils/requesting? app-state request-keys/fetch-user-stylist-service-menu)
              :notification/content "Voucher redeemed successfully"
              :cta/id               "view-earnings"
@@ -135,7 +135,7 @@
              :breakdown/primary-id "redemption-amount"
              :breakdown/primary    "Payout Breakdown"}
 
-      (:discount voucher) ;; GROT: old behavior for single service vouchers, remove once vaqum is deployed
+      (not v2-voucher?)
       (merge (let [service-menu              (get-in app-state keypaths/user-stylist-service-menu)
                    install-type              (-> voucher :discount :unit_type)
                    install-type-display-name (get unit-type->display-name install-type)
@@ -147,7 +147,7 @@
                                    :breakdown-item/value (str payout-amount "*")}]
                 :notification/id (str "voucher-redeemed-" install-type-display-name)}))
 
-      services ;; NOTE: post-deploy, just put these into default map
+      v2-voucher?
       (merge {:breakdown/items (mapv (fn [service]
                                        {:breakdown-item/id    (str (:sku service) "-service")
                                         :breakdown-item/label (:product-name service)
@@ -169,7 +169,5 @@
 
 (defmethod effects/perform-effects events/navigate-voucher-redeemed [_ _ _ _ app-state]
   #?(:cljs
-     (when-not (or
-                (get-in app-state voucher-keypaths/voucher-redeemed-response)
-                (-> (get-in app-state voucher-keypaths/voucher-response) :discount :type))
+     (when-not (get-in app-state voucher-keypaths/voucher-redeemed-response)
        (history/enqueue-redirect events/navigate-home))))

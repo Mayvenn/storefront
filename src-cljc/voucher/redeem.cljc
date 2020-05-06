@@ -165,14 +165,15 @@
 
 (defmethod transitions/transition-state events/api-success-voucher-redemption
   [_ event {:keys [date id object result voucher] :as data} app-state]
-  (if (:services data)
-    (assoc-in app-state voucher-keypaths/voucher-redeemed-response data)
-    (assoc-in app-state voucher-keypaths/voucher-response {:date     date
-                                                             :id       id
-                                                             :object   object
-                                                             :result   result
-                                                             :discount (:discount voucher)
-                                                             :type     (:type voucher)})))
+  (assoc-in app-state voucher-keypaths/voucher-redeemed-response
+            (if (:services data)
+              data
+              {:date     date
+               :id       id
+               :object   object
+               :result   result
+               :discount (:discount voucher)
+               :type     (:type voucher)})))
 
 (defmethod effects/perform-effects events/api-success-voucher-redemption
   [_ _ response _ _]

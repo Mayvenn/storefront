@@ -14,7 +14,9 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.numbers :as numbers]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [voucher.keypaths :as voucher-keypaths]
+            [storefront.platform.messages :as messages]))
 
 (defn earnings-count [title value]
   [:div.letter-spacing-0
@@ -170,7 +172,14 @@
          (api/get-stylist-dashboard-stats events/api-success-v2-stylist-dashboard-stats
                                           stylist-id
                                           user-id
-                                          user-token)))))
+                                          user-token)
+
+         (when-let [service-sku-ids (->> (get-in app-state voucher-keypaths/voucher-redeemed-response)
+                                         :services
+                                         (map :sku)
+                                         set
+                                         not-empty)]
+           (messages/handle-message events/ensure-sku-ids {:sku-ids service-sku-ids}))))))
 
 (defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-stats
   [_ event {:as stats :keys [stylist earnings services store-credit-balance bonuses]} app-state]
@@ -180,4 +189,3 @@
 (defmethod transitions/transition-state events/control-v2-stylist-dashboard-section-toggle
   [_ event {:keys [keypath]} app-state]
   (update-in app-state keypath not))
-

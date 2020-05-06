@@ -74,22 +74,6 @@
       [:div.bold {:class (:amount-color styles)} amount]
       [:div.h8 (or amount-description ui/nbsp)]]]))
 
-(defn pending-voucher-row [{:as pending-voucher :keys [discount date]} service-menu]
-  (let [item {:id                 (str "pending-voucher-" 1)
-              :icon               "68e6bcb0-a236-46fe-a8e7-f846fff0f464"
-              :title              "Service Payment"
-              :date               date
-              :subtitle           (service-menu/discount->campaign-name discount)
-              :amount             (service-menu/display-voucher-amount
-                                   service-menu
-                                   mf/as-money pending-voucher)
-              :amount-description "Pending"
-              :styles             {:background   ""
-                                   :title-color  "black"
-                                   :amount-color "s-color"}
-              :non-clickable?     true}]
-    (payment-row item)))
-
 (defn group-payments-by-month [payments]
   #?(:cljs
      (let [year-month           (fn [{:keys [date]}]
@@ -106,14 +90,14 @@
    [:h4.gray.bold.p1 "No payments yet"]
    [:h6.col-5.mx-auto.line-height-2 "Payments and bonus activity will appear here"]])
 
-(defn payments-table [pending-voucher service-menu balance-transfers pagination fetching?]
+(defn payments-table [pending-voucher-row balance-transfers pagination fetching?]
   (let [payments (map balance-transfer->payment balance-transfers)
         sections (group-payments-by-month payments)
         {current-page :page total-pages :total} pagination]
     [:div
      {:data-test "payments-tab"}
      (cond
-       (and (nil? pending-voucher) (empty? payments)) empty-payments
+       (and (nil? pending-voucher-row) (empty? payments)) empty-payments
 
        fetching?
        [:div.my2.h2 ui/spinner]
@@ -121,8 +105,8 @@
        :else
        [:div
         [:div.col-12.mb3
-         (when pending-voucher
-           (pending-voucher-row pending-voucher service-menu))
+         (when pending-voucher-row
+           (payment-row pending-voucher-row))
          (for [{:keys [title items] :as section} sections]
            [:div {:key (str "payments-table-" title)}
             [:div.h8.bg-cool-gray.px2.py1.medium title]
@@ -165,13 +149,11 @@
 (defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-balance-transfers
   [_ event {:keys [balance-transfers pagination]} app-state]
   (let [most-recent-voucher-award-date (most-recent-voucher-award balance-transfers)
-        voucher-response-date          (-> (get-in app-state voucher-keypaths/voucher-response)
-                                           :date
-                                           date/to-millis)
+        voucher-response-date          (some->> (get-in app-state voucher-keypaths/voucher-redeemed-response)
+                                                ((some-fn :date :redemption-date))
+                                                date/to-millis)
         voucher-pending?               (> (or voucher-response-date 0) (or most-recent-voucher-award-date 0))]
-    (-> (if voucher-pending?
-          app-state
-          (update-in app-state voucher-keypaths/voucher dissoc :response))
+    (-> (if voucher-pending? app-state (update-in app-state voucher-keypaths/voucher dissoc :response))
         (update-in keypaths/v2-dashboard-balance-transfers-elements merge (maps/map-keys (comp spice/parse-int name) balance-transfers))
         (assoc-in keypaths/v2-dashboard-balance-transfers-pagination pagination))))
 
