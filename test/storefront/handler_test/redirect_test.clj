@@ -492,3 +492,11 @@
       (let [resp (handler (mock/request :get "https://classic.mayvenn.com/shop/deals"))]
         (is (= 301 (:status resp)) (pr-str resp))
         (is (= "https://classic.mayvenn.com/" (get-in resp [:headers "Location"])))))))
+
+(deftest redirects-how-it-works-to-homepage
+  (with-services {}
+    (with-handler handler
+      (let [resp (handler (mock/request :get "https://shop.mayvenn.com/how-it-works"))]
+        (is (= 301 (:status resp)) (pr-str resp))
+        (is (= "https://shop.mayvenn.com/" (get-in resp [:headers "Location"])))
+        (is (= "max-age=604800" (get-in resp [:headers "cache-control"])))))))

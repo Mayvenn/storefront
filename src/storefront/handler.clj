@@ -177,6 +177,13 @@
                    "pragma"        "no-cache"
                    "expires"       "0"}))))))
 
+(defn wrap-set-cache-header
+  [f cache-header-val]
+  (fn set-cache-header [req]
+    (when-let [res (f req)]
+      (spice.core/spy (update res :headers merge
+                              {"cache-control" cache-header-val})))))
+
 (defn wrap-add-domains [h]
   (fn [req]
     (h (merge req {:subdomains (parse-subdomains (:server-name req))}))))
@@ -755,7 +762,6 @@
                                                 ["https://shop.mayvenn.com/shop/all-bundle-sets"                "0.80"]
                                                 ["https://shop.mayvenn.com/shop/straight-bundle-sets"           "0.80"]
                                                 ["https://shop.mayvenn.com/shop/wavy-curly-bundle-sets"         "0.80"]
-                                                ["https://shop.mayvenn.com/how-it-works"                        "0.80"]
                                                 ["https://shop.mayvenn.com/certified-stylists"                  "0.80"]]
 
                                                (concat
@@ -958,6 +964,7 @@
                (GET "/products" req (redirect-to-home environment req))
                (GET "/products/" req (redirect-to-home environment req))
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
+               (GET "/how-it-works" req (wrap-set-cache-header (partial redirect-to-home environment) "max-age=604800"))
                (GET "/cms/*" {uri :uri}
                     (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
                       (-> (contentful/read-cache contentful)

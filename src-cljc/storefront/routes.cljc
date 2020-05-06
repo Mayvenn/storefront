@@ -55,7 +55,6 @@
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "/gallery"]       (edn->bidi events/navigate-adventure-stylist-gallery)
    "/certified-stylists"                                               (edn->bidi events/navigate-info-certified-stylists)
    "/about-our-hair"                                                   (edn->bidi events/navigate-info-about-our-hair)
-   "/how-it-works"                                                     (edn->bidi events/navigate-info-how-it-works)
    "/about-mayvenn-install"                                            (edn->bidi events/navigate-about-mayvenn-install)})
 
 (def catalog-routes
