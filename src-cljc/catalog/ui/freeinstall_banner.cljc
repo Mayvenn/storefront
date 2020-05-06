@@ -4,10 +4,10 @@
             [storefront.platform.component-utils :as utils]))
 
 (defcomponent organism
-  [{:freeinstall-banner/keys [show? title subtitle image-ucare-id button-id button-copy nav-event]} _ _]
-  (when show?
+  [{:freeinstall-banner/keys [id title subtitle image-ucare-id button-copy nav-event]} _ _]
+  (when id
     [:div.cursor.m3
-     (merge {:data-test button-id}
+     (merge {:data-test id}
             (apply utils/route-to nav-event))
      [:div.flex.justify-center.bg-pale-purple
       [:div.p5.center.col-12.flex.flex-column.items-center

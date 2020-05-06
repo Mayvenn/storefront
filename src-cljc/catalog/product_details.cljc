@@ -420,7 +420,8 @@
                              :button-copy    "browse stylists"
                              :nav-event      [events/navigate-adventure-match-stylist]
                              :image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
-                             :show?          (= "shop" (get-in data keypaths/store-slug))})
+                             :id             (and (= "shop" (get-in data keypaths/store-slug))
+                                                  "freeinstall-banner-cta")})
 
       (#{"360-wigs" "ready-wigs" "lace-front-wigs"} (-> product :hair/family first))
       (merge {:freeinstall-banner/title "Buy any Lace Front or 360 Wig and we'll pay for your wig customization"}))))
