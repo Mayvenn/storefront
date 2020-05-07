@@ -181,8 +181,8 @@
   [f cache-header-val]
   (fn set-cache-header [req]
     (when-let [res (f req)]
-      (spice.core/spy (update res :headers merge
-                              {"cache-control" cache-header-val})))))
+      (update res :headers merge
+              {"cache-control" cache-header-val}))))
 
 (defn wrap-add-domains [h]
   (fn [req]
