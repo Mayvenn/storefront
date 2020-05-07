@@ -45,8 +45,6 @@
      weights
      materials
      summary
-     stylist-exclusives-family
-     hair-family
      learn-more-nav-event]} _ _]
   (when (seq description)
     [:div.border.border-width-2.m3.p4.border-cool-gray
@@ -73,10 +71,7 @@
             [:li.mbp3 {:key (str "item-" idx)} item])]])
       (for [[idx item] (map-indexed vector description)]
         [:div.mt2 {:key (str "product-description-" idx)} item])
-      (when (and learn-more-nav-event
-                 (not (or (contains? hair-family "seamless-clip-ins")
-                          (contains? hair-family "tape-ins")
-                          (contains? stylist-exclusives-family "kits"))))
+      (when learn-more-nav-event
         [:div.mt4.mb2
          (ui/button-medium-underline-black
           (utils/route-to learn-more-nav-event)

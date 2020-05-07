@@ -407,14 +407,15 @@
        (add-to-cart-query data selected-sku sku-price)
        (let [{:keys [copy/description copy/colors copy/weights copy/density copy/materials copy/summary hair/family]} product]
          #:product-description {:summary                   summary
-                                :hair-family               family
                                 :description               description,
                                 :materials                 materials
                                 :colors                    colors
                                 :density                   density
                                 :weights                   (when (not density) weights)
-                                :stylist-exclusives-family (:stylist-exclusives/family product)
-                                :learn-more-nav-event      events/navigate-content-our-hair})
+                                :learn-more-nav-event (and (not (contains? family "seamless-clip-ins"))
+                                                           (not (contains? family "tape-ins"))
+                                                           (not (contains? (:stylist-exclusives/family product) "kits"))
+                                                           events/navigate-content-our-hair)})
        #:freeinstall-banner {:title          "Buy 3 items and we'll pay for your hair install"
                              :subtitle       "Choose any Mayvenn stylist in your area"
                              :button-copy    "browse stylists"
