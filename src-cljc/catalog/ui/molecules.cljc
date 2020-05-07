@@ -39,7 +39,8 @@
 
 (defcomponent product-description
   [{:product-description/keys
-    [description
+    [duration
+     description
      colors
      density
      weights
@@ -48,6 +49,10 @@
      learn-more-nav-event]} _ _]
   (when (seq description)
     [:div.border.border-width-2.m3.p4.border-cool-gray
+     (when duration
+       [:dl.mb2
+        [:dt.shout.proxima.title-3 "Duration"]
+        [:dd.ml0.proxima.content-2 duration]])
      [:div.light.canela.title-2 "Description"]
      [:div {:item-prop "description"}
       (when (or colors density weights materials)
@@ -62,7 +67,7 @@
                 (for [[title value] attrs]
                   [:dl.col.m0.inline-block {:class size}
                    [:dt.mx1.shout.proxima.title-3 title]
-                   [:dd.mx1.ml0.proxima.content-2 value]]))))
+                   [:dd.mx1.proxima.content-2 value]]))))
       (when (seq summary)
         [:div.my2
          [:h3.mbp3.h6 "Includes:"]

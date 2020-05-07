@@ -1,6 +1,4 @@
-(ns storefront.accessors.products
-  (:require [storefront.keypaths :as keypaths]
-            [storefront.utils.query :as query]))
+(ns storefront.accessors.products)
 
 (defn product-title
   "Prefer variant-name, if available. Otherwise use product name (product-name
@@ -22,3 +20,22 @@
       :hair/family
       first
       wig-families))
+
+
+(defn product-is-mayvenn-install-service?
+  [product]
+  (contains? (set (:promo.mayvenn-install/discountable product))
+             true))
+
+(defn service? [product]
+  (seq (:service/type product)))
+
+(defn base-service?
+  [product]
+  (contains? (set (:service/type product))
+             "base"))
+
+(defn standalone-service?
+  [product]
+  (and (base-service? product)
+       (not (product-is-mayvenn-install-service? product))))

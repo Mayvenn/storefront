@@ -101,7 +101,8 @@
 (defn show-quadpay?
   [data]
   (boolean (or (get-in data keypaths/order-cart-payments-quadpay)
-               (display-feature? data "show-quadpay"))))
+               (display-feature? data "show-quadpay")))
+  true)
 
 (defn service-category-page?
   [data]

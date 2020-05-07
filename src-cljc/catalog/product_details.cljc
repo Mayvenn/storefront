@@ -18,6 +18,7 @@
             [catalog.products :as products]
             [catalog.selector.sku :as sku-selector]
             [catalog.ui.molecules :as catalog.M]
+            [catalog.ui.how-it-works :as how-it-works]
             [clojure.string :as string]
             [spice.date :as date]
             [spice.selector :as selector]
@@ -196,10 +197,12 @@
            selected-sku
            sku-quantity
            selected-options
+           how-it-works
            get-a-free-install-section-data
            options
            picker-data
            aladdin?
+           sticky-add-to-bag?
            ugc] :as data} owner opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
@@ -218,7 +221,10 @@
          (page
           [:div
            (carousel carousel-images product)
-           [:div.hide-on-mb (component/build ugc/component ugc opts)]]
+           [:div.hide-on-mb (component/build ugc/component ugc opts)]
+           (when how-it-works
+             [:div.container.mx-auto.mt4.px4.hide-on-mb
+              (component/build how-it-works/organism how-it-works)])]
           [:div
            [:div
             [:meta {:item-prop "image"
@@ -235,6 +241,9 @@
            (when (products/stylist-only? product)
              shipping-and-guarantee)
            (component/build catalog.M/product-description data opts)
+           (when how-it-works
+             [:div.container.mx-auto.mt4.px4.hide-on-dt.hide-on-tb
+              (component/build how-it-works/organism how-it-works)])
            (component/build freeinstall-banner/organism data opts)
            [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
        (when aladdin?
@@ -243,8 +252,7 @@
        (when (seq reviews)
          [:div.container.col-7-on-tb-dt.px2
           (component/build review-component/reviews-component reviews opts)])
-       (when (and (nil? (:offset ugc))
-                  (not (products/stylist-only? product)))
+       (when sticky-add-to-bag?
            ;; We use visibility:hidden rather than display:none so that this component has a height.
            ;; We use the height on mobile view to slide it on/off the bottom of the page.
          [:div.invisible-on-tb-dt
@@ -368,18 +376,19 @@
                                                    "you purchase a Virgin Lace Front Wig or Virgin 360 Wig.")}))))
 
 (defn query [data]
-  (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
-        selections      (get-in data catalog.keypaths/detailed-product-selections)
-        product         (products/current-product data)
-        product-skus    (products/extract-product-skus data product)
-        facets          (facets/by-slug data)
-        carousel-images (find-carousel-images product product-skus
-                                              (select-keys selections [:hair/color])
-                                              selected-sku)
-        options         (get-in data catalog.keypaths/detailed-product-options)
-        ugc             (ugc-query product selected-sku data)
-        sku-price       (:sku/price selected-sku)
-        review-data     (review-component/query data)]
+  (let [selected-sku        (get-in data catalog.keypaths/detailed-product-selected-sku)
+        selections          (get-in data catalog.keypaths/detailed-product-selections)
+        product             (products/current-product data)
+        product-skus        (products/extract-product-skus data product)
+        facets              (facets/by-slug data)
+        carousel-images     (find-carousel-images product product-skus
+                                                  (select-keys selections [:hair/color])
+                                                  selected-sku)
+        options             (get-in data catalog.keypaths/detailed-product-options)
+        ugc                 (ugc-query product selected-sku data)
+        sku-price           (:sku/price selected-sku)
+        review-data         (review-component/query data)
+        standalone-service? (accessors.products/standalone-service? product)]
     (cond->
         (merge
          {:reviews                            review-data
@@ -388,7 +397,8 @@
           :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
           :title/primary                      (:copy/title product)
           :price-block/primary                sku-price
-          :price-block/secondary              "each"
+
+          :price-block/secondary              (when-not standalone-service? "each")
           :ugc                                ugc
           :aladdin?                           (experiments/aladdin-experience? data)
           :fetching-product?                  (utils/requesting? data (conj request-keys/get-products
@@ -403,11 +413,34 @@
           :facets                             facets
           :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
           :picker-data                        (picker/query data)
-          :carousel-images                    carousel-images}
+          :carousel-images                    carousel-images
+          :sticky-add-to-bag?                 (and (nil? (:offset ugc))
+                                                   (not (products/stylist-only? product))
+                                                   (not standalone-service?))}
        (add-to-cart-query data selected-sku sku-price)
-       (let [{:keys [copy/description copy/colors copy/weights copy/density copy/materials copy/summary hair/family]} product]
-         #:product-description {:summary                   summary
-                                :description               description,
+       (let [{:keys [copy/description
+                     copy/colors
+                     copy/weights
+                     copy/density
+                     copy/materials
+                     copy/summary
+                     copy/duration ; TODO: "copy/duration"? yeah?
+                     hair/family]} product]
+         #:product-description {:duration                  (if standalone-service?  ; TODO: Use cellar instead of placeholder
+                                                             "30min"
+                                                             duration)
+                                :summary                   summary
+                                :description               (if standalone-service? ; TODO: Use cellar instead of placeholder
+                                                             ["Lorem ipsum dolor
+                                                             sit amet,
+                                                             consectetur
+                                                             adipiscing elit.
+                                                             Nullam feugiat
+                                                             posuere magna vitae
+                                                             pulvinar. Vivamus
+                                                             pellentesque, purus
+                                                             sed iaculis
+                                                             ultricies"] description)
                                 :materials                 materials
                                 :colors                    colors
                                 :density                   density
@@ -415,14 +448,45 @@
                                 :learn-more-nav-event (and (not (contains? family "seamless-clip-ins"))
                                                            (not (contains? family "tape-ins"))
                                                            (not (contains? (:stylist-exclusives/family product) "kits"))
-                                                           events/navigate-content-our-hair)})
-       #:freeinstall-banner {:title          "Buy 3 items and we'll pay for your hair install"
-                             :subtitle       "Choose any Mayvenn stylist in your area"
-                             :button-copy    "browse stylists"
-                             :nav-event      [events/navigate-adventure-match-stylist]
-                             :image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
-                             :id             (and (= "shop" (get-in data keypaths/store-slug))
-                                                  "freeinstall-banner-cta")})
+                                                           (not standalone-service?)
+                                                           events/navigate-content-our-hair)}))
+
+      (and (= "shop" (get-in data keypaths/store-slug))
+           (not standalone-service?))
+      (merge #:freeinstall-banner {:title          "Buy 3 items and we'll pay for your hair install"
+                                   :subtitle       "Choose any Mayvenn stylist in your area"
+                                   :button-copy    "browse stylists"
+                                   :nav-event      [events/navigate-adventure-match-stylist]
+                                   :class          "bg-pale-purple"
+                                   :id             "freeinstall-banner-cta"})
+
+      standalone-service?
+      (merge #:freeinstall-banner {:title          "Amazing Stylists"
+                                   :icon           (svg/heart {:class  "fill-p-color"
+                                                               :width  "32px"
+                                                               :height "29px"})
+                                   :subtitle       (str "We’ve rounded up the best stylists in the country so you can be "
+                                                        "sure your hair is in really, really good hands.")
+                                   :button-copy    "browse stylists"
+                                   :nav-event      [events/navigate-adventure-match-stylist]
+                                   :image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
+                                   :class          "bg-refresh-gray"
+                                   :id             "freeinstall-banner-cta"}
+             {:how-it-works
+              {:how-it-works.title/secondary "Here’s how it works."
+               :how-it-works.step/elements
+               [{:how-it-works.step.title/primary   "01"
+                 :how-it-works.step.title/secondary "Pick your service"
+                 :how-it-works.step.body/primary    (str "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+                                                         "Ut sollicitudin massa sit amet efficitur sagittis.")}
+                {:how-it-works.step.title/primary   "02"
+                 :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
+                 :how-it-works.step.body/primary    (str "We've hand-picked thousands of talented stylists around the country. "
+                                                         "We'll cover the cost of your salon appointment or wig customization with any qualifying purchase.") }
+                {:how-it-works.step.title/primary   "03"
+                 :how-it-works.step.title/secondary "Schedule your appointment"
+                 :how-it-works.step.body/primary    (str " We’ll connect you with your stylist to set up your service. "
+                                                         "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}})
 
       (#{"360-wigs" "ready-wigs" "lace-front-wigs"} (-> product :hair/family first))
       (merge {:freeinstall-banner/title "Buy any Lace Front or 360 Wig and we'll pay for your wig customization"}))))

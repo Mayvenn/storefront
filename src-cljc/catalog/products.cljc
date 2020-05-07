@@ -2,6 +2,7 @@
   (:require [catalog.keypaths :as k]
             [clojure.set :as set]
             [spice.maps :as maps]
+            [storefront.accessors.products :as accessors.products]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
@@ -18,7 +19,11 @@
   [skuer]
   (some-> skuer :catalog/department (contains? "stylist-exclusives")))
 
-(def eligible-for-reviews? (complement stylist-only?))
+(defn eligible-for-reviews?
+  [skuer]
+  (and
+   (not (accessors.products/standalone-service? skuer))
+   (not (stylist-only? skuer))))
 
 (defn eligible-for-triple-bundle-discount?
   [skuer]
