@@ -761,8 +761,7 @@
                                                              mayvenn-install)
                                          {:promo-field-data (promo-input-query data order entered?)})
              :cart-items                (cart-items-query data line-items skus)
-             :service-line-items        (service-line-items-query data mayvenn-install add-items-action)
-             :new-cart?                 (experiments/new-cart? data)}
+             :service-line-items        (service-line-items-query data mayvenn-install add-items-action)}
 
       (experiments/show-quadpay? data)
       (merge {:quadpay/order-total (when-not locked? (:total order))

@@ -32,7 +32,6 @@
             [mayvenn-made.home :as mayvenn-made.home]
             checkout.classic-cart
             checkout.cart
-            [storefront.accessors.experiments :as experiments]
             [storefront.components.content :as content]
             [storefront.components.flash :as flash]
             [storefront.components.footer :as footer]
@@ -48,8 +47,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
-            [checkout.shop.cart-v202004 :as shop-cart-v202004]
-            [checkout.shop.cart :as shop-cart]))
+            [checkout.shop.cart-v202004 :as shop-cart-v202004]))
 
 ;; HACK until the day there are no more built-components
 (defn ^:private first-arg-only [inner-fn]
@@ -190,9 +188,7 @@
 
        ;; Cart pages for Shop
        (routes/sub-page? [nav-event] [events/navigate-cart])
-       (if (experiments/new-cart? data)
-         (shop-cart-v202004/page data nav-event)
-         (shop-cart/page data nav-event))
+       (shop-cart-v202004/page data nav-event)
 
        ;; TODO this should be moved into the UI domain of stylist-matching
        ;; Reminder, these are guarded by routing for Aladdin
