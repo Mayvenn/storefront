@@ -81,6 +81,7 @@
            cart-summary
            checkout-caption-copy
            checkout-disabled?
+           disabled-reasons
            entered?
            locked?
            promo-banner
@@ -91,8 +92,7 @@
            servicing-stylist-portrait-url
            share-carts?
            show-browser-pay?
-           suggestions
-           mayvenn-install]
+           suggestions]
     :as   queried-data}
    _ _]
   [:div.container.px2
@@ -169,26 +169,7 @@
                                  :data-test "start-checkout-button"}
                                 "Check out")
 
-       (when locked?
-         (let [any-wig? (:mayvenn-install/any-wig? mayvenn-install)]
-           [:div
-            [:div.content-3.proxima.center.py1.mt2
-             (if any-wig?
-               (str "Add a Lace Front or 360 Wig to check out")
-               (str "Add " quantity-remaining (ui/pluralize quantity-remaining " more item")))]
-            [:div.h5.py1.flex.items-center
-             [:div.flex-grow-1.border-bottom.border-gray]
-             [:div.content-3.proxima.mx2 "or"]
-             [:div.flex-grow-1.border-bottom.border-gray]]
-            [:div.mb4.mt3
-             (ui/button-small-underline-secondary
-              (apply utils/fake-href remove-freeinstall-event)
-              (if any-wig?
-                "Checkout without a free Wig Customization"
-                "Checkout without a free Mayvenn Install"))]]))
-
-
-       (when-not locked?
+       (if (empty? disabled-reasons)
          [:div
           [:div.h5.black.py1.flex.items-center
            [:div.flex-grow-1.border-bottom.border-gray]
@@ -203,7 +184,19 @@
                                    (component/html
                                     [:div
                                      "Check out with "
-                                     [:span.medium.italic "PayPal™"]]))]])
+                                     [:span.medium.italic "PayPal™"]]))]]
+         [:div
+          [:div.content-3.proxima.center.my2.red
+           disabled-reasons]
+          [:div.h5.py1.flex.items-center
+           [:div.flex-grow-1.border-bottom.border-gray]
+           [:div.content-3.proxima.mx2 "or"]
+           [:div.flex-grow-1.border-bottom.border-gray]]
+          [:div.mb4.mt3
+           (ui/button-small-underline-secondary
+            (apply utils/fake-href remove-freeinstall-event)
+            "Checkout without service")]])
+
        #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])]]
 
      (when share-carts?
@@ -686,19 +679,34 @@
                                  "Add promo code")})))))
 
 (defn full-cart-query [data]
-  (let [shop?                                (#{"shop"} (get-in data keypaths/store-slug))
-        order                                (get-in data keypaths/order)
-        products                             (get-in data keypaths/v2-products)
-        facets                               (get-in data keypaths/v2-facets)
-        line-items                           (map (partial add-product-title-and-color-to-line-item products facets)
-                                                  (orders/product-items order))
-        freeinstall-entered-cart-incomplete? (and (orders/freeinstall-entered? order)
-                                                  (not (orders/service-line-item-promotion-applied? order)))
+  (let [shop?                                        (#{"shop"} (get-in data keypaths/store-slug))
+        order                                        (get-in data keypaths/order)
+        products                                     (get-in data keypaths/v2-products)
+        facets                                       (get-in data keypaths/v2-facets)
+        line-items                                   (map (partial add-product-title-and-color-to-line-item products facets)
+                                                          (orders/product-items order))
         {:mayvenn-install/keys
          [entered? applied? locked? any-wig?
-          quantity-remaining]
-         :as mayvenn-install
-         servicing-stylist :mayvenn-install/stylist}  (mayvenn-install/mayvenn-install data)
+          quantity-remaining stylist quantity-remaining]
+         :as               mayvenn-install
+         servicing-stylist :mayvenn-install/stylist} (mayvenn-install/mayvenn-install data)
+
+        update-pending?                (update-pending? data)
+        required-stylist-not-selected? (and entered?
+                                            (experiments/cart-service-require-stylist? data)
+                                            (not stylist))
+        required-line-items-not-added? (and entered?
+                                            (> quantity-remaining 0))
+        checkout-disabled?             (or required-stylist-not-selected?
+                                           required-line-items-not-added?
+                                           update-pending?)
+        any-wig?                       (:mayvenn-install/any-wig? mayvenn-install)
+        disabled-reasons               (remove nil? [(when required-line-items-not-added?
+                                                       [:div.m1 (if any-wig?
+                                                               (str "Add a Lace Front or 360 Wig to check out")
+                                                               (str "Add " quantity-remaining (ui/pluralize quantity-remaining " more item")))])
+                                                     (when required-stylist-not-selected?
+                                                       [:div.m1 "Please pick your stylist"])])
 
         skus                            (get-in data keypaths/v2-skus)
         recently-added-sku-ids          (get-in data keypaths/cart-recently-added-skus)
@@ -729,8 +737,8 @@
              :promo-banner              (when (zero? (orders/product-quantity order))
                                           (promo-banner/query data))
              :call-out                  (call-out/query data)
-             :checkout-disabled?        (or freeinstall-entered-cart-incomplete?
-                                            (update-pending? data))
+             :checkout-disabled?        checkout-disabled?
+             :disabled-reasons          disabled-reasons
              :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
              :share-carts?              (stylists/own-store? data)
              :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
@@ -754,7 +762,6 @@
                                          {:promo-field-data (promo-input-query data order entered?)})
              :cart-items                (cart-items-query data line-items skus)
              :service-line-items        (service-line-items-query data mayvenn-install add-items-action)
-             :mayvenn-install           mayvenn-install
              :new-cart?                 (experiments/new-cart? data)}
 
       (experiments/show-quadpay? data)

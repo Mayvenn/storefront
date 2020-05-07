@@ -118,3 +118,7 @@
 (defn hide-star-distribution?
   [data]
   (display-feature? data "hide-star-distribution"))
+
+(defn cart-service-require-stylist?
+  [data]
+  (display-feature? data "cart-service-require-stylist"))
