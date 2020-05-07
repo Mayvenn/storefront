@@ -105,6 +105,7 @@
 
 (defn new-cart?
   [data]
+  #_true
   (display-feature? data "new-cart"))
 
 (defn service-category-page?
@@ -119,6 +120,6 @@
   [data]
   (display-feature? data "hide-star-distribution"))
 
-(defn cart-service-require-stylist?
+(defn stylist-blocked?
   [data]
-  (display-feature? data "cart-service-require-stylist"))
+  (display-feature? data "stylist-blocked"))

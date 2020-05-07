@@ -693,7 +693,7 @@
 
         update-pending?                (update-pending? data)
         required-stylist-not-selected? (and entered?
-                                            (experiments/cart-service-require-stylist? data)
+                                            (experiments/stylist-blocked? data)
                                             (not stylist))
         required-line-items-not-added? (and entered?
                                             (> quantity-remaining 0))
