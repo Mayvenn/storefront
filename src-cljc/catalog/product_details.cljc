@@ -574,8 +574,6 @@
                               {}
                               (select-keys sku (:selector/electives product))))))))
 
-;; TODO change effect handler to check for this:
-;; (and sku-id (contains? (set skus) sku-id))
 (defmethod transitions/transition-state events/initialize-product-details
   [_ event {:as args :keys [catalog/product-id query-params]} app-state]
   (let [ugc-offset (:offset query-params)
