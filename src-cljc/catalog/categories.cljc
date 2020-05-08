@@ -129,7 +129,7 @@
            :flyout-menu/order             1
            :homepage.v2020-04/order       2
            :homepage.v2020-04/image-id    "27e942b0-136c-4f7d-8b7b-ca98869fa272"
-           :footer/order                  1
+           :footer/order                  5
            :footer/title                  "Closures"
            :copy/description              (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                                 "Our collection of closures blend seamlessly with our bundles"
@@ -185,7 +185,7 @@
            :flyout-menu/order             2
            :homepage.v2020-04/order       3
            :homepage.v2020-04/image-id    "b6dc646c-039f-48a8-b932-bd03350a3beb"
-           :footer/order                  2
+           :footer/order                  6
            :footer/title                  "Frontals"
            :hair/source                   #{"virgin"}
            :category/tags                 #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
@@ -433,7 +433,7 @@
   [(merge {:catalog/category-id   "13"
            :homepage.v2020-04/order    0
            :homepage.v2020-04/image-id "5457be03-d25b-41d6-a5e3-ef28b4fda2f5"
-           :footer/order          3
+           :footer/order          7
            :footer/title          "Wigs"
            :flyout-menu/order     3
            :flyout-menu/title     "Wigs"
@@ -601,7 +601,7 @@
            :flyout-menu/order             0
            :homepage.v2020-04/order       1
            :homepage.v2020-04/image-id    "2013a836-9fc8-4530-8696-884400fad880"
-           :footer/order                  0
+           :footer/order                  4
            :footer/title                  "Hair Bundles"
            :category/description          (copy "Have a hairstyle in mind and want more volume, length, and texture? Add our 100% Virgin hair bundles."
                                                 "Purchase three high-quality human hair bundles and the install is free.")
@@ -644,7 +644,7 @@
 (def the-only-stylist-exclusive
   {:catalog/category-id       "14"
    :auth/requires             #{:stylist}
-   :footer/order              5
+   :footer/order              9
    :footer/title              "Stylist Exclusives"
    :header/title              "Stylist Exclusives"
    :flyout-menu/title         "Stylist Exclusives"
@@ -786,7 +786,7 @@
      :homepage.v2020-04/order    4
      :homepage.v2020-04/image-id "978c91a9-9931-40f3-abec-ca7ccefa8240"
 
-     :footer/order 4
+     :footer/order 8
      :footer/title "Hair Extensions"
 
      :copy/title         "Hair Extensions"
@@ -824,107 +824,41 @@
     clip-in-tape-in-templates)])
 
 (def standalone-services
-  [(merge
-    {:catalog/category-id                "30"
-     :catalog/department                 #{"service"}
-     :service/type                       #{"base"}
-     :promo.mayvenn-install/discountable #{false}
-     :selector/essentials                [:catalog/department :service/type :promo.mayvenn-install/discountable]
-     :selector/electives                 []
-
-     :page/icp?     false
-     :category/new? true
-
-     ;; :flyout-menu/title "Salon Services"
-     ;; :flyout-menu/order 6
-
-     ;; :homepage.v2020-04/order    5
-     ;; :homepage.v2020-04/image-id "978c91a9-9931-40f3-abec-ca7ccefa8240"
-     ;; :footer/order          5
-     ;; :footer/title          "Salon Services"
-
-     :copy/title         "Salon Services"
-
-     :page/slug        "salon-services"
-     :copy/description "Lorem ipsum dolor sit amet, consectetur adipiscing
+  [{:catalog/category-id                "30"
+    :catalog/department                 #{"service"}
+    :service/type                       #{"base"}
+    :promo.mayvenn-install/discountable #{false}
+    :selector/essentials                [:catalog/department
+                                         :service/type
+                                         :promo.mayvenn-install/discountable]
+    :selector/electives                 []
+    :page/icp?                          false
+    :category/new?                      true
+    :flyout-menu/title                  "Salon Services"
+    :footer/order                       1
+    :footer/title                       "Salon Services"
+    :copy/title                         "Salon Services"
+    :page/slug                          "salon-services"
+    :copy/description                   "Lorem ipsum dolor sit amet, consectetur adipiscing
       elit. Ut sollicitudin massa sit amet efficitur sagittis."
+    }])
 
-     ;;  :category/description          (str "Ditch the tracks and opt for hair that blends in seamlessly. "
-     ;;                                      "Mayvenn human hair extensions are made with a thin polyurethane "
-     ;;                                      "weft that blends with your hair for a natural look.")
-     ;;  :seo/sitemap                   true
-     ;;  :seo/title                     "Hair Extensions"
-     ;;  :page/title                    "Hair Extensions: Real Human Hair Extensions | Mayvenn"
-     ;;  :page.meta/description         (str "Mayvenn’s real human hair extensions come in different variations"
-     ;;                                      " such as Brazilian and Malaysian, straight, deep wave and loose wave."
-     ;;                                      " Shop now.")
-     ;;  :category/image-url            "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
-     ;;  :opengraph/title               "Real Human Hair Extensions - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
-     ;;  :opengraph/description         "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in and tape-in extensions are the best quality products on the market and ships free!"
-     ;;  :subsections/category-selector :hair/family
-     ;;  :content-block/type            :about-attributes ;; incase we have different templates in the future
-     ;;  :content-block/title           "Hair Extensions 101:"
-     ;;  :content-block/header          "How to Choose"
-     ;;  :content-block/summary         "No matter what kind of transformation you’re looking for, our seamless clip-in & tape-in hair extensions will help you achieve your desired look in an instant. Our clip-ins & tape-ins are perfect for when you want a natural-looking appearance that complements your own hair while giving that much coveted oomph-factor."
-     ;;  :content-block/sections        [{:title "Tape-In Hair Extensions"
-     ;;                                   :body  "Our seamless tape-in hair extensions have a thin weft that flawlessly blends with your own hair, so you can have the hair of your dreams."}
-     ;;                                  {:title "Clip-In Hair Extensions"
-     ;;                                   :body  "With a thin weft that blends into your hair seamlessly, our clip-in human hair extensions help you create the hair of your dreams."}
-     ;;                                  {:title "Human Hair Extensions"
-     ;;                                   :body  "Our human hair extensions are a must-have for creating the hair you’ve always wanted. Our high-quality extensions are easy to install and available in many textures like Straight, Yaki Straight, Kinky Straight, Body Wave, Loose Wave, Water Wave, Deep Wave, and Curly, plus multiple lengths for all kinds of hairstyles."}]
-     ;; clip-in-tape-in-templates)
-     })
-
-   (merge
-    {:catalog/category-id                "31"
-     :catalog/department                 #{"service"}
-     :service/type                       #{"base"}
-     :promo.mayvenn-install/discountable #{true}
-     :selector/essentials                [:catalog/department :service/type :promo.mayvenn-install/discountable]
-     :selector/electives                 []
-
-     :page/icp?     false
-     :category/new? true
-
-     ;; :flyout-menu/title "Salon Services"
-     ;; :flyout-menu/order 6
-
-     ;; :homepage.v2020-04/order    5
-     ;; :homepage.v2020-04/image-id "978c91a9-9931-40f3-abec-ca7ccefa8240"
-     ;; :footer/order          5
-     ;; :footer/title          "Salon Services"
-
-     :copy/title       "FREE Mayvenn Services"
-
-     :page/slug        "free-mayvenn-services"
-     :copy/description "Lorem ipsum dolor sit amet, consectetur adipiscing
+(def mayvenn-install-services
+  [{:catalog/category-id                "31"
+    :catalog/department                 #{"service"}
+    :service/type                       #{"base"}
+    :promo.mayvenn-install/discountable #{true}
+    :selector/essentials                [:catalog/department
+                                         :service/type
+                                         :promo.mayvenn-install/discountable]
+    :selector/electives                 []
+    :page/icp?                          false
+    :category/new?                      true
+    :copy/title                         "FREE Mayvenn Services"
+    :page/slug                          "free-mayvenn-services"
+    :copy/description                   "Lorem ipsum dolor sit amet, consectetur adipiscing
       elit. Ut sollicitudin massa sit amet efficitur sagittis."
-
-     ;;  :category/description          (str "Ditch the tracks and opt for hair that blends in seamlessly. "
-     ;;                                      "Mayvenn human hair extensions are made with a thin polyurethane "
-     ;;                                      "weft that blends with your hair for a natural look.")
-     ;;  :seo/sitemap                   true
-     ;;  :seo/title                     "Hair Extensions"
-     ;;  :page/title                    "Hair Extensions: Real Human Hair Extensions | Mayvenn"
-     ;;  :page.meta/description         (str "Mayvenn’s real human hair extensions come in different variations"
-     ;;                                      " such as Brazilian and Malaysian, straight, deep wave and loose wave."
-     ;;                                      " Shop now.")
-     ;;  :category/image-url            "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
-     ;;  :opengraph/title               "Real Human Hair Extensions - Free shipping. Free 30 day returns. Made with 100% virgin human hair."
-     ;;  :opengraph/description         "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in and tape-in extensions are the best quality products on the market and ships free!"
-     ;;  :subsections/category-selector :hair/family
-     ;;  :content-block/type            :about-attributes ;; incase we have different templates in the future
-     ;;  :content-block/title           "Hair Extensions 101:"
-     ;;  :content-block/header          "How to Choose"
-     ;;  :content-block/summary         "No matter what kind of transformation you’re looking for, our seamless clip-in & tape-in hair extensions will help you achieve your desired look in an instant. Our clip-ins & tape-ins are perfect for when you want a natural-looking appearance that complements your own hair while giving that much coveted oomph-factor."
-     ;;  :content-block/sections        [{:title "Tape-In Hair Extensions"
-     ;;                                   :body  "Our seamless tape-in hair extensions have a thin weft that flawlessly blends with your own hair, so you can have the hair of your dreams."}
-     ;;                                  {:title "Clip-In Hair Extensions"
-     ;;                                   :body  "With a thin weft that blends into your hair seamlessly, our clip-in human hair extensions help you create the hair of your dreams."}
-     ;;                                  {:title "Human Hair Extensions"
-     ;;                                   :body  "Our human hair extensions are a must-have for creating the hair you’ve always wanted. Our high-quality extensions are easy to install and available in many textures like Straight, Yaki Straight, Kinky Straight, Body Wave, Loose Wave, Water Wave, Deep Wave, and Curly, plus multiple lengths for all kinds of hairstyles."}]
-     ;; clip-in-tape-in-templates)
-     })])
+    }])
 
 (def menu-categories
   (concat virgin-hair
@@ -940,4 +874,5 @@
           seamless-clip-ins-category
           tape-ins-category
           human-hair-bundles
-          standalone-services))
+          standalone-services
+          mayvenn-install-services))

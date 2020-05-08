@@ -173,7 +173,7 @@
                                      :catalog/category-id "30"})
        :data-test   "menu-shop-salon-services"
        :new-content "NEW"
-       :content     [[:span.medium "Shop Salon Services"]]}])
+       :content     [[:span.medium "Salon Services"]]}])
    (if (= :classic site)
      [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
        :data-test  "menu-shop-by-look"

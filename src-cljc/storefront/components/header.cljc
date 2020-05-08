@@ -199,7 +199,7 @@
             [:span copy]])])]])))
 
 (defn individual-flyout-menu
-  [{:keys [show-freeinstall-link? show-bundle-sets? site]
+  [{:keys [show-freeinstall-link? show-bundle-sets? salon-services site]
     :as   queried-data}]
   (component/html
    [:div.center
@@ -208,6 +208,14 @@
                 (assoc (utils/route-to events/navigate-adventure-match-stylist)
                        :on-mouse-enter close-header-menus)
                 (component/html [:span [:span.p-color.pr1 "NEW"] "Get a Mayvenn Install"])))
+    (when salon-services
+      ^:inline (individual-header-menu-link
+                (assoc (utils/route-to events/navigate-category salon-services)
+                       :on-mouse-enter close-header-menus)
+                (component/html [:span
+                                 (when (:category/new? salon-services)
+                                   [:span.p-color.pr1 "NEW"])
+                                 (:flyout-menu/title salon-services)])))
 
     (if (= :classic site)
       ^:inline (individual-header-menu-link
@@ -442,9 +450,21 @@
      :show-freeinstall-link? shop?
      :site                   (sites/determine-site data)}))
 
+(defn salon-services-category [data]
+  (let [category (->> (get-in data keypaths/categories)
+                      (filter (comp #{"30"} :catalog/category-id))
+                      first)]
+    {:salon-services
+     (and (experiments/service-category-page? data)
+          (select-keys category [:page/slug
+                                 :catalog/category-id
+                                 :flyout-menu/title
+                                 :category/new?]))}))
+
 (defn query [data]
   (-> (basic-query data)
       (assoc-in [:user :expanded?] (get-in data keypaths/account-menu-expanded))
+      (merge (salon-services-category data))
       (merge (shop-a-la-carte-flyout-query data))
       (merge (shop-looks-query data))
       (merge (shop-bundle-sets-query data))

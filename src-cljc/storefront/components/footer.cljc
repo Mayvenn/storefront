@@ -30,6 +30,7 @@
                       [events/navigate-category category])
         slug        (or product-slug slug)]
     {:title       (:footer/title category)
+     :sort-order  (:footer/order category)
      :id          slug
      :new-link?   (categories/new-category? slug)
      :nav-message nav-message}))
@@ -129,35 +130,45 @@
           half-way-point (int (Math/ceil (float (/ coll-length 2))))]
       (split-at half-way-point coll))))
 
+(defn show-category?
+  [data category]
+  (or (-> category :catalog/id #{"30" "31"} not)
+      (and (= (get-in data keypaths/store-slug) "shop")
+           (experiments/service-category-page? data))))
+
 (defn query
   [data]
-  (let [shop?             (= (get-in data keypaths/store-slug) "shop")
-        classic?          (= "mayvenn-classic" (get-in data keypaths/store-experience))
-        sort-key          :footer/order
-        sorted-categories (->> (get-in data keypaths/categories)
-                               (into []
-                                     (comp (filter sort-key)
-                                           (filter (partial auth/permitted-category? data))))
-                               (sort-by sort-key))
+  (let [shop?      (= (get-in data keypaths/store-slug) "shop")
+        classic?   (= "mayvenn-classic" (get-in data keypaths/store-experience))
+        sort-key   :footer/order
+        categories (->> (get-in data keypaths/categories)
+                        (into []
+                              (comp (filter (partial show-category? data))
+                                    (filter sort-key)
+                                    (filter (partial auth/permitted-category? data)))))
 
         non-category-links [(when shop?
                               {:title       "Mayvenn Install"
+                               :sort-order  0
                                :id          "freeinstall"
                                :new-link?   false
                                :nav-message [events/navigate-adventure-match-stylist]})
                             {:title       "Shop By Look"
+                             :sort-order  2
                              :id          "shop-by-look"
                              :new-link?   false
                              :nav-message [events/navigate-shop-by-look {:album-keyword :look}]}
                             (when (not classic?)
                               {:title       "Shop Bundle Sets"
+                               :sort-order  3
                                :id          "shop-bundle-sets"
                                :new-link?   false
                                :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]})]
-        links              (->> sorted-categories
+        links              (->> categories
                                 (mapv (partial category->link))
                                 (concat non-category-links)
-                                (remove nil?))]
+                                (remove nil?)
+                                (sort-by :sort-order))]
     {:contacts     (contacts-query data)
      :link-columns (split-evenly links)
      :essence-copy (str "All orders include a one year subscription to ESSENCE Magazine - a $10 value! "
