@@ -132,7 +132,7 @@
 
 (defn show-category?
   [data category]
-  (or (-> category :catalog/id #{"30" "31"} not)
+  (or (-> category :catalog/category-id #{"30" "31"} not)
       (and (= (get-in data keypaths/store-slug) "shop")
            (experiments/service-category-page? data))))
 
