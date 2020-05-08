@@ -390,7 +390,7 @@
        :cart-item-remove-action/spinning?        removing?
        :cart-item-remove-action/target           [events/control-cart-remove (:id service-line-item)]
        :cart-item-service-thumbnail/id           sku-id
-       :cart-item-service-thumbnail/image-url    "9664879b-07e0-432e-9c09-b2cf4c899b10"
+       :cart-item-service-thumbnail/image-url    (->> sku-id (get skus) (catalog-images/image "cart") :ucare/id)
        :cart-item-service-thumbnail/highlighted? just-added-to-order?})))
 
 (defn cart-items-query
