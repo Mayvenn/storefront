@@ -37,7 +37,7 @@
   [line-item]
   (and (service? line-item)
        (-> line-item :variant-attrs :service/type #{"base"})
-       (comp false? :promo.mayvenn-install/discountable :variant-attrs)))
+       (-> line-item :variant-attrs :promo.mayvenn-install/discountable false?)))
 
 (defn any-wig?
   [line-item]
