@@ -424,23 +424,11 @@
                      copy/density
                      copy/materials
                      copy/summary
-                     copy/duration ; TODO: "copy/duration"? yeah?
+                     copy/duration
                      hair/family]} product]
-         #:product-description {:duration                  (if standalone-service?  ; TODO: Use cellar instead of placeholder
-                                                             "30min"
-                                                             duration)
+         #:product-description {:duration                  duration
                                 :summary                   summary
-                                :description               (if standalone-service? ; TODO: Use cellar instead of placeholder
-                                                             ["Lorem ipsum dolor
-                                                             sit amet,
-                                                             consectetur
-                                                             adipiscing elit.
-                                                             Nullam feugiat
-                                                             posuere magna vitae
-                                                             pulvinar. Vivamus
-                                                             pellentesque, purus
-                                                             sed iaculis
-                                                             ultricies"] description)
+                                :description               description
                                 :materials                 materials
                                 :colors                    colors
                                 :density                   density
