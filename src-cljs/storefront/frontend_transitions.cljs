@@ -257,8 +257,7 @@
                 covered-by-store-credit-and-can-use-store-credit?
                 {:store-credit {}}
 
-                (and (not covered-by-store-credit-and-can-use-store-credit?)
-                     (not (experiments/show-quadpay? app-state)))
+                (not covered-by-store-credit-and-can-use-store-credit?)
                 (orders/form-payment-methods order user)
 
                 :else

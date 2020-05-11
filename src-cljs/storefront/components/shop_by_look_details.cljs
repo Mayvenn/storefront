@@ -126,8 +126,7 @@
 (defn look-details-body
   [{:keys [creating-order? sold-out? look shared-cart skus fetching-shared-cart?
            shared-cart-type-copy base-price discounted-price quadpay-loaded?
-           discount-text desktop-two-column? yotpo-data-attributes
-           show-quadpay?]}]
+           discount-text desktop-two-column? yotpo-data-attributes]}]
   [:div.clearfix
    (when look
      [:div.bg-cool-gray.slides-middle
@@ -173,8 +172,7 @@
           [:div.col-11.mx-auto
            (add-to-cart-button sold-out? creating-order? look shared-cart)]
           (component/build quadpay/component
-                           {:quadpay/show?       (when show-quadpay?
-                                                   quadpay-loaded?)
+                           {:quadpay/show?       quadpay-loaded?
                             :quadpay/order-total discounted-price
                             :quadpay/directive   :just-select}
                            nil)
@@ -281,7 +279,6 @@
             :base-price            base-price
             :discounted-price      (:discounted-price discount)
             :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
-            :show-quadpay?         (experiments/show-quadpay? data)
             :desktop-two-column?   true
             :discount-text         (:discount-text discount)
 

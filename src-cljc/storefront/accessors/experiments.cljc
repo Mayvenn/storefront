@@ -98,11 +98,6 @@
   [data]
   (display-feature? data "hide-stylist-specialty"))
 
-(defn show-quadpay?
-  [data]
-  (boolean (or (get-in data keypaths/order-cart-payments-quadpay)
-               (display-feature? data "show-quadpay"))))
-
 (defn service-category-page?
   [data]
   (display-feature? data "service-category-page"))

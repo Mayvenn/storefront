@@ -752,12 +752,10 @@
                                          {:promo-field-data (promo-input-query data order entered?)})
              :cart-items                (cart-items-query data line-items skus)
              :service-line-items        (concat (mayvenn-install-line-items-query data mayvenn-install add-items-action)
-                                                (standalone-service-line-items-query data))}
-
-      (experiments/show-quadpay? data)
-      (merge {:quadpay/order-total (when-not locked? (:total order))
-              :quadpay/show?       (get-in data keypaths/loaded-quadpay)
-              :quadpay/directive   (if locked? :no-total :just-select)})
+                                                (standalone-service-line-items-query data))
+             :quadpay/order-total       (when-not locked? (:total order))
+             :quadpay/show?             (get-in data keypaths/loaded-quadpay)
+             :quadpay/directive         (if locked? :no-total :just-select)}
 
       entered?
       (merge {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."

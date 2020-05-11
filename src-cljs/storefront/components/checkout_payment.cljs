@@ -143,7 +143,6 @@
 
 (defcomponent component
   [{:keys [step-bar
-           show-quadpay-feature-flag-on?
            loaded-stripe?
            promo-banner]
     :store-credit/keys [fully-covered? can-use-store-credit?]
@@ -160,17 +159,9 @@
       {:on-submit (utils/send-event-callback events/control-checkout-choose-payment-method-submit)
        :data-test "payment-form"}
 
-      (cond
-        (and fully-covered? can-use-store-credit?)
+      (if (and fully-covered? can-use-store-credit?)
         (store-credit-note data)
-
-        show-quadpay-feature-flag-on?
-        (payment-method-selection data)
-
-        :else
-        [:div
-         [:div.ml2 credit-card-label]
-         (credit-card-entry data)])
+        (payment-method-selection data))
 
       (cta-submit data)]])])
 
@@ -230,7 +221,6 @@
       :cta/id        (when loaded-stripe?
                        "payment-form-submit")}
      {:step-bar                      (checkout-steps/query data)
-      :show-quadpay-feature-flag-on? (experiments/show-quadpay? data)
       :loaded-stripe?                loaded-stripe?
       :promo-banner                  (promo-banner/query data)})))
 
