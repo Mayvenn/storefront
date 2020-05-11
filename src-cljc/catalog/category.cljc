@@ -80,22 +80,7 @@
                                                             loaded-category-products
                                                             category-products-matching-criteria
                                                             selections)
-              :how-it-works         (when (#{"30" "31"} (:catalog/category-id current))
-                                      {:how-it-works.title/primary   "Your hair deserves a Mayvenn–Certified Stylist."
-                                       :how-it-works.title/secondary "Here’s how it works."
-                                       :how-it-works.step/elements
-                                       [{:how-it-works.step.title/primary   "01"
-                                         :how-it-works.step.title/secondary "Pick your service"
-                                         :how-it-works.step.body/primary    (str "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-                                                                                 "Ut sollicitudin massa sit amet efficitur sagittis.")}
-                                        {:how-it-works.step.title/primary   "02"
-                                         :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
-                                         :how-it-works.step.body/primary    (str "We've hand-picked thousands of talented stylists around the country. "
-                                                                                 "We'll cover the cost of your salon appointment or wig customization with any qualifying purchase.") }
-                                        {:how-it-works.step.title/primary  "03"
-                                         :how-it-works.step.title/secondary "Schedule your appointment"
-                                         :how-it-works.step.body/primary    (str " We’ll connect you with your stylist to set up your service. "
-                                                                                 "Then, we’ll send you a prepaid voucher to cover the cost. ")}]})
+              :how-it-works         current
               :product-card-listing (product-card-listing/query app-state
                                                                 current
                                                                 category-products-matching-criteria)}

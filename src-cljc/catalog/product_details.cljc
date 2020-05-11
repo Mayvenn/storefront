@@ -461,19 +461,19 @@
                                    :class          "bg-refresh-gray"
                                    :id             "freeinstall-banner-cta"}
              {:how-it-works
-              {:how-it-works.title/secondary "Here’s how it works."
-               :how-it-works.step/elements
+              {:how-it-works/title-secondary "Here’s how it works."
+               :how-it-works/step-elements
                [{:how-it-works.step.title/primary   "01"
                  :how-it-works.step.title/secondary "Pick your service"
-                 :how-it-works.step.body/primary    (str "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-                                                         "Ut sollicitudin massa sit amet efficitur sagittis.")}
+                 :how-it-works.step.body/primary    (str "Choose the service you’d like to book from our full list of salon service offerings. "
+                                                         "Next, you’ll see which stylists are nearby and decide who you want to book.")}
                 {:how-it-works.step.title/primary   "02"
                  :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
                  :how-it-works.step.body/primary    (str "We've hand-picked thousands of talented stylists around the country. "
                                                          "We'll cover the cost of your salon appointment or wig customization with any qualifying purchase.") }
                 {:how-it-works.step.title/primary   "03"
                  :how-it-works.step.title/secondary "Schedule your appointment"
-                 :how-it-works.step.body/primary    (str " We’ll connect you with your stylist to set up your service. "
+                 :how-it-works.step.body/primary    (str "We’ll connect you with your stylist to set up your service. "
                                                          "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}})
 
       (#{"360-wigs" "ready-wigs" "lace-front-wigs"} (-> product :hair/family first))

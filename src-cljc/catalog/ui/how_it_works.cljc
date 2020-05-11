@@ -4,10 +4,10 @@
    [storefront.components.svg :as svg]))
 
 (defn ^:private how-it-works-title-molecule
-  [{:how-it-works.title/keys [primary secondary]}]
+  [{:how-it-works/keys [title-primary title-secondary]}]
   [:div
-   [:div.canela.title-1 primary]
-   [:div.proxima.title-1.shout secondary]])
+   [:div.canela.title-1 title-primary]
+   [:div.proxima.title-1.shout title-secondary]])
 
 (defn ^:private how-it-works-step-body-molecule
   [{:how-it-works.step.body/keys [primary]}]
@@ -38,9 +38,7 @@
   ([organism data elem-key]
    (elements organism data elem-key :default))
   ([organism data elem-key breakpoint]
-   (let [elems (->> (keyword (name elem-key)
-                             "elements")
-                    (get data))]
+   (let [elems (get data elem-key)]
      (for [[idx elem] (map-indexed vector elems)]
        (c/build organism
                 elem
@@ -56,4 +54,4 @@
      how-it-works-straight-line-atom
      (elements how-it-works-step-organism
                data
-               :how-it-works.step)]))
+               :how-it-works/step-elements)]))
