@@ -45,6 +45,7 @@
      density
      weights
      materials
+     whats-included
      summary
      learn-more-nav-event]} _ _]
   (when (seq description)
@@ -55,11 +56,12 @@
         [:dd.ml0.proxima.content-2 duration]])
      [:div.light.canela.title-2 "Description"]
      [:div {:item-prop "description"}
-      (when (or colors density weights materials)
+      (when (or colors density weights materials whats-included)
         (let [attrs (->> [["Color" colors]
                           ["Density" density]
                           ["Weight" weights]
-                          ["Material" materials]]
+                          ["Material" materials]
+                          ["What's Included" whats-included]]
                          (filter second))
                ;;This won't work if we have 5 possible attrs
               size (str "col-" (/ 12 (count attrs)))]

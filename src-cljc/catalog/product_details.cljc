@@ -423,6 +423,7 @@
                      copy/weights
                      copy/density
                      copy/materials
+                     copy/whats-included
                      copy/summary
                      copy/duration
                      hair/family]} product]
@@ -432,6 +433,7 @@
                                 :materials                 materials
                                 :colors                    colors
                                 :density                   density
+                                :whats-included            whats-included
                                 :weights                   (when (not density) weights)
                                 :learn-more-nav-event (and (not (contains? family "seamless-clip-ins"))
                                                            (not (contains? family "tape-ins"))
