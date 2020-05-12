@@ -493,6 +493,7 @@
      [{:stylist-count-content (str count-matching " Stylists Found")
        :react/key             "stylist-count-content"
        :element/type          :matching-stylist-count}]
+      matching
      (when (seq non-matching)
        [{:breaker-content "Other stylists in your area"
          :react/key       "non-matching-breaker"
