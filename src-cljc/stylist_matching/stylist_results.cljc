@@ -489,8 +489,7 @@
   [partition-results]
   (let [{matching true non-matching false} partition-results
         count-matching          (count matching)]
-    [matching
-     [{:stylist-count-content (str count-matching " Stylists Found")
+    [[{:stylist-count-content (str count-matching " Stylists Found")
        :react/key             "stylist-count-content"
        :element/type          :matching-stylist-count}]
       matching
