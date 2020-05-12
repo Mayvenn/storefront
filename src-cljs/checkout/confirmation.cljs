@@ -276,8 +276,7 @@
       (string/replace #"[^a-z]+" "-")))
 
 (defn cart-summary-query
-  [show-priority-shipping-method?
-   {:as order :keys [adjustments]}
+  [{:as order :keys [adjustments]}
    {:mayvenn-install/keys [locked? applied? service-discount addon-services service-type]}
    available-store-credit]
   (when (seq order)
@@ -289,9 +288,7 @@
                                       vector
                                       (apply (juxt :quantity :unit-price))
                                       (reduce *))
-          timeframe-copy-fn  (if show-priority-shipping-method?
-                               shipping/priority-shipping-experimental-timeframe
-                               shipping/timeframe)
+          timeframe-copy-fn  shipping/timeframe
           shipping-timeframe (some-> shipping :sku timeframe-copy-fn)
           adjustment         (->> order :adjustments (map :price) (reduce + 0))
           total-savings      (- adjustment)
@@ -444,8 +441,7 @@
          :service-line-items           (concat
                                         (mayvenn-install-line-items-query data mayvenn-install)
                                         (cart/standalone-service-line-items-query data))
-         :cart-summary                 (cart-summary-query (experiments/show-priority-shipping-method? data)
-                                                           order
+         :cart-summary                 (cart-summary-query order
                                                            mayvenn-install
                                                            (orders/available-store-credit order user))}
 
