@@ -250,7 +250,7 @@
 
 
 (component/defcomponent stylist-organism
-  [{:servicing-stylist-banner/keys [id title image-url rating action-id target]} _ _]
+  [{:servicing-stylist-banner/keys [id name image-url rating action-id target]} _ _]
   (when id
     [:div.flex.bg-white.pl3 {:data-test id}
      [:div.py2
@@ -260,7 +260,7 @@
       [:div.flex.flex-auto.pr3.py2
        [:div.flex.flex-grow-1.items-center
         [:div
-         [:div.content-2.proxima.flex.justify-between title]
+         [:div.content-2.proxima.flex.justify-between name]
          [:div.content-3.proxima "Your Certified Mayvenn Stylist"]
          [:div.mt1 (ui.molecules/stars-rating-molecule rating)]]]
        (when action-id
@@ -271,6 +271,7 @@
           (svg/swap-arrows {:width "16px"
                             :height "20px"})])]
       [:div.mt1.border-bottom.border-cool-gray.hide-on-mb]]]))
+
 
 (component/defcomponent no-stylist-organism
   [{:stylist-organism/keys [id]} _ _]

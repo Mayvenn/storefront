@@ -16,25 +16,24 @@
 
 (defcomponent component
   [{:keys [show-priority-shipping-method? shipping-methods selected-sku]} owner _]
-  [:div.pb2.pt4
-   [:.proxima.title-2 "Shipping Method"]
+  [:div
+   [:.h3 "Shipping Method"]
    [:.py1
     (for [{:keys [sku name price] :as shipping-method} shipping-methods]
-      [:div.my2
-       (ui/radio-section
-        (merge {:key          sku
-                :name         "shipping-method"
-                :id           (str "shipping-method-" sku)
-                :data-test    "shipping-method"
-                :data-test-id sku
-                :on-click     (select-shipping-method shipping-method)}
-               (when (= selected-sku sku) {:checked "checked"}))
-        [:.right.ml1.medium {:class (if (pos? price) "black" "p-color")} (mf/as-money-or-free price)]
-        [:.overflow-hidden
-         [:div (when (= selected-sku sku) {:data-test "selected-shipping-method"}) name]
-         [:.content-3 (or (if show-priority-shipping-method?
-                            (shipping/priority-shipping-experimental-longform-timeframe sku)
-                            (shipping/longform-timeframe sku)) "")]])])]])
+      (ui/radio-section
+       (merge {:key          sku
+               :name         "shipping-method"
+               :id           (str "shipping-method-" sku)
+               :data-test    "shipping-method"
+               :data-test-id sku
+               :on-click     (select-shipping-method shipping-method)}
+              (when (= selected-sku sku) {:checked "checked"}))
+       [:.right.ml1.medium {:class (if (pos? price) "black" "p-color")} (mf/as-money-or-free price)]
+       [:.overflow-hidden
+        [:div (when (= selected-sku sku) {:data-test "selected-shipping-method"}) name]
+        [:.h6 (or (if show-priority-shipping-method?
+                    (shipping/priority-shipping-experimental-longform-timeframe sku)
+                    (shipping/longform-timeframe sku)) "")]]))]])
 
 (def priority-shipping-method?
   (comp boolean #{"WAITER-SHIPPING-7"} :sku))

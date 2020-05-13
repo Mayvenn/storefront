@@ -1,10 +1,8 @@
 (ns checkout.confirmation
   (:require [catalog.images :as catalog-images]
-            [checkout.shop.cart-v202004 :as cart]
             [checkout.templates.item-card :as item-card]
             [checkout.ui.cart-item :as cart-item]
-            [checkout.ui.cart-item-v202004 :as cart-item-v202004]
-            [checkout.ui.cart-summary-v202004 :as cart-summary]
+            [checkout.ui.cart-summary :as cart-summary]
             [clojure.string :as string]
             [spice.core :as spice]
             [spice.maps :as maps]
@@ -130,7 +128,7 @@
            cart-summary
            delivery
            free-install-applied?
-           cart-items
+           items
            site
            order
            loaded-quadpay?
@@ -139,8 +137,7 @@
            requires-additional-payment?
            selected-quadpay?
            servicing-stylist
-           freeinstall-cart-item
-           service-line-items]}
+           freeinstall-cart-item]}
    owner _]
   [:div.container.p2
    (component/build promo-banner/sticky-organism promo-banner nil)
@@ -154,46 +151,15 @@
            (utils/send-event-callback events/control-checkout-confirmation-submit
                                       {:place-order? requires-additional-payment?})))}
       [:.clearfix.mxn3
-       [:div
-        [:div.bg-refresh-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
-         (when (seq service-line-items)
-           [:div.mb3
-            [:div.title-2.proxima.mb1 "Services"]
-            [:div
-             [:div.mbn1
-              (component/build cart-item-v202004/stylist-organism queried-data nil)
-              (component/build cart-item-v202004/no-stylist-organism queried-data nil)]
+       (servicing-stylist-banner-component queried-data)
+       [:.col-on-tb-dt.col-6-on-tb-dt.px3
+        [:.h3.left-align "Order Summary"]
 
-             ;; TODO: Separate mayvenn install base into its own service line item key
-             (for [service-line-item service-line-items]
-               [:div
-                [:div.mt2-on-mb
-                 (component/build cart-item-v202004/organism {:cart-item service-line-item}
-                                  (component/component-id (:react/key service-line-item)))]])]
-            [:div.border-bottom.border-gray.hide-on-mb]])
-
-         [:div
-          [:div.title-2.proxima.mb1
-           "Items"]
-
-          [:div
-           {:data-test "confirmation-line-items"}
-
-           (if (seq cart-items)
-             (for [[index cart-item] (map-indexed vector cart-items)
-                   :let [react-key (:react/key cart-item)]
-                   :when react-key]
-               [:div
-                {:key (str index "-cart-item-" react-key)}
-                (when-not (zero? index)
-                  [:div.flex.bg-white
-                   [:div.ml2 {:style {:width "75px"}}]
-                   [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
-                (component/build cart-item-v202004/organism {:cart-item  cart-item}
-                                 (component/component-id (str index "-cart-item-" react-key)))])
-             [:div.mt2
-              (component/build cart-item-v202004/no-items {}
-                               (component/component-id "no-items"))])]]]]
+        [:div.my2
+         {:data-test "confirmation-line-items"}
+         (component/build item-card/component items nil)
+         (when freeinstall-cart-item
+           (component/build cart-item/organism freeinstall-cart-item nil))]]
 
        [:div.col-on-tb-dt.col-6-on-tb-dt.px3
         (component/build checkout-delivery/component delivery nil)
@@ -211,27 +177,22 @@
                           :quadpay/order-total (:total order)
                           :quadpay/directive   :continue-with}
                          nil)
-
-        [:div.col-12.mx-auto.mt4
-         (checkout-button selected-quadpay? checkout-button-data)]
-
         (when free-install-applied?
-          [:div.my4.content-3.flex.items-center.mx2
-           (ui/ucare-img {:width "56px"
-                          :class "mtp2"} "9664879b-07e0-432e-9c09-b2cf4c899b10")
-           [:div.px1
-            (let [servicing-stylist-name (stylists/->display-name servicing-stylist)]
-              (cond
-                (= :aladdin site)
-                (str "After you place your order, please contact "
-                     servicing-stylist-name
-                     " to make your appointment.")
-                servicing-stylist
-                (str "After your order ships, you’ll be connected with "
-                     servicing-stylist-name
-                     " over SMS to make an appointment.")
-                :else
-                "You’ll be able to select your Certified Mayvenn Stylist after checkout."))]])]]]
+          [:div.h5.my4.center.col-10.mx-auto.line-height-3
+           (let [servicing-stylist-name (stylists/->display-name servicing-stylist)]
+             (cond
+               (= :aladdin site)
+               (str "After you place your order, please contact "
+                    servicing-stylist-name
+                    " to make your appointment.")
+               servicing-stylist
+               (str "After your order ships, you’ll be connected with "
+                    servicing-stylist-name
+                    " over SMS to make an appointment.")
+               :else
+               "You’ll be able to select your Certified Mayvenn Stylist after checkout."))])
+        [:div.col-12.mx-auto.mt4
+         (checkout-button selected-quadpay? checkout-button-data)]]]]
      [:div.py6.h2
       [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
       [:h2.center "Processing your order..."]])])
@@ -351,61 +312,6 @@
         (merge {:cart-summary-total-incentive/id    "wig-customization"
                 :cart-summary-total-incentive/label "Includes Wig Customization"})))))
 
-(defn mayvenn-install-line-items-query
-  [app-state {:mayvenn-install/keys
-              [service-title addon-services service-image-url service-type
-              stylist service-discount]}]
-  (let [wig-customization? (= service-type :wig-customization)]
-    (if service-title
-      [(merge {:react/key                                "freeinstall-line-item-freeinstall"
-               :cart-item-title/id                       "line-item-title-upsell-free-service"
-               :cart-item-floating-box/id                "line-item-freeinstall-price"
-               :cart-item-floating-box/value             (some-> service-discount - mf/as-money)
-               :cart-item-service-thumbnail/id           "freeinstall"
-               :cart-item-service-thumbnail/image-url    service-image-url}
-              (if wig-customization?
-                {:cart-item-title/id      "line-item-title-applied-wig-customization"
-                 :cart-item-title/primary "Wig Customization"
-                 :cart-item-copy/value    "You're all set! Bleaching knots, tinting & cutting lace and hairline customization included."
-                 :cart-item-copy/id       "congratulations"}
-                {:cart-item-title/id      "line-item-title-applied-mayvenn-install"
-                 :cart-item-title/primary service-title
-                 :cart-item-copy/value    "You’re all set! Shampoo, braiding and basic styling included."
-                 :cart-item-copy/id       "congratulations"})
-              (when (seq addon-services)
-                {:cart-item-sub-items/id      "addon-services"
-                 :cart-item-sub-items/title   "Add-On Services"
-                 :cart-item-sub-items/items   (map (fn [{:addon-service/keys [title price sku-id]}]
-                                                     {:cart-item-sub-item/title  title
-                                                      :cart-item-sub-item/price  price
-                                                      :cart-item-sub-item/sku-id sku-id})
-                                                   addon-services)}))]
-      nil)))
-
-(defn cart-items-query
-  [app-state line-items skus]
-  (let [cart-items
-        (for [{sku-id :sku variant-id :id :as line-item} line-items
-              :let
-              [sku                  (get skus sku-id)
-               price                (or (:sku/price line-item)
-                                        (:unit-price line-item))]]
-          {:react/key                                      (str sku-id "-" (:quantity line-item))
-           :cart-item-title/id                             (str "line-item-title-" sku-id)
-           :cart-item-title/primary                        (or (:product-title line-item)
-                                                               (:product-name line-item))
-           :cart-item-title/secondary                      (:color-name line-item)
-           :cart-item-floating-box/id                      (str "line-item-price-ea-with-label-" sku-id)
-           :cart-item-floating-box/value                   [:div {:data-test (str "line-item-price-ea-" sku-id)}
-                                                            (mf/as-money price)
-                                                            [:div.proxima.content-4 " each"]]
-           :cart-item-square-thumbnail/id                  sku-id
-           :cart-item-square-thumbnail/sku-id              sku-id
-           :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
-                                                             (str length-circle-value "”"))
-           :cart-item-square-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)})]
-    cart-items))
-
 (defn query
   [data]
   (let [order                                   (get-in data keypaths/order)
@@ -419,35 +325,27 @@
                                 service-image-url]
          :as                   mayvenn-install} (mayvenn-install/mayvenn-install data)
         user                                    (get-in data keypaths/user)
-        wig-customization?                      (= :wig-customization service-type)
-        skus                                    (get-in data keypaths/v2-skus)
-        products                                (get-in data keypaths/v2-products)
-        facets                                  (get-in data keypaths/v2-facets)
-        physical-line-items                     (map (partial cart/add-product-title-and-color-to-line-item products facets)
-                                 (orders/product-items order))]
+        wig-customization?                      (= :wig-customization service-type)]
     (cond->
-        {:order                        order
-         :store-slug                   (get-in data keypaths/store-slug)
-         :site                         (sites/determine-site data)
-         :requires-additional-payment? (requires-additional-payment? data)
-         :promo-banner                 (promo-banner/query data)
-         :checkout-steps               (checkout-steps/query data)
-         :products                     (get-in data keypaths/v2-products)
-         :payment                      (checkout-credit-card/query data)
-         :delivery                     (checkout-delivery/query data)
-         :free-install-applied?        applied?
-         :checkout-button-data         (checkout-button-query data)
-         :selected-quadpay?            selected-quadpay?
-         :loaded-quadpay?              (get-in data keypaths/loaded-quadpay)
-         :servicing-stylist            stylist
-         :cart-items                   (cart-items-query data physical-line-items skus)
-         :service-line-items           (concat
-                                        (mayvenn-install-line-items-query data mayvenn-install)
-                                        (cart/standalone-service-line-items-query data))
-         :cart-summary                 (cart-summary-query (experiments/show-priority-shipping-method? data)
-                                                           order
-                                                           mayvenn-install
-                                                           (orders/available-store-credit order user))}
+     {:order                        order
+      :store-slug                   (get-in data keypaths/store-slug)
+      :site                         (sites/determine-site data)
+      :requires-additional-payment? (requires-additional-payment? data)
+      :promo-banner                 (promo-banner/query data)
+      :checkout-steps               (checkout-steps/query data)
+      :products                     (get-in data keypaths/v2-products)
+      :payment                      (checkout-credit-card/query data)
+      :delivery                     (checkout-delivery/query data)
+      :free-install-applied?        applied?
+      :checkout-button-data         (checkout-button-query data)
+      :selected-quadpay?            selected-quadpay?
+      :loaded-quadpay?              (get-in data keypaths/loaded-quadpay)
+      :servicing-stylist            stylist
+      :items                        (item-card-query data)
+      :cart-summary                 (cart-summary-query (experiments/show-priority-shipping-method? data)
+                                                        order
+                                                        mayvenn-install
+                                                        (orders/available-store-credit order user))}
 
 
       (seq addon-services)
