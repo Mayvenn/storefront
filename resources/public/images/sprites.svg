@@ -335,4 +335,10 @@
       <path fill="#4427C1" d="M1.107 6l5 5 5-5-5-5z"/>
     </g>
   </symbol>
+  <symbol id="white-diamond" viewBox="0 0 13 12">
+    <g fill="none" fill-rule="evenodd">
+      <path stroke="#000" d="M1.107 6l5 5 5-5-5-5z"/>
+      <path fill="#FFF" d="M1.107 6l5 5 5-5-5-5z"/>
+    </g>
+  </symbol>
 </svg>
