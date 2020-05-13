@@ -445,14 +445,18 @@
 
 (defn regular-cart-summary-query
   "This is for cart's that haven't entered an upsell (free install, wig customization, etc)"
-  [{:as order :keys [adjustments tax-total total]} {:mayvenn-install/keys [any-wig?]}]
+  [show-priority-shipping-method?
+   {:as order :keys [adjustments tax-total total]} {:mayvenn-install/keys [any-wig?]}]
   (let [subtotal          (orders/products-and-services-subtotal order)
         shipping          (orders/shipping-item order)
         shipping-cost     (some->> shipping
                                    vector
                                    (apply (juxt :quantity :unit-price))
                                    (reduce *))
-        timeframe-copy-fn shipping/timeframe
+        timeframe-copy-fn (if show-priority-shipping-method?
+                            shipping/priority-shipping-experimental-timeframe
+                            shipping/timeframe)
+
         shipping-timeframe (some-> shipping :sku timeframe-copy-fn)]
     (cond->
         {:cart-summary-total-line/id    "total"
@@ -509,7 +513,8 @@
 
 (defn upsold-cart-summary-query
   "The cart has an upsell 'entered' because the customer has requested a service discount"
-  [{:as order :keys [adjustments]}
+  [show-priority-shipping-method?
+   {:as order :keys [adjustments]}
    {:as install :mayvenn-install/keys [any-wig? service-type entered? locked? applied? service-discount quantity-remaining]}]
   (let [total              (:total order)
         tax                (:tax-total order)
@@ -519,7 +524,9 @@
                                     vector
                                     (apply (juxt :quantity :unit-price))
                                     (reduce *))
-        timeframe-copy-fn  shipping/timeframe
+        timeframe-copy-fn  (if show-priority-shipping-method?
+                             shipping/priority-shipping-experimental-timeframe
+                             shipping/timeframe)
         shipping-timeframe (some-> shipping :sku timeframe-copy-fn)
 
         adjustment         (->> order :adjustments (map :price) (reduce + 0))
@@ -612,10 +619,10 @@
               :cart-summary-total-incentive/label "Includes Wig Customization"}))))
 
 (defn cart-summary-query
-  [order install]
+  [show-priority-shipping-method? order install]
   (if (:mayvenn-install/entered? install)
-    (upsold-cart-summary-query order install)
-    (regular-cart-summary-query order install)))
+    (upsold-cart-summary-query show-priority-shipping-method? order install)
+    (regular-cart-summary-query show-priority-shipping-method? order install)))
 
 (defn promo-input-query
   [data order entered?]
@@ -739,7 +746,9 @@
              :applied?                  applied?
              :remove-freeinstall-event  [events/control-checkout-remove-promotion {:code "freeinstall"}]
              :cart-summary              (merge
-                                         (cart-summary-query order mayvenn-install)
+                                         (cart-summary-query (experiments/show-priority-shipping-method? data)
+                                                             order
+                                                             mayvenn-install)
                                          {:promo-field-data (promo-input-query data order entered?)})
              :cart-items                (cart-items-query data line-items skus)
              :service-line-items        (concat (mayvenn-install-line-items-query data mayvenn-install add-items-action)

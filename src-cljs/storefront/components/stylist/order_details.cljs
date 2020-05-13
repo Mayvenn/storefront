@@ -206,6 +206,7 @@
 
 (defn query [app-state]
   (let [order-number                   (:order-number (get-in app-state keypaths/navigation-args))
+        show-priority-shipping-method? (experiments/show-priority-shipping-method? app-state)
         sale                           (cond-> (sale-by-order-number app-state order-number)
                                          (no-vouchers? app-state)
                                          (dissoc :voucher))
@@ -217,7 +218,9 @@
                                                                                  product-line-items)]
                                            (assoc shipment
                                                   :line-items enriched-product-line-items
-                                                  :shipping-details (shipping/shipping-details shipment))))
+                                                  :shipping-details (shipping/shipping-details
+                                                                     show-priority-shipping-method?
+                                                                     shipment))))
         returned-quantities            (orders/returned-quantities (:order sale))
         shipments-with-returns         (add-returns (vec shipments-enriched) returned-quantities)]
     {:sale                      (assoc-in sale [:order :shipments] shipments-with-returns)

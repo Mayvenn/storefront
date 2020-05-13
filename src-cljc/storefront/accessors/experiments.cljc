@@ -90,6 +90,10 @@
   [data]
   (display-feature? data "color-picker-redesign"))
 
+(defn show-priority-shipping-method?
+  [data]
+  (display-feature? data "show-priority-shipping-method"))
+
 (defn hide-stylist-specialty?
   [data]
   (display-feature? data "hide-stylist-specialty"))
