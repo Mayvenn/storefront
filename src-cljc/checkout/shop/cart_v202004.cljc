@@ -668,6 +668,7 @@
         facets                                       (get-in data keypaths/v2-facets)
         line-items                                   (map (partial add-product-title-and-color-to-line-item products facets)
                                                           (orders/product-items order))
+        cart-services                                (api.orders/services data order)
         {:mayvenn-install/keys
          [entered? applied? locked?
           stylist quantity-remaining]
@@ -686,8 +687,8 @@
         any-wig?                       (:mayvenn-install/any-wig? mayvenn-install)
         disabled-reasons               (remove nil? [(when required-line-items-not-added?
                                                        [:div.m1 (if any-wig?
-                                                               (str "Add a Lace Front or 360 Wig to check out")
-                                                               (str "Add " quantity-remaining (ui/pluralize quantity-remaining " more item")))])
+                                                                  (str "Add a Lace Front or 360 Wig to check out")
+                                                                  (str "Add " quantity-remaining (ui/pluralize quantity-remaining " more item")))])
                                                      (when required-stylist-not-selected?
                                                        [:div.m1 "Please pick your stylist"])])
 
@@ -748,27 +749,28 @@
              :quadpay/show?             (get-in data keypaths/loaded-quadpay)
              :quadpay/directive         (if locked? :no-total :just-select)}
 
-      entered?
-      (merge {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
-              :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})
+      (seq (:services/items cart-services))
+      (cond->
+        (empty? (:services/stylist cart-services)) 
+        (merge
+         {:stylist-organism/id            "stylist-organism"
+          :checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
+          :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})
 
-      (and entered? servicing-stylist)
-      (merge {:checkout-caption-copy              (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
-              :servicing-stylist-banner/id        "servicing-stylist-banner"
-              :servicing-stylist-banner/title     (stylists/->display-name servicing-stylist)
-              :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)}
-              :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)
-              :servicing-stylist-banner/target    [events/control-change-stylist {:stylist-id (:stylist-id servicing-stylist)}]
-              :servicing-stylist-banner/action-id "stylist-swap"
-              :servicing-stylist-portrait-url     (-> servicing-stylist :portrait :resizable-url)})
-
-      (and entered? (not servicing-stylist))
-      (merge {:stylist-organism/id "stylist-organism"})
-
-      (and entered? servicing-stylist (not shop?))
-      (merge {:checkout-caption-copy (str "After you place your order, please contact "
-                                          (stylists/->display-name servicing-stylist)
-                                          " to make your appointment.")})
+        (seq (:services/stylist cart-services))
+        (merge
+         {:checkout-caption-copy              (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
+          :servicing-stylist-banner/id        "servicing-stylist-banner"
+          :servicing-stylist-banner/title     (stylists/->display-name servicing-stylist)
+          :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)}
+          :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)
+          :servicing-stylist-banner/target    [events/control-change-stylist {:stylist-id (:stylist-id servicing-stylist)}]
+          :servicing-stylist-banner/action-id "stylist-swap"
+          :servicing-stylist-portrait-url     (-> servicing-stylist :portrait :resizable-url)}
+         (when-not shop?
+           {:checkout-caption-copy (str "After you place your order, please contact "
+                                        (stylists/->display-name servicing-stylist)
+                                        " to make your appointment.")})))
 
       applied?
       (merge {:confetti-spout/mode (get-in data keypaths/confetti-mode)

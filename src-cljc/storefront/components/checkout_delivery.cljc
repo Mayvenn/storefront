@@ -36,7 +36,7 @@
 
 (defn query
   [data]
-  (let [shipping-methods               (get-in data keypaths/shipping-methods)
-        selected-sku                   (get-in data keypaths/checkout-selected-shipping-method-sku)]
-    {:shipping-methods               shipping-methods
-     :selected-sku                   selected-sku}))
+  (let [shipping-methods (get-in data keypaths/shipping-methods)
+        selected-sku     (get-in data keypaths/checkout-selected-shipping-method-sku)]
+    {:shipping-methods shipping-methods
+     :selected-sku     selected-sku}))

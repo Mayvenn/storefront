@@ -58,3 +58,19 @@
 (defn current
   [app-state]
   (->order app-state (get-in app-state storefront.keypaths/order)))
+
+(defn services
+  "Model for services in the cart
+
+  Scope:
+  - services in cart
+  - servicing stylist for those services
+  "
+  [app-state order]
+  (let [experience (get-in app-state storefront.keypaths/store-experience)]
+    (when-not (= "classic" experience)
+      (let [stylist (if (= "aladdin" experience)
+                      (get-in app-state storefront.keypaths/store)
+                      (get-in app-state adventure.keypaths/adventure-servicing-stylist))]
+        #:services{:stylist stylist
+                   :items   (orders/service-line-items order)}))))
