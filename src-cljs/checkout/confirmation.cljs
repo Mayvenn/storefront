@@ -391,6 +391,8 @@
            :cart-item-title/id                             (str "line-item-title-" sku-id)
            :cart-item-title/primary                        (or (:product-title line-item)
                                                                (:product-name line-item))
+           :cart-item-copy/id                              "line-item-quantity"
+           :cart-item-copy/value                           (str "qty " (:quantity line-item))
            :cart-item-title/secondary                      (:color-name line-item)
            :cart-item-floating-box/id                      (str "line-item-price-ea-with-label-" sku-id)
            :cart-item-floating-box/value                   [:div {:data-test (str "line-item-price-ea-" sku-id)}
