@@ -16,7 +16,7 @@
 
 (defcomponent component
   [{:keys [shipping-methods selected-sku]} owner _]
-  [:div.pb2.pt4
+  [:div.pb2.pt4.mx3
    [:.proxima.title-2 "Shipping Method"]
    [:.py1
     (for [{:keys [sku name price] :as shipping-method} shipping-methods]

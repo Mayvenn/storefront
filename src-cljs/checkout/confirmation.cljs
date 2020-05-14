@@ -195,7 +195,7 @@
               (component/build cart-item-v202004/no-items {}
                                (component/component-id "no-items"))])]]]]
 
-       [:div.col-on-tb-dt.col-6-on-tb-dt.px3
+       [:div.col-on-tb-dt.col-6-on-tb-dt
         (component/build checkout-delivery/component delivery nil)
         (when requires-additional-payment?
           [:div
@@ -212,8 +212,9 @@
                           :quadpay/directive   :continue-with}
                          nil)
 
-        [:div.col-12.mx-auto.mt4
-         (checkout-button selected-quadpay? checkout-button-data)]
+        [:div.mx3
+         [:div.col-12.mx-auto.mt4
+          (checkout-button selected-quadpay? checkout-button-data)]]
 
         (when free-install-applied?
           [:div.my4.content-3.flex.items-center.mx2

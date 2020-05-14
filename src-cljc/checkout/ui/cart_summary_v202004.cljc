@@ -10,7 +10,7 @@
   [{:cart-summary/keys [id lines]
     :as query
     :keys [promo-field-data]} owner _]
-  [:div.mxn3 {:data-test id}
+  [:div {:data-test id}
    [:div.py1.bg-refresh-gray.px4
     [:div.title-2.proxima.my2.hide-on-mb "Order Summary"]
     [:table.col-12
