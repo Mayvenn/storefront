@@ -662,18 +662,19 @@
               render (server-render-pages nav-event generic-server-render)]
           (render render-ctx data req params))))))
 
-(def user-specific-disalloweds ["User-agent: *"
-                                "Disallow: /account"
-                                "Disallow: /checkout"
-                                "Disallow: /orders"
-                                "Disallow: /stylist"
-                                "Disallow: /cart"
-                                "Disallow: /m/"
-                                "Disallow: /c/"
-                                "Disallow: /admin"
-                                "Disallow: /content"
-                                "Disallow: /policy/privacy"
-                                "Disallow: /policy/tos"])
+(def robots-content ["User-agent: *"
+                     "Disallow: /account"
+                     "Disallow: /checkout"
+                     "Disallow: /orders"
+                     "Disallow: /stylist"
+                     "Disallow: /cart"
+                     "Disallow: /m/"
+                     "Disallow: /c/"
+                     "Disallow: /admin"
+                     "Disallow: /content"
+                     "Disallow: /policy/privacy"
+                     "Disallow: /policy/tos"
+                     "Sitemap: https://shop.mayvenn.com/sitemap.xml"])
 
 (def server-render-pages
   {events/navigate-home                      generic-server-render
@@ -695,7 +696,7 @@
    events/navigate-mayvenn-made              generic-server-render})
 
 (defn robots [_]
-  (string/join "\n" user-specific-disalloweds))
+  (string/join "\n" robots-content))
 
 (defn canonical-category-sitemap
   "As per SEO needs, we're only listing the following categories:

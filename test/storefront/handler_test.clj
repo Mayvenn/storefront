@@ -369,7 +369,8 @@
           "Disallow: /m/"
           "Disallow: /c/"
           "Disallow: /admin"
-          "Disallow: /content")))))
+          "Disallow: /content"
+          "Sitemap: https://shop.mayvenn.com/sitemap.xml")))))
 
 (deftest robots-allows-all-pages-on-stylist-stores
   (with-services {}
