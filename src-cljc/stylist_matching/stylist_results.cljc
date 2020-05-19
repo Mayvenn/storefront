@@ -66,7 +66,8 @@
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results
   [_ _ {:keys [query-params]} prev-app-state app-state]
   #?(:cljs
-     (google-maps/insert)))
+     (when (some? query-params)
+       (google-maps/insert))))
 
 ;;  Navigating to the results page causes the effect of searching for stylists
 ;;
