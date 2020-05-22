@@ -853,7 +853,7 @@
       :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
       :how-it-works.step.body/primary
       (str "We've hand-picked thousands of talented stylists around the country. "
-           "We'll cover the cost of your salon appointment or wig customization with any qualifying purchase.")}
+           "Browse the stylists in your area to find your perfect match.")}
      {:how-it-works.step.title/primary   "03"
       :how-it-works.step.title/secondary "Schedule your appointment"
       :how-it-works.step.body/primary
@@ -887,7 +887,7 @@
       :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
       :how-it-works.step.body/primary
       (str "We've hand-picked thousands of talented stylists around the country. "
-           "We'll cover the cost of your salon appointment or wig customization with any qualifying purchase.")}
+           "Browse the stylists in your area to find your perfect match.")}
      {:how-it-works.step.title/primary   "03"
       :how-it-works.step.title/secondary "Schedule your appointment"
       :how-it-works.step.body/primary
