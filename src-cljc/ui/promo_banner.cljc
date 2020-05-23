@@ -156,11 +156,9 @@
   [data]
   (let [no-applied-promo? (orders/no-applied-promo? (get-in data keypaths/order))
         on-shop?          (= "shop" (get-in data keypaths/store-slug))
-        on-classic?       (= "mayvenn-classic" (get-in data keypaths/store-experience))
         nav-event         (get-in data keypaths/navigation-event)
         promo-type        (promo-type* data)
-        show?             (and (contains? (nav-whitelist-for no-applied-promo? on-shop?) nav-event)
-                               (not on-classic?))
+        show?             (contains? (nav-whitelist-for no-applied-promo? on-shop?) nav-event)
         hide-on-mb-tb?    (boolean (get-in data catalog.keypaths/category-panel))]
     (cond-> {:promo (promotion-to-advertise data)}
       show?          (assoc :promo/type promo-type)
