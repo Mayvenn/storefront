@@ -50,10 +50,6 @@
      learn-more-nav-event]} _ _]
   (when (seq description)
     [:div.border.border-width-2.m3.p4.border-cool-gray
-     (when duration
-       [:dl.mb2
-        [:dt.shout.proxima.title-3 "Duration"]
-        [:dd.ml0.proxima.content-2 duration]])
      [:div.light.canela.title-2 "Description"]
      [:div {:item-prop "description"}
       (when (or colors density weights materials whats-included)
@@ -67,9 +63,9 @@
               size (str "col-" (/ 12 (count attrs)))]
           (into [:div.clearfix.mxn1.mt2.mb4]
                 (for [[title value] attrs]
-                  [:dl.col.m0.inline-block {:class size}
-                   [:dt.mx1.shout.proxima.title-3 title]
-                   [:dd.mx1.proxima.content-2 value]]))))
+                  [:dl.col.m0.mb2.inline-block {:class size}
+                   [:dt.mx1.shout.proxima.title-3.dark-gray title]
+                   [:dd.mx1.mtn1.proxima.content-2 value]]))))
       (when (seq summary)
         [:div.my2
          [:h3.mbp3.h6 "Includes:"]
@@ -83,3 +79,43 @@
          (ui/button-medium-underline-black
           (utils/route-to learn-more-nav-event)
           "Learn more about our hair")])]]))
+
+
+(defcomponent service-description
+  [{:product-description/keys
+    [duration
+     description
+     colors
+     density
+     weights
+     materials
+     whats-included
+     summary
+     learn-more-nav-event]} _ _]
+  (when (seq description)
+    [:div.border.border-width-2.m3.p4.border-cool-gray
+     [:div.light.canela.title-2 "Description"]
+     (for [[idx item] (map-indexed vector description)]
+       [:div.mt2 {:key (str "product-description-" idx)} item])
+     (when learn-more-nav-event
+       [:div.mt4.mb2
+        (ui/button-medium-underline-black
+         (utils/route-to learn-more-nav-event)
+         "Learn more about our hair")])
+     [:div {:item-prop "description"}
+      (when (or colors density weights materials whats-included)
+        (let [attrs (->> [["Duration" duration]
+                          ["What's Included" whats-included]]
+                         (filter second))]
+          [:div.clearfix.mxn1.mt2.mb4
+           (for [[title value] attrs]
+             [:dl.col.m0.mb2.inline-block {:class "col-12"
+                                           :key   (str title)}
+              [:dt.mx1.shout.proxima.title-3.dark-gray title]
+              [:dd.mx1.mtn1.proxima.content-2 value]])]))
+      (when (seq summary)
+        [:div.my2
+         [:h3.mbp3.h6 "Includes:"]
+         [:ul.list-reset.h5.medium
+          (for [[idx item] (map-indexed vector summary)]
+            [:li.mbp3 {:key (str "item-" idx)} item])]])]]))

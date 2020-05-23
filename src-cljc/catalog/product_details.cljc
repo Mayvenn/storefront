@@ -240,7 +240,9 @@
               :else        (component/build add-to-cart/organism data))]
            (when (products/stylist-only? product)
              shipping-and-guarantee)
-           (component/build catalog.M/product-description data opts)
+           (if (accessors.products/service? product)
+             (component/build catalog.M/service-description data opts)
+             (component/build catalog.M/product-description data opts))
            (when how-it-works
              [:div.container.mx-auto.mt4.px4.hide-on-dt.hide-on-tb
               (component/build how-it-works/organism how-it-works)])
