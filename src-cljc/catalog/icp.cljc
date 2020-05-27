@@ -184,11 +184,12 @@
             :height              "24px"}}])
 
 (def ^:private green-divider-atom
-  [:div
-   {:style {:background-image  "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"
-            :background-position "center center"
-            :background-repeat   "repeat-x"
-            :height              "24px"}}])
+  (component/html
+   [:div
+    {:style {:background-image  "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"
+             :background-position "center center"
+             :background-repeat   "repeat-x"
+             :height              "24px"}}]))
 
 (defcomponent content-box-organism
   [{:keys [title header summary sections]} _ _]
