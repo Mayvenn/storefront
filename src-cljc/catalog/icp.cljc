@@ -130,7 +130,7 @@
                                                (component/component-id (:drill-category/id %)))
                              values)]
       [:div.py8.px4
-       [:div.title-2.proxima.shout "YOYOYO" title]
+       [:div.title-2.proxima.shout title]
        (when (or desktop? (nil? desktop?))
          [:div.hide-on-mb.hide-on-tb ; dt
           (->> grid-entries
