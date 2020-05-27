@@ -131,12 +131,12 @@
                              values)]
       [:div.py8.px4
        [:div.title-2.proxima.shout title]
-       (when (or desktop? (nil? desktop?))
+       (when desktop? ;; hide in SSR
          [:div.hide-on-mb.hide-on-tb ; dt
           (->> grid-entries
                (partition-all 4)
                (mapv (fn [row] (component/html [:div.flex.justify-around row]))))])
-       (when (or tablet? (nil? tablet?))
+       (when tablet? ;; hide in SSR
          [:div.hide-on-dt.hide-on-mb ; tb
           (->> grid-entries
                (partition 3 3 [[:div {:style {:width "120px"}}]])

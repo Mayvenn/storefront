@@ -105,7 +105,9 @@
          ^:inline (dtc-link link))])]])
 
 (defcomponent dtc-full-component
-  [{:keys [contacts link-columns essence-copy]} owner opts]
+  [{:keys         [contacts link-columns essence-copy]
+    :browser/keys [desktop? tablet? mobile?]}
+   owner opts]
   [:div.bg-cool-gray
    [:div.bg-p-color.pt1]
    [:div.container
@@ -118,10 +120,12 @@
        [:div.col-on-tb-dt.col-6-on-tb-dt.pb2.content-4.dark-gray
         essence-copy])]]
 
-   [:div.hide-on-dt {:style {:margin-bottom "90px"}}
-    (component/build footer-links/component {:minimal? false} nil)]
-   [:div.hide-on-mb-tb
-    (component/build footer-links/component {:minimal? false} nil)]])
+   (when (or mobile? tablet? (nil? mobile?) (nil? tablet?))
+     [:div.hide-on-dt {:style {:margin-bottom "90px"}}
+      (component/build footer-links/component {:minimal? false} nil)])
+   (when desktop?
+     [:div.hide-on-mb-tb
+      (component/build footer-links/component {:minimal? false} nil)])])
 
 (defn ^:private split-evenly
   [coll]
@@ -181,7 +185,7 @@
       (footer-minimal/built-component data nil)
 
       (= (get-in data keypaths/store-slug) "shop")
-      (component/build dtc-full-component (query data) {:key "dtc-full-footer"})
+      (ui/width-aware dtc-full-component (query data) {:key "dtc-full-footer"})
 
       :else
       (component/build full-component (query data) nil))))
