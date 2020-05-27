@@ -136,18 +136,20 @@
 
 (defn product-card-title-molecule
   [{:product-card-title/keys [id primary]}]
-  (when id
-    (component/html
-     [:h2.mt3.mx1.content-2.proxima
-      primary])))
+  (component/html
+   (when id
+     (component/html
+      [:h2.mt3.mx1.content-2.proxima
+       primary]))))
 
 (defn product-card-details-molecule
   [{:product-card-details/keys [id content]}]
-  (when id
-    [:div.mb4.content-3.proxima
-     (for [[idx item] (map-indexed vector content)]
-       [:div.py1 {:key (str id "-" idx)}
-        item])]))
+  (component/html
+   (when id
+     [:div.mb4.content-3.proxima
+      (for [[idx item] (map-indexed vector content)]
+        [:div.py1 {:key (str id "-" idx)}
+         item])])))
 
 (defn organism
   [{:as data react-key :react/key :product-card/keys [target]}]
@@ -157,6 +159,6 @@
            {:key       react-key
             :data-test react-key})
     [:div.border.border-cool-gray.rounded.container-height.center
-     (ui/screen-aware card-image-molecule data)
-     (product-card-title-molecule data)
-     (product-card-details-molecule data)]]))
+     ^:inline (ui/screen-aware card-image-molecule data)
+     ^:inline (product-card-title-molecule data)
+     ^:inline (product-card-details-molecule data)]]))

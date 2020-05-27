@@ -130,26 +130,30 @@
        (ui/button-small-underline-primary link-attrs title)])))
 
 (defcomponent ^:private drill-category-grid-organism
-  [{:drill-category-grid/keys [values title]} _ _]
+  [{:drill-category-grid/keys [values title]
+    :browser/keys [desktop? tablet? mobile?]} _ _]
   (when (seq values)
     (let [grid-entries (mapv #(component/build drill-category-grid-entry-organism
                                                %
                                                (component/component-id (:drill-category/id %)))
                              values)]
       [:div.py8.px4
-       [:div.title-2.proxima.shout title]
-       [:div.hide-on-mb.hide-on-tb ; dt
-        (->> grid-entries
-             (partition-all 4)
-             (mapv (fn [row] [:div.flex.justify-around row])))]
-       [:div.hide-on-dt.hide-on-mb ; tb
-        (->> grid-entries
-             (partition 3 3 [[:div {:style {:width "120px"}}]])
-             (mapv (fn [row] [:div.flex.justify-around row])))]
-       [:div.hide-on-dt.hide-on-tb ; mb
-        (->> grid-entries
-             (partition-all 2)
-             (mapv (fn [row] [:div.flex.justify-around row])))]])))
+       [:div.title-2.proxima.shout "YOYOYO" title]
+       (when (or desktop? (nil? desktop?))
+         [:div.hide-on-mb.hide-on-tb ; dt
+          (->> grid-entries
+               (partition-all 4)
+               (mapv (fn [row] (component/html [:div.flex.justify-around row]))))])
+       (when (or tablet? (nil? tablet?))
+         [:div.hide-on-dt.hide-on-mb ; tb
+          (->> grid-entries
+               (partition 3 3 [[:div {:style {:width "120px"}}]])
+               (mapv (fn [row] (component/html [:div.flex.justify-around row]))))])
+       (when (or mobile? (nil? mobile?))
+         [:div.hide-on-dt.hide-on-tb ; mb
+          (->> grid-entries
+               (partition-all 2)
+               (mapv (fn [row] (component/html [:div.flex.justify-around row]))))])])))
 
 (defn ^:private category->drill-category-list-entry
   [category]
@@ -232,7 +236,7 @@
     (vertical-squiggle-atom "-36px")
     [:div.max-960.mx-auto
      (component/build drill-category-list-organism drill-category-list)
-     (component/build drill-category-grid-organism drill-category-grid)]
+     (ui/width-aware drill-category-grid-organism drill-category-grid)]
     purple-divider-atom
     [:div.max-960.mx-auto
      [:div.pt4]

@@ -82,7 +82,8 @@
    (when primary-title
      [:div.canela.title-2.center.mt8.mb2 primary-title])
    [:div.flex.flex-wrap
-    (map card->component product-cards)]])
+    (for [card product-cards]
+      ^:inline (card->component card))]])
 
 (c/defcomponent organism
   [{:keys [subsections title no-product-cards? loading-products?]} _ _]
