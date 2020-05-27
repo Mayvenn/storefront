@@ -47,14 +47,6 @@
      {:style {:top top}}
      ^:inline (svg/vertical-squiggle {:style {:height "72px"}})]]))
 
-(defcomponent ^:private header-organism
-  [_ _ _]
-  [:div])
-
-(defcomponent ^:private footer-organism
-  [_ _ _]
-  [:div])
-
 (defn ^:private category-hero-query
   [category]
   ;; TODO(corey) icp heroes use #:category not #:copy for :description
@@ -230,24 +222,21 @@
            header
            product-card-listing]} _ _]
   [:div
-   (component/build header-organism header)
-   [:div
-    (component/build category-hero/organism category-hero)
-    (vertical-squiggle-atom "-36px")
-    [:div.max-960.mx-auto
-     (component/build drill-category-list-organism drill-category-list)
-     (ui/width-aware drill-category-grid-organism drill-category-grid)]
-    purple-divider-atom
-    [:div.max-960.mx-auto
-     [:div.pt4]
-     (when-let [title (:title category-filters)]
-       [:div.canela.title-1.center.mt3.py4 title])
-     (component/build category-filters/organism category-filters {})
-     (component/build product-card-listing/organism product-card-listing {})]
-    (when content-box green-divider-atom)
-    (when content-box (component/build content-box-organism content-box))
-    (component/build layered/shop-contact contact-query)]
-   (component/build footer-organism footer)])
+   (component/build category-hero/organism category-hero)
+   (vertical-squiggle-atom "-36px")
+   [:div.max-960.mx-auto
+    (component/build drill-category-list-organism drill-category-list)
+    (ui/width-aware drill-category-grid-organism drill-category-grid)]
+   purple-divider-atom
+   [:div.max-960.mx-auto
+    [:div.pt4]
+    (when-let [title (:title category-filters)]
+      [:div.canela.title-1.center.mt3.py4 title])
+    (component/build category-filters/organism category-filters {})
+    (component/build product-card-listing/organism product-card-listing {})]
+   (when content-box ^:inline green-divider-atom)
+   (when content-box (component/build content-box-organism content-box))
+   (component/build layered/shop-contact contact-query)])
 
 (defn category->subcategories
   "Returns a hydrated sequence of subcategories for the given category"
