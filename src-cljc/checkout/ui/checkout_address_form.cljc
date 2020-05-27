@@ -100,7 +100,7 @@
                               :data-test data-test})]))
 
 (c/defcomponent organism
-  [{:keys [:become-guest?] :as data} _ _]
+  [{:keys [become-guest?] :as data} _ _]
   [:div.m-auto.col-8-on-tb-dt
    [:div.p3
     [:form.col-12.flex.flex-column.items-center
