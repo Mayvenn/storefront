@@ -138,7 +138,8 @@
         {:style {:transform "rotate(45deg)"
                  :width     "9px"
                  :height    "9px"
-                 :padding   "0"}}
+                 :padding   "0"}
+         :key option-slug}
         [:img
          {:key   (str "product-card-details-" product-slug "-" option-slug)
           :style {:transform "rotate(-45deg) translateY(-3px)"
