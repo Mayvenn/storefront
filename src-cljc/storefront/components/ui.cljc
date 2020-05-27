@@ -915,12 +915,12 @@
                                    (fn []
                                      (let [w (.-innerWidth js/window)]
                                        (component/set-state! this
-                                                             :browser/desktop? (>= w 1000)
-                                                             :browser/tablet?  (>= 999 w 750)
-                                                             :browser/mobile?  (< 749 w)))))
-                         {:browser/desktop? nil
-                          :browser/tablet?  nil
-                          :browser/mobile?  nil})
+                                                             :desktop? (>= w 1000)
+                                                             :tablet?  (>= 999 w 750)
+                                                             :mobile?  (<= w 749)))))
+                         {:desktop? nil
+                          :tablet?  nil
+                          :mobile?  nil})
             (did-mount [this]
                        (let [resize (gobj/get this "resizer")]
                          (resize)
@@ -931,14 +931,12 @@
                     (let [{:keys [desktop? tablet? mobile?] :as state} (component/get-state this)
                           data                                         (component/get-props this)
                           {:keys [embed opts]}                         (component/get-opts this)]
-                      (component/html
-                       [:div
-                        (component/build embed
-                                         (assoc data
-                                                :browser/desktop? desktop?
-                                                :browser/tablet?  tablet?
-                                                :browser/mobile?  mobile?)
-                                         (merge {:key "embed"} opts))]))))))
+                      (component/build embed
+                                       (assoc data
+                                              :browser/desktop? desktop?
+                                              :browser/tablet?  tablet?
+                                              :browser/mobile?  mobile?)
+                                       (merge {:key "embed"} opts)))))))
 
 (defn width-aware
   "A decorator around component/build that sets the browser size-class
