@@ -98,8 +98,7 @@
   [data]
   (and (display-feature? data "service-category-page")
        (or
-        (= "shop" (get-in data keypaths/store-slug))
-        (= "aladdin" (get-in data keypaths/store-experience)))))
+        (= "shop" (get-in data keypaths/store-slug)))))
 
 (defn hide-bookings?
   [data]
