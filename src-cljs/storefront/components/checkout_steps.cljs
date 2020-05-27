@@ -10,13 +10,13 @@
    {:step-index 2 :events [events/navigate-checkout-payment] :name "payment" :id "payment"}
    {:step-index 3 :events [events/navigate-checkout-confirmation] :name "review & pay" :id "confirm"}])
 
-(defcomponent component [{:keys [current-navigation-event]} owner _]
+(defcomponent component [{:keys [current-navigation-event checkout-title]} owner _]
   (let [current-step  (->> steps
                            (filter #(contains? (set (:events %)) current-navigation-event))
                            first)
         current-index (:step-index current-step)]
     [:div
-     [:div.title-1.canela.center.pt5 "Secure Checkout"]
+     [:div.title-1.canela.center.pt5 checkout-title]
      [:.flex.flex-column.items-center.col-12.my2
       {:data-test (str "checkout-step-" (:id current-step))}
       [:.relative.border-bottom.col-8 {:style {:top "6px"}}]
@@ -35,4 +35,5 @@
            [:.mt2 name]]])]]]))
 
 (defn query [data]
-  {:current-navigation-event (get-in data keypaths/navigation-event)})
+  {:current-navigation-event (get-in data keypaths/navigation-event)
+   :checkout-title           "Secure Checkout"})

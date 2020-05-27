@@ -1,5 +1,6 @@
 (ns storefront.components.checkout-address
-  (:require [storefront.component :as component :refer [defcomponent defdynamic-component]]
+  (:require [storefront.accessors.auth :as auth]
+            [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.ui :as ui]
             [ui.promo-banner :as promo-banner]
@@ -30,10 +31,10 @@
                              :max-length  max-length
                              :value       value})))))
 
-(defcomponent ^:private shipping-address-component
+(defcomponent shipping-address-component
   [{:keys [focused shipping-address states email become-guest? google-maps-loaded? field-errors]} owner _]
   [:.flex.flex-column.items-center.col-12
-   [:.h4.col-12.my1 "Shipping Address"]
+   [:div.col-12.my1.proxima.title-3.shout.bold "Shipping Address"]
    [:.col-12
     (ui/text-field-group
      {:type          "text"
@@ -147,19 +148,20 @@
                       :required    true
                       :value       (:state shipping-address)})]])
 
-(defcomponent ^:private billing-address-component
+(defcomponent billing-address-component
   [{:keys [focused billing-address states bill-to-shipping-address? google-maps-loaded? field-errors]} owner _]
   [:.flex.flex-column.items-center.col-12
-   [:.h4.col-12.my1 "Billing Address"]
+   [:div.col-12.my1.proxima.title-3.shout.bold "Billing Address"]
    [:.col-12.my1
     [:label.h6.py1
-     [:input.mr1
-      (merge (utils/toggle-checkbox keypaths/checkout-bill-to-shipping-address
-                                    bill-to-shipping-address?)
-             {:type      "checkbox"
-              :id        "use_billing"
-              :data-test "use-billing"})]
-     "Use same address?"]]
+     [:div.mr1
+      (ui/check-box
+       {:type      "checkbox"
+        :label     "Use same address?"
+        :id        "use_billing"
+        :data-test "use-billing"
+        :value     bill-to-shipping-address?
+        :keypath   keypaths/checkout-bill-to-shipping-address})]]]
    (when-not bill-to-shipping-address?
      [:.col-12
       [:.col-12
@@ -267,7 +269,7 @@
    (component/build checkout-steps/component step-bar)
 
    [:div.m-auto.col-8-on-tb-dt
-    [:div.p2
+    [:div.p3
      [:form.col-12.flex.flex-column.items-center
       {:on-submit (utils/send-event-callback events/control-checkout-update-addresses-submit
                                              {:become-guest? (:become-guest? shipping-address-data)})
@@ -285,7 +287,9 @@
         states              (map (juxt :name :abbr) (get-in data keypaths/states))
         field-errors        (get-in data keypaths/field-errors)]
     {:saving?               (utils/requesting? data request-keys/update-addresses)
-     :step-bar              (checkout-steps/query data)
+     :step-bar              (cond-> (checkout-steps/query data)
+                              (= :guest (::auth/as (auth/signed-in data)))
+                              (assoc :checkout-title "Guest Checkout"))
      :promo-banner          (promo-banner/query data)
      :billing-address-data  {:billing-address           (get-in data keypaths/checkout-billing-address)
                              :states                    states

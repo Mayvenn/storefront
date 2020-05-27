@@ -5,7 +5,7 @@
 
 (defn narrow-sign-in-button [loaded?]
   (when loaded?
-    (ui/button-large-facebook-blue
+    (ui/button-medium-facebook-blue
      {:on-click  (utils/send-event-callback events/control-facebook-sign-in)
       :data-test "facebook-button"}
      [:div.mx-auto

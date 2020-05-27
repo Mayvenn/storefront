@@ -344,8 +344,6 @@
   areas expects a vector of the field ids for their positions:
   [''field-id1'' ''field-id2'']"
   [& fields]
-  {:pre [(zero? (rem 12 (count fields)))
-         (every? (comp string? :id) fields)]}
   (component/html
    (let [areas        (map :id fields)
          columns      (map (fn [field] (get field :column-size "1fr")) fields)
