@@ -82,31 +82,16 @@
                                                                  color-order-map))}}]
      :product-card-details/id      (str "product-card-details-" product-slug)
      :product-card-details/content (if (empty? in-stock-skus)
-                                     ["Out of stock"]
-                                     [(str "in "
-                                           (if (= shortest longest)
-                                             shortest
-                                             (str shortest " - " longest)))
+                                     [[:text "Out of stock"]]
+                                     [[:text (str "in "
+                                                  (if (= shortest longest)
+                                                    shortest
+                                                    (str shortest " - " longest)))]
                                       (if (= 1 (count product-colors))
-                                        (:option/name (first product-colors))
-                                        [:div.flex.col-10.mx-auto.justify-center
-                                         (for [{option-slug  :option/slug
-                                                :option/keys [rectangle-swatch]} product-colors]
-                                           [:div.mx1.overflow-hidden
-                                            {:style {:transform "rotate(45deg)"
-                                                     :width     "9px"
-                                                     :height    "9px"
-                                                     :padding   "0"}}
-                                            [:img
-                                             {:key   (str "product-card-details-" product-slug "-" option-slug)
-                                              :style {:transform "rotate(-45deg) translateY(-3px)"
-                                                      ;; :margin     "5px 5px"
-                                                      :width     "13px"
-                                                      :height    "13px"}
-                                              :src   rectangle-swatch}]])])
-                                      [:span.black
-                                       "Starting at "
-                                       [:span.content-2.proxima (mf/as-money (:sku/price cheapest-sku))]]])
+                                        [:text (:option/name (first product-colors))]
+                                        [:swatches {:product-slug   product-slug
+                                                    :product-colors product-colors}])
+                                      [:starting-price (:sku/price cheapest-sku)]])
      :card-image/src               (str (:url image) "-/format/auto/" (:filename image))
      :card-image/alt               (:alt image)}))
 
@@ -142,14 +127,40 @@
       [:h2.mt3.mx1.content-2.proxima
        primary]))))
 
+(defcomponent swatches
+  [{:keys        [product-slug product-colors]
+    :screen/keys [seen?]} _ _]
+  [:div.flex.col-10.mx-auto.justify-center
+   (when seen? ;; explicitly ignoring SSR to minimize number of dom nodes
+     (for [{option-slug  :option/slug
+            :option/keys [rectangle-swatch]} product-colors]
+       [:div.mx1.overflow-hidden
+        {:style {:transform "rotate(45deg)"
+                 :width     "9px"
+                 :height    "9px"
+                 :padding   "0"}}
+        [:img
+         {:key   (str "product-card-details-" product-slug "-" option-slug)
+          :style {:transform "rotate(-45deg) translateY(-3px)"
+                  ;; :margin     "5px 5px"
+                  :width     "13px"
+                  :height    "13px"}
+          :src   rectangle-swatch}]]))])
+
 (defn product-card-details-molecule
   [{:product-card-details/keys [id content]}]
   (component/html
    (when id
      [:div.mb4.content-3.proxima
-      (for [[idx item] (map-indexed vector content)]
+      (for [[idx [type item]] (map-indexed vector content)]
         [:div.py1 {:key (str id "-" idx)}
-         item])])))
+         (case type
+           :text item
+           :swatches (ui/screen-aware swatches item)
+           :starting-price [:span.black
+                            "Starting at "
+                            [:span.content-2.proxima (mf/as-money item)]]
+           item)])])))
 
 (defn organism
   [{:as data react-key :react/key :product-card/keys [target]}]
