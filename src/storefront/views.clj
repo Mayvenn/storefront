@@ -98,125 +98,126 @@
 
 (def js-files ["cljs_base.js" "main.js"])
 
-(defn index?
-  [environment data]
-  (and (= "production" environment)
-      (or (= "shop" (get-in data keypaths/store-slug))
-          (= events/navigate-home (get-in data keypaths/navigation-event)))))
-
 (defn layout
   [{:keys [storeback-config environment client-version]} data initial-content]
-  (html5 {:lang "en"}
-         [:head
-          [:meta {:name "fragment" :content "!"}]
-          [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
-          [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
-          [:meta {:name "theme-color" :content "#ffffff"}]
-          [:meta {:name "apple-mobile-web-app-capable" :content "yes"}]
-          [:meta {:name "apple-mobile-web-app-status-bar-style" :content "white"}]
-          [:meta {:name "mobile-web-app-capable" :content "yes"}]
+  (let [follow? (and (#{"production" "development"} environment)
+                        (= "shop" (get-in data keypaths/store-slug)))
+        index?  (and (#{"production" "development"} environment)
+                    (or (= "shop" (get-in data keypaths/store-slug))
+                        (= events/navigate-home (get-in data keypaths/navigation-event))))]
+    (html5 {:lang "en"}
+           [:head
+            [:meta {:name "fragment" :content "!"}]
+            [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
+            [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
+            [:meta {:name "theme-color" :content "#ffffff"}]
+            [:meta {:name "apple-mobile-web-app-capable" :content "yes"}]
+            [:meta {:name "apple-mobile-web-app-status-bar-style" :content "white"}]
+            [:meta {:name "mobile-web-app-capable" :content "yes"}]
 
-          (when-not (index? environment data)
-            [:meta {:name "robots" :content "noindex"}])
+            (when-not index?
+              [:meta {:name "robots" :content "noindex"}])
+            (when-not follow?
+              [:meta {:name "robots" :content "nofollow"}])
 
-          (into '() (seo/tags-for-page data))
+            (into '() (seo/tags-for-page data))
 
-          favicon-links
-          (when asset-mappings/cdn-host [:link {:rel "preconnect" :href (str "https://" asset-mappings/cdn-host)}])
-          [:link {:rel "preconnect" :href (:endpoint storeback-config)}]
-          (case environment
-            "production" [:link {:rel "preconnect" :href "https://t.mayvenn.com"}]
-            "acceptance" [:link {:rel "preconnect" :href "https://t.diva-acceptance.com"}]
-            [:link {:rel "preconnect" :href "http://byliner.localhost"}])
-          [:link {:rel "preconnect" :href "https://t.mayvenn.com"}]
-          [:link {:rel "preconnect" :href "https://ucarecdn.com"}]
-          [:link {:rel "preconnect" :href "https://cdnjs.cloudflare.com"}]
-          [:link {:rel "preconnect" :href "https://www.facebook.com"}]
-          [:link {:rel "preconnect" :href "https://analytics.twitter.com"}]
-          [:link {:rel "preconnect" :href "https://t.co"}]
-          [:link {:rel "preconnect" :href "https://stats.g.doubleclick.net"}]
-          [:link {:rel "preconnect" :href "https://c.riskified.com"}]
-          [:link {:rel "preconnect" :href "https://www.googleadservices.com"}]
-          [:link {:rel "preconnect" :href "https://img.riskified.com"}]
-          [:link {:rel "preconnect" :href "https://cdn-3.convertexperiments.com"}]
-          [:link {:rel "preconnect" :href "https://widgets.quadpay.com"}]
-          [:link {:rel "preconnect" :href "https://www.google.com"}]
-          [:link {:rel "preconnect" :href "https://settings.luckyorange.net"}]
-          [:link {:rel "preconnect" :href "https://beacon.riskified.com"}]
-          [:link {:rel "preconnect" :href "https://www.googletagmanager.com"}]
-          [:link {:rel "preconnect" :href "https://connect.facebook.net"}]
-          [:link {:rel "preconnect" :href "https://cx.atdmt.com"}]
-          [:link {:rel "preconnect" :href "https://d2jjzw81hqbuqv.cloudfront.net"}] ;; talkable
-          [:link {:rel "preconnect" :href "https://s.pinimg.com"}]
-          [:link {:rel "preconnect" :href "https://googleads.g.doubleclick.net"}]
-          [:link {:rel "preconnect" :href "https://d10lpsik1i8c69.cloudfront.net"}] ;; luckyorange
+            favicon-links
+            (when asset-mappings/cdn-host [:link {:rel "preconnect" :href (str "https://" asset-mappings/cdn-host)}])
+            [:link {:rel "preconnect" :href (:endpoint storeback-config)}]
+            (case environment
+              "production" [:link {:rel "preconnect" :href "https://t.mayvenn.com"}]
+              "acceptance" [:link {:rel "preconnect" :href "https://t.diva-acceptance.com"}]
+              [:link {:rel "preconnect" :href "http://byliner.localhost"}])
+            [:link {:rel "preconnect" :href "https://t.mayvenn.com"}]
+            [:link {:rel "preconnect" :href "https://ucarecdn.com"}]
+            [:link {:rel "preconnect" :href "https://cdnjs.cloudflare.com"}]
+            [:link {:rel "preconnect" :href "https://www.facebook.com"}]
+            [:link {:rel "preconnect" :href "https://analytics.twitter.com"}]
+            [:link {:rel "preconnect" :href "https://t.co"}]
+            [:link {:rel "preconnect" :href "https://stats.g.doubleclick.net"}]
+            [:link {:rel "preconnect" :href "https://c.riskified.com"}]
+            [:link {:rel "preconnect" :href "https://www.googleadservices.com"}]
+            [:link {:rel "preconnect" :href "https://img.riskified.com"}]
+            [:link {:rel "preconnect" :href "https://cdn-3.convertexperiments.com"}]
+            [:link {:rel "preconnect" :href "https://widgets.quadpay.com"}]
+            [:link {:rel "preconnect" :href "https://www.google.com"}]
+            [:link {:rel "preconnect" :href "https://settings.luckyorange.net"}]
+            [:link {:rel "preconnect" :href "https://beacon.riskified.com"}]
+            [:link {:rel "preconnect" :href "https://www.googletagmanager.com"}]
+            [:link {:rel "preconnect" :href "https://connect.facebook.net"}]
+            [:link {:rel "preconnect" :href "https://cx.atdmt.com"}]
+            [:link {:rel "preconnect" :href "https://d2jjzw81hqbuqv.cloudfront.net"}] ;; talkable
+            [:link {:rel "preconnect" :href "https://s.pinimg.com"}]
+            [:link {:rel "preconnect" :href "https://googleads.g.doubleclick.net"}]
+            [:link {:rel "preconnect" :href "https://d10lpsik1i8c69.cloudfront.net"}] ;; luckyorange
 
-          [:script {:defer true
-                    :type  "text/javascript"
-                    :src   "https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/min/tiny-slider.js"}]
+            [:script {:defer true
+                      :type  "text/javascript"
+                      :src   "https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/min/tiny-slider.js"}]
 
-          (when-not (config/development? environment)
-            (for [n js-files]
-              [:link {:rel "preload" :as "script" :href (assets/path (str "/js/out/" n))}]))
+            (when-not (config/development? environment)
+              (for [n js-files]
+                [:link {:rel "preload" :as "script" :href (assets/path (str "/js/out/" n))}]))
 
-          [:link {:rel "preload" :as "font" :href (assets/path "/fonts/Canela-Light-Web.woff2") :crossorigin "anonymous"}]
-          [:link {:rel "preload" :as "font" :href (assets/path "/fonts/Proxima-Nova.woff2") :crossorigin "anonymous"}]
-          [:link {:rel "preload" :as "font" :href (assets/path "/fonts/Proxima-Nova-Black.woff2") :crossorigin "anonymous"}]
+            [:link {:rel "preload" :as "font" :href (assets/path "/fonts/Canela-Light-Web.woff2") :crossorigin "anonymous"}]
+            [:link {:rel "preload" :as "font" :href (assets/path "/fonts/Proxima-Nova.woff2") :crossorigin "anonymous"}]
+            [:link {:rel "preload" :as "font" :href (assets/path "/fonts/Proxima-Nova-Black.woff2") :crossorigin "anonymous"}]
 
-          [:script {:type "text/javascript"} (raw prefetch-script)]
+            [:script {:type "text/javascript"} (raw prefetch-script)]
 
-          ;; Quadpay Widget
-          #_[:script {:type  "text/javascript"
-                      :src   "https://widgets.quadpay.com/mayvenn/quadpay-widget-2.2.1.js"
+            ;; Quadpay Widget
+            #_[:script {:type  "text/javascript"
+                        :src   "https://widgets.quadpay.com/mayvenn/quadpay-widget-2.2.1.js"
+                        :defer true}]
+
+            ;; Talkable
+            [:script {:type  "text/javascript"
+                      :src   (case environment
+                               "production" "https://d2jjzw81hqbuqv.cloudfront.net/integration/clients/mayvenn.min.js"
+                               "https://d2jjzw81hqbuqv.cloudfront.net/integration/clients/mayvenn-staging.min.js")
                       :defer true}]
 
-          ;; Talkable
-          [:script {:type  "text/javascript"
-                    :src   (case environment
-                             "production" "https://d2jjzw81hqbuqv.cloudfront.net/integration/clients/mayvenn.min.js"
-                             "https://d2jjzw81hqbuqv.cloudfront.net/integration/clients/mayvenn-staging.min.js")
-                    :defer true}]
+            ;; Storefront server-side data
+            [:script {:type "text/javascript"}
+             (raw (str "var assetManifest=" (generate-string (select-keys asset-mappings/image-manifest (map #(subs % 1) config/frontend-assets))) ";"
+                       "var cdnHost=" (generate-string asset-mappings/cdn-host) ";"
+                       (when-not (config/development? environment)
+                         ;; Use CDN urls when not in dev, otherwise let figwheel control the compiled modules
+                         (str "var COMPILED_MODULE_URIS=" (json/generate-string (config/frontend-modules)) ";"))
+                       ;; need to make sure the edn which has double quotes is validly escaped as
+                       ;; json as it goes into the JS file
+                       (format "var data = %s;" (data->transit (dissoc data (first keypaths/categories))))
+                       "var environment=\"" environment "\";"
+                       "var clientVersion=\"" client-version "\";"
+                       "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
 
-          ;; Storefront server-side data
-          [:script {:type "text/javascript"}
-           (raw (str "var assetManifest=" (generate-string (select-keys asset-mappings/image-manifest (map #(subs % 1) config/frontend-assets))) ";"
-                     "var cdnHost=" (generate-string asset-mappings/cdn-host) ";"
-                     (when-not (config/development? environment)
-                       ;; Use CDN urls when not in dev, otherwise let figwheel control the compiled modules
-                       (str "var COMPILED_MODULE_URIS=" (json/generate-string (config/frontend-modules)) ";"))
-                     ;; need to make sure the edn which has double quotes is validly escaped as
-                     ;; json as it goes into the JS file
-                     (format "var data = %s;" (data->transit (dissoc data (first keypaths/categories))))
-                     "var environment=\"" environment "\";"
-                     "var clientVersion=\"" client-version "\";"
-                     "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
-
-          (when-not (config/development? environment)
-            (for [n js-files]
-              [:script {:src   (assets/path (str "/js/out/" n))
-                        :defer true}]))
+            (when-not (config/development? environment)
+              (for [n js-files]
+                [:script {:src   (assets/path (str "/js/out/" n))
+                          :defer true}]))
 
           ;;;;;;;;; "Third party" libraries
-          ;; Stringer
-          [:script {:type "text/javascript"}
-           (raw (str "(function(d,e){function g(a){return function(){var b=Array.prototype.slice.call(arguments);b.unshift(a);c.push(b);return d.stringer}}var c=d.stringer=d.stringer||[],a=[\"init\",\"track\",\"identify\",\"clear\",\"getBrowserId\"];if(!c.snippetRan&&!c.loaded){c.snippetRan=!0;for(var b=0;b<a.length;b++){var f=a[b];c[f]=g(f)}a=e.createElement(\"script\");a.type=\"text/javascript\";a.async=!0;a.src=\"https://d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-8537ec7.js\";b=e.getElementsByTagName(\"script\")[0];b.parentNode.insertBefore(a,b);c.init({environment:\"" environment "\",sourceSite:\"storefront\"})}})(window,document);"))]
+            ;; Stringer
+            [:script {:type "text/javascript"}
+             (raw (str "(function(d,e){function g(a){return function(){var b=Array.prototype.slice.call(arguments);b.unshift(a);c.push(b);return d.stringer}}var c=d.stringer=d.stringer||[],a=[\"init\",\"track\",\"identify\",\"clear\",\"getBrowserId\"];if(!c.snippetRan&&!c.loaded){c.snippetRan=!0;for(var b=0;b<a.length;b++){var f=a[b];c[f]=g(f)}a=e.createElement(\"script\");a.type=\"text/javascript\";a.async=!0;a.src=\"https://d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-8537ec7.js\";b=e.getElementsByTagName(\"script\")[0];b.parentNode.insertBefore(a,b);c.init({environment:\"" environment "\",sourceSite:\"storefront\"})}})(window,document);"))]
 
-          ;; Facebook Pixel
-          [:script {:type "text/javascript"}
-           (let [facebook-pixel-id (case environment
-                                     "production" "721931104522825"
-                                     "139664856621138")]
-             (raw (str
-                   "!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            ;; Facebook Pixel
+            [:script {:type "text/javascript"}
+             (let [facebook-pixel-id (case environment
+                                       "production" "721931104522825"
+                                       "139664856621138")]
+               (raw (str
+                     "!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
 n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
 document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '" facebook-pixel-id "'); fbq('track', 'PageView');")))]
 
-          ;; Google Tag Manager
-          [:script {:type "text/javascript"}
-           (raw "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            ;; Google Tag Manager
+            [:script {:type "text/javascript"}
+             (raw "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
@@ -224,19 +225,19 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 
           ;;;;;;;;;;;;
 
-          ;; inline styles in production because our css file is so small and it avoids another round
-          ;; trip request. At time of writing this greatly includes our pagespeed score
-          (if (#{"development" "test"} environment)
-            (page/include-css (assets/path "/css/app.css"))
-            [:style (raw (css-styles))])]
-         [:body
-          [:div#content initial-content]
-          (when (config/development? environment)
-            ;; in development, figwheel uses document.write which can't be done asynchronously
-            ;; additionally, we want developers to see the server side render, so we don't want
-            ;; to put this tag in <head> and be synchronous
-            (for [n js-files]
-              [:script {:src (str "/js/out/" n)}]))]))
+            ;; inline styles in production because our css file is so small and it avoids another round
+            ;; trip request. At time of writing this greatly includes our pagespeed score
+            (if (#{"development" "test"} environment)
+              (page/include-css (assets/path "/css/app.css"))
+              [:style (raw (css-styles))])]
+           [:body
+            [:div#content initial-content]
+            (when (config/development? environment)
+              ;; in development, figwheel uses document.write which can't be done asynchronously
+              ;; additionally, we want developers to see the server side render, so we don't want
+              ;; to put this tag in <head> and be synchronous
+              (for [n js-files]
+                [:script {:src (str "/js/out/" n)}]))])))
 
 (defn index [render-ctx data]
   (layout render-ctx data spinner-content))
