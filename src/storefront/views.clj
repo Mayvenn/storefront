@@ -98,6 +98,12 @@
 
 (def js-files ["cljs_base.js" "main.js"])
 
+(defn index?
+  [environment data]
+  (and (= "production" environment)
+      (or (= "shop" (get-in data keypaths/store-slug))
+          (= events/navigate-home (get-in data keypaths/navigation-event)))))
+
 (defn layout
   [{:keys [storeback-config environment client-version]} data initial-content]
   (html5 {:lang "en"}
@@ -110,7 +116,7 @@
           [:meta {:name "apple-mobile-web-app-status-bar-style" :content "white"}]
           [:meta {:name "mobile-web-app-capable" :content "yes"}]
 
-          (when (#{"acceptance" "development"} environment)
+          (when-not (index? environment data)
             [:meta {:name "robots" :content "noindex"}])
 
           (into '() (seo/tags-for-page data))
