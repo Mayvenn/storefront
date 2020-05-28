@@ -27,8 +27,8 @@
 (defn sort-query-params
   [params]
   (let [ordering {"origin"        0
-                  "style"         1
-                  "texture"       2
+                  "texture"       1
+                  "style"         2
                   "color"         3
                   "base-material" 4
                   "weight"        5
