@@ -164,11 +164,8 @@
      :hashtag-mayvenn-hair.cta/label    "see more looks"
      :hashtag-mayvenn-hair.cta/target   [e/navigate-shop-by-look {:album-keyword :look}]}))
 
-(defn faq-query
-  [expanded-index]
-  {:faq/expanded-index expanded-index
-   :list/sections
-   [{:faq/title      "Who is going to do my hair?",
+(def faq-sections-data
+  [{:faq/title      "Who is going to do my hair?",
      :faq/paragraphs ["Mayvenn Certified Stylists have been chosen because of their professionalism, skillset, and client ratings. We’ve got a network of licensed stylists across the country who are all committed to providing you with amazing service and quality hair extensions."]}
     {:faq/title      "What kind of hair do you offer?"
      :faq/paragraphs ["We’ve got top of the line virgin hair in 8 different textures. In the event that you’d like to switch it up, we have pre-colored options available as well. The best part? All of our hair is quality-guaranteed."]}
@@ -179,7 +176,12 @@
     {:faq/title      "How does this process actually work?"
      :faq/paragraphs ["It’s super simple — after you purchase your hair, we’ll send you a pre-paid voucher that you’ll use during your appointment. When your stylist scans it, they get paid instantly by Mayvenn."]}
     {:faq/title      "What if I want to get my hair done by another stylist? Can I still get the Mayvenn Install?"
-     :faq/paragraphs ["You must get your hair done from a Certified Stylist in order to get your hair installed for free."]}]})
+     :faq/paragraphs ["You must get your hair done from a Certified Stylist in order to get your hair installed for free."]}])
+
+(defn faq-query
+  [expanded-index]
+  {:faq/expanded-index expanded-index
+   :list/sections      faq-sections-data})
 
 ;; TODO svg ns returns components full of undiffable data
 (def guarantees-query

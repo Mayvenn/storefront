@@ -9,6 +9,7 @@
             [catalog.keypaths :as k]
             [catalog.facets :as facets]
             [storefront.events :as events]
+            [homepage.v2020-04 :as homepage]
             [catalog.categories :as categories]
             [catalog.products :as products]
             [spice.selector :as selector]
@@ -50,6 +51,12 @@
    [:meta {:property "og:description"
            :content "Mayvenn is the recommended and trusted source for quality hair by 100,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"}]])
 
+(defn ->structured-data [data]
+  [:script {:type "application/ld+json"}
+   (#?(:clj (comp safe-hiccup/raw json/generate-string)
+       :cljs (comp js/JSON.stringify clj->js))
+    (merge {"@context"  "https://schema.org"} data))])
+
 (defn product-details-tags [data]
   (let [product (products/current-product data)
         sku     (get-in data k/detailed-product-selected-sku)
@@ -60,14 +67,10 @@
      [:meta {:property "og:type" :content "product"}]
      [:meta {:property "og:image" :content (str "http:" (:url image))}]
      [:meta {:property "og:description" :content (:opengraph/description product)}]
-     [:script {:type "application/ld+json"}
-      (#?(:clj (comp safe-hiccup/raw json/generate-string)
-          :cljs (comp js/JSON.stringify clj->js))
-       {"@context" "http://schema.org"
-        "@type"    "Product"
-        :offers    {"@type"         "Offer"
-                    :price          (str (:sku/price sku))
-                    :priceCurrency "USD"}})]]))
+     (->structured-data {"@type" "Product"
+                         :offers {"@type"        "Offer"
+                                  :price         (str (:sku/price sku))
+                                  :priceCurrency "USD"}})]))
 
 (defn ^:private facet-option->option-name
   ;; For origin and color, the sku/name is more appropriate than the option name
@@ -171,6 +174,18 @@
   (when-let [canonical-href (canonical-uri data)]
     [[:link {:rel "canonical" :href canonical-href}]]))
 
+(defn homepage-tags
+  [data]
+  [(when (= "shop" (get-in data keypaths/store-slug))
+     (->structured-data {"@type"     "FAQPage"
+                         :mainEntity (mapv (fn
+                                             [{:faq/keys [title paragraphs]}]
+                                             {"@type"         "Question"
+                                              :name           title
+                                              :acceptedAnswer {"@type" "Answer"
+                                                               :text   (string/join " " paragraphs)}})
+                                           homepage/faq-sections-data)}))])
+
 (defn tags-for-page [data]
   (let [og-image-url assets/canonical-image]
     (->
@@ -228,21 +243,17 @@
                                                  :content  og-image-url}]
                                          [:meta {:property "og:description"
                                                  :content  "Mayvenn's story starts with a Toyota Corolla filled with bundles of hair to now having over 50,000 stylists selling Mayvenn hair and increasing their incomes. Learn more about us!"}]
-                                         [:script {:type "application/ld+json"}
-                                          (#?(:clj (comp safe-hiccup/raw json/generate-string)
-                                              :cljs (comp js/JSON.stringify clj->js))
-                                           {:url       "https://shop.mayvenn.com/about-us"
-                                            "@context" "http://schema.org"
-                                            "@type"    "Corporation"
-                                            :name      "Mayvenn Hair"
-                                            :logo      "https://d6w7wdcyyr51t.cloudfront.net/cdn/images/header_logo.e8e0ffc6.svg"
-                                            :sameAs    ["https://www.facebook.com/MayvennHair"
-                                                        "http://instagram.com/mayvennhair"
-                                                        "https://twitter.com/MayvennHair"
-                                                        "http://www.pinterest.com/mayvennhair/"]
-                                            :founder   {"@context" "http://schema.org"
-                                                        "@type"    "Person"
-                                                        :name      "Diishan Imira"}})]]
+                                         (->structured-data {:url     "https://shop.mayvenn.com/about-us"
+                                                             "@type"  "Corporation"
+                                                             :name    "Mayvenn Hair"
+                                                             :logo    "https://d6w7wdcyyr51t.cloudfront.net/cdn/images/header_logo.e8e0ffc6.svg"
+                                                             :sameAs  ["https://www.facebook.com/MayvennHair"
+                                                                         "http://instagram.com/mayvennhair"
+                                                                         "https://twitter.com/MayvennHair"
+                                                                         "http://www.pinterest.com/mayvennhair/"]
+                                                             :founder {"@context" "http://schema.org"
+                                                                       "@type"    "Person"
+                                                                       :name      "Diishan Imira"}})]
 
        events/navigate-shop-by-look (let [album-keyword (get-in data keypaths/selected-album-keyword)]
                                       [[:title {} (-> ugc/album-copy album-keyword :seo-title)]
@@ -259,6 +270,9 @@
 
        events/navigate-category        (category-tags data)
        events/navigate-product-details (product-details-tags data)
+
+       events/navigate-home (homepage-tags data)
+
        default-tags)
      (concat constant-tags (canonical-link-tag data))
      add-seo-tag-class)))
