@@ -394,7 +394,6 @@
 
 (defmethod effects/perform-effects events/navigate-checkout-address [_ event args _ app-state]
   (when-not (get-in app-state keypaths/user-id)
-    (prn "HERE?")
     (effects/redirect events/navigate-checkout-returning-or-guest))
   (google-maps/remove-containers)
   (api/get-states (get-in app-state keypaths/api-cache))
