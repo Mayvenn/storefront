@@ -52,10 +52,14 @@
            :content "Mayvenn is the recommended and trusted source for quality hair by 100,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"}]])
 
 (defn ->structured-data [data]
-  [:script {:type "application/ld+json"}
-   (#?(:clj (comp safe-hiccup/raw json/generate-string)
-       :cljs (comp js/JSON.stringify clj->js))
-    (merge {"@context"  "https://schema.org"} data))])
+  ;; Although it's not difficult to make this work for client side, there is no value to having structured data
+  ;; in the fully rendered page as the information is scraped from the server side render.  Additionally,
+  ;; the second render was being detected and flagged as duplicate by the Google structured data tool.
+  #?(:clj
+     [:script {:type "application/ld+json"}
+      (-> (merge {"@context" "https://schema.org"} data)
+          json/generate-string
+          safe-hiccup/raw)]))
 
 (defn product-details-tags [data]
   (let [product (products/current-product data)
