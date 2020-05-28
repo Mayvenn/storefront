@@ -4,7 +4,6 @@
             [storefront.component :as c :refer [defcomponent]]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as e]
-            [storefront.components.facebook :as facebook]
             [storefront.components.ui :as ui]))
 
 (defn ^:private address-names

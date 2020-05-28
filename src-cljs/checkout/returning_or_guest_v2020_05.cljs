@@ -39,7 +39,7 @@
   {:secure-checkout.title/primary        "Secure Checkout"
    :secure-checkout.title/secondary      "Sign in or checkout as guest. You’ll have an opportunity to create an account after placing your order. "
    :secure-checkout.cta/id               "begin-password-sign-in-button"
-   :secure-checkout.cta/value            "Facebook Sign in"
+   :secure-checkout.cta/value            "Sign in"
    :secure-checkout.cta/target           e/navigate-checkout-sign-in
    :secure-checkout.facebook-cta/id      "sign-in-facebook"
    :secure-checkout.facebook-cta/loaded? facebook-loaded?})

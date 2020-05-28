@@ -1,7 +1,8 @@
 (ns storefront.components.facebook
   (:require [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
-            [storefront.components.ui :as ui]))
+            [storefront.components.ui :as ui]
+            [storefront.components.svg :as svg]))
 
 (defn narrow-sign-in-button [loaded?]
   (when loaded?
@@ -10,9 +11,10 @@
       :data-test "facebook-button"}
      [:div.mx-auto
       [:div.flex.items-center.justify-center
-       (ui/ucare-img {:width  14
-                      :height 14} "975698f3-3eda-411c-83ad-6a2750e0e59d")
-       [:span.ml1 "Sign in"]]])))
+       [:div.mbn1
+        (svg/button-facebook-f {:width "7px"
+                                :height "14px"})]
+       [:span.ml3 "Facebook Sign in"]]])))
 
 (defn- wide-button [loaded? click-event]
   (if loaded?
