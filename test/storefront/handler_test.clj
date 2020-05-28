@@ -871,9 +871,9 @@
                                     "?texture=straight&style=center-part"))
             handler
             (validate-title-and-description-and-canonical
-             "Center Part Straight Ready-to-Wear Wigs | Mayvenn"
-             (str "Mayvenn’s Center Part Straight Ready-to-Wear Wigs "
+             "Straight Center Part Wigs: Straight Center Part Ready-to-Wear Wigs | Mayvenn"
+             (str "Mayvenn’s Straight Center Part Ready-to-Wear Wigs "
                   "allow you to change up and achieve your desired look. "
                   "Shop our collection of virgin hair wigs today.")
              "/categories/25-ready-wear-wigs"
-             "style=center-part&texture=straight"))))))
+             "texture=straight&style=center-part"))))))
