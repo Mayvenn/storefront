@@ -176,15 +176,15 @@
 
 (defn homepage-tags
   [data]
-  [(when (= "shop" (get-in data keypaths/store-slug))
-     (->structured-data {"@type"     "FAQPage"
+  (when (= "shop" (get-in data keypaths/store-slug))
+    [(->structured-data {"@type"     "FAQPage"
                          :mainEntity (mapv (fn
                                              [{:faq/keys [title paragraphs]}]
                                              {"@type"         "Question"
                                               :name           title
                                               :acceptedAnswer {"@type" "Answer"
                                                                :text   (string/join " " paragraphs)}})
-                                           homepage/faq-sections-data)}))])
+                                           homepage/faq-sections-data)})]))
 
 (defn tags-for-page [data]
   (let [og-image-url assets/canonical-image]
