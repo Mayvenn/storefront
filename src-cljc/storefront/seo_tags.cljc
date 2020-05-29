@@ -56,10 +56,11 @@
   ;; in the fully rendered page as the information is scraped from the server side render.  Additionally,
   ;; the second render was being detected and flagged as duplicate by the Google structured data tool.
   #?(:clj
-     [:script {:type "application/ld+json"}
-      (-> (merge {"@context" "https://schema.org"} data)
-          json/generate-string
-          safe-hiccup/raw)]))
+     [[:script {:type "application/ld+json"}
+       (-> (merge {"@context" "https://schema.org"} data)
+           json/generate-string
+           safe-hiccup/raw)]]
+     :cljs []))
 
 (defn product-details-tags [data]
   (let [product   (products/current-product data)
@@ -69,23 +70,23 @@
                            first
                            :url
                            (str "http:"))]
-    [[:title {} (:page/title product)]
-     [:meta {:name "description" :content (:page.meta/description product)}]
-     [:meta {:property "og:title" :content (:opengraph/title product)}]
-     [:meta {:property "og:type" :content "product"}]
-     [:meta {:property "og:image" :content image-url}]
-     [:meta {:property "og:description" :content (:opengraph/description product)}]
-     (->structured-data {"@type"      "Product"
-                         :name        (:sku/title sku)
-                         :image       image-url
-                         :sku         (:catalog/sku-id sku)
-                         :description (:opengraph/description product)
-                         :offers      {"@type"        "Offer"
-                                       :price         (str (:sku/price sku))
-                                       :priceCurrency "USD"
-                                       :availability  (if (:inventory/in-stock? sku)
-                                                       "http://schema.org/InStock"
-                                                       "http://schema.org/OutOfStock")}})]))
+    (concat [[:title {} (:page/title product)]
+             [:meta {:name "description" :content (:page.meta/description product)}]
+             [:meta {:property "og:title" :content (:opengraph/title product)}]
+             [:meta {:property "og:type" :content "product"}]
+             [:meta {:property "og:image" :content image-url}]
+             [:meta {:property "og:description" :content (:opengraph/description product)}]]
+            (->structured-data {"@type"      "Product"
+                                :name        (:sku/title sku)
+                                :image       image-url
+                                :sku         (:catalog/sku-id sku)
+                                :description (:opengraph/description product)
+                                :offers      {"@type"        "Offer"
+                                              :price         (str (:sku/price sku))
+                                              :priceCurrency "USD"
+                                              :availability  (if (:inventory/in-stock? sku)
+                                                               "http://schema.org/InStock"
+                                                               "http://schema.org/OutOfStock")}}))))
 
 (defn ^:private facet-option->option-name
   ;; For origin and color, the sku/name is more appropriate than the option name
@@ -191,15 +192,17 @@
 
 (defn homepage-tags
   [data]
-  (when (= "shop" (get-in data keypaths/store-slug))
-    [(->structured-data {"@type"     "FAQPage"
-                         :mainEntity (mapv (fn
-                                             [{:faq/keys [title paragraphs]}]
-                                             {"@type"         "Question"
-                                              :name           title
-                                              :acceptedAnswer {"@type" "Answer"
-                                                               :text   (string/join " " paragraphs)}})
-                                           homepage/faq-sections-data)})]))
+  (cond-> default-tags
+
+    (= "shop" (get-in data keypaths/store-slug))
+    (concat (->structured-data {"@type"     "FAQPage"
+                                :mainEntity (mapv (fn
+                                                    [{:faq/keys [title paragraphs]}]
+                                                    {"@type"         "Question"
+                                                     :name           title
+                                                     :acceptedAnswer {"@type" "Answer"
+                                                                      :text   (string/join " " paragraphs)}})
+                                                  homepage/faq-sections-data)}))))
 
 (defn tags-for-page [data]
   (let [og-image-url assets/canonical-image]
@@ -247,28 +250,28 @@
                                           [:meta {:property "og:description"
                                                   :content  "Wear it, dye it, even flat iron it. If you do not love your Mayvenn hair we will exchange it within 30 days of purchase."}]]
 
-       events/navigate-content-about-us [[:title {} "About Us - 100% virgin human hair company | Mayvenn "]
-                                         [:meta {:property "og:title"
-                                                 :content  "The Mayvenn Story - About Us"}]
-                                         [:meta {:name    "description"
-                                                 :content "Mayvenn is a hair company providing top-quality 100% virgin human hair for consumers and stylists. Learn more about us!"}]
-                                         [:meta {:property "og:type"
-                                                 :content  "website"}]
-                                         [:meta {:property "og:image"
-                                                 :content  og-image-url}]
-                                         [:meta {:property "og:description"
-                                                 :content  "Mayvenn's story starts with a Toyota Corolla filled with bundles of hair to now having over 50,000 stylists selling Mayvenn hair and increasing their incomes. Learn more about us!"}]
-                                         (->structured-data {:url     "https://shop.mayvenn.com/about-us"
-                                                             "@type"  "Corporation"
-                                                             :name    "Mayvenn Hair"
-                                                             :logo    "https://d6w7wdcyyr51t.cloudfront.net/cdn/images/header_logo.e8e0ffc6.svg"
-                                                             :sameAs  ["https://www.facebook.com/MayvennHair"
-                                                                         "http://instagram.com/mayvennhair"
-                                                                         "https://twitter.com/MayvennHair"
-                                                                         "http://www.pinterest.com/mayvennhair/"]
-                                                             :founder {"@context" "http://schema.org"
-                                                                       "@type"    "Person"
-                                                                       :name      "Diishan Imira"}})]
+       events/navigate-content-about-us (concat [[:title {} "About Us - 100% virgin human hair company | Mayvenn "]
+                                                 [:meta {:property "og:title"
+                                                         :content  "The Mayvenn Story - About Us"}]
+                                                 [:meta {:name    "description"
+                                                         :content "Mayvenn is a hair company providing top-quality 100% virgin human hair for consumers and stylists. Learn more about us!"}]
+                                                 [:meta {:property "og:type"
+                                                         :content  "website"}]
+                                                 [:meta {:property "og:image"
+                                                         :content  og-image-url}]
+                                                 [:meta {:property "og:description"
+                                                         :content  "Mayvenn's story starts with a Toyota Corolla filled with bundles of hair to now having over 50,000 stylists selling Mayvenn hair and increasing their incomes. Learn more about us!"}]]
+                                                (->structured-data {:url     "https://shop.mayvenn.com/about-us"
+                                                                    "@type"  "Corporation"
+                                                                    :name    "Mayvenn Hair"
+                                                                    :logo    "https://d6w7wdcyyr51t.cloudfront.net/cdn/images/header_logo.e8e0ffc6.svg"
+                                                                    :sameAs  ["https://www.facebook.com/MayvennHair"
+                                                                              "http://instagram.com/mayvennhair"
+                                                                              "https://twitter.com/MayvennHair"
+                                                                              "http://www.pinterest.com/mayvennhair/"]
+                                                                    :founder {"@context" "http://schema.org"
+                                                                              "@type"    "Person"
+                                                                              :name      "Diishan Imira"}}))
 
        events/navigate-shop-by-look (let [album-keyword (get-in data keypaths/selected-album-keyword)]
                                       [[:title {} (-> ugc/album-copy album-keyword :seo-title)]
