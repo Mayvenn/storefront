@@ -62,19 +62,30 @@
           safe-hiccup/raw)]))
 
 (defn product-details-tags [data]
-  (let [product (products/current-product data)
-        sku     (get-in data k/detailed-product-selected-sku)
-        image   (when sku (first (seo-image sku)))] ;; This when-clause is because of direct-to-detail products.
+  (let [product   (products/current-product data)
+        sku       (get-in data k/detailed-product-selected-sku)
+        image-url (some->> sku
+                           seo-image
+                           first
+                           :url
+                           (str "http:"))]
     [[:title {} (:page/title product)]
      [:meta {:name "description" :content (:page.meta/description product)}]
      [:meta {:property "og:title" :content (:opengraph/title product)}]
      [:meta {:property "og:type" :content "product"}]
-     [:meta {:property "og:image" :content (str "http:" (:url image))}]
+     [:meta {:property "og:image" :content image-url}]
      [:meta {:property "og:description" :content (:opengraph/description product)}]
-     (->structured-data {"@type" "Product"
-                         :offers {"@type"        "Offer"
-                                  :price         (str (:sku/price sku))
-                                  :priceCurrency "USD"}})]))
+     (->structured-data {"@type"      "Product"
+                         :name        (:sku/title sku)
+                         :image       image-url
+                         :sku         (:catalog/sku-id sku)
+                         :description (:opengraph/description product)
+                         :offers      {"@type"        "Offer"
+                                       :price         (str (:sku/price sku))
+                                       :priceCurrency "USD"
+                                       :availability  (if (:inventory/in-stock? sku)
+                                                       "http://schema.org/InStock"
+                                                       "http://schema.org/OutOfStock")}})]))
 
 (defn ^:private facet-option->option-name
   ;; For origin and color, the sku/name is more appropriate than the option name
