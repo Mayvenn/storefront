@@ -96,9 +96,7 @@
                            redemption-date
                            date)
      ;;definition
-     :subtitle           (if v2-voucher?
-                           (:sku/name voucher-service-base)
-                           (service-menu/discount->campaign-name discount))
+     :subtitle           (:sku/name voucher-service-base)
      :amount             (if v2-voucher?
                            (some->> services (keep :price) (reduce + 0.0) mf/as-money)
                            (service-menu/display-voucher-amount service-menu mf/as-money voucher-response))

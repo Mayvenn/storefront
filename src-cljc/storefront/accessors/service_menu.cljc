@@ -8,13 +8,6 @@
    "Free Install (Leave Out)"    :install-sew-in-leave-out
    "Wig Customization"          :wig-customization})
 
-(def unit-type->campaign-name
-  {"Free Install (with Closure)" "Free Install - Closure"
-   "Free Install (with 360)"     "Free Install - 360"
-   "Free Install (with Frontal)" "Free Install - Frontal"
-   "Free Install (Leave Out)"    "Free Install - Leave Out"
-   "Wig Customization"          "Wig Customization"})
-
 (def default-service-menu
   "Install prices to use when a stylist has not yet been selected."
   {:advertised-sew-in-360-frontal "225.0"
@@ -22,9 +15,6 @@
    :advertised-sew-in-frontal     "200.0"
    :advertised-sew-in-leave-out   "150.0"
    :advertised-wig-customization  "75.0"})
-
-(defn discount->campaign-name [discount]
-  (some->> discount :unit_type unit-type->campaign-name))
 
 (defn display-voucher-amount
   ([service-menu voucher]
