@@ -41,7 +41,10 @@
              "voucher_award" {:title     (str "Service Payment" (when-let [name (orders/first-name-plus-last-name-initial order)]
                                                                   (str " - " name)))
                               :data-test (str "voucher-award-" id)
-                              :subtitle  (->> (orders/service-line-items order)
+                              :subtitle  (->> order
+                                              :shipments
+                                              last
+                                              :line-items
                                               (filter #(some #{"base"} ((comp :service/type :variant-attrs) %)))
                                               first
                                               :variant-name)}
