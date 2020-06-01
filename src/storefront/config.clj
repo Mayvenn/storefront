@@ -7,6 +7,8 @@
             [storefront.platform.asset-mappings :as asset-mappings]))
 
 (def welcome-subdomain "welcome")
+(def jobs-subdomain "jobs")
+(def help-subdomain "help")
 
 ;; human-readable phone number to call support. Use a helper function to
 ;; format it properly for "tel:" (see ui/phone-url)

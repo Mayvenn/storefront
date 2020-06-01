@@ -752,18 +752,24 @@
 
             (-> (xml/emit {:tag     :urlset
                            :attrs   {:xmlns "http://www.sitemaps.org/schemas/sitemap/0.9"}
-                           :content (->> (into [[(str "https://" config/welcome-subdomain ".mayvenn.com/")      "0.60"]
-                                                ["https://shop.mayvenn.com/"                                    "1.00"]
-                                                ["https://shop.mayvenn.com/guarantee"                           "0.60"]
-                                                ["https://shop.mayvenn.com/help"                                "0.60"]
-                                                ["https://shop.mayvenn.com/about-us"                            "0.60"]
-                                                ["https://shop.mayvenn.com/shop/look"                           "0.80"]
-                                                ["https://shop.mayvenn.com/shop/straight-looks"                 "0.80"]
-                                                ["https://shop.mayvenn.com/shop/wavy-curly-looks"               "0.80"]
-                                                ["https://shop.mayvenn.com/shop/all-bundle-sets"                "0.80"]
-                                                ["https://shop.mayvenn.com/shop/straight-bundle-sets"           "0.80"]
-                                                ["https://shop.mayvenn.com/shop/wavy-curly-bundle-sets"         "0.80"]
-                                                ["https://shop.mayvenn.com/certified-stylists"                  "0.80"]]
+                           :content (->> (into [[(str "https://" config/welcome-subdomain ".mayvenn.com/") "0.60"]
+                                                [(str "https://" config/jobs-subdomain ".mayvenn.com/")    "0.60"]
+                                                [(str "https://" config/help-subdomain ".mayvenn.com/")    "0.60"]
+                                                ["https://shop.mayvenn.com/"                               "1.00"]
+                                                ["https://shop.mayvenn.com/guarantee"                      "0.60"]
+                                                ["https://shop.mayvenn.com/help"                           "0.60"]
+                                                ["https://shop.mayvenn.com/about-us"                       "0.60"]
+                                                ["https://shop.mayvenn.com/our-hair"                       "0.60"]
+                                                ["https://shop.mayvenn.com/login"                          "0.60"]
+                                                ["https://shop.mayvenn.com/signup"                         "0.60"]
+                                                ["https://shop.mayvenn.com/adv/match-stylist"              "0.60"]
+                                                ["https://shop.mayvenn.com/shop/look"                      "0.80"]
+                                                ["https://shop.mayvenn.com/shop/straight-looks"            "0.80"]
+                                                ["https://shop.mayvenn.com/shop/wavy-curly-looks"          "0.80"]
+                                                ["https://shop.mayvenn.com/shop/all-bundle-sets"           "0.80"]
+                                                ["https://shop.mayvenn.com/shop/straight-bundle-sets"      "0.80"]
+                                                ["https://shop.mayvenn.com/shop/wavy-curly-bundle-sets"    "0.80"]
+                                                ["https://shop.mayvenn.com/certified-stylists"             "0.80"]]
 
                                                (concat
                                                 (canonical-category-sitemap initial-categories launched-products)

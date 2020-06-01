@@ -447,6 +447,7 @@
            :copy/title           "Human Hair Wigs"
            :page/slug            "wigs"
            :seo/title            "Wigs"
+           :seo/sitemap          true
 
            ;; TODO: GROT once old category page is retired
            :copy/description              (copy "These units will be your go-to protective style"
@@ -849,6 +850,7 @@
     :page.meta/description              (copy "Shop our selection of salon services for the ultimate hair install or maintenance experience."
                                               "Check out our menu to learn about these premium offerings.")
     :copy/description                   "Book services that protect and maintain your hair with an amazing network of stylists near you."
+    :seo/sitemap                        true
 
     :how-it-works/title-primary   "Your hair deserves a Mayvenn–Certified Stylist."
     :how-it-works/title-secondary "Here’s how it works."
