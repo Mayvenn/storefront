@@ -301,7 +301,6 @@
 
 (defn query [data]
   (-> (header/basic-query data)
-      (assoc :service-category-page? (experiments/service-category-page? data))
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
       (assoc-in [:cart :quantity] (orders/displayed-cart-count (get-in data keypaths/order)))
       (assoc-in [:menu-data] (case (get-in data keypaths/current-traverse-nav-menu-type)

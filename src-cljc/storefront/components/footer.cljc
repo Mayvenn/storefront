@@ -131,9 +131,9 @@
       (split-at half-way-point coll))))
 
 (defn show-category?
-  [data category]
+  [shop? category]
   (or (-> category :catalog/category-id #{"30" "31"} not)
-      (experiments/service-category-page? data)))
+      shop?))
 
 (defn query
   [data]
@@ -142,7 +142,7 @@
         sort-key   :footer/order
         categories (->> (get-in data keypaths/categories)
                         (into []
-                              (comp (filter (partial show-category? data))
+                              (comp (filter (partial show-category? shop?))
                                     (filter sort-key)
                                     (filter (partial auth/permitted-category? data)))))
 

@@ -448,18 +448,19 @@
      :show-bundle-sets?      (or aladdin? shop?)
      :vouchers?              (experiments/dashboard-with-vouchers? data)
      :show-freeinstall-link? shop?
+     :service-category-page? shop?
      :site                   (sites/determine-site data)}))
 
 (defn salon-services-category [data]
-  (let [category (->> (get-in data keypaths/categories)
+  (let [shop?    (= :shop (sites/determine-site data))
+        category (->> (get-in data keypaths/categories)
                       (filter (comp #{"30"} :catalog/category-id))
                       first)]
-    {:salon-services
-     (and (experiments/service-category-page? data)
-          (select-keys category [:page/slug
-                                 :catalog/category-id
-                                 :flyout-menu/title
-                                 :category/new?]))}))
+    (when shop?
+      {:salon-services (select-keys category [:page/slug
+                                              :catalog/category-id
+                                              :flyout-menu/title
+                                              :category/new?])})))
 
 (defn query [data]
   (-> (basic-query data)
