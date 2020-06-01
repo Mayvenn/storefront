@@ -35,21 +35,25 @@
 (defn add-seo-tag-class [tags]
   (map #(update-in % [1] assoc :class tag-class) tags))
 
+(def ^:private default-tagmap
+  {:title          "Mayvenn - Virgin human hair, bundles, extensions and wigs"
+   :description    "Quality virgin human hair & extensions trusted & recommended by 100,000 stylists, and backed by the only 30-day return policy in the industry. Try Mayvenn hair today!"
+   :og-title       "100% Virgin Hair Extensions With a 30 Day Money Back Guarantee and Free Shipping!"
+   :og-type        "website"
+   :og-image       assets/canonical-image
+   :og-description "Mayvenn is the recommended and trusted source for quality hair by 100,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"})
+
+(defn ^:private ->tags
+  ([{:keys [title description og-title og-type og-image og-description]}]
+   (cond-> [[:title {} title]
+            [:meta {:name "description" :content description}]
+            [:meta {:property "og:title" :content og-title}]
+            [:meta {:property "og:type" :content og-type}]
+            [:meta {:property "og:description" :content og-description}]]
+     og-image (concat [[:meta {:property "og:image" :content og-image}]]))))
+
 (def ^:private constant-tags
   [[:meta {:property "og:site_name" :content "Mayvenn"}]])
-
-(def ^:private default-tags
-  [[:title {} "Mayvenn - Virgin human hair, bundles, extensions and wigs"]
-   [:meta {:name "description"
-           :content "Quality virgin human hair & extensions trusted & recommended by 100,000 stylists, and backed by the only 30-day return policy in the industry. Try Mayvenn hair today!"}]
-   [:meta {:property "og:title"
-           :content "100% Virgin Hair Extensions With a 30 Day Money Back Guarantee and Free Shipping!"}]
-   [:meta {:property "og:type"
-           :content "website"}]
-   [:meta {:property "og:image"
-           :content assets/canonical-image}]
-   [:meta {:property "og:description"
-           :content "Mayvenn is the recommended and trusted source for quality hair by 100,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"}]])
 
 (defn ->structured-data [data]
   ;; Although it's not difficult to make this work for client side, there is no value to having structured data
@@ -70,12 +74,12 @@
                            first
                            :url
                            (str "http:"))]
-    (concat [[:title {} (:page/title product)]
-             [:meta {:name "description" :content (:page.meta/description product)}]
-             [:meta {:property "og:title" :content (:opengraph/title product)}]
-             [:meta {:property "og:type" :content "product"}]
-             [:meta {:property "og:image" :content image-url}]
-             [:meta {:property "og:description" :content (:opengraph/description product)}]]
+    (concat (->tags {:title          (:page/title product)
+                     :description    (:page.meta/description product)
+                     :og-title       (:opengraph/title product)
+                     :og-type        "product"
+                     :og-image       image-url
+                     :og-description (:opengraph/description product)})
             (->structured-data {"@type"      "Product"
                                 :name        (:sku/title sku)
                                 :image       image-url
@@ -138,12 +142,13 @@
         page-meta-description (if (and can-use-seo-template? selected-facet-string)
                                 (categories/render-template description-template (assoc category :computed/selected-facet-string selected-facet-string))
                                 (:page.meta/description category))]
-    (cond-> [[:title {} page-title]
-             [:meta {:name "description" :content page-meta-description}]
-             [:meta {:property "og:title" :content (:opengraph/title category)}]
-             [:meta {:property "og:type" :content "product"}]
-             [:meta {:property "og:image" :content (str "http:" (:category/image-url category))}]
-             [:meta {:property "og:description" :content (:opengraph/description category)}]]
+    (cond->
+        (->tags {:title          page-title
+                 :description    page-meta-description
+                 :og-title       (:opengraph/title category)
+                 :og-type        "product"
+                 :og-image       (str "http:" (:category/image-url category))
+                 :og-description (:opengraph/description category)})
       (not indexable?)
       (conj [:meta {:name "robots" :content "noindex"}]))))
 
@@ -190,107 +195,86 @@
   (when-let [canonical-href (canonical-uri data)]
     [[:link {:rel "canonical" :href canonical-href}]]))
 
-(defn homepage-tags
-  [data]
-  (cond-> default-tags
-
-    (= "shop" (get-in data keypaths/store-slug))
-    (concat (->structured-data {"@type"     "FAQPage"
-                                :mainEntity (mapv (fn
-                                                    [{:faq/keys [title paragraphs]}]
-                                                    {"@type"         "Question"
-                                                     :name           title
-                                                     :acceptedAnswer {"@type" "Answer"
-                                                                      :text   (string/join " " paragraphs)}})
-                                                  homepage/faq-sections-data)}))))
-
 (defn tags-for-page [data]
   (let [og-image-url assets/canonical-image]
     (->
      (condp = (get-in data keypaths/navigation-event)
-       events/navigate-sign-in [[:title {} "Sign In | Mayvenn"]
-                                [:meta {:property "og:title"
-                                        :content  "100% human hair backed by our 30 Day Quality Guarantee. Sign In to your Mayvenn account."}]
-                                [:meta {:name    "description"
-                                        :content "Sign In to your Mayvenn account to see your store credit balance, edit your password, and to update your profile."}]
-                                [:meta {:property "og:type"
-                                        :content  "website"}]
-                                [:meta {:property "og:description"
-                                        :content  "Sign In to your Mayvenn account to see your store credit balance, edit your password, and to edit your email address."}]]
+       events/navigate-sign-in
+       (->tags {:title          "Sign In | Mayvenn"
+                :og-title       "100% human hair backed by our 30 Day Quality Guarantee. Sign In to your Mayvenn account."
+                :description    "Sign In to your Mayvenn account to see your store credit balance, edit your password, and to update your profile."
+                :og-type        "website"
+                :og-description "Sign In to your Mayvenn account to see your store credit balance, edit your password, and to edit your email address."})
 
-       events/navigate-sign-up [[:title {} "Sign Up | Mayvenn"]
-                                [:meta {:property "og:title"
-                                        :content  "100% human hair backed by our 30 Day Quality Guarantee. Sign Up for special offers!"}]
-                                [:meta {:name    "description"
-                                        :content "Sign up for a Mayvenn account to receive special promotions, exclusive offers, and helpful hair styling tips."}]
-                                [:meta {:property "og:type"
-                                        :content  "website"}]
-                                [:meta {:property "og:description"
-                                        :content  "Sign Up for a Mayvenn account and we will be able to send you special promotions for discounted hair and other important messages."}]]
+       events/navigate-sign-up
+       (->tags {:title          "Sign Up | Mayvenn"
+                :og-title       "100% human hair backed by our 30 Day Quality Guarantee. Sign Up for special offers!"
+                :description    "Sign up for a Mayvenn account to receive special promotions, exclusive offers, and helpful hair styling tips."
+                :og-type        "website"
+                :og-description "Sign Up for a Mayvenn account and we will be able to send you special promotions for discounted hair and other important messages."})
 
-       events/navigate-content-help [[:title {} "Contact Us | Mayvenn"]
-                                     [:meta {:property "og:title"
-                                             :content  "Contact Us for any questions, problems, or if you need styling advice!"}]
-                                     [:meta {:name    "description"
-                                             :content "We pride ourselves our top-notch customer service. Need help? Call, text, or email us and we will get back to you as quickly as possible."}]
-                                     [:meta {:property "og:type"
-                                             :content  "website"}]
-                                     [:meta {:property "og:description"
-                                             :content  "We are always here for you and pride ourselves on the best customer service. Call, text, or email us and we will get back to you as quickly as possible."}]]
+       events/navigate-content-help
+       (->tags {:title          "Contact Us | Mayvenn"
+                :og-title       "Contact Us for any questions, problems, or if you need styling advice!"
+                :description    "We pride ourselves our top-notch customer service. Need help? Call, text, or email us and we will get back to you as quickly as possible."
+                :og-type        "website"
+                :og-description "We are always here for you and pride ourselves on the best customer service. Call, text, or email us and we will get back to you as quickly as possible."})
 
-       events/navigate-content-guarantee [[:title {} "Our 30 Day Quality Guarantee | Mayvenn"]
-                                          [:meta {:property "og:title"
-                                                  :content  "Our 30 Day Quality Guarantee - Buy Risk Free With Easy Returns and Exchanges!"}]
-                                          [:meta {:name    "description"
-                                                  :content "Mayvenn's quality guarantee: wear it, dye it, even flat iron it! If you do not love your Mayvenn hair we will exchange it within 30 days of purchase."}]
-                                          [:meta {:property "og:type"
-                                                  :content  "website"}]
-                                          [:meta {:property "og:image"
-                                                  :content  og-image-url}]
-                                          [:meta {:property "og:description"
-                                                  :content  "Wear it, dye it, even flat iron it. If you do not love your Mayvenn hair we will exchange it within 30 days of purchase."}]]
+       events/navigate-content-guarantee
+       (->tags {:title          "Our 30 Day Quality Guarantee | Mayvenn"
+                :og-title       "Our 30 Day Quality Guarantee - Buy Risk Free With Easy Returns and Exchanges!"
+                :description    "Mayvenn's quality guarantee: wear it, dye it, even flat iron it! If you do not love your Mayvenn hair we will exchange it within 30 days of purchase."
+                :og-type        "website"
+                :og-image       og-image-url
+                :og-description "Wear it, dye it, even flat iron it. If you do not love your Mayvenn hair we will exchange it within 30 days of purchase."})
 
-       events/navigate-content-about-us (concat [[:title {} "About Us - 100% virgin human hair company | Mayvenn "]
-                                                 [:meta {:property "og:title"
-                                                         :content  "The Mayvenn Story - About Us"}]
-                                                 [:meta {:name    "description"
-                                                         :content "Mayvenn is a hair company providing top-quality 100% virgin human hair for consumers and stylists. Learn more about us!"}]
-                                                 [:meta {:property "og:type"
-                                                         :content  "website"}]
-                                                 [:meta {:property "og:image"
-                                                         :content  og-image-url}]
-                                                 [:meta {:property "og:description"
-                                                         :content  "Mayvenn's story starts with a Toyota Corolla filled with bundles of hair to now having over 50,000 stylists selling Mayvenn hair and increasing their incomes. Learn more about us!"}]]
-                                                (->structured-data {:url     "https://shop.mayvenn.com/about-us"
-                                                                    "@type"  "Corporation"
-                                                                    :name    "Mayvenn Hair"
-                                                                    :logo    "https://d6w7wdcyyr51t.cloudfront.net/cdn/images/header_logo.e8e0ffc6.svg"
-                                                                    :sameAs  ["https://www.facebook.com/MayvennHair"
-                                                                              "http://instagram.com/mayvennhair"
-                                                                              "https://twitter.com/MayvennHair"
-                                                                              "http://www.pinterest.com/mayvennhair/"]
-                                                                    :founder {"@context" "http://schema.org"
-                                                                              "@type"    "Person"
-                                                                              :name      "Diishan Imira"}}))
+       events/navigate-content-about-us
+       (concat (->tags {:title          "About Us - 100% virgin human hair company | Mayvenn "
+                        :og-title       "The Mayvenn Story - About Us"
+                        :description    "Mayvenn is a hair company providing top-quality 100% virgin human hair for consumers and stylists. Learn more about us!"
+                        :og-type        "website"
+                        :og-image       og-image-url
+                        :og-description "Mayvenn's story starts with a Toyota Corolla filled with bundles of hair to now having over 50,000 stylists selling Mayvenn hair and increasing their incomes. Learn more about us!"})
+               (->structured-data {:url     "https://shop.mayvenn.com/about-us"
+                                   "@type"  "Corporation"
+                                   :name    "Mayvenn Hair"
+                                   :logo    "https://d6w7wdcyyr51t.cloudfront.net/cdn/images/header_logo.e8e0ffc6.svg"
+                                   :sameAs  ["https://www.facebook.com/MayvennHair"
+                                             "http://instagram.com/mayvennhair"
+                                             "https://twitter.com/MayvennHair"
+                                             "http://www.pinterest.com/mayvennhair/"]
+                                   :founder {"@context" "http://schema.org"
+                                             "@type"    "Person"
+                                             :name      "Diishan Imira"}}))
 
-       events/navigate-shop-by-look (let [album-keyword (get-in data keypaths/selected-album-keyword)]
-                                      [[:title {} (-> ugc/album-copy album-keyword :seo-title)]
-                                       [:meta {:property "og:title"
-                                               :content  (-> ugc/album-copy album-keyword :og-title)}]
-                                       [:meta {:name    "description"
-                                               :content "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]
-                                       [:meta {:property "og:type"
-                                               :content  "website"}]
-                                       [:meta {:property "og:image"
-                                               :content  og-image-url}]
-                                       [:meta {:property "og:description"
-                                               :content  "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]])
+       events/navigate-shop-by-look
+       (let [album-keyword (get-in data keypaths/selected-album-keyword)]
+         (->tags {:title          (-> ugc/album-copy album-keyword :seo-title)
+                  :og-title       (-> ugc/album-copy album-keyword :og-title)
+                  :description    "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."
+                  :og-type        "website"
+                  :og-image       og-image-url
+                  :og-description "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}))
 
-       events/navigate-category        (category-tags data)
-       events/navigate-product-details (product-details-tags data)
+       events/navigate-category
+       (category-tags data)
 
-       events/navigate-home (homepage-tags data)
+       events/navigate-product-details
+       (product-details-tags data)
 
-       default-tags)
+       events/navigate-home
+       (concat
+        (->tags default-tagmap)
+        (when (= "shop" (get-in data keypaths/store-slug))
+          (->structured-data {"@type"     "FAQPage"
+                              :mainEntity (mapv (fn
+                                                  [{:faq/keys [title paragraphs]}]
+                                                  {"@type"         "Question"
+                                                   :name           title
+                                                   :acceptedAnswer {"@type" "Answer"
+                                                                    :text   (string/join " " paragraphs)}})
+                                                homepage/faq-sections-data)})))
+
+       (->tags default-tagmap))
      (concat constant-tags (canonical-link-tag data))
      add-seo-tag-class)))
