@@ -100,11 +100,12 @@
 
 (defn layout
   [{:keys [storeback-config environment client-version]} data initial-content]
-  (let [follow? (and (#{"production" "development"} environment)
-                        (= "shop" (get-in data keypaths/store-slug)))
-        index?  (and (#{"production" "development"} environment)
-                    (or (= "shop" (get-in data keypaths/store-slug))
-                        (= events/navigate-home (get-in data keypaths/navigation-event))))]
+  (let [shop?   (= "shop" (get-in data keypaths/store-slug))
+        follow? (and (not= "acceptance" environment)
+                     shop?)
+        index?  (and (not= "acceptance" environment)
+                     (or shop?
+                         (= events/navigate-home (get-in data keypaths/navigation-event))))]
     (html5 {:lang "en"}
            [:head
             [:meta {:name "fragment" :content "!"}]
