@@ -845,6 +845,9 @@
     :footer/title                       "Salon Services"
     :copy/title                         "Salon Services"
     :page/slug                          "salon-services"
+    :page/title                         "Hair Salon Services Menu | Mayvenn"
+    :page.meta/description              (copy "Shop our selection of salon services for the ultimate hair install or maintenance experience."
+                                              "Check out our menu to learn about these premium offerings.")
     :copy/description                   "Book services that protect and maintain your hair with an amazing network of stylists near you."
 
     :how-it-works/title-primary   "Your hair deserves a Mayvenn–Certified Stylist."
