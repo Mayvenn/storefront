@@ -264,7 +264,12 @@
 
        events/navigate-home
        (concat
-        (->tags default-tagmap)
+        (->tags {:title          "Sew-In Weave Bundles, Human Hair Wigs, and Free Install Salon Services | Mayvenn",
+                 :description    "Quality virgin human hair & extensions trusted & recommended by 100,000 stylists, and backed by the only 30-day return policy in the industry. Try Mayvenn hair today!",
+                 :og-title       "100% Virgin Hair Extensions With a 30 Day Money Back Guarantee and Free Shipping!",
+                 :og-type        "website",
+                 :og-image       "http://ucarecdn.com/401c6886-077a-4445-85ec-f6b7023d5d1e/-/format/auto/canonical_image",
+                 :og-description "Mayvenn is the recommended and trusted source for quality hair by 100,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"})
         (when (= "shop" (get-in data keypaths/store-slug))
           (->structured-data {"@type"     "FAQPage"
                               :mainEntity (mapv (fn
@@ -275,6 +280,31 @@
                                                                     :text   (string/join " " paragraphs)}})
                                                 homepage/faq-sections-data)})))
 
-       (->tags default-tagmap))
-     (concat constant-tags (canonical-link-tag data))
+       events/navigate-info-certified-stylists
+       (->tags {:title          "Certified Stylists: Top-Rated Hair Weave Stylists | Mayvenn",
+                :description    "Quality virgin human hair & extensions trusted & recommended by 100,000 stylists, and backed by the only 30-day return policy in the industry. Try Mayvenn hair today!",
+                :og-title       "100% Virgin Hair Extensions With a 30 Day Money Back Guarantee and Free Shipping!",
+                :og-type        "website",
+                :og-image       "http://ucarecdn.com/401c6886-077a-4445-85ec-f6b7023d5d1e/-/format/auto/canonical_image",
+                :og-description "Mayvenn is the recommended and trusted source for quality hair by 100,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"})
+
+       events/navigate-adventure-match-stylist
+       (->tags {:title          "Browse Stylists: Find Stylists in Your Area | Mayvenn",
+                :description    "Quality virgin human hair & extensions trusted & recommended by 100,000 stylists, and backed by the only 30-day return policy in the industry. Try Mayvenn hair today!",
+                :og-title       "100% Virgin Hair Extensions With a 30 Day Money Back Guarantee and Free Shipping!",
+                :og-type        "website",
+                :og-image       "http://ucarecdn.com/401c6886-077a-4445-85ec-f6b7023d5d1e/-/format/auto/canonical_image",
+                :og-description "Mayvenn is the recommended and trusted source for quality hair by 100,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"})
+
+       events/navigate-friend-referrals
+       (->tags {:title          "Share: Refer Friends to Earn Rewards | Mayvenn",
+                :description    "Quality virgin human hair & extensions trusted & recommended by 100,000 stylists, and backed by the only 30-day return policy in the industry. Try Mayvenn hair today!",
+                :og-title       "100% Virgin Hair Extensions With a 30 Day Money Back Guarantee and Free Shipping!",
+                :og-type        "website",
+                :og-image       "http://ucarecdn.com/401c6886-077a-4445-85ec-f6b7023d5d1e/-/format/auto/canonical_image",
+                :og-description "Mayvenn is the recommended and trusted source for quality hair by 100,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"})
+
+       ;; else
+       (->tags default-tagmap)
+       (concat constant-tags (canonical-link-tag data)))
      add-seo-tag-class)))

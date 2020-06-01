@@ -16,10 +16,12 @@
 (def album-copy
   {:look                 shop-by-look-default
    :aladdin-free-install shop-by-look-default ; TODO Rename aladdin-free-install album
-   :sleek-and-straight   (assoc shop-by-look-default ; TODO Get proper copy
-                                :default-back-event events/navigate-home)
-   :waves-and-curly      (assoc shop-by-look-default ; TODO Get proper copy
-                                :default-back-event events/navigate-home)
+   :sleek-and-straight   (merge shop-by-look-default ; TODO Get proper copy
+                                {:default-back-event events/navigate-home
+                                 :seo-title          "Shop by Sleek and Straight Looks | Mayvenn"})
+   :waves-and-curly      (merge shop-by-look-default ; TODO Get proper copy
+                                {:default-back-event events/navigate-home
+                                 :seo-title          "Shop by Wavy and Curly Looks | Mayvenn"})
    :email-deals          (assoc shop-by-look-default
                                 :description (str "Grab the latest bundle deal! "
                                                   "Below you can shop every bundle deal of the week."))
