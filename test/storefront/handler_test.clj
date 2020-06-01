@@ -577,6 +577,16 @@
            (#(string/replace % #"&amp;" "&"))
            (#(string/replace % #"&apos;" "'"))))
 
+(defn nofollow? [body]
+  (some->> body
+           (re-find (re-pattern (format "<meta[^>]+content=\"nofollow\"[^>]*>")))
+           spice.core/spy))
+
+(defn noindex? [body]
+  (some->> body
+           (re-find (re-pattern (format "<meta[^>]+content=\"noindex\"[^>]*>")))
+           spice.core/spy))
+
 (defn parse-title [body]
   (some->> body
            (re-find #"<title[^>]*>(.*)</title>")
@@ -877,3 +887,45 @@
                   "Shop our collection of virgin hair wigs today.")
              "/categories/25-ready-wear-wigs"
              "texture=straight&style=center-part"))))))
+
+(def storeback-shop-handler
+  (routes
+   (GET "/store" _ common/storeback-shop-response)
+   (GET "/promotions" _ {:status 200
+                         :body   "{}"})
+   (GET "/v2/products" _ {:status 200
+                          :body   "{}"})
+   (GET "/v2/skus" _ {:status   200
+                      :body "{}"})
+   (GET "/v2/facets" _ {:status 200
+                        :body   (generate-string common/facets-body)})))
+
+(deftest nofollow-and-noindex
+  (with-services {:storeback-handler storeback-shop-handler}
+    (with-handler handler
+      (testing "Shop homepage is neither nofollow nor noindex"
+        (let [body (-> (mock/request :get "https://shop.mayvenn.com/")
+                       handler
+                       :body)]
+          (is (not (nofollow? body)))
+          (is (not (noindex? body)))))
+      (testing "Shop subpages are neither nofollow nor noindex"
+        (let [body (-> (mock/request :get "https://shop.mayvenn.com/guarantee")
+                       handler
+                       :body)]
+          (is (not (nofollow? body)))
+          (is (not (noindex? body)))))))
+  (with-services {}
+    (with-handler handler
+      (testing "Stylist homepages are nofollow but not noindex"
+        (let [body (-> (mock/request :get "https://bob.mayvenn.com/")
+                       handler
+                       :body)]
+          (is (nofollow? body))
+          (is (not (noindex? body)))))
+      (testing "Stylist subpages are nofollow and noindex"
+        (let [body (-> (mock/request :get "https://bob.mayvenn.com/guarantee")
+                       handler
+                       :body)]
+          (is (nofollow? body))
+          (is (noindex? body)))))))
