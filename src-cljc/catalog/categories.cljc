@@ -197,7 +197,19 @@
            :subcategories/ids             ["10" "29"]
            :subcategories/layout          :list
            :subsections/category-selector :hair/family
-           :subsections                   ["360-frontals" "frontals"]}
+           :subsections                   ["360-frontals" "frontals"]
+           :content-block/type            :about-attributes
+           :content-block/title           "Frontals 101:"
+           :content-block/header          "How to Choose Your Hair Frontal"
+           :content-block/summary         "Frontals are a great solution if you want to conceal hair loss or achieve an up-do, but how do you choose the right unit? Check out different factors to look for when picking the perfect lace frontal:"
+           :content-block/sections        [{:title "Origin"
+                                            :body  "The origin of your lace frontal will determine the thickness and density of your hair. From thick and smooth, to light and bouncy, Mayvenn offers hair frontals for every style: Brazilian, Malaysian, Peruvian, and Indian."}
+                                           {:title "Texture"
+                                            :body  "You want texture? We’ve got options. From straight to curly, deep to loose waves, our lace frontals are designed to beautifully blend with your hair bundles to create a versatile style for any occasion."}
+                                           {:title "Get Your Frontals Installed–For Free!"
+                                            :body  "Yes, that’s right–when you select your lace frontal, click the Free Install option at checkout, and we'll help you find a Mayvenn Certified Stylist near you! Your install includes a shampoo and condition, braid down, sew-in, and basic style."}
+                                           {:title "Need Help Choosing a Frontal?"
+                                            :body  "Choosing between different lace frontals, textures, and colors can be overwhelming. Whether you’re investing in a frontal for the first time or are a pro, Mayvenn’s team is ready to answer your questions. Connect with us today to learn more!"}]}
           (category->seo "Frontals"
                          "Get your dream hair with Mayvenn’s 100% human hair frontals that blend seamlessly with our bundles for a unique look that’s all your own."
                          "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")
