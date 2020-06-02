@@ -18,6 +18,7 @@
             [storefront.config :as config]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.line-items :as line-items]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.checkout-credit-card :as checkout-credit-card]
             [storefront.components.checkout-delivery :as checkout-delivery]
@@ -276,7 +277,7 @@
       string/lower-case
       (string/replace #"[^a-z]+" "-")))
 
-(defn cart-summary-query
+(defn ^:private cart-summary-query
   [{:as order :keys [adjustments]}
    {:mayvenn-install/keys [locked? applied? service-discount addon-services service-type]}
    available-store-credit]
@@ -380,6 +381,24 @@
                                                    addon-services)}))]
       nil)))
 
+(defn ^:private standalone-service-line-items-query
+  [app-state]
+  (let [skus                          (get-in app-state keypaths/v2-skus)
+        service-line-items            (orders/service-line-items (get-in app-state keypaths/order))
+        standalone-service-line-items (filter line-items/standalone-service? service-line-items)]
+    (for [{sku-id :sku :as service-line-item} standalone-service-line-items
+          :let
+          [price                (or (:sku/price service-line-item)
+                                    (:unit-price service-line-item))]]
+      {:react/key                             sku-id
+       :cart-item-title/primary               (or (:product-title service-line-item)
+                                                  (:product-name service-line-item))
+       :cart-item-title/id                    (str "line-item-" sku-id)
+       :cart-item-floating-box/id             (str "line-item-" sku-id "-price")
+       :cart-item-floating-box/value          (some-> price mf/as-money)
+       :cart-item-service-thumbnail/id        sku-id
+       :cart-item-service-thumbnail/image-url (->> sku-id (get skus) (catalog-images/image "cart") :ucare/id)})))
+
 (defn cart-items-query
   [app-state line-items skus]
   (let [cart-items
@@ -443,7 +462,7 @@
          :cart-items                   (cart-items-query data physical-line-items skus)
          :service-line-items           (concat
                                         (mayvenn-install-line-items-query data mayvenn-install)
-                                        (cart/standalone-service-line-items-query data))
+                                        (standalone-service-line-items-query data))
          :cart-summary                 (cart-summary-query order
                                                            mayvenn-install
                                                            (orders/available-store-credit order user))}

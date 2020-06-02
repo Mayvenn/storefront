@@ -368,7 +368,7 @@
                                                            :cart-item-sub-item/sku-id sku-id})
                                                         addon-services)}))))))
 
-(defn standalone-service-line-items-query
+(defn ^:private standalone-service-line-items-query
   [app-state]
   (let [skus                      (get-in app-state keypaths/v2-skus)
         service-line-items        (orders/service-line-items (get-in app-state keypaths/order))
