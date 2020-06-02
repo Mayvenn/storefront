@@ -7,6 +7,7 @@
             checkout.processing
             checkout.cart
             checkout.classic-cart
+            checkout.shop.cart-v202004
             adventure.handlers ;; TODO, wherever these go, maybe they shouldn't be here
             [storefront.loader :as loader]))
 
