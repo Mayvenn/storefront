@@ -75,14 +75,64 @@
     :vertical-direct-to-cart-card   (vertical-direct-to-cart-card/organism card)
     :horizontal-direct-to-cart-card (horizontal-direct-to-cart-card/organism card)))
 
+;; See HACKY(jeff) note below
+(def product-card-height (atom 0))
+
 (c/defcomponent ^:private product-list-subsection-component
-  [{:keys [product-cards subsection-key] primary-title :title/primary} _ {:keys [id]}]
-  [:div
+  [{:keys        [product-cards subsection-key server-render?]
+    :screen/keys [seen?]
+    primary-title :title/primary}
+   _
+   {:keys [id]}]
+  [:section
    {:id id :data-test id}
    (when primary-title
      [:div.canela.title-2.center.mt8.mb2 primary-title])
-   [:div.flex.flex-wrap
-    (map card->component product-cards)]])
+   (if (or seen? (and (nil? seen?) server-render?))
+     [:div.flex.flex-wrap
+      (for [card product-cards]
+        ^:inline (card->component card))]
+
+     ;; HACKY(jeff): We need to employ some evil state / DOM querying to get the height of a product card
+     ;;              So we can properly estimate the height a section takes.
+     ;;
+     ;;              This is broken down into several parts:
+     ;;
+     ;;               1. Use some state to store the height of an individual product card for future reference
+     ;;               2. Compute height using card height by calculating the number of rows needed
+     ;;               3. Render a dummy product card and attach a ref handler to capture its height
+     ;;
+     ;; WHY? This allows us to not render all the product cards unless that
+     ;; section is on screen, saving page speed performance.
+
+     [:div ;; I am the spacer
+      {:style {:width "100%"
+               ;; estimate the amount of scroll height we need
+               :height
+               (let [w #?(:cljs js/window.innerWidth
+                          :clj  425)
+                     items-per-row (if (>= w 1000)
+                                     3
+                                     2)]
+                 (str (double
+                       (* (+ (int (/ (count product-cards) items-per-row))
+                             (if (not= 0 (mod (count product-cards) items-per-row))
+                               1
+                               0))
+                          (+
+                           10
+                           (max @product-card-height
+                                ;; this constant came from subsection height / num elements
+                                ;; on large mobile layout
+                                188.652307692))))
+                      "px"))}}
+      [:div.flex.flex-wrap ;; I'm here to hide the dummy card that's used for measurements
+       (merge
+        {:style {:visibility "hidden"}}
+        #?(:cljs {:ref (fn [element]
+                         (when element
+                           (reset! product-card-height (.-height (.getBoundingClientRect (.-firstChild element))))))}))
+       ^:inline (product-card/organism (first product-cards))]])])
 
 (c/defcomponent organism
   [{:keys [subsections title no-product-cards? loading-products?]} _ _]
@@ -92,11 +142,10 @@
 
      no-product-cards? (c/build product-cards-empty-state {} {})
 
-     :else             (mapv (fn build [{:as subsection :keys [subsection-key]}]
-                               (c/build product-list-subsection-component
-                                        subsection
-                                        (c/component-id (str "subsection-" subsection-key))))
-                             subsections))])
+     :else             (for [[i {:as subsection :keys [subsection-key]}] (map-indexed vector subsections)]
+                         ^:inline (ui/screen-aware product-list-subsection-component
+                                                   (assoc subsection :server-render? (< i 2))
+                                                   (c/component-id (str "subsection-" subsection-key)))))])
 
 (defn query
   [app-state category products-matching-filter-selections]

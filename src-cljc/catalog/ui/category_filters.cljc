@@ -108,7 +108,8 @@
       "Done")]]])
 
 (c/defcomponent organism
-  [{:keys [title open-panel tabs filter-panel-data]} _ _]
+  [{:keys         [title open-panel tabs filter-panel-data]
+    :browser/keys [desktop? tablet? mobile?]} _ _]
   [:div.px3.bg-white.sticky.z1
    ;; The -5px prevents a sliver of the background from being visible above the filters
    ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
@@ -122,8 +123,10 @@
           [:div.hide-on-mb-tb
            tabs panel]])
        [:div
-        [:div.hide-on-dt tabs]
-        [:div.hide-on-mb-tb tabs]]))])
+        (when (or mobile? tablet? (nil? mobile?) (nil? tablet?))
+          [:div.hide-on-dt tabs])
+        (when desktop? ;; hide in SSR
+          [:div.hide-on-mb-tb tabs])]))])
 
 (defn filter-option-query
   [{facet-slug :facet/slug}

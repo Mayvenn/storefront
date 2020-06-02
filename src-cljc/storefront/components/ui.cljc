@@ -899,6 +899,73 @@
       empty-stars
       [:span.mlp2 rating]])))
 
+(def ^:private browser-width-aware-component
+  #?(:clj (fn [data owner {:keys [embed opts]}]
+            (component/create
+             [:div (component/build embed
+                                    (assoc data
+                                           :browser/desktop? nil
+                                           :browser/tablet? nil
+                                           :browser/mobile? nil)
+                                    opts)]))
+     :cljs (component/create-dynamic
+            "browser-width-aware-component"
+            (constructor [this props]
+                         (gobj/set this "resizer"
+                                   (fn []
+                                     (let [w (.-innerWidth js/window)]
+                                       (component/set-state! this
+                                                             :desktop? (>= w 1000)
+                                                             :tablet?  (>= 999 w 750)
+                                                             :mobile?  (<= w 749)))))
+                         {:desktop? nil
+                          :tablet?  nil
+                          :mobile?  nil})
+            (did-mount [this]
+                       (let [resize (gobj/get this "resizer")]
+                         (resize)
+                         (.addEventListener js/window "resize" resize)))
+            (will-unmount [this]
+                          (.removeEventListener js/window "resize" (gobj/get this "resizer")))
+            (render [this]
+                    (let [{:keys [desktop? tablet? mobile?] :as state} (component/get-state this)
+                          data                                         (component/get-props this)
+                          {:keys [embed opts]}                         (component/get-opts this)]
+                      (component/build embed
+                                       (assoc data
+                                              :browser/desktop? desktop?
+                                              :browser/tablet?  tablet?
+                                              :browser/mobile?  mobile?)
+                                       (merge {:key "embed"} opts)))))))
+
+(defn width-aware
+  "A decorator around component/build that sets the browser size-class
+  information data to the underlying component.
+
+  Extra keys associated into the data:
+
+   :browser/desktop? (bool) is true if the page width matches a desktop browser
+   :browser/tablet? (bool) is true if the page width matches a tablet browser
+   :browser/mobile? (bool) is true if the page width matches a mobile browser
+
+  All values can be nil to indicate first render or server-side-render.
+
+  Why use this over the CSS classes? This can significantly reduce the number of
+  HTML DOM elements, which increases performance for large DOM trees (thus
+  improving page speed).
+  "
+  ([component] (width-aware component nil nil))
+  ([component data] (width-aware component data nil))
+  ([component data opts]
+   (component/build
+    browser-width-aware-component
+    data
+    (merge
+     (when (:key opts)
+       {:key (:key opts)})
+     {:opts {:embed component
+             :opts  opts}}))))
+
 (def ^:private screen-aware-component
   #?(:clj (fn [data owner {:keys [embed opts]}]
             (component/create [:div
