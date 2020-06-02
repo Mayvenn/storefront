@@ -322,42 +322,38 @@
                      {:quantity value}))))
 
 (defcomponent component
-  [{:as           data
-    :browser/keys [desktop? tablet? mobile?]
-    :keys         [store user cart signed-in vouchers?]}
-   _ _]
+  [{:as   data
+    :keys [store user cart signed-in vouchers?]} _ _]
   [:div
-   (when (or desktop? tablet? (nil? desktop?) (nil? tablet?))
-     [:div.hide-on-mb.relative
-      {:on-mouse-leave close-header-menus}
-      [:div.relative.border-bottom.border-gray
-       [:div.flex.justify-between.px8
-        [:div {:key "store-info"} ^:inline (store-info signed-in store)]
-        [:div {:key "account-info"}
-         [:div.my2
-          ^:inline (account-info signed-in user vouchers? store)]]]
-       [:div.flex.justify-between.px8
-        [:div {:style {:width "33px"}}]
-        [:div.mb3 {:key "logo"}
-         [:div.mb4 ^:inline (ui/clickable-logo {:event     events/navigate-home
-                                                :data-test "desktop-header-logo"
-                                                :height    "44px"})]
-         [:div ^:inline (individual-flyout-menu data)]]
-        ^:inline (ui/shopping-bag {:style     {:height "44px"
-                                               :width  "33px"}
-                                   :data-test "desktop-cart"}
-                                  cart)]]])
-   (when (or mobile? (nil? mobile?))
-     (mobile-nav-header
-      {:class "border-bottom border-gray hide-on-tb-dt"
-       :style {:height "70px"}}
-      hamburger
-      (ui/clickable-logo {:event     events/navigate-home
-                          :data-test "header-logo"
-                          :height    "29px"})
-      (ui/shopping-bag {:style     {:height "70px" :width "80px"}
-                        :data-test "mobile-cart"}
-                       cart)))])
+   [:div.hide-on-mb.relative
+    {:on-mouse-leave close-header-menus}
+    [:div.relative.border-bottom.border-gray
+     [:div.flex.justify-between.px8
+      [:div {:key "store-info"} ^:inline (store-info signed-in store)]
+      [:div {:key "account-info"}
+       [:div.my2
+        ^:inline (account-info signed-in user vouchers? store)]]]
+     [:div.flex.justify-between.px8
+      [:div {:style {:width "33px"}}]
+      [:div.mb3 {:key "logo"}
+       [:div.mb4 ^:inline (ui/clickable-logo {:event     events/navigate-home
+                                              :data-test "desktop-header-logo"
+                                              :height    "44px"})]
+       [:div ^:inline (individual-flyout-menu data)]]
+      ^:inline (ui/shopping-bag {:style     {:height "44px"
+                                             :width  "33px"}
+                                 :data-test "desktop-cart"}
+                                cart)]]]
+   (mobile-nav-header
+    {:class "border-bottom border-gray hide-on-tb-dt"
+     :style {:height "70px"}}
+    hamburger
+    (ui/clickable-logo {:event     events/navigate-home
+                        :data-test "header-logo"
+                        :height    "29px"})
+    (ui/shopping-bag {:style     {:height "70px" :width "80px"}
+                      :data-test "mobile-cart"}
+                     cart))])
 
 (defn minimal-component
   [logo-nav-event]

@@ -47,6 +47,14 @@
      {:style {:top top}}
      ^:inline (svg/vertical-squiggle {:style {:height "72px"}})]]))
 
+(defcomponent ^:private header-organism
+  [_ _ _]
+  [:div])
+
+(defcomponent ^:private footer-organism
+  [_ _ _]
+  [:div])
+
 (defn ^:private category-hero-query
   [category]
   ;; TODO(corey) icp heroes use #:category not #:copy for :description
@@ -122,8 +130,7 @@
        (ui/button-small-underline-primary link-attrs title)])))
 
 (defcomponent ^:private drill-category-grid-organism
-  [{:drill-category-grid/keys [values title]
-    :browser/keys [desktop? tablet? mobile?]} _ _]
+  [{:drill-category-grid/keys [values title]} _ _]
   (when (seq values)
     (let [grid-entries (mapv #(component/build drill-category-grid-entry-organism
                                                %
@@ -131,21 +138,18 @@
                              values)]
       [:div.py8.px4
        [:div.title-2.proxima.shout title]
-       (when desktop? ;; hide in SSR
-         [:div.hide-on-mb.hide-on-tb ; dt
-          (->> grid-entries
-               (partition-all 4)
-               (mapv (fn [row] (component/html [:div.flex.justify-around row]))))])
-       (when tablet? ;; hide in SSR
-         [:div.hide-on-dt.hide-on-mb ; tb
-          (->> grid-entries
-               (partition 3 3 [[:div {:style {:width "120px"}}]])
-               (mapv (fn [row] (component/html [:div.flex.justify-around row]))))])
-       (when (or mobile? (nil? mobile?))
-         [:div.hide-on-dt.hide-on-tb ; mb
-          (->> grid-entries
-               (partition-all 2)
-               (mapv (fn [row] (component/html [:div.flex.justify-around row]))))])])))
+       [:div.hide-on-mb.hide-on-tb ; dt
+        (->> grid-entries
+             (partition-all 4)
+             (mapv (fn [row] [:div.flex.justify-around row])))]
+       [:div.hide-on-dt.hide-on-mb ; tb
+        (->> grid-entries
+             (partition 3 3 [[:div {:style {:width "120px"}}]])
+             (mapv (fn [row] [:div.flex.justify-around row])))]
+       [:div.hide-on-dt.hide-on-tb ; mb
+        (->> grid-entries
+             (partition-all 2)
+             (mapv (fn [row] [:div.flex.justify-around row])))]])))
 
 (defn ^:private category->drill-category-list-entry
   [category]
@@ -177,20 +181,18 @@
                              [events/navigate-category category])})
 
 (def ^:private purple-divider-atom
-  (component/html
-   [:div
-    {:style {:background-image    "url('//ucarecdn.com/73db5b08-860e-4e6c-b052-31ed6d951f00/-/resize/x24/')"
-             :background-position "center center"
-             :background-repeat   "repeat-x"
-             :height              "24px"}}]))
+  [:div
+   {:style {:background-image    "url('//ucarecdn.com/73db5b08-860e-4e6c-b052-31ed6d951f00/-/resize/x24/')"
+            :background-position "center center"
+            :background-repeat   "repeat-x"
+            :height              "24px"}}])
 
 (def ^:private green-divider-atom
-  (component/html
-   [:div
-    {:style {:background-image  "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"
-             :background-position "center center"
-             :background-repeat   "repeat-x"
-             :height              "24px"}}]))
+  [:div
+   {:style {:background-image  "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"
+            :background-position "center center"
+            :background-repeat   "repeat-x"
+            :height              "24px"}}])
 
 (defcomponent content-box-organism
   [{:keys [title header summary sections]} _ _]
@@ -224,21 +226,24 @@
            header
            product-card-listing]} _ _]
   [:div
-   (component/build category-hero/organism category-hero)
-   (vertical-squiggle-atom "-36px")
-   [:div.max-960.mx-auto
-    (component/build drill-category-list-organism drill-category-list)
-    (ui/width-aware drill-category-grid-organism drill-category-grid)]
-   purple-divider-atom
-   [:div.max-960.mx-auto
-    [:div.pt4]
-    (when-let [title (:title category-filters)]
-      [:div.canela.title-1.center.mt3.py4 title])
-    (component/build category-filters/organism category-filters {})
-    (component/build product-card-listing/organism product-card-listing {})]
-   (when content-box ^:inline green-divider-atom)
-   (when content-box (component/build content-box-organism content-box))
-   (component/build layered/shop-contact contact-query)])
+   (component/build header-organism header)
+   [:div
+    (component/build category-hero/organism category-hero)
+    (vertical-squiggle-atom "-36px")
+    [:div.max-960.mx-auto
+     (component/build drill-category-list-organism drill-category-list)
+     (component/build drill-category-grid-organism drill-category-grid)]
+    purple-divider-atom
+    [:div.max-960.mx-auto
+     [:div.pt4]
+     (when-let [title (:title category-filters)]
+       [:div.canela.title-1.center.mt3.py4 title])
+     (component/build category-filters/organism category-filters {})
+     (component/build product-card-listing/organism product-card-listing {})]
+    (when content-box green-divider-atom)
+    (when content-box (component/build content-box-organism content-box))
+    (component/build layered/shop-contact contact-query)]
+   (component/build footer-organism footer)])
 
 (defn category->subcategories
   "Returns a hydrated sequence of subcategories for the given category"
