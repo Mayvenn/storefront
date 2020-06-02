@@ -581,13 +581,11 @@
 
 (defn nofollow? [body]
   (some->> body
-           (re-find (re-pattern (format "<meta[^>]+content=\"nofollow\"[^>]*>")))
-           spice.core/spy))
+           (re-find (re-pattern (format "<meta[^>]+content=\"nofollow\"[^>]*>")))))
 
 (defn noindex? [body]
   (some->> body
-           (re-find (re-pattern (format "<meta[^>]+content=\"noindex\"[^>]*>")))
-           spice.core/spy))
+           (re-find (re-pattern (format "<meta[^>]+content=\"noindex\"[^>]*>")))))
 
 (defn parse-title [body]
   (some->> body
