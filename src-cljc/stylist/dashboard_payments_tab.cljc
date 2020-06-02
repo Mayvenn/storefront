@@ -38,16 +38,10 @@
                            :date commission-date}
              "award"      {:title reason
                            :data-test (str "award-" id)}
-             "voucher_award" {:title     (str "Service Payment" (when-let [name (orders/first-name-plus-last-name-initial order)]
-                                                                  (str " - " name)))
+             "voucher_award" {:title (str "Service Payment" (when-let [name (orders/first-name-plus-last-name-initial order)]
+                                                              (str " - " name)))
                               :data-test (str "voucher-award-" id)
-                              :subtitle  (->> order
-                                              :shipments
-                                              last
-                                              :line-items
-                                              (filter #(some #{"base"} ((comp :service/type :variant-attrs) %)))
-                                              first
-                                              :variant-name)}
+                              :subtitle campaign-name}
              "payout" {:title "Money Transfer"
                        :icon "4939408b-1ec8-4a47-bb0e-5cdeb15d544d"
                        :data-test (str "payout-" id)
