@@ -47,7 +47,6 @@
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
-   {:item-scope :itemscope :item-type "http://schema.org/Product"}
    [:div.col-on-tb-dt.col-7-on-tb-dt.px2
     [:div.hide-on-mb wide-left]]
    [:div.col-on-tb-dt.col-5-on-tb-dt.px2 wide-right-and-narrow]])
@@ -60,7 +59,6 @@
 (defn counter-or-out-of-stock [can-supply? quantity]
   (if can-supply?
     [:div
-     [:link {:item-prop "availability" :href "http://schema.org/InStock"}]
      (ui/counter {:spinning? false
                   :data-test "pdp"}
                  quantity
@@ -227,8 +225,6 @@
               (component/build how-it-works/organism how-it-works)])]
           [:div
            [:div
-            [:meta {:item-prop "image"
-                    :content   (:url (first carousel-images))}]
             (full-bleed-narrow (carousel carousel-images product))]
            (component/build organism data)
            [:div.px2

@@ -9,7 +9,7 @@
   "TODO empty state"
   [{:title/keys [id primary secondary]}]
   [:div.flex-grow {:data-test id}
-   [:h3.proxima.title-2.shout {:item-prop "name"} primary]
+   [:h3.proxima.title-2.shout primary]
    [:div.medium secondary]])
 
 (defn ^:private item-price
@@ -51,7 +51,7 @@
   (when (seq description)
     [:div.border.border-width-2.m3.p4.border-cool-gray
      [:div.light.canela.title-2 "Description"]
-     [:div {:item-prop "description"}
+     [:div
       (when (or colors density weights materials whats-included)
         (let [attrs (->> [["Color" colors]
                           ["Density" density]
@@ -102,7 +102,7 @@
         (ui/button-medium-underline-black
          (utils/route-to learn-more-nav-event)
          "Learn more about our hair")])
-     [:div {:item-prop "description"}
+     [:div
       (when (or colors density weights materials whats-included)
         (let [attrs (->> [["Duration" duration]
                           ["What's Included" whats-included]]
