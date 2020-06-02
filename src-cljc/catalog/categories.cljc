@@ -198,10 +198,10 @@
            :subcategories/layout          :list
            :subsections/category-selector :hair/family
            :subsections                   ["360-frontals" "frontals"]}
-          (category->seo "100% Human Hair Lace Frontals | Mayvenn"
+          (category->seo "Frontals"
                          "Get your dream hair with Mayvenn’s 100% human hair frontals that blend seamlessly with our bundles for a unique look that’s all your own."
                          "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")
-          {:page/title "Hair Frontals: Human Hair Lace Frontal Sew-Ins | Mayvenn"}
+          {:page/title "100% Human Hair Lace Frontals | Mayvenn"}
           frontals-templates)
    (merge {:catalog/category-id      "29"
            :copy/title               "Virgin Hair Lace Frontals"
