@@ -500,3 +500,77 @@
         (is (= 301 (:status resp)) (pr-str resp))
         (is (= "https://shop.mayvenn.com/" (get-in resp [:headers "Location"])))
         (is (= "max-age=604800" (get-in resp [:headers "cache-control"])))))))
+
+(deftest classic-and-aladdin-standalone-service-pages-redirect-to-shop-service-pages
+  (with-services {:storeback-handler (routes (GET "/v2/products" req {:status 200
+                                                                      :body
+                                                                      (generate-string
+                                                                       {:products
+                                                                        [{:legacy/product-id                  214,
+                                                                          :promo.mayvenn-install/eligible     [false],
+                                                                          :copy/description
+                                                                          ["Sometimes you need a stylist’s touch to maintain your hair between install appointments. This includes tightening tracks and light styling."],
+                                                                          :selector/electives                 [],
+                                                                          :catalog/released-at                "2020-04-22T00:00:00.000Z",
+                                                                          :catalog/discontinued-at            nil,
+                                                                          :catalog/sku-id                     ["SRV-WMBI-000"],
+                                                                          :selector/essentials
+                                                                          ["catalog/department"
+                                                                           "service/type"
+                                                                           "catalog/sku-id"
+                                                                           "promo.mayvenn-install/discountable"],
+                                                                          :service/type                       ["base"],
+                                                                          :page/slug                          "weave-maintenance-service",
+                                                                          :catalog/product-id                 "132",
+                                                                          :promo.triple-bundle/eligible       false,
+                                                                          :selector/sku-ids                   ["SRV-WMBI-000"],
+                                                                          :page.meta/description
+                                                                          "Find a sew-in weave maintenance hair stylist at a salon near you. Learn about this service by a Mayvenn-certified stylist and book an appointment today!",
+                                                                          :promo.mayvenn-install/discountable [false],
+                                                                          :legacy/product-name                "Weave Maintenance",
+                                                                          :catalog/launched-at                "2020-04-22T00:00:00.000Z",
+                                                                          :selector/skus                      ["SRV-WMBI-000"],
+                                                                          :catalog/department                 ["service"],
+                                                                          :copy/title                         "Weave Maintenance",
+                                                                          :copy/duration                      "2 hours",
+                                                                          :page/title                         "Weave Maintenance Service - Book Salon Appointment | Mayvenn",
+                                                                          :copy/whats-included                "Shampoo, Condition, Tighten tracks, Style"}],
+                                                                        :skus [{:legacy/product-id                            214,
+                                                                                :promo.mayvenn-install/eligible               [false],
+                                                                                :sku/title                                    "Weave Maintenance",
+                                                                                :inventory/in-stock?                          true,
+                                                                                :selector/electives                           [],
+                                                                                :catalog/released-at                          "2020-04-22T00:00:00.000Z",
+                                                                                :selector/from-products                       ["132"],
+                                                                                :catalog/discontinued-at                      nil,
+                                                                                :sku/name                                     "Weave Maintenance",
+                                                                                :catalog/sku-id                               "SRV-WMBI-000",
+                                                                                :catalog/stylist-only?                        false,
+                                                                                :selector/essentials
+                                                                                ["catalog/department"
+                                                                                 "service/type"
+                                                                                 "promo.mayvenn-install/discountable"
+                                                                                 "temporary-placeholder.shim/unique-identifier"],
+                                                                                :service/type                                 ["base"],
+                                                                                :promo.triple-bundle/eligible                 false,
+                                                                                :legacy/variant-id                            1050,
+                                                                                :promo.mayvenn-install/discountable           [false],
+                                                                                :temporary-placeholder.shim/unique-identifier ["SRV-WMBI-000"],
+                                                                                :legacy/product-name                          "Weave Maintenance",
+                                                                                :catalog/launched-at                          "2020-04-22T00:00:00.000Z",
+                                                                                :catalog/department                           ["service"],
+                                                                                :catalog/discontinued?                        false,
+                                                                                :sku/price                                    65.0}]})})
+                                             common/default-storeback-handler)}
+    (with-handler handler
+      (testing "salon service category"
+        (let [resp (handler (mock/request :get "https://classic.mayvenn.com/categories/30-salon-services"))]
+          (is (= 301 (:status resp)) (pr-str resp))
+          (is (= "https://shop.mayvenn.com/categories/30-salon-services" (get-in resp [:headers "Location"])))))
+      (testing "salon service PDP"
+        (let [resp (handler (mock/request :get "https://jasmine.mayvenn.com/products/132-weave-maintenance-service"))]
+          (is (= 301 (:status resp)) (pr-str resp))
+          (is (= "https://shop.mayvenn.com/products/132-weave-maintenance-service" (get-in resp [:headers "Location"])))))
+      (testing "on shop, salon service PDP"
+        (let [resp (handler (mock/request :get "https://shop.mayvenn.com/products/132-weave-maintenance-service"))]
+          (is (= 200 (:status resp)) (pr-str resp)))))))

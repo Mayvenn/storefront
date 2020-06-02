@@ -537,7 +537,7 @@
          :page/slug           "virgin-frontals"}})
 
 (defn render-category
-  [render-ctx data req {:keys [catalog/category-id page/slug]}]
+  [{:keys [environment] :as render-ctx} data {:keys [subdomains] :as req} {:keys [catalog/category-id page/slug]}]
   (let [virgin-category (get dyed-virgin-category-id->virgin-category category-id)]
     (cond
       (contains? discontinued-categories category-id)
@@ -553,6 +553,11 @@
             (not= slug (:page/slug category)) (-> (path-for req events/navigate-category category)
                                                   (util.response/redirect :moved-permanently))
             (:page/redirect? category)        (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
+
+            (and (not= (first subdomains) "shop")
+                 (:page/shop-only? category))
+            (util.response/redirect (store-url "shop" environment req) :moved-permanently)
+
             :else                             (->> (assoc-in data
                                                              keypaths/current-category-id
                                                              (:catalog/category-id category))
@@ -593,7 +598,7 @@
 
 (defn render-product-details [{:keys [environment] :as render-ctx}
                               data
-                              {:keys [params] :as req}
+                              {:keys [params subdomains] :as req}
                               {:keys [catalog/product-id
                                       page/slug]}]
   (let [[redirect-nav-event redirect-nav-params] (get discontinued-product-id->redirect product-id)]
@@ -601,20 +606,26 @@
       (util.response/redirect (path-for req redirect-nav-event (merge params redirect-nav-params))
                               :moved-permanently)
       (when-let [product (get-in data (conj keypaths/v2-products product-id))]
-        (let [sku-id         (determine-sku-id data product (:SKU params))
-              sku            (get-in data (conj keypaths/v2-skus sku-id))
-              canonical-slug (:page/slug product)
-              redirect?      (and canonical-slug
-                                  (or (not= slug canonical-slug)
-                                      (and sku-id (not sku))))
-              permitted?     (auth/permitted-product? data product)]
+        (let [sku-id               (determine-sku-id data product (:SKU params))
+              sku                  (get-in data (conj keypaths/v2-skus sku-id))
+              canonical-slug       (:page/slug product)
+              redirect-to-fix-url? (and canonical-slug
+                                        (or (not= slug canonical-slug)
+                                            (and sku-id (not sku))))
+              permitted?           (auth/permitted-product? data product)
+              redirect-to-shop?    (and (not= "shop" (first subdomains))
+                                        (= "service" (first (:catalog/department product)))
+                                        (some false? (:promo.mayvenn-install/discountable product)))]
           (cond
             (not permitted?)
             (redirect-to-home environment req)
 
-            redirect?
+            redirect-to-fix-url?
             (let [path (products/path-for-sku product-id canonical-slug sku-id)]
               (util.response/redirect path))
+
+            redirect-to-shop?
+            (util.response/redirect (store-url "shop" environment req) :moved-permanently)
 
             :else
             (html-response render-ctx

@@ -852,6 +852,7 @@
                                          :promo.mayvenn-install/discountable]
     :selector/electives                 []
     :page/icp?                          false
+    :page/shop-only?                    true
     :category/new?                      true
     :flyout-menu/title                  "Salon Services"
     :footer/order                       1
