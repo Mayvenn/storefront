@@ -158,7 +158,7 @@
            :selector/essentials           [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives            [:hair/origin :hair/texture]
 
-           :copy/description "Mayvenn’s hair 360 frontals got you covered and come in different variations such as Brazilian, Malaysian, straight, and deep wave."
+           :copy/description "Spanning your entire hairline, 360 lace frontals are the most versatile option to get your desired look, including up-dos."
            :header/title     "Virgin 360 Frontals"}
           (category->seo "360 Frontals"
                          (copy "Mayvenn’s virgin hair 360 frontals got you covered and come in"
@@ -174,10 +174,10 @@
            :legacy/named-search-slug "frontals"
            :menu/hide?               true
            :page/icp?                true
-           :category/description     (copy "Save your precious strands and top your look off with"
-                                           "the ultimate tool in protective weave styling. Our collection of"
-                                           "frontals blend seamlessly with our bundles and can be customized to"
-                                           "fit your unique look.")
+           :category/description     (copy "Protect your tresses and finish off your style with 100% virgin hair"
+                                           "frontals that blend flawlessly with bundles and your natural hairline."
+                                           "Lace frontals give you the freedom to part your hair in any direction"
+                                           "with gorgeous texture and style.")
            :catalog/department            #{"hair"}
            :hair/family                   #{"frontals" "360-frontals"}
            :hair/color.process            #{"natural" "dyed"}
@@ -204,7 +204,7 @@
           {:page/title "Hair Frontals: Human Hair Lace Frontal Sew-Ins | Mayvenn"}
           frontals-templates)
    (merge {:catalog/category-id      "29"
-           :copy/title               "Virgin Lace Frontals"
+           :copy/title               "Virgin Hair Lace Frontals"
            :page/slug                "virgin-lace-frontals"
            :seo/title                "Virgin Hair Frontals"
            :legacy/named-search-slug "frontals"
@@ -218,7 +218,7 @@
            :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives       [:hair/origin :hair/texture :hair/color]
            :subcategory/image-uri    "//ucarecdn.com/47e29e97-821e-4c20-aeac-35eadc1a653d/-/format/auto/-/resize/124x/"
-           :copy/description         "Our lace frontal human hair pieces blend in seamlessly with our bundles and come in a variety of different combinations. Shop now to create your look."}
+           :copy/description         "Our 13x4 inch virgin lace frontals stretch from ear-to-ear for a look that can be parted in any direction."}
           (category->seo "Lace Frontals"
                          (copy "Mayvenn’s human hair lace frontals blend in seamlessly"
                                "with our bundles and come in a variety of different"
