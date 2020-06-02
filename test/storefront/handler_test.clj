@@ -346,7 +346,9 @@
                                   (map (comp string/trim first :content)))
                                  (:content parsed-body))
             excluded-urls #{"https://mayvenn.com/"
-                            (str "https://" config/welcome-subdomain ".mayvenn.com/")}]
+                            (str "https://" config/welcome-subdomain ".mayvenn.com/")
+                            (str "https://" config/jobs-subdomain ".mayvenn.com/")
+                            (str "https://" config/help-subdomain ".mayvenn.com/")}]
         (is (not-empty urls))
         (doseq [url urls
                 :when (not (contains? excluded-urls url))]
