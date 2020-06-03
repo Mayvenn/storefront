@@ -224,7 +224,7 @@
                 "Shop by look")
       [:div.inline (->flyout-handlers keypaths/shop-looks-menu-expanded)
        ^:inline (individual-header-menu-link
-                 (utils/route-to events/navigate-home)
+                 {}
                  "Shop by look"
                  (when (:shop-looks-menu/expanded? queried-data)
                    ;; TODO: refactor data structure to remove be a single level list of items
@@ -234,7 +234,7 @@
     (when show-bundle-sets?
       [:div.inline (->flyout-handlers keypaths/shop-bundle-sets-menu-expanded)
        ^:inline (individual-header-menu-link
-                 (utils/route-to events/navigate-home)
+                 {}
                  "Shop bundle sets"
                  (when (:shop-bundle-sets-menu/expanded? queried-data)
                    ;; TODO: refactor data structure to remove be a single level list of items
@@ -243,7 +243,7 @@
 
     [:div.inline (->flyout-handlers keypaths/shop-a-la-carte-menu-expanded)
      ^:inline (individual-header-menu-link
-               (utils/route-to events/navigate-home)
+               {}
                "Shop hair"
                (when (:shop-a-la-carte-menu/expanded? queried-data)
                  ;; TODO: refactor data structure to remove be a single level list of items
