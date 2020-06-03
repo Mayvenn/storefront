@@ -22,7 +22,7 @@
 
 (defn balance-transfer->payment [balance-transfer]
   (let [{:keys [id type data]}                                                                           balance-transfer
-        {:keys [order created-at amount reason commission-date payout-method-name voucher-uuid voucher]} data]
+        {:keys [order created-at amount campaign-name reason commission-date payout-method-name voucher-uuid voucher]} data]
     (merge {:id                 id
             :icon               "68e6bcb0-a236-46fe-a8e7-f846fff0f464"
             :date               created-at
@@ -45,17 +45,18 @@
                                                 (str " - " name)))
                               :data-test (str "voucher-award-" id)
                               :subtitle  (let [fix-uuid-key #(string/replace (name %) #"-" "")]
-                                           (->> voucher
-                                                ;; This beaut is to deal with storeback kabobify weirdness
-                                                (filter (fn [[k _]] (= (fix-uuid-key k)
-                                                                       (fix-uuid-key voucher-uuid))))
-                                                first
-                                                last
-                                                :services
-                                                (filter #(or (= "base" (:service/type %))
-                                                             (= "base" (:type %))))
-                                                first
-                                                :product-name))}
+                                           (or (->> voucher
+                                                    ;; This beaut is to deal with storeback kabobify weirdness
+                                                    (filter (fn [[k _]] (= (fix-uuid-key k)
+                                                                           (fix-uuid-key voucher-uuid))))
+                                                    first
+                                                    last
+                                                    :services
+                                                    (filter #(or (= "base" (:service/type %))
+                                                                 (= "base" (:type %))))
+                                                    first
+                                                    :product-name)
+                                               campaign-name))}
              "payout"        {:title              "Money Transfer"
                               :icon               "4939408b-1ec8-4a47-bb0e-5cdeb15d544d"
                               :data-test          (str "payout-" id)
