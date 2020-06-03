@@ -20,38 +20,40 @@
             [voucher.keypaths :as voucher-keypaths]))
 
 (defn balance-transfer->payment [balance-transfer]
-  (let [{:keys [id type data]} balance-transfer
+  (let [{:keys [id type data]}                                                                    balance-transfer
         {:keys [order created-at amount campaign-name reason commission-date payout-method-name]} data]
-    (merge {:id id
-            :icon "68e6bcb0-a236-46fe-a8e7-f846fff0f464"
-            :date created-at
-            :subtitle ""
-            :amount (mf/as-money amount)
+    (merge {:id                 id
+            :icon               "68e6bcb0-a236-46fe-a8e7-f846fff0f464"
+            :date               created-at
+            :subtitle           ""
+            :amount             (mf/as-money amount)
             :amount-description nil
-            :styles {:background ""
-                     :title-color "black"
-                     :amount-color "p-color"}}
+            :styles             {:background   ""
+                                 :title-color  "black"
+                                 :amount-color "p-color"}}
            (case type
-             "commission" {:title (str "Commission Earned" (when-let [name (orders/first-name-plus-last-name-initial order)]
-                                                             (str " - " name)))
-                           :data-test (str "commission-" (:number order))
-                           :date commission-date}
-             "award"      {:title reason
-                           :data-test (str "award-" id)}
-             "voucher_award" {:title (str "Service Payment" (when-let [name (orders/first-name-plus-last-name-initial order)]
-                                                              (str " - " name)))
+             "commission"    {:title     (str "Commission Earned"
+                                              (when-let [name (orders/first-name-plus-last-name-initial order)]
+                                                (str " - " name)))
+                              :data-test (str "commission-" (:number order))
+                              :date      commission-date}
+             "award"         {:title     reason
+                              :data-test (str "award-" id)}
+             "voucher_award" {:title     (str "Service Payment"
+                                              (when-let [name (orders/first-name-plus-last-name-initial order)]
+                                                (str " - " name)))
                               :data-test (str "voucher-award-" id)
-                              :subtitle campaign-name}
-             "payout" {:title "Money Transfer"
-                       :icon "4939408b-1ec8-4a47-bb0e-5cdeb15d544d"
-                       :data-test (str "payout-" id)
-                       :amount-description payout-method-name
-                       :styles {:background "bg-cool-gray"
-                                :title-color "p-color"
-                                :amount-color "p-color"}}
-             "sales_bonus" {:title "Sales Bonus"
-                            :data-test (str "sales-bonus-" id)
-                            :icon "56bfbe66-6db0-48c7-9069-f86c6393b15d"}
+                              :subtitle  campaign-name}
+             "payout"        {:title              "Money Transfer"
+                              :icon               "4939408b-1ec8-4a47-bb0e-5cdeb15d544d"
+                              :data-test          (str "payout-" id)
+                              :amount-description payout-method-name
+                              :styles             {:background   "bg-cool-gray"
+                                                   :title-color  "p-color"
+                                                   :amount-color "p-color"}}
+             "sales_bonus"   {:title     "Sales Bonus"
+                              :data-test (str "sales-bonus-" id)
+                              :icon      "56bfbe66-6db0-48c7-9069-f86c6393b15d"}
              {:title "Unknown Payment"}))))
 
 (defn payment-row [item]
