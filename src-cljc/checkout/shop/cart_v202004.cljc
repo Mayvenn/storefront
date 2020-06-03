@@ -669,9 +669,11 @@
          :as               mayvenn-install
          servicing-stylist :mayvenn-install/stylist} (mayvenn-install/mayvenn-install data)
 
+
+        any-services?                  (seq (:services/items cart-services))
         update-pending?                (update-pending? data)
         stylist-blocked?               (experiments/stylist-blocked? data)
-        required-stylist-not-selected? (and entered?
+        required-stylist-not-selected? (and any-services?
                                             stylist-blocked?
                                             (not stylist))
         required-line-items-not-added? (and entered?
@@ -744,29 +746,27 @@
              :quadpay/show?             (get-in data keypaths/loaded-quadpay)
              :quadpay/directive         (if locked? :no-total :just-select)}
 
-      (seq (:services/items cart-services))
+      any-services?
       (cond->
 
-        (empty? (:services/stylist cart-services))
-        (merge
-         {:stylist-organism/id "stylist-organism"})
+        (nil? servicing-stylist)
+        (merge {:stylist-organism/id "stylist-organism"})
 
-        (and (not stylist-blocked?)
-             (empty? (:services/stylist cart-services)))
+        (and (not stylist-blocked?) (nil? servicing-stylist))
         (merge
          {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
           :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})
 
-        (seq (:services/stylist cart-services))
+        (some? servicing-stylist)
         (merge
          {:checkout-caption-copy              (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
+          :servicing-stylist-portrait-url     (-> servicing-stylist :portrait :resizable-url)
           :servicing-stylist-banner/id        "servicing-stylist-banner"
           :servicing-stylist-banner/title     (stylists/->display-name servicing-stylist)
           :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)}
           :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)
           :servicing-stylist-banner/target    [events/control-change-stylist {:stylist-id (:stylist-id servicing-stylist)}]
-          :servicing-stylist-banner/action-id (when shop? "stylist-swap")
-          :servicing-stylist-portrait-url     (-> servicing-stylist :portrait :resizable-url)}
+          :servicing-stylist-banner/action-id (when shop? "stylist-swap")}
          (when-not shop?
            {:checkout-caption-copy (str "After you place your order, please contact "
                                         (stylists/->display-name servicing-stylist)
