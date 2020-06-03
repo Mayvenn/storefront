@@ -1,23 +1,20 @@
 (ns checkout.shop.cart-v202004
   (:require
-   #?@(:cljs [[storefront.api :as api]
+   #?@(:cljs [
               [storefront.components.payment-request-button :as payment-request-button]
               [storefront.components.popup :as popup]
               [storefront.confetti :as confetti]
-              [storefront.history :as history]
               [storefront.hooks.quadpay :as quadpay]
               [storefront.platform.messages :as messages]])
+   api.orders
    [catalog.facets :as facets]
    [catalog.images :as catalog-images]
    [checkout.call-out :as call-out]
    [checkout.header :as header]
    [checkout.suggestions :as suggestions]
-   [checkout.ui.cart-item :as cart-item]
    [checkout.ui.cart-item-v202004 :as cart-item-v202004]
    [checkout.ui.cart-summary-v202004 :as cart-summary-v202004]
    [clojure.string :as string]
-   [clojure.set :as set]
-   [spice.maps :as maps]
    [spice.core :as spice]
    spice.selector
    [storefront.accessors.adjustments :as adjustments]
@@ -32,16 +29,13 @@
    [storefront.component :as component :refer [defcomponent defdynamic-component]]
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
-   [storefront.components.header :as components.header]
    [storefront.components.money-formatters :as mf]
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
-   [storefront.effects :as effects]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.request-keys :as request-keys]
-   [storefront.transitions :as transitions]
    [ui.molecules :as ui-molecules]
    [ui.promo-banner :as promo-banner]))
 
@@ -676,8 +670,9 @@
          servicing-stylist :mayvenn-install/stylist} (mayvenn-install/mayvenn-install data)
 
         update-pending?                (update-pending? data)
+        stylist-blocked?               (experiments/stylist-blocked? data)
         required-stylist-not-selected? (and entered?
-                                            (experiments/stylist-blocked? data)
+                                            stylist-blocked?
                                             (not stylist))
         required-line-items-not-added? (and entered?
                                             (> quantity-remaining 0))
@@ -751,10 +746,15 @@
 
       (seq (:services/items cart-services))
       (cond->
-        (empty? (:services/stylist cart-services)) 
+
+        (empty? (:services/stylist cart-services))
         (merge
-         {:stylist-organism/id            "stylist-organism"
-          :checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
+         {:stylist-organism/id "stylist-organism"})
+
+        (and (not stylist-blocked?)
+             (empty? (:services/stylist cart-services)))
+        (merge
+         {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
           :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})
 
         (seq (:services/stylist cart-services))
