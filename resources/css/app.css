@@ -144,17 +144,18 @@
     --sms-green:     #1fcc23;
 
     /* THESE ARE OUR NEW COLORS */
-    --p-color:      #4427c1;
-    --s-color:      #6bc8ad;
-    --red:          #f94941;
-    --paypal:       #49bbf0;
-    --pale-purple:  #dedbe5;
-    --white:        #ffffff;
-    --gray:         #cccccc;
-    --refresh-gray: #f5f5f5;
-    --cool-gray:    #eeefef;
-    --warm-gray:    #ece6e2;
-    --black:        #000000;
+    --p-color:        #4427c1;
+    --s-color:        #6bc8ad;
+    --red:            #f94941;
+    --paypal:         #49bbf0;
+    --pale-purple:    #dedbe5;
+    --white:          #ffffff;
+    --gray:           #cccccc;
+    --refresh-gray:   #f5f5f5;
+    --cool-gray:      #eeefef;
+    --warm-gray:      #ece6e2;
+    --black:          #000000;
+    --warning-yellow: #EDC203;
 
     --s-color-transparent:  rgba(107, 200, 173, 0.20);
 

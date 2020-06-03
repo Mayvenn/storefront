@@ -165,11 +165,6 @@
 
       (cta-submit data)]])])
 
-(defn store-credit-content
-  [credit]
-  [:div [:span.medium (as-money credit)]
-   " in store credit will be applied to this order."])
-
 (defn query [data]
   (let [available-store-credit   (get-in data keypaths/user-total-available-store-credit)
         credit-to-use            (min available-store-credit (get-in data keypaths/order-total))
@@ -178,34 +173,41 @@
                                   order
                                   (get-in data keypaths/user))
         selected-payment-methods (set (keys (get-in data keypaths/checkout-selected-payment-methods)))
-        freeinstall-applied?     (orders/service-line-item-promotion-applied? order)
         user                     (get-in data keypaths/user)
         can-use-store-credit?    (orders/can-use-store-credit? order user)
         loaded-stripe?           (get-in data keypaths/loaded-stripe)
         selected-quadpay?        (some #{:quadpay} selected-payment-methods)]
     (merge
-     {:credit-note/id         (when (pos? available-store-credit) "store-credit-note")
-      :credit-note/color      (if can-use-store-credit? "p-color" "s-color")
-      :credit-note/content    (store-credit-content credit-to-use)
-      :credit-note/subcontent (cond
-                                (and fully-covered? can-use-store-credit?)
-                                nil
-                                can-use-store-credit?
-                                [:div.h6.mt1
-                                 "Please enter an additional payment method below for the remaining total on your order."]
-                                :else
-                                [:div.h6.mt1
-                                 "To use store credit, please remove promo code "
-                                 [:span.shout freeinstall-applied?]
-                                 " from your bag."])}
+     (cond-> {:store-credit/fully-covered?        fully-covered?
+              :store-credit/can-use-store-credit? can-use-store-credit?}
+
+
+
+       (pos? available-store-credit)
+       (merge {:credit-note/id "store-credit-note"})
+
+       (not can-use-store-credit?)
+       (merge {:credit-note/color      "warning-yellow"
+               :credit-note/content    [:div.proxima.content-3
+                                        "Your "
+                                        (as-money credit-to-use)
+                                        " in store credit cannot be used with Mayvenn Service orders."
+                                        " To use store credit, please remove any Mayvenn Services from your cart."]})
+
+       can-use-store-credit?
+       (merge
+        {:credit-note/color   "s-color"
+         :credit-note/content [:div.proxima.content-3
+                               (str
+                                (as-money credit-to-use)
+                                " in store credit will be applied to this order."
+                                (when-not fully-covered?
+                                  " Please enter an additional payment method below for the remaining total on your order."))]}))
 
      {:credit-card-entry/credit-card  (:credit-card (cc/query data))
       :credit-card-entry/id           (when loaded-stripe?
                                         "credit-card-entry")
       :credit-card-entry/field-errors (:field-errors (get-in data keypaths/errors))}
-
-     {:store-credit/fully-covered?        fully-covered?
-      :store-credit/can-use-store-credit? can-use-store-credit?}
 
      {:payment-method/show-quadpay-component?          (get-in data keypaths/loaded-quadpay)
       :payment-method/selected-stripe-or-store-credit? (some #{:stripe :store-credit} selected-payment-methods)
@@ -220,9 +222,9 @@
       :cta/label     "Review Order"
       :cta/id        (when loaded-stripe?
                        "payment-form-submit")}
-     {:step-bar                      (checkout-steps/query data)
-      :loaded-stripe?                loaded-stripe?
-      :promo-banner                  (promo-banner/query data)})))
+     {:step-bar       (checkout-steps/query data)
+      :loaded-stripe? loaded-stripe?
+      :promo-banner   (promo-banner/query data)})))
 
 (defn ^:private built-non-auth-component [data opts]
   (component/build component (query data) opts))

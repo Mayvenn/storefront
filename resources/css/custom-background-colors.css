@@ -19,6 +19,7 @@
 .bg-warm-gray    { background-color: var(--warm-gray); }
 .bg-pale-purple  { background-color: var(--pale-purple); }
 .bg-pink         { background-color: var(--pink); }
+.bg-warning-yellow         { background-color: var(--warning-yellow); }
 
 .bg-alternate-refresh-gray-white:nth-child(odd) { background-color: var(--refresh-gray); }
 .bg-alternate-refresh-gray-white:nth-child(even) { background-color: var(--white); }
@@ -61,4 +62,5 @@
     --cool-gray:    #eeefef;
     --warm-gray:    #ece6e2;
     --black:        #000000;
+    --warning-yellow: #EDC203;
 }

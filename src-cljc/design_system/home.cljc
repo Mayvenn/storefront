@@ -728,6 +728,24 @@
       :selected? false
       :sold-out? true})]])
 
+(def alerts
+  (let [content
+        [:div.proxima.content-3.p3
+         "To use your $126.74 store credit credit, please remove promo code from your bag."]]
+    [:section.flex.flex-column
+     [:div.col-4.my2
+      (ui/note-box {:color "red"
+                    :data-test "red-alert"}
+                   content)]
+     [:div.col-4.my2
+      (ui/note-box {:color "warning-yellow"
+                    :data-test "warning-yellow-alert"}
+                   content)]
+     [:div.col-4.my2
+      (ui/note-box {:color "s-color"
+                    :data-test "s-color-alert"}
+                   content)]]))
+
 (defcomponent component [data owner opts]
   [:div
    [:div.mx3
@@ -745,6 +763,7 @@
      typography
      (form-fields data)
      (buttons data)
+     alerts
 
      #_simple-custom-options
      #_swatch-custom-options
