@@ -105,3 +105,7 @@
 (defn stylist-blocked?
   [data]
   (display-feature? data "stylist-blocked"))
+
+(defn promotion-helper?
+  [data]
+  (display-feature? data "promotion-helper"))
