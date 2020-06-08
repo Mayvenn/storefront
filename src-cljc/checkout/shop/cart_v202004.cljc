@@ -504,7 +504,7 @@
 (defn upsold-cart-summary-query
   "The cart has an upsell 'entered' because the customer has requested a service discount"
   [{:as order :keys [adjustments]}
-   {:as install :mayvenn-install/keys [any-wig? service-type entered? locked? applied? service-discount quantity-remaining]}]
+   {:as install :mayvenn-install/keys [any-wig? service-type entered? locked? applied? service-discount quantity-remaining service-title]}]
   (let [total              (:total order)
         tax                (:tax-total order)
         subtotal           (orders/products-and-services-subtotal order)
@@ -545,9 +545,7 @@
                                                                      "freeinstall-locked")
                                           :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-gray pr1"
                                                                                        :height "2em" :width "2em"}]
-                                          :cart-summary-line/label (if any-wig?
-                                                                     "Free Wig Customization"
-                                                                     "Free Mayvenn Install")
+                                          :cart-summary-line/label (str "Free " service-title)
                                           :cart-summary-line/value (if any-wig?
                                                                      (mf/as-money-or-free -75.0)
                                                                      (mf/as-money-or-free service-discount))
