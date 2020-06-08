@@ -1,5 +1,6 @@
 (ns storefront.components.footer
   (:require [catalog.categories :as categories]
+            [promotion-helper.ui :refer [promotion-helper]]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.nav :as nav]
@@ -130,7 +131,6 @@
      [:div.flex.items-center.justify-center.pl3.pr4.py2
       [:div.flex-auto.pr4
        [:div.flex.items-center.justify-left.proxima.button-font-2.bold
-        [:div.shout "Free Mayvenn Service Tracker"]
         [:div.circle.bg-red.white.flex.items-center.justify-center.ml2
          {:style {:height "20px" :width "20px"}} "2"]]
        [:div.button-font-3.mtp4.regular "Swipe up to learn how to get your service for free"]]
@@ -199,6 +199,7 @@
 
       (= (get-in data keypaths/store-slug) "shop")
       (component/build dtc-full-component (query data) {:key "dtc-full-footer"})
+                        {:key "dtc-full-footer"})
 
       :else
       (component/build full-component (query data) nil))))
