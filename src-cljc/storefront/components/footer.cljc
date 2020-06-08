@@ -199,7 +199,6 @@
 
       (= (get-in data keypaths/store-slug) "shop")
       (component/build dtc-full-component (query data) {:key "dtc-full-footer"})
-                        {:key "dtc-full-footer"})
 
       :else
       (component/build full-component (query data) nil))))

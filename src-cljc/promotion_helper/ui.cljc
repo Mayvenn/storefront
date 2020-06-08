@@ -31,7 +31,7 @@
 (defn promotion-helper-model<-
   [app-state order]
   (when (experiments/promotion-helper? app-state)
-    #:promotion-helper{:shown?               (:mayvenn-install/entered? order)
+    #{:shown?               (:mayvenn-install/entered? order)
                        :opened?              true
                        :conditions/remaining 2}))
 
