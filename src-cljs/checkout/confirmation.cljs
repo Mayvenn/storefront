@@ -279,7 +279,7 @@
 
 (defn ^:private cart-summary-query
   [{:as order :keys [adjustments]}
-   {:mayvenn-install/keys [locked? applied? service-discount addon-services service-type]}
+   {:mayvenn-install/keys [locked? applied? service-discount addon-services service-type service-title]}
    available-store-credit]
   (when (seq order)
     (let [total              (-> order :total)
@@ -318,8 +318,7 @@
 
                                                install-summary-line?
                                                (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
-                                                       :cart-summary-line/label (adjustments/display-service-line-item-adjustment-name adjustment)
-                                                       :cart-summary-line/class "p-color"})))
+                                                       :cart-summary-line/label (str "Free " service-title)})))
                                            (when (pos? tax)
                                              [{:cart-summary-line/id       "tax"
                                                :cart-summary-line/label    "Tax"

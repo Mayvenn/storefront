@@ -568,8 +568,7 @@
 
                                          install-summary-line?
                                          (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
-                                                 :cart-summary-line/label (adjustments/display-service-line-item-adjustment-name adjustment)
-                                                 :cart-summary-line/class "p-color"}
+                                                 :cart-summary-line/label (str "Free " service-title)}
                                                 (coupon-code->remove-promo-action "freeinstall"))
 
                                          coupon-code
