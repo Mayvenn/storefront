@@ -182,7 +182,7 @@
   [_ _ {:keys [look-id order shared-cart-id]} app-state]
   (let [line-item-skuers (waiter-line-items->line-item-skuer
                           (get-in app-state keypaths/v2-skus)
-                          (orders/product-and-service-item order))
+                          (orders/product-and-service-items order))
 
         cart-items (mapv line-item-skuer->stringer-cart-item line-item-skuers)]
     (facebook-analytics/track-event "AddToCart" {:content_type "product"
