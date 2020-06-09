@@ -5,12 +5,10 @@
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.sites :as sites]
-            [storefront.accessors.stylists :as stylists]
-            [storefront.assets :as assets]
-            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as c]
             [storefront.components.marquee :as marquee]
-            [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
@@ -19,7 +17,7 @@
 (def blog-url "https://shop.mayvenn.com/blog/")
 
 (def hamburger
-  (component/html
+  (c/html
    [:a.block.px3.py4.content-box.black
     (assoc (utils/fake-href events/control-menu-expand-hamburger
                             {:keypath keypaths/menu-expanded})
@@ -33,14 +31,14 @@
 
 (defn drop-down-row
   ([opts content]
-   (component/html
+   (c/html
     [:a.inherit-color.block.center.h5.flex.items-center.justify-center
      ^:attrs (-> opts
                  (assoc-in [:style :min-width] "200px")
                  (assoc-in [:style :height] "39px"))
      ^:inline content]))
   ([opts content1 content2]
-   (component/html
+   (c/html
     [:a.inherit-color.block.center.h5.flex.items-center.justify-center
      ^:attrs (-> opts
                  (assoc-in [:style :min-width] "200px")
@@ -48,7 +46,7 @@
      ^:inline content1
      ^:inline content2]))
   ([opts content1 content2 content3]
-   (component/html
+   (c/html
     [:a.inherit-color.block.center.h5.flex.items-center.justify-center
      ^:attrs (-> opts
                  (assoc-in [:style :min-width] "200px")
@@ -80,7 +78,7 @@
    (social-icon "c8f0a4b8-24f7-4de8-9c20-c6634b865bc1")))
 
 (defn store-welcome [signed-in {:keys [store-nickname portrait expanded?]} expandable?]
-  (component/html
+  (c/html
    [:div.h6.flex.items-center.mt2
     (case (marquee/portrait-status (auth/stylist-on-own-store? signed-in) portrait)
       ::marquee/show-what-we-have [:div.left.pr2 ^:inline (marquee/stylist-portrait portrait)]
@@ -91,17 +89,17 @@
        [:span.ml1 ^:inline (ui/expand-icon expanded?)])]]))
 
 (defn store-info [signed-in {:keys [expanded?] :as store}]
-  (component/html
+  (c/html
    (if (-> signed-in ::auth/to #{:marketplace :own-store})
      (let [rows (marquee/actions store gallery-link instagram-link styleseat-link)]
        (if (pos? (count rows))
          ^:inline (ui/drop-down
                    expanded?
-                   (component/html
+                   (c/html
                     [:div
                      ^:attrs (utils/fake-href events/control-menu-expand {:keypath keypaths/store-info-expanded})
                      ^:inline (store-welcome signed-in store true)])
-                   (component/html
+                   (c/html
                     [:div.bg-white.absolute.left-0.top-lit
                      (for [[idx row] (map-indexed vector rows)]
                        [:div.border-gray {:key   idx
@@ -114,17 +112,17 @@
   ;;             implicitly allows calling a fn with less args than specified.
   ([signed-in user vouchers?] (account-info signed-in user vouchers? nil))
   ([signed-in {:keys [email expanded?]} vouchers? store]
-   (component/html
+   (c/html
     (case (::auth/as signed-in)
 
       :user    (ui/drop-down
                 expanded?
-                (component/html
+                (c/html
                  [:a.inherit-color.h6
                   ^:attrs (utils/fake-href events/control-menu-expand {:keypath keypaths/account-menu-expanded})
                   "Signed in with: " [:span.p-color email]
                   " | Account" [:span.ml1 ^:inline (ui/expand-icon expanded?)]])
-                (component/html
+                (c/html
                  [:div.bg-white.absolute.right-0.top-lit
                   [:div
                    ^:inline (drop-down-row (utils/route-to events/navigate-account-manage) "Account")]
@@ -135,12 +133,12 @@
 
       :stylist (ui/drop-down
                 expanded?
-                (component/html
+                (c/html
                  [:a.inherit-color.h6
                   ^:attrs (utils/fake-href events/control-menu-expand {:keypath keypaths/account-menu-expanded})
                   "Signed in with: " [:span.p-color email]
                   " | My dashboard" [:span.ml1 ^:inline (ui/expand-icon expanded?)]])
-                (component/html
+                (c/html
                  [:div.bg-white.absolute.right-0.border.border-gray.top-lit
                   [:div
                    ^:inline (drop-down-row (utils/route-to events/navigate-v2-stylist-dashboard-orders) "My Dashboard")]
@@ -171,84 +169,59 @@
 
 (def close-header-menus (utils/collapse-menus-callback keypaths/header-menus))
 
-(defn header-menu-link
-  ([opts text]
-   (header-menu-link opts text nil))
-  ([opts text flyout-content]
-   (component/html
-    [:div.inline.relative
-     {:on-mouse-leave close-header-menus}
-     [:a.h5.medium.inherit-color.py2
-      ^:attrs (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
-      text]
-     [:div.absolute.left-0.z2
-      {:style {:padding-left "24px"}}
-      (when flyout-content
-        [:div.bg-cool-gray.flex.flex-column.p8.border.border-pale-purple
-         (for [{:keys [key nav-message copy]} flyout-content]
-           [:a.inherit-color.left-align.nowrap.my1.content-1.hover-menu-item
-            (merge
-             (apply utils/route-to nav-message)
-             {:key key
-              :id  key})
-            [:span copy]])])]])))
+(c/defcomponent flyout-content
+  [{:flyout/keys [items id]} _ _]
+  (if id
+    [:div.bg-cool-gray.flex.flex-column.p8.border.border-pale-purple
+     (for [{:keys [key nav-message copy]} items]
+       [:a.inherit-color.left-align.nowrap.my1.content-1.hover-menu-item
+        (merge
+         (apply utils/route-to nav-message)
+         {:key key
+          :id  key})
+        [:span copy]])]
+    (c/html [:div])) )
 
-(defn flyout-menu
-  [{:keys [show-freeinstall-link? show-bundle-sets? salon-services site]
-    :as   queried-data}]
-  (component/html
-   [:div.center
-    (when show-freeinstall-link?
-      ^:inline (header-menu-link
-                (utils/route-to events/navigate-adventure-match-stylist)
-                (component/html [:span [:span.p-color.pr1 "NEW"] "Get a Mayvenn Install"])))
-    (when salon-services
-      ^:inline (header-menu-link
-                (utils/route-to events/navigate-category salon-services)
-                (component/html [:span
-                                 (when (:category/new? salon-services)
-                                   [:span.p-color.pr1 "NEW"])
-                                 (:flyout-menu/title salon-services)])))
+(c/defcomponent header-menu-item
+  [{:header-menu-item/keys [navigation-target
+                            href
+                            action-target
+                            content
+                            flyout-menu-path]
+    :as data} _ _]
+  [:div.inline.relative
+   (merge
+    {:on-mouse-leave close-header-menus}  ;; TODO
+    (when flyout-menu-path
+      (->flyout-handlers flyout-menu-path)))
+   [:a.h5.medium.inherit-color.py2
+    ^:attrs
+    (cond-> {:style {:padding-left "24px" :padding-right "24px"}}
 
-    (if (= :classic site)
-      ^:inline (header-menu-link
-                (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                "Shop by look")
-      [:div.inline (->flyout-handlers keypaths/shop-looks-menu-expanded)
-       ^:inline (header-menu-link
-                 {}
-                 "Shop by look"
-                 (when (:shop-looks-menu/expanded? queried-data)
-                   (:shop-looks-menu/items queried-data)))])
+      navigation-target
+      (merge (apply utils/route-to navigation-target))
 
-    (when show-bundle-sets?
-      [:div.inline (->flyout-handlers keypaths/shop-bundle-sets-menu-expanded)
-       ^:inline (header-menu-link
-                 {}
-                 "Shop bundle sets"
-                 (when (:shop-bundle-sets-menu/expanded? queried-data)
-                   (:shop-bundle-sets-menu/items queried-data)))])
+      action-target
+      (merge (apply utils/fake-href action-target))
 
-    [:div.inline (->flyout-handlers keypaths/shop-a-la-carte-menu-expanded)
-     ^:inline (header-menu-link
-               {}
-               "Shop hair"
-               (when (:shop-a-la-carte-menu/expanded? queried-data)
-                 (:shop-a-la-carte-menu/items queried-data)))]
-    ^:inline (header-menu-link
-              (utils/route-to events/navigate-content-guarantee)
-              "Our Guarantee")
-    ^:inline (header-menu-link
-              (utils/route-to events/navigate-content-our-hair)
-              "Our hair")
-    ^:inline (header-menu-link
-              {:href blog-url}
-              "Blog")]))
+      href
+      (merge {:href href}))
+    content]
+   [:div.absolute.left-0.z2
+    {:style {:padding-left "24px"}}
+    (c/build flyout-content data)]])
+
+(c/defcomponent desktop-menu
+  [{:desktop-menu/keys [items]
+    :as   queried-data} _ _]
+  [:div.center
+   (for [item items]
+     (c/build header-menu-item item (c/component-id (:header-menu-item/id item))))])
 
 ;; Produces a mobile-nav layout (no styling)
 (defn mobile-nav-header [attrs left center right]
   (let [size {:width "80px" :height "55px"}]
-    (component/html
+    (c/html
      [:div.flex.items-center
       ^:attrs attrs
       [:div.mx-auto.flex.items-center.justify-around {:style size} ^:inline left]
@@ -266,7 +239,7 @@
    (mobile-nav-header
     {:class "border-bottom border-gray bg-white black"
      :style {:height "70px"}}
-    (component/html
+    (c/html
      (if target
        [:div
         {:data-test "header-back"}
@@ -275,11 +248,11 @@
          (svg/left-arrow {:width  "20"
                           :height "20"})]]
        [:div]))
-    (component/html [:div.content-1.proxima.center primary])
+    (c/html [:div.content-1.proxima.center primary])
     (ui/shopping-bag {:data-test "mobile-cart"}
                      {:quantity value}))))
 
-(defcomponent component
+(c/defcomponent component
   [{:as   data
     :keys [store user cart signed-in vouchers?]} _ _]
   [:div
@@ -296,7 +269,7 @@
        [:div.mb4 ^:inline (ui/clickable-logo {:event     events/navigate-home
                                               :data-test "desktop-header-logo"
                                               :height    "44px"})]
-       [:div ^:inline (flyout-menu data)]]
+       [:div ^:inline (c/build desktop-menu data)]]
       ^:inline (ui/shopping-bag {:style     {:height "44px"
                                              :width  "33px"}
                                  :data-test "desktop-cart"}
@@ -314,7 +287,7 @@
 
 (defn minimal-component
   [logo-nav-event]
-  (component/html
+  (c/html
    [:div.border-bottom.border-gray.flex.items-center
     [:div.flex-auto.py3
      ^:inline (ui/clickable-logo
@@ -323,60 +296,71 @@
                  logo-nav-event
                  (merge {:event logo-nav-event})))]]))
 
-(defn category->icp-flyout-option [{:as category :keys [:page/slug flyout-menu/title category/new?]}]
-  {:key         slug
-   :nav-message (let [{:direct-to-details/keys [id slug sku-id]} category]
-                  (if id
-                    [events/navigate-product-details
-                     (merge
-                      {:catalog/product-id id
-                       :page/slug          slug}
-                      (when sku-id {:query-params {:SKU sku-id}}))]
-                    [events/navigate-category category]))
-   :copy        title
-   :new?        new?})
-
 (defn shop-a-la-carte-flyout-query [data]
-  {:shop-a-la-carte-menu/items     (->>  (get-in data keypaths/categories)
-                                         (filter :flyout-menu/order)
-                                         (filter (fn [category]
-                                                   (or (auth/stylist? (auth/signed-in data))
-                                                       (not (-> category
-                                                                :catalog/department
-                                                                (contains? "stylist-exclusives"))))))
-                                         (sort-by :flyout-menu/order)
-                                         (map category->icp-flyout-option))
-   :shop-a-la-carte-menu/expanded? (get-in data keypaths/shop-a-la-carte-menu-expanded)})
+  {:header-menu-item/flyout-menu-path keypaths/shop-a-la-carte-menu-expanded
+   :header-menu-item/content          "Shop hair"
+   :header-menu-item/id               "desktop-shop-hair"
+   :flyout/items                      (->> (get-in data keypaths/categories)
+                                           (filter :flyout-menu/order)
+                                           (filter (fn [category]
+                                                     (or (auth/stylist? (auth/signed-in data))
+                                                         (not (-> category
+                                                                  :catalog/department
+                                                                  (contains? "stylist-exclusives"))))))
+                                           (sort-by :flyout-menu/order)
+                                           (mapv (fn category->icp-flyout-option
+                                                   [{:as category :keys [:page/slug flyout-menu/title category/new?]}]
+                                                   {:key         slug
+                                                    :nav-message (let [{:direct-to-details/keys [id slug sku-id]} category]
+                                                                   (if id
+                                                                     [events/navigate-product-details
+                                                                      (merge
+                                                                       {:catalog/product-id id
+                                                                        :page/slug          slug}
+                                                                       (when sku-id {:query-params {:SKU sku-id}}))]
+                                                                     [events/navigate-category category]))
+                                                    :copy        title
+                                                    :new?        new?})))
+   :flyout/id                         (when (get-in data keypaths/shop-a-la-carte-menu-expanded)
+                                        "shop-a-la-carte-menu-expanded")})
 
 (defn shop-looks-query [data]
-  {:shop-looks-menu/items     [{:key         "all"
-                                :nav-message [events/navigate-shop-by-look {:album-keyword :look}]
-                                :new?        false
-                                :copy        "All Looks"}
-                               {:key         "straight"
-                                :nav-message [events/navigate-shop-by-look {:album-keyword :straight-looks}]
-                                :new?        false
-                                :copy        "Straight Looks"}
-                               {:key         "curly"
-                                :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-looks}]
-                                :new?        false
-                                :copy        "Wavy & Curly Looks"}]
-   :shop-looks-menu/expanded? (get-in data keypaths/shop-looks-menu-expanded)})
+  {:header-menu-item/flyout-menu-path keypaths/shop-looks-menu-expanded
+   :header-menu-item/id               "desktop-shop-by-look"
+   :header-menu-item/content          "Shop by look"
+   :flyout/items                      [{:key         "all"
+                                        :nav-message [events/navigate-shop-by-look {:album-keyword :look}]
+                                        :new?        false
+                                        :copy        "All Looks"}
+                                       {:key         "straight"
+                                        :nav-message [events/navigate-shop-by-look {:album-keyword :straight-looks}]
+                                        :new?        false
+                                        :copy        "Straight Looks"}
+                                       {:key         "curly"
+                                        :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-looks}]
+                                        :new?        false
+                                        :copy        "Wavy & Curly Looks"}]
+   :flyout/id                         (when (get-in data keypaths/shop-looks-menu-expanded)
+                                        "shop-looks-menu-expanded")})
 
 (defn shop-bundle-sets-query [data]
-  {:shop-bundle-sets-menu/items     [{:key         "all"
-                                      :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]
-                                      :new?        false
-                                      :copy        "All Bundle Sets"}
-                                     {:key         "straight"
-                                      :nav-message [events/navigate-shop-by-look {:album-keyword :straight-bundle-sets}]
-                                      :new?        false
-                                      :copy        "Straight Bundle Sets"}
-                                     {:key         "curly"
-                                      :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]
-                                      :new?        false
-                                      :copy        "Wavy & Curly Bundle Sets"}]
-   :shop-bundle-sets-menu/expanded? (get-in data keypaths/shop-bundle-sets-menu-expanded)})
+  {:header-menu-item/flyout-menu-path keypaths/shop-bundle-sets-menu-expanded
+   :header-menu-item/id               "desktop-shop-bundle-sets"
+   :header-menu-item/content          "Shop bundle sets"
+   :flyout/items                      [{:key         "all"
+                                        :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]
+                                        :new?        false
+                                        :copy        "All Bundle Sets"}
+                                       {:key         "straight"
+                                        :nav-message [events/navigate-shop-by-look {:album-keyword :straight-bundle-sets}]
+                                        :new?        false
+                                        :copy        "Straight Bundle Sets"}
+                                       {:key         "curly"
+                                        :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]
+                                        :new?        false
+                                        :copy        "Wavy & Curly Bundle Sets"}]
+   :flyout/id                         (when (get-in data keypaths/shop-bundle-sets-menu-expanded)
+                                        "shop-bundle-sets-menu-expanded")})
 
 (defn basic-query [data]
   (let [store (marquee/query data)
@@ -392,35 +376,57 @@
      :vouchers?              (experiments/dashboard-with-vouchers? data)
      :show-freeinstall-link? shop?
      :service-category-page? shop?
-     :site                   (sites/determine-site data)}))
+     :site                   (sites/determine-site data)
+     :desktop-menu/items     (cond-> []
+                               shop?
+                               (concat
+                                [{:header-menu-item/navigation-target [events/navigate-adventure-match-stylist]
+                                  :header-menu-item/id                "desktop-get-mayvenn-install"
+                                  :header-menu-item/content           [:span [:span.p-color.pr1 "NEW"] "Get a Mayvenn Install"]}
+                                 (let [salon-services (->> (get-in data keypaths/categories)
+                                                           (filter (comp #{"30"} :catalog/category-id))
+                                                           first)]
+                                   {:header-menu-item/navigation-target [events/navigate-category salon-services]
+                                    :header-menu-item/id                "desktop-salon-services"
+                                    :header-menu-item/content           [:span (when (:category/new? salon-services)
+                                                                                 [:span.p-color.pr1 "NEW"])
+                                                                         (:flyout-menu/title salon-services)]})])
 
-(defn salon-services-category [data]
-  (let [shop?    (= :shop (sites/determine-site data))
-        category (->> (get-in data keypaths/categories)
-                      (filter (comp #{"30"} :catalog/category-id))
-                      first)]
-    (when shop?
-      {:salon-services (select-keys category [:page/slug
-                                              :catalog/category-id
-                                              :flyout-menu/title
-                                              :category/new?])})))
+                               (= :classic site)
+                               (concat [{:header-menu-item/navigation-target [events/navigate-shop-by-look {:album-keyword :look}]
+                                         :header-menu-item/id                "desktop-shop-by-look"
+                                         :header-menu-item/content           "Shop by look"}])
+
+                               (contains? #{:aladdin :shop} site)
+                               (concat
+                                [(shop-looks-query data)
+                                 (shop-bundle-sets-query data)])
+
+                               :always
+                               (concat
+                                [(shop-a-la-carte-flyout-query data)
+                                 {:header-menu-item/navigation-target [events/navigate-content-guarantee]
+                                  :header-menu-item/id                "desktop-our-guarantee"
+                                  :header-menu-item/content           "Our Guarantee"}
+                                 {:header-menu-item/navigation-target [events/navigate-content-our-hair]
+                                  :header-menu-item/id                "desktop-our-hair"
+                                  :header-menu-item/content           "Our hair"}
+                                 {:header-menu-item/href    blog-url
+                                  :header-menu-item/id                "desktop-blog"
+                                  :header-menu-item/content "Blog"}]))}))
 
 (defn query [data]
   (-> (basic-query data)
       (assoc-in [:user :expanded?] (get-in data keypaths/account-menu-expanded))
-      (merge (salon-services-category data))
-      (merge (shop-a-la-carte-flyout-query data))
-      (merge (shop-looks-query data))
-      (merge (shop-bundle-sets-query data))
       (assoc-in [:cart :quantity] (orders/displayed-cart-count (get-in data keypaths/order)))
       (assoc :site (sites/determine-site data))))
 
 (defn built-component [data opts]
-  (component/html
+  (c/html
    [:header.stacking-context.z4
     (when (get-in data keypaths/hide-header?)
       {:class "hide-on-mb-tb"})
     (let [nav-event (get-in data keypaths/navigation-event)]
       (if (nav/show-minimal-header? nav-event)
         ^:inline (minimal-component events/navigate-home)
-        ^:inline (component/build component (query data) nil)))]))
+        ^:inline (c/build component (query data) nil)))]))
