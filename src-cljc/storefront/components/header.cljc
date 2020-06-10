@@ -194,8 +194,9 @@
 
 (defmethod effects/perform-effects events/flyout-click-away
   [_ _ _ _ app-state]
-  (messages/handle-message events/unstick-flyout)
-  (messages/handle-message events/control-menu-collapse-all {:menus (get-in app-state keypaths/header-menus)}))
+  (when (get-in app-state keypaths/flyout-stuck-open?)
+    (messages/handle-message events/unstick-flyout)
+    (messages/handle-message events/control-menu-collapse-all {:menus (get-in app-state keypaths/header-menus)})))
 
 (defn ->flyout-handlers [keypath]
   {:on-mouse-enter (utils/send-event-callback events/flyout-mouse-enter {:menu-keypath keypath})
