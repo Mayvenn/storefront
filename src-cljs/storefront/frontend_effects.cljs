@@ -104,6 +104,7 @@
   (stringer/fetch-browser-id)
   (refresh-account app-state)
   (browser-events/attach-global-listeners)
+  (browser-events/attach-flyout-click-away-handler)
   (browser-events/attach-esc-key-listener)
   (browser-events/attach-capture-late-readystatechange-callbacks)
   (lucky-orange/track-store-experience (get-in app-state keypaths/store-experience))
@@ -117,6 +118,7 @@
   (lucky-orange/remove-tracking)
   (pixlee/remove-tracking)
   (browser-events/unattach-capture-late-readystatechange-callbacks)
+  (browser-events/detach-flyout-click-away-handler)
   (browser-events/detach-esc-key-listener))
 
 (defmethod effects/perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]

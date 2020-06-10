@@ -560,4 +560,12 @@
 (defpath spreedly-frame-initialized)
 (defpath spreedly-frame-tokenized)
 
+(defpath stick-flyout)
+(defpath unstick-flyout)
+
+(defpath flyout-mouse-enter)
+(defpath flyout-mouse-away)
+(defpath flyout-on-click)
+(defpath flyout-click-away)
+
 (defpath escape-key-pressed)

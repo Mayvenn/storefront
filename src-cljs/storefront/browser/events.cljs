@@ -93,6 +93,19 @@
   (when-let [message-to-handle (dismiss-stylist-filter-modal-event app-state)]
     (handle-message message-to-handle)))
 
+(defn flyout-click-away-handler [e]
+  (let [target (.-target e)]
+    (when-not (some #(.contains % target) (array-seq (js/document.querySelectorAll ".flyout")))
+      (handle-message events/flyout-click-away))))
+
+(defn attach-flyout-click-away-handler
+  []
+  (goog.events/listen js/document EventType/CLICK flyout-click-away-handler))
+
+(defn detach-flyout-click-away-handler
+  []
+  (goog.events/unlisten js/document EventType/CLICK flyout-click-away-handler))
+
 (defn attach-esc-key-listener
   []
   (goog.events/listen js/document EventType/KEYDOWN esc-key-handler))

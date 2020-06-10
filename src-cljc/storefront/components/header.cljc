@@ -12,7 +12,10 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [ui.promo-banner :as promo-banner]))
+            [storefront.transitions :as transitions]
+            [storefront.effects :as effects]
+            [ui.promo-banner :as promo-banner]
+            [storefront.platform.messages :as messages]))
 
 (def blog-url "https://shop.mayvenn.com/blog/")
 
@@ -163,11 +166,42 @@
 
       [:div]))))
 
-(defn ->flyout-handlers [keypath]
-  {:on-mouse-enter (utils/expand-menu-callback keypath)
-   :on-click       (utils/expand-menu-callback keypath)})
 
-(def close-header-menus (utils/collapse-menus-callback keypaths/header-menus))
+(defmethod transitions/transition-state events/stick-flyout
+  [_ _ _ app-state]
+  (assoc-in app-state keypaths/flyout-stuck-open? true))
+
+(defmethod transitions/transition-state events/unstick-flyout
+  [_ _ _ app-state]
+  (assoc-in app-state keypaths/flyout-stuck-open? false))
+
+(defmethod effects/perform-effects events/flyout-mouse-enter
+  [_ _ {:keys [menu-keypath]} _ app-state]
+  (when-not (get-in app-state keypaths/flyout-stuck-open?)
+    (messages/handle-message events/control-menu-expand {:keypath menu-keypath})))
+
+(defmethod effects/perform-effects events/flyout-on-click
+  [_ _ {:keys [menu-keypath]} _ app-state]
+  (messages/handle-message events/stick-flyout)
+  (messages/handle-message events/control-menu-collapse-all {:menus (disj (get-in app-state keypaths/header-menus)
+                                                                           menu-keypath)})
+  (messages/handle-message events/control-menu-expand {:keypath menu-keypath}))
+
+(defmethod effects/perform-effects events/flyout-mouse-away
+  [_ _ _ _ app-state]
+  (when-not (get-in app-state keypaths/flyout-stuck-open?)
+    (messages/handle-message events/control-menu-collapse-all {:menus (get-in app-state keypaths/header-menus)})))
+
+(defmethod effects/perform-effects events/flyout-click-away
+  [_ _ _ _ app-state]
+  (messages/handle-message events/unstick-flyout)
+  (messages/handle-message events/control-menu-collapse-all {:menus (get-in app-state keypaths/header-menus)}))
+
+(defn ->flyout-handlers [keypath]
+  {:on-mouse-enter (utils/send-event-callback events/flyout-mouse-enter {:menu-keypath keypath})
+   :on-click       (utils/send-event-callback events/flyout-on-click {:menu-keypath keypath})})
+
+(def close-header-menus (utils/send-event-callback events/flyout-mouse-away))
 
 (c/defcomponent flyout-content
   [{:flyout/keys [items id]} _ _]
@@ -189,7 +223,7 @@
                             content
                             flyout-menu-path]
     :as data} _ _]
-  [:div.inline.relative
+  [:div.inline.relative.flyout
    (merge
     {:on-mouse-leave close-header-menus}  ;; TODO
     (when flyout-menu-path
@@ -213,7 +247,7 @@
 
 (c/defcomponent desktop-menu
   [{:desktop-menu/keys [items]
-    :as   queried-data} _ _]
+    :as                queried-data} _ _]
   [:div.center
    (for [item items]
      (c/build header-menu-item item (c/component-id (:header-menu-item/id item))))])
@@ -300,6 +334,7 @@
   {:header-menu-item/flyout-menu-path keypaths/shop-a-la-carte-menu-expanded
    :header-menu-item/content          "Shop hair"
    :header-menu-item/id               "desktop-shop-hair"
+   :header-menu-item/action-target    [events/stick-flyout]
    :flyout/items                      (->> (get-in data keypaths/categories)
                                            (filter :flyout-menu/order)
                                            (filter (fn [category]
@@ -412,7 +447,7 @@
                                   :header-menu-item/id                "desktop-our-hair"
                                   :header-menu-item/content           "Our hair"}
                                  {:header-menu-item/href    blog-url
-                                  :header-menu-item/id                "desktop-blog"
+                                  :header-menu-item/id      "desktop-blog"
                                   :header-menu-item/content "Blog"}]))}))
 
 (defn query [data]
