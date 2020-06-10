@@ -219,7 +219,6 @@
 (c/defcomponent header-menu-item
   [{:header-menu-item/keys [navigation-target
                             href
-                            action-target
                             content
                             flyout-menu-path]
     :as data} _ _]
@@ -234,9 +233,6 @@
 
       navigation-target
       (merge (apply utils/route-to navigation-target))
-
-      action-target
-      (merge (apply utils/fake-href action-target))
 
       href
       (merge {:href href}))
@@ -334,7 +330,6 @@
   {:header-menu-item/flyout-menu-path keypaths/shop-a-la-carte-menu-expanded
    :header-menu-item/content          "Shop hair"
    :header-menu-item/id               "desktop-shop-hair"
-   :header-menu-item/action-target    [events/stick-flyout]
    :flyout/items                      (->> (get-in data keypaths/categories)
                                            (filter :flyout-menu/order)
                                            (filter (fn [category]
