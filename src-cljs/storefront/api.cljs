@@ -965,7 +965,7 @@
 
 (defn assign-servicing-stylist
   "Assigns a servicing stylist to an order, or creates such an order if no order number given"
-  [servicing-stylist-id stylist-id number token cohort-flags handler]
+  [servicing-stylist-id stylist-id number token heat-feature-flags handler]
   (storeback-api-req
    POST
    "/v2/assign-servicing-stylist"
@@ -974,7 +974,7 @@
                      :servicing-stylist-id servicing-stylist-id
                      :number               number
                      :token                token}
-                    (when cohort-flags {:cohort-flags cohort-flags}))
+                    (when heat-feature-flags {:heat-feature-flags heat-feature-flags}))
     :handler (comp handler orders/TEMP-pretend-service-items-do-not-exist)}))
 
 (defn remove-servicing-stylist
