@@ -13,6 +13,7 @@
 
 .btn-outline:disabled,
 .btn-outline.is-disabled {
+    border-color: var(--warm-gray);
     background-color: var(--cool-gray);
     color: var(--gray);
 }
@@ -20,6 +21,7 @@
 :root {
   --gray:       #cccccc;
   --cool-gray:  #EEEFEF;
+  --warm-gray:  #ECE6E2;
   --darken-1: rgba(0, 0, 0, .075);
   --darken-3: rgba(0, 0, 0, .375);
 }
