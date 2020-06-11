@@ -39,10 +39,10 @@
                (c/create-ref! this "filter-tabs")
                #?(:cljs
                   (set! (.-handle-scroll this)
-                        (fn [e] (c/set-state! this :stuck? (-> (c/get-ref this "filter-tabs")
-                                                               .getBoundingClientRect
-                                                               (object/get "top")
-                                                               (<= 0))))))
+                        (fn [e] (c/set-state! this :stuck? (some-> (c/get-ref this "filter-tabs")
+                                                                   .getBoundingClientRect
+                                                                   (object/get "top")
+                                                                   (<= 0))))))
                {:stuck? false})
   (did-mount [this]
    #?(:cljs (goog.events/listen js/window EventType/SCROLL (.-handle-scroll this))))
