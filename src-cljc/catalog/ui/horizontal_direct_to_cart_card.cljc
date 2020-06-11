@@ -75,7 +75,7 @@
          [:div.mbn1 {:style {:max-width "111px"}}
           (ui/button-small-secondary
            (merge (apply utils/fake-href cta-target)
-                  {:key       react-key
+                  {:key       (str "add-to-cart-" react-key)
                    :class     "px0"
-                   :data-test react-key})
+                   :data-test (str "add-to-cart-" react-key)})
            "Add To Cart")]]]]])))

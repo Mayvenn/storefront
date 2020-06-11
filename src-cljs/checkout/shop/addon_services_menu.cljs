@@ -154,12 +154,13 @@
     (if previously-checked?
       (api/delete-line-item session-id order variant-id)
       (api/add-sku-to-bag session-id
-                          {:token      (:token order)
-                           :number     (:number order)
-                           :user-id    (get-in app-state keypaths/user-id)
-                           :user-token (get-in app-state keypaths/user-token)
-                           :sku        sku
-                           :quantity   quantity}
+                          {:token              (:token order)
+                           :number             (:number order)
+                           :user-id            (get-in app-state keypaths/user-id)
+                           :user-token         (get-in app-state keypaths/user-token)
+                           :heat-feature-flags (get-in app-state keypaths/features)
+                           :sku                sku
+                           :quantity           quantity}
                           #(messages/handle-message events/api-success-add-sku-to-bag
                                                     {:order    %
                                                      :quantity quantity

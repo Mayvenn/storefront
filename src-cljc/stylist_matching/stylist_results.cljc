@@ -201,6 +201,7 @@
                                      (get-in app-state storefront.keypaths/store-stylist-id)
                                      number
                                      token
+                                     (get-in app-state keypaths/features)
                                      (fn [order]
                                        (messages/handle-message events/api-success-assign-servicing-stylist-pre-purchase
                                                                 {:order             order

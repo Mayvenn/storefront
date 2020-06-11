@@ -886,7 +886,7 @@
                                                      (assoc (waiter-style->std-error response-body) :promo-code promo-code))
                             (default-error-handler (alter-shop-freeinstall-promotion-error shop? promo-code %)))))})))
 
-(defn add-sku-to-bag [session-id {:keys [token number sku] :as params} handler]
+(defn add-sku-to-bag [session-id {:keys [token number sku heat-feature-flags] :as params} handler]
   (storeback-api-req
    POST
    "/v2/add-to-bag"
@@ -894,16 +894,18 @@
    {:params (merge (select-keys params [:quantity :stylist-id :user-id :user-token])
                    {:session-id session-id
                     :sku (:catalog/sku-id sku)}
+                   (when heat-feature-flags {:heat-feature-flags heat-feature-flags})
                    (when (and token number) {:token token :number number}))
     :handler (comp handler orders/TEMP-pretend-service-items-do-not-exist)}))
 
-(defn add-skus-to-bag [session-id {:keys [token number sku-id->quantity] :as params} handler]
+(defn add-skus-to-bag [session-id {:keys [token number sku-id->quantity heat-feature-flags] :as params} handler]
   (storeback-api-req
    POST
    "/v2/bulk-add-to-bag"
    (conj request-keys/add-to-bag (set (keys sku-id->quantity)))
    {:params  (merge {:session-id       session-id
                      :sku-id->quantity sku-id->quantity}
+                    (when heat-feature-flags {:heat-feature-flags heat-feature-flags})
                     (when (and token number) {:token token :number number}))
     :handler (fn [order]
                (handler {:order            (orders/TEMP-pretend-service-items-do-not-exist order)
@@ -963,15 +965,16 @@
 
 (defn assign-servicing-stylist
   "Assigns a servicing stylist to an order, or creates such an order if no order number given"
-  [servicing-stylist-id stylist-id number token handler]
+  [servicing-stylist-id stylist-id number token cohort-flags handler]
   (storeback-api-req
    POST
    "/v2/assign-servicing-stylist"
    request-keys/assign-servicing-stylist
-   {:params  {:stylist-id           stylist-id
-              :servicing-stylist-id servicing-stylist-id
-              :number               number
-              :token                token}
+   {:params  (merge {:stylist-id           stylist-id
+                     :servicing-stylist-id servicing-stylist-id
+                     :number               number
+                     :token                token}
+                    (when cohort-flags {:cohort-flags cohort-flags}))
     :handler (comp handler orders/TEMP-pretend-service-items-do-not-exist)}))
 
 (defn remove-servicing-stylist

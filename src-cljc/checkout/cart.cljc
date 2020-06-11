@@ -23,15 +23,16 @@
      (let [quantity 1
            sku      (get-in app-state (conj keypaths/v2-skus "SRV-LBI-000"))]
        (api/add-sku-to-bag (get-in app-state keypaths/session-id)
-                           {:token      (get-in app-state keypaths/order-token)
-                            :number     (get-in app-state keypaths/order-number)
-                            :stylist-id (get-in app-state keypaths/store-stylist-id)
-                            :user-id    (get-in app-state keypaths/user-id)
-                            :user-token (get-in app-state keypaths/user-token)
+                           {:token              (get-in app-state keypaths/order-token)
+                            :number             (get-in app-state keypaths/order-number)
+                            :stylist-id         (get-in app-state keypaths/store-stylist-id)
+                            :user-id            (get-in app-state keypaths/user-id)
+                            :user-token         (get-in app-state keypaths/user-token)
+                            :heat-feature-flags (get-in app-state keypaths/features)
                             ;; Not necessarily an actual leave-out service, just need to use any install service
                             ;; line item.  The actual SKU will be calculated by waiter on every cart modification.
-                            :sku        sku
-                            :quantity   quantity}
+                            :sku                sku
+                            :quantity           quantity}
                            #(messages/handle-message events/api-success-add-sku-to-bag
                                                      {:order    %
                                                       :quantity quantity
@@ -88,10 +89,11 @@
            order    (get-in app-state keypaths/order)
            quantity 1]
        (api/add-sku-to-bag (get-in app-state keypaths/session-id)
-                           {:sku      sku
-                            :token    (:token order)
-                            :number   (:number order)
-                            :quantity quantity}
+                           {:sku                sku
+                            :token              (:token order)
+                            :number             (:number order)
+                            :quantity           quantity
+                            :heat-feature-flags (get-in app-state keypaths/features)}
                            #(messages/handle-message events/api-success-add-sku-to-bag
                                                      {:order    %
                                                       :quantity quantity
