@@ -1,8 +1,7 @@
 (ns homepage.ui.hero
-  (:require
-   [storefront.component :as c]
-   [storefront.components.ui :as ui]
-   [ui.molecules :refer [hero]]))
+  (:require [storefront.component :as c]
+            [storefront.components.svg :as svg]
+            [ui.molecules :refer [hero]]))
 
 (def ^:private free-standard-shipping-bar
   [:div.mx-auto {:style {:height "3em"}}
@@ -10,10 +9,8 @@
     {:style {:height "2.25em"
              :margin-top "-1px"
              :padding-top "1px"}}
-    [:div.px2
-     (ui/ucare-img {:alt "" :height "25"}
-                   "38d0a770-2dcd-47a3-a035-fc3ccad11037")]
-    [:div.h7.white.medium
+    (svg/shipping {:height "18px" :width "17px"})
+    [:div.h7.white.medium.pxp5
      "FREE standard shipping"]]])
 
 (c/defcomponent organism
