@@ -56,11 +56,11 @@
 
 (defn ^:private shopping-categories-title-molecule
   [{:shopping-categories.title/keys [primary]}]
-  [:div.my3.center.mx-auto.title-1.canela primary])
+  [:div.mb3.center.mx-auto.title-1.canela primary])
 
 (c/defcomponent organism
   [data _ _]
-  [:div.p2.pb2.my5
+  [:div.px2.myj3
    (shopping-categories-title-molecule data)
    [:div.col-8-on-dt.container
     (boxes-list-molecule data)]])

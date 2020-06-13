@@ -12,7 +12,7 @@
            :data-ref  id)
     label)])
 
-(defn ^:private quality-hair-body-atom
+(defn ^:private quality-hair-body-molecule
   [{:quality-hair.body/keys [primary]}]
   [:div.title-2.canela primary])
 
@@ -28,8 +28,8 @@
 
 (c/defcomponent organism
   [data _ _]
-  [:div.col-6-on-dt.col-9.mx-auto.my5.py4
-   [:div.col-9-on-dt.mx-auto.flex.flex-column.center.left-align-on-dt.mt5.pt3
+  [:div.col-6-on-dt.col-9.mx-auto ;; .my5.py4
+   [:div.col-9-on-dt.mx-auto.flex.flex-column.center.left-align-on-dt.myj3
     (quality-hair-title-molecule data)
-    (quality-hair-body-atom data)
+    (quality-hair-body-molecule data)
     (quality-hair-cta-molecule data)]])

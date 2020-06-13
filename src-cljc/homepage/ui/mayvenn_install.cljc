@@ -47,7 +47,7 @@
 (defn ^:private mayvenn-install-title-molecule
   [{:mayvenn-install.title/keys [primary secondary]}]
   [:div.center.col-6-on-dt.mx-auto
-   [:div.title-1.canela.mb3 primary]
+   [:div.title-1.canela.px1.mb3 primary]
    [:div.col-9.mx-auto secondary]])
 
 (c/defcomponent organism
@@ -55,7 +55,7 @@
   (when (seq data)
     [:div.mb4.mb0-on-dt
      A/horizontal-rule-atom
-     [:div.my6.pt4
+     [:div.mtj3
       (mayvenn-install-title-molecule data)]
      [:div.flex-on-dt
       (mayvenn-install-image-molecule data)

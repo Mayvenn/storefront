@@ -32,7 +32,7 @@
 
 (c/defcomponent organism
   [data _ _]
-  [:div.py8.col-10.mx-auto.center
+  [:div.col-10.mx-auto.center.myj3
    hashtag-mayvenn-hair-title-atom
    [:div.flex.flex-wrap.py3
     (looks-images-molecule data)]

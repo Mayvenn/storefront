@@ -4,7 +4,7 @@
             [ui.molecules :refer [hero]]))
 
 (def ^:private free-standard-shipping-bar
-  [:div.mx-auto {:style {:height "3em"}}
+  [:div.mx-auto
    [:div.bg-black.flex.items-center.justify-center
     {:style {:height "2.25em"
              :margin-top "-1px"

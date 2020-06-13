@@ -51,8 +51,8 @@
   [data _ _]
   (when (seq data)
     [:div
-     [:div.col-6-on-dt.col-9.mx-auto.my5.pt4
-      [:div.col-9-on-dt.mx-auto.flex.flex-column.center.left-align-on-dt.mt5.pt3
+     [:div.col-6-on-dt.col-9.mx-auto
+      [:div.col-9-on-dt.mx-auto.flex.flex-column.center.left-align-on-dt.myj3
        (quality-stylists-title-molecule data)
        (quality-stylists-body-atom data)
        (quality-stylists-cta-molecule data)]]

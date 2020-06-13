@@ -105,6 +105,17 @@
 .mbnp5 { margin-bottom: -5px; }
 .mbnp6 { margin-bottom: -6px; }
 
+/* Juri sizes */
+
+.mtj3,.myj3 { margin-top: 60px }
+.mtj2,.myj2 { margin-top: 45px }
+.mtj1,.myj1 { margin-top: 30px }
+
+.mbj3,.myj3 { margin-bottom: 60px }
+.mbj2,.myj2 { margin-bottom: 45px }
+.mbj1,.myj1 { margin-bottom: 30px }
+
+
 :root {
   --space-1: .5rem;
   --space-2: 1rem;

@@ -60,7 +60,7 @@
   (when (seq data)
     [:div.mb4.mb0-on-dt
      A/horizontal-rule-atom
-     [:div.my6.pt4
+     [:div.mtj3
       (wig-customization-title-molecule data)]
      [:div.flex-on-dt
       {:style {:flex-direction "row-reverse"}}
