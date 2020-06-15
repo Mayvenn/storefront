@@ -7,7 +7,7 @@
   [{:promotion-helper.ui.drawer-face.circle/keys [color value]}]
   (c/html
    [:div.circle.flex.items-center.justify-center.ml2
-    {:style {:height "20px" :width "20px"}
+    {:style {:height "20px" :min-width "20px"}
      :class color}
     value]))
 

@@ -33,7 +33,7 @@
        {:promotion-helper.ui.drawer-face.circle/color "bg-white"
         :promotion-helper.ui.drawer-face.circle/value
         (svg/check-mark {:class "fill-teal ml1"
-                         :style {:height "14px" :width "18px"}})}))}
+                         :style {:height "12px" :width "14px"}})}))}
    (when opened?
      {:drawer-contents
       {:promotion-helper.ui.drawer-contents/id "contents"
