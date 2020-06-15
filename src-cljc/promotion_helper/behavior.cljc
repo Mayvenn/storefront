@@ -1,10 +1,17 @@
 (ns promotion-helper.behavior
-  (:require [storefront.transitions :as t]))
+  (:require [storefront.transitions :as t]
+            [promotion-helper.keypaths :as k]))
 
-(defmethod t/transition-state [:ui :promotion-helper :opened]
-  [_ event args app-state]
-  (assoc-in app-state [:ui :promotion-helper :opened?] true))
+;; Promotion Helper events
+(def ui-promotion-helper-closed [:ui :promotion-helper :closed])
+(def ui-promotion-helper-opened [:ui :promotion-helper :opened])
 
-(defmethod t/transition-state [:ui :promotion-helper :closed]
+(defmethod t/transition-state ui-promotion-helper-opened
   [_ event args app-state]
-  (assoc-in app-state [:ui :promotion-helper :opened?] false))
+  (-> app-state
+      (assoc-in k/ui-promotion-helper-opened true)))
+
+(defmethod t/transition-state ui-promotion-helper-closed
+  [_ event args app-state]
+  (-> app-state
+      (assoc-in k/ui-promotion-helper-opened false)))
