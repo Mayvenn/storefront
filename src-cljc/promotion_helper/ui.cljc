@@ -19,82 +19,6 @@
                                 breakpoint
                                 idx))))))
 
-(defn promotion-helper-model<-
-  ;; COREY a ui state model for the session
-  ;; COREY existing structure for menus, collapse?
-  [app-state free-mayvenn-service]
-  (when (and (experiments/promotion-helper? app-state)
-             free-mayvenn-service)
-    (assoc free-mayvenn-service
-           :promotion-helper/opened?
-           (boolean
-            (get-in app-state
-                    [:ui :promotion-helper :opened?])))))
-
-(defn promotion-helper-ui<-
-  [{:promotion-helper/keys [opened?]
-    :free-mayvenn-service/keys [failed-criteria-count
-                                service-item
-                                hair-success hair-missing hair-missing-quantity
-                                stylist]
-    :as model}]
-  (merge
-   {:drawer-face
-    (merge
-     {:promotion-helper.ui.drawer-face.action/id     "promotion-helper"
-      :promotion-helper.ui.drawer-face.action/target [(if opened?
-                                                        [:ui :promotion-helper :closed]
-                                                        [:ui :promotion-helper :opened])]}
-     (if (pos? failed-criteria-count)
-       {:promotion-helper.ui.drawer-face.circle/color "bg-red white"
-        :promotion-helper.ui.drawer-face.circle/value failed-criteria-count}
-       {:promotion-helper.ui.drawer-face.circle/color "bg-white"
-        :promotion-helper.ui.drawer-face.circle/value
-        (svg/check-mark {:class "fill-teal ml1"
-                         :style {:height "14px" :width "18px"}})}))}
-   (when opened?
-     {:drawer-contents
-      {:promotion-helper.ui.drawer-contents/id "contents"
-       :promotion-helper.ui.drawer-contents/conditions
-       [{:promotion-helper.ui.drawer-contents.condition.title/primary-struck "Add Your Services"
-         :promotion-helper.ui.drawer-contents.condition.title/secondary      (:product-name service-item)
-         :promotion-helper.ui.drawer-contents.condition.progress/completed   1
-         :promotion-helper.ui.drawer-contents.condition.progress/remaining   0}
-
-        (if (empty? hair-missing)
-          {:promotion-helper.ui.drawer-contents.condition.title/primary-struck "Add Your Hair"
-           :promotion-helper.ui.drawer-contents.condition.title/secondary      hair-success
-           :promotion-helper.ui.drawer-contents.condition.progress/completed   3
-           :promotion-helper.ui.drawer-contents.condition.progress/remaining   0}
-          (let [missing-description (->> hair-missing
-                                         (map (fn [[word _ quantity _]]
-                                                (str quantity " " word))))]
-            {:promotion-helper.ui.drawer-contents.condition.title/primary      "Add Your Hair"
-             :promotion-helper.ui.drawer-contents.condition.title/secondary    (->> missing-description
-                                                                                    (clojure.string/join " and ")
-                                                                                    (str "Add "))
-             :promotion-helper.ui.drawer-contents.condition.progress/completed (- 3 hair-missing-quantity)
-             :promotion-helper.ui.drawer-contents.condition.progress/remaining hair-missing-quantity
-             :promotion-helper.ui.drawer-contents.condition.action/id          "condition-add-hair-button" ;; COREY
-             :promotion-helper.ui.drawer-contents.condition.action/label       "add"
-             :promotion-helper.ui.drawer-contents.condition.action/target      [events/navigate-category
-                                                                                {:catalog/category-id "23"
-                                                                                 :page/slug           "mayvenn-install"}]}))
-        (if stylist
-          {:promotion-helper.ui.drawer-contents.condition.title/primary-struck "Add Your Stylist"
-           :promotion-helper.ui.drawer-contents.condition.title/secondary      (str "You have selected "
-                                                                                    (:store-nickname stylist)
-                                                                                    " as your stylist")
-           :promotion-helper.ui.drawer-contents.condition.progress/completed   1
-           :promotion-helper.ui.drawer-contents.condition.progress/remaining   0}
-          {:promotion-helper.ui.drawer-contents.condition.title/primary      "Add Your Stylist"
-           :promotion-helper.ui.drawer-contents.condition.title/secondary    "Select a Mayvenn Certified Stylist"
-           :promotion-helper.ui.drawer-contents.condition.progress/completed 0
-           :promotion-helper.ui.drawer-contents.condition.progress/remaining 1
-           :promotion-helper.ui.drawer-contents.condition.action/id          "condition-add-stylist-button"
-           :promotion-helper.ui.drawer-contents.condition.action/label       "add"
-           :promotion-helper.ui.drawer-contents.condition.action/target      [events/navigate-adventure-match-stylist]})]}})))
-
 (defn drawer-face-circle-molecule
   [{:promotion-helper.ui.drawer-face.circle/keys [color value]}]
   (component/html
@@ -184,16 +108,94 @@
    (component/build drawer-face-organism drawer-face)
    (component/build drawer-contents-organism drawer-contents)])
 
+(defn promotion-helper-ui<-
+  [{:promotion-helper/keys [opened?]}
+   {:free-mayvenn-service/keys [failed-criteria-count
+                                service-item
+                                hair-success hair-missing hair-missing-quantity
+                                stylist]}]
+  (merge
+   {:drawer-face
+    (merge
+     {:promotion-helper.ui.drawer-face.action/id     "promotion-helper"
+      :promotion-helper.ui.drawer-face.action/target [(if opened?
+                                                        [:ui :promotion-helper :closed]
+                                                        [:ui :promotion-helper :opened])]}
+     (if (pos? failed-criteria-count)
+       {:promotion-helper.ui.drawer-face.circle/color "bg-red white"
+        :promotion-helper.ui.drawer-face.circle/value failed-criteria-count}
+       {:promotion-helper.ui.drawer-face.circle/color "bg-white"
+        :promotion-helper.ui.drawer-face.circle/value
+        (svg/check-mark {:class "fill-teal ml1"
+                         :style {:height "14px" :width "18px"}})}))}
+   (when opened?
+     {:drawer-contents
+      {:promotion-helper.ui.drawer-contents/id "contents"
+       :promotion-helper.ui.drawer-contents/conditions
+       [{:promotion-helper.ui.drawer-contents.condition.title/primary-struck "Add Your Services"
+         :promotion-helper.ui.drawer-contents.condition.title/secondary      (:product-name service-item)
+         :promotion-helper.ui.drawer-contents.condition.progress/completed   1
+         :promotion-helper.ui.drawer-contents.condition.progress/remaining   0}
+
+        (if (empty? hair-missing)
+          {:promotion-helper.ui.drawer-contents.condition.title/primary-struck "Add Your Hair"
+           :promotion-helper.ui.drawer-contents.condition.title/secondary      hair-success
+           :promotion-helper.ui.drawer-contents.condition.progress/completed   3
+           :promotion-helper.ui.drawer-contents.condition.progress/remaining   0}
+          (let [missing-description (->> hair-missing
+                                         (map (fn [[word _ quantity _]]
+                                                (str quantity " " word))))]
+            {:promotion-helper.ui.drawer-contents.condition.title/primary      "Add Your Hair"
+             :promotion-helper.ui.drawer-contents.condition.title/secondary    (->> missing-description
+                                                                                    (clojure.string/join " and ")
+                                                                                    (str "Add "))
+             :promotion-helper.ui.drawer-contents.condition.progress/completed (- 3 hair-missing-quantity)
+             :promotion-helper.ui.drawer-contents.condition.progress/remaining hair-missing-quantity
+             :promotion-helper.ui.drawer-contents.condition.action/id          "condition-add-hair-button" ;; COREY
+             :promotion-helper.ui.drawer-contents.condition.action/label       "add"
+             :promotion-helper.ui.drawer-contents.condition.action/target      [events/navigate-category
+                                                                                {:catalog/category-id "23"
+                                                                                 :page/slug           "mayvenn-install"}]}))
+        (if stylist
+          {:promotion-helper.ui.drawer-contents.condition.title/primary-struck "Add Your Stylist"
+           :promotion-helper.ui.drawer-contents.condition.title/secondary      (str "You have selected "
+                                                                                    (:store-nickname stylist)
+                                                                                    " as your stylist")
+           :promotion-helper.ui.drawer-contents.condition.progress/completed   1
+           :promotion-helper.ui.drawer-contents.condition.progress/remaining   0}
+          {:promotion-helper.ui.drawer-contents.condition.title/primary      "Add Your Stylist"
+           :promotion-helper.ui.drawer-contents.condition.title/secondary    "Select a Mayvenn Certified Stylist"
+           :promotion-helper.ui.drawer-contents.condition.progress/completed 0
+           :promotion-helper.ui.drawer-contents.condition.progress/remaining 1
+           :promotion-helper.ui.drawer-contents.condition.action/id          "condition-add-stylist-button"
+           :promotion-helper.ui.drawer-contents.condition.action/label       "add"
+           :promotion-helper.ui.drawer-contents.condition.action/target      [events/navigate-adventure-match-stylist]})]}})))
+
+(defn promotion-helper-model<-
+  "Model doesn't exist when there isn't a mayvenn service that can be gratis"
+  [app-state free-mayvenn-service]
+  (when free-mayvenn-service
+    {:promotion-helper/opened?
+     (boolean (get-in app-state [:ui :promotion-helper :opened?]))}))
+
+;; COREY
+;; Concepts that exist, but not modeled well:
+;;   servicing stylist, sku-catalog, and orders
+;; Additionally page models, ui states, ffs need to be considered completely
+
 (defn promotion-helper
   [state]
-  (let [servicing-stylist (get-in state adventure.keypaths/adventure-servicing-stylist)
-        sku-catalog       (get-in state storefront.keypaths/v2-skus) ;; COREY modelize
-        waiter-order      (get-in state storefront.keypaths/order)   ;; COREY modelize
-        mayvenn-install   (api.orders/free-mayvenn-service servicing-stylist
-                                                           waiter-order
-                                                           sku-catalog)
-        model             (promotion-helper-model<- state mayvenn-install)]
-    (when (seq model)
+  (let [servicing-stylist      (get-in state adventure.keypaths/adventure-servicing-stylist)
+        sku-catalog            (get-in state storefront.keypaths/v2-skus)
+        waiter-order           (get-in state storefront.keypaths/order)
+        free-mayvenn-service   (api.orders/free-mayvenn-service servicing-stylist
+                                                                waiter-order
+                                                                sku-catalog)
+        promotion-helper-model (promotion-helper-model<- state
+                                                         free-mayvenn-service)]
+    (when (and (experiments/promotion-helper? state)
+               promotion-helper-model)
       (component/build promotion-helper-template
-                       (promotion-helper-ui<- model)
+                       (promotion-helper-ui<- promotion-helper-model
+                                              free-mayvenn-service)
                        {}))))
