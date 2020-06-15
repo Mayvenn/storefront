@@ -40,11 +40,18 @@
     :as model}]
   (merge
    {:drawer-face
-    {:promotion-helper.ui.drawer-face.action/id     "promotion-helper"
-     :promotion-helper.ui.drawer-face.action/target [(if opened?
-                                                       [:ui :promotion-helper :closed]
-                                                       [:ui :promotion-helper :opened])]
-     :promotion-helper.ui.drawer-face.circle/value  failed-criteria-count}}
+    (merge
+     {:promotion-helper.ui.drawer-face.action/id     "promotion-helper"
+      :promotion-helper.ui.drawer-face.action/target [(if opened?
+                                                        [:ui :promotion-helper :closed]
+                                                        [:ui :promotion-helper :opened])]}
+     (if (pos? failed-criteria-count)
+       {:promotion-helper.ui.drawer-face.circle/color "bg-red white"
+        :promotion-helper.ui.drawer-face.circle/value failed-criteria-count}
+       {:promotion-helper.ui.drawer-face.circle/color "bg-white"
+        :promotion-helper.ui.drawer-face.circle/value
+        (svg/check-mark {:class "fill-teal ml1"
+                         :style {:height "14px" :width "18px"}})}))}
    (when opened?
      {:drawer-contents
       {:promotion-helper.ui.drawer-contents/id "contents"
@@ -89,10 +96,12 @@
            :promotion-helper.ui.drawer-contents.condition.action/target      [events/navigate-adventure-match-stylist]})]}})))
 
 (defn drawer-face-circle-molecule
-  [{:promotion-helper.ui.drawer-face.circle/keys [value]}]
+  [{:promotion-helper.ui.drawer-face.circle/keys [color value]}]
   (component/html
-   [:div.circle.bg-red.white.flex.items-center.justify-center.ml2
-    {:style {:height "20px" :width "20px"}} value]))
+   [:div.circle.flex.items-center.justify-center.ml2
+    {:style {:height "20px" :width "20px"}
+     :class color}
+    value]))
 
 (defcomponent drawer-face-organism
   [data _ _]
