@@ -1,9 +1,9 @@
 (ns checkout.shop.addon-services-menu
   (:require
+   api.orders
    [clojure.set :as set]
    [clojure.string :as string]
    [spice.maps :as maps]
-   [storefront.accessors.mayvenn-install :as mayvenn-install]
    [storefront.accessors.orders :as orders]
    [storefront.api :as api]
    [storefront.component :as component]
@@ -71,7 +71,7 @@
            (or
             (when (not (stylist-can-perform-addon-service? stylist addon-sku-id))
               "Your stylist does not yet offer this service on Mayvenn")
-            (when (not (contains? (set (map mayvenn-install/hair-family->service-type addon-service-hair-family)) service-type))
+            (when (not (contains? (set (map api.orders/hair-family->service-type addon-service-hair-family)) service-type))
               (let [facet-name (->> addon-service-hair-family first (get hair-family-facet) :sku/name)]
                 (str "Only available with " facet-name " Install")))))))
 
@@ -94,7 +94,8 @@
   (let [{:keys [available-addon-skus
                 unavailable-addon-skus]} (addon-skus-for-stylist-grouped-by-availability
                                           {:facets          (get-in data keypaths/v2-facets)
-                                           :mayvenn-install (mayvenn-install/mayvenn-install data)
+                                           ;; NOTE: current-order contains the mayvenn-install/keys one would expect
+                                           :mayvenn-install (api.orders/current data)
                                            :skus            (get-in data keypaths/v2-skus)})]
     {:addon-services/spinning? (utils/requesting? data request-keys/get-skus)
      :addon-services/services  (map (partial addon-service-sku->addon-service-menu-entry data)
@@ -171,7 +172,8 @@
                 unavailable-addon-sku-ids]} (set/rename-keys
                                              (->> (addon-skus-for-stylist-grouped-by-availability
                                                    {:facets          (get-in app-state keypaths/v2-facets)
-                                                    :mayvenn-install (mayvenn-install/mayvenn-install app-state)
+                                                    ;; NOTE: current-order contains the mayvenn-install/keys one would expect
+                                                    :mayvenn-install (api.orders/current app-state)
                                                     :skus            (get-in app-state keypaths/v2-skus)})
                                                   (maps/map-values #(string/join "," (mapv :catalog/sku-id %))))
                                              {:available-addon-skus   :available-addon-sku-ids

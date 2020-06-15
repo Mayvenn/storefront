@@ -18,7 +18,6 @@
    [spice.core :as spice]
    spice.selector
    [storefront.accessors.adjustments :as adjustments]
-   [storefront.accessors.mayvenn-install :as mayvenn-install]
    [storefront.accessors.experiments :as experiments]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.line-items :as line-items]
@@ -664,7 +663,7 @@
          [entered? applied? locked?
           stylist quantity-remaining]
          :as               mayvenn-install
-         servicing-stylist :mayvenn-install/stylist} (mayvenn-install/mayvenn-install data)
+         servicing-stylist :mayvenn-install/stylist} (api.orders/current data)
 
 
         any-services?                  (seq (:services/items cart-services))
@@ -822,7 +821,7 @@
   (component/build template
                    (merge
                     (when (and (zero? (orders/displayed-cart-count (get-in app-state keypaths/order)))
-                               (-> app-state mayvenn-install/mayvenn-install :mayvenn-install/entered? not))
+                               (-> app-state api.orders/current :mayvenn-install/entered? not))
                       {:promo-banner app-state})
                     {:cart                   (query app-state)
                      :header                 app-state

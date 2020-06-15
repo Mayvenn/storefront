@@ -1,5 +1,6 @@
 (ns checkout.confirmation
-  (:require [catalog.images :as catalog-images]
+  (:require api.orders
+            [catalog.images :as catalog-images]
             [checkout.shop.cart-v202004 :as cart]
             [checkout.templates.item-card :as item-card]
             [checkout.ui.cart-item :as cart-item]
@@ -9,7 +10,6 @@
             [spice.core :as spice]
             [spice.maps :as maps]
             [storefront.accessors.adjustments :as adjustments]
-            [storefront.accessors.mayvenn-install :as mayvenn-install]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.shipping :as shipping]
@@ -435,7 +435,7 @@
                                 service-title
                                 addon-services
                                 service-image-url]
-         :as                   mayvenn-install} (mayvenn-install/mayvenn-install data)
+         :as                   mayvenn-install} (api.orders/current data)
         user                                    (get-in data keypaths/user)
         wig-customization?                      (= :wig-customization service-type)
         skus                                    (get-in data keypaths/v2-skus)
