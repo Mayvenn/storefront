@@ -2,14 +2,11 @@
   (:require [catalog.categories :as categories]
             [promotion-helper.ui :refer [promotion-helper]]
             [storefront.accessors.auth :as auth]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.nav :as nav]
-            [storefront.accessors.orders :as orders]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.footer-links :as footer-links]
             [storefront.components.footer-minimal :as footer-minimal]
             [storefront.components.ui :as ui]
-            [storefront.components.svg :as svg]
             [storefront.config :as config]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -108,7 +105,7 @@
          ^:inline (dtc-link link))])]])
 
 (defcomponent dtc-full-component
-  [{:keys [contacts link-columns essence-copy promotion-helper?]} owner opts]
+  [{:keys [contacts link-columns essence-copy]} owner opts]
   [:div.bg-cool-gray
    [:div.bg-p-color.pt1]
    [:div.container
@@ -124,19 +121,7 @@
    [:div.hide-on-dt {:style {:margin-bottom "90px"}}
     (component/build footer-links/component {:minimal? false} nil)]
    [:div.hide-on-mb-tb
-    (component/build footer-links/component {:minimal? false} nil)]
-
-   (when promotion-helper?
-    [:div.fixed.z4.bottom-0.left-0.right-0.bg-black.white
-     [:div.flex.items-center.justify-center.pl3.pr4.py2
-      [:div.flex-auto.pr4
-       [:div.flex.items-center.justify-left.proxima.button-font-2.bold
-        [:div.circle.bg-red.white.flex.items-center.justify-center.ml2
-         {:style {:height "20px" :width "20px"}} "2"]]
-       [:div.button-font-3.mtp4.regular "Swipe up to learn how to get your service for free"]]
-      [:div.fill-white.flex.items-center.justify-center
-       (svg/dropdown-arrow {:height "18px"
-                            :width  "18px"})]]])])
+    (component/build footer-links/component {:minimal? false} nil)]])
 
 (defn ^:private split-evenly
   [coll]
@@ -183,12 +168,10 @@
                                 (concat non-category-links)
                                 (remove nil?)
                                 (sort-by :sort-order))]
-    {:promotion-helper? (and (experiments/promotion-helper? data)
-                             (:mayvenn-install/entered? (api.orders/current data)))
-     :contacts          (contacts-query data)
-     :link-columns      (split-evenly links)
-     :essence-copy      (str "All orders include a one year subscription to ESSENCE Magazine - a $10 value! "
-                             "Offer and refund details will be included with your confirmation.")}))
+    {:contacts         (contacts-query data)
+     :link-columns     (split-evenly links)
+     :essence-copy     (str "All orders include a one year subscription to ESSENCE Magazine - a $10 value! "
+                            "Offer and refund details will be included with your confirmation.")}))
 
 (defn built-component
   [data opts]
@@ -198,7 +181,11 @@
       (footer-minimal/built-component data nil)
 
       (= (get-in data keypaths/store-slug) "shop")
-      (component/build dtc-full-component (query data) {:key "dtc-full-footer"})
+      [:div
+       (component/build dtc-full-component
+                        (query data)
+                        {:key "dtc-full-footer"})
+       (promotion-helper.ui/promotion-helper data)]
 
       :else
       (component/build full-component (query data) nil))))

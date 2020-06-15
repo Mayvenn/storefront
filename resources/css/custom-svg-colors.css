@@ -19,11 +19,11 @@
 .fill-white     { fill: var(--white); }
 .fill-dark-gray { fill: var(--gray); }
 .fill-black     { fill: var(--black); }
+.fill-teal      { fill: var(--teal); }
 
 :root { /* Compare to app.css :( */
   --twitter-blue:   #00aced;
   --aqua:         #49BBF0;
-
 
   /* THESE ARE OUR NEW COLORS */
   --p-color:      #4427c1;
@@ -37,4 +37,5 @@
   --dark-gray:    #8B8B8B;
   --cool-gray:    #eeefef;
   --black:        #000000;
+  --teal:         #6BC8AD;
 }
