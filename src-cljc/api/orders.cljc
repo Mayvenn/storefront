@@ -1,5 +1,6 @@
 (ns api.orders
   (:require adventure.keypaths
+            [spice.selector :refer [match-all]]
             [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
             storefront.keypaths))
@@ -101,7 +102,7 @@
                                               (:variant-attrs item)))))
         failed-rules             (reduce (fn [acc [word essentials rule-quantity]]
                                            (let [cart-quantity    (->> physical-items
-                                                                       (spice.selector/match-all
+                                                                       (match-all
                                                                         {:selector/strict? true}
                                                                         essentials)
                                                                        (map :quantity)
