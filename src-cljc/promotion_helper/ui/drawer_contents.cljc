@@ -59,12 +59,22 @@
 
 (defcomponent drawer-contents-condition-organism
   [data _ _]
-  [:div.black.bg-white.my1.p3.flex
+  [:div.black.bg-white.my1.p3.flex.items-center
    [:div.col-10.flex.flex-wrap
     (drawer-contents-condition-progress-molecule data)
     (drawer-contents-condition-title-molecule data)]
    [:div.col-2
     (drawer-contents-condition-action-molecule data)]])
+
+(defn drawer-contents-footer
+  [{:promotion-helper.ui.drawer-contents.footer/keys [id primary cta-label cta-target]}]
+  (c/html
+   [:div
+    (when id
+      [:div.flex.items-center.mt3.justify-between
+       [:div.content-3 primary]
+       (ui/button-small-primary (assoc (apply utils/route-to cta-target)
+                                       :data-test id)  cta-label)])]))
 
 (defcomponent organism
   [data _ _]
@@ -72,4 +82,5 @@
     [:div.bg-refresh-gray.p3
      (elements drawer-contents-condition-organism
                data
-               :promotion-helper.ui.drawer-contents/conditions)]))
+               :promotion-helper.ui.drawer-contents/conditions)
+     (drawer-contents-footer data)]))

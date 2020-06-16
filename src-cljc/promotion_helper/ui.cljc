@@ -42,6 +42,7 @@
                          :style {:height "12px" :width "14px"}})}))}
    (when opened?
      {:drawer-contents
+      (merge
       {:promotion-helper.ui.drawer-contents/id "contents"
        :promotion-helper.ui.drawer-contents/conditions
        [{:promotion-helper.ui.drawer-contents.condition.title/primary-struck "Add Your Services"
@@ -49,25 +50,23 @@
          :promotion-helper.ui.drawer-contents.condition.progress/completed   1
          :promotion-helper.ui.drawer-contents.condition.progress/remaining   0}
 
-        (if (empty? hair-missing)
-          {:promotion-helper.ui.drawer-contents.condition.title/primary-struck "Add Your Hair"
-           :promotion-helper.ui.drawer-contents.condition.title/secondary      hair-success
-           :promotion-helper.ui.drawer-contents.condition.progress/completed   3
-           :promotion-helper.ui.drawer-contents.condition.progress/remaining   0}
+         (if (seq hair-missing)
           (let [missing-description (->> hair-missing
                                          (map (fn [{:keys [word missing-quantity]}]
                                                 (apply str (if (= 1 missing-quantity)
                                                              ["a " word]
                                                              [missing-quantity " " word "s"])))))]
             {:promotion-helper.ui.drawer-contents.condition.title/primary      "Add Your Hair"
-             :promotion-helper.ui.drawer-contents.condition.title/secondary    (->> missing-description
-                                                                                    (string/join " and ")
-                                                                                    (str "Add "))
+              :promotion-helper.ui.drawer-contents.condition.title/secondary    (str "Add " (string/join " and " missing-description))
              :promotion-helper.ui.drawer-contents.condition.progress/completed (- hair-success-quantity hair-missing-quantity)
              :promotion-helper.ui.drawer-contents.condition.progress/remaining hair-missing-quantity
              :promotion-helper.ui.drawer-contents.condition.action/id          "condition-add-hair-button" ;; COREY
              :promotion-helper.ui.drawer-contents.condition.action/label       "add"
-             :promotion-helper.ui.drawer-contents.condition.action/target      failure-navigation-event}))
+              :promotion-helper.ui.drawer-contents.condition.action/target      failure-navigation-event})
+           {:promotion-helper.ui.drawer-contents.condition.title/primary-struck "Add Your Hair"
+            :promotion-helper.ui.drawer-contents.condition.title/secondary      hair-success
+            :promotion-helper.ui.drawer-contents.condition.progress/completed   hair-success-quantity
+            :promotion-helper.ui.drawer-contents.condition.progress/remaining   0})
         (if stylist
           {:promotion-helper.ui.drawer-contents.condition.title/primary-struck "Add Your Stylist"
            :promotion-helper.ui.drawer-contents.condition.title/secondary      (str "You have selected "
@@ -81,7 +80,12 @@
            :promotion-helper.ui.drawer-contents.condition.progress/remaining 1
            :promotion-helper.ui.drawer-contents.condition.action/id          "condition-add-stylist-button"
            :promotion-helper.ui.drawer-contents.condition.action/label       "add"
-           :promotion-helper.ui.drawer-contents.condition.action/target      [e/navigate-adventure-match-stylist]})]}})))
+            :promotion-helper.ui.drawer-contents.condition.action/target      [e/navigate-adventure-match-stylist]})]}
+       (when (zero? failed-criteria-count)
+         {:promotion-helper.ui.drawer-contents.footer/id         "promotion-helper-conditions-fulfilled-footer"
+          :promotion-helper.ui.drawer-contents.footer/primary    "🎉 Great work! Free service unlocked!"
+          :promotion-helper.ui.drawer-contents.footer/cta-label  "View Cart"
+          :promotion-helper.ui.drawer-contents.footer/cta-target [e/navigate-cart]}))})))
 
 (defn promotion-helper-model<-
   "Model depends on existence of a mayvenn service that can be gratis"
