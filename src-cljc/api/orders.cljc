@@ -230,22 +230,33 @@
         wig-success
         "You're all set! Bleaching knots, tinting & cutting lace and hairline customization included."
         sew-in-success
-        "You’re all set! Shampoo, braiding and basic styling included."]
+        "You’re all set! Shampoo, braiding and basic styling included."
+        install-navigation-message [e/navigate-category {:catalog/category-id "23"
+                                                         :page/slug           "mayvenn-install"}]
+        wig-navigation-message     [e/navigate-category {:catalog/category-id "13"
+                                                         :page/slug           "wigs-install"
+                                                         :query-params        {:family (str "360-wigs" categories/query-param-separator "lace-front-wigs")}}]]
     {"SRV-LBI-000"
-     {:rules   [["bundle" ?bundles 3]]
+     {:rules                    [["bundle" ?bundles 3]] ; TODO {:word :essentials :cart-quantity}
+      :failure-navigation-event install-navigation-message
+
       :success sew-in-success}
      "SRV-CBI-000"
-     {:rules   [["bundle" ?bundles 2] ["closure" ?closures 1]]
-      :success sew-in-success}
+     {:rules                    [["bundle" ?bundles 2] ["closure" ?closures 1]]
+      :failure-navigation-event install-navigation-message
+      :success                  sew-in-success}
      "SRV-FBI-000"
-     {:rules   [["bundle" ?bundles 2] ["frontal" ?frontals 1]]
-      :success sew-in-success}
+     {:rules                    [["bundle" ?bundles 2] ["frontal" ?frontals 1]]
+      :failure-navigation-event install-navigation-message
+      :success                  sew-in-success}
      "SRV-3BI-000"
-     {:rules   [["bundle" ?bundles 2] ["360 frontal" ?360-frontals 1]]
-      :success sew-in-success}
+     {:rules                    [["bundle" ?bundles 2] ["360 frontal" ?360-frontals 1]]
+      :failure-navigation-event install-navigation-message
+      :success                  sew-in-success}
      "SRV-WGC-000"
-     {:rules [["wig" ?wigs 1]]
-      :success wig-success}}))
+     {:rules                    [["Virgin Lace Front or a Virgin 360 Wig" ?wigs 1]]
+      :failure-navigation-event wig-navigation-message
+      :success                  wig-success}}))
 
 (defn free-mayvenn-service
   "
@@ -261,48 +272,51 @@
   Caveats
   - service items should have a stylist associated, but that is broken 2020 June
   "
-  [servicing-stylist order sku-catalog]
-  (let [freeinstall-entered?     (boolean (orders/freeinstall-entered? order))
-        service-line-item        (first (filter
-                                     (comp :promo.mayvenn-install/discountable :variant-attrs)
-                                     (orders/service-line-items order)))
-        rules-for-service        (:rules (get rules (:sku service-line-item)))
-        physical-items           (->> order :shipments (mapcat :line-items)
-                                      (filter (fn [item]
-                                                (= "spree" (:source item))))
-                                      (map (fn [item]
-                                             (merge
-                                              (dissoc item :variant-attrs)
-                                              (:variant-attrs item)))))
-        failed-rules             (reduce (fn [acc [word essentials rule-quantity]]
-                                           (let [cart-quantity    (->> physical-items
-                                                                       (match-all
-                                                                        {:selector/strict? true}
-                                                                        essentials)
-                                                                       (map :quantity)
-                                                                       (apply +))
-                                                 missing-quantity (- rule-quantity cart-quantity)]
-                                             (cond-> acc
-                                               (pos? missing-quantity)
-                                               (conj [word essentials missing-quantity cart-quantity]))))
-                                         []
-                                         rules-for-service)
-        physical-items-remaining (apply + (map (comp last butlast) failed-rules))]
+  [servicing-stylist order]
+  (let [service-line-item                                    (first (filter
+                                                                     (comp :promo.mayvenn-install/discountable :variant-attrs)
+                                                                     (orders/service-line-items order)))
+        {rules-for-service        :rules
+         failure-navigation-event :failure-navigation-event} (get rules (:sku service-line-item))
+        physical-items                                       (->> order :shipments (mapcat :line-items)
+                                                                  (filter (fn [item]
+                                                                            (= "spree" (:source item))))
+                                                                  (map (fn [item]
+                                                                         (merge
+                                                                          (dissoc item :variant-attrs)
+                                                                          (:variant-attrs item)))))
+        failed-rules                                         (keep (fn [[word essentials rule-quantity]]
+                                                                       (let [cart-quantity    (->> physical-items
+                                                                                                   (match-all
+                                                                                                    {:selector/strict? true}
+                                                                                                    essentials)
+                                                                                                   (map :quantity)
+                                                                                                   (apply +))
+                                                                             missing-quantity (- rule-quantity cart-quantity)]
+                                                                         (when (pos? missing-quantity)
+                                                                           {:word             word
+                                                                            :rule-quantity    rule-quantity
+                                                                            :cart-quantity    cart-quantity
+                                                                            :missing-quantity missing-quantity
+                                                                            :essentials       essentials})))
+                                                                     rules-for-service)]
     (when (seq service-line-item)
       #:free-mayvenn-service
-      {:failed-criteria-count (->> [(seq service-line-item)
-                                    (empty? failed-rules)
-                                    (seq servicing-stylist)]
-                                   (remove boolean)
-                                   count)
+      {:failed-criteria-count    (->> [(seq service-line-item)
+                                       (empty? failed-rules)
+                                       (seq servicing-stylist)]
+                                      (remove boolean)
+                                      count)
+       :failure-navigation-event failure-navigation-event
        ;; criterion 1
-       :service-item          service-line-item
+       :service-item             service-line-item
        ;; criterion 2
-       :hair-success          (:success (get rules (:sku service-line-item)))
-       :hair-missing          (seq failed-rules)
-       :hair-missing-quantity physical-items-remaining
+       :hair-success             (:success (get rules (:sku service-line-item)))
+       :hair-missing             (seq failed-rules)
+       :hair-missing-quantity    (apply + (map :missing-quantity failed-rules))
+       :hair-success-quantity    (apply + (map :rule-quantity failed-rules))
        ;; criterion 3
-       :stylist               (not-empty servicing-stylist)})))
+       :stylist                  (not-empty servicing-stylist)})))
 
 (defn ->order
   [app-state order]

@@ -1,9 +1,11 @@
 (ns promotion-helper.ui
-  (:require [promotion-helper.ui.drawer-contents :as drawer-contents]
-            [promotion-helper.ui.drawer-face :as drawer-face]
-            [promotion-helper.keypaths :as k]
+  (:require [clojure.string :as string]
             [promotion-helper.behavior :as behavior]
+            [promotion-helper.keypaths :as k]
+            [promotion-helper.ui.drawer-contents :as drawer-contents]
+            [promotion-helper.ui.drawer-face :as drawer-face]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.stylists :as stylists]
             [storefront.component :as c]
             [storefront.components.svg :as svg]
             [storefront.events :as e]))
@@ -18,7 +20,11 @@
   [{:promotion-helper/keys [opened?]}
    {:free-mayvenn-service/keys [failed-criteria-count
                                 service-item
-                                hair-success hair-missing hair-missing-quantity
+                                hair-success
+                                hair-success-quantity
+                                hair-missing
+                                hair-missing-quantity
+                                failure-navigation-event
                                 stylist]}]
   (merge
    {:drawer-face
@@ -49,23 +55,23 @@
            :promotion-helper.ui.drawer-contents.condition.progress/completed   3
            :promotion-helper.ui.drawer-contents.condition.progress/remaining   0}
           (let [missing-description (->> hair-missing
-                                         (map (fn [[word _ quantity _]]
-                                                (str quantity " " word))))]
+                                         (map (fn [{:keys [word missing-quantity]}]
+                                                (apply str (if (= 1 missing-quantity)
+                                                             ["a " word]
+                                                             [missing-quantity " " word "s"])))))]
             {:promotion-helper.ui.drawer-contents.condition.title/primary      "Add Your Hair"
              :promotion-helper.ui.drawer-contents.condition.title/secondary    (->> missing-description
-                                                                                    (clojure.string/join " and ")
+                                                                                    (string/join " and ")
                                                                                     (str "Add "))
-             :promotion-helper.ui.drawer-contents.condition.progress/completed (- 3 hair-missing-quantity)
+             :promotion-helper.ui.drawer-contents.condition.progress/completed (- hair-success-quantity hair-missing-quantity)
              :promotion-helper.ui.drawer-contents.condition.progress/remaining hair-missing-quantity
              :promotion-helper.ui.drawer-contents.condition.action/id          "condition-add-hair-button" ;; COREY
              :promotion-helper.ui.drawer-contents.condition.action/label       "add"
-             :promotion-helper.ui.drawer-contents.condition.action/target      [e/navigate-category
-                                                                                {:catalog/category-id "23"
-                                                                                 :page/slug           "mayvenn-install"}]}))
+             :promotion-helper.ui.drawer-contents.condition.action/target      failure-navigation-event}))
         (if stylist
           {:promotion-helper.ui.drawer-contents.condition.title/primary-struck "Add Your Stylist"
            :promotion-helper.ui.drawer-contents.condition.title/secondary      (str "You have selected "
-                                                                                    (:store-nickname stylist)
+                                                                                    (stylists/->display-name stylist)
                                                                                     " as your stylist")
            :promotion-helper.ui.drawer-contents.condition.progress/completed   1
            :promotion-helper.ui.drawer-contents.condition.progress/remaining   0}
@@ -93,11 +99,8 @@
 (defn promotion-helper
   [state]
   (let [servicing-stylist      (get-in state adventure.keypaths/adventure-servicing-stylist)
-        sku-catalog            (get-in state storefront.keypaths/v2-skus)
         waiter-order           (get-in state storefront.keypaths/order)
-        free-mayvenn-service   (api.orders/free-mayvenn-service servicing-stylist
-                                                                waiter-order
-                                                                sku-catalog)
+        free-mayvenn-service   (api.orders/free-mayvenn-service servicing-stylist waiter-order)
         promotion-helper-model (promotion-helper-model<- state
                                                          free-mayvenn-service)]
     (when (and (experiments/promotion-helper? state)
