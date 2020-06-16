@@ -164,9 +164,11 @@
                                      (group-by (comp keyword :service/type :variant-attrs)))
 
         product-line-items      (orders/product-items-for-shipment shipment)
+        updated-service-type    (services->service-type base-services)
         service-type            (if add-free-service?
-                                  (services->service-type base-services)
-                                  (product-line-items->service-type product-line-items))
+                                  updated-service-type
+                                  (or (product-line-items->service-type product-line-items)
+                                      updated-service-type))
         {:keys [disable-checkout?
                 promo-helper-copy
                 steps-required
@@ -214,7 +216,7 @@
      :mayvenn-install/any-wig?           any-wig?
      :mayvenn-install/service-image-url  (->> mayvenn-install-sku (images/skuer->image "cart") :url)
      :mayvenn-install/addon-services     addon-services-skus
-     :mayvenn-install/service-type       (or service-type (services->service-type base-services))})) ;; TODO: Remove hack to fix production
+     :mayvenn-install/service-type       service-type}))
 
 (def rules
   (let [?bundles
