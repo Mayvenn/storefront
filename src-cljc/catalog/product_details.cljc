@@ -178,8 +178,8 @@
    {}
    (keys selections)))
 
-(defcomponent organism
-  "Product Details organism"
+(defcomponent product-summary-organism
+  "Displays basic information about a particular product"
   [data _ _]
   [:div.mt3.mx3
    [:div.flex.items-center.justify-between
@@ -226,7 +226,7 @@
           [:div
            [:div
             (full-bleed-narrow (carousel carousel-images product))]
-           (component/build organism data)
+           (component/build product-summary-organism data)
            [:div.px2
             (component/build picker/component picker-data opts)]
            [:div
