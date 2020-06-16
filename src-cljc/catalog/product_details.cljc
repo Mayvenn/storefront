@@ -392,8 +392,6 @@
           :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
           :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
           :title/primary                      (:copy/title product)
-          :price-block/primary                (mf/as-money sku-price)
-          :price-block/secondary              (when-not standalone-service? "each")
           :ugc                                ugc
           :aladdin?                           (experiments/aladdin-experience? data)
           :fetching-product?                  (utils/requesting? data (conj request-keys/get-products
@@ -413,6 +411,17 @@
                                                    (not (products/stylist-only? product))
                                                    (not standalone-service?)
                                                    (not (experiments/promotion-helper? data)))}
+         (cond
+           (accessors.products/product-is-mayvenn-install-service? product)
+           {:price-block/primary-struck         (mf/as-money sku-price)
+            :price-block/secondary              [:span.teal "FREE"]}
+
+           standalone-service?
+           {:price-block/primary                (mf/as-money sku-price)}
+
+           :else
+           {:price-block/primary                (mf/as-money sku-price)
+            :price-block/secondary              "each"})
        (add-to-cart-query data selected-sku sku-price)
        (let [{:keys [copy/description
                      copy/colors

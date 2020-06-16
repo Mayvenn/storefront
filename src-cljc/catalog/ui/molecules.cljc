@@ -12,11 +12,14 @@
    [:div.medium secondary]])
 
 (defn price-block
-  [{:price-block/keys [primary secondary]}]
+  [{:price-block/keys [primary primary-struck secondary]}]
   [:div.right-align
-   (when primary
+   (when (or primary primary-struck)
      [:div
-      [:span.proxima.content-2 primary]
+      (when primary
+        [:span.proxima.content-2 primary])
+      (when primary-struck
+        [:span.proxima.content-2.strike primary-struck])
       [:div.proxima.content-3 secondary]])])
 
 (defn yotpo-reviews-summary
