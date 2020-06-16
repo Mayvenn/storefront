@@ -214,7 +214,7 @@
      :mayvenn-install/any-wig?           any-wig?
      :mayvenn-install/service-image-url  (->> mayvenn-install-sku (images/skuer->image "cart") :url)
      :mayvenn-install/addon-services     addon-services-skus
-     :mayvenn-install/service-type       service-type}))
+     :mayvenn-install/service-type       (or service-type (services->service-type base-services))})) ;; TODO: Remove hack to fix production
 
 (def rules
   (let [?bundles

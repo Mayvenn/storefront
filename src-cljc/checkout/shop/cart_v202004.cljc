@@ -363,7 +363,7 @@
               ;; Locked basically means the freeinstall coupon code was entered, yet not all the requirements
               ;; of a free install order to generate a voucher have been satisfied.
               locked?
-              (merge  (if any-wig?
+              (merge  (if (or any-wig? wig-customization?)
                         {:cart-item-title/primary                   "Wig Customization (locked)"
                          :cart-item-title/id                        "line-item-title-locked-wig-customization"
                          :cart-item-copy/value                      "Add a Virgin Lace Front or a Virgin 360 Wig to unlock this service"
