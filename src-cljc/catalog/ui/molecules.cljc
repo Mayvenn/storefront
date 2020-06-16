@@ -1,9 +1,8 @@
 (ns catalog.ui.molecules
   (:require [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
-            [storefront.platform.reviews :as review-component]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.platform.reviews :as review-component]))
 
 (defn product-title
   "TODO empty state"
@@ -12,17 +11,12 @@
    [:h3.proxima.title-2.shout primary]
    [:div.medium secondary]])
 
-(defn ^:private item-price
-  [price]
-  (when price
-    [:span.proxima.content-2 (mf/as-money price)]))
-
 (defn price-block
   [{:price-block/keys [primary secondary]}]
   [:div.right-align
-   (when-let [primary-formatted (item-price primary)]
+   (when primary
      [:div
-      primary-formatted
+      [:span.proxima.content-2 primary]
       [:div.proxima.content-3 secondary]])])
 
 (defn yotpo-reviews-summary

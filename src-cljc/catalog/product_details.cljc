@@ -29,6 +29,7 @@
             [storefront.accessors.skus :as skus]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.marquee :as marquee]
+            [storefront.components.money-formatters :as mf]
             [storefront.components.picker.picker :as picker]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -391,8 +392,7 @@
           :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
           :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
           :title/primary                      (:copy/title product)
-          :price-block/primary                sku-price
-
+          :price-block/primary                (mf/as-money sku-price)
           :price-block/secondary              (when-not standalone-service? "each")
           :ugc                                ugc
           :aladdin?                           (experiments/aladdin-experience? data)
