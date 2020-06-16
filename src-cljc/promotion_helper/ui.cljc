@@ -38,7 +38,7 @@
         :promotion-helper.ui.drawer-face.circle/value failed-criteria-count}
        {:promotion-helper.ui.drawer-face.circle/color "bg-white"
         :promotion-helper.ui.drawer-face.circle/value
-        (svg/check-mark {:class "fill-teal ml1"
+        (svg/check-mark {:class "fill-teal"
                          :style {:height "12px" :width "14px"}})}))}
    (when opened?
      {:drawer-contents
