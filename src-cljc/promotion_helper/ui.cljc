@@ -12,7 +12,7 @@
 
 (c/defcomponent promotion-helper-template
   [{:as data :keys [drawer-face drawer-contents]} owner opts]
-  [:div.fixed.z4.bottom-0.left-0.right-0
+  [:div.fixed.bottom-0.left-0.right-0.z1
    (c/build drawer-face/organism drawer-face)
    (c/build drawer-contents/organism drawer-contents)])
 

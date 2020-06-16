@@ -109,15 +109,16 @@
 
 (c/defcomponent organism
   [{:keys [title open-panel tabs filter-panel-data]} _ _]
-  [:div.px3.bg-white.sticky.z1
+  [:div.px3.bg-white.sticky
    ;; The -5px prevents a sliver of the background from being visible above the filters
    ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
-   {:style {:top "-5px"}}
+   {:style {:top "-5px"}
+    :class (if open-panel "z2" "z1")}
    (let [tabs (c/build filter-tabs tabs nil)]
      (if open-panel
        (let [panel (c/build filter-panel filter-panel-data)]
          [:div
-          [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
+          [:div.hide-on-dt.px2.fixed.overlay.overflow-auto.bg-white
            tabs panel]
           [:div.hide-on-mb-tb
            tabs panel]])
