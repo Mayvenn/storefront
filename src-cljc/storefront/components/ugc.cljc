@@ -5,6 +5,24 @@
              [storefront.component :as component :refer [defcomponent]]
              #?@(:cljs [[goog.string]])))
 
+(defcomponent ugc-image [{:screen/keys [seen?]
+                          :keys [image-url overlay]} _ _]
+  [:div.relative.bg-white
+   (ui/aspect-ratio
+    1 1
+    {:class "flex items-center"}
+    (if seen?
+      [:img.col-12.block {:src image-url}]
+      [:div.col-12 " "]))
+   (when overlay
+     [:div.absolute.flex.justify-end.bottom-0.right-0.mb8
+      [:div {:style {:width       "0"
+                     :height      "0"
+                     :border-top  "28px solid #dedbe5"
+                     :border-left "21px solid transparent"}}]
+      [:div.flex.items-center.px3.bold.h6.bg-pale-purple.whisper.white
+       overlay]])])
+
 (defcomponent social-image-card-component
   [{:keys                [desktop-aware?
                           id image-url overlay description social-service icon-url title]
@@ -20,10 +38,7 @@
             (when desktop-aware?
               {:class "col-6-on-tb col-4-on-dt"}))
      [:div.relative.bg-white
-      (ui/aspect-ratio
-       1 1
-       {:class "flex items-center"}
-       [:img.col-12.block {:src image-url}])
+      (ui/screen-aware ugc-image {:overlay overlay :image-url image-url})
       (when overlay
         [:div.absolute.flex.justify-end.bottom-0.right-0.mb8
          [:div {:style {:width       "0"
