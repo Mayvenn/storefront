@@ -284,17 +284,16 @@
       string/lower-case
       (string/replace #"[^a-z]+" "-")))
 
-(defn mayvenn-install-line-items-query
+(defn free-service-line-items-query
   [app-state
    {:mayvenn-install/keys
-    [service-title addon-services service-image-url service-type
-     entered? locked? promo-helper-copy action-label applied? stylist service-discount
-     quantity-remaining quantity-required quantity-added]}
+    [service-title addon-services service-image-url
+     entered? locked? promo-helper-copy action-label stylist service-discount
+     quantity-required quantity-added]}
    add-items-action]
   (cond-> []
     entered?
-    (conj (let [wig-customization? (= service-type :wig-customization)
-                matched?           (boolean stylist)]
+    (conj (let [matched?           (boolean stylist)]
             (cond-> {:react/key                                "freeinstall-line-item-freeinstall"
                      :cart-item-title/id                       "line-item-title-upsell-free-service"
                      :cart-item-copy/value                     promo-helper-copy
@@ -339,6 +338,84 @@
                                                            :cart-item-sub-item/price  price
                                                            :cart-item-sub-item/sku-id sku-id})
                                                         addon-services)}))))))
+
+(defn mayvenn-install-line-items-query
+  [app-state {:mayvenn-install/keys
+              [service-title addon-services service-image-url service-type
+               entered? locked? applied? stylist service-discount
+               quantity-remaining quantity-required quantity-added any-wig?]} add-items-action]
+  (cond-> []
+    entered?
+    (conj (let [wig-customization? (= service-type :wig-customization)
+                matched?           (boolean stylist)]
+            (cond-> {:react/key                                "freeinstall-line-item-freeinstall"
+                     :cart-item-title/id                       "line-item-title-upsell-free-service"
+                     :cart-item-floating-box/id                "line-item-freeinstall-price"
+                     :cart-item-floating-box/value             (some-> service-discount - mf/as-money)
+                     :cart-item-remove-action/id               "line-item-remove-freeinstall"
+                     :cart-item-remove-action/spinning?        (utils/requesting? app-state request-keys/remove-freeinstall-line-item)
+                     :cart-item-remove-action/target           [events/control-checkout-remove-promotion {:code "freeinstall"}]
+                     :cart-item-service-thumbnail/id           "freeinstall"
+                     :cart-item-service-thumbnail/image-url    service-image-url
+                     :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)
+                     :confetti-mode                            (get-in app-state keypaths/confetti-mode)}
+
+              ;; Locked basically means the freeinstall coupon code was entered, yet not all the requirements
+              ;; of a free install order to generate a voucher have been satisfied.
+              locked?
+              (merge  (if any-wig?
+                        {:cart-item-title/primary                   "Wig Customization (locked)"
+                         :cart-item-title/id                        "line-item-title-locked-wig-customization"
+                         :cart-item-copy/value                      "Add a Virgin Lace Front or a Virgin 360 Wig to unlock this service"
+                         :cart-item-steps-to-complete/action-target add-items-action
+                         :cart-item-floating-box/value              (mf/as-money 75)
+                         :cart-item-steps-to-complete/action-label  "Add Wig"
+                         :cart-item-steps-to-complete/id            "add-wig"
+                         :cart-item-steps-to-complete/steps         {}
+                         :cart-item-steps-to-complete/current-step  0
+                         :cart-item-service-thumbnail/locked?       true}
+                        {:cart-item-title/primary                   (str service-title " (locked)")
+                         :cart-item-title/id                        "line-item-title-locked-mayvenn-install"
+                         :cart-item-copy/value                      (str "Add " quantity-remaining
+                                                                         " or more items to receive your free Mayvenn Install")
+                         :cart-item-steps-to-complete/action-target add-items-action
+                         :cart-item-steps-to-complete/action-label  "add items"
+                         :cart-item-steps-to-complete/id            "add-items"
+                         :cart-item-steps-to-complete/steps         (->> quantity-required
+                                                                         range
+                                                                         (map inc))
+                         :cart-item-steps-to-complete/current-step  quantity-added
+                         :cart-item-service-thumbnail/locked?       true}))
+
+              applied?
+              (merge (if wig-customization?
+                       {:cart-item-title/id      "line-item-title-applied-wig-customization"
+                        :cart-item-title/primary "Wig Customization"
+                        :cart-item-copy/value    "You're all set! Bleaching knots, tinting & cutting lace and hairline customization included."
+                        :cart-item-copy/id       "congratulations"}
+                       {:cart-item-title/id      "line-item-title-applied-mayvenn-install"
+                        :cart-item-title/primary service-title
+                        :cart-item-copy/value    "You’re all set! Shampoo, braiding and basic styling included."
+                        :cart-item-copy/id       "congratulations"}))
+
+              matched?
+              (merge {:cart-item-modify-button/id              "browse-addons"
+                      :cart-item-modify-button/target          [events/control-show-addon-service-menu]
+                      :cart-item-modify-button/tracking-target [events/browse-addon-service-menu-button-enabled]
+                      :cart-item-modify-button/locked?         locked?
+                      :cart-item-modify-button/content         "+ Browse Add-Ons"})
+
+              (and matched?
+                   (seq addon-services))
+              (merge {:cart-item-sub-items/id      "addon-services"
+                      :cart-item-sub-items/title   "Add-On Services"
+                      :cart-item-sub-items/locked? locked?
+                      :cart-item-sub-items/items   (map (fn [{:addon-service/keys [title price sku-id]}]
+                                                          {:cart-item-sub-item/title  title
+                                                           :cart-item-sub-item/price  price
+                                                           :cart-item-sub-item/sku-id sku-id})
+                                                        addon-services)}))))))
+
 
 (defn ^:private standalone-service-line-items-query
   [app-state]
@@ -723,7 +800,9 @@
                                          (cart-summary-query order mayvenn-install)
                                          {:promo-field-data (promo-input-query data order entered?)})
              :cart-items                (cart-items-query data line-items skus)
-             :service-line-items        (concat (mayvenn-install-line-items-query data mayvenn-install add-items-action)
+             :service-line-items        (concat (if (experiments/add-free-service? data)
+                                                  (free-service-line-items-query data mayvenn-install add-items-action)
+                                                  (mayvenn-install-line-items-query data mayvenn-install add-items-action))
                                                 (standalone-service-line-items-query data))
              :quadpay/order-total       (when-not locked? (:total order))
              :quadpay/show?             (get-in data keypaths/loaded-quadpay)
