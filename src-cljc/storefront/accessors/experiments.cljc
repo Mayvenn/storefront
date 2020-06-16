@@ -109,3 +109,7 @@
 (defn promotion-helper?
   [data]
   (display-feature? data "promotion-helper"))
+
+(defn add-free-service?
+  [data]
+  (display-feature? data "add-free-service"))

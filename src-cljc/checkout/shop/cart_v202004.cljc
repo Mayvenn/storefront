@@ -285,16 +285,19 @@
       (string/replace #"[^a-z]+" "-")))
 
 (defn mayvenn-install-line-items-query
-  [app-state {:mayvenn-install/keys
-              [service-title addon-services service-image-url service-type
-               entered? locked? applied? stylist service-discount
-               quantity-remaining quantity-required quantity-added any-wig?]} add-items-action]
+  [app-state
+   {:mayvenn-install/keys
+    [service-title addon-services service-image-url service-type
+     entered? locked? promo-helper-copy action-label applied? stylist service-discount
+     quantity-remaining quantity-required quantity-added]}
+   add-items-action]
   (cond-> []
     entered?
     (conj (let [wig-customization? (= service-type :wig-customization)
                 matched?           (boolean stylist)]
             (cond-> {:react/key                                "freeinstall-line-item-freeinstall"
                      :cart-item-title/id                       "line-item-title-upsell-free-service"
+                     :cart-item-copy/value                     promo-helper-copy
                      :cart-item-floating-box/id                "line-item-freeinstall-price"
                      :cart-item-floating-box/value             (some-> service-discount - mf/as-money)
                      :cart-item-remove-action/id               "line-item-remove-freeinstall"
@@ -308,40 +311,16 @@
               ;; Locked basically means the freeinstall coupon code was entered, yet not all the requirements
               ;; of a free install order to generate a voucher have been satisfied.
               locked?
-              (merge  (if any-wig?
-                        {:cart-item-title/primary                   "Wig Customization (locked)"
-                         :cart-item-title/id                        "line-item-title-locked-wig-customization"
-                         :cart-item-copy/value                      "Add a Virgin Lace Front or a Virgin 360 Wig to unlock this service"
-                         :cart-item-steps-to-complete/action-target add-items-action
-                         :cart-item-floating-box/value              (mf/as-money 75)
-                         :cart-item-steps-to-complete/action-label  "Add Wig"
-                         :cart-item-steps-to-complete/id            "add-wig"
-                         :cart-item-steps-to-complete/steps         {}
-                         :cart-item-steps-to-complete/current-step  0
-                         :cart-item-service-thumbnail/locked?       true}
-                        {:cart-item-title/primary                   (str service-title " (locked)")
-                         :cart-item-title/id                        "line-item-title-locked-mayvenn-install"
-                         :cart-item-copy/value                      (str "Add " quantity-remaining
-                                                                         " or more items to receive your free Mayvenn Install")
-                         :cart-item-steps-to-complete/action-target add-items-action
-                         :cart-item-steps-to-complete/action-label  "add items"
-                         :cart-item-steps-to-complete/id            "add-items"
-                         :cart-item-steps-to-complete/steps         (->> quantity-required
-                                                                         range
-                                                                         (map inc))
-                         :cart-item-steps-to-complete/current-step  quantity-added
-                         :cart-item-service-thumbnail/locked?       true}))
-
-              applied?
-              (merge (if wig-customization?
-                       {:cart-item-title/id      "line-item-title-applied-wig-customization"
-                        :cart-item-title/primary "Wig Customization"
-                        :cart-item-copy/value    "You're all set! Bleaching knots, tinting & cutting lace and hairline customization included."
-                        :cart-item-copy/id       "congratulations"}
-                       {:cart-item-title/id      "line-item-title-applied-mayvenn-install"
-                        :cart-item-title/primary service-title
-                        :cart-item-copy/value    "You’re all set! Shampoo, braiding and basic styling included."
-                        :cart-item-copy/id       "congratulations"}))
+              (merge {:cart-item-title/primary                    (str service-title " (locked)")
+                      :cart-item-title/id                        "line-item-title-locked-mayvenn-install"
+                      :cart-item-steps-to-complete/action-target add-items-action
+                      :cart-item-steps-to-complete/action-label  action-label
+                      :cart-item-steps-to-complete/id            "add-items"
+                      :cart-item-steps-to-complete/steps         (->> quantity-required
+                                                                      range
+                                                                      (map inc))
+                      :cart-item-steps-to-complete/current-step  quantity-added
+                      :cart-item-service-thumbnail/locked?       true})
 
               matched?
               (merge {:cart-item-modify-button/id              "browse-addons"
@@ -661,7 +640,8 @@
         cart-services                                (api.orders/services data order)
         {:mayvenn-install/keys
          [entered? applied? locked?
-          stylist quantity-remaining]
+          stylist quantity-remaining
+          service-type]
          :as               mayvenn-install
          servicing-stylist :mayvenn-install/stylist} (api.orders/current data)
 
@@ -701,12 +681,19 @@
         continue-shopping-action        (if any-wig?
                                           [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
                                           mayvenn-install-shopping-action)
-        add-items-action                (if any-wig?
-                                          [events/navigate-category
-                                           {:page/slug           "wigs"
-                                            :catalog/category-id "13"
-                                            :query-params        {:family "lace-front-wigs~360-wigs"}}]
-                                          mayvenn-install-shopping-action)]
+        add-items-action                (if (experiments/add-free-service? data)
+                                          (if (= service-type :wig-customization)
+                                            [events/navigate-category
+                                             {:page/slug           "wigs"
+                                              :catalog/category-id "13"
+                                              :query-params        {:family "lace-front-wigs~360-wigs"}}]
+                                            mayvenn-install-shopping-action)
+                                          (if any-wig?
+                                           [events/navigate-category
+                                            {:page/slug           "wigs"
+                                             :catalog/category-id "13"
+                                             :query-params        {:family "lace-front-wigs~360-wigs"}}]
+                                           mayvenn-install-shopping-action))]
     (cond-> {:suggestions               (suggestions/consolidated-query data)
              :line-items                line-items
              :skus                      skus
@@ -823,10 +810,10 @@
                     (when (and (zero? (orders/displayed-cart-count (get-in app-state keypaths/order)))
                                (-> app-state api.orders/current :mayvenn-install/entered? not))
                       {:promo-banner app-state})
-                    {:cart                   (query app-state)
-                     :header                 app-state
-                     :footer                 app-state
-                     :popup                  app-state
-                     :flash                  app-state
-                     :data                   app-state
-                     :nav-event              nav-event})))
+                    {:cart      (query app-state)
+                     :header    app-state
+                     :footer    app-state
+                     :popup     app-state
+                     :flash     app-state
+                     :data      app-state
+                     :nav-event nav-event})))
