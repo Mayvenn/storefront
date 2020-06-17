@@ -422,28 +422,29 @@
                      copy/summary
                      copy/duration
                      hair/family]} product]
-         #:product-description {:duration                  duration
-                                :summary                   summary
-                                :description               description
-                                :materials                 materials
-                                :colors                    colors
-                                :density                   density
-                                :whats-included            whats-included
-                                :weights                   (when (not density) weights)
-                                :learn-more-nav-event (and (not (contains? family "seamless-clip-ins"))
-                                                           (not (contains? family "tape-ins"))
-                                                           (not (contains? (:stylist-exclusives/family product) "kits"))
-                                                           (not standalone-service?)
-                                                           events/navigate-content-our-hair)}))
+         #:product-description {:duration             duration
+                                :summary              summary
+                                :description          description
+                                :materials            materials
+                                :colors               colors
+                                :density              density
+                                :whats-included       whats-included
+                                :weights              (when-not density
+                                                        weights)
+                                :learn-more-nav-event (when-not (or (contains? family "seamless-clip-ins")
+                                                                    (contains? family "tape-ins")
+                                                                    (contains? (:stylist-exclusives/family product) "kits")
+                                                                    standalone-service?)
+                                                        events/navigate-content-our-hair)}))
 
       (and (= "shop" (get-in data keypaths/store-slug))
            (not standalone-service?))
-      (merge #:freeinstall-banner {:title          "Buy 3 items and we'll pay for your hair install"
-                                   :subtitle       "Choose any Mayvenn stylist in your area"
-                                   :button-copy    "browse stylists"
-                                   :nav-event      [events/navigate-adventure-match-stylist]
-                                   :class          "bg-pale-purple"
-                                   :id             "freeinstall-banner-cta"})
+      (merge #:freeinstall-banner {:title       "Buy 3 items and we'll pay for your hair install"
+                                   :subtitle    "Choose any Mayvenn stylist in your area"
+                                   :button-copy "browse stylists"
+                                   :nav-event   [events/navigate-adventure-match-stylist]
+                                   :class       "bg-pale-purple"
+                                   :id          "freeinstall-banner-cta"})
 
       standalone-service?
       (merge #:freeinstall-banner {:title          "Amazing Stylists"
