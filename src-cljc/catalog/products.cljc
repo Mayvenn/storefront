@@ -22,6 +22,7 @@
 (defn eligible-for-reviews?
   [skuer]
   (and
+   (not (accessors.products/product-is-mayvenn-install-service? skuer))
    (not (accessors.products/standalone-service? skuer))
    (not (stylist-only? skuer))))
 
