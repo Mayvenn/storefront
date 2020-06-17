@@ -34,6 +34,16 @@
           link-label))]
       [:div.content-4.dark-gray footnote]]]))
 
+(defn add-to-cart-quadpay-molecule
+  [{:add-to-cart.quadpay/keys [price loaded?]}]
+  #?(:cljs
+     [:div
+      (component/build quadpay/component
+                       {:quadpay/order-total price
+                        :quadpay/show?       loaded?
+                        :quadpay/directive   :just-select}
+                       nil)]))
+
 (defcomponent organism
   "Add to Cart organism"
   [data _ _]
@@ -41,10 +51,4 @@
    (add-to-cart-incentive-block-molecule data)
    [:div.px3.py1
     (cta-molecule data)
-    #?(:cljs
-       [:div
-        (component/build quadpay/component
-                         {:quadpay/order-total (:quadpay/price data)
-                          :quadpay/show?       (:quadpay/loaded? data)
-                          :quadpay/directive   :just-select}
-                         nil)])]])
+    (add-to-cart-quadpay-molecule data)]])

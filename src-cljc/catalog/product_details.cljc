@@ -343,16 +343,19 @@
         wig-customization-incentive-families #{"360-wigs" "lace-front-wigs"}
         base-service-already-in-cart?        (boolean (some #(= (:catalog/sku-id selected-sku) (:sku %))
                                                             (orders/service-line-items (get-in data keypaths/order))))]
-    (cond-> {:cta/id          "add-to-cart"
-             :cta/label       (if base-service-already-in-cart? "Already In Cart" "Add to Cart")
-             :cta/target      [events/control-add-sku-to-bag
-                               {:sku      selected-sku
-                                :quantity (get-in data keypaths/browse-sku-quantity 1)}]
-             :cta/spinning?   (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-             :cta/disabled?   (or (not (:inventory/in-stock? selected-sku))
-                                  base-service-already-in-cart?)
-             :quadpay/loaded? (get-in data keypaths/loaded-quadpay)
-             :quadpay/price   sku-price}
+    (cond-> {:cta/id        "add-to-cart"
+             :cta/label     (if base-service-already-in-cart? "Already In Cart" "Add to Cart")
+             :cta/target    [events/control-add-sku-to-bag
+                             {:sku      selected-sku
+                              :quantity (get-in data keypaths/browse-sku-quantity 1)}]
+             :cta/spinning? (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+             :cta/disabled? (or (not (:inventory/in-stock? selected-sku))
+                                base-service-already-in-cart?)}
+
+      (not (accessors.products/product-is-mayvenn-install-service? selected-sku))
+      (merge
+       {:add-to-cart.quadpay/loaded? (get-in data keypaths/loaded-quadpay)
+        :add-to-cart.quadpay/price   sku-price})
 
       (and shop? (mayvenn-install-incentive-families sku-family))
       (merge
