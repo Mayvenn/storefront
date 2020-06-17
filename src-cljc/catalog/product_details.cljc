@@ -411,7 +411,8 @@
           :carousel-images                    carousel-images
           :sticky-add-to-bag?                 (and (nil? (:offset ugc))
                                                    (not (products/stylist-only? product))
-                                                   (not standalone-service?))}
+                                                   (not standalone-service?)
+                                                   (not (experiments/promotion-helper? data)))}
        (add-to-cart-query data selected-sku sku-price)
        (let [{:keys [copy/description
                      copy/colors
