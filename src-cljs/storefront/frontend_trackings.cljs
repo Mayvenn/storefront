@@ -43,19 +43,20 @@
   "Converts line item skuers into the format that stringer expects"
   [line-item-skuer]
   (let [image (images/cart-image line-item-skuer)]
-    {:variant_id       (:legacy/variant-id line-item-skuer)
-     :variant_sku      (:catalog/sku-id line-item-skuer)
-     :variant_price    (:sku/price line-item-skuer)
-     :variant_quantity (:item/quantity line-item-skuer)
-     :variant_name     (or (:legacy/product-name line-item-skuer)
+    {:variant_id         (:legacy/variant-id line-item-skuer)
+     :variant_sku        (:catalog/sku-id line-item-skuer)
+     :variant_price      (:sku/price line-item-skuer)
+     :variant_quantity   (:item/quantity line-item-skuer)
+     :variant_name       (or (:legacy/product-name line-item-skuer)
                            (:sku/title line-item-skuer))
-     :variant_origin   (-> line-item-skuer :hair/origin first)
-     :variant_style    (-> line-item-skuer :hair/texture first)
-     :variant_color    (-> line-item-skuer :hair/color first)
-     :variant_length   (-> line-item-skuer :hair/length first)
-     :variant_material (-> line-item-skuer :hair/base-material first)
-     :variant_image    (when image
-                         (update image :src (partial str "https:")))}))
+     :variant_origin     (-> line-item-skuer :hair/origin first)
+     :variant_style      (-> line-item-skuer :hair/texture first)
+     :variant_color      (-> line-item-skuer :hair/color first)
+     :variant_length     (-> line-item-skuer :hair/length first)
+     :variant_material   (-> line-item-skuer :hair/base-material first)
+     :variant_image      (when image
+                         (update image :src (partial str "https:")))
+     :variant_department (-> line-item-skuer :catalog/department first)}))
 
 (defmethod perform-track events/app-start [_ event args app-state]
   (when (get-in app-state keypaths/user-id)
