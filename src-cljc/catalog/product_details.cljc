@@ -459,6 +459,35 @@
                                    :class       "bg-pale-purple"
                                    :id          "freeinstall-banner-cta"})
 
+      (accessors.products/product-is-mayvenn-install-service? product)
+      (merge #:freeinstall-banner
+             {:title          "Amazing Stylists"
+              :icon           (svg/heart {:class  "fill-p-color"
+                                          :width  "32px"
+                                          :height "29px"})
+              :subtitle       (str "We’ve rounded up the best stylists in the country so you can be "
+                                   "sure your hair is in really, really good hands.")
+              :button-copy    "browse stylists"
+              :nav-event      [events/navigate-adventure-match-stylist]
+              :image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
+              :class          "bg-refresh-gray"
+              :id             "freeinstall-banner-cta"}
+             {:how-it-works
+              {:how-it-works/title-secondary "Here’s how it works."
+               :how-it-works/step-elements
+               [{:how-it-works.step.title/primary   "01"
+                 :how-it-works.step.title/secondary "Pick your service"
+                 :how-it-works.step.body/primary    (str "Choose the service you’d like to book from our full list of salon service offerings. "
+                                                         "Next, you’ll see which stylists are nearby and decide who you want to book.")}
+                {:how-it-works.step.title/primary   "02"
+                 :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
+                 :how-it-works.step.body/primary    (str "We've hand-picked thousands of talented stylists around the country. "
+                                                         "Browse the stylists in your area to find your perfect match.") }
+                {:how-it-works.step.title/primary   "03"
+                 :how-it-works.step.title/secondary "Schedule your appointment"
+                 :how-it-works.step.body/primary    (str "We’ll connect you with your stylist to set up your service. "
+                                                         "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}})
+
       standalone-service?
       (merge #:freeinstall-banner {:title          "Amazing Stylists"
                                    :icon           (svg/heart {:class  "fill-p-color"
