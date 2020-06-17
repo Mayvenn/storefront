@@ -412,6 +412,8 @@
           :carousel-images                    carousel-images
           :sticky-add-to-bag?                 (and (nil? (:offset ugc))
                                                    (not (products/stylist-only? product))
+                                                   (not
+                                                    (accessors.products/product-is-mayvenn-install-service? product))
                                                    (not standalone-service?)
                                                    (not (experiments/promotion-helper? data)))}
          (cond
