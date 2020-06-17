@@ -1,5 +1,7 @@
 (ns promotion-helper.ui
-  (:require [clojure.string :as string]
+  (:require api.orders
+            adventure.keypaths
+            [clojure.string :as string]
             [promotion-helper.behavior :as behavior]
             [promotion-helper.keypaths :as k]
             [promotion-helper.ui.drawer-contents :as drawer-contents]
@@ -10,7 +12,8 @@
             [storefront.components.svg :as svg]
             [storefront.events :as e]
             [storefront.accessors.nav :as nav]
-            [storefront.accessors.sites :as sites]))
+            [storefront.accessors.sites :as sites]
+            storefront.keypaths))
 
 (c/defcomponent promotion-helper-template
   [{:as data :keys [drawer-face drawer-contents]} owner opts]
