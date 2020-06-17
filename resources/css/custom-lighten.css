@@ -1,7 +1,9 @@
+.lit-strong    { box-shadow: 0 2px 10px 0 var(--darken-4)}
 .top-lit-light { box-shadow: 0 1px 2px 0 var(--darken-2)}
 .top-lit       { box-shadow: 0 4px 8px 0 var(--darken-2)}
 .lit           { box-shadow: 0   0 4px 1px var(--darken-2)}
 
 :root {
   --darken-2: rgba(0, 0, 0, .125);
+  --darken-4: rgba(0, 0, 0, .625);
 }

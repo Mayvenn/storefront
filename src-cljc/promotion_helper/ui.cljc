@@ -16,10 +16,17 @@
             storefront.keypaths))
 
 (c/defcomponent promotion-helper-template
-  [{:as data :keys [drawer-face drawer-contents]} owner opts]
-  [:div.fixed.bottom-0.left-0.right-0.z1
-   (c/build drawer-face/organism drawer-face)
-   (c/build drawer-contents/organism drawer-contents)])
+  [{:keys [drawer-face drawer-contents]} owner opts]
+  (let [face     (c/build drawer-face/organism drawer-face)
+        contents (c/build drawer-contents/organism drawer-contents)]
+    [:div
+     [:div.fixed.bottom-0.left-0.right-0.z1.hide-on-dt
+      face
+      contents]
+     [:div.fixed.bottom-0.left-0.right-0.z1.hide-on-mb-tb
+      [:div.col-4.mx-auto.lit-strong
+       face
+       contents]]]))
 
 (defn promotion-helper-ui<-
   [{:promotion-helper/keys [opened?]}
