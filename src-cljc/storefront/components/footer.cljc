@@ -3,6 +3,7 @@
             [promotion-helper.ui :refer [promotion-helper]]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.nav :as nav]
+            [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.footer-links :as footer-links]
             [storefront.components.footer-minimal :as footer-minimal]
