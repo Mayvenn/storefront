@@ -14,7 +14,9 @@
     [:span.hide-on-mb
      (ui/link :link/phone :a.inherit-color {} call-number)]
     " | 8am-5pm PST M-F"]
-   (component/build footer-links/component {:minimal? true} nil)])
+   (component/build footer-links/component {:minimal? true} nil)
+   ;; Space for promotion helper
+   [:div {:style {:margin-bottom "60px"}}]])
 
 (defn query
   [data]

@@ -175,17 +175,14 @@
 
 (defn built-component
   [data opts]
-  (let [nav-event (get-in data keypaths/navigation-event)]
-    (cond
-      (nav/show-minimal-footer? nav-event)
-      (footer-minimal/built-component data nil)
+  [:div
+   (cond
+     (nav/show-minimal-footer? (get-in data keypaths/navigation-event))
+     (footer-minimal/built-component data nil)
 
-      (= (get-in data keypaths/store-slug) "shop")
-      [:div
-       (component/build dtc-full-component
-                        (query data)
-                        {:key "dtc-full-footer"})
-       (promotion-helper.ui/promotion-helper data)]
+     (= :shop (sites/determine-site data))
+     (component/build dtc-full-component (query data) {:key "dtc-full-footer"})
 
-      :else
-      (component/build full-component (query data) nil))))
+     :else
+     (component/build full-component (query data) nil))
+   (promotion-helper.ui/promotion-helper data)])

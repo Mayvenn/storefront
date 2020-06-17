@@ -83,6 +83,18 @@
              checkout-events
              payout-events))
 
+(defn promotion-helper-can-exist-on-page? [event]
+  (->> event
+       (contains? (set/union account-events
+                             auth-events
+                             checkout-events
+                             order-complete-events
+                             payout-events
+                             sharing-events
+                             stylist-dashboard-events
+                             voucher-events))
+       not))
+
 (defn show-minimal-footer? [event]
   (contains? minimal-footer-events event))
 
