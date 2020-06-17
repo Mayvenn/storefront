@@ -474,6 +474,8 @@
               :image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
               :class          "bg-refresh-gray"
               :id             "freeinstall-banner-cta"}
+             #:product-description
+             {:description [""]}
              {:how-it-works
               {:how-it-works/title-secondary "Here’s how it works."
                :how-it-works/step-elements
