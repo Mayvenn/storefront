@@ -239,7 +239,7 @@
                                                          :page/slug           "wigs-install"
                                                          :query-params        {:family (str "360-wigs" categories/query-param-separator "lace-front-wigs")}}]]
     {"SRV-LBI-000"
-     {:rules                    [["bundle" ?bundles 3]] ; TODO {:word :essentials :cart-quantity}
+     {:rules                    [["bundle" ?bundles 3]] ;; [word essentials cart-quantity]
       :failure-navigation-event install-navigation-message
 
       :success sew-in-success}
@@ -297,7 +297,6 @@
                                                                              missing-quantity (- rule-quantity cart-quantity)]
                                                                          (when (pos? missing-quantity)
                                                                            {:word             word
-                                                                            :rule-quantity    rule-quantity
                                                                             :cart-quantity    cart-quantity
                                                                             :missing-quantity missing-quantity
                                                                             :essentials       essentials})))
@@ -316,7 +315,7 @@
        :hair-success             (:success (get rules (:sku service-line-item)))
        :hair-missing             (seq failed-rules)
        :hair-missing-quantity    (apply + (map :missing-quantity failed-rules))
-       :hair-success-quantity    (apply + (map :rule-quantity failed-rules))
+       :hair-success-quantity    (apply + (map last rules-for-service))
        ;; criterion 3
        :stylist                  (not-empty servicing-stylist)})))
 
