@@ -3,6 +3,7 @@
             [catalog.products :as products]
             [cemerick.url :as url]
             [clojure.string :as string]
+            promotion-helper.keypaths
             [rng :as rng]
             [spice.core :as spice]
             [spice.maps :as maps]
@@ -197,7 +198,8 @@
         (assoc-in keypaths/navigation-uri uri)
         ;; order is important from here on
         (assoc-in keypaths/redirecting? false)
-        (assoc-in keypaths/navigation-message new-nav-message))))
+        (assoc-in keypaths/navigation-message new-nav-message)
+        (assoc-in promotion-helper.keypaths/ui-promotion-helper-opened false))))
 
 (def ^:private hostname (comp :host url/url))
 
