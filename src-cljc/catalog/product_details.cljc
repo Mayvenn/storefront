@@ -425,30 +425,30 @@
            :else
            {:price-block/primary                (mf/as-money sku-price)
             :price-block/secondary              "each"})
-       (add-to-cart-query data selected-sku sku-price)
-       (let [{:keys [copy/description
-                     copy/colors
-                     copy/weights
-                     copy/density
-                     copy/materials
-                     copy/whats-included
-                     copy/summary
-                     copy/duration
-                     hair/family]} product]
-         #:product-description {:duration             duration
-                                :summary              summary
-                                :description          description
-                                :materials            materials
-                                :colors               colors
-                                :density              density
-                                :whats-included       whats-included
-                                :weights              (when-not density
-                                                        weights)
-                                :learn-more-nav-event (when-not (or (contains? family "seamless-clip-ins")
-                                                                    (contains? family "tape-ins")
-                                                                    (contains? (:stylist-exclusives/family product) "kits")
-                                                                    standalone-service?)
-                                                        events/navigate-content-our-hair)}))
+         (add-to-cart-query data selected-sku sku-price)
+         (let [{:keys [copy/description
+                       copy/colors
+                       copy/weights
+                       copy/density
+                       copy/materials
+                       copy/whats-included
+                       copy/summary
+                       copy/duration
+                       hair/family]} product]
+           #:product-description {:duration             duration
+                                  :summary              summary
+                                  :description          description
+                                  :materials            materials
+                                  :colors               colors
+                                  :density              density
+                                  :whats-included       whats-included
+                                  :weights              (when-not density
+                                                          weights)
+                                  :learn-more-nav-event (when-not (or (contains? family "seamless-clip-ins")
+                                                                      (contains? family "tape-ins")
+                                                                      (contains? (:stylist-exclusives/family product) "kits")
+                                                                      standalone-service?)
+                                                          events/navigate-content-our-hair)}))
 
       (and (= "shop" (get-in data keypaths/store-slug))
            (not standalone-service?))
