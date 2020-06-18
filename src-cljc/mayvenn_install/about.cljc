@@ -35,13 +35,16 @@
 
 (defn query
   [data]
-  (let [cms-homepage-hero  (some-> data (get-in storefront.keypaths/cms-homepage) :shop :hero)
-        cms-ugc-collection (get-in data storefront.keypaths/cms-ugc-collection)
+  (let [cms-ugc-collection (get-in data storefront.keypaths/cms-ugc-collection)
         current-nav-event  (get-in data storefront.keypaths/navigation-event)]
     {:layers
-     [(merge {:layer/type :hero}
-             (assoc (homepage-hero/query cms-homepage-hero)
-                    :file-name "free-install-hero"))
+     [{:layer/type :hero
+       :opts       {:href      "/adv/match-stylist"
+                    :data-test "home-banner"}
+       :dsk-url    "//images.ctfassets.net/76m8os65degn/6qzfvE4tjQApY5shHJU7gw/d946312226ad40efe3445c2f3e9ac91e/site-homepage-hero-020420-dsk-03.jpg"
+       :mob-url    "//images.ctfassets.net/76m8os65degn/49QbvcP6B3Ow3g08qM3u3g/1a4567b56ab380a70e8889cec983fef8/site-homepage-hero-020420-mob-03.jpg"
+       :alt        "Buy 3 bundles and we'll pay for your install! Choose any Mayvenn Stylist in your area. Browse Stylists."
+       :file-name  "free-install-hero"}
       {:layer/type :free-standard-shipping-bar}
       {:layer/type   :shop-text-block
        :header/value "Buy 3 bundles and we’ll pay for your service"
