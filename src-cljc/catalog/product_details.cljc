@@ -184,8 +184,10 @@
   [data _ _]
   [:div.mt3.mx3
    [:div.flex.items-center.justify-between
-    (catalog.M/product-title data)
-    (catalog.M/price-block data)]
+    [:div.flex-auto
+     (catalog.M/product-title data)]
+    [:div.col-2
+     (catalog.M/price-block data)]]
    (catalog.M/yotpo-reviews-summary data)])
 
 (defcomponent component

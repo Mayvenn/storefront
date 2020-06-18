@@ -7,9 +7,9 @@
 (defn product-title
   "TODO empty state"
   [{:title/keys [id primary secondary]}]
-  [:div.flex-grow {:data-test id}
+  [:div {:data-test id}
    [:h3.proxima.title-2.shout primary]
-   [:div.medium secondary]])
+   [:div.content-3 secondary]])
 
 (defn price-block
   [{:price-block/keys [primary primary-struck secondary]}]
