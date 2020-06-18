@@ -3,13 +3,17 @@
             [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as utils]))
 
+(def drawer-face-teal-checkmark-atom
+  (svg/check-mark {:class "fill-teal"
+                   :style {:height "12px" :width "14px"}}))
+
 (defn drawer-face-circle-molecule
   [{:promotion-helper.ui.drawer-face.circle/keys [color value]}]
   (c/html
    [:div.circle.flex.items-center.justify-center.ml2
     {:style {:height "20px" :min-width "20px"}
      :class color}
-    value]))
+    (if (int? value) value (svg/symbolic->html value))]))
 
 ;; Note: these molecules are weird because the title is split
 

@@ -24,7 +24,7 @@
       face
       contents]
      [:div.fixed.z1.hide-on-mb-tb.col-4.bottom-0.mx-auto.lit-strong
-      {:style {:left "50%"
+      {:style {:left      "50%"
                :transform "translate(-50%, 0)"}}
       face contents]]))
 
@@ -47,11 +47,12 @@
                                                         behavior/ui-promotion-helper-opened)]}
      (if (pos? failed-criteria-count)
        {:promotion-helper.ui.drawer-face.circle/color "bg-red white"
-        :promotion-helper.ui.drawer-face.circle/value failed-criteria-count}
+        :promotion-helper.ui.drawer-face.circle/value failed-criteria-count
+        :promotion-helper.ui.drawer-face.circle/id    "failed-criteria-count"}
        {:promotion-helper.ui.drawer-face.circle/color "bg-white"
-        :promotion-helper.ui.drawer-face.circle/value
-        (svg/check-mark {:class "fill-teal"
-                         :style {:height "12px" :width "14px"}})}))}
+        :promotion-helper.ui.drawer-face.circle/id    "failed-criteria-count"
+        :promotion-helper.ui.drawer-face.circle/value [:svg/check-mark {:class "fill-teal"
+                                                                        :style {:height "12px" :width "14px"}}]}))}
    (when opened?
      {:drawer-contents
       (merge
