@@ -9,7 +9,7 @@
             [catalog.keypaths :as k]
             [catalog.facets :as facets]
             [storefront.events :as events]
-            [homepage.v2020-04 :as homepage]
+            [homepage.ui-v2020-06 :as homepage.ui]
             [catalog.categories :as categories]
             [catalog.products :as products]
             [spice.selector :as selector]
@@ -278,7 +278,7 @@
                                                  :name           title
                                                  :acceptedAnswer {"@type" "Answer"
                                                                   :text   (string/join " " paragraphs)}})
-                                              homepage/faq-sections-data)})}
+                                              homepage.ui/faq-sections-data)})}
 
        events/navigate-info-certified-stylists
        {:title          "Certified Stylists: Top-Rated Hair Weave Stylists | Mayvenn",

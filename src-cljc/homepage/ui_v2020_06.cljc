@@ -1,4 +1,4 @@
-(ns homepage.v2020-04
+(ns homepage.ui-v2020-06
   (:require [clojure.string :refer [join]]
             [homepage.ui.atoms :as A]
             [homepage.ui.contact-us :as contact-us]
@@ -18,8 +18,7 @@
             [storefront.components.homepage-hero :as homepage-hero]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.events :as e]
-            [storefront.keypaths :as k]))
+            [storefront.events :as e]))
 
 (c/defcomponent template
   [{:keys [contact-us
@@ -67,10 +66,10 @@
   decomplect:
   - handles extraction from cms
   - schematizes according to reused component"
-  [cms]
+  [cms experience]
   (let [hero-content
         (or
-         (some-> cms :homepage :unified :hero)
+         (some-> cms :homepage experience :hero)
          ;; TODO handle cms failure fallback
          {})]
     (assoc-in (homepage-hero/query hero-content)
@@ -139,7 +138,7 @@
    :quality-hair.cta/target      [e/navigate-category {:page/slug           "human-hair-bundles"
                                                        :catalog/category-id "27"}]})
 
-;; HACK shop? is required because link on aladdin is missing
+
 (defn quality-stylists-query
   [shop?]
   (cond-> {:quality-stylists.title/primary   "Sit back and"
@@ -149,9 +148,11 @@
                                               :mobile  "8f14c17b-ffef-4178-8915-640573a8bf3a"}}
     shop?
     (merge
-     {:quality-stylists.cta/id          "info-certified-stylists"
-      :quality-stylists.cta/label       "Learn more"
-      :quality-stylists.cta/target      [e/navigate-info-certified-stylists]})))
+     {:quality-stylists.cta/id     "info-certified-stylists"
+      :quality-stylists.cta/label  "Learn more"
+      :quality-stylists.cta/target [e/navigate-info-certified-stylists]})))
+
+
 
 (defn hashtag-mayvenn-hair-query
   [ugc]
@@ -239,51 +240,18 @@
 
 ;;;; TODO -> model.stylists
 
-(def ^:private wig-customizations
+(def wig-customizations
   [:specialty-wig-customization])
-(def ^:private mayvenn-installs
+(def mayvenn-installs
   [:specialty-sew-in-360-frontal
    :specialty-sew-in-closure
    :specialty-sew-in-frontal
    :specialty-sew-in-leave-out])
-(def ^:private services
+(def services
   (into mayvenn-installs wig-customizations))
 
-(defn ^:private offers?
+(defn offers?
   [menu services]
   (->> ((apply juxt services) menu) ; i.e. select-vals
        (some identity)
        boolean))
-
-;;;;
-
-(defn page
-  "Binds app-state to template"
-  [app-state]
-  (let [cms            (get-in app-state k/cms)
-        categories     (get-in app-state k/categories)
-        ugc            (get-in app-state k/cms-ugc-collection)
-        expanded-index (get-in app-state k/faq-expanded-section)
-        shop?          (= "shop" (get-in app-state k/store-slug))
-        menu           (get-in app-state k/store-service-menu)]
-    (c/build
-     template
-     (cond->
-         {:contact-us           contact-us-query
-          :diishan              diishan-query
-          :guarantees           guarantees-query
-          :hero                 (hero-query cms)
-          :hashtag-mayvenn-hair (hashtag-mayvenn-hair-query ugc)
-          :shopping-categories  (shopping-categories-query categories)}
-
-       (or shop? (offers? menu mayvenn-installs))
-       (merge {:mayvenn-install mayvenn-install-query})
-
-       (or shop? (offers? menu wig-customizations))
-       (merge {:wig-customization wig-customization-query})
-
-       (or shop? (offers? menu services))
-       (merge {:faq              (faq-query expanded-index)
-               :quality-hair     quality-hair-query
-               ;; HACK shop? is required because link on aladdin is missing
-               :quality-stylists (quality-stylists-query shop?)})))))

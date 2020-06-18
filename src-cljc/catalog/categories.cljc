@@ -127,8 +127,8 @@
            :header/title                  "Virgin Hair Closures"
            :flyout-menu/title             "Closures"
            :flyout-menu/order             1
-           :homepage.v2020-04/order       2
-           :homepage.v2020-04/image-id    "27e942b0-136c-4f7d-8b7b-ca98869fa272"
+           :homepage.ui-v2020-06/order    2
+           :homepage.ui-v2020-06/image-id "27e942b0-136c-4f7d-8b7b-ca98869fa272"
            :footer/order                  5
            :footer/title                  "Closures"
            :copy/description              (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
@@ -167,24 +167,24 @@
                          "//ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/")
           {:page/title "360 Lace Frontals: Virgin Hair 360 Frontals | Mayvenn"}
           frontals-templates)
-   (merge {:catalog/category-id      "1"
-           :copy/title               "Hair Frontals"
-           :page/slug                "virgin-frontals"
-           :seo/title                "Hair Frontals"
-           :legacy/named-search-slug "frontals"
-           :menu/hide?               true
-           :page/icp?                true
-           :category/description     (copy "Protect your tresses and finish off your style with 100% virgin hair"
-                                           "frontals that blend flawlessly with bundles and your natural hairline."
-                                           "Lace frontals give you the freedom to part your hair in any direction"
-                                           "with gorgeous texture and style.")
+   (merge {:catalog/category-id           "1"
+           :copy/title                    "Hair Frontals"
+           :page/slug                     "virgin-frontals"
+           :seo/title                     "Hair Frontals"
+           :legacy/named-search-slug      "frontals"
+           :menu/hide?                    true
+           :page/icp?                     true
+           :category/description          (copy "Protect your tresses and finish off your style with 100% virgin hair"
+                                                "frontals that blend flawlessly with bundles and your natural hairline."
+                                                "Lace frontals give you the freedom to part your hair in any direction"
+                                                "with gorgeous texture and style.")
            :catalog/department            #{"hair"}
            :hair/family                   #{"frontals" "360-frontals"}
            :hair/color.process            #{"natural" "dyed"}
            :flyout-menu/title             "Frontals"
            :flyout-menu/order             2
-           :homepage.v2020-04/order       3
-           :homepage.v2020-04/image-id    "b6dc646c-039f-48a8-b932-bd03350a3beb"
+           :homepage.ui-v2020-06/order    3
+           :homepage.ui-v2020-06/image-id "b6dc646c-039f-48a8-b932-bd03350a3beb"
            :footer/order                  6
            :footer/title                  "Frontals"
            :hair/source                   #{"virgin"}
@@ -442,14 +442,14 @@
           texture-templates)])
 
 (def wigs
-  [(merge {:catalog/category-id   "13"
-           :homepage.v2020-04/order    0
-           :homepage.v2020-04/image-id "5457be03-d25b-41d6-a5e3-ef28b4fda2f5"
-           :footer/order          7
-           :footer/title          "Wigs"
-           :flyout-menu/order     3
-           :flyout-menu/title     "Wigs"
-           :header/title          "Wigs"
+  [(merge {:catalog/category-id           "13"
+           :homepage.ui-v2020-06/order    0
+           :homepage.ui-v2020-06/image-id "5457be03-d25b-41d6-a5e3-ef28b4fda2f5"
+           :footer/order                  7
+           :footer/title                  "Wigs"
+           :flyout-menu/order             3
+           :flyout-menu/title             "Wigs"
+           :header/title                  "Wigs"
 
            :page/icp?            true
            :category/new?        true
@@ -543,13 +543,13 @@
                                         "convenient way to change up your look instantly.")
            :subcategory/image-uri "//ucarecdn.com/a4f7ad94-3c2c-41aa-be4d-94d9d83b1602/-/format/auto/-/resize/124x/"
 
-           :catalog/department    #{"hair"}
-           :hair/family           #{"ready-wigs"}
-           :selector/essentials   [:hair/family :catalog/department]
-           :selector/electives    [:hair/texture :wig/trait]
-           :opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our"
-                                        "30 Day Quality Guarantee, our Wigs can be customized to fit"
-                                        "your unique look using the built-in combs and adjustable strap.")
+           :catalog/department             #{"hair"}
+           :hair/family                    #{"ready-wigs"}
+           :selector/essentials            [:hair/family :catalog/department]
+           :selector/electives             [:hair/texture :wig/trait]
+           :opengraph/description          (copy "100% virgin human hair, machine-wefted and backed by our"
+                                                 "30 Day Quality Guarantee, our Wigs can be customized to fit"
+                                                 "your unique look using the built-in combs and adjustable strap.")
            :page/title-template            [:computed/selected-facet-string " Wigs: " :computed/selected-facet-string " " :seo/title " | Mayvenn"]
            :page.meta/description-template ["Mayvenn’s "
                                             :computed/selected-facet-string
@@ -618,8 +618,8 @@
            :category/new?                 false
            :flyout-menu/title             "Hair Bundles"
            :flyout-menu/order             0
-           :homepage.v2020-04/order       1
-           :homepage.v2020-04/image-id    "2013a836-9fc8-4530-8696-884400fad880"
+           :homepage.ui-v2020-06/order    1
+           :homepage.ui-v2020-06/image-id "2013a836-9fc8-4530-8696-884400fad880"
            :footer/order                  4
            :footer/title                  "Hair Bundles"
            :category/description          (copy "Have a hairstyle in mind and want more volume, length, and texture? Add our 100% Virgin hair bundles."
@@ -802,8 +802,8 @@
      :flyout-menu/title "Hair Extensions"
      :flyout-menu/order 4
 
-     :homepage.v2020-04/order    4
-     :homepage.v2020-04/image-id "978c91a9-9931-40f3-abec-ca7ccefa8240"
+     :homepage.ui-v2020-06/order    4
+     :homepage.ui-v2020-06/image-id "978c91a9-9931-40f3-abec-ca7ccefa8240"
 
      :footer/order 8
      :footer/title "Hair Extensions"
@@ -899,8 +899,8 @@
     :page/slug                          "free-mayvenn-services"
     :copy/description                   "Lorem ipsum dolor sit amet, consectetur adipiscing
       elit. Ut sollicitudin massa sit amet efficitur sagittis."
-    :how-it-works/title-primary   "Your hair deserves a Mayvenn–Certified Stylist."
-    :how-it-works/title-secondary "Here’s how it works."
+    :how-it-works/title-primary         "Your hair deserves a Mayvenn–Certified Stylist."
+    :how-it-works/title-secondary       "Here’s how it works."
     :how-it-works/step-elements
     [{:how-it-works.step.title/primary   "01"
       :how-it-works.step.title/secondary "Pick your service"
