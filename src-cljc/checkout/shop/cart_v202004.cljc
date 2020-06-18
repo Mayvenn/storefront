@@ -293,7 +293,7 @@
    add-items-action]
   (cond-> []
     entered?
-    (conj (let [matched?           (boolean stylist)]
+    (conj (let [matched? (boolean stylist)]
             (cond-> {:react/key                                "freeinstall-line-item-freeinstall"
                      :cart-item-title/id                       "line-item-title-upsell-free-service"
                      :cart-item-title/primary                  service-title
@@ -311,7 +311,7 @@
               ;; Locked basically means the freeinstall coupon code was entered, yet not all the requirements
               ;; of a free install order to generate a voucher have been satisfied.
               locked?
-              (merge {:cart-item-title/primary                    (str service-title " (locked)")
+              (merge {:cart-item-title/primary                   (str service-title " (locked)")
                       :cart-item-title/id                        "line-item-title-locked-mayvenn-install"
                       :cart-item-steps-to-complete/action-target add-items-action
                       :cart-item-steps-to-complete/action-label  action-label
@@ -812,7 +812,7 @@
       any-services?
       (cond->
 
-        (nil? servicing-stylist)
+          (nil? servicing-stylist)
         (merge {:stylist-organism/id "stylist-organism"})
 
         (and (not stylist-blocked?) (nil? servicing-stylist))
