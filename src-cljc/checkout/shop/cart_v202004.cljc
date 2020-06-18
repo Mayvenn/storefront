@@ -495,14 +495,16 @@
 
 (defn regular-cart-summary-query
   "This is for cart's that haven't entered an upsell (free install, wig customization, etc)"
-  [{:as order :keys [adjustments tax-total total]} {:mayvenn-install/keys [any-wig?]}]
-  (let [subtotal          (orders/products-and-services-subtotal order)
-        shipping          (orders/shipping-item order)
-        shipping-cost     (some->> shipping
-                                   vector
-                                   (apply (juxt :quantity :unit-price))
-                                   (reduce *))
-        timeframe-copy-fn shipping/timeframe
+  [{:as order :keys [adjustments tax-total total]}
+   {:mayvenn-install/keys [any-wig?]}
+   {:keys [add-free-service?]}]
+  (let [subtotal           (orders/products-and-services-subtotal order)
+        shipping           (orders/shipping-item order)
+        shipping-cost      (some->> shipping
+                                    vector
+                                    (apply (juxt :quantity :unit-price))
+                                    (reduce *))
+        timeframe-copy-fn  shipping/timeframe
         shipping-timeframe (some-> shipping :sku timeframe-copy-fn)]
     (cond->
         {:cart-summary-total-line/id    "total"
@@ -549,13 +551,28 @@
          :freeinstall-informational/secondary-link-label  "learn more"}
 
       any-wig?
-      (merge {:freeinstall-informational/button-id             "add-wig-customization"
-              :freeinstall-informational/primary               "Don't miss out on free Wig Customization"
-              :freeinstall-informational/secondary             "Get a free customization by a licensed stylist when you add a Wig Customization to your cart below."
-              :freeinstall-informational/cta-label             "Add Wig Customization"
-              :freeinstall-informational/secondary-link-id     "Learn More"
-              :freeinstall-informational/secondary-link-target [events/popup-show-wigs-customization]
-              :freeinstall-informational/fine-print            "*Wig Customization cannot be combined with other promo codes, and excludes Ready to Wear Wigs"}))))
+      (merge
+       {:freeinstall-informational/button-id             "add-wig-customization"
+        :freeinstall-informational/primary               "Don't miss out on free Wig Customization"
+        :freeinstall-informational/secondary             "Get a free customization by a licensed stylist when you add a Wig Customization to your cart below."
+        :freeinstall-informational/cta-label             "Add Wig Customization"
+        :freeinstall-informational/secondary-link-id     "Learn More"
+        :freeinstall-informational/secondary-link-target [events/popup-show-wigs-customization]
+        :freeinstall-informational/fine-print            "*Wig Customization cannot be combined with other promo codes, and excludes Ready to Wear Wigs"})
+
+      add-free-service?
+      (merge
+       {:freeinstall-informational/button-id             "add-free-mayvenn-service"
+        :freeinstall-informational/primary               "Don't miss out on free Mayvenn Services"
+        :freeinstall-informational/secondary             "Get a free service by a licensed stylist when you purchase qualifying items"
+        :freeinstall-informational/cta-label             "Add Mayvenn Service"
+        :freeinstall-informational/cta-target            [events/navigate-category
+                                                          {:catalog/category-id "31"
+                                                           :page/slug           "free-mayvenn-services"}]
+        :freeinstall-informational/id                    "freeinstall-informational"
+        :freeinstall-informational/secondary-link-id     "cart-learn-more"
+        :freeinstall-informational/secondary-link-target [events/popup-show-consolidated-cart-free-install]
+        :freeinstall-informational/fine-print            "*Mayvenn Services cannot be combined with other promo codes."}))))
 
 (defn upsold-cart-summary-query
   "The cart has an upsell 'entered' because the customer has requested a service discount"
@@ -659,10 +676,10 @@
               :cart-summary-total-incentive/label "Includes Wig Customization"}))))
 
 (defn cart-summary-query
-  [order install]
+  [order install feature-flags]
   (if (:mayvenn-install/entered? install)
     (upsold-cart-summary-query order install)
-    (regular-cart-summary-query order install)))
+    (regular-cart-summary-query order install feature-flags)))
 
 (defn promo-input-query
   [data order entered?]
@@ -710,6 +727,7 @@
 
 (defn full-cart-query [data]
   (let [shop?                                        (#{"shop"} (get-in data keypaths/store-slug))
+        feature-flags                                {:add-free-service? (experiments/add-free-service? data)}
         order                                        (get-in data keypaths/order)
         products                                     (get-in data keypaths/v2-products)
         facets                                       (get-in data keypaths/v2-facets)
@@ -767,11 +785,11 @@
                                               :query-params        {:family "lace-front-wigs~360-wigs"}}]
                                             mayvenn-install-shopping-action)
                                           (if any-wig?
-                                           [events/navigate-category
-                                            {:page/slug           "wigs"
-                                             :catalog/category-id "13"
-                                             :query-params        {:family "lace-front-wigs~360-wigs"}}]
-                                           mayvenn-install-shopping-action))]
+                                            [events/navigate-category
+                                             {:page/slug           "wigs"
+                                              :catalog/category-id "13"
+                                              :query-params        {:family "lace-front-wigs~360-wigs"}}]
+                                            mayvenn-install-shopping-action))]
     (cond-> {:suggestions               (suggestions/consolidated-query data)
              :line-items                line-items
              :skus                      skus
@@ -798,7 +816,7 @@
              :applied?                  applied?
              :remove-freeinstall-event  [events/control-checkout-remove-promotion {:code "freeinstall"}]
              :cart-summary              (merge
-                                         (cart-summary-query order mayvenn-install)
+                                         (cart-summary-query order mayvenn-install feature-flags)
                                          {:promo-field-data (promo-input-query data order entered?)})
              :cart-items                (cart-items-query data line-items skus)
              :service-line-items        (concat (if (experiments/add-free-service? data)
