@@ -8,10 +8,11 @@
                    :style {:height "12px" :width "14px"}}))
 
 (defn drawer-face-circle-molecule
-  [{:promotion-helper.ui.drawer-face.circle/keys [color value]}]
+  [{:promotion-helper.ui.drawer-face.circle/keys [id color value]}]
   (c/html
    [:div.circle.flex.items-center.justify-center.ml2
     {:style {:height "20px" :min-width "20px"}
+     :data-test id
      :class color}
     (if (int? value) value (svg/symbolic->html value))]))
 
@@ -28,10 +29,11 @@
    [:div.button-font-3.mtp4.regular "Swipe up to learn how to get your service for free"]))
 
 (defcomponent organism
-  [data _ _]
+  [{:promotion-helper.ui.drawer-face.action/keys [target id]
+    :as data} _ _]
   [:div.flex.items-center.justify-center.pl3.pr4.py2.bg-black.white
-   (apply utils/fake-href
-          (:promotion-helper.ui.drawer-face.action/target data))
+   (-> (apply utils/fake-href target)
+       (assoc :data-test id))
    [:div.flex-auto.pr4
     [:div.flex.items-center.justify-left.proxima.button-font-2.bold
      (drawer-face-primary-title-molecule data)

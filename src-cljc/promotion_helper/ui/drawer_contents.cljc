@@ -26,27 +26,39 @@
                    :style {:height "14px" :width "18px"}}))
 
 (defn drawer-contents-condition-progress-molecule
-  [{:promotion-helper.ui.drawer-contents.condition.progress/keys [completed remaining]}]
+  [{:promotion-helper.ui.drawer-contents.condition.progress/keys [id completed remaining]}]
   (c/html
    [:div.flex-auto.pl1 {:key "c" :style {:order 2}}
-    (for [n (range completed)]
-      [:span {:key (str "promotion-helper.ui.drawer-contents.steps.checkmarks.teal." n)}
+    (for [n (range completed)
+          :let [dt (str "drawer-contents.checkmarks.s-color.completed-" id "-" n)]]
+      [:span {:key dt
+              :data-test dt}
        drawer-contents-step-teal-checkmark-atom])
-    (for [n (range remaining)]
-      [:span {:key (str "promotion-helper.ui.drawer-contents.steps.checkmarks.gray." n)}
+    (for [n (range remaining)
+          :let [dt (str "drawer-contents.checkmarks.gray.remaining-" id "-" n)]]
+      [:span {:key dt
+              :data-test dt}
        drawer-contents-step-gray-checkmark-atom])]))
 
 (defn drawer-contents-condition-title-molecule
-  [{:promotion-helper.ui.drawer-contents.condition.title/keys [primary primary-struck secondary]}]
+  [{:promotion-helper.ui.drawer-contents.condition.title/keys [id primary primary-struck secondary]}]
   (c/html
    (list
     (when primary
-      [:div.content-2 {:key "a" :style {:order 1}}
+      [:div.content-2
+       {:key "a"
+        :style {:order 1}
+        :data-test (str "primary-" id)}
        primary])
     (when primary-struck
-      [:div.content-2.strike {:key "a" :style {:order 1}}
+      [:div.content-2.strike
+       {:key "a" :style {:order 1}
+        :data-test (str "primary-struck-" id)}
        primary-struck])
-    [:div.content-3.dark-gray.col-12 {:key "b" :style {:order 3}} secondary])))
+    [:div.content-3.dark-gray.col-12
+     {:key "b" :style {:order 3}
+      :data-test (str "secondary-" id)}
+     secondary])))
 
 (defn drawer-contents-condition-action-molecule
   [{:promotion-helper.ui.drawer-contents.condition.action/keys [id label target]}]
@@ -80,7 +92,6 @@
   [data _ _]
   (when (seq data)
     [:div.bg-refresh-gray.p3
-     (elements drawer-contents-condition-organism
-               data
-               :promotion-helper.ui.drawer-contents/conditions)
+     {:data-test (:promotion-helper.ui.drawer-contents/id data)}
+     (elements drawer-contents-condition-organism data :promotion-helper.ui.drawer-contents/conditions)
      (drawer-contents-footer data)]))
