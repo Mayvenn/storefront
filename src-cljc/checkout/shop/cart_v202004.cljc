@@ -296,6 +296,7 @@
     (conj (let [matched?           (boolean stylist)]
             (cond-> {:react/key                                "freeinstall-line-item-freeinstall"
                      :cart-item-title/id                       "line-item-title-upsell-free-service"
+                     :cart-item-title/primary                  service-title
                      :cart-item-copy/value                     promo-helper-copy
                      :cart-item-floating-box/id                "line-item-freeinstall-price"
                      :cart-item-floating-box/value             (some-> service-discount - mf/as-money)

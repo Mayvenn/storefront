@@ -72,6 +72,7 @@
               " and ")
             (when needs-additional-hair-family?
               (str additional-hair-family-count
+                   " "
                    (ui/pluralize additional-hair-family-count
                                  singular-addition-hair-family
                                  additional-hair-family)))))
