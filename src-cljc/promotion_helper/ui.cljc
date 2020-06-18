@@ -23,10 +23,10 @@
      [:div.fixed.bottom-0.left-0.right-0.z1.hide-on-dt
       face
       contents]
-     [:div.fixed.bottom-0.left-0.right-0.z1.hide-on-mb-tb
-      [:div.col-4.mx-auto.lit-strong
-       face
-       contents]]]))
+     [:div.fixed.z1.hide-on-mb-tb.col-4.bottom-0.mx-auto.lit-strong
+      {:style {:left "50%"
+               :transform "translate(-50%, 0)"}}
+      face contents]]))
 
 (defn promotion-helper-ui<-
   [{:promotion-helper/keys [opened?]}
