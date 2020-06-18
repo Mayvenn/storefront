@@ -418,15 +418,21 @@
                                                    (not (experiments/promotion-helper? data)))}
          (cond
            (accessors.products/product-is-mayvenn-install-service? product)
-           {:price-block/primary-struck         (mf/as-money sku-price)
-            :price-block/secondary              [:span.teal "FREE"]}
+           {:price-block/primary-struck (mf/as-money sku-price)
+            :price-block/secondary      [:span.teal "FREE"]
+            :title/secondary            (->> (:catalog/sku-id selected-sku)
+                                             (get {"SRV-LBI-000" "FREE with purchase of 3+ Bundles"
+                                                   "SRV-CBI-000" "FREE with purchase of 2+ Bundles and a Closure"
+                                                   "SRV-FBI-000" "FREE with purchase of 2+ Bundles and a Lace Frontal"
+                                                   "SRV-3BI-000" "FREE with purchase of 2+ Bundles and a 360 Frontal"
+                                                   "SRV-WGC-000" "FREE with purchase of a Lace Front Wig or a 360 Lace Wig"}))}
 
            standalone-service?
-           {:price-block/primary                (mf/as-money sku-price)}
+           {:price-block/primary (mf/as-money sku-price)}
 
            :else
-           {:price-block/primary                (mf/as-money sku-price)
-            :price-block/secondary              "each"})
+           {:price-block/primary   (mf/as-money sku-price)
+            :price-block/secondary "each"})
          (add-to-cart-query data selected-sku sku-price)
          (let [{:keys [copy/description
                        copy/colors
