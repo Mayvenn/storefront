@@ -338,7 +338,6 @@
 
                                     (= events/navigate-about-mayvenn-install nav-event)
                                     (-> {}
-                                        (update-data [:homepage :shop])
                                         (update-data [:ugc-collection :free-install-mayvenn])
                                         contentful/derive-all-looks)
 
