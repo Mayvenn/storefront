@@ -15,7 +15,7 @@
      {:contact-us           ui/contact-us-query
       :diishan              ui/diishan-query
       :guarantees           ui/guarantees-query
-      :hero                 (ui/hero-query cms :unified) ; TODO update :shop in contentful, then here
+      :hero                 (ui/hero-query cms :shop)
       :hashtag-mayvenn-hair (ui/hashtag-mayvenn-hair-query ugc)
       :shopping-categories  (ui/shopping-categories-query categories)
       :mayvenn-install      ui/mayvenn-install-query

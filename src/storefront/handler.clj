@@ -312,7 +312,7 @@
 
                                     (= events/navigate-home nav-event)
                                     (-> {}
-                                        (update-data [:homepage :unified])
+                                        (update-data [:homepage (if shop? :shop :unified)])
                                         (update-data [:ugc-collection :free-install-mayvenn])
                                         contentful/derive-all-looks)
 
