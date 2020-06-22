@@ -45,6 +45,17 @@
 .pp5, .pyp5 { padding-top: 5px; padding-bottom: 5px; }
 .pp6, .pyp6 { padding-top: 6px; padding-bottom: 6px; }
 
+/* Juri sizes */
+
+.ptj3,.pyj3 { padding-top: 60px }
+.ptj2,.pyj2 { padding-top: 45px }
+.ptj1,.pyj1 { padding-top: 30px }
+
+.pbj3,.pyj3 { padding-bottom: 60px }
+.pbj2,.pyj2 { padding-bottom: 45px }
+.pbj1,.pyj1 { padding-bottom: 30px }
+
+
 :root {
     --space-1: .5rem;
     --space-2: 1rem;
