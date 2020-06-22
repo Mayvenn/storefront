@@ -505,6 +505,7 @@
 (defpath navigate-adventure-stylist-gallery)
 (defpath navigate-adventure-match-success)
 (defpath navigate-adventure-match-success-pre-purchase)
+(defpath navigate-adventure-match-success-pre-purchase-pick-service)
 (defpath navigate-adventure-match-success-post-purchase)
 (defpath navigate-adventure-stylist-profile)
 (defpath navigate-adventure-stylist-profile-post-purchase)

@@ -25,6 +25,7 @@
             stylist-matching.find-your-stylist
             stylist-matching.stylist-results
             stylist-matching.match-success
+            [stylist-matching.match-success-pick-service-v2020-06 :as pick-service-v2020-06]
 
             mayvenn-install.about
 
@@ -115,16 +116,17 @@
    events/navigate-info-certified-stylists (constantly adventure.informational.certified-stylists/built-component)
    events/navigate-info-about-our-hair     (constantly adventure.informational.about-our-hair/built-component)
 
-   events/navigate-adventure-match-stylist                 (constantly stylist-matching.match-stylist/page)
-   events/navigate-adventure-find-your-stylist             (constantly stylist-matching.find-your-stylist/page)
-   events/navigate-adventure-stylist-results-pre-purchase  (constantly stylist-matching.stylist-results/page)
-   events/navigate-adventure-stylist-results-post-purchase (constantly stylist-matching.stylist-results/page)
-   events/navigate-adventure-match-success-pre-purchase    (constantly stylist-matching.match-success/page)
-   events/navigate-adventure-match-success-post-purchase   (constantly stylist-matching.match-success/page)
-   events/navigate-adventure-checkout-wait                 #(ui/lazy-load-component :checkout 'adventure.checkout.wait/built-component events/navigate-adventure-checkout-wait)
-   events/navigate-adventure-stylist-profile               (constantly adventure.stylist-matching.stylist-profile/built-component)
-   events/navigate-adventure-stylist-profile-post-purchase (constantly adventure.stylist-matching.stylist-profile/built-component)
-   events/navigate-adventure-stylist-gallery               (constantly adventure.stylist-matching.stylist-gallery/built-component)})
+   events/navigate-adventure-match-stylist                           (constantly stylist-matching.match-stylist/page)
+   events/navigate-adventure-find-your-stylist                       (constantly stylist-matching.find-your-stylist/page)
+   events/navigate-adventure-stylist-results-pre-purchase            (constantly stylist-matching.stylist-results/page)
+   events/navigate-adventure-stylist-results-post-purchase           (constantly stylist-matching.stylist-results/page)
+   events/navigate-adventure-match-success-pre-purchase              (constantly stylist-matching.match-success/page)
+   events/navigate-adventure-match-success-post-purchase             (constantly stylist-matching.match-success/page)
+   events/navigate-adventure-match-success-pre-purchase-pick-service (constantly stylist-matching.match-success-pick-service-v2020-06/page)
+   events/navigate-adventure-checkout-wait                           #(ui/lazy-load-component :checkout 'adventure.checkout.wait/built-component events/navigate-adventure-checkout-wait)
+   events/navigate-adventure-stylist-profile                         (constantly adventure.stylist-matching.stylist-profile/built-component)
+   events/navigate-adventure-stylist-profile-post-purchase           (constantly adventure.stylist-matching.stylist-profile/built-component)
+   events/navigate-adventure-stylist-gallery                         (constantly adventure.stylist-matching.stylist-gallery/built-component)})
 
 (defn main-component [nav-event]
   (doto ((get nav-table nav-event (constantly (first-arg-only homepage.core/page))))

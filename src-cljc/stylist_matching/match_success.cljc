@@ -16,7 +16,8 @@
             [stylist-matching.ui.atoms :as stylist-matching.A]
             [stylist-matching.ui.matched-stylist :as matched-stylist]
             [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]
-            [stylist-matching.ui.stylist-cards :as stylist-cards]))
+            [stylist-matching.ui.stylist-cards :as stylist-cards]
+            [storefront.accessors.orders :as orders]))
 
 (defmethod transitions/transition-state events/api-success-assign-servicing-stylist-pre-purchase
   [_ _ {:keys [order]} app-state]
@@ -32,13 +33,26 @@
 
 (defmethod effects/perform-effects events/api-success-assign-servicing-stylist-pre-purchase [_ _ _ _ app-state]
   #?(:cljs
-     (let [cart-contains-a-freeinstall-eligible-item? (some-> app-state
-                                                              api.orders/current
+     (let [current-order                              (api.orders/current app-state)
+           cart-contains-a-freeinstall-eligible-item? (some-> current-order
                                                               :mayvenn-install/quantity-added
-                                                              (> 0))]
-       (if cart-contains-a-freeinstall-eligible-item?
-         (history/enqueue-navigate events/navigate-cart)
-         (history/enqueue-navigate events/navigate-adventure-match-success-pre-purchase)))))
+                                                              (> 0))
+           add-free-service?                          (experiments/add-free-service? app-state)
+           {services       "service"
+            physical-items "spree"}                   (group-by :source (orders/product-and-service-items (:waiter/order current-order)))]
+       (if add-free-service?
+         (history/enqueue-navigate
+          (cond (and (seq services) (seq physical-items))
+                events/navigate-cart
+
+                (seq services)
+                events/navigate-adventure-match-success-pre-purchase
+
+                :else
+                events/navigate-adventure-match-success-pre-purchase-pick-service))
+         (if cart-contains-a-freeinstall-eligible-item?
+           (history/enqueue-navigate events/navigate-cart)
+           (history/enqueue-navigate events/navigate-adventure-match-success-pre-purchase))))))
 
 (defmethod effects/perform-effects events/navigate-adventure-match-success-pre-purchase
   [_ _ _ _ app-state]

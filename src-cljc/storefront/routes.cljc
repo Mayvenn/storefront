@@ -49,6 +49,7 @@
    "/adv/stylist-results-post-purchase"                                (edn->bidi events/navigate-adventure-stylist-results-post-purchase)
    "/adv/match-success"                                                (edn->bidi events/navigate-adventure-match-success-pre-purchase)
    "/adv/match-success-post-purchase"                                  (edn->bidi events/navigate-adventure-match-success-post-purchase)
+   "/adv/match-success-pick-service"                                   (edn->bidi events/navigate-adventure-match-success-pre-purchase-pick-service)
    "/adv/checkout-wait"                                                (edn->bidi events/navigate-adventure-checkout-wait)
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug]                  (edn->bidi events/navigate-adventure-stylist-profile)
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "-post-purchase"] (edn->bidi events/navigate-adventure-stylist-profile-post-purchase)
