@@ -12,12 +12,25 @@
             storefront.keypaths
             [storefront.transitions :as transitions]
             [stylist-matching.ui.spinner :as spinner]
-            [stylist-matching.ui.stylist-search :as stylist-search]))
+            [stylist-matching.stylist-results :as stylist-results]
+            [stylist-matching.ui.stylist-search :as stylist-search]
+            [clojure.string :as string]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn spinner-query
   [app-state]
   (when-not (boolean (get-in app-state storefront.keypaths/loaded-google-maps))
     {:spinner/id "loading-google-maps"}))
+
+(defn service-sku-id->preferred-service
+  [sku-id]
+  (get
+   {"SRV-LBI-000" "leave-out"
+    "SRV-CBI-000" "closure"
+    "SRV-FBI-000" "frontal"
+    "SRV-3BI-000" "360-frontal"
+    "SRV-WGC-000" "wig-customization"}
+   sku-id))
 
 (defn stylist-search-query
   [app-state] ;; TODO ui model/api?
@@ -32,12 +45,23 @@
      :stylist-search.location-search-box/value       (str input-location)
      :stylist-search.location-search-box/clear?      selected-location?
 
-     :stylist-search.button/id        "stylist-match-address-submit"
+     :stylist-search.button/id "stylist-match-address-submit"
 
      :stylist-search.button/disabled? (not (and selected-location?
                                                 input-location))
-     :stylist-search.button/target    [events/control-adventure-location-submit {:query-params {:long (:longitude selected-location)
-                                                                                                :lat  (:latitude selected-location)}}]
+     :stylist-search.button/target    [events/control-adventure-location-submit
+                                       {:query-params
+                                        (merge {:long (:longitude selected-location)
+                                                :lat  (:latitude selected-location)}
+                                               (when (experiments/add-free-service? app-state)
+                                                 (when-let [preferred-services
+                                                            (->> (api.orders/current app-state)
+                                                                 :waiter/order
+                                                                 orders/service-line-items
+                                                                 (keep (comp service-sku-id->preferred-service :sku))
+                                                                 (string/join stylist-results/query-param-separator)
+                                                                 not-empty)]
+                                                   {:preferred-services preferred-services})))}]
      :stylist-search.button/label     "Search"}))
 
 (defn header-query

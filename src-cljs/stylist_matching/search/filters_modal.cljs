@@ -32,6 +32,8 @@
                                       "qualifying hair from Mayvenn. You buy the hair, we cover the service!")
      :stylist-search-filters/show? (get-in data stylist-directory.keypaths/stylist-search-show-filters?)
      :stylist-search-filters/filters
+     ;; NOTE: there is a `service-sku-id->preferred-service` mapping in `stylist-matching.find-your-stylist`
+     ;; May be useful when generating this list dynamically from the service categories
      (mapv (partial specialty->filter selected-filters)
            [["Leave out Install" :leave-out]
             ["Closure Install" :closure]

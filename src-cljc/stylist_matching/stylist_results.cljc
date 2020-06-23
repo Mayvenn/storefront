@@ -35,6 +35,8 @@
             [storefront.request-keys :as request-keys]
             [clojure.string :as str]))
 
+(def query-param-separator "~")
+
 (def preferred-filters?
   #{:leave-out :360-frontal :closure :frontal :wig-customization})
 
@@ -48,7 +50,7 @@
     (cond-> app-state
       (seq preferred-services)
       (assoc-in stylist-directory.keypaths/stylist-search-selected-filters
-                (set (sanitize-preferred-filters (map keyword (string/split preferred-services "~")))))
+                (set (sanitize-preferred-filters (map keyword (string/split preferred-services query-param-separator)))))
 
       (and lat long)
       (-> (assoc-in adventure.keypaths/adventure-stylist-match-location ;; GROT
@@ -177,7 +179,7 @@
                                   (merge (:query-params nav-args)
                                          {:lat                latitude
                                           :long               longitude
-                                          :preferred-services (clojure.string/join "~" (map name service-filters))})}))))
+                                          :preferred-services (clojure.string/join query-param-separator (map name service-filters))})}))))
 
 
 (defmethod transitions/transition-state events/api-success-fetch-stylists-matching-filters
