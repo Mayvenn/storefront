@@ -26,7 +26,7 @@
 (defn drawer-face-secondary-title-molecule
   [{}]
   (c/html
-   [:div.button-font-3.mtp4.regular "Swipe up to learn how to get your service for free"]))
+   [:div.button-font-3.mtp4.regular "Tap to learn how to get your service for free"]))
 
 (defcomponent organism
   [{:promotion-helper.ui.drawer-face.action/keys [target id]
