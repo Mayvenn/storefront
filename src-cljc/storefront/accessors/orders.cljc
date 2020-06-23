@@ -137,7 +137,12 @@
 (defn service-line-item-promotion?
   [{:keys [name]}]
   (boolean
-   (#{"FREEINSTALL" "Wig Customization"} name)))
+   (#{"FREEINSTALL"
+      "Wig Customization"
+      "Leave Out Install"
+      "Closure Install"
+      "Frontal Install"
+      "360 Frontal Install"} name)))
 
 (defn service-line-item-promotion-applied?
   [order]
