@@ -133,7 +133,7 @@
        [:div.flex.items-center.justify-left.proxima.button-font-2.bold
         [:div.circle.bg-red.white.flex.items-center.justify-center.ml2
          {:style {:height "20px" :width "20px"}} "2"]]
-       [:div.button-font-3.mtp4.regular "Swipe up to learn how to get your service for free"]]
+       [:div.button-font-3.mtp4.regular "Tap to learn how to get your service for free"]]
       [:div.fill-white.flex.items-center.justify-center
        (svg/dropdown-arrow {:height "18px"
                             :width  "18px"})]]])])
