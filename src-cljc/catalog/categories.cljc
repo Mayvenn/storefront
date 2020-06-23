@@ -897,8 +897,7 @@
     :category/new?                      true
     :copy/title                         "FREE Mayvenn Services"
     :page/slug                          "free-mayvenn-services"
-    :copy/description                   "Lorem ipsum dolor sit amet, consectetur adipiscing
-      elit. Ut sollicitudin massa sit amet efficitur sagittis."
+    :copy/description                   "These standout services, with Certified Stylists, are included with qualifying purchases."
     :how-it-works/title-primary         "Your hair deserves a Mayvenn–Certified Stylist."
     :how-it-works/title-secondary       "Here’s how it works."
     :how-it-works/step-elements
