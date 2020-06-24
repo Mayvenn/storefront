@@ -852,7 +852,7 @@
                                     (scroll/snap-to-top))
     (scroll/snap-to-top)))
 
-(defmethod effects/perform-effects events/api-success-add-to-bag [dispatch event {:keys [order]} _ app-state]
+(defmethod effects/perform-effects events/api-success-decrease-quantity [dispatch event {:keys [order]} _ app-state]
   (messages/handle-message events/save-order {:order order})
   (add-pending-promo-code app-state order)
   (messages/handle-later events/added-to-bag))

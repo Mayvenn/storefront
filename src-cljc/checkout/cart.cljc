@@ -108,7 +108,7 @@
                               :token      (:token order)
                               :variant-id (:id variant)
                               :sku-code   (:sku variant)}
-                             #(messages/handle-message events/api-success-add-to-bag {:order %})))))
+                             #(messages/handle-message events/api-success-decrease-quantity {:order %})))))
 
 #?(:cljs
    (defn- order-has-inapplicable-freeinstall-promo?

@@ -314,7 +314,7 @@
 
 (defpath api-success-fetch-cms-keypath)
 
-(defpath api-success-add-to-bag)
+(defpath api-success-decrease-quantity)
 (defpath api-success-add-sku-to-bag)
 (defpath api-success-suggested-add-to-bag)
 (defpath api-success-remove-from-bag)
