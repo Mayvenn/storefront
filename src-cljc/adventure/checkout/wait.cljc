@@ -92,11 +92,11 @@
                                          :longitude longitude
                                          :radius    "100mi"
                                          :choices   choices}] ; For trackings purposes only
-       (api/fetch-stylists-within-radius-v2 query
-                                            #(messages/handle-message
-                                              events/api-success-fetch-stylists-within-radius-post-purchase
-                                              (merge {:query query}
-                                                     %))))))
+       (api/fetch-stylists-within-radius query
+                                         #(messages/handle-message
+                                           events/api-success-fetch-stylists-within-radius-post-purchase
+                                           (merge {:query query}
+                                                  %))))))
 
 (defmethod effects/perform-effects events/api-success-fetch-stylists-within-radius-post-purchase [_ event _ _ app-state]
   #?(:cljs

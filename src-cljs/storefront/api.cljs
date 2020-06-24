@@ -1033,29 +1033,12 @@
 (defn fetch-stylists-within-radius [params handler]
   (storeback-api-req
    GET
-   "/v1/stylist/within-radius"
-   request-keys/fetch-stylists-within-radius
-   {:params  params
-    :handler handler}))
-
-(defn fetch-stylists-matching-filters [params handler]
-  (storeback-api-req
-   GET
-   "/v1/stylist/within-radius"
-   request-keys/fetch-stylists-matching-filters
-   {:params  params
-    :handler (or handler
-                 #(messages/handle-message events/api-success-fetch-stylists-matching-filters %))}))
-
-(defn fetch-stylists-within-radius-v2 [params handler]
-  (storeback-api-req
-   GET
    "/v2/stylist/within-radius"
    request-keys/fetch-stylists-within-radius
    {:params  params
     :handler handler}))
 
-(defn fetch-stylists-matching-filters-v2 [params handler]
+(defn fetch-stylists-matching-filters [params handler]
   (storeback-api-req
    GET
    "/v2/stylist/within-radius"

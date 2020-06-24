@@ -99,11 +99,11 @@
                       :radius             "100mi"
                       :choices            (get-in app-state adventure.keypaths/adventure-choices) ; For trackings purposes only
                       :preferred-services preferred-services}]
-           (api/fetch-stylists-matching-filters-v2 query
-                                                   #(messages/handle-message
-                                                     events/api-success-fetch-stylists-matching-filters
-                                                     (merge {:query query}
-                                                            %))))
+           (api/fetch-stylists-matching-filters query
+                                                #(messages/handle-message
+                                                  events/api-success-fetch-stylists-matching-filters
+                                                  (merge {:query query}
+                                                         %))))
          ;; Previously performed search results
          ;; TODO consider removal (uri holds state and effects)
          (seq matched-stylists)
