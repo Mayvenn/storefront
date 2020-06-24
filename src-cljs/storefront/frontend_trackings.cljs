@@ -162,6 +162,32 @@
                                              :order-quantity   order-quantity
                                              :line-item-skuers [(assoc sku :item/quantity quantity)]}))))
 
+(defmethod perform-track events/api-success-remove-from-bag
+  [_ _ {order :order} app-state]
+  (let [skus (get-in app-state keypaths/v2-skus)]
+    (stringer/track-event "remove_from_cart"
+                          {:order_number     (:number order)
+                           :order_total      (:total order)
+                           :order_quantity   (orders/product-and-service-quantity order)
+                           :store_experience (get-in app-state keypaths/store-experience)
+                           :context          {:cart-items (->> order
+                                                               orders/product-and-service-items
+                                                               (waiter-line-items->line-item-skuer skus)
+                                                               (mapv line-item-skuer->stringer-cart-item))}})))
+
+(defmethod perform-track events/api-success-decrease-quantity
+  [_ _ {order :order} app-state]
+  (let [skus (get-in app-state keypaths/v2-skus)]
+    (stringer/track-event "remove_from_cart"
+                          {:order_number     (:number order)
+                           :order_total      (:total order)
+                           :order_quantity   (orders/product-and-service-quantity order)
+                           :store_experience (get-in app-state keypaths/store-experience)
+                           :context          {:cart-items (->> order
+                                                               orders/product-and-service-items
+                                                               (waiter-line-items->line-item-skuer skus)
+                                                               (mapv line-item-skuer->stringer-cart-item))}})))
+
 (defmethod perform-track events/api-success-shared-cart-create [_ _ {:keys [cart]} app-state]
   (let [all-skus                 (vals (get-in app-state keypaths/v2-skus))
         sku-by-legacy-variant-id (fn [variant-id]
