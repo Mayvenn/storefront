@@ -44,7 +44,8 @@
             [storefront.transitions :as transitions]
             [catalog.ui.add-to-cart :as add-to-cart]
             [catalog.ui.freeinstall-banner :as freeinstall-banner]
-            [catalog.keypaths :as catalog.keypaths]))
+            [catalog.keypaths :as catalog.keypaths]
+            [spice.core :as core]))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
@@ -389,7 +390,9 @@
         ugc                 (ugc-query product selected-sku data)
         sku-price           (:sku/price selected-sku)
         review-data         (review-component/query data)
-        standalone-service? (accessors.products/standalone-service? product)]
+        standalone-service? (accessors.products/standalone-service? product)
+        wig-customization?  (seq (spice.selector/match-all {} {:catalog/department "service"
+                                                               :service/category "customization"} [product]))]
     (cond->
         (merge
          {:reviews                            review-data
@@ -487,8 +490,7 @@
                :how-it-works/step-elements
                [{:how-it-works.step.title/primary   "01"
                  :how-it-works.step.title/secondary "Pick your service"
-                 :how-it-works.step.body/primary    (str "Choose the service you’d like to book from our full list of salon service offerings. "
-                                                         "Next, you’ll see which stylists are nearby and decide who you want to book.")}
+                 :how-it-works.step.body/primary    "Choose the service you’d like to book from our full list of complimentary Mayvenn service offerings."}
                 {:how-it-works.step.title/primary   "02"
                  :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
                  :how-it-works.step.body/primary    (str "We've hand-picked thousands of talented stylists around the country. "
@@ -497,6 +499,26 @@
                  :how-it-works.step.title/secondary "Schedule your appointment"
                  :how-it-works.step.body/primary    (str "We’ll connect you with your stylist to set up your service. "
                                                          "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}})
+      wig-customization?
+      (merge {:how-it-works
+                {:how-it-works/title-secondary "Here’s how it works."
+                 :how-it-works/step-elements
+                 [{:how-it-works.step.title/primary   "01"
+                   :how-it-works.step.title/secondary "Select Your Wig"
+                   :how-it-works.step.body/primary    "Decide which wig you want and buy it from Mayvenn. Shop Lace Front & 360 Lace Wigs."}
+                  {:how-it-works.step.title/primary   "02"
+                   :how-it-works.step.title/secondary "Choose a Mayvenn Certified Stylist"
+                   :how-it-works.step.body/primary    "Browse our network of professional stylists in your area and make an appointment." }
+                  {:how-it-works.step.title/primary   "03"
+                   :how-it-works.step.title/secondary "Drop Off Your Wig"
+                   :how-it-works.step.body/primary    (str "Leave the wig with your stylist and talk about what you want. "
+                                                           "Your stylist will bleach the knots, tint the lace, cut the lace, customize your hairline and make sure it fits perfectly.  ")}
+                  {:how-it-works.step.title/primary   "04"
+                   :how-it-works.step.title/secondary "Schedule Your Pickup"
+                   :how-it-works.step.body/primary    "Make an appointment to pick up your wig with your stylist in a week."}
+                  {:how-it-works.step.title/primary   "05"
+                   :how-it-works.step.title/secondary "Go Get Your Wig"
+                   :how-it-works.step.body/primary    "You pick up your wig. Let us pick up the tab. Let us cover the cost of your customization—we insist."}]}})
 
       standalone-service?
       (merge #:freeinstall-banner {:title          "Amazing Stylists"
