@@ -113,7 +113,11 @@
                           :wig-customization {:requirements         {"360-wigs"        1
                                                                      "lace-front-wigs" 1}
                                               :steps-required       1
-                                              :steps-remaining      remaining-count
+                                              :steps-remaining      (fn [items-needed]
+                                                                      (if (or (<= (items-needed "360-wigs") 0)
+                                                                              (<= (items-needed "lace-front-wigs") 0))
+                                                                        0
+                                                                        1))
                                               :satisfies?           (fn [items-needed]
                                                                       (or (<= (items-needed "360-wigs") 0)
                                                                           (<= (items-needed "lace-front-wigs") 0)))
