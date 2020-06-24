@@ -268,10 +268,11 @@
 
 (defmethod effects/perform-effects events/navigate-home
   [_ _ _ _ app-state]
+  (let [homepage-version (if (= :shop (sites/determine-site app-state)) :shop :unified)]
   (doseq [keypath [[:advertisedPromo]
-                   [:homepage :unified]
+                     [:homepage homepage-version]
                    [:ugc-collection :free-install-mayvenn]]]
-    (effects/fetch-cms-keypath app-state keypath)))
+      (effects/fetch-cms-keypath app-state keypath))))
 
 (defmethod effects/perform-effects events/navigate-about-mayvenn-install
   [_ _ _ _ app-state]
