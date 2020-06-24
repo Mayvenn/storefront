@@ -67,8 +67,7 @@
        :shipments
        first
        :storefront/all-line-items
-       (remove (some-fn line-items/mayvenn-install-service?
-                        line-items/addon-service?
+       (remove (some-fn line-items/addon-service?
                         line-items/shipping-method?))
        (mapv :quantity)
        (reduce +)))
