@@ -394,9 +394,10 @@
                                         "shop-bundle-sets-menu-expanded")})
 
 (defn basic-query [data]
-  (let [store (marquee/query data)
-        site  (sites/determine-site data)
-        shop? (= :shop site)]
+  (let [store             (marquee/query data)
+        site              (sites/determine-site data)
+        shop?             (= :shop site)
+        add-free-service? (experiments/add-free-service? data)]
     {:signed-in              (auth/signed-in data)
      :on-taxon?              (get-in data keypaths/current-traverse-nav)
      :promo-banner           (promo-banner/query data)
@@ -408,12 +409,21 @@
      :show-freeinstall-link? shop?
      :service-category-page? shop?
      :site                   (sites/determine-site data)
+     :add-free-service?      add-free-service?
      :desktop-menu/items     (cond-> []
                                shop?
                                (concat
-                                [{:header-menu-item/navigation-target [events/navigate-adventure-match-stylist]
-                                  :header-menu-item/id                "desktop-get-mayvenn-install"
-                                  :header-menu-item/content           [:span [:span.p-color.pr1 "NEW"] "Get a Mayvenn Install"]}
+                                [(if add-free-service?
+                                   (let [free-services-category
+                                         (->> (get-in data keypaths/categories)
+                                              (filter (comp #{"31"} :catalog/category-id))
+                                              first)]
+                                     {:header-menu-item/navigation-target [events/navigate-category free-services-category]
+                                      :header-menu-item/id                "desktop-get-mayvenn-install"
+                                      :header-menu-item/content           [:span "Get a Free Service"]})
+                                   {:header-menu-item/navigation-target [events/navigate-adventure-match-stylist]
+                                    :header-menu-item/id                "desktop-get-mayvenn-install"
+                                    :header-menu-item/content           [:span [:span.p-color.pr1 "NEW"] "Get a Mayvenn Install"]})
                                  (let [salon-services (->> (get-in data keypaths/categories)
                                                            (filter (comp #{"30"} :catalog/category-id))
                                                            first)]

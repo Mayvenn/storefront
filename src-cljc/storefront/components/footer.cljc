@@ -12,7 +12,8 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.numbers :as numbers]))
+            [storefront.platform.numbers :as numbers]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn phone-uri [tel-num]
   (apply str "tel://+" (numbers/digits-only tel-num)))
@@ -138,21 +139,27 @@
 
 (defn query
   [data]
-  (let [shop?      (= (get-in data keypaths/store-slug) "shop")
-        classic?   (= "mayvenn-classic" (get-in data keypaths/store-experience))
-        sort-key   :footer/order
-        categories (->> (get-in data keypaths/categories)
-                        (into []
-                              (comp (filter (partial show-category? shop?))
-                                    (filter sort-key)
-                                    (filter (partial auth/permitted-category? data)))))
-
+  (let [shop?              (= (get-in data keypaths/store-slug) "shop")
+        classic?           (= "mayvenn-classic" (get-in data keypaths/store-experience))
+        sort-key           :footer/order
+        categories         (->> (get-in data keypaths/categories)
+                                (into []
+                                      (comp (filter (partial show-category? shop?))
+                                            (filter sort-key)
+                                            (filter (partial auth/permitted-category? data)))))
         non-category-links [(when shop?
-                              {:title       "Mayvenn Install"
-                               :sort-order  0
-                               :id          "freeinstall"
-                               :new-link?   false
-                               :nav-message [events/navigate-adventure-match-stylist]})
+                              (if (experiments/add-free-service? data)
+                                {:title       "Free Services"
+                                 :sort-order  0
+                                 :id          "freeinstall"
+                                 :new-link?   false
+                                 :nav-message [events/navigate-category {:page/slug           "free-mayvenn-services"
+                                                                         :catalog/category-id "31"}]}
+                                {:title       "Mayvenn Install"
+                                 :sort-order  0
+                                 :id          "freeinstall"
+                                 :new-link?   false
+                                 :nav-message [events/navigate-adventure-match-stylist]}))
                             {:title       "Shop By Look"
                              :sort-order  2
                              :id          "shop-by-look"
@@ -169,10 +176,10 @@
                                 (concat non-category-links)
                                 (remove nil?)
                                 (sort-by :sort-order))]
-    {:contacts         (contacts-query data)
-     :link-columns     (split-evenly links)
-     :essence-copy     (str "All orders include a one year subscription to ESSENCE Magazine - a $10 value! "
-                            "Offer and refund details will be included with your confirmation.")}))
+    {:contacts     (contacts-query data)
+     :link-columns (split-evenly links)
+     :essence-copy (str "All orders include a one year subscription to ESSENCE Magazine - a $10 value! "
+                        "Offer and refund details will be included with your confirmation.")}))
 
 (defn built-component
   [data opts]
