@@ -87,44 +87,44 @@
 
 (defn service-locked-content
   [service-type product-quantities]
-  (let [all-requirements {:leave-out         {:satisfies?           satisfies-all-needs
-                                              :requirements         {"bundles" 3}
-                                              :steps-required       3
-                                              :steps-remaining      remaining-count
-                                              :promo-helper-copy-fn (locked-content-for nil nil)}
-                          :closure           {:satisfies?           satisfies-all-needs
-                                              :requirements         {"bundles"  2
-                                                                     "closures" 1}
-                                              :steps-required       3
-                                              :steps-remaining      remaining-count
-                                              :promo-helper-copy-fn (locked-content-for "closure" "closures")}
-                          :frontal           {:satisfies?           satisfies-all-needs
-                                              :requirements         {"bundles"  2
-                                                                     "frontals" 1}
-                                              :steps-required       3
-                                              :steps-remaining      remaining-count
-                                              :promo-helper-copy-fn (locked-content-for "frontal" "frontals")}
-                          :three-sixty       {:requirements         {"bundles"      2
-                                                                     "360-frontals" 1}
-                                              :steps-required       3
-                                              :steps-remaining      remaining-count
-                                              :satisfies?           satisfies-all-needs
-                                              :promo-helper-copy-fn (locked-content-for "360 frontal" "360-frontals")}
-                          :wig-customization {:requirements         {"360-wigs"        1
-                                                                     "lace-front-wigs" 1}
-                                              :steps-required       1
-                                              :steps-remaining      (fn [items-needed]
-                                                                      (if (or (<= (items-needed "360-wigs") 0)
-                                                                              (<= (items-needed "lace-front-wigs") 0))
-                                                                        0
-                                                                        1))
-                                              :satisfies?           (fn [items-needed]
-                                                                      (or (<= (items-needed "360-wigs") 0)
-                                                                          (<= (items-needed "lace-front-wigs") 0)))
-                                              :promo-helper-copy-fn (fn [items-needed satisfied?]
-                                                                      (if satisfied?
-                                                                        "You're all set! Bleaching knots, tinting & cutting lace and hairline customization included."
-                                                                        "Add a Virgin Lace Front or a Virgin 360 Wig"))}
+  (let [all-requirements {:leave-out         {:satisfies?          satisfies-all-needs
+                                              :requirements        {"bundles" 3}
+                                              :steps-required      3
+                                              :steps-remaining     remaining-count
+                                              :cart-helper-copy-fn (locked-content-for nil nil)}
+                          :closure           {:satisfies?          satisfies-all-needs
+                                              :requirements        {"bundles"  2
+                                                                    "closures" 1}
+                                              :steps-required      3
+                                              :steps-remaining     remaining-count
+                                              :cart-helper-copy-fn (locked-content-for "closure" "closures")}
+                          :frontal           {:satisfies?          satisfies-all-needs
+                                              :requirements        {"bundles"  2
+                                                                    "frontals" 1}
+                                              :steps-required      3
+                                              :steps-remaining     remaining-count
+                                              :cart-helper-copy-fn (locked-content-for "frontal" "frontals")}
+                          :three-sixty       {:requirements        {"bundles"      2
+                                                                    "360-frontals" 1}
+                                              :steps-required      3
+                                              :steps-remaining     remaining-count
+                                              :satisfies?          satisfies-all-needs
+                                              :cart-helper-copy-fn (locked-content-for "360 frontal" "360-frontals")}
+                          :wig-customization {:requirements        {"360-wigs"        1
+                                                                    "lace-front-wigs" 1}
+                                              :steps-required      1
+                                              :steps-remaining     (fn [items-needed]
+                                                                     (if (or (<= (items-needed "360-wigs") 0)
+                                                                             (<= (items-needed "lace-front-wigs") 0))
+                                                                       0
+                                                                       1))
+                                              :satisfies?          (fn [items-needed]
+                                                                     (or (<= (items-needed "360-wigs") 0)
+                                                                         (<= (items-needed "lace-front-wigs") 0)))
+                                              :cart-helper-copy-fn (fn [items-needed satisfied?]
+                                                                     (if satisfied?
+                                                                       "You're all set! Bleaching knots, tinting & cutting lace and hairline customization included."
+                                                                       "Add a Virgin Lace Front or a Virgin 360 Wig"))}
                           }
         requirements     (get all-requirements service-type)
         items-needed     (->> (select-keys product-quantities (keys (:requirements requirements)))
@@ -132,7 +132,7 @@
         satisfied?       ((:satisfies? requirements) items-needed)
         steps-required   (:steps-required requirements)
         steps-remaining  ((:steps-remaining requirements) items-needed)]
-    {:promo-helper-copy ((:promo-helper-copy-fn requirements) items-needed satisfied?)
+    {:cart-helper-copy  ((:cart-helper-copy-fn requirements) items-needed satisfied?)
      :disable-checkout? (not satisfied?)
      :steps-required    steps-required
      :current-step      (- steps-required steps-remaining)
@@ -175,7 +175,7 @@
                                   (or (product-line-items->service-type product-line-items)
                                       updated-service-type))
         {:keys [disable-checkout?
-                promo-helper-copy
+                cart-helper-copy
                 steps-required
                 current-step
                 steps-remaining]} (when (and add-free-service? service-type)
@@ -209,7 +209,7 @@
                                          (not (line-items/fully-discounted? mayvenn-install-line-item)))]
     {:mayvenn-install/entered?           freeinstall-entered?
      :mayvenn-install/locked?            (if add-free-service? disable-checkout? locked?)
-     :mayvenn-install/promo-helper-copy  promo-helper-copy
+     :mayvenn-install/cart-helper-copy   cart-helper-copy
      :mayvenn-install/action-label       (if add-free-service? "add" "add items")
      :mayvenn-install/applied?           (orders/service-line-item-promotion-applied? order)
      :mayvenn-install/quantity-required  (if add-free-service? steps-required install-items-required)

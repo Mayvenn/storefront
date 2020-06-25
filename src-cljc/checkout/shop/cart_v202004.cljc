@@ -288,7 +288,7 @@
   [app-state
    {:mayvenn-install/keys
     [service-title addon-services service-image-url
-     entered? locked? promo-helper-copy action-label stylist service-discount
+     entered? locked? cart-helper-copy action-label stylist service-discount
      quantity-required quantity-added]}
    add-items-action]
   (cond-> []
@@ -297,7 +297,7 @@
             (cond-> {:react/key                                "freeinstall-line-item-freeinstall"
                      :cart-item-title/id                       "line-item-title-upsell-free-service"
                      :cart-item-title/primary                  service-title
-                     :cart-item-copy/value                     promo-helper-copy
+                     :cart-item-copy/value                     cart-helper-copy
                      :cart-item-floating-box/id                "line-item-freeinstall-price"
                      :cart-item-floating-box/value             (some-> service-discount - mf/as-money)
                      :cart-item-remove-action/id               "line-item-remove-freeinstall"
@@ -737,7 +737,7 @@
         {:mayvenn-install/keys
          [entered? applied? locked?
           stylist quantity-remaining
-          service-type]
+          service-type cart-helper-copy]
          :as               mayvenn-install
          servicing-stylist :mayvenn-install/stylist} (api.orders/current data)
 
@@ -754,10 +754,13 @@
                                            required-line-items-not-added?
                                            update-pending?)
         any-wig?                       (:mayvenn-install/any-wig? mayvenn-install)
-        disabled-reasons               (remove nil? [(when required-line-items-not-added?
-                                                       [:div.m1 (if any-wig?
-                                                                  (str "Add a Lace Front or 360 Wig to check out")
-                                                                  (str "Add " quantity-remaining (ui/pluralize quantity-remaining " more item")))])
+        disabled-reasons               (remove nil? [(if (and (experiments/add-free-service? data)
+                                                              locked?)
+                                                       cart-helper-copy
+                                                       (when required-line-items-not-added?
+                                                         [:div.m1 (if any-wig?
+                                                                   (str "Add a Lace Front or 360 Wig to check out")
+                                                                   (str "Add " quantity-remaining (ui/pluralize quantity-remaining " more item")))]))
                                                      (when required-stylist-not-selected?
                                                        [:div.m1 "Please pick your stylist"])])
 
