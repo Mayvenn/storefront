@@ -41,10 +41,11 @@
   (merge
    {:drawer-face
     (merge
-     {:promotion-helper.ui.drawer-face.action/id     "promotion-helper"
-      :promotion-helper.ui.drawer-face.action/target [(if opened?
+     {:promotion-helper.ui.drawer-face.action/id      "promotion-helper"
+      :promotion-helper.ui.drawer-face.action/target  [(if opened?
                                                         behavior/ui-promotion-helper-closed
-                                                        behavior/ui-promotion-helper-opened)]}
+                                                        behavior/ui-promotion-helper-opened)]
+      :promotion-helper.ui.drawer-face.action/opened? opened?}
      (if (pos? failed-criteria-count)
        {:promotion-helper.ui.drawer-face.circle/color "bg-red white"
         :promotion-helper.ui.drawer-face.circle/value failed-criteria-count
@@ -93,7 +94,7 @@
                                                                                      (stylists/->display-name stylist)
                                                                                      " as your stylist")
             :promotion-helper.ui.drawer-contents.condition.progress/completed   1
-            :promotion-helper.ui.drawer-contents.condition.progress/id         "stylist"
+            :promotion-helper.ui.drawer-contents.condition.progress/id          "stylist"
             :promotion-helper.ui.drawer-contents.condition.progress/remaining   0}
            {:promotion-helper.ui.drawer-contents.condition.title/id           "stylist"
             :promotion-helper.ui.drawer-contents.condition.title/primary      "Add Your Stylist"

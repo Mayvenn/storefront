@@ -29,7 +29,7 @@
    [:div.button-font-3.mtp4.regular "Tap to learn how to get your service for free"]))
 
 (defcomponent organism
-  [{:promotion-helper.ui.drawer-face.action/keys [target id]
+  [{:promotion-helper.ui.drawer-face.action/keys [target id opened?]
     :as data} _ _]
   [:div.flex.items-center.justify-center.pl3.pr4.py2.bg-black.white
    (-> (apply utils/fake-href target)
@@ -42,4 +42,5 @@
    ;; chevron
    [:div.fill-white.flex.items-center.justify-center
     (svg/dropdown-arrow {:height "18px"
-                         :width  "18px"})]])
+                         :width  "18px"
+                         :class (when-not opened? "rotate-180")})]])
