@@ -5,12 +5,12 @@
 
 (def ^:private free-standard-shipping-bar
   [:div.mx-auto
-   [:div.bg-black.flex.items-center.justify-center
+   [:div.bg-cool-gray.black.flex.items-center.justify-center
     {:style {:height "2.25em"
              :margin-top "-1px"
              :padding-top "1px"}}
     (svg/shipping {:height "18px" :width "17px"})
-    [:div.h7.white.medium.pxp5
+    [:div.h7.medium.pxp5
      "FREE standard shipping"]]])
 
 (c/defcomponent organism
