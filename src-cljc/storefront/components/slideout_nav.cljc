@@ -159,19 +159,14 @@
                                 :height 16})]))
 
 (defn shopping-rows
-  [{:keys [show-freeinstall-link? show-bundle-sets? site service-category-page? add-free-service?] :as data}]
+  [{:keys [show-freeinstall-link? show-bundle-sets? site service-category-page?] :as data}]
   (concat
    (when show-freeinstall-link?
-     [(if add-free-service?
-        {:link-attrs (utils/route-to events/navigate-category
-                                     {:page/slug           "free-mayvenn-services"
-                                      :catalog/category-id "31"})
-         :data-test  "menu-shop-freeinstall"
-         :content    [[:span.medium "Get a Free Service"]]}
-        {:link-attrs  (utils/route-to events/navigate-adventure-match-stylist)
-         :data-test   "menu-shop-freeinstall"
-         :new-content "NEW"
-         :content     [[:span.medium "Get a Mayvenn Install"]]})])
+     [{:link-attrs (utils/route-to events/navigate-category
+                                   {:page/slug           "free-mayvenn-services"
+                                    :catalog/category-id "31"})
+       :data-test  "menu-shop-freeinstall"
+       :content    [[:span.medium "Get a Free Service"]]}])
 
    (when service-category-page?
      [{:link-attrs  (utils/route-to events/navigate-category

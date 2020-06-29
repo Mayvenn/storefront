@@ -53,15 +53,14 @@
                                        {:query-params
                                         (merge {:long (:longitude selected-location)
                                                 :lat  (:latitude selected-location)}
-                                               (when (experiments/add-free-service? app-state)
-                                                 (when-let [preferred-services
-                                                            (->> (api.orders/current app-state)
-                                                                 :waiter/order
-                                                                 orders/service-line-items
-                                                                 (keep (comp service-sku-id->preferred-service :sku))
-                                                                 (string/join stylist-results/query-param-separator)
-                                                                 not-empty)]
-                                                   {:preferred-services preferred-services})))}]
+                                               (when-let [preferred-services
+                                                          (->> (api.orders/current app-state)
+                                                               :waiter/order
+                                                               orders/service-line-items
+                                                               (keep (comp service-sku-id->preferred-service :sku))
+                                                               (string/join stylist-results/query-param-separator)
+                                                               not-empty)]
+                                                 {:preferred-services preferred-services}))}]
      :stylist-search.button/label     "Search"}))
 
 (defn header-query

@@ -148,18 +148,12 @@
                                             (filter sort-key)
                                             (filter (partial auth/permitted-category? data)))))
         non-category-links [(when shop?
-                              (if (experiments/add-free-service? data)
-                                {:title       "Free Services"
-                                 :sort-order  0
-                                 :id          "freeinstall"
-                                 :new-link?   false
-                                 :nav-message [events/navigate-category {:page/slug           "free-mayvenn-services"
-                                                                         :catalog/category-id "31"}]}
-                                {:title       "Mayvenn Install"
-                                 :sort-order  0
-                                 :id          "freeinstall"
-                                 :new-link?   false
-                                 :nav-message [events/navigate-adventure-match-stylist]}))
+                              {:title       "Free Services"
+                               :sort-order  0
+                               :id          "freeinstall"
+                               :new-link?   false
+                               :nav-message [events/navigate-category {:page/slug           "free-mayvenn-services"
+                                                                       :catalog/category-id "31"}]})
                             {:title       "Shop By Look"
                              :sort-order  2
                              :id          "shop-by-look"

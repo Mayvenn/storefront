@@ -496,8 +496,7 @@
 (defn regular-cart-summary-query
   "This is for cart's that haven't entered an upsell (free install, wig customization, etc)"
   [{:as order :keys [adjustments tax-total total]}
-   {:mayvenn-install/keys [any-wig?]}
-   {:keys [add-free-service?]}]
+   {:mayvenn-install/keys [any-wig?]}]
   (let [subtotal           (orders/products-and-services-subtotal order)
         shipping           (orders/shipping-item order)
         shipping-cost      (some->> shipping
@@ -539,15 +538,17 @@
                                          :cart-summary-line/label "Tax"
                                          :cart-summary-line/value (mf/as-money tax-total)}]))
 
-         :freeinstall-informational/button-id             "add-mayvenn-install"
-         :freeinstall-informational/primary               "Don't miss out on free Mayvenn Install"
-         :freeinstall-informational/secondary             "Get a free install by a licensed stylist when you add a Mayvenn Install to your cart below."
-         :freeinstall-informational/cta-label             "Add Mayvenn Install"
-         :freeinstall-informational/cta-target            [events/control-cart-add-base-service]
-         :freeinstall-informational/fine-print            "*Mayvenn Install cannot be combined with other promo codes."
+         :freeinstall-informational/button-id             "add-free-mayvenn-service"
+         :freeinstall-informational/primary               "Don't miss out on free Mayvenn Services"
+         :freeinstall-informational/secondary             "Get a free service by a licensed stylist when you purchase qualifying items"
+         :freeinstall-informational/cta-label             "Add Mayvenn Service"
+         :freeinstall-informational/cta-target            [events/navigate-category
+                                                           {:catalog/category-id "31"
+                                                            :page/slug           "free-mayvenn-services"}]
          :freeinstall-informational/id                    "freeinstall-informational"
          :freeinstall-informational/secondary-link-id     "cart-learn-more"
          :freeinstall-informational/secondary-link-target [events/popup-show-consolidated-cart-free-install]
+         :freeinstall-informational/fine-print            "*Mayvenn Services cannot be combined with other promo codes."
          :freeinstall-informational/secondary-link-label  "learn more"}
 
       any-wig?
@@ -558,21 +559,7 @@
         :freeinstall-informational/cta-label             "Add Wig Customization"
         :freeinstall-informational/secondary-link-id     "Learn More"
         :freeinstall-informational/secondary-link-target [events/popup-show-wigs-customization]
-        :freeinstall-informational/fine-print            "*Wig Customization cannot be combined with other promo codes, and excludes Ready to Wear Wigs"})
-
-      add-free-service?
-      (merge
-       {:freeinstall-informational/button-id             "add-free-mayvenn-service"
-        :freeinstall-informational/primary               "Don't miss out on free Mayvenn Services"
-        :freeinstall-informational/secondary             "Get a free service by a licensed stylist when you purchase qualifying items"
-        :freeinstall-informational/cta-label             "Add Mayvenn Service"
-        :freeinstall-informational/cta-target            [events/navigate-category
-                                                          {:catalog/category-id "31"
-                                                           :page/slug           "free-mayvenn-services"}]
-        :freeinstall-informational/id                    "freeinstall-informational"
-        :freeinstall-informational/secondary-link-id     "cart-learn-more"
-        :freeinstall-informational/secondary-link-target [events/popup-show-consolidated-cart-free-install]
-        :freeinstall-informational/fine-print            "*Mayvenn Services cannot be combined with other promo codes."}))))
+        :freeinstall-informational/fine-print            "*Wig Customization cannot be combined with other promo codes, and excludes Ready to Wear Wigs"}))))
 
 (defn upsold-cart-summary-query
   "The cart has an upsell 'entered' because the customer has requested a service discount"
@@ -676,10 +663,10 @@
               :cart-summary-total-incentive/label "Includes Wig Customization"}))))
 
 (defn cart-summary-query
-  [order install feature-flags]
+  [order install]
   (if (:mayvenn-install/entered? install)
     (upsold-cart-summary-query order install)
-    (regular-cart-summary-query order install feature-flags)))
+    (regular-cart-summary-query order install)))
 
 (defn promo-input-query
   [data order entered?]
@@ -727,7 +714,6 @@
 
 (defn full-cart-query [data]
   (let [shop?                                        (#{"shop"} (get-in data keypaths/store-slug))
-        feature-flags                                {:add-free-service? (experiments/add-free-service? data)}
         order                                        (get-in data keypaths/order)
         products                                     (get-in data keypaths/v2-products)
         facets                                       (get-in data keypaths/v2-facets)
@@ -754,8 +740,7 @@
                                            required-line-items-not-added?
                                            update-pending?)
         any-wig?                       (:mayvenn-install/any-wig? mayvenn-install)
-        disabled-reasons               (remove nil? [(if (and (experiments/add-free-service? data)
-                                                              locked?)
+        disabled-reasons               (remove nil? [(if locked?
                                                        cart-helper-copy
                                                        (when required-line-items-not-added?
                                                          [:div.m1 (if any-wig?
@@ -780,19 +765,12 @@
         continue-shopping-action        (if any-wig?
                                           [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
                                           mayvenn-install-shopping-action)
-        add-items-action                (if (experiments/add-free-service? data)
-                                          (if (= service-type :wig-customization)
-                                            [events/navigate-category
-                                             {:page/slug           "wigs"
-                                              :catalog/category-id "13"
-                                              :query-params        {:family "lace-front-wigs~360-wigs"}}]
-                                            mayvenn-install-shopping-action)
-                                          (if any-wig?
-                                            [events/navigate-category
-                                             {:page/slug           "wigs"
-                                              :catalog/category-id "13"
-                                              :query-params        {:family "lace-front-wigs~360-wigs"}}]
-                                            mayvenn-install-shopping-action))]
+        add-items-action                (if (= service-type :wig-customization)
+                                          [events/navigate-category
+                                           {:page/slug           "wigs"
+                                            :catalog/category-id "13"
+                                            :query-params        {:family "lace-front-wigs~360-wigs"}}]
+                                          mayvenn-install-shopping-action)]
     (cond-> {:suggestions               (suggestions/consolidated-query data)
              :line-items                line-items
              :skus                      skus
@@ -819,12 +797,10 @@
              :applied?                  applied?
              :remove-freeinstall-event  [events/control-checkout-remove-promotion {:code "freeinstall"}]
              :cart-summary              (merge
-                                         (cart-summary-query order mayvenn-install feature-flags)
+                                         (cart-summary-query order mayvenn-install)
                                          {:promo-field-data (promo-input-query data order entered?)})
              :cart-items                (cart-items-query data line-items skus)
-             :service-line-items        (concat (if (experiments/add-free-service? data)
-                                                  (free-service-line-items-query data mayvenn-install add-items-action)
-                                                  (mayvenn-install-line-items-query data mayvenn-install add-items-action))
+             :service-line-items        (concat (free-service-line-items-query data mayvenn-install add-items-action)
                                                 (standalone-service-line-items-query data))
              :quadpay/order-total       (when-not locked? (:total order))
              :quadpay/show?             (get-in data keypaths/loaded-quadpay)

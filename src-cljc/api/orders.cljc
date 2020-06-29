@@ -124,8 +124,7 @@
                                               :cart-helper-copy-fn (fn [items-needed satisfied?]
                                                                      (if satisfied?
                                                                        "You're all set! Bleaching knots, tinting & cutting lace and hairline customization included."
-                                                                       "Add a Virgin Lace Front or a Virgin 360 Wig"))}
-                          }
+                                                                       "Add a Virgin Lace Front or a Virgin 360 Wig"))}}
         requirements     (get all-requirements service-type)
         items-needed     (->> (select-keys product-quantities (keys (:requirements requirements)))
                               (merge-with (fnil - 0 0) (:requirements requirements)))
@@ -156,7 +155,7 @@
 
   This is deprecated. There isn't a directly equivalent model to replace it.
   It has been conceptually superseded by 'free-mayvenn-service'"
-  [order servicing-stylist sku-catalog add-free-service?]
+  [order servicing-stylist sku-catalog]
   (let [shipment                (-> order :shipments first)
         any-wig?                (->> shipment
                                      :line-items
@@ -170,15 +169,12 @@
 
         product-line-items      (orders/product-items-for-shipment shipment)
         updated-service-type    (services->service-type base-services)
-        service-type            (if add-free-service?
-                                  updated-service-type
-                                  (or (product-line-items->service-type product-line-items)
-                                      updated-service-type))
+        service-type            updated-service-type
         {:keys [disable-checkout?
                 cart-helper-copy
                 steps-required
                 current-step
-                steps-remaining]} (when (and add-free-service? service-type)
+                steps-remaining]} (when service-type
                                     (->> (product-line-items->hair-family-counts product-line-items)
                                          (service-locked-content service-type)))
         mayvenn-install-line-item (->> base-services
@@ -191,30 +187,16 @@
                                          (map (fn [addon-sku] {:addon-service/title  (:sku/title addon-sku)
                                                                :addon-service/price  (some-> addon-sku :sku/price mf/as-money)
                                                                :addon-service/sku-id (:catalog/sku-id addon-sku)})))
-        wig-customization-service?  (= :wig-customization service-type)
-        install-items-required      (if wig-customization-service? 1 3)
-        item-eligibility-fn         (if wig-customization-service?
-                                      line-items/customizable-wig?
-                                      (partial line-items/sew-in-eligible? sku-catalog))
-        items-added-for-install     (->> shipment
-                                         :line-items
-                                         (filter item-eligibility-fn)
-                                         (map :quantity)
-                                         (apply +)
-                                         (min install-items-required))
-        items-remaining-for-install (- install-items-required items-added-for-install)
         freeinstall-entered?        (boolean (orders/freeinstall-entered? order))
-        sku-title                   (:sku/title mayvenn-install-sku)
-        locked?                     (and mayvenn-install-line-item
-                                         (not (line-items/fully-discounted? mayvenn-install-line-item)))]
+        sku-title                   (:sku/title mayvenn-install-sku)]
     {:mayvenn-install/entered?           freeinstall-entered?
-     :mayvenn-install/locked?            (if add-free-service? disable-checkout? locked?)
+     :mayvenn-install/locked?            disable-checkout?
      :mayvenn-install/cart-helper-copy   cart-helper-copy
-     :mayvenn-install/action-label       (if add-free-service? "add" "add items")
+     :mayvenn-install/action-label       "add"
      :mayvenn-install/applied?           (orders/service-line-item-promotion-applied? order)
-     :mayvenn-install/quantity-required  (if add-free-service? steps-required install-items-required)
-     :mayvenn-install/quantity-remaining (if add-free-service? steps-remaining items-remaining-for-install)
-     :mayvenn-install/quantity-added     (if add-free-service? current-step items-added-for-install)
+     :mayvenn-install/quantity-required  steps-required
+     :mayvenn-install/quantity-remaining steps-remaining
+     :mayvenn-install/quantity-added     current-step
      :mayvenn-install/stylist            servicing-stylist
      :mayvenn-install/service-title      sku-title
      :mayvenn-install/service-discount   (- (line-items/service-line-item-price mayvenn-install-line-item))
@@ -332,8 +314,7 @@
                             (get-in app-state adventure.keypaths/adventure-servicing-stylist))
         sku-catalog       (get-in app-state storefront.keypaths/v2-skus)
         store-slug        (get-in app-state storefront.keypaths/store-slug)
-        add-free-service? (experiments/add-free-service? app-state)
-        mayvenn-install   (mayvenn-install waiter-order servicing-stylist sku-catalog add-free-service?)]
+        mayvenn-install   (mayvenn-install waiter-order servicing-stylist sku-catalog)]
     (merge
      mayvenn-install
      {:waiter/order         waiter-order

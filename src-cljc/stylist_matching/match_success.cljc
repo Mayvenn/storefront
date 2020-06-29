@@ -33,26 +33,18 @@
 
 (defmethod effects/perform-effects events/api-success-assign-servicing-stylist-pre-purchase [_ _ _ _ app-state]
   #?(:cljs
-     (let [current-order                              (api.orders/current app-state)
-           cart-contains-a-freeinstall-eligible-item? (some-> current-order
-                                                              :mayvenn-install/quantity-added
-                                                              (> 0))
-           add-free-service?                          (experiments/add-free-service? app-state)
+     (let [current-order            (api.orders/current app-state)
            {services       "service"
-            physical-items "spree"}                   (group-by :source (orders/product-and-service-items (:waiter/order current-order)))]
-       (if add-free-service?
-         (history/enqueue-navigate
-          (cond (and (seq services) (seq physical-items))
-                events/navigate-cart
+            physical-items "spree"} (group-by :source (orders/product-and-service-items (:waiter/order current-order)))]
+       (history/enqueue-navigate
+        (cond (and (seq services) (seq physical-items))
+              events/navigate-cart
 
-                (seq services)
-                events/navigate-adventure-match-success-pre-purchase
+              (seq services)
+              events/navigate-adventure-match-success-pre-purchase
 
-                :else
-                events/navigate-adventure-match-success-pre-purchase-pick-service))
-         (if cart-contains-a-freeinstall-eligible-item?
-           (history/enqueue-navigate events/navigate-cart)
-           (history/enqueue-navigate events/navigate-adventure-match-success-pre-purchase))))))
+              :else
+              events/navigate-adventure-match-success-pre-purchase-pick-service)))))
 
 (defmethod effects/perform-effects events/navigate-adventure-match-success-pre-purchase
   [_ _ _ _ app-state]
