@@ -35,7 +35,7 @@
                                                                           events/navigate-adventure-stylist-profile
                                                                           {:stylist-id stylist-id
                                                                            :store-slug (:store-slug stylist)})
-              :gallery                            (map (comp ui/ucare-img-id :resizable-url) (:gallery-images stylist))}))))
+              :gallery                            (map :resizable-url (:gallery-images stylist))}))))
 
 (defn ^:private component-overhead-magic-number [mobile-overhead desktop-overhead]
   #?(:cljs
@@ -49,10 +49,6 @@
        (component/set-state! component
                              :show? (< (component-overhead-magic-number mobile-overhead desktop-overhead)
                                        (.-y (goog.dom/getDocumentScroll)))))))
-
-(defn ^:private set-height [component dom-node]
-  #?(:cljs
-     (component/set-state! component :component-height (some-> dom-node goog.style/getSize .-height))))
 
 (defn stylist-gallery-header-molecule
   [{:stylist-gallery-header/keys [title close-id close-route]}]
@@ -75,15 +71,24 @@
                                :height "14px"}})])))]
    [:div {:style {:margin-top "70px"}}]])
 
+(defn ^:private stylist-gallery-image
+  [idx url]
+  ;; padding hack to preserve pre-load image aspect ratio
+  [:div.relative {:style {:padding-top "100%"}}
+   [:picture.absolute
+    {:data-ref (str "offset-" idx)
+     :style    {:top 0
+                :bottom 0}}
+    [:source {:src-set
+              (str url "-/scale_crop/1160x1160/smart/ 2x," url "-/scale_crop/580x580/smart/ 1x")}]
+    [:img {:src   (str url "-/scale_crop/580x580/smart/")
+           :style {:width "100%"}}]]])
+
 (defcomponent component
   [data owner opts]
   [:div.col-12.bg-white
    (stylist-gallery-header-molecule data)
-   (map-indexed (fn [ix image-id]
-                  (ui/ucare-img {:class    "col-12 block"
-                                 :width    580
-                                 :data-ref (str "offset-" ix)} image-id))
-                (:gallery data))])
+   (map-indexed stylist-gallery-image (:gallery data))])
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-gallery
   [dispatch event {:keys [stylist-id query-params] :as args} prev-app-state app-state]
