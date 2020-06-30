@@ -279,7 +279,7 @@
 
 (defn ^:private cart-summary-query
   [{:as order :keys [adjustments]}
-   {:mayvenn-install/keys [locked? applied? service-discount addon-services service-type service-title]}
+   {:mayvenn-install/keys [applied? service-discount addon-services service-type service-title]}
    available-store-credit]
   (when (seq order)
     (let [total              (-> order :total)

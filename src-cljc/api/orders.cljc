@@ -137,7 +137,6 @@
      :current-step      (- steps-required steps-remaining)
      :steps-remaining   steps-remaining}))
 
-
 (defn product-line-items->hair-family-counts [line-items]
   (reduce (fn [m line-item]
             (update m (-> line-item
@@ -155,7 +154,7 @@
 
   This is deprecated. There isn't a directly equivalent model to replace it.
   It has been conceptually superseded by 'free-mayvenn-service'"
-  [order servicing-stylist sku-catalog]
+  [order servicing-stylist sku-catalog promotion-helper?]
   (let [shipment                (-> order :shipments first)
         any-wig?                (->> shipment
                                      :line-items
@@ -167,9 +166,9 @@
                                      orders/service-line-items
                                      (group-by (comp keyword :service/type :variant-attrs)))
 
-        product-line-items      (orders/product-items-for-shipment shipment)
-        updated-service-type    (services->service-type base-services)
-        service-type            updated-service-type
+        product-line-items        (orders/product-items-for-shipment shipment)
+        updated-service-type      (services->service-type base-services)
+        service-type              updated-service-type
         {:keys [disable-checkout?
                 cart-helper-copy
                 steps-required
@@ -181,29 +180,30 @@
                                        (filter #(:promo.mayvenn-install/discountable (:variant-attrs %)))
                                        first)
 
-        mayvenn-install-sku         (get sku-catalog (:sku mayvenn-install-line-item))
-        addon-services-skus         (->> addon-services
-                                         (map (fn [addon-service] (get sku-catalog (:sku addon-service))))
-                                         (map (fn [addon-sku] {:addon-service/title  (:sku/title addon-sku)
-                                                               :addon-service/price  (some-> addon-sku :sku/price mf/as-money)
-                                                               :addon-service/sku-id (:catalog/sku-id addon-sku)})))
-        freeinstall-entered?        (boolean (orders/freeinstall-entered? order))
-        sku-title                   (:sku/title mayvenn-install-sku)]
-    {:mayvenn-install/entered?           freeinstall-entered?
-     :mayvenn-install/locked?            disable-checkout?
-     :mayvenn-install/cart-helper-copy   cart-helper-copy
-     :mayvenn-install/action-label       "add"
-     :mayvenn-install/applied?           (orders/service-line-item-promotion-applied? order)
-     :mayvenn-install/quantity-required  steps-required
-     :mayvenn-install/quantity-remaining steps-remaining
-     :mayvenn-install/quantity-added     current-step
-     :mayvenn-install/stylist            servicing-stylist
-     :mayvenn-install/service-title      sku-title
-     :mayvenn-install/service-discount   (- (line-items/service-line-item-price mayvenn-install-line-item))
-     :mayvenn-install/any-wig?           any-wig?
-     :mayvenn-install/service-image-url  (->> mayvenn-install-sku (images/skuer->image "cart") :url)
-     :mayvenn-install/addon-services     addon-services-skus
-     :mayvenn-install/service-type       service-type}))
+        mayvenn-install-sku             (get sku-catalog (:sku mayvenn-install-line-item))
+        addon-services-skus             (->> addon-services
+                                             (map (fn [addon-service] (get sku-catalog (:sku addon-service))))
+                                             (map (fn [addon-sku] {:addon-service/title  (:sku/title addon-sku)
+                                                                   :addon-service/price  (some-> addon-sku :sku/price mf/as-money)
+                                                                   :addon-service/sku-id (:catalog/sku-id addon-sku)})))
+        discountable-services-on-order? (boolean (orders/discountable-services-on-order? order))
+        sku-title                       (:sku/title mayvenn-install-sku)]
+    {:mayvenn-install/discountable-services-on-order?    discountable-services-on-order?
+     :mayvenn-install/locked?                            (if promotion-helper? false disable-checkout?)
+     :mayvenn-install/needs-more-items-for-free-service? (< 0 steps-remaining)
+     :mayvenn-install/cart-helper-copy                   cart-helper-copy
+     :mayvenn-install/action-label                       "add"
+     :mayvenn-install/applied?                           (orders/service-line-item-promotion-applied? order)
+     :mayvenn-install/quantity-required                  steps-required
+     :mayvenn-install/quantity-remaining                 steps-remaining
+     :mayvenn-install/quantity-added                     current-step
+     :mayvenn-install/stylist                            servicing-stylist
+     :mayvenn-install/service-title                      sku-title
+     :mayvenn-install/service-discount                   (- (line-items/service-line-item-price mayvenn-install-line-item))
+     :mayvenn-install/any-wig?                           any-wig?
+     :mayvenn-install/service-image-url                  (->> mayvenn-install-sku (images/skuer->image "cart") :url)
+     :mayvenn-install/addon-services                     addon-services-skus
+     :mayvenn-install/service-type                       service-type}))
 
 (def rules
   (let [?bundles
@@ -314,7 +314,8 @@
                             (get-in app-state adventure.keypaths/adventure-servicing-stylist))
         sku-catalog       (get-in app-state storefront.keypaths/v2-skus)
         store-slug        (get-in app-state storefront.keypaths/store-slug)
-        mayvenn-install   (mayvenn-install waiter-order servicing-stylist sku-catalog)]
+        promotion-helper? (experiments/promotion-helper? app-state)
+        mayvenn-install   (mayvenn-install waiter-order servicing-stylist sku-catalog promotion-helper?)]
     (merge
      mayvenn-install
      {:waiter/order         waiter-order

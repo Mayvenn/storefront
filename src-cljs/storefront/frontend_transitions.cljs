@@ -398,8 +398,8 @@
                                     (orders/newly-added-sku-ids previous-order order))
           freeinstall-just-added? (if (= order previous-order)
                                     (get-in app-state keypaths/cart-freeinstall-just-added?)
-                                    (and (not (orders/freeinstall-entered? previous-order))
-                                         (orders/freeinstall-entered? order)))
+                                    (and (not (orders/discountable-services-on-order? previous-order))
+                                         (orders/discountable-services-on-order? order)))
           no-servicing-stylist?   (nil? (:servicing-stylist-id order))]
 
       (cond-> (-> app-state

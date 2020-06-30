@@ -117,7 +117,7 @@
      [app-state]
      (let [order            (get-in app-state keypaths/order)
            store-experience (get-in app-state keypaths/store-experience)]
-       (and (orders/freeinstall-entered? order)
+       (and (orders/discountable-services-on-order? order)
             (= "mayvenn-classic" store-experience)))))
 
 #?(:cljs

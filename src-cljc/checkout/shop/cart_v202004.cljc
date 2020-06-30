@@ -76,7 +76,7 @@
            checkout-caption-copy
            checkout-disabled?
            disabled-reasons
-           entered?
+           discountable-services-on-order?
            locked?
            promo-banner
            quantity-remaining
@@ -288,11 +288,13 @@
   [app-state
    {:mayvenn-install/keys
     [service-title addon-services service-image-url
-     entered? locked? cart-helper-copy action-label stylist service-discount
+     discountable-services-on-order? locked?
+     needs-more-items-for-free-service?
+     cart-helper-copy action-label stylist service-discount
      quantity-required quantity-added]}
    add-items-action]
   (cond-> []
-    entered?
+    discountable-services-on-order?
     (conj (let [matched? (boolean stylist)]
             (cond-> {:react/key                                "freeinstall-line-item-freeinstall"
                      :cart-item-title/id                       "line-item-title-upsell-free-service"
@@ -308,9 +310,9 @@
                      :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)
                      :confetti-mode                            (get-in app-state keypaths/confetti-mode)}
 
-              ;; Locked basically means the freeinstall coupon code was entered, yet not all the requirements
-              ;; of a free install order to generate a voucher have been satisfied.
-              locked?
+              ;; needs-more-items-for-free-service means there are discountable services on the order,
+              ;; yet not all the requirements of a free install order to generate a voucher have been satisfied.
+              needs-more-items-for-free-service?
               (merge {:cart-item-title/primary                   (str service-title " (locked)")
                       :cart-item-title/id                        "line-item-title-locked-mayvenn-install"
                       :cart-item-steps-to-complete/action-target add-items-action
@@ -320,7 +322,7 @@
                                                                       range
                                                                       (map inc))
                       :cart-item-steps-to-complete/current-step  quantity-added
-                      :cart-item-service-thumbnail/locked?       true})
+                      :cart-item-service-thumbnail/locked?       locked?})
 
               matched?
               (merge {:cart-item-modify-button/id              "browse-addons"
@@ -343,10 +345,11 @@
 (defn mayvenn-install-line-items-query
   [app-state {:mayvenn-install/keys
               [service-title addon-services service-image-url service-type
-               entered? locked? applied? stylist service-discount
+               discountable-services-on-order? locked?
+               needs-more-items-for-free-service? applied? stylist service-discount
                quantity-remaining quantity-required quantity-added any-wig?]} add-items-action]
   (cond-> []
-    entered?
+    discountable-services-on-order?
     (conj (let [wig-customization? (= service-type :wig-customization)
                 matched?           (boolean stylist)]
             (cond-> {:react/key                                "freeinstall-line-item-freeinstall"
@@ -361,9 +364,9 @@
                      :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)
                      :confetti-mode                            (get-in app-state keypaths/confetti-mode)}
 
-              ;; Locked basically means the freeinstall coupon code was entered, yet not all the requirements
+              ;; Locked basically means there are discountable services on the order, yet not all the requirements
               ;; of a free install order to generate a voucher have been satisfied.
-              locked?
+              needs-more-items-for-free-service?
               (merge  (if (or any-wig? wig-customization?)
                         {:cart-item-title/primary                   "Wig Customization (locked)"
                          :cart-item-title/id                        "line-item-title-locked-wig-customization"
@@ -374,7 +377,7 @@
                          :cart-item-steps-to-complete/id            "add-wig"
                          :cart-item-steps-to-complete/steps         {}
                          :cart-item-steps-to-complete/current-step  0
-                         :cart-item-service-thumbnail/locked?       true}
+                         :cart-item-service-thumbnail/locked?       locked?}
                         {:cart-item-title/primary                   (str service-title " (locked)")
                          :cart-item-title/id                        "line-item-title-locked-mayvenn-install"
                          :cart-item-copy/value                      (str "Add " quantity-remaining
@@ -564,7 +567,7 @@
 (defn upsold-cart-summary-query
   "The cart has an upsell 'entered' because the customer has requested a service discount"
   [{:as order :keys [adjustments]}
-   {:as install :mayvenn-install/keys [any-wig? service-type entered? locked? applied? service-discount quantity-remaining service-title]}]
+   {:as install :mayvenn-install/keys [any-wig? service-type locked? needs-more-items-for-free-service? applied? service-discount quantity-remaining service-title]}]
   (let [total              (:total order)
         tax                (:tax-total order)
         subtotal           (orders/products-and-services-subtotal order)
@@ -597,7 +600,7 @@
                                          :cart-summary-line/sublabel shipping-timeframe
                                          :cart-summary-line/value    (mf/as-money-or-free shipping-cost)}])
 
-                                     (when locked?
+                                     (when needs-more-items-for-free-service?
                                        ;; When FREEINSTALL is merely locked (and so not yet an adjustment) we must special case it, so:
                                        [(merge
                                          {:cart-summary-line/id    (if any-wig?
@@ -664,13 +667,13 @@
 
 (defn cart-summary-query
   [order install]
-  (if (:mayvenn-install/entered? install)
+  (if (:mayvenn-install/discountable-services-on-order? install)
     (upsold-cart-summary-query order install)
     (regular-cart-summary-query order install)))
 
 (defn promo-input-query
-  [data order entered?]
-  (when (and (orders/no-applied-promo? order) (not entered?))
+  [data order discountable-services-on-order?]
+  (when (and (orders/no-applied-promo? order) (not discountable-services-on-order?))
     (let [keypath                 keypaths/cart-coupon-code
           value                   (get-in data keypath)
           promo-link?             (experiments/promo-link? data)
@@ -721,7 +724,8 @@
                                                           (orders/product-items order))
         cart-services                                (api.orders/services data order)
         {:mayvenn-install/keys
-         [entered? applied? locked?
+         [discountable-services-on-order? applied? locked?
+          needs-more-items-for-free-service?
           stylist quantity-remaining
           service-type cart-helper-copy]
          :as               mayvenn-install
@@ -734,13 +738,12 @@
         required-stylist-not-selected? (and any-services?
                                             stylist-blocked?
                                             (not stylist))
-        required-line-items-not-added? (and entered?
-                                            (> quantity-remaining 0))
+        required-line-items-not-added? locked?
         checkout-disabled?             (or required-stylist-not-selected?
                                            required-line-items-not-added?
-                                           update-pending?)
+                                          update-pending?)
         any-wig?                       (:mayvenn-install/any-wig? mayvenn-install)
-        disabled-reasons               (remove nil? [(if locked?
+        disabled-reasons               (remove nil? [(if needs-more-items-for-free-service?
                                                        cart-helper-copy
                                                        (when required-line-items-not-added?
                                                          [:div.m1 (if any-wig?
@@ -793,12 +796,13 @@
              :return-link/event-message continue-shopping-action
              :quantity-remaining        quantity-remaining
              :locked?                   locked?
-             :entered?                  entered?
+             :needs-more-items-for-free-service? needs-more-items-for-free-service?
+             :discountable-services-on-order?                  discountable-services-on-order?
              :applied?                  applied?
              :remove-freeinstall-event  [events/control-checkout-remove-promotion {:code "freeinstall"}]
              :cart-summary              (merge
                                          (cart-summary-query order mayvenn-install)
-                                         {:promo-field-data (promo-input-query data order entered?)})
+                                         {:promo-field-data (promo-input-query data order discountable-services-on-order?)})
              :cart-items                (cart-items-query data line-items skus)
              :service-line-items        (concat (free-service-line-items-query data mayvenn-install add-items-action)
                                                 (standalone-service-line-items-query data))
@@ -842,7 +846,7 @@
            empty-cart
            full-cart]} owner opts]
   (let [cart-empty?    (and (zero? item-count)
-                            (not (:entered? full-cart)))
+                            (not (:discountable-services-on-order? full-cart)))
         cart-data (if cart-empty? empty-cart full-cart)]
     [:div
      [:div.hide-on-tb-dt
@@ -885,7 +889,7 @@
   (component/build template
                    (merge
                     (when (and (zero? (orders/displayed-cart-count (get-in app-state keypaths/order)))
-                               (-> app-state api.orders/current :mayvenn-install/entered? not))
+                               (-> app-state api.orders/current :mayvenn-install/discountable-services-on-order? not))
                       {:promo-banner app-state})
                     {:cart      (query app-state)
                      :header    app-state

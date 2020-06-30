@@ -154,7 +154,7 @@
   [order]
   (filter (comp :promo.mayvenn-install/discountable :variant-attrs) (service-line-items order)))
 
-(defn freeinstall-entered?
+(defn discountable-services-on-order?
   [order]
   (boolean
    (seq (discountable-service-bases order))))
