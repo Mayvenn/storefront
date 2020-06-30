@@ -108,5 +108,6 @@
                                     app-state)]
     {:subsections       subsections
      :no-product-cards? (empty? (mapcat :product-cards subsections))
-     :loading-products? (utils/requesting? app-state (conj request-keys/get-products
-                                                           (skuers/essentials category)))}))
+     :loading-products? (and (empty? (filter :products subsections))
+                             (utils/requesting? app-state (conj request-keys/get-products
+                                                                        (skuers/essentials category))))}))
