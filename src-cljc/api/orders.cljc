@@ -56,7 +56,7 @@
           (keep line-item->service-type)
           first))
 
-(defn locked-content-for [singular-addition-hair-family additional-hair-family]
+(defn ^:private promotion-helper-guide-content-for [singular-addition-hair-family additional-hair-family]
   (fn [items-needed satisfied?]
     (if (not satisfied?)
       (let [bundles-count                 (items-needed "bundles")
@@ -85,31 +85,31 @@
   [items-needed]
   (reduce + (filter pos? (vals items-needed))))
 
-(defn service-locked-content
+(defn ^:private promo-helper-guiding-content
   [service-type product-quantities]
   (let [all-requirements {:leave-out         {:satisfies?          satisfies-all-needs
                                               :requirements        {"bundles" 3}
                                               :steps-required      3
                                               :steps-remaining     remaining-count
-                                              :cart-helper-copy-fn (locked-content-for nil nil)}
+                                              :cart-helper-copy-fn (promotion-helper-guide-content-for nil nil)}
                           :closure           {:satisfies?          satisfies-all-needs
                                               :requirements        {"bundles"  2
                                                                     "closures" 1}
                                               :steps-required      3
                                               :steps-remaining     remaining-count
-                                              :cart-helper-copy-fn (locked-content-for "closure" "closures")}
+                                              :cart-helper-copy-fn (promotion-helper-guide-content-for "closure" "closures")}
                           :frontal           {:satisfies?          satisfies-all-needs
                                               :requirements        {"bundles"  2
                                                                     "frontals" 1}
                                               :steps-required      3
                                               :steps-remaining     remaining-count
-                                              :cart-helper-copy-fn (locked-content-for "frontal" "frontals")}
+                                              :cart-helper-copy-fn (promotion-helper-guide-content-for "frontal" "frontals")}
                           :three-sixty       {:requirements        {"bundles"      2
                                                                     "360-frontals" 1}
                                               :steps-required      3
                                               :steps-remaining     remaining-count
                                               :satisfies?          satisfies-all-needs
-                                              :cart-helper-copy-fn (locked-content-for "360 frontal" "360-frontals")}
+                                              :cart-helper-copy-fn (promotion-helper-guide-content-for "360 frontal" "360-frontals")}
                           :wig-customization {:requirements        {"360-wigs"        1
                                                                     "lace-front-wigs" 1}
                                               :steps-required      1
@@ -176,7 +176,7 @@
                 current-step
                 steps-remaining]} (when service-type
                                     (->> (product-line-items->hair-family-counts product-line-items)
-                                         (service-locked-content service-type)))
+                                         (promo-helper-guiding-content service-type)))
         mayvenn-install-line-item (->> base-services
                                        (filter #(:promo.mayvenn-install/discountable (:variant-attrs %)))
                                        first)
