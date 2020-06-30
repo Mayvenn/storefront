@@ -175,6 +175,12 @@
        :data-test   "menu-shop-salon-services"
        :new-content "NEW"
        :content     [[:span.medium "Salon Services"]]}])
+
+   (when show-freeinstall-link?
+     [{:link-attrs (utils/route-to events/navigate-adventure-match-stylist)
+       :data-test  "menu-shop-find-stylist"
+       :content    [[:span.medium "Find a Stylist"]]}])
+
    (if (= :classic site)
      [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
        :data-test  "menu-shop-by-look"

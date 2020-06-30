@@ -89,7 +89,7 @@
 
 (defn dtc-link [{:keys [title new-link? nav-message id]}]
   (component/html
-   [:a.inherit-color.block.py2.light.titleize.pointer
+   [:a.inherit-color.block.py2.light.pointer
     ^:attrs (merge {:data-test (str id "-footer-link")
                     :key       (str id "-footer-link")}
                    (apply utils/route-to nav-message))
@@ -147,24 +147,29 @@
                                       (comp (filter (partial show-category? shop?))
                                             (filter sort-key)
                                             (filter (partial auth/permitted-category? data)))))
-        non-category-links [(when shop?
-                              {:title       "Free Services"
-                               :sort-order  0
-                               :id          "freeinstall"
-                               :new-link?   false
-                               :nav-message [events/navigate-category {:page/slug           "free-mayvenn-services"
-                                                                       :catalog/category-id "31"}]})
-                            {:title       "Shop By Look"
-                             :sort-order  2
-                             :id          "shop-by-look"
-                             :new-link?   false
-                             :nav-message [events/navigate-shop-by-look {:album-keyword :look}]}
-                            (when (not classic?)
-                              {:title       "Shop Bundle Sets"
-                               :sort-order  3
-                               :id          "shop-bundle-sets"
-                               :new-link?   false
-                               :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]})]
+        non-category-links (concat (when shop?
+                                     [{:title       "Free Services"
+                                       :sort-order  0
+                                       :id          "freeinstall"
+                                       :new-link?   false
+                                       :nav-message [events/navigate-category {:page/slug           "free-mayvenn-services"
+                                                                               :catalog/category-id "31"}]}
+                                      {:title       "Find a Stylist"
+                                       :sort-order  2
+                                       :id          "freeinstall"
+                                       :new-link?   false
+                                       :nav-message [events/navigate-adventure-match-stylist]}])
+                                   (when (not classic?)
+                                     [{:title       "Shop By Look"
+                                       :sort-order  3
+                                       :id          "shop-by-look"
+                                       :new-link?   false
+                                       :nav-message [events/navigate-shop-by-look {:album-keyword :look}]}
+                                      {:title       "Shop Bundle Sets"
+                                       :sort-order  4
+                                       :id          "shop-bundle-sets"
+                                       :new-link?   false
+                                       :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]}]))
         links              (->> categories
                                 (mapv (partial category->link))
                                 (concat non-category-links)
