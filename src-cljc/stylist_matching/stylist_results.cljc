@@ -1,7 +1,6 @@
 (ns stylist-matching.stylist-results
   (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.browser.cookie-jar :as cookie-jar]
-                       [storefront.accessors.categories :as categories]
                        [catalog.skuers :as skuers]
                        [storefront.history :as history]
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
@@ -15,6 +14,7 @@
             [clojure.string :as string]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.stylists :as stylists]
+            [storefront.accessors.categories :as categories]
             [storefront.component :as component :refer [defdynamic-component defcomponent]]
             [storefront.components.header :as components.header]
             [storefront.components.svg :as svg]
