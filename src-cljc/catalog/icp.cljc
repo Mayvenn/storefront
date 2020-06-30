@@ -126,7 +126,8 @@
        [:a.block.mt1
         link-attrs
         [:img {:src   (assets/path svg-url)
-               :width 72}]]
+               :width 72
+               :alt   title}]]
        (ui/button-small-underline-primary link-attrs title)])))
 
 (defcomponent ^:private drill-category-grid-organism
