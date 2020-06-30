@@ -141,15 +141,15 @@
        [:div.hide-on-mb.hide-on-tb ; dt
         (->> grid-entries
              (partition-all 4)
-             (mapv (fn [row] [:div.flex.justify-around row])))]
+             (map-indexed (fn [i row] (component/html [:div.flex.justify-around {:key (str "i-" i)} row]))))]
        [:div.hide-on-dt.hide-on-mb ; tb
         (->> grid-entries
-             (partition 3 3 [[:div {:style {:width "120px"}}]])
-             (mapv (fn [row] [:div.flex.justify-around row])))]
+             (partition 3 3 [[:div {:key "placeholder" :style {:width "120px"}}]])
+             (map-indexed (fn [i row] (component/html [:div.flex.justify-around {:key (str "i-" i)} row]))))]
        [:div.hide-on-dt.hide-on-tb ; mb
         (->> grid-entries
              (partition-all 2)
-             (mapv (fn [row] [:div.flex.justify-around row])))]])))
+             (map-indexed (fn [i row] (component/html [:div.flex.justify-around {:key (str "i-" i)} row]))))]])))
 
 (defn ^:private category->drill-category-list-entry
   [category]
@@ -206,7 +206,7 @@
      [:div.canela.content-1 ^:inline (str summary)]]
 
     (for [{:keys [title body]} sections]
-      [:div.py2 {:keys title}
+      [:div.py2 {:key title}
        [:div.proxima.title-2.bold.caps.pb1 ^:inline (str title)]
        [:div.canela.content-2 ^:inline (str body)]])
 
