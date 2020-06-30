@@ -42,8 +42,8 @@
 
 (defn normalize-image [image]
   (-> image
-      (assoc :id (str (:use-case image) "-" (:url image)))
-      (assoc :order (or (:order image)
+      (assoc :id (str (:use-case image) "-" (:url image))
+             :order (or (:order image)
                         (case (:image/of (:criteria/attributes image))
                           "model"   1
                           "product" 2
@@ -55,26 +55,32 @@
 
 (defn ->skuer [value]
   (let [value (-> value
-                  (update :selector/electives
-                          (partial map keyword))
-                  (update :selector/essentials
-                          (partial map keyword))
+                  (update :selector/electives (partial mapv keyword))
+                  (update :selector/essentials (partial mapv keyword))
                   (update :selector/images (partial mapv normalize-image)))
-        ks (concat (:selector/essentials value)
-                   (:selector/electives value))]
+        ks (into (:selector/essentials value)
+                 (:selector/electives value))]
     (->> (select-keys value ks)
          (maps/map-values set)
          (merge value))))
 
+(defn index-by [f coll]
+  (persistent!
+   (reduce (fn [acc item]
+             (let [k (f item)]
+               (assoc! acc k item)))
+           (transient {})
+           coll)))
+
 (defn index-skus [skus]
   (->> skus
        (map ->skuer)
-       (maps/index-by :catalog/sku-id)))
+       (index-by :catalog/sku-id)))
 
 (defn index-products [products]
   (->> products
        (map ->skuer)
-       (maps/index-by :catalog/product-id)))
+       (index-by :catalog/product-id)))
 
 (defmethod transition-state events/api-success-v2-products
   [_ event {:keys [products skus] :as response} app-state]

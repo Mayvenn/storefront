@@ -1,5 +1,6 @@
 (ns storefront.api
   (:require [ajax.core :refer [GET POST PUT] :as ajax]
+            [ajax.protocols :refer [-body]]
             [clojure.string :as string]
             [clojure.walk :as walk]
             [storefront.accessors.line-items :as line-items]
@@ -12,7 +13,8 @@
             [storefront.request-keys :as request-keys]
             [spice.maps :as maps]
             [clojure.set :as set]
-            [storefront.accessors.promos :as promos]))
+            [storefront.accessors.promos :as promos]
+            [cljs-bean.core :as cljs-bean]))
 
 (defn is-rails-style? [resp]
   (or (seq (:error resp))
@@ -84,18 +86,22 @@
 (defn app-version [xhrio]
   (some-> xhrio (.getResponseHeader "X-App-Version") int))
 
-(defn json-response-format-with-app-version [config]
-  (let [default (ajax/json-response-format config)
-        read-json (:read default)]
-    (assoc default :read (fn [xhrio]
-                           {:body (read-json xhrio)
-                            :app-version (app-version xhrio)}))))
+;; (defn json-response-format-with-app-version [config]
+;;   (let [default (ajax/json-response-format config)
+;;         read-json (:read default)]
+;;     (assoc default :read (fn [xhrio]
+;;                            {:body (read-json xhrio)
+;;                             :app-version (app-version xhrio)}))))
 
-(defn json-response-format [config]
-  (let [default (ajax/json-response-format config)
+(defn json-response-format-with-app-version [config]
+  (let [default   (ajax/json-response-format config)
         read-json (:read default)]
-    (assoc default :read (fn [xhrio]
-                           {:body (read-json xhrio)}))))
+    (assoc default
+           :content-type ["application/json"]
+           :description "JSON"
+           :read (fn [xhrio]
+                   {:body        (cljs-bean/bean (js/JSON.parse (-body xhrio)) :recursive true)
+                    :app-version (app-version xhrio)}))))
 
 (def default-req-opts {:format :json
                        :response-format (json-response-format-with-app-version {:keywords? true})})
