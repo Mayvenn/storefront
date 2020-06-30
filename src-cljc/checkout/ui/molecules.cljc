@@ -90,7 +90,7 @@
         secondary]
        [:div.flex.justify-left.py1
         (ui/button-small-primary
-         (assoc (apply utils/fake-href cta-target) :data-test button-id)
+         (assoc (apply utils/route-to cta-target) :data-test button-id)
          cta-label)
         (when secondary-link-id
           [:div.s-color.flex.items-center.px2.button-font-3.shout
