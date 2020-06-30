@@ -270,6 +270,7 @@
 (defpath api-success-v2-products-for-nav)
 (defpath api-success-v2-products-for-browse)
 (defpath api-success-v2-products-for-details)
+(defpath api-success-v2-products-for-stylist-filters)
 (defpath api-success-get-skus)
 
 (defpath api-success-facets)

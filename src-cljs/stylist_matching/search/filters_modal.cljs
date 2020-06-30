@@ -1,8 +1,9 @@
 (ns stylist-matching.search.filters-modal
   (:require
-   [storefront.api :as api]
+   [spice.selector :as selector]
    [storefront.component :as component]
    [storefront.components.header :as components.header]
+   [storefront.components.money-formatters :as mf]
    [storefront.components.ui :as ui]
    [storefront.effects :as effects]
    [storefront.events :as events]
@@ -10,39 +11,81 @@
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
-   [storefront.request-keys :as request-keys]
    [storefront.transitions :as transitions]
    [stylist-directory.keypaths]))
 
-(defn specialty->filter [selected-filters [label specialty]]
+(defn specialty->filter [selected-filters [primary specialty price]]
   (let [checked? (some #{specialty} selected-filters)]
-    {:stylist-search-filter/label    label
-     :stylist-search-filter/id       (str "stylist-filter-" (name specialty))
-     :stylist-search-filter/target   [events/control-stylist-search-toggle-filter
-                                      {:previously-checked?      checked?
-                                       :stylist-filter-selection specialty}]
-     :stylist-search-filter/checked? checked?}))
+    {:stylist-search-filter/primary   primary
+     :stylist-search-filter/secondary (str "(" (mf/as-money-or-free price) ")")
+     :stylist-search-filter/id        (str "stylist-filter-" (name specialty))
+     :stylist-search-filter/target    [events/control-stylist-search-toggle-filter
+                                       {:previously-checked?      checked?
+                                        :stylist-filter-selection specialty}]
+     :stylist-search-filter/checked?  checked?}))
+
+(defn free-install-service-sku->install-type-slug
+  [sku]
+  (if (= "SRV-WGC-000" (:catalog/sku-id sku))
+    :wig-customization
+    (->> sku
+         :hair/family
+         first
+         butlast
+         (apply str)
+         keyword)))
 
 (defn query [data]
-  (let [selected-filters
-        (get-in data stylist-directory.keypaths/stylist-search-selected-filters)]
-    {:stylist-search-filters/title   "Free Mayvenn Services"
-     :stylist-search-filters/primary (str
-                                      "Get Mayvenn services (valued up to $200) for free when purchasing "
-                                      "qualifying hair from Mayvenn. You buy the hair, we cover the service!")
-     :stylist-search-filters/show? (get-in data stylist-directory.keypaths/stylist-search-show-filters?)
-     :stylist-search-filters/filters
-     ;; NOTE: there is a `service-sku-id->preferred-service` mapping in `stylist-matching.find-your-stylist`
-     ;; May be useful when generating this list dynamically from the service categories
-     (mapv (partial specialty->filter selected-filters)
-           [["Leave out Install" :leave-out]
-            ["Closure Install" :closure]
-            ["Frontal Install" :frontal]
-            ["360 Frontal Install" :360-frontal]
-            ["Wig Customization" :wig-customization]])}))
+  (let [selected-filters       (get-in data stylist-directory.keypaths/stylist-search-selected-filters)
+        {free-services  #{true}
+         salon-services #{false}} (->> (get-in data storefront.keypaths/v2-skus)
+                                       vals
+                                       (selector/match-all {:selector/strict? true}
+                                                           {:service/type #{"base"}})
+                                       (sort-by :legacy/variant-id)
+                                       (group-by :promo.mayvenn-install/discountable))]
+    {:stylist-search-filters/show? (get-in data stylist-directory.keypaths/stylist-search-show-filters?)
+     :stylist-search-filters/sections
+     [{:stylist-search-filter-section/id      "free-mayvenn-services"
+       :stylist-search-filter-section/title   "Free Mayvenn Services"
+       :stylist-search-filter-section/primary (str
+                                               "Get Mayvenn services (valued up to $200) for free when purchasing "
+                                               "qualifying hair from Mayvenn. You buy the hair, we cover the service!")
+       :stylist-search-filter-section/filters
+       ;; NOTE: there is a `service-sku-id->preferred-service` mapping in `stylist-matching.find-your-stylist`
+       ;; May be useful when generating this list dynamically from the service categories
+       (->> free-services
+            (mapv (juxt :sku/name free-install-service-sku->install-type-slug (constantly 0)))
+            (mapv (partial specialty->filter selected-filters)))}
+      {:stylist-search-filter-section/id    "other-salon-services"
+       :stylist-search-filter-section/title "Other Salon Services"
+       :stylist-search-filter-section/filters
+       (->> salon-services
+            (mapv (juxt :sku/name (comp keyword :catalog/sku-id) :sku/price))
+            (mapv (partial specialty->filter selected-filters)))}]}))
+
+(component/defcomponent filter-section
+  [{:stylist-search-filter-section/keys [id filters title primary]} _ _]
+  [:div.flex.flex-column.px5.ptj1.left-align
+   {:key id}
+   [:div.shout.title-2.proxima title]
+   [:div.content-3.mt2.mb3 primary]
+   (for [{:stylist-search-filter/keys
+          [id primary secondary target checked?]} filters]
+     [:div.col-12.my1.flex.justify-between
+      {:on-click (apply utils/send-event-callback target)
+       :key (str "preference-" id)}
+      [:div primary
+       [:span.dark-gray.ml1.content-3 secondary]]
+
+      [:div.flex.justify-end
+       {:style {:margin-right "-15px"}}
+       (ui/check-box {:value     checked?
+                      :id        id
+                      :data-test id})]])])
 
 (component/defcomponent component
- [{:stylist-search-filters/keys [filters title primary show?]} _ _]
+ [{:stylist-search-filters/keys [show? sections]} _ _]
  (when show?
    (ui/modal
     {:body-style  {:max-width "625px"}
@@ -60,20 +103,7 @@
                              (merge {:data-test "stylist-search-filters-dismiss"}
                                     (utils/fake-href events/control-stylist-search-filters-dismiss))
                              "DONE")]))
-     [:div.flex.flex-column.p5.left-align
-      [:div.shout.title-2.proxima title]
-      [:div.content-3.mt2.mb3 primary]
-      (for [{:stylist-search-filter/keys
-             [id label target checked?]} filters]
-        [:div.col-12.my1.flex.justify-between
-         {:on-click (apply utils/send-event-callback target)
-          :key (str "preference-" id)}
-         [:div.col-10 label]
-         [:div.flex.justify-end
-          {:style {:margin-right "-15px"}}
-          (ui/check-box {:value     checked?
-                         :id        id
-                         :data-test id})]])]])))
+     (map #(component/build filter-section % {}) sections)])))
 
 (defmethod transitions/transition-state events/control-stylist-search-toggle-filter
   [_ event {:keys [previously-checked? stylist-filter-selection]} app-state]

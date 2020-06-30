@@ -22,16 +22,6 @@
   (when-not (boolean (get-in app-state storefront.keypaths/loaded-google-maps))
     {:spinner/id "loading-google-maps"}))
 
-(defn service-sku-id->preferred-service
-  [sku-id]
-  (get
-   {"SRV-LBI-000" "leave-out"
-    "SRV-CBI-000" "closure"
-    "SRV-FBI-000" "frontal"
-    "SRV-3BI-000" "360-frontal"
-    "SRV-WGC-000" "wig-customization"}
-   sku-id))
-
 (defn stylist-search-query
   [app-state] ;; TODO ui model/api?
   (let [input-location     (get-in app-state adventure.keypaths/adventure-stylist-match-address)
@@ -57,7 +47,7 @@
                                                           (->> (api.orders/current app-state)
                                                                :waiter/order
                                                                orders/service-line-items
-                                                               (keep (comp service-sku-id->preferred-service :sku))
+                                                               (keep (comp stylist-results/service-sku-id->query-parameter-value :sku))
                                                                (string/join stylist-results/query-param-separator)
                                                                not-empty)]
                                                  {:preferred-services preferred-services}))}]
