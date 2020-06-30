@@ -22,6 +22,7 @@
             [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]
             [stylist-matching.ui.stylist-cards :as stylist-cards]
             [stylist-matching.ui.gallery-modal :as gallery-modal]
+            [stylist-matching.search.accessors.filters :as accessors.filters]
             stylist-directory.keypaths
             storefront.keypaths
             [storefront.components.ui :as ui]
@@ -30,29 +31,11 @@
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
             [storefront.platform.messages :as messages]
-            [adventure.keypaths :as adventure.keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [storefront.keypaths :as storefront.keypaths]
             [spice.maps :as maps]))
 
 (def query-param-separator "~")
-
-(def service-filter-data
-  (concat
-   [{:sku-id "SRV-LBI-000", :query-parameter-value "leave-out"}
-    {:sku-id "SRV-CBI-000" :query-parameter-value "closure"}
-    {:sku-id "SRV-FBI-000" :query-parameter-value "frontal"}
-    {:sku-id "SRV-3BI-000" :query-parameter-value "360-frontal"}
-    {:sku-id "SRV-WGC-000" :query-parameter-value "wig-customization"}]
-   (mapv (fn [s] {:sku-id s :query-parameter-value s})
-         ["SRV-SPBI-000" "SRV-WMBI-000" "SRV-WIBI-000" "SRV-BDBI-000"])))
-
-(def service-sku-id->query-parameter-value
-  (reduce #(assoc %1 (:sku-id %2) (:query-parameter-value %2)) {} service-filter-data))
-
-(def allowed-stylist-filters
-  (->> service-filter-data (map (comp keyword :query-parameter-value)) set))
 
 (defmethod transitions/transition-state events/navigate-adventure-stylist-results-pre-purchase
   [_ _ {:keys [query-params]} app-state]
@@ -62,7 +45,7 @@
       (assoc-in stylist-directory.keypaths/stylist-search-selected-filters
                 (->> (string/split preferred-services query-param-separator)
                      (map keyword)
-                     (filter allowed-stylist-filters)
+                     (filter accessors.filters/allowed-stylist-filters)
                      set))
 
       (and lat long)
@@ -559,7 +542,7 @@
                                   [{:keys [stylist-card.services-list/items]}]
                                   (every? :value (filter (comp preferences :preference) items)))
         skus                    (get-in app-state storefront.keypaths/v2-skus)
-        indexed-service-filters (maps/index-by (comp keyword :query-parameter-value) service-filter-data)]
+        indexed-service-filters (maps/index-by (comp keyword :query-parameter-value) accessors.filters/service-filter-data)]
     (component/build template
                      {:gallery-modal          (gallery-modal-query app-state)
                       :spinning?              (or (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)

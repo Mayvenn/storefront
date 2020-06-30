@@ -1,5 +1,6 @@
 (ns stylist-matching.find-your-stylist
-  (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]])
+  (:require #?@(:cljs [[storefront.platform.messages :as messages]
+                       [storefront.hooks.google-maps :as google-maps]])
             adventure.keypaths
             api.orders
             [storefront.accessors.orders :as orders]
@@ -8,14 +9,13 @@
             [storefront.components.header :as header]
             [storefront.effects :as effects]
             [storefront.events :as events]
-            [storefront.platform.messages :as messages]
             storefront.keypaths
             [storefront.transitions :as transitions]
             [stylist-matching.ui.spinner :as spinner]
             [stylist-matching.stylist-results :as stylist-results]
+            [stylist-matching.search.accessors.filters :as accessors.filters]
             [stylist-matching.ui.stylist-search :as stylist-search]
-            [clojure.string :as string]
-            [storefront.accessors.experiments :as experiments]))
+            [clojure.string :as string]))
 
 (defn spinner-query
   [app-state]
@@ -47,7 +47,7 @@
                                                           (->> (api.orders/current app-state)
                                                                :waiter/order
                                                                orders/service-line-items
-                                                               (keep (comp stylist-results/service-sku-id->query-parameter-value :sku))
+                                                               (keep (comp accessors.filters/service-sku-id->query-parameter-value :sku))
                                                                (string/join stylist-results/query-param-separator)
                                                                not-empty)]
                                                  {:preferred-services preferred-services}))}]

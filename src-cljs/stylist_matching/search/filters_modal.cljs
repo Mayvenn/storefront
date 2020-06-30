@@ -1,8 +1,10 @@
 (ns stylist-matching.search.filters-modal
   (:require
    [spice.selector :as selector]
+   clojure.string
    [storefront.component :as component]
    [storefront.components.header :as components.header]
+   [stylist-matching.search.accessors.filters :as accessors.filters]
    [storefront.components.money-formatters :as mf]
    [storefront.components.ui :as ui]
    [storefront.effects :as effects]
@@ -24,16 +26,12 @@
                                         :stylist-filter-selection specialty}]
      :stylist-search-filter/checked?  checked?}))
 
-(defn free-install-service-sku->install-type-slug
+(defn sku->specialty
   [sku]
-  (if (= "SRV-WGC-000" (:catalog/sku-id sku))
-    :wig-customization
-    (->> sku
-         :hair/family
-         first
-         butlast
-         (apply str)
-         keyword)))
+  (-> sku
+      :catalog/sku-id
+      accessors.filters/service-sku-id->query-parameter-value
+      keyword))
 
 (defn query [data]
   (let [selected-filters       (get-in data stylist-directory.keypaths/stylist-search-selected-filters)
@@ -55,13 +53,13 @@
        ;; NOTE: there is a `service-sku-id->preferred-service` mapping in `stylist-matching.find-your-stylist`
        ;; May be useful when generating this list dynamically from the service categories
        (->> free-services
-            (mapv (juxt :sku/name free-install-service-sku->install-type-slug (constantly 0)))
+            (mapv (juxt :sku/name sku->specialty (constantly 0)))
             (mapv (partial specialty->filter selected-filters)))}
       {:stylist-search-filter-section/id    "other-salon-services"
        :stylist-search-filter-section/title "Other Salon Services"
        :stylist-search-filter-section/filters
        (->> salon-services
-            (mapv (juxt :sku/name (comp keyword :catalog/sku-id) :sku/price))
+            (mapv (juxt :sku/name sku->specialty :sku/price))
             (mapv (partial specialty->filter selected-filters)))}]}))
 
 (component/defcomponent filter-section
