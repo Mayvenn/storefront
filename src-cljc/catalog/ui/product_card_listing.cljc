@@ -47,15 +47,15 @@
                      (comp first category-selector)
                      (constantly :no-subsections)))
 
-         (sequence
-          (comp
-           (map (fn [[subsection-key products]]
-                  {:title/primary (:option/name (get subsection-facet-options subsection-key))
-                   :products       products
-                   :subsection-key subsection-key}))
-           (map #(update % :products (partial map (partial product->card data))))
-           (map #(clojure.set/rename-keys % {:products :product-cards}))
-           (map #(update % :product-cards (partial sort-by :sort/value)))))
+         (into []
+               (comp
+                (map (fn [[subsection-key products]]
+                       {:title/primary (:option/name (get subsection-facet-options subsection-key))
+                        :products       products
+                        :subsection-key subsection-key}))
+                (map #(update % :products (partial map (partial product->card data))))
+                (map #(clojure.set/rename-keys % {:products :product-cards}))
+                (map #(update % :product-cards (partial sort-by :sort/value)))))
          (sort-by (comp subsection-order :subsection-key)))))
 
 (c/defcomponent ^:private product-cards-empty-state
@@ -100,14 +100,15 @@
 
 (defn query
   [app-state category products-matching-filter-selections]
-  (let [facets                     (maps/index-by :facet/slug (get-in app-state keypaths/v2-facets))
-        subsections                (subsections-query
+  (let [facets            (maps/index-by :facet/slug (get-in app-state keypaths/v2-facets))
+        subsections       (subsections-query
                                     (vals facets)
                                     category
                                     products-matching-filter-selections
-                                    app-state)]
+                                    app-state)
+        no-product-cards? (empty? (mapcat :product-cards subsections))]
     {:subsections       subsections
-     :no-product-cards? (empty? (mapcat :product-cards subsections))
-     :loading-products? (and (empty? (filter :products subsections))
+     :no-product-cards? no-product-cards?
+     :loading-products? (and no-product-cards?
                              (utils/requesting? app-state (conj request-keys/get-products
-                                                                        (skuers/essentials category))))}))
+                                                                (skuers/essentials category))))}))
