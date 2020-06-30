@@ -11,6 +11,8 @@
                        adventure.components.program-details-popup
                        storefront.components.share-your-cart
                        storefront.components.v2-homepage-popup
+                       storefront.components.shop-by-look
+                       storefront.components.shop-by-look-details
                        checkout.shop.addon-services-menu])
             #?@(:clj
                 [[design-system.home :as design-system]])
@@ -20,6 +22,9 @@
 
             adventure.stylist-matching.stylist-profile
             adventure.stylist-matching.stylist-gallery
+
+            catalog.category
+            catalog.product-details
 
             stylist-matching.match-stylist
             stylist-matching.find-your-stylist
@@ -58,10 +63,8 @@
   {#?@(:cljs
        [events/navigate-reset-password                             (constantly reset-password/built-component)
         events/navigate-force-set-password                         (constantly force-set-password/built-component)
-        events/navigate-shop-by-look                               #(ui/lazy-load-component :catalog 'storefront.components.shop-by-look/built-component
-                                                                                            events/navigate-shop-by-look)
-        events/navigate-shop-by-look-details                       #(ui/lazy-load-component :catalog 'storefront.components.shop-by-look-details/built-component
-                                                                                            events/navigate-shop-by-look-details)
+        events/navigate-shop-by-look                               (constantly storefront.components.shop-by-look/built-component)
+        events/navigate-shop-by-look-details                       (constantly storefront.components.shop-by-look-details/built-component)
         events/navigate-stylist-dashboard-balance-transfer-details #(ui/lazy-load-component :dashboard 'storefront.components.stylist.balance-transfer-details/built-component
                                                                                             events/navigate-stylist-dashboard-balance-transfer-details)
         events/navigate-stylist-dashboard-order-details            #(ui/lazy-load-component :dashboard 'storefront.components.stylist.order-details/built-component events/navigate-stylist-dashboard-order-details)
@@ -90,11 +93,11 @@
 
    events/navigate-home                    (constantly (first-arg-only homepage.core/page))
    events/navigate-about-mayvenn-install   (constantly mayvenn-install.about/built-component)
-   events/navigate-category                #(ui/lazy-load-component :catalog 'catalog.category/built-component events/navigate-category)
-   events/navigate-product-details         #(ui/lazy-load-component :catalog 'catalog.product-details/built-component events/navigate-product-details)
+   events/navigate-category                (constantly catalog.category/built-component)
+   events/navigate-product-details         (constantly catalog.product-details/built-component)
    events/navigate-shared-cart             #(ui/lazy-load-component :catalog 'storefront.components.shared-cart/built-component events/navigate-shared-cart)
    events/navigate-checkout-processing     #(ui/lazy-load-component :checkout 'checkout.processing/built-component events/navigate-checkout-processing)
-   events/navigate-cart                    #(ui/lazy-load-component :catalog 'checkout.classic-cart/built-component events/navigate-cart)
+   events/navigate-cart                    (constantly checkout.classic-cart/built-component)
    events/navigate-voucher-redeem          #(ui/lazy-load-component :redeem 'voucher.redeem/built-component events/navigate-voucher-redeem)
    events/navigate-voucher-redeemed        #(ui/lazy-load-component :redeem 'voucher.redeemed/built-component events/navigate-voucher-redeemed)
    events/navigate-mayvenn-made            (constantly mayvenn-made.home/built-component)
