@@ -35,9 +35,8 @@
   [facets skus facet-slug]
   (let [facet-options (->> facets (slug->facet facet-slug) :facet/options)]
     (->> skus
-         (mapcat #(get % facet-slug))
-         set
-         (map #(slug->option % facet-options))
+         (into #{} (mapcat #(get % facet-slug)))
+         (mapv #(slug->option % facet-options))
          (sort-by (juxt :option/order :option/slug)))))
 
 (defn query
@@ -144,10 +143,11 @@
 (defn product-card-details-molecule
   [{:product-card-details/keys [id content]}]
   (when id
-    [:div.mb4.content-3.proxima
-     (for [[idx item] (map-indexed vector content)]
-       [:div.py1 {:key (str id "-" idx)}
-        item])]))
+    (component/html
+     [:div.mb4.content-3.proxima
+      (for [[idx item] (map-indexed vector content)]
+        [:div.py1 {:key (str id "-" idx)}
+         item])])))
 
 (defn organism
   [{:as data react-key :react/key :product-card/keys [target]}]

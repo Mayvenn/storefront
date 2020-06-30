@@ -41,17 +41,24 @@
                  (get-in app-state k/detailed-product-id)))
 
 (defn normalize-image [image]
-  (-> image
-      (assoc :id (str (:use-case image) "-" (:url image))
-             :order (or (:order image)
-                        (case (:image/of (:criteria/attributes image))
-                          "model"   1
-                          "product" 2
-                          "seo"     3
-                          "catalog" 4
-                          5)))
-      (merge (:criteria/attributes image))
-      (dissoc :criteria/attributes :filename)))
+  ;; PERF(jeff): this is called for every product in category pages, which can
+  ;; be many times.
+  (let [img (-> (transient image)
+                (assoc! :id (str (:use-case image) "-" (:url image))
+                        :order (or (:order image)
+                                   (case (:image/of (:criteria/attributes image))
+                                     "model"   1
+                                     "product" 2
+                                     "seo"     3
+                                     "catalog" 4
+                                     5))))]
+    (persistent!
+     (dissoc!
+      (reduce (fn [acc [k v]]
+                (assoc! acc k v))
+              img
+              (:criteria/attributes image))
+      :criteria/attributes :filename))))
 
 (defn ->skuer [value]
   (let [value (-> value
