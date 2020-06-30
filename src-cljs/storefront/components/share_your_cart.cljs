@@ -54,6 +54,7 @@ Thanks,
                  [:div.p1.col.col-6.col-12-on-dt
                   [:a.h6.col-12.btn.btn-primary.bg-fb-blue
                    {:href   (facebook-link utm-url)
+                    :rel    "noopener"
                     :target "_blank"}
                    (ui/ucare-img {:class "align-middle mr1"
                                   :style {:height "18px"}} "975698f3-3eda-411c-83ad-6a2750e0e59d")
@@ -61,20 +62,23 @@ Thanks,
                  [:div.p1.col.col-6.col-12-on-dt
                   [:a.h6.col-12.btn.btn-primary.bg-twitter-blue
                    {:href   (twitter-link utm-url)
+                    :rel    "noopener"
                     :target "_blank"}
                    (ui/ucare-img {:class "align-middle mr1"
                                   :style {:height "18px"}} "287fcd79-c45d-453d-94e2-48f0ef6fc35c")
                    "Tweet"]]
                  [:div.p1.col.col-6.col-12-on-dt.hide-on-dt
                   [:a.h6.col-12.btn.btn-primary.bg-sms-green
-                   {:href (sms-link utm-url)
+                   {:href   (sms-link utm-url)
+                    :rel    "noopener"
                     :target "_blank"}
                    (ui/ucare-img {:class "align-middle mr1"
                                   :style {:height "18px"}} "7e992996-0495-4707-998b-f04ea56c7c73")
                    "SMS"]]
                  [:div.p1.col.col-6.col-12-on-dt
                   [:a.h6.col-12.btn.btn-primary.bg-black
-                   {:href (email-link utm-url store-nickname)
+                   {:href   (email-link utm-url store-nickname)
+                    :rel    "noopener"
                     :target "_blank"}
                    ^:inline (svg/mail-envelope {:class "stroke-white align-middle mr1"
                                                 :style {:height "18px" :width "18px"}})

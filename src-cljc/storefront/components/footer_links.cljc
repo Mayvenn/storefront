@@ -15,7 +15,8 @@
   ([uri icon] (social-link {:height "18px" :width "18px"} uri icon))
   ([{:keys [height width]} uri icon]
    (component/html
-    [:a.block.px1.mx1.flex.items-center {:href uri :target "_blank"}
+    ;; https://web.dev/external-anchors-use-rel-noopener/
+    [:a.block.px1.mx1.flex.items-center {:href uri :rel "noopener" :target "_blank"}
      [:div {:style {:width width :height height}}
       ^:inline icon]])))
 

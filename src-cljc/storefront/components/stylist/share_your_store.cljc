@@ -64,27 +64,30 @@
      [:div.col-12.col-6-on-tb.col-4-on-dt.mx-auto
       (social-button
        {:class  "bg-fb-blue"
+        :rel    "noopener"
         :target "_blank"
         :href   (facebook-link share-url)}
        "//ucarecdn.com/f9ab7fce-d25f-4854-b405-0e0c83684388/-/format/auto/fb"
        "Share on Facebook")
       (social-button
        {:class  "bg-twitter-blue"
+        :rel    "noopener"
         :target "_blank"
         :href   (twitter-link share-url)}
        "//ucarecdn.com/cb22b91e-5e62-47e2-a513-23435084a02b/-/format/auto/twitter"
        "Tweet your store link")
       (social-button
        {:class  "hide-on-dt bg-sms-green"
+        :rel    "noopener"
         :target "_blank"
         :href   (sms-link share-url)}
        "//ucarecdn.com/0bb20f76-52b6-4ad5-b094-a292352473b1/-/format/auto/sms"
        "Send a text")
       [:div.h5.my4 "Tap to select, copy and share"]
       [:input.border.border-gray.rounded.pl1.py1.bg-white.p-color.col-12.center
-       {:type     "text"
-        :value    store-link
-        :on-click utils/select-all-text
+       {:type      "text"
+        :value     store-link
+        :on-click  utils/select-all-text
         :data-test "store-link"}]]]))
 
 (defn query [data]
