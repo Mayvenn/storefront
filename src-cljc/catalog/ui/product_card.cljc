@@ -102,7 +102,7 @@
                                                       ;; :margin     "5px 5px"
                                                       :width     "13px"
                                                       :height    "13px"}
-                                              :src   rectangle-swatch}]])])
+                                              :src   (str "https://ucarecdn.com/" (ui/ucare-img-id rectangle-swatch) "/-/format/auto/-/resize/13x/")}]])])
                                       [:span.black
                                        "Starting at "
                                        [:span.content-2.proxima (mf/as-money (:sku/price cheapest-sku))]]])
