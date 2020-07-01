@@ -289,7 +289,6 @@
    {:mayvenn-install/keys
     [service-title addon-services service-image-url
      discountable-services-on-order? locked?
-     needs-more-items-for-free-service?
      cart-helper-copy action-label stylist service-discount
      quantity-required quantity-added]}
    add-items-action]
@@ -310,10 +309,8 @@
                      :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)
                      :confetti-mode                            (get-in app-state keypaths/confetti-mode)}
 
-              ;; needs-more-items-for-free-service means there are discountable services on the order,
-              ;; yet not all the requirements of a free install order to generate a voucher have been satisfied.
-              needs-more-items-for-free-service?
-              (merge {:cart-item-title/primary                   (str service-title " (locked)")
+              locked?
+              (merge {:cart-item-title/primary                   (str service-title " (locked)") ;; TODO: Not include "locked" on this line item title in promotion-helper ff
                       :cart-item-title/id                        "line-item-title-locked-mayvenn-install"
                       :cart-item-steps-to-complete/action-target add-items-action
                       :cart-item-steps-to-complete/action-label  action-label
