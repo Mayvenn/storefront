@@ -310,7 +310,7 @@
                      :confetti-mode                            (get-in app-state keypaths/confetti-mode)}
 
               locked?
-              (merge {:cart-item-title/primary                   (str service-title " (locked)") ;; TODO: Not include "locked" on this line item title in promotion-helper ff
+              (merge {:cart-item-title/primary                   (str service-title " (locked)")
                       :cart-item-title/id                        "line-item-title-locked-mayvenn-install"
                       :cart-item-steps-to-complete/action-target add-items-action
                       :cart-item-steps-to-complete/action-label  action-label
