@@ -319,7 +319,7 @@
                                                                       range
                                                                       (map inc))
                       :cart-item-steps-to-complete/current-step  quantity-added
-                      :cart-item-service-thumbnail/locked?       true?})
+                      :cart-item-service-thumbnail/locked?       true})
 
               matched?
               (merge {:cart-item-modify-button/id              "browse-addons"
@@ -598,7 +598,7 @@
                                          :cart-summary-line/sublabel shipping-timeframe
                                          :cart-summary-line/value    (mf/as-money-or-free shipping-cost)}])
 
-                                     (when needs-more-items-for-free-service?
+                                     (when locked?
                                        ;; When FREEINSTALL is merely locked (and so not yet an adjustment) we must special case it, so:
                                        [(merge
                                          {:cart-summary-line/id    (if any-wig?
