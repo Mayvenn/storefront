@@ -2,7 +2,7 @@
 
 (def service-filter-data
   (concat
-   [{:sku-id "SRV-LBI-000", :query-parameter-value "leave-out"}
+   [{:sku-id "SRV-LBI-000" :query-parameter-value "leave-out"}
     {:sku-id "SRV-CBI-000" :query-parameter-value "closure"}
     {:sku-id "SRV-FBI-000" :query-parameter-value "frontal"}
     {:sku-id "SRV-3BI-000" :query-parameter-value "360-frontal"}
