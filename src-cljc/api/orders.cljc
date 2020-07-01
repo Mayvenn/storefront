@@ -56,27 +56,29 @@
           (keep line-item->service-type)
           first))
 
-(defn ^:private promotion-helper-guide-content-for [singular-addition-hair-family additional-hair-family]
+(defn ^:private promotion-helper-guide-content-for [singular-addition-hair-family additional-hair-family promotion-helper?]
   (fn [items-needed satisfied?]
-    (if (not satisfied?)
-      (let [bundles-count                 (items-needed "bundles")
-            bundles-required?             (pos? bundles-count)
-            additional-hair-family-count  (items-needed additional-hair-family)
-            needs-additional-hair-family? (and additional-hair-family
-                                               (pos? additional-hair-family-count))]
-        (str "Add "
-            (when bundles-required?
-              (str bundles-count (ui/pluralize bundles-count " bundle" " bundles")))
-            (when (and bundles-required?
-                       needs-additional-hair-family?)
-              " and ")
-            (when needs-additional-hair-family?
-              (str additional-hair-family-count
-                   " "
-                   (ui/pluralize additional-hair-family-count
-                                 singular-addition-hair-family
-                                 additional-hair-family)))))
-      "You’re all set! Shampoo, braiding and basic styling included.")))
+    (if promotion-helper?
+      "Free with purchase of 3+ items"
+      (if (not satisfied?)
+        (let [bundles-count                 (items-needed "bundles")
+              bundles-required?             (pos? bundles-count)
+              additional-hair-family-count  (items-needed additional-hair-family)
+              needs-additional-hair-family? (and additional-hair-family
+                                                 (pos? additional-hair-family-count))]
+          (str "Add "
+               (when bundles-required?
+                 (str bundles-count (ui/pluralize bundles-count " bundle" " bundles")))
+               (when (and bundles-required?
+                          needs-additional-hair-family?)
+                 " and ")
+               (when needs-additional-hair-family?
+                 (str additional-hair-family-count
+                      " "
+                      (ui/pluralize additional-hair-family-count
+                                    singular-addition-hair-family
+                                    additional-hair-family)))))
+        "You’re all set! Shampoo, braiding and basic styling included."))))
 
 (defn- satisfies-all-needs [items-needed]
   (not (some pos? (vals items-needed))))
@@ -86,30 +88,30 @@
   (reduce + (filter pos? (vals items-needed))))
 
 (defn ^:private promo-helper-guiding-content
-  [service-type product-quantities]
+  [service-type promotion-helper? product-quantities]
   (let [all-requirements {:leave-out         {:satisfies?          satisfies-all-needs
                                               :requirements        {"bundles" 3}
                                               :steps-required      3
                                               :steps-remaining     remaining-count
-                                              :cart-helper-copy-fn (promotion-helper-guide-content-for nil nil)}
+                                              :cart-helper-copy-fn (promotion-helper-guide-content-for nil nil promotion-helper?)}
                           :closure           {:satisfies?          satisfies-all-needs
                                               :requirements        {"bundles"  2
                                                                     "closures" 1}
                                               :steps-required      3
                                               :steps-remaining     remaining-count
-                                              :cart-helper-copy-fn (promotion-helper-guide-content-for "closure" "closures")}
+                                              :cart-helper-copy-fn (promotion-helper-guide-content-for "closure" "closures" promotion-helper?)}
                           :frontal           {:satisfies?          satisfies-all-needs
                                               :requirements        {"bundles"  2
                                                                     "frontals" 1}
                                               :steps-required      3
                                               :steps-remaining     remaining-count
-                                              :cart-helper-copy-fn (promotion-helper-guide-content-for "frontal" "frontals")}
+                                              :cart-helper-copy-fn (promotion-helper-guide-content-for "frontal" "frontals" promotion-helper?)}
                           :three-sixty       {:requirements        {"bundles"      2
                                                                     "360-frontals" 1}
                                               :steps-required      3
                                               :steps-remaining     remaining-count
                                               :satisfies?          satisfies-all-needs
-                                              :cart-helper-copy-fn (promotion-helper-guide-content-for "360 frontal" "360-frontals")}
+                                              :cart-helper-copy-fn (promotion-helper-guide-content-for "360 frontal" "360-frontals" promotion-helper?)}
                           :wig-customization {:requirements        {"360-wigs"        1
                                                                     "lace-front-wigs" 1}
                                               :steps-required      1
@@ -174,8 +176,10 @@
                 steps-required
                 current-step
                 steps-remaining]} (when service-type
-                                    (->> (product-line-items->hair-family-counts product-line-items)
-                                         (promo-helper-guiding-content service-type)))
+                                    (->> product-line-items
+                                         product-line-items->hair-family-counts
+                                         (promo-helper-guiding-content service-type
+                                                                       promotion-helper?)))
         mayvenn-install-line-item (->> base-services
                                        (filter #(:promo.mayvenn-install/discountable (:variant-attrs %)))
                                        first)
