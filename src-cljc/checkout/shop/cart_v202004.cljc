@@ -673,7 +673,8 @@
 
 (defn promo-input-query
   [data order discountable-services-on-order?]
-  (when (and (orders/no-applied-promo? order) (not discountable-services-on-order?))
+  (when (or (experiments/promotion-helper? data)
+         (and (orders/no-applied-promo? order) (not discountable-services-on-order?)))
     (let [keypath                 keypaths/cart-coupon-code
           value                   (get-in data keypath)
           promo-link?             (experiments/promo-link? data)
