@@ -421,13 +421,14 @@
 
 (defn ^:private standalone-service-line-items-query
   [app-state]
-  (let [skus                      (get-in app-state keypaths/v2-skus)
-        service-line-items        (orders/service-line-items (get-in app-state keypaths/order))
-        delete-line-item-requests (variants-requests app-state request-keys/delete-line-item (map :id service-line-items))
-        standalone-service-line-items  (filter line-items/standalone-service? service-line-items)]
+  (let [skus                          (get-in app-state keypaths/v2-skus)
+        service-line-items            (orders/service-line-items (get-in app-state keypaths/order))
+        delete-line-item-requests     (variants-requests app-state request-keys/delete-line-item (map :id service-line-items))
+        standalone-service-line-items (filter line-items/standalone-service? service-line-items)]
     (for [{sku-id :sku variant-id :id :as service-line-item} standalone-service-line-items
           :let
-          [price                (or (:sku/price service-line-item)
+          [sku                  (get skus sku-id)
+           price                (or (:sku/price service-line-item)
                                     (:unit-price service-line-item))
            removing?            (get delete-line-item-requests variant-id)
            just-added-to-order? (some #(= sku-id %) (get-in app-state keypaths/cart-recently-added-skus))]]
@@ -437,11 +438,12 @@
        :cart-item-title/id                       (str "line-item-" sku-id)
        :cart-item-floating-box/id                (str "line-item-" sku-id "-price")
        :cart-item-floating-box/value             (some-> price mf/as-money)
+       :cart-item-copy/value                     (:copy/whats-included sku)
        :cart-item-remove-action/id               (str "line-item-remove-" sku-id)
        :cart-item-remove-action/spinning?        removing?
        :cart-item-remove-action/target           [events/control-cart-remove (:id service-line-item)]
        :cart-item-service-thumbnail/id           sku-id
-       :cart-item-service-thumbnail/image-url    (->> sku-id (get skus) (catalog-images/image "cart") :ucare/id)
+       :cart-item-service-thumbnail/image-url    (->> sku (catalog-images/image "cart") :ucare/id)
        :cart-item-service-thumbnail/highlighted? just-added-to-order?})))
 
 (defn cart-items-query

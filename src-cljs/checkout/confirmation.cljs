@@ -387,16 +387,18 @@
         standalone-service-line-items (filter line-items/standalone-service? service-line-items)]
     (for [{sku-id :sku :as service-line-item} standalone-service-line-items
           :let
-          [price                (or (:sku/price service-line-item)
-                                    (:unit-price service-line-item))]]
+          [sku   (get skus sku-id)
+           price (or (:sku/price service-line-item)
+                     (:unit-price service-line-item))]]
       {:react/key                             sku-id
        :cart-item-title/primary               (or (:product-title service-line-item)
                                                   (:product-name service-line-item))
        :cart-item-title/id                    (str "line-item-" sku-id)
+       :cart-item-copy/value                  (:copy/whats-included sku)
        :cart-item-floating-box/id             (str "line-item-" sku-id "-price")
        :cart-item-floating-box/value          (some-> price mf/as-money)
        :cart-item-service-thumbnail/id        sku-id
-       :cart-item-service-thumbnail/image-url (->> sku-id (get skus) (catalog-images/image "cart") :ucare/id)})))
+       :cart-item-service-thumbnail/image-url (->> sku (catalog-images/image "cart") :ucare/id)})))
 
 (defn cart-items-query
   [app-state line-items skus]
