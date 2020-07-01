@@ -319,7 +319,7 @@
                                                                       range
                                                                       (map inc))
                       :cart-item-steps-to-complete/current-step  quantity-added
-                      :cart-item-service-thumbnail/locked?       locked?})
+                      :cart-item-service-thumbnail/locked?       true?})
 
               matched?
               (merge {:cart-item-modify-button/id              "browse-addons"
@@ -361,7 +361,7 @@
                      :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)
                      :confetti-mode                            (get-in app-state keypaths/confetti-mode)}
 
-              ;; Locked basically means there are discountable services on the order, yet not all the requirements
+              ;; needs-more-items-for-free-service? basically means there are discountable services on the order, yet not all the requirements
               ;; of a free install order to generate a voucher have been satisfied.
               needs-more-items-for-free-service?
               (merge  (if (or any-wig? wig-customization?)
@@ -373,8 +373,7 @@
                          :cart-item-steps-to-complete/action-label  "Add Wig"
                          :cart-item-steps-to-complete/id            "add-wig"
                          :cart-item-steps-to-complete/steps         {}
-                         :cart-item-steps-to-complete/current-step  0
-                         :cart-item-service-thumbnail/locked?       locked?}
+                         :cart-item-steps-to-complete/current-step  0}
                         {:cart-item-title/primary                   (str service-title " (locked)")
                          :cart-item-title/id                        "line-item-title-locked-mayvenn-install"
                          :cart-item-copy/value                      (str "Add " quantity-remaining
@@ -385,8 +384,10 @@
                          :cart-item-steps-to-complete/steps         (->> quantity-required
                                                                          range
                                                                          (map inc))
-                         :cart-item-steps-to-complete/current-step  quantity-added
-                         :cart-item-service-thumbnail/locked?       true}))
+                         :cart-item-steps-to-complete/current-step  quantity-added}))
+
+              locked?
+              (merge {:cart-item-service-thumbnail/locked? true})
 
               applied?
               (merge (if wig-customization?
