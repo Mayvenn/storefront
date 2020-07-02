@@ -744,7 +744,7 @@
                                            required-line-items-not-added?
                                           update-pending?)
         any-wig?                       (:mayvenn-install/any-wig? mayvenn-install)
-        disabled-reasons               (remove nil? [(if needs-more-items-for-free-service?
+        disabled-reasons               (remove nil? [(if locked?
                                                        cart-helper-copy
                                                        (when required-line-items-not-added?
                                                          [:div.m1 (if any-wig?
