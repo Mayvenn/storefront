@@ -198,7 +198,7 @@
   [{:keys [promotions base-price shared-cart-promo base-service]}]
   (if base-service
     (let [service-price (:sku/price base-service)]
-      {:discount-text    "10% OFF + FREE Install"
+      {:discount-text    "10% OFF + FREE Service"
        :discounted-price (* 0.90 (- base-price service-price))})
     (let [promotion% (some->> promotions
                               (filter (comp #{shared-cart-promo} str/lower-case :code))
@@ -220,7 +220,7 @@
   [{:keys [promotions base-price shared-cart-promo base-service]}]
   (if base-service
     (let [service-price (:sku/price base-service)]
-      {:discount-text    "Hair + FREE Install"
+      {:discount-text    "Hair + FREE Service"
        :discounted-price (- base-price service-price)})
     (let [promotion% (some->> promotions
                               (filter (comp #{shared-cart-promo} str/lower-case :code))

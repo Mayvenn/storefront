@@ -592,20 +592,20 @@
     :catalog/department             #{"hair"}
     :category/show-title?           true
     :category/new?                  true
-    :copy/description               "Get a free Mayvenn Install by a licensed stylist when you purchase 3 or more items. "
+    :copy/description               "Get a free Mayvenn Service by a licensed stylist with qualifying purchases. "
     :copy/learn-more-target         [events/popup-show-consolidated-cart-free-install]
-    :copy/title                     "Mayvenn Install"
+    :copy/title                     "Free Service Eligible Products"
     :hair/family                    #{"bundles" "closures" "frontals" "360-frontals"}
     :page/slug                      "mayvenn-install"
-    :page/title                     "Mayvenn Install Eligible | Mayvenn"
-    :page.meta/description          (copy "Mayvenn’s Natural Lace Front Wigs and 360 Wigs."
-                                          "Comes in different variations such as Brazilian and Malaysian, straight, deep wave and loose wave.")
+    :page/title                     "Free Hair Service - Buy 3 Items for Free Service | Mayvenn"
+    :page.meta/description          (copy "Buy 3 items and Mayvenn will pay for your hair service!" 
+    																																						"Shop our selection of natural human hair bundles and"
+    																																						"get connected with a stylist near you.")
     :promo.mayvenn-install/eligible #{true}
-    :opengraph/description          (copy "100% virgin human hair, machine-wefted and backed by our"
-                                          "30 Day Quality Guarantee, our Wigs can be customized to fit"
-                                          "your unique look using the built-in combs and adjustable strap.")
-    :opengraph/title                (copy "Mayvenn 360 and Lace Frontal Wigs - Free shipping."
-                                          "Free 30 day returns. Made with 100% virgin human hair.")
+    :opengraph/description          (copy "Buy 3 items and Mayvenn will pay for your hair service!" 
+    																																						"Shop our selection of natural human hair bundles and"
+    																																						"get connected with a stylist near you.")
+    :opengraph/title                (copy "Shop Mayvenn Hair - Buy 3 items and we'll pay for your hair service.")
     :selector/electives             [:hair/texture :hair/family :hair/origin :hair/color]
     :selector/essentials            [:catalog/department :promo.mayvenn-install/eligible]
     :subsections/category-selector  :hair/texture
