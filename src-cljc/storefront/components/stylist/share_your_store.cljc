@@ -19,7 +19,6 @@
                          "Hey! I’m now selling 100% virgin human hair through my Mayvenn hair store: "
                          (share-links/with-utm-medium share-url "sms") " "
                          "All orders ship out for free and are backed by a 30-day quality guarantee! "
-                         "If you order 3 bundles or more you’ll get 25% off. "
                          "If you’re in the market for new hair, I hope you’ll consider supporting my business!")))
 
 (defn constrain-to-720px
