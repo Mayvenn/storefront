@@ -897,6 +897,11 @@
     :category/new?                      true
     :copy/title                         "FREE Mayvenn Services"
     :page/slug                          "free-mayvenn-services"
+    :page/title                         "Hair Free Mayvenn Services Menu | Mayvenn"
+    :page.meta/description              (copy "Shop our selection of free Mayvenn Services for the ultimate hair install or wig customization"
+                                               "experience. Check out our menu to learn about these exclusive offers.")
+    :opengraph/title               					"Free Mayvenn Services Menu - Buy 3 items and we'll pay for your hair service."
+    :opengraph/description         					"Buy 3 items and Mayvenn will pay for your hair service! Shop our selection of natural human hair bundles and get connected with a stylist near you."
     :copy/description                   "These standout services, with Certified Stylists, are included with qualifying purchases."
     :how-it-works/title-primary         "Your hair deserves a Mayvenn–Certified Stylist."
     :how-it-works/title-secondary       "Here’s how it works."
