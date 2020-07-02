@@ -696,10 +696,10 @@
       (testing "when a category page does not have a template and has selections"
         (-> (mock/request :get "https://shop.mayvenn.com/categories/23-mayvenn-install?origin=indian")
             handler
-            (validate-title-and-description-and-canonical "Mayvenn Install Eligible | Mayvenn"
-                                                          (str "Mayvenn’s Natural Lace Front Wigs and 360 Wigs. "
-                                                               "Comes in different variations such as Brazilian "
-                                                               "and Malaysian, straight, deep wave and loose wave.")
+            (validate-title-and-description-and-canonical "Free Hair Service - Buy 3 Items for Free Service | Mayvenn"
+                                                          (str "Buy 3 items and Mayvenn will pay for your hair service!"
+                                                               " Shop our selection of natural human hair bundles and"
+                                                               " get connected with a stylist near you.")
                                                           "/categories/23-mayvenn-install"
                                                           "origin=indian")))
 
