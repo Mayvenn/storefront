@@ -61,14 +61,13 @@
   (->> order line-items (filter line-items/product?)))
 
 (defn displayed-cart-count
-  "# of product items plus standalone services"
+  "# of product items plus base services, excluding addons and shipping"
   [order]
   (->> order
        :shipments
        first
        :storefront/all-line-items
-       (remove (some-fn line-items/addon-service?
-                        line-items/shipping-method?))
+       (remove (some-fn line-items/addon-service? line-items/shipping-method?))
        (mapv :quantity)
        (reduce +)))
 

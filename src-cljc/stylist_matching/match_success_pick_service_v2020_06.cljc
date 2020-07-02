@@ -15,8 +15,8 @@
    (c/build congrats/organism congrats)])
 
 (defn header-query
- [order browser-history]
-  (let [submitted? (= "submitted" (:state order))]
+  [order browser-history]
+  (let [submitted? (= "submitted" (-> order :waiter/order :state))]
     (cond-> {:header.title/id           "adventure-title"
              :header.title/primary      "Meet Your Stylist"
              :header.back-navigation/id "adventure-back"}
@@ -30,7 +30,7 @@
       (not submitted?)
       (merge {:header.back-navigation/target [e/navigate-adventure-find-your-stylist]
               :header.cart/id                "mobile-cart"
-              :header.cart/value             (orders/product-quantity order)
+              :header.cart/value             (:order.items/quantity order)
               :header.cart/color             "white"}))))
 
 (defn congrats-query
@@ -47,9 +47,9 @@
 
 (defn page
   [app-state]
-  (let [{order             :waiter/order
+  (let [{:as               current-order
          servicing-stylist :mayvenn-install/stylist} (api.orders/current app-state)
         browser-history                              (get-in app-state storefront.keypaths/navigation-undo-stack)]
     (c/build
-     template {:header   (header-query order browser-history)
+     template {:header   (header-query current-order browser-history)
                :congrats (congrats-query servicing-stylist)})))

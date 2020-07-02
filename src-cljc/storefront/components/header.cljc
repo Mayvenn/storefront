@@ -1,6 +1,5 @@
 (ns storefront.components.header
-  (:require [clojure.string :as string]
-            [storefront.accessors.auth :as auth]
+  (:require [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
@@ -9,13 +8,13 @@
             [storefront.components.marquee :as marquee]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages :as messages]
             [storefront.transitions :as transitions]
-            [storefront.effects :as effects]
-            [ui.promo-banner :as promo-banner]
-            [storefront.platform.messages :as messages]))
+            [ui.promo-banner :as promo-banner]))
 
 (def blog-url "https://shop.mayvenn.com/blog/")
 
@@ -260,28 +259,24 @@
       [:div.mx-auto.flex.items-center.justify-around {:style size} ^:inline right]])))
 
 (defn adventure-header
-  ([left-target title cart-data]
-   (adventure-header {:header.back-navigation/target left-target
-                      :header.title/primary          title
-                      :header.cart/value             (:quantity cart-data)}))
-  ([{:header.back-navigation/keys [target back]
-     :header.cart/keys            [value]
-     :header.title/keys           [primary]}]
-   (mobile-nav-header
-    {:class "border-bottom border-gray bg-white black"
-     :style {:height "70px"}}
-    (c/html
-     (if target
-       [:div
-        {:data-test "header-back"}
-        [:a.block.black.p2.flex.justify-center.items-center
-         (apply utils/route-back-or-to back target)
-         (svg/left-arrow {:width  "20"
-                          :height "20"})]]
-       [:div]))
-    (c/html [:div.content-1.proxima.center primary])
-    (ui/shopping-bag {:data-test "mobile-cart"}
-                     {:quantity value}))))
+  [{:header.back-navigation/keys [target back]
+    :header.cart/keys            [value]
+    :header.title/keys           [primary]}]
+  (mobile-nav-header
+   {:class "border-bottom border-gray bg-white black"
+    :style {:height "70px"}}
+   (c/html
+    (if target
+      [:div
+       {:data-test "header-back"}
+       [:a.block.black.p2.flex.justify-center.items-center
+        (apply utils/route-back-or-to back target)
+        (svg/left-arrow {:width  "20"
+                         :height "20"})]]
+      [:div]))
+   (c/html [:div.content-1.proxima.center primary])
+   (ui/shopping-bag {:data-test "mobile-cart"}
+                    {:quantity value})))
 
 (c/defcomponent component
   [{:as   data

@@ -326,7 +326,7 @@
       :order/dtc?           (= "shop" store-slug)
       :order/submitted?     (= "submitted" (:state order))
       :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
-      :order.items/quantity (orders/product-quantity waiter-order)})))
+      :order.items/quantity (orders/displayed-cart-count waiter-order)})))
 
 (defn completed
   [app-state]

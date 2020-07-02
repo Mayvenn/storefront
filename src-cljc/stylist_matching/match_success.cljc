@@ -183,24 +183,21 @@
   [{:keys [header shopping-method-choice matched-stylist]} _ _]
   [:div.center.flex.flex-auto.flex-column
    stylist-matching.A/bottom-right-party-background
-   (header/adventure-header (:header.back-navigation/target header)
-                            (:header.title/primary header)
-                            {:quantity (:header.cart/value header)})
+   (header/adventure-header header)
    (component/build shopping-method-choice/organism shopping-method-choice nil)
    (component/build matched-stylist/organism matched-stylist nil)])
 
 (defn page
   [app-state]
-  (let [servicing-stylist  (get-in app-state adventure.keypaths/adventure-servicing-stylist)
-        nav-event          (get-in app-state storefront.keypaths/navigation-event)
-        post-purchase?     (post-purchase? nav-event)
-        order              (if (pre-purchase? nav-event)
-                             (api.orders/current app-state)
-                             (api.orders/completed app-state))
-        browser-history    (get-in app-state storefront.keypaths/navigation-undo-stack)]
+  (let [servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        nav-event         (get-in app-state storefront.keypaths/navigation-event)
+        post-purchase?    (post-purchase? nav-event)
+        order             (if (pre-purchase? nav-event)
+                            (api.orders/current app-state)
+                            (api.orders/completed app-state))
+        browser-history   (get-in app-state storefront.keypaths/navigation-undo-stack)]
     (component/build template
-                     {:header                 (header-query order
-                                                            browser-history)
+                     {:header                 (header-query order browser-history)
                       :shopping-method-choice (shopping-method-choice-query servicing-stylist
                                                                             order)
                       :matched-stylist        (matched-stylist-query servicing-stylist

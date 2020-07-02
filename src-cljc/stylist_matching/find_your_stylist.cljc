@@ -67,7 +67,7 @@
   [{:keys [flash header stylist-search spinner cart]} _ _]
   [:div.center.flex.flex-auto.flex-column
 
-   (header/adventure-header (:header.back-navigation/target header) (:header.title/primary header) cart)
+   (header/adventure-header header)
    (component/build flash/component flash nil)
    (if (seq spinner)
      (component/build spinner/organism spinner nil)
@@ -81,8 +81,7 @@
                      {:stylist-search (stylist-search-query app-state)
                       :flash          (flash/query app-state)
                       :spinner        (spinner-query app-state)
-                      :header         (header-query current-order)
-                      :cart           {:quantity (orders/product-quantity (get-in app-state storefront.keypaths/order))}})))
+                      :header         (header-query current-order)})))
 
 (defmethod transitions/transition-state events/navigate-adventure-find-your-stylist
   [_ event _ app-state]

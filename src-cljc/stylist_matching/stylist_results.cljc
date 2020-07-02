@@ -463,9 +463,7 @@
   #?(:cljs (component/build filters-modal/component filters-modal nil))
 
    (component/build gallery-modal/organism gallery-modal nil)
-   (components.header/adventure-header (:header.back-navigation/target header)
-                                       (:header.title/primary header)
-                                       {:quantity (:header.cart/value header)})
+   (components.header/adventure-header header)
 
    (when (:stylist.results.location-search-box/id location-search-box)
      (component/build location-input-and-filters-molecule location-search-box nil))
