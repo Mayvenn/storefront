@@ -149,7 +149,6 @@
    (some (comp service-line-item-promotion? :promotion)
          (mapcat :applied-promotions (service-line-items order)))))
 
-
 (defn discountable-service-bases
   [order]
   (filter (comp :promo.mayvenn-install/discountable :variant-attrs) (service-line-items order)))
@@ -187,7 +186,7 @@
         store-credit      (:total-available-store-credit user)
         store-credit-used (min order-total store-credit)]
     (cond-> {}
-      (or (service-line-item-promotion-applied? order)
+      (or (not-empty (service-line-items order))
           (> order-total store-credit-used)) (assoc :stripe {})
       (can-use-store-credit? order user)     (assoc :store-credit {}))))
 
