@@ -363,12 +363,12 @@
       (and shop? (mayvenn-install-incentive-families sku-family))
       (merge
        {:add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
-        :add-to-cart.incentive-block/footnote    "*Mayvenn Install cannot be combined with other promotions"
+        :add-to-cart.incentive-block/footnote    "*Mayvenn Services cannot be combined with other promotions"
         :add-to-cart.incentive-block/link-id     "learn-more-mayvenn-install"
         :add-to-cart.incentive-block/link-label  "Learn more"
         :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
-        :add-to-cart.incentive-block/message     (str "Get a free Mayvenn Install when you "
-                                                      "purchase 3 bundles, closure, or frontals.* ")})
+        :add-to-cart.incentive-block/message     (str "Get a free Mayvenn Service by a licensed "
+                                                      "stylist with qualifying purchases.* ")})
       (and shop? (wig-customization-incentive-families sku-family))
       (merge
        {:add-to-cart.incentive-block/id       "add-to-cart-incentive-block"
