@@ -31,7 +31,7 @@
 (defcomponent organism
   [{:promotion-helper.ui.drawer-face.action/keys [target id opened?]
     :as data} _ _]
-  [:div.flex.items-center.justify-center.pl3.pr4.py2.bg-black.white
+  [:div.flex.items-center.justify-center.p4.bg-black.white
    (-> (apply utils/fake-href target)
        (assoc :data-test id))
    [:div.flex-auto.pr4

@@ -16,7 +16,7 @@
     " | 8am-5pm PST M-F"]
    (component/build footer-links/component {:minimal? true} nil)
    ;; Space for promotion helper
-   [:div {:style {:margin-bottom "60px"}}]])
+   [:div {:style {:margin-bottom "80px"}}]])
 
 (defn query
   [data]
