@@ -122,7 +122,8 @@
       [:div.py3.flex.flex-column.items-center
        {:id        id
         :data-test id
-        :style     {:width "120px"}}
+        :style     {:width  "120px"
+                    :height "128px"}}
        [:a.block.mt1
         link-attrs
         [:img {:src   (assets/path svg-url)

@@ -124,8 +124,10 @@
      [:h2.mt3.mx1.content-2.proxima
       primary])))
 
-(defn product-card-details-molecule
-  [{:product-card-details/keys [id content]}]
+(defcomponent product-card-details-molecule
+  [{:product-card-details/keys [id content]
+    :screen/keys               [seen?]}
+   _ _]
   (when id
     (component/html
      [:div.mb4.content-3.proxima
@@ -135,24 +137,26 @@
            :text           (str item)
            :starting-price [:span.black "Starting at " [:span.content-2.proxima (mf/as-money item)]]
            :swatches       [:div.flex.col-10.mx-auto.justify-center
-                            (let [[product-slug options] item]
-                              (for [{option-slug  :option/slug
-                                     option-name  :option/name
-                                     :option/keys [rectangle-swatch]} options]
-                                [:div.mx1.overflow-hidden
-                                 {:style {:transform "rotate(45deg)"
-                                          :width     "9px"
-                                          :height    "9px"
-                                          :padding   "0"}
-                                  :key   option-slug}
-                                 [:img
-                                  {:key   (str "product-card-details-" product-slug "-" option-slug)
-                                   :style {:transform "rotate(-45deg) translateY(-3px)"
-                                           ;; :margin     "5px 5px"
-                                           :width     "13px"
-                                           :height    "13px"}
-                                   :alt   option-name
-                                   :src   (str "https://ucarecdn.com/" (ui/ucare-img-id rectangle-swatch) "/-/format/auto/-/resize/13x/")}]]))])])])))
+                            {:style {:height "9px"}}
+                            (when seen?
+                              (let [[product-slug options] item]
+                                (for [{option-slug  :option/slug
+                                       option-name  :option/name
+                                       :option/keys [rectangle-swatch]} options]
+                                  [:div.mx1.overflow-hidden
+                                   {:style {:transform "rotate(45deg)"
+                                            :width     "9px"
+                                            :height    "9px"
+                                            :padding   "0"}
+                                    :key   option-slug}
+                                   [:img
+                                    {:key   (str "product-card-details-" product-slug "-" option-slug)
+                                     :style {:transform "rotate(-45deg) translateY(-3px)"
+                                             ;; :margin     "5px 5px"
+                                             :width     "13px"
+                                             :height    "13px"}
+                                     :alt   option-name
+                                     :src   (str "https://ucarecdn.com/" (ui/ucare-img-id rectangle-swatch) "/-/format/auto/-/resize/13x/")}]])))])])])))
 
 (defn organism
   [{:as data react-key :react/key :product-card/keys [target]}]
@@ -164,4 +168,4 @@
     [:div.border.border-cool-gray.rounded.container-height.center
      (ui/screen-aware card-image-molecule data)
      (product-card-title-molecule data)
-     (product-card-details-molecule data)]]))
+     (ui/screen-aware product-card-details-molecule data)]]))
