@@ -3,6 +3,7 @@
             [catalog.products :as products]
             [cemerick.url :as url]
             [clojure.string :as string]
+            [cljs-bean.core :as cljs-bean]
             promotion-helper.keypaths
             [rng :as rng]
             [spice.core :as spice]
@@ -403,7 +404,9 @@
           no-servicing-stylist?   (nil? (:servicing-stylist-id order))]
 
       (cond-> (-> app-state
-                  (assoc-in keypaths/order order)
+                  (assoc-in keypaths/order (if (cljs-bean/bean? order)
+                                             (js->clj (cljs-bean/object order))
+                                             order))
                   (assoc-in keypaths/cart-recently-added-skus newly-added-sku-ids)
                   (assoc-in keypaths/cart-freeinstall-just-added? freeinstall-just-added?)
                   (update-in keypaths/checkout-billing-address merge (:billing-address order))

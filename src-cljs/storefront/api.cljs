@@ -100,7 +100,7 @@
            :content-type ["application/json"]
            :description "JSON"
            :read (fn [xhrio]
-                   {:body        (cljs-bean/bean (js/JSON.parse (-body xhrio)) :recursive true)
+                   {:body        (cljs-bean/->clj (js/JSON.parse (-body xhrio)))
                     :app-version (app-version xhrio)}))))
 
 (def default-req-opts {:format :json
