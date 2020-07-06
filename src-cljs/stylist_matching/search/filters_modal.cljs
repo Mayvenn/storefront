@@ -20,18 +20,11 @@
   (let [checked? (some #{specialty} selected-filters)]
     {:stylist-search-filter/primary   primary
      :stylist-search-filter/secondary (str "(" (mf/as-money-or-free price) ")")
-     :stylist-search-filter/id        (str "stylist-filter-" (name specialty))
+     :stylist-search-filter/id        (str "stylist-filter-" specialty)
      :stylist-search-filter/target    [events/control-stylist-search-toggle-filter
                                        {:previously-checked?      checked?
                                         :stylist-filter-selection specialty}]
      :stylist-search-filter/checked?  checked?}))
-
-(defn sku->specialty
-  [sku]
-  (-> sku
-      :catalog/sku-id
-      accessors.filters/service-sku-id->query-parameter-value
-      keyword))
 
 (defn query [data]
   (let [selected-filters       (get-in data stylist-directory.keypaths/stylist-search-selected-filters)
@@ -53,13 +46,13 @@
        ;; NOTE: there is a `service-sku-id->preferred-service` mapping in `stylist-matching.find-your-stylist`
        ;; May be useful when generating this list dynamically from the service categories
        (->> free-services
-            (mapv (juxt :sku/name sku->specialty (constantly 0)))
+            (mapv (juxt :sku/name :catalog/sku-id (constantly 0)))
             (mapv (partial specialty->filter selected-filters)))}
       {:stylist-search-filter-section/id    "other-salon-services"
        :stylist-search-filter-section/title "Other Salon Services"
        :stylist-search-filter-section/filters
        (->> salon-services
-            (mapv (juxt :sku/name sku->specialty :sku/price))
+            (mapv (juxt :sku/name :catalog/sku-id :sku/price))
             (mapv (partial specialty->filter selected-filters)))}]}))
 
 (component/defcomponent filter-section
@@ -107,7 +100,7 @@
   [_ event {:keys [previously-checked? stylist-filter-selection]} app-state]
   (-> (update-in app-state stylist-directory.keypaths/stylist-search-selected-filters
                 #(set (if previously-checked?
-                        (remove #{stylist-filter-selection} %)
+                        (disj % stylist-filter-selection)
                         (conj % stylist-filter-selection))))
       (assoc-in stylist-directory.keypaths/user-toggled-preference true)))
 
@@ -118,10 +111,11 @@
         selected-location    (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)]
     (history/enqueue-redirect nav-event
                               {:query-params
-                               (merge (:query-params nav-args)
-                                      {:lat                (:latitude selected-location)
-                                       :long               (:longitude selected-location)
-                                       :preferred-services (clojure.string/join "~" (map name service-filters))})})))
+                               (merge (dissoc (:query-params nav-args) :preferred-services)
+                                      {:lat  (:latitude selected-location)
+                                       :long (:longitude selected-location)}
+                                      (when (seq service-filters)
+                                        {:preferred-services (clojure.string/join "~" service-filters)}))})))
 
 (defmethod transitions/transition-state events/control-stylist-search-reset-filters
   [_ event _ app-state]

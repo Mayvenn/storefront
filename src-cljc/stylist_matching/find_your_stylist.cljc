@@ -4,6 +4,7 @@
             adventure.keypaths
             api.orders
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.line-items :as line-items]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.flash :as flash]
             [storefront.components.header :as header]
@@ -47,7 +48,8 @@
                                                           (->> (api.orders/current app-state)
                                                                :waiter/order
                                                                orders/service-line-items
-                                                               (keep (comp accessors.filters/service-sku-id->query-parameter-value :sku))
+                                                               (filter line-items/base-service?)
+                                                               (map :sku)
                                                                (string/join stylist-results/query-param-separator)
                                                                not-empty)]
                                                  {:preferred-services preferred-services}))}]
