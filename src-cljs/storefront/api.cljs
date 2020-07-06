@@ -86,6 +86,12 @@
 (defn app-version [xhrio]
   (some-> xhrio (.getResponseHeader "X-App-Version") int))
 
+(defn ^:private slow-json->clj [json]
+  (js->clj (js/JSON.parse json)))
+
+(defn ^:private fast-json->bean [json]
+  (cljs-bean/->clj (js/JSON.parse json)))
+
 ;; (defn json-response-format-with-app-version [config]
 ;;   (let [default (ajax/json-response-format config)
 ;;         read-json (:read default)]
@@ -95,12 +101,12 @@
 
 (defn json-response-format-with-app-version [config]
   (let [default   (ajax/json-response-format config)
-        read-json (:read default)]
+        parser    (:parser config slow-json->clj)]
     (assoc default
            :content-type ["application/json"]
            :description "JSON"
            :read (fn [xhrio]
-                   {:body        (cljs-bean/->clj (js/JSON.parse (-body xhrio)))
+                   {:body        (parser (-body xhrio))
                     :app-version (app-version xhrio)}))))
 
 (def default-req-opts {:format :json
