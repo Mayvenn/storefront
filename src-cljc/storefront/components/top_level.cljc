@@ -47,6 +47,7 @@
             [storefront.components.header :as header]
             homepage.core
             [ui.promo-banner :as promo-banner]
+            storefront.components.shared-cart
             [storefront.components.sign-in :as sign-in]
             [storefront.components.sign-up :as sign-up]
             [storefront.components.slideout-nav :as slideout-nav]
@@ -95,7 +96,7 @@
    events/navigate-about-mayvenn-install   (constantly mayvenn-install.about/built-component)
    events/navigate-category                (constantly catalog.category/built-component)
    events/navigate-product-details         (constantly catalog.product-details/built-component)
-   events/navigate-shared-cart             #(ui/lazy-load-component :catalog 'storefront.components.shared-cart/built-component events/navigate-shared-cart)
+   events/navigate-shared-cart             (constantly storefront.components.shared-cart/built-component)
    events/navigate-checkout-processing     #(ui/lazy-load-component :checkout 'checkout.processing/built-component events/navigate-checkout-processing)
    events/navigate-cart                    (constantly checkout.classic-cart/built-component)
    events/navigate-voucher-redeem          #(ui/lazy-load-component :redeem 'voucher.redeem/built-component events/navigate-voucher-redeem)
