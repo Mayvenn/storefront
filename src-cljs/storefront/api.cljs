@@ -87,7 +87,7 @@
   (some-> xhrio (.getResponseHeader "X-App-Version") int))
 
 (defn ^:private slow-json->clj [json]
-  (js->clj (js/JSON.parse json)))
+  (js->clj (js/JSON.parse json) :keywordize-keys true))
 
 (defn ^:private fast-json->bean [json]
   (cljs-bean/->clj (js/JSON.parse json)))
