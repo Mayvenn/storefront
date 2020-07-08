@@ -317,7 +317,8 @@
                                                       :cart-summary-line/value (mf/as-money-or-free price)}
 
                                                install-summary-line?
-                                               (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
+                                               (merge {:cart-summary-line/id    "free-service-adjustment"
+                                                       :cart-summary-line/value (mf/as-money-or-free service-discount)
                                                        :cart-summary-line/label (str "Free " service-title)})))
                                            (when (pos? tax)
                                              [{:cart-summary-line/id       "tax"
