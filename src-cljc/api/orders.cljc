@@ -200,6 +200,7 @@
      :mayvenn-install/quantity-remaining                 steps-remaining
      :mayvenn-install/quantity-added                     current-step
      :mayvenn-install/stylist                            servicing-stylist
+     :mayvenn-install/service-sku                        mayvenn-install-sku
      :mayvenn-install/service-title                      sku-title
      :mayvenn-install/service-discount                   (- (line-items/service-line-item-price mayvenn-install-line-item))
      :mayvenn-install/any-wig?                           any-wig?

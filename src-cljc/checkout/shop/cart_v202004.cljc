@@ -292,7 +292,8 @@
      cart-helper-copy action-label stylist service-discount
      quantity-required quantity-added]}
    add-items-action
-   promotion-helper?]
+   promotion-helper?
+   {:keys [promo.mayvenn-install/requirement-copy]}]
   (cond-> []
     discountable-services-on-order?
     (conj (let [matched? (boolean stylist)]
@@ -300,7 +301,7 @@
                      :cart-item-title/id                       "line-item-title-upsell-free-service"
                      :cart-item-title/primary                  service-title
                      :cart-item-copy/value                     (if promotion-helper?
-                                                                 "Free with purchase of 3+ items"
+                                                                 requirement-copy
                                                                  cart-helper-copy)
                      :cart-item-floating-box/id                "line-item-freeinstall-price"
                      :cart-item-floating-box/value             (some-> service-discount - mf/as-money)
@@ -654,7 +655,8 @@
          [discountable-services-on-order? applied? locked?
           needs-more-items-for-free-service?
           stylist quantity-remaining
-          service-type cart-helper-copy]
+          service-type cart-helper-copy
+          service-sku]
          :as               mayvenn-install
          servicing-stylist :mayvenn-install/stylist} (api.orders/current data)
 
@@ -732,8 +734,17 @@
                                          (cart-summary-query order mayvenn-install)
                                          {:promo-field-data (promo-input-query data order discountable-services-on-order?)})
              :cart-items                (cart-items-query data line-items skus)
-             :service-line-items        (concat (free-service-line-items-query data mayvenn-install add-items-action promotion-helper?)
-                                                (standalone-service-line-items-query data))
+             :service-line-items        (concat
+                                         (let [service-product (some->> service-sku
+                                                                        :selector/from-products
+                                                                        first
+                                                                        (get products))]
+                                           (free-service-line-items-query data
+                                                                          mayvenn-install
+                                                                          add-items-action
+                                                                          promotion-helper?
+                                                                          service-product))
+                                         (standalone-service-line-items-query data))
              :quadpay/order-total       (when-not locked? (:total order))
              :quadpay/show?             (get-in data keypaths/loaded-quadpay)
              :quadpay/directive         (if locked? :no-total :just-select)}
