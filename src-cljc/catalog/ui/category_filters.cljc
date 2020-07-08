@@ -142,10 +142,10 @@
                                  events/control-category-option-select)
                                {:facet  facet-slug
                                 :option facet-option-slug}]
-     :filter-option/label     [:span
-                               (when (categories/new-facet? [facet-slug facet-option-slug])
-                                 [:span.mr1.p-color "NEW"])
-                               facet-option-name]}))
+     :filter-option/label     ^:ignore-interpret-warning [:span
+                                                          (when (categories/new-facet? [facet-slug facet-option-slug])
+                                                            [:span.mr1.p-color "NEW"])
+                                                          facet-option-name]}))
 
 (defn filter-options-query
   [selections represented-options facet]

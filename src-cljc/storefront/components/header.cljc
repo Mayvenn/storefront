@@ -220,6 +220,7 @@
   [{:header-menu-item/keys [navigation-target
                             href
                             content
+                            new-label?
                             flyout-menu-path]
     :as data} _ _]
   [:div.inline.relative.flyout
@@ -236,6 +237,8 @@
 
       href
       (merge {:href href}))
+    (when new-label?
+      [:span.p-color.pr1 "NEW"])
     content]
    [:div.absolute.left-0.z2
     {:style {:padding-left "24px"}}
@@ -412,15 +415,14 @@
                                             first)]
                                    {:header-menu-item/navigation-target [events/navigate-category free-services-category]
                                     :header-menu-item/id                "desktop-get-mayvenn-install"
-                                    :header-menu-item/content           [:span "Get a Free Service"]})
+                                    :header-menu-item/content           "Get a Free Service"})
                                  (let [salon-services (->> (get-in data keypaths/categories)
                                                            (filter (comp #{"30"} :catalog/category-id))
                                                            first)]
                                    {:header-menu-item/navigation-target [events/navigate-category salon-services]
                                     :header-menu-item/id                "desktop-salon-services"
-                                    :header-menu-item/content           [:span (when (:category/new? salon-services)
-                                                                                 [:span.p-color.pr1 "NEW"])
-                                                                         (:flyout-menu/title salon-services)]})])
+                                    :header-menu-item/new-label?        (:category/new? salon-services)
+                                    :header-menu-item/content           (:flyout-menu/title salon-services)})])
 
                                (= :classic site)
                                (concat [{:header-menu-item/navigation-target [events/navigate-shop-by-look {:album-keyword :look}]

@@ -6,7 +6,8 @@
                        [goog.object :as gobj]
                        [sablono.core :as sablono :refer-macros [html]]
                        ["react" :as react]
-                       [storefront.platform.component-utils :as utils]]
+                       [storefront.platform.component-utils :as utils]
+                       [clojure.walk :as walk]]
                 :clj [[storefront.safe-hiccup :as safe-hiccup]]))
   #?(:cljs (:require-macros [storefront.component :refer [defcomponent]])))
 
@@ -120,31 +121,86 @@
 
 (defn ^:private has-fn?
   ;;; NOTE/TODO: gave a false positive to the structure [[0 [{}]]]. Fixed by nesting it in a map {:a [[0 [{}]]]}
-  ([f] (has-fn? (atom nil) [] f))
-  ([problems path f]
-   (cond (map? f)
-         (not-empty
-          (remove false?
-                  (for [[k v] f]
-                    (if (fn? v)
-                      (let [path' (conj (vec path) k)]
-                        (swap! problems conj {:keypath path' :value v})
-                        (has-fn? problems path' v))
-                      false))))
-         (sequential? f)
-         (not-empty (remove false? (map-indexed #(has-fn? problems (conj (vec path) %1) %2) f)))
+  [problems path f]
+  (cond (map? f)
+        (not-empty
+         (remove false?
+                 (for [[k v] f]
+                   (if (fn? v)
+                     (let [path' (conj (vec path) k)]
+                       (swap! problems conj {:keypath path' :value v})
+                       (has-fn? problems path' v))
+                     false))))
+        (sequential? f)
+        (not-empty (remove false? (map-indexed #(has-fn? problems (conj (vec path) %1) %2) f)))
 
-         :else (fn? f))))
+        :else (fn? f)))
+
+(defn ^:private has-html?
+  [problems path f]
+  (cond
+    (and (or (vector? f) (map-entry? f)) (pos? (count f)))
+    (let [first-v (first f)]
+      (if (and (keyword? first-v)
+               (first (filter #(str/starts-with? (name first-v) %)
+                              ["div" "img" "div" "h1" "h2" "h3" "h4" "h5" "h6" "span"])))
+        (when (not (:ignore-interpret-warning (meta f)))
+          (swap! problems conj {:keypath path :value f :offending-element first-v})
+          true)
+        (some true? (doall (map-indexed #(has-html? problems (conj (vec path) %1) %2) f)))))
+
+    (map? f)
+    (some true?
+          (doall
+           (for [[k v] f]
+             (has-html? problems (conj (vec path) k) v))))
+    (sequential? f)
+    (some true? (doall (map-indexed #(has-html? problems (conj (vec path) %1) %2) f)))
+
+    :else false))
 
 (defn build* [component data opts debug-data]
   #?(:clj (component data nil (:opts opts))
      :cljs (do
-             ;; in dev mode: assert proper usage
+             ;; in dev mode: assert proper usage - tagging this var explicitly
+             ;; as boolean ensures closure compiler can dead-code eliminate this
+             ;; condition in production builds
              (when ^boolean goog/DEBUG
+
+               ;; assert that data does not contain any functions: which causes
+               ;; react to constantly rerender since in JS, function references
+               ;; are compared (so a partial/anonymous function is never equal)
                (let [problems (atom nil)]
                  (assert (not (has-fn? problems [] data))
                          (str "building " (:file debug-data) ":" (:line debug-data)
-                              " includes a function which is not recommended because it reforces constant rerenders (" @problems ")"))))
+                              " includes a function which is not recommended because it reforces constant rerenders (" @problems ")")))
+
+               ;; assert that there's no sablono-looking html inside data since
+               ;; interpretation creates a subtle performance cost.
+               ;;
+               ;; this is an inaccurate heuristic: this looks for vectors whose
+               ;; first element is a keyword that looks like an html tag.
+               ;;
+               ;; If you wish to ignore this warning, the offending vector that
+               ;; be annotated with the metadata ^:ignore-interpret-warning like:
+               ;;
+               ;;   {:contents ^:ignore-interpret-warning [:h1 "ok"]}
+               ;;
+               ;; This makes it explicit where we opt into sablono
+               ;; interpretation inside queries, although it's best to avoid
+               ;; interpretation all together
+               (let [problems (atom nil)]
+                 (when (has-html? problems [] data)
+                   (js/console.warn
+                    (str "A component includes sablono html in its query data which is not recommended because"
+                         " forces sablono interpretation which is slower for render.\n"
+                         "Component is at: " (:file debug-data) ":" (:line debug-data)
+                         "\n Details: ")
+                    (clj->js (map (fn [f]
+                                    #js {:keypath           (pr-str (:keypath f))
+                                         :value             (pr-str (:value f))
+                                         :offending-element (pr-str (:offending-element f))})
+                                  @problems))))))
              (cond
                (gobj/get component "isNewStyleComponent" false)
                (react/createElement component

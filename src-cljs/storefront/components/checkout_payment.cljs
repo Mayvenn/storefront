@@ -188,21 +188,21 @@
 
        (not can-use-store-credit?)
        (merge {:credit-note/color      "warning-yellow"
-               :credit-note/content    [:div.proxima.content-3
-                                        "Your "
-                                        (as-money credit-to-use)
-                                        " in store credit cannot be used with Mayvenn Service orders."
-                                        " To use store credit, please remove any Mayvenn Services from your cart."]})
+               :credit-note/content    ^:ignore-interpret-warning [:div.proxima.content-3
+                                                                   "Your "
+                                                                   (as-money credit-to-use)
+                                                                   " in store credit cannot be used with Mayvenn Service orders."
+                                                                   " To use store credit, please remove any Mayvenn Services from your cart."]})
 
        can-use-store-credit?
        (merge
         {:credit-note/color   "s-color"
-         :credit-note/content [:div.proxima.content-3
-                               (str
-                                (as-money credit-to-use)
-                                " in store credit will be applied to this order."
-                                (when-not fully-covered?
-                                  " Please enter an additional payment method below for the remaining total on your order."))]}))
+         :credit-note/content ^:ignore-interpret-warning [:div.proxima.content-3
+                                                          (str
+                                                           (as-money credit-to-use)
+                                                           " in store credit will be applied to this order."
+                                                           (when-not fully-covered?
+                                                             " Please enter an additional payment method below for the remaining total on your order."))]}))
 
      {:credit-card-entry/credit-card  (:credit-card (cc/query data))
       :credit-card-entry/id           (when loaded-stripe?

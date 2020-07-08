@@ -395,9 +395,10 @@
                                                                           (:product-name line-item))
                       :cart-item-title/secondary                      (:color-name line-item)
                       :cart-item-floating-box/id                      (str "line-item-price-ea-with-label-" sku-id)
-                      :cart-item-floating-box/value                   [:div {:data-test (str "line-item-price-ea-" sku-id)}
-                                                                       (mf/as-money price)
-                                                                       [:div.proxima.content-4 " each"]]
+                      :cart-item-floating-box/value                   ^:ignore-interpret-warning [:div {:data-test (str "line-item-price-ea-" sku-id)}
+                                                                                                  (mf/as-money price)
+                                                                                                  ^:ignore-interpret-warning
+                                                                                                  [:div.proxima.content-4 " each"]]
                       :cart-item-square-thumbnail/id                  sku-id
                       :cart-item-square-thumbnail/sku-id              sku-id
                       :cart-item-square-thumbnail/highlighted?        just-added-to-order?
@@ -437,7 +438,7 @@
     (cond->
         {:cart-summary-total-line/id    "total"
          :cart-summary-total-line/label "Total"
-         :cart-summary-total-line/value [:div (some-> total mf/as-money)]
+         :cart-summary-total-line/value ^:ignore-interpret-warning [:div (some-> total mf/as-money)]
 
          :cart-summary/id    "cart-summary"
          :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
@@ -515,7 +516,7 @@
                                                    (not wig-customization?))
                                             "Hair + Install Total"
                                             "Total")
-         :cart-summary-total-line/value   [:div (some-> total mf/as-money)]
+         :cart-summary-total-line/value   ^:ignore-interpret-warning [:div (some-> total mf/as-money)]
          :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
                                        :cart-summary-line/label "Subtotal"
                                        :cart-summary-line/value (mf/as-money subtotal)}]
@@ -572,15 +573,15 @@
 
       locked?
       (merge {:cart-summary-total-line/value (if any-wig?
-                                               [:div.h7.content-4
-                                                "Add a Lace Front or 360 Wig"
-                                                [:br] "to calculate total price"]
-                                               [:div.h7.content-4
-                                                "Add " quantity-remaining
-                                                " more " (ui/pluralize quantity-remaining "item")
-                                                " to "
-                                                [:br]
-                                                " calculate total price"])})
+                                               ^:ignore-interpret-warning [:div.h7.content-4
+                                                                           "Add a Lace Front or 360 Wig"
+                                                                           [:br] "to calculate total price"]
+                                               ^:ignore-interpret-warning [:div.h7.content-4
+                                                                           "Add " quantity-remaining
+                                                                           " more " (ui/pluralize quantity-remaining "item")
+                                                                           " to "
+                                                                           [:br]
+                                                                           " calculate total price"])})
 
       applied?
       (merge {:cart-summary-total-incentive/id      "mayvenn-install"

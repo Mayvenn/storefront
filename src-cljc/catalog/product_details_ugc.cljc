@@ -11,6 +11,7 @@
 (defn ^:private carousel-slide
   [destination-event product-id page-slug sku-id dt-prefix idx
    {:keys [image-url]}]
+  ^:ignore-interpret-warning
   [:div.p1
    (when dt-prefix {:data-test (str dt-prefix idx)})
    [:a (if destination-event

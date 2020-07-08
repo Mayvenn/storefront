@@ -49,8 +49,8 @@
   [nav-event guest?]
   {:current-navigation-event nav-event
    :checkout-title-content   (if guest?
-                               [:div.title-2.canela.center.pt5 "Guest Checkout"]
-                               [:div.title-1.canela.center.pt5 "Secure Checkout"])})
+                               ^:ignore-interpret-warning [:div.title-2.canela.center.pt5 "Guest Checkout"]
+                               ^:ignore-interpret-warning [:div.title-1.canela.center.pt5 "Secure Checkout"])})
 
 (defn ^:private checkout-address-form-query
   [shipping-address

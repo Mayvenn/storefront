@@ -54,8 +54,8 @@
      :control/data-test-id sku
      :control/target       [events/control-checkout-shipping-method-select shipping-method]
      :control/selected?    selected?
-     :detail/value         [:span {:class (if (pos? price) "black" "p-color")}
-                            (mf/as-money-or-free price)]}))
+     :detail/value         ^:ignore-interpret-warning [:span {:class (if (pos? price) "black" "p-color")}
+                                                       (mf/as-money-or-free price)]}))
 
 (defn query
   [data]
@@ -154,8 +154,8 @@
      :control/data-test-id sku
      :control/target       [events/control-checkout-shipping-method-select shipping-method]
      :control/selected?    selected?
-     :detail/value         [:span {:class (if (pos? price) "black" "p-color")}
-                            (mf/as-money-or-free price)]}))
+     :detail/value         ^:ignore-interpret-warning [:span {:class (if (pos? price) "black" "p-color")}
+                                                       (mf/as-money-or-free price)]}))
 
 
 (defn shipping-estimates-query [data]

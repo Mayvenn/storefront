@@ -299,7 +299,7 @@
       (cond-> {:cart-summary/id               "cart-summary"
                :cart-summary-total-line/id    "total"
                :cart-summary-total-line/label "Total"
-               :cart-summary-total-line/value [:div (some-> total (- available-store-credit) (max 0) mf/as-money)]
+               :cart-summary-total-line/value ^:ignore-interpret-warning [:div (some-> total (- available-store-credit) (max 0) mf/as-money)]
                :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
                                              :cart-summary-line/label "Subtotal"
                                              :cart-summary-line/value (mf/as-money subtotal)}
@@ -420,9 +420,9 @@
            :cart-item-copy/value                     (str "qty " (:quantity line-item))
            :cart-item-title/secondary                (:color-name line-item)
            :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku-id)
-           :cart-item-floating-box/value             [:div {:data-test (str "line-item-price-ea-" sku-id)}
-                                                            (mf/as-money price)
-                                                            [:div.proxima.content-4 " each"]]
+           :cart-item-floating-box/value             ^:ignore-interpret-warning [:div {:data-test (str "line-item-price-ea-" sku-id)}
+                                                                                 (mf/as-money price)
+                                                                                 [:div.proxima.content-4 " each"]]
            :cart-item-square-thumbnail/id            sku-id
            :cart-item-square-thumbnail/sku-id        sku-id
            :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> sku :hair/length first)]
@@ -494,9 +494,9 @@
           :cart-item-service-thumbnail/image-url (or service-image-url ; GROT: when cellar deploy is done with service image
                                                      "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/")
           :cart-item-floating-box/id             "line-item-freeinstall-price"
-          :cart-item-floating-box/value          [:div.flex.flex-column.justify-end
-                                                  {:style {:height "100%"}}
-                                                  (some-> service-discount - mf/as-money)]
+          :cart-item-floating-box/value          ^:ignore-interpret-warning [:div.flex.flex-column.justify-end
+                                                                             {:style {:height "100%"}}
+                                                                             (some-> service-discount - mf/as-money)]
           :cart-item-title/id                    "line-item-title-applied-mayvenn-install"
           :cart-item-title/primary               service-title
           :cart-item-title/secondary             [:div.line-height-3
