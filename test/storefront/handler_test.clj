@@ -81,7 +81,7 @@
 
 (deftest affiliate-store-urls-redirect-to-shop
   (with-services {:storeback-handler (routes
-                                      (GET "/v2/products" req {:status 200
+                                      (GET "/v3/products" req {:status 200
                                                                :body "{}"})
                                       (GET "/v2/facets" req {:status 200
                                                              :body   "{}"})
@@ -168,11 +168,13 @@
     (let [[_ storeback-handler] (with-requests-chan (routes
                                                      common/default-storeback-handler
                                                      (GET "/v2/orders/:number"
-                                                       req {:status 404
-                                                            :body   "{}"})
-                                                     (GET "/v2/products" req
-                                                       {:status 200
-                                                        :body   (generate-string {:products []})})))]
+                                                          req {:status 404
+                                                               :body   "{}"})
+                                                     (GET "/v3/products" req
+                                                          {:status 200
+                                                           :body   (generate-string {:products []
+                                                                                     :skus     []
+                                                                                     :images   []})})))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
           (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/999-red-balloons"))]
@@ -180,10 +182,11 @@
   (testing "when whitelisted for discontinued"
     (let [[_ storeback-handler] (with-requests-chan (routes
                                                      common/default-storeback-handler
-                                                     (GET "/v2/products" req
-                                                       {:status 200
-                                                        :body   (generate-string {:products []
-                                                                                  :skus     []})})))]
+                                                     (GET "/v3/products" req
+                                                          {:status 200
+                                                           :body   (generate-string {:products []
+                                                                                     :skus     []
+                                                                                     :images   []})})))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
           (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/104-dyed-100-human-hair-brazilian-loose-wave-bundle?SKU=BLWLR1JB1"))]
@@ -193,73 +196,71 @@
           (with-requests-chan (routes
                                (GET "/v2/orders/:number" req {:status 404
                                                               :body   "{}"})
-                               (GET "/v2/products" req
-                                 {:status 200
-                                  :body   (generate-string {:products [{:catalog/product-id  "67"
-                                                                        :catalog/department  #{"hair"}
-                                                                        :selector/skus       ["PWWLC18"]
-                                                                        :selector/sku-ids    ["PWWLC18"]
-                                                                        :hair/base-material  #{"lace"}
-                                                                        :hair/color.process  #{"natural"}
-                                                                        :hair/family         #{"closures"}
-                                                                        :hair/grade          #{"6a"}
-                                                                        :hair/origin         #{"peruvian"}
-                                                                        :hair/source         #{"virgin"}
-                                                                        :hair/texture        #{"water-wave"}
-                                                                        :selector/electives  [:hair/color :hair/length]
-                                                                        :selector/essentials [:catalog/department
-                                                                                              :hair/grade
-                                                                                              :hair/origin
-                                                                                              :hair/texture
-                                                                                              :hair/base-material
-                                                                                              :hair/family
-                                                                                              :hair/color.process
-                                                                                              :hair/source]
-                                                                        :page/slug           "peruvian-water-wave-lace-closures"}]
-                                                            :skus     [{:catalog/sku-id               "PWWLC18"
-                                                                        :catalog/stylist-only?        false
-                                                                        :catalog/launched-at          "2016-01-01T00:00:00.000Z"
-                                                                        :catalog/department           #{"hair"}
-                                                                        :selector/essentials          [:hair/family
-                                                                                                       :hair/color
-                                                                                                       :hair/origin
-                                                                                                       :hair/base-material
-                                                                                                       :hair/length
-                                                                                                       :catalog/department
-                                                                                                       :hair/color.process
-                                                                                                       :hair/grade
-                                                                                                       :hair/texture
-                                                                                                       :hair/source]
-                                                                        :selector/electives           []
-                                                                        :hair/base-material           #{"lace"}
-                                                                        :hair/color.process           #{"natural"}
-                                                                        :hair/family                  #{"closures"}
-                                                                        :hair/grade                   #{"6a"}
-                                                                        :hair/origin                  #{"peruvian"}
-                                                                        :hair/source                  #{"virgin"}
-                                                                        :hair/texture                 #{"water-wave"}
-                                                                        :hair/color                   #{"black"}
-                                                                        :selector/images              [{:filename  "Water-Wave-Bundle.jpg"
-                                                                                                        :url       "//ucarecdn.com/5f6c669f-8274-4bef-afa9-3c08813842f6/"
-                                                                                                        :use-cases {:seo      {:alt ""}
-                                                                                                                    :carousel {:alt   ""
-                                                                                                                               :order 5}
-                                                                                                                    :catalog  {:alt ""}}
-                                                                                                        :criteria/attributes
-                                                                                                        {:catalog/department "hair"
-                                                                                                         :image/of           "product"
-                                                                                                         :hair/grade         "6a"
-                                                                                                         :hair/texture       "water-wave"
-                                                                                                         :hair/color         "black"
-                                                                                                         :hair/family        "bundles"}}]
-                                                                        :selector/from-products       ["67"]
-                                                                        :inventory/in-stock?          true
-                                                                        :sku/price                    104.0
-                                                                        :sku/title                    "A balloon"
-                                                                        :legacy/product-name          "A balloon"
-                                                                        :legacy/product-id            133
-                                                                        :legacy/variant-id            641
-                                                                        :promo.triple-bundle/eligible true}]})})
+                               (GET "/v3/products" req
+                                    {:status 200
+                                     :body   (generate-string {:products [{:catalog/product-id  "67"
+                                                                           :catalog/department  #{"hair"}
+                                                                           :selector/skus       ["PWWLC18"]
+                                                                           :selector/sku-ids    ["PWWLC18"]
+                                                                           :hair/base-material  #{"lace"}
+                                                                           :hair/color.process  #{"natural"}
+                                                                           :hair/family         #{"closures"}
+                                                                           :hair/grade          #{"6a"}
+                                                                           :hair/origin         #{"peruvian"}
+                                                                           :hair/source         #{"virgin"}
+                                                                           :hair/texture        #{"water-wave"}
+                                                                           :selector/electives  [:hair/color :hair/length]
+                                                                           :selector/essentials [:catalog/department
+                                                                                                 :hair/grade
+                                                                                                 :hair/origin
+                                                                                                 :hair/texture
+                                                                                                 :hair/base-material
+                                                                                                 :hair/family
+                                                                                                 :hair/color.process
+                                                                                                 :hair/source]
+                                                                           :page/slug           "peruvian-water-wave-lace-closures"}]
+                                                               :skus     {"PWWLC18" {:catalog/sku-id               "PWWLC18"
+                                                                                     :catalog/stylist-only?        false
+                                                                                     :catalog/launched-at          "2016-01-01T00:00:00.000Z"
+                                                                                     :catalog/department           #{"hair"}
+                                                                                     :selector/essentials          [:hair/family
+                                                                                                                    :hair/color
+                                                                                                                    :hair/origin
+                                                                                                                    :hair/base-material
+                                                                                                                    :hair/length
+                                                                                                                    :catalog/department
+                                                                                                                    :hair/color.process
+                                                                                                                    :hair/grade
+                                                                                                                    :hair/texture
+                                                                                                                    :hair/source]
+                                                                                     :selector/electives           []
+                                                                                     :hair/base-material           #{"lace"}
+                                                                                     :hair/color.process           #{"natural"}
+                                                                                     :hair/family                  #{"closures"}
+                                                                                     :hair/grade                   #{"6a"}
+                                                                                     :hair/origin                  #{"peruvian"}
+                                                                                     :hair/source                  #{"virgin"}
+                                                                                     :hair/texture                 #{"water-wave"}
+                                                                                     :hair/color                   #{"black"}
+                                                                                     :selector/image-cases         [["seo" nil "af"]
+                                                                                                                    ["carousel" 5 "af"]
+                                                                                                                    ["catalog" nil "af"]]
+                                                                                     :selector/from-products       ["67"]
+                                                                                     :inventory/in-stock?          true
+                                                                                     :sku/price                    104.0
+                                                                                     :sku/title                    "A balloon"
+                                                                                     :legacy/product-name          "A balloon"
+                                                                                     :legacy/product-id            133
+                                                                                     :legacy/variant-id            641
+                                                                                     :promo.triple-bundle/eligible true}}
+                                                               :images   {"af" {:url                "//ucarecdn.com/5f6c669f-8274-4bef-afa9-3c08813842f6/"
+                                                                                :catalog/image-id   "af"
+                                                                                :catalog/department "hair"
+                                                                                :image/of           "product"
+                                                                                :hair/grade         "6a"
+                                                                                :hair/texture       "water-wave"
+                                                                                :hair/color         "black"
+                                                                                :hair/family        "bundles"}}})})
                                common/default-storeback-handler))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
@@ -893,7 +894,7 @@
    (GET "/store" _ common/storeback-shop-response)
    (GET "/promotions" _ {:status 200
                          :body   "{}"})
-   (GET "/v2/products" _ {:status 200
+   (GET "/v3/products" _ {:status 200
                           :body   "{}"})
    (GET "/v2/skus" _ {:status   200
                       :body "{}"})

@@ -523,7 +523,7 @@
 (defn redirect-legacy-product-page
   [render-ctx data req {:keys [legacy/product-slug]}]
   (when-let [[type id] (legacy-product-slug->new-location product-slug)]
-    (let [product    (first (:products (api/fetch-v2-products (:storeback-config render-ctx) {:catalog/product-id id})))
+    (let [product    (first (:products (api/fetch-v3-products (:storeback-config render-ctx) {:_keys "products" :catalog/product-id id})))
           categories (maps/index-by :catalog/category-id (get-in data keypaths/categories))
           path       (if (= :product type)
                        (path-for req events/navigate-product-details product)
@@ -641,11 +641,12 @@
 (defn- assoc-category-route-data [data storeback-config params]
   (let [category                (accessors.categories/id->category (:catalog/category-id params)
                                                                    (get-in data keypaths/categories))
-        {:keys [skus products]} (api/fetch-v2-products storeback-config (maps/map-values vec (skuers/essentials category)))]
+        {:keys [skus products images]} (api/fetch-v3-products storeback-config (maps/map-values vec (skuers/essentials category)))]
     (-> data
         (assoc-in catalog.keypaths/category-id (:catalog/category-id params))
+        (update-in keypaths/v2-images merge images)
         (update-in keypaths/v2-products merge (products/index-products products))
-        (update-in keypaths/v2-skus merge (products/index-skus skus)))))
+        (update-in keypaths/v2-skus merge skus))))
 
 (defn- transition [app-state [event args]]
   (reduce (fn [app-state dispatch]

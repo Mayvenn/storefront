@@ -90,7 +90,7 @@
         (with-requests-chan (routes
                              (GET "/v2/orders/:number" req {:status 404
                                                             :body   "{}"})
-                             (GET "/v2/products" req
+                             (GET "/v3/products" req
                                {:status 200
                                 :body   (generate-string {:products [{:catalog/product-id "33"
                                                                       :page/slug          "brazilian-loose-wave-lace-closures"}]})})
@@ -502,7 +502,7 @@
         (is (= "max-age=604800" (get-in resp [:headers "cache-control"])))))))
 
 (deftest classic-and-aladdin-standalone-service-pages-redirect-to-shop-service-pages
-  (with-services {:storeback-handler (routes (GET "/v2/products" req {:status 200
+  (with-services {:storeback-handler (routes (GET "/v3/products" req {:status 200
                                                                       :body
                                                                       (generate-string
                                                                        {:products
@@ -535,32 +535,32 @@
                                                                           :copy/duration                      "2 hours",
                                                                           :page/title                         "Weave Maintenance Service - Book Salon Appointment | Mayvenn",
                                                                           :copy/whats-included                "Shampoo, Condition, Tighten tracks, Style"}],
-                                                                        :skus [{:legacy/product-id                            214,
-                                                                                :promo.mayvenn-install/eligible               [false],
-                                                                                :sku/title                                    "Weave Maintenance",
-                                                                                :inventory/in-stock?                          true,
-                                                                                :selector/electives                           [],
-                                                                                :catalog/released-at                          "2020-04-22T00:00:00.000Z",
-                                                                                :selector/from-products                       ["132"],
-                                                                                :catalog/discontinued-at                      nil,
-                                                                                :sku/name                                     "Weave Maintenance",
-                                                                                :catalog/sku-id                               "SRV-WMBI-000",
-                                                                                :catalog/stylist-only?                        false,
-                                                                                :selector/essentials
-                                                                                ["catalog/department"
-                                                                                 "service/type"
-                                                                                 "promo.mayvenn-install/discountable"
-                                                                                 "temporary-placeholder.shim/unique-identifier"],
-                                                                                :service/type                                 ["base"],
-                                                                                :promo.triple-bundle/eligible                 false,
-                                                                                :legacy/variant-id                            1050,
-                                                                                :promo.mayvenn-install/discountable           [false],
-                                                                                :temporary-placeholder.shim/unique-identifier ["SRV-WMBI-000"],
-                                                                                :legacy/product-name                          "Weave Maintenance",
-                                                                                :catalog/launched-at                          "2020-04-22T00:00:00.000Z",
-                                                                                :catalog/department                           ["service"],
-                                                                                :catalog/discontinued?                        false,
-                                                                                :sku/price                                    65.0}]})})
+                                                                        :skus {"SRV-WMBI-000" {:legacy/product-id                            214,
+                                                                                               :promo.mayvenn-install/eligible               [false],
+                                                                                               :sku/title                                    "Weave Maintenance",
+                                                                                               :inventory/in-stock?                          true,
+                                                                                               :selector/electives                           [],
+                                                                                               :catalog/released-at                          "2020-04-22T00:00:00.000Z",
+                                                                                               :selector/from-products                       ["132"],
+                                                                                               :catalog/discontinued-at                      nil,
+                                                                                               :sku/name                                     "Weave Maintenance",
+                                                                                               :catalog/sku-id                               "SRV-WMBI-000",
+                                                                                               :catalog/stylist-only?                        false,
+                                                                                               :selector/essentials
+                                                                                               ["catalog/department"
+                                                                                                "service/type"
+                                                                                                "promo.mayvenn-install/discountable"
+                                                                                                "temporary-placeholder.shim/unique-identifier"],
+                                                                                               :service/type                                 ["base"],
+                                                                                               :promo.triple-bundle/eligible                 false,
+                                                                                               :legacy/variant-id                            1050,
+                                                                                               :promo.mayvenn-install/discountable           [false],
+                                                                                               :temporary-placeholder.shim/unique-identifier ["SRV-WMBI-000"],
+                                                                                               :legacy/product-name                          "Weave Maintenance",
+                                                                                               :catalog/launched-at                          "2020-04-22T00:00:00.000Z",
+                                                                                               :catalog/department                           ["service"],
+                                                                                               :catalog/discontinued?                        false,
+                                                                                               :sku/price                                    65.0}}})})
                                              common/default-storeback-handler)}
     (with-handler handler
       (testing "salon service category"

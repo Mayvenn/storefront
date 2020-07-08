@@ -863,7 +863,7 @@
    (GET "/store" req storeback-stylist-response)
    (GET "/promotions" req {:status 200
                            :body   "{}"})
-   (GET "/v2/products" req {:status 200
+   (GET "/v3/products" req {:status 200
                             :body   "{}"})
    (GET "/v2/skus" req {:status   200
                         :body "{}"})
