@@ -291,14 +291,17 @@
      discountable-services-on-order? locked?
      cart-helper-copy action-label stylist service-discount
      quantity-required quantity-added]}
-   add-items-action]
+   add-items-action
+   promotion-helper?]
   (cond-> []
     discountable-services-on-order?
     (conj (let [matched? (boolean stylist)]
             (cond-> {:react/key                                "freeinstall-line-item-freeinstall"
                      :cart-item-title/id                       "line-item-title-upsell-free-service"
                      :cart-item-title/primary                  service-title
-                     :cart-item-copy/value                     cart-helper-copy
+                     :cart-item-copy/value                     (if promotion-helper?
+                                                                 "Free with purchase of 3+ items"
+                                                                 cart-helper-copy)
                      :cart-item-floating-box/id                "line-item-freeinstall-price"
                      :cart-item-floating-box/value             (some-> service-discount - mf/as-money)
                      :cart-item-remove-action/id               "line-item-remove-freeinstall"
@@ -665,14 +668,14 @@
         required-line-items-not-added? locked?
         checkout-disabled?             (or required-stylist-not-selected?
                                            required-line-items-not-added?
-                                          update-pending?)
+                                           update-pending?)
         any-wig?                       (:mayvenn-install/any-wig? mayvenn-install)
         disabled-reasons               (remove nil? [(if locked?
                                                        cart-helper-copy
                                                        (when required-line-items-not-added?
                                                          [:div.m1 (if any-wig?
-                                                                   (str "Add a Lace Front or 360 Wig to check out")
-                                                                   (str "Add " quantity-remaining (ui/pluralize quantity-remaining " more item")))]))
+                                                                    (str "Add a Lace Front or 360 Wig to check out")
+                                                                    (str "Add " quantity-remaining (ui/pluralize quantity-remaining " more item")))]))
                                                      (when required-stylist-not-selected?
                                                        [:div.m1 "Please pick your stylist"])])
 
@@ -697,7 +700,8 @@
                                            {:page/slug           "wigs"
                                             :catalog/category-id "13"
                                             :query-params        {:family "lace-front-wigs~360-wigs"}}]
-                                          mayvenn-install-shopping-action)]
+                                          mayvenn-install-shopping-action)
+        promotion-helper?               (experiments/promotion-helper? data)]
     (cond-> {:suggestions               (suggestions/consolidated-query data)
              :line-items                line-items
              :skus                      skus
@@ -728,7 +732,7 @@
                                          (cart-summary-query order mayvenn-install)
                                          {:promo-field-data (promo-input-query data order discountable-services-on-order?)})
              :cart-items                (cart-items-query data line-items skus)
-             :service-line-items        (concat (free-service-line-items-query data mayvenn-install add-items-action)
+             :service-line-items        (concat (free-service-line-items-query data mayvenn-install add-items-action promotion-helper?)
                                                 (standalone-service-line-items-query data))
              :quadpay/order-total       (when-not locked? (:total order))
              :quadpay/show?             (get-in data keypaths/loaded-quadpay)

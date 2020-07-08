@@ -396,7 +396,7 @@
         review-data         (review-component/query data)
         standalone-service? (accessors.products/standalone-service? product)
         wig-customization?  (seq (spice.selector/match-all {} {:catalog/department "service"
-                                                               :service/category "customization"} [product]))]
+                                                               :service/category   "customization"} [product]))]
     (cond->
         (merge
          {:reviews                            review-data
@@ -429,12 +429,7 @@
            (accessors.products/product-is-mayvenn-install-service? product)
            {:price-block/primary-struck (mf/as-money sku-price)
             :price-block/secondary      [:span.teal "FREE"]
-            :title/secondary            (->> (:catalog/sku-id selected-sku)
-                                             (get {"SRV-LBI-000" "FREE with purchase of 3+ Bundles"
-                                                   "SRV-CBI-000" "FREE with purchase of 2+ Bundles and a Closure"
-                                                   "SRV-FBI-000" "FREE with purchase of 2+ Bundles and a Lace Frontal"
-                                                   "SRV-3BI-000" "FREE with purchase of 2+ Bundles and a 360 Frontal"
-                                                   "SRV-WGC-000" "FREE with purchase of a Lace Front Wig or a 360 Lace Wig"}))}
+            :title/secondary            (:promo.mayvenn-install/requirement-copy product)}
 
            standalone-service?
            {:price-block/primary (mf/as-money sku-price)}
@@ -505,24 +500,24 @@
                                                          "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}})
       wig-customization?
       (merge {:how-it-works
-                {:how-it-works/title-secondary "Here’s how it works."
-                 :how-it-works/step-elements
-                 [{:how-it-works.step.title/primary   "01"
-                   :how-it-works.step.title/secondary "Select Your Wig"
-                   :how-it-works.step.body/primary    "Decide which wig you want and buy it from Mayvenn. Shop Lace Front & 360 Lace Wigs."}
-                  {:how-it-works.step.title/primary   "02"
-                   :how-it-works.step.title/secondary "Choose a Mayvenn Certified Stylist"
-                   :how-it-works.step.body/primary    "Browse our network of professional stylists in your area and make an appointment." }
-                  {:how-it-works.step.title/primary   "03"
-                   :how-it-works.step.title/secondary "Drop Off Your Wig"
-                   :how-it-works.step.body/primary    (str "Leave the wig with your stylist and talk about what you want. "
-                                                           "Your stylist will bleach the knots, tint the lace, cut the lace, customize your hairline and make sure it fits perfectly.  ")}
-                  {:how-it-works.step.title/primary   "04"
-                   :how-it-works.step.title/secondary "Schedule Your Pickup"
-                   :how-it-works.step.body/primary    "Make an appointment to pick up your wig with your stylist in a week."}
-                  {:how-it-works.step.title/primary   "05"
-                   :how-it-works.step.title/secondary "Go Get Your Wig"
-                   :how-it-works.step.body/primary    "You pick up your wig. Let us pick up the tab. Let us cover the cost of your customization—we insist."}]}})
+              {:how-it-works/title-secondary "Here’s how it works."
+               :how-it-works/step-elements
+               [{:how-it-works.step.title/primary   "01"
+                 :how-it-works.step.title/secondary "Select Your Wig"
+                 :how-it-works.step.body/primary    "Decide which wig you want and buy it from Mayvenn. Shop Lace Front & 360 Lace Wigs."}
+                {:how-it-works.step.title/primary   "02"
+                 :how-it-works.step.title/secondary "Choose a Mayvenn Certified Stylist"
+                 :how-it-works.step.body/primary    "Browse our network of professional stylists in your area and make an appointment." }
+                {:how-it-works.step.title/primary   "03"
+                 :how-it-works.step.title/secondary "Drop Off Your Wig"
+                 :how-it-works.step.body/primary    (str "Leave the wig with your stylist and talk about what you want. "
+                                                         "Your stylist will bleach the knots, tint the lace, cut the lace, customize your hairline and make sure it fits perfectly.  ")}
+                {:how-it-works.step.title/primary   "04"
+                 :how-it-works.step.title/secondary "Schedule Your Pickup"
+                 :how-it-works.step.body/primary    "Make an appointment to pick up your wig with your stylist in a week."}
+                {:how-it-works.step.title/primary   "05"
+                 :how-it-works.step.title/secondary "Go Get Your Wig"
+                 :how-it-works.step.body/primary    "You pick up your wig. Let us pick up the tab. Let us cover the cost of your customization—we insist."}]}})
 
       standalone-service?
       (merge #:freeinstall-banner {:title          "Amazing Stylists"
