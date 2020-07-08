@@ -19,7 +19,7 @@
    :opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our 30 Day Quality Guarantee, our"
                                 category-name
                                 "are the best quality products on the market and ships free!")
-   ;; TODO make this a proper image and place under :selector/images
+   ;; TODO make this a proper image and place under :selector/image-cases & images catalog
    :category/image-url    image-url
    :seo/sitemap           true})
 

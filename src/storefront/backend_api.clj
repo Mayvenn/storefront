@@ -1,6 +1,7 @@
 (ns storefront.backend-api
   (:require [spice.maps :as maps]
             [storefront.accessors.orders :as orders]
+            [catalog.products :refer [->skuer]]
             [tugboat.core :as tugboat]))
 
 (defn storeback-fetch [storeback-config path params]
@@ -60,6 +61,25 @@
                  v)]))
        (into {})))
 
+(defn fetch-v3-products [storeback-config criteria-or-id]
+  (let [response (storeback-fetch storeback-config "/v3/products"
+                                  {:query-params (criteria->query-params (if (map? criteria-or-id)
+                                                                           criteria-or-id
+                                                                           {:catalog/product-id criteria-or-id}))})]
+    (when (not-404 response)
+      (-> (:body response)
+          (update :skus (fn [skus]
+                          (into {}
+                                (map (fn [[k v]]
+                                       [(name k) (->skuer v)]))
+                                skus)))
+          (update :images (fn [images]
+                            (into {}
+                                  (map (fn [[k v]]
+                                         [(name k) v]))
+                                  images)))))))
+
+;; TODO(jeff): DEPRECATED, use v3 which denormalizes images off of skus and products
 (defn fetch-v2-products [storeback-config criteria-or-id]
   (let [response (storeback-fetch storeback-config "/v2/products"
                                   {:query-params (criteria->query-params (if (map? criteria-or-id)

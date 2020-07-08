@@ -42,8 +42,8 @@
 
 (defn line-item-skuer->stringer-cart-item
   "Converts line item skuers into the format that stringer expects"
-  [line-item-skuer]
-  (let [image (images/cart-image line-item-skuer)]
+  [images-catalog line-item-skuer]
+  (let [image (images/cart-image images-catalog line-item-skuer)]
     {:variant_id           (:legacy/variant-id line-item-skuer)
      :variant_sku          (:catalog/sku-id line-item-skuer)
      :variant_price        (:sku/price line-item-skuer)
@@ -105,9 +105,10 @@
 
 (defmethod perform-track events/api-success-suggested-add-to-bag [_ event {:keys [order sku-id->quantity initial-sku]} app-state]
   (let [line-item-skuers (sku-id->quantity-to-line-item-skuer (get-in app-state keypaths/v2-skus) sku-id->quantity)
-        added-skus       (mapv line-item-skuer->stringer-cart-item line-item-skuers)]
+        images-catalog   (get-in app-state keypaths/v2-images)
+        added-skus       (mapv line-item-skuer->stringer-cart-item images-catalog line-item-skuers)]
     (stringer/track-event "suggested_line_item_added" {:added_skus   added-skus
-                                                       :initial_sku  (dissoc (line-item-skuer->stringer-cart-item initial-sku)
+                                                       :initial_sku  (dissoc (line-item-skuer->stringer-cart-item images-catalog initial-sku)
                                                                              :variant_quantity)
                                                        :order_number (:number order)
                                                        :order_total  (:total order)})))
@@ -124,12 +125,13 @@
   (let [quantity         1
         skus             (get-in data keypaths/v2-skus)
         order            (get-in data keypaths/order)
+        images-catalog   (get-in data keypaths/v2-images)
         line-item-skuers (waiter-line-items->line-item-skuer
                           skus (orders/product-and-service-items order))
-        cart-items       (mapv line-item-skuer->stringer-cart-item line-item-skuers)
+        cart-items       (mapv (partial line-item-skuer->stringer-cart-item images-catalog) line-item-skuers)
         sku              (get skus "SRV-LBI-000")
-        order-quantity   (orders/product-and-service-quantity order) ]
-    (stringer/track-event "add_to_cart" (merge (line-item-skuer->stringer-cart-item sku)
+        order-quantity   (orders/product-and-service-quantity order)]
+    (stringer/track-event "add_to_cart" (merge (line-item-skuer->stringer-cart-item images-catalog sku)
                                                {:order_number     (:number order)
                                                 :order_total      (:total order)
                                                 :order_quantity   order-quantity
@@ -145,10 +147,11 @@
                             (get-in app-state keypaths/v2-skus)
                             (orders/product-and-service-items order))
 
-          cart-items     (mapv line-item-skuer->stringer-cart-item line-item-skuers)
+          images-catalog   (get-in app-state keypaths/v2-images)
+          cart-items     (mapv (partial line-item-skuer->stringer-cart-item images-catalog) line-item-skuers)
           store-slug     (get-in app-state keypaths/store-slug)
           order-quantity (orders/product-and-service-quantity order)]
-      (stringer/track-event "add_to_cart" (merge (line-item-skuer->stringer-cart-item sku)
+      (stringer/track-event "add_to_cart" (merge (line-item-skuer->stringer-cart-item images-catalog sku)
                                                  {:order_number     (:number order)
                                                   :order_total      (:total order)
                                                   :order_quantity   order-quantity
@@ -164,7 +167,8 @@
 
 (defmethod perform-track events/api-success-remove-from-bag
   [_ _ {order :order} app-state]
-  (let [skus (get-in app-state keypaths/v2-skus)]
+  (let [skus           (get-in app-state keypaths/v2-skus)
+        images-catalog (get-in app-state keypaths/v2-images)]
     (stringer/track-event "remove_from_cart"
                           {:order_number     (:number order)
                            :order_total      (:total order)
@@ -173,11 +177,12 @@
                            :context          {:cart-items (->> order
                                                                orders/product-and-service-items
                                                                (waiter-line-items->line-item-skuer skus)
-                                                               (mapv line-item-skuer->stringer-cart-item))}})))
+                                                               (mapv (partial line-item-skuer->stringer-cart-item images-catalog)))}})))
 
 (defmethod perform-track events/api-success-decrease-quantity
   [_ _ {order :order} app-state]
-  (let [skus (get-in app-state keypaths/v2-skus)]
+  (let [skus           (get-in app-state keypaths/v2-skus)
+        images-catalog (get-in app-state keypaths/v2-images)]
     (stringer/track-event "remove_from_cart"
                           {:order_number     (:number order)
                            :order_total      (:total order)
@@ -186,7 +191,7 @@
                            :context          {:cart-items (->> order
                                                                orders/product-and-service-items
                                                                (waiter-line-items->line-item-skuer skus)
-                                                               (mapv line-item-skuer->stringer-cart-item))}})))
+                                                               (mapv (partial line-item-skuer->stringer-cart-item images-catalog)))}})))
 
 (defmethod perform-track events/api-success-shared-cart-create [_ _ {:keys [cart]} app-state]
   (let [all-skus                 (vals (get-in app-state keypaths/v2-skus))
@@ -214,20 +219,21 @@
                           (get-in app-state keypaths/v2-skus)
                           (orders/product-and-service-items order))
 
-        cart-items (mapv line-item-skuer->stringer-cart-item line-item-skuers)]
+        images-catalog (get-in app-state keypaths/v2-images)
+        cart-items     (mapv (partial line-item-skuer->stringer-cart-item images-catalog) line-item-skuers)]
     (facebook-analytics/track-event "AddToCart" {:content_type "product"
                                                  :content_ids  (map :catalog/sku-id line-item-skuers)
                                                  :num_items    (->> line-item-skuers (map :item/quantity) (reduce + 0))})
     (google-tag-manager/track-add-to-cart {:number           (:number order)
                                            :line-item-skuers line-item-skuers})
-    (stringer/track-event "bulk_add_to_cart" (merge {:shared_cart_id shared-cart-id
+    (stringer/track-event "bulk_add_to_cart" (merge {:shared_cart_id   shared-cart-id
                                                      :store_experience (get-in app-state keypaths/store-experience)
-                                                     :order_number   (:number order)
-                                                     :order_total    (:total order)
-                                                     :order_quantity (orders/product-quantity order)
-                                                     :skus           (->> line-item-skuers (map :catalog/sku-id) (string/join ","))
-                                                     :variant_ids    (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
-                                                     :context        {:cart-items cart-items}}
+                                                     :order_number     (:number order)
+                                                     :order_total      (:total order)
+                                                     :order_quantity   (orders/product-quantity order)
+                                                     :skus             (->> line-item-skuers (map :catalog/sku-id) (string/join ","))
+                                                     :variant_ids      (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
+                                                     :context          {:cart-items cart-items}}
                                                     (when look-id
                                                       {:look_id look-id})))))
 

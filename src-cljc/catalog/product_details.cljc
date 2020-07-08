@@ -22,11 +22,13 @@
             [clojure.string :as string]
             [spice.date :as date]
             [spice.selector :as selector]
+            [spice.maps :as maps]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as accessors.products]
             [storefront.accessors.skus :as skus]
+            [storefront.accessors.images :as images]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.marquee :as marquee]
             [storefront.components.money-formatters :as mf]
@@ -313,12 +315,12 @@
                         :page/slug          (:page/slug product)
                         :query-params       {:SKU (:catalog/sku-id sku)}}]})))
 
-(defn find-carousel-images [product product-skus selections selected-sku]
+(defn find-carousel-images [product product-skus images-catalog selections selected-sku]
   (->> (selector/match-all {}
                            (or selected-sku
                                selections
                                (first product-skus))
-                           (:selector/images product))
+                           (images/for-skuer images-catalog product))
        (selector/match-all {:selector/strict? true}
                            {:use-case #{"carousel"}
                             :image/of #{"model" "product"}})
@@ -328,8 +330,9 @@
   "Using map of current selections (which can be empty)
   for un-selected values picks first option from the available options.
   e.g.: if there's no `hair/color` in `selections` map - it sets it to whatever the first in the list, e.g.: \"black\""
-  [facets product product-skus]
-  (let [options (sku-selector/product-options facets product product-skus)]
+  [facets product product-skus images]
+  (let [options (sku-selector/product-options facets product product-skus images)]
+    ;; PERF(jeff): can use transients here
     (reduce
      (fn [a k]
        (if (get a k)
@@ -382,8 +385,9 @@
         selections          (get-in data catalog.keypaths/detailed-product-selections)
         product             (products/current-product data)
         product-skus        (products/extract-product-skus data product)
+        images-catalog      (get-in data keypaths/v2-images)
         facets              (facets/by-slug data)
-        carousel-images     (find-carousel-images product product-skus
+        carousel-images     (find-carousel-images product product-skus images-catalog
                                                   (select-keys selections [:hair/color])
                                                   selected-sku)
         options             (get-in data catalog.keypaths/detailed-product-options)
@@ -593,7 +597,7 @@
      (api/get-products (get-in app-state keypaths/api-cache)
                        {:catalog/product-id product-id}
                        (fn [response]
-                         (messages/handle-message events/api-success-v2-products-for-details response)
+                         (messages/handle-message events/api-success-v3-products-for-details response)
                          (when-let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)]
                            (messages/handle-message events/viewed-sku {:sku selected-sku}))))
 
@@ -619,8 +623,9 @@
   (let [product-id   (get-in app-state catalog.keypaths/detailed-product-id)
         product      (products/product-by-id app-state product-id)
         facets       (facets/by-slug app-state)
-        product-skus (products/extract-product-skus app-state product)]
-    (sku-selector/product-options facets product product-skus)))
+        product-skus (products/extract-product-skus app-state product)
+        images       (get-in app-state keypaths/v2-images)]
+    (sku-selector/product-options facets product product-skus images)))
 
 (defn ^:private assoc-selections
   "Selections are ultimately a function of three inputs:
@@ -636,11 +641,12 @@
   (let [product-id   (get-in app-state catalog.keypaths/detailed-product-id)
         product      (products/product-by-id app-state product-id)
         facets       (facets/by-slug app-state)
-        product-skus (products/extract-product-skus app-state product)]
+        product-skus (products/extract-product-skus app-state product)
+        images       (get-in app-state keypaths/v2-images)]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-selections
                   (merge
-                   (default-selections facets product product-skus)
+                   (default-selections facets product product-skus images)
                    (get-in app-state catalog.keypaths/detailed-product-selections)
                    (reduce-kv #(assoc %1 %2 (first %3))
                               {}
@@ -748,11 +754,11 @@
 ;; When a sku for combination is not found return nil sku -> 'Unavailable'
 ;; When no sku id is given in the query parameters we must find and use an epitome
 
-(defmethod transitions/transition-state events/api-success-v2-products-for-details
+(defmethod transitions/transition-state events/api-success-v3-products-for-details
   ;; for pre-selecting skus by url
   [_ event {:keys [skus]} app-state]
   (let [product      (products/current-product app-state)
-        skus         (products/index-skus skus)
+        skus         skus
         sku-id       (determine-sku-id app-state product)
         sku          (get skus sku-id)
         product-skus (products/extract-product-skus app-state product)
@@ -764,7 +770,7 @@
         (assoc-in catalog.keypaths/detailed-product-options options))))
 
 #?(:cljs
-   (defmethod effects/perform-effects events/api-success-v2-products-for-details
+   (defmethod effects/perform-effects events/api-success-v3-products-for-details
      [_ event _ _ app-state]
      ;; "Setting seo tags for the product detail page relies on the product
      ;; being available"

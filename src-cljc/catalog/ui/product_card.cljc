@@ -3,6 +3,7 @@
             [catalog.facets :as facets]
             [spice.selector :as selector]
             [storefront.accessors.skus :as skus]
+            [storefront.accessors.images :as images]
             [storefront.components.money-formatters :as mf]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -41,7 +42,8 @@
 
 (defn query
   [data product]
-  (let [skus                (vals (select-keys (get-in data keypaths/v2-skus)
+  (let [images-catalog      (get-in data keypaths/v2-images)
+        skus                (vals (select-keys (get-in data keypaths/v2-skus)
                                                (:selector/skus product)))
         facets              (get-in data keypaths/v2-facets)
         category-selections (get-in data catalog.keypaths/category-selections)
@@ -63,7 +65,7 @@
         epitome      (skus/determine-epitome color-order-map skus-to-search)
 
         image (->> epitome
-                   :selector/images
+                   (images/for-skuer images-catalog)
                    (filter (comp #{"catalog"} :use-case))
                    first)]
     {:sort/value                   (:sku/price cheapest-sku)

@@ -77,6 +77,7 @@
 (def v2-products (conj catalog :products))
 (def v2-skus (conj catalog :skus))
 (def v2-facets (conj catalog :facets))
+(def v2-images (conj catalog :images))
 
 (def db [:db])
 (def db-images (conj db :images))

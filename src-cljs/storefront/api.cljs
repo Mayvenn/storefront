@@ -3,6 +3,7 @@
             [ajax.protocols :refer [-body]]
             [clojure.string :as string]
             [clojure.walk :as walk]
+            [catalog.products :refer [->skuer]]
             [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
             [storefront.routes :as routes]
@@ -198,12 +199,22 @@
   (cache-req
    cache
    GET
-   "/v2/products"
+   "/v3/products"
    (conj request-keys/get-products criteria-or-id)
    {:params (if (map? criteria-or-id)
               (criteria->query-params criteria-or-id)
               {:id criteria-or-id})
-    :handler handler}))
+    :handler #(handler (-> %
+                           (update :skus (fn [skus]
+                                           (into {}
+                                                 (map (fn [[k v]]
+                                                        [(name k) (->skuer v)]))
+                                                 skus)))
+                           (update :images (fn [images]
+                                             (into {}
+                                                   (map (fn [[k v]]
+                                                          [(name k) v]))
+                                                   images)))))}))
 
 (defn get-skus [cache criteria-or-id handler]
   (cache-req

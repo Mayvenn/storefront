@@ -1,5 +1,6 @@
 (ns catalog.ui.horizontal-direct-to-cart-card
-  (:require [storefront.component :as c]
+  (:require [storefront.accessors.images :as images]
+            [storefront.component :as c]
             [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
@@ -14,7 +15,7 @@
                          vals
                          first)
         image        (->> service-sku
-                          :selector/images
+                          (images/for-skuer (get-in data keypaths/v2-images))
                           (filter (comp #{"catalog"} :use-case))
                           first)
         product-slug (:page/slug product)

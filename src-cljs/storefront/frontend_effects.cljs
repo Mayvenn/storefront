@@ -134,7 +134,7 @@
                                                      (set ids-in-db)))
         api-cache               (get-in app-state keypaths/api-cache)
         handler                 (partial messages/handle-message
-                                         events/api-success-v2-products)]
+                                         events/api-success-v3-products)]
     (when missing-ids
       (api/get-products api-cache
                         {:selector/sku-ids missing-ids}

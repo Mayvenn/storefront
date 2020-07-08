@@ -69,7 +69,7 @@
         (merge-with clojure.set/union
                     (skuers/essentials (categories/id->category "30" (get-in app-state storefront.keypaths/categories)))
                     (skuers/essentials (categories/id->category "31" (get-in app-state storefront.keypaths/categories))))
-        #(messages/handle-message events/api-success-v2-products-for-stylist-filters %))
+        #(messages/handle-message events/api-success-v3-products-for-stylist-filters %))
        (when (some? query-params)
          (google-maps/insert)))))
 

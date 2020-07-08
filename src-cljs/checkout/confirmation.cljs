@@ -242,6 +242,7 @@
   [data]
   (let [order               (get-in data keypaths/order)
         skus                (get-in data keypaths/v2-skus)
+        images              (get-in data keypaths/v2-images)
         facets              (maps/index-by :facet/slug (get-in data keypaths/v2-facets))
         color-options->name (->> facets
                                  :hair/color
@@ -259,7 +260,7 @@
                        :circle/id                 (str "line-item-length-" sku-id)
                        :circle/value              (-> sku :hair/length first (str "”"))
                        :image/id                  (str "line-item-img-" (:catalog/sku-id sku))
-                       :image/value               (->> sku (catalog-images/image "cart") :ucare/id)
+                       :image/value               (->> sku (catalog-images/image images "cart") :ucare/id)
                        :title/id                  (str "line-item-title-" sku-id)
                        :title/value               (or (:product-title line-item)
                                                       (:product-name line-item))
@@ -384,6 +385,7 @@
 (defn ^:private standalone-service-line-items-query
   [app-state]
   (let [skus                          (get-in app-state keypaths/v2-skus)
+        images                        (get-in app-state keypaths/v2-images)
         service-line-items            (orders/service-line-items (get-in app-state keypaths/order))
         standalone-service-line-items (filter line-items/standalone-service? service-line-items)]
     (for [{sku-id :sku :as service-line-item} standalone-service-line-items
@@ -399,32 +401,33 @@
        :cart-item-floating-box/id             (str "line-item-" sku-id "-price")
        :cart-item-floating-box/value          (some-> price mf/as-money)
        :cart-item-service-thumbnail/id        sku-id
-       :cart-item-service-thumbnail/image-url (->> sku (catalog-images/image "cart") :ucare/id)})))
+       :cart-item-service-thumbnail/image-url (->> sku (catalog-images/image images "cart") :ucare/id)})))
 
 (defn cart-items-query
   [app-state line-items skus]
-  (let [cart-items
+  (let [images (get-in app-state keypaths/v2-images)
+        cart-items
         (for [{sku-id :sku variant-id :id :as line-item} line-items
               :let
               [sku                  (get skus sku-id)
                price                (or (:sku/price line-item)
                                         (:unit-price line-item))]]
-          {:react/key                                      (str sku-id "-" (:quantity line-item))
-           :cart-item-title/id                             (str "line-item-title-" sku-id)
-           :cart-item-title/primary                        (or (:product-title line-item)
+          {:react/key                                (str sku-id "-" (:quantity line-item))
+           :cart-item-title/id                       (str "line-item-title-" sku-id)
+           :cart-item-title/primary                  (or (:product-title line-item)
                                                                (:product-name line-item))
-           :cart-item-copy/id                              "line-item-quantity"
-           :cart-item-copy/value                           (str "qty " (:quantity line-item))
-           :cart-item-title/secondary                      (:color-name line-item)
-           :cart-item-floating-box/id                      (str "line-item-price-ea-with-label-" sku-id)
-           :cart-item-floating-box/value                   [:div {:data-test (str "line-item-price-ea-" sku-id)}
+           :cart-item-copy/id                        "line-item-quantity"
+           :cart-item-copy/value                     (str "qty " (:quantity line-item))
+           :cart-item-title/secondary                (:color-name line-item)
+           :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku-id)
+           :cart-item-floating-box/value             [:div {:data-test (str "line-item-price-ea-" sku-id)}
                                                             (mf/as-money price)
                                                             [:div.proxima.content-4 " each"]]
-           :cart-item-square-thumbnail/id                  sku-id
-           :cart-item-square-thumbnail/sku-id              sku-id
-           :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
+           :cart-item-square-thumbnail/id            sku-id
+           :cart-item-square-thumbnail/sku-id        sku-id
+           :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> sku :hair/length first)]
                                                              (str length-circle-value "”"))
-           :cart-item-square-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)})]
+           :cart-item-square-thumbnail/ucare-id      (->> sku (catalog-images/image images "cart") :ucare/id)})]
     cart-items))
 
 (defn query

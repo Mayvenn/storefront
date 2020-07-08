@@ -43,22 +43,24 @@
 (defn normalize-image [image]
   ;; PERF(jeff): this is called for every product in category pages, which can
   ;; be many times.
-  (let [img (-> (transient image)
-                (assoc! :id (str (:use-case image) "-" (:url image))
-                        :order (or (:order image)
-                                   (case (:image/of (:criteria/attributes image))
-                                     "model"   1
-                                     "product" 2
-                                     "seo"     3
-                                     "catalog" 4
-                                     5))))]
-    (persistent!
-     (dissoc!
-      (reduce (fn [acc [k v]]
-                (assoc! acc k v))
-              img
-              (:criteria/attributes image))
-      :criteria/attributes :filename))))
+  (if (nil? (:criteria/attributes image))
+    image ;; assume cellar has done this work for us (technically, image = [use-case order catalog/image-id])
+    (let [img (-> (transient image)
+                  (assoc! :id (str (:use-case image) "-" (:url image))
+                          :order (or (:order image)
+                                     (case (:image/of (:criteria/attributes image))
+                                       "model"   1
+                                       "product" 2
+                                       "seo"     3
+                                       "catalog" 4
+                                       5))))]
+      (persistent!
+       (dissoc!
+        (reduce (fn [acc [k v]]
+                  (assoc! acc k v))
+                img
+                (:criteria/attributes image))
+        :criteria/attributes :filename)))))
 
 (defn ->skuer [value]
   (let [value (-> value
@@ -89,11 +91,12 @@
        (map ->skuer)
        (index-by :catalog/product-id)))
 
-(defmethod transition-state events/api-success-v2-products
-  [_ event {:keys [products skus] :as response} app-state]
+(defmethod transition-state events/api-success-v3-products
+  [_ event {:keys [products skus images] :as response} app-state]
   (-> app-state
       (update-in keypaths/v2-products merge (index-products products))
-      (update-in keypaths/v2-skus merge (index-skus skus))))
+      (update-in keypaths/v2-skus merge skus)
+      (update-in keypaths/v2-images merge images)))
 
 (defn path-for-sku [product-id slug sku]
   (routes/path-for events/navigate-product-details

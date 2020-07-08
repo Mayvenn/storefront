@@ -128,7 +128,7 @@
                   (for [[k v] f]
                     (if (fn? v)
                       (let [path' (conj (vec path) k)]
-                        (swap! problems conj path')
+                        (swap! problems conj {:keypath path' :value v})
                         (has-fn? problems path' v))
                       false))))
          (sequential? f)
@@ -141,8 +141,10 @@
      :cljs (do
              ;; in dev mode: assert proper usage
              (when ^boolean goog/DEBUG
-               (assert (not (has-fn? data))
-                       (str "building " (:file debug-data) ":" (:line debug-data) " includes a function which is not recommended because it reforces constant rerenders")))
+               (let [problems (atom nil)]
+                 (assert (not (has-fn? problems [] data))
+                         (str "building " (:file debug-data) ":" (:line debug-data)
+                              " includes a function which is not recommended because it reforces constant rerenders (" @problems ")"))))
              (cond
                (gobj/get component "isNewStyleComponent" false)
                (react/createElement component

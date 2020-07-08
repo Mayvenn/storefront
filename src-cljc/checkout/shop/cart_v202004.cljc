@@ -342,6 +342,7 @@
 (defn ^:private standalone-service-line-items-query
   [app-state]
   (let [skus                          (get-in app-state keypaths/v2-skus)
+        images                        (get-in app-state keypaths/v2-images)
         service-line-items            (orders/service-line-items (get-in app-state keypaths/order))
         delete-line-item-requests     (variants-requests app-state request-keys/delete-line-item (map :id service-line-items))
         standalone-service-line-items (filter line-items/standalone-service? service-line-items)]
@@ -363,12 +364,13 @@
        :cart-item-remove-action/spinning?        removing?
        :cart-item-remove-action/target           [events/control-cart-remove (:id service-line-item)]
        :cart-item-service-thumbnail/id           sku-id
-       :cart-item-service-thumbnail/image-url    (->> sku (catalog-images/image "cart") :ucare/id)
+       :cart-item-service-thumbnail/image-url    (->> sku (catalog-images/image images "cart") :ucare/id)
        :cart-item-service-thumbnail/highlighted? just-added-to-order?})))
 
 (defn cart-items-query
   [app-state line-items skus]
-  (let [update-line-item-requests (merge-with
+  (let [images                    (get-in app-state keypaths/v2-images)
+        update-line-item-requests (merge-with
                                    #(or %1 %2)
                                    (variants-requests app-state request-keys/add-to-bag (map :sku line-items))
                                    (variants-requests app-state request-keys/update-line-item (map :sku line-items)))
@@ -397,7 +399,7 @@
                       :cart-item-square-thumbnail/highlighted?        just-added-to-order?
                       :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
                                                                         (str length-circle-value "”"))
-                      :cart-item-square-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)
+                      :cart-item-square-thumbnail/ucare-id            (->> sku (catalog-images/image images "cart") :ucare/id)
                       :cart-item-adjustable-quantity/id               (str "line-item-quantity-" sku-id)
                       :cart-item-adjustable-quantity/spinning?        updating?
                       :cart-item-adjustable-quantity/value            (:quantity line-item)

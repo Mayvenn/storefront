@@ -1,19 +1,32 @@
 (ns storefront.accessors.images)
 
-(defn skuer->image [use-case skuer]
+;; return images for a given product or sku
+(defn for-skuer [images-catalog skuer]
+  (or (not-empty ;; v3/products style - normalized
+       (into []
+             (keep (fn [[use-case order catalog-id]]
+                     (some-> catalog-id
+                             images-catalog
+                             (assoc :use-case use-case
+                                    :order order))))
+             (:selector/image-cases skuer)))
+      ;; GROT: v2/skus, ~~v2/products~~, shared-cart style - denormalized already
+      (:selector/images skuer)))
+
+(defn- matches-use-case? [use-case image]
+  (= (:use-case image) use-case))
+
+(defn skuer->image [images-catalog use-case skuer]
   (->> skuer
-       :selector/images
-       (filter #(= (:use-case %) use-case))
+       (for-skuer images-catalog)
+       (filter (partial matches-use-case? use-case))
        first))
 
-(defn image-by-use-case [use-case skuer]
-  ;;TODO fix this!!! PLEASE!!! (should be using selector and doing something more clever than this.)
-  (when-let [image (->> skuer
-                   :selector/images
-                   (filter #(= (:use-case %) use-case))
-                   first)]
+(defn ^:private image-by-use-case [images-catalog use-case skuer]
+  ;; TODO fix this!!! PLEASE!!! (should be using selector and doing something more clever than this.)
+  (when-let [image (skuer->image images-catalog use-case skuer)]
     {:src (str (:url image) "-/format/auto/")
-     :alt (:copy/title skuer)}))
+     :alt (str (:copy/title skuer))}))
 
-(defn cart-image [skuer]
-  (image-by-use-case "cart" skuer))
+(defn cart-image [images-catalog skuer]
+  (image-by-use-case images-catalog "cart" skuer))

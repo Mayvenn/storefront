@@ -29,7 +29,7 @@
    [storefront.request-keys :as request-keys]))
 
 (defn display-adjustable-line-items
-  [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
+  [recently-added-skus line-items skus images update-line-item-requests delete-line-item-requests]
   (for [{sku-id :sku variant-id :id :as line-item} line-items
         :let [sku                  (get skus sku-id)
               price                (or (:sku/price line-item)
@@ -62,7 +62,7 @@
          :style     {:width "79px" :height "74px"}})
        (ui/ucare-img
         {:width 75}
-        (->> sku (catalog-images/image "cart") :ucare/id))]]
+        (->> sku (catalog-images/image images "cart") :ucare/id))]]
 
      [:div {:style {:margin-top "-14px"}}
       [:a.medium.titleize.h5
@@ -97,6 +97,7 @@
 
 (defcomponent full-component [{:keys [order
                                       skus
+                                      images
                                       promo-banner
                                       updating?
                                       redirecting-to-paypal?
@@ -120,6 +121,7 @@
      (display-adjustable-line-items recently-added-skus
                                     line-items
                                     skus
+                                    images
                                     update-line-item-requests
                                     delete-line-item-requests)
      (component/build suggestions/component suggestions nil)]
@@ -213,33 +215,35 @@
 (defn full-cart-query [data]
   (let [order       (get-in data keypaths/order)
         products    (get-in data keypaths/v2-products)
+        images      (get-in data keypaths/v2-images)
         facets      (get-in data keypaths/v2-facets)
         line-items  (map (partial add-product-title-and-color-to-line-item products facets)
                          (orders/product-items order))
         variant-ids (map :id line-items)]
-    {:suggestions                (suggestions/query data)
-     :order                      order
-     :line-items                 line-items
-     :skus                       (get-in data keypaths/v2-skus)
-     :products                   products
-     :promo-banner               (when (zero? (orders/product-quantity order))
-                                   (promo-banner/query data))
-     :updating?                  (update-pending? data)
-     :redirecting-to-paypal?     (get-in data keypaths/cart-paypal-redirect)
-     :share-carts?               (stylists/own-store? data)
-     :requesting-shared-cart?    (utils/requesting? data request-keys/create-shared-cart)
-     :loaded-quadpay?            (get-in data keypaths/loaded-quadpay)
-     :show-browser-pay?          (and (get-in data keypaths/loaded-stripe)
-                                      (experiments/browser-pay? data)
-                                      (seq (get-in data keypaths/shipping-methods))
-                                      (seq (get-in data keypaths/states)))
-     :update-line-item-requests  (merge-with
-                                  #(or %1 %2)
-                                  (variants-requests data request-keys/add-to-bag (map :sku line-items))
-                                  (variants-requests data request-keys/update-line-item (map :sku line-items)))
-     :cart-summary               (cart-summary/query data)
-     :delete-line-item-requests  (variants-requests data request-keys/delete-line-item variant-ids)
-     :recently-added-skus        (get-in data keypaths/cart-recently-added-skus)}))
+    {:suggestions               (suggestions/query data)
+     :order                     order
+     :line-items                line-items
+     :skus                      (get-in data keypaths/v2-skus)
+     :products                  products
+     :images                    images
+     :promo-banner              (when (zero? (orders/product-quantity order))
+                                  (promo-banner/query data))
+     :updating?                 (update-pending? data)
+     :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
+     :share-carts?              (stylists/own-store? data)
+     :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
+     :loaded-quadpay?           (get-in data keypaths/loaded-quadpay)
+     :show-browser-pay?         (and (get-in data keypaths/loaded-stripe)
+                                     (experiments/browser-pay? data)
+                                     (seq (get-in data keypaths/shipping-methods))
+                                     (seq (get-in data keypaths/states)))
+     :update-line-item-requests (merge-with
+                                 #(or %1 %2)
+                                 (variants-requests data request-keys/add-to-bag (map :sku line-items))
+                                 (variants-requests data request-keys/update-line-item (map :sku line-items)))
+     :cart-summary              (cart-summary/query data)
+     :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
+     :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)}))
 
 (defn empty-cart-query
   [data]

@@ -19,6 +19,7 @@
             [storefront.api :as api]
             [clojure.string :as string]
             [spice.core :as spice]
+            [spice.maps :as maps]
             [ui.molecules :as ui-molecules]))
 
 ;; TODO Remove handling of underscored keys after storeback has been deployed.
@@ -166,8 +167,8 @@
 (defn subtract-allocated-returns [returned-line-items returned-quantities]
   ;; TODO: service line items may be showing up here
   (let [indexed-returned-line-items (->> returned-line-items
-                                         (spice.maps/index-by :id)
-                                         (spice.maps/map-values :returned-quantity))]
+                                         (maps/index-by :id)
+                                         (maps/map-values :returned-quantity))]
     (into {}
           (map
            (fn [[variant-id r-qty]]

@@ -21,7 +21,8 @@
     (let [{:keys [variant-attrs] sku-id :sku} (first items)]
       (when (= "bundles" (variant-attrs :hair/family))
         (let [sku               (get skus sku-id)
-              image             (images/cart-image sku)
+              images-catalog    (get-in data keypaths/v2-images)
+              image             (images/cart-image images-catalog sku)
               adjacent-skus     (->> sku
                                      :selector/from-products
                                      first
@@ -47,7 +48,7 @@
                        {:position               position
                         :image                  image
                         :skus                   skus
-                        :initial-sku             sku
+                        :initial-sku            sku
                         :any-adding-to-bag?     (utils/requesting? data (fn [req]
                                                                           (subvec (:request-key req []) 0 1))
                                                                    request-keys/add-to-bag)
@@ -169,6 +170,7 @@
   [data]
   (let [skus       (get-in data keypaths/v2-skus)
         products   (get-in data keypaths/v2-products)
+        images     (get-in data keypaths/v2-images)
         line-items (orders/product-items (get-in data keypaths/order))]
     {:suggestions
      (map (fn [{:keys [position skus initial-sku this-is-adding-to-bag? any-adding-to-bag?]}]
@@ -181,7 +183,7 @@
                                                         {:skus        skus
                                                          :initial-sku initial-sku}]
                :suggested-bundles/cta-id               (str "add-" (name position))
-               :suggested-bundles/images-with-stickers [{:cart-icon/ucare-id      (->> short-sku (catalog-images/image "cart") :ucare/id)
+               :suggested-bundles/images-with-stickers [{:cart-icon/ucare-id      (->> short-sku (catalog-images/image images "cart") :ucare/id)
                                                          :cart-icon/sku-id        (:catalog/sku-id short-sku)
                                                          :cart-icon/sticker-label (when-let [length-circle-value (-> short-sku :hair/length first)]
                                                                                     (str length-circle-value "”"))
@@ -190,7 +192,7 @@
                                                          :cart-icon/image-width   39
                                                          :cart-icon/top-margin    "-8px"
                                                          :cart-icon/left-margin   "-17px"}
-                                                        {:cart-icon/ucare-id      (->> long-sku (catalog-images/image "cart") :ucare/id)
+                                                        {:cart-icon/ucare-id      (->> long-sku (catalog-images/image images "cart") :ucare/id)
                                                          :cart-icon/sku-id        (:catalog/sku-id long-sku)
                                                          :cart-icon/sticker-label (when-let [length-circle-value (-> long-sku :hair/length first)]
                                                                                     (str length-circle-value "”"))

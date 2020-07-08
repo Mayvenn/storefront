@@ -111,7 +111,7 @@
   [_ event {:keys [catalog/category-id slug query-params]} _ app-state]
   #?(:cljs
      (let [category   (accessors.categories/current-category app-state)
-           success-fn #(messages/handle-message e/api-success-v2-products-for-browse
+           success-fn #(messages/handle-message e/api-success-v3-products-for-browse
                                                 (assoc % :category-id category-id))]
        ;; Some pages may disable scrolling on the body, e.g.: product detail page
        ;; and it must be re-enabled for this page

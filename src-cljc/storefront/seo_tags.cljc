@@ -5,6 +5,7 @@
             [storefront.assets :as assets]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.categories :as accessors.categories]
+            [storefront.accessors.images :as images]
             [cemerick.url :as cemerick-url]
             [catalog.keypaths :as k]
             [catalog.facets :as facets]
@@ -26,8 +27,8 @@
      2)
    (:order img)])
 
-(defn ^:private seo-image [skuer]
-  (->> (selector/match-essentials skuer (:selector/images skuer))
+(defn ^:private seo-image [images-catalog skuer]
+  (->> (selector/match-essentials skuer (images/for-skuer images-catalog skuer))
        (sort-by use-case-then-order-key)))
 
 (def tag-class "seo-tag")
@@ -69,20 +70,21 @@
   [[:meta {:property "og:site_name" :content "Mayvenn"}]])
 
 (defn product-details-tags [data]
-  (let [product   (products/current-product data)
-        sku       (get-in data k/detailed-product-selected-sku)
-        image-url (some->> sku
-                           seo-image
-                           first
-                           :url
-                           (str "http:"))]
+  (let [product        (products/current-product data)
+        images-catalog (get-in data keypaths/v2-images)
+        sku            (get-in data k/detailed-product-selected-sku)
+        image-url      (some->> sku
+                                (seo-image images-catalog)
+                                first
+                                :url
+                                (str "http:"))]
 
-    {:title          (:page/title product)
-     :description    (:page.meta/description product)
-     :og-title       (:opengraph/title product)
-     :og-type        "product"
-     :og-image       image-url
-     :og-description (:opengraph/description product)
+    {:title           (:page/title product)
+     :description     (:page.meta/description product)
+     :og-title        (:opengraph/title product)
+     :og-type         "product"
+     :og-image        image-url
+     :og-description  (:opengraph/description product)
      :structured-data {"@type"      "Product"
                        :name        (:sku/title sku)
                        :image       image-url

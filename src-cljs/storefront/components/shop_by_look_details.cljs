@@ -58,8 +58,8 @@
                                :items       1}}))
 
 (defn get-model-image
-  [{:keys [selector/images copy/title]}]
-  (when-let [image (->> images
+  [images-catalog {:keys [copy/title] :as skuer}]
+  (when-let [image (->> (images/for-skuer images-catalog skuer)
                         (selector/match-all {:selector/strict? true}
                                             {:image/of #{"model"}})
                         (sort-by :order)
@@ -69,8 +69,8 @@
       :alt title}]))
 
 (defn get-cart-product-image
-  [{:keys [selector/images copy/title]}]
-  (when-let [image (->> images
+  [images-catalog {:keys [copy/title] :as skuer}]
+  (when-let [image (->> (images/for-skuer images-catalog skuer)
                         (selector/match-all {:selector/strict? true}
                                             {:use-case #{"cart"}
                                              :image/of #{"product"}})
@@ -86,12 +86,12 @@
              [(first department) price])
            items))
 
-(defn imgs [look {:keys [line-items]}]
+(defn imgs [images-catalog look {:keys [line-items]}]
   (let [sorted-line-items (sort-by-depart-and-price line-items)]
     (list
      [:img.col-12 {:src (str (:image-url look)) :alt ""}]
-     (get-model-image (first sorted-line-items))
-     (get-cart-product-image (first sorted-line-items)))))
+     (get-model-image images-catalog (first sorted-line-items))
+     (get-cart-product-image images-catalog (first sorted-line-items)))))
 
 (defn ^:private display-line-item
   [line-item {:keys [catalog/sku-id] :as sku} thumbnail quantity]
@@ -113,27 +113,27 @@
         [:div {:data-test (str "line-item-price-ea-" sku-id)}
          (mf/as-money price)]]]]]))
 
-(defn ^:private display-line-items [line-items skus]
+(defn ^:private display-line-items [images-catalog line-items skus]
   (for [line-item line-items]
     (let [sku-id   (or (:catalog/sku-id line-item) (:sku line-item))
           sku      (get skus sku-id)
           quantity (or (:item/quantity line-item) (:quantity line-item))]
       (display-line-item line-item
                          sku
-                         (images/cart-image sku)
+                         (images/cart-image images-catalog sku)
                          quantity))))
 
 (defn look-details-body
   [{:keys [creating-order? sold-out? look shared-cart skus fetching-shared-cart?
            shared-cart-type-copy base-price discounted-price quadpay-loaded?
-           discount-text desktop-two-column? yotpo-data-attributes]}]
+           discount-text desktop-two-column? yotpo-data-attributes images-catalog]}]
   [:div.clearfix
    (when look
      [:div.bg-cool-gray.slides-middle
       (when desktop-two-column?
         {:class "col-on-tb-dt col-6-on-tb-dt px3-on-tb-dt"})
       (when shared-cart
-        (carousel (imgs look shared-cart)))
+        (carousel (imgs images-catalog look shared-cart)))
       [:div.px3.pb3.pt1
        [:div.flex.items-center
         [:div.flex-auto.content-1.proxima {:style {:word-break "break-all"}}
@@ -158,7 +158,7 @@
           [:div.pt2.proxima.title-2.shout
            {:data-test "item-quantity-in-look"}
            (str item-count " items in this " shared-cart-type-copy)]
-          (display-line-items line-items skus)
+          (display-line-items images-catalog line-items skus)
           [:div.border-top.border-cool-gray.mxn2.mt3]
           [:div.center.pt4
            (when discount-text
@@ -281,6 +281,7 @@
             :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
             :desktop-two-column?   true
             :discount-text         (:discount-text discount)
+            :images-catalog        (get-in data keypaths/v2-images)
 
             :return-link/event-message (if (and (not back) back-event)
                                          [back-event]

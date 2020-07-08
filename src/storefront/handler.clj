@@ -402,28 +402,31 @@
 ;; TODO: Add joining ability to v2 product queries
 (defn wrap-fetch-catalog [h storeback-config]
   (fn [req]
-    (let [order                      (get-in-req-state req keypaths/order)
-          skus-on-order              (mapv :sku (orders/product-items order))
-          services-on-order          (mapv :sku (orders/service-line-items order))
-          skus-we-have               (keys (get-in-req-state req keypaths/v2-skus))
-          needed-skus                (set/difference (set skus-on-order) (set skus-we-have))
+    (let [order                    (get-in-req-state req keypaths/order)
+          skus-on-order            (mapv :sku (orders/product-items order))
+          services-on-order        (mapv :sku (orders/service-line-items order))
+          skus-we-have             (keys (get-in-req-state req keypaths/v2-skus))
+          needed-skus              (set/difference (set skus-on-order) (set skus-we-have))
           ;; Include default base service sku for adding a base service to the order
-          needed-service-skus        (set/difference (conj (set services-on-order) "SRV-LBI-000") (set skus-we-have))
+          needed-service-skus      (set/difference (conj (set services-on-order) "SRV-LBI-000") (set skus-we-have))
           {order-skus     :skus
-           order-products :products} (when (seq needed-skus)
-                                       (api/fetch-v2-products storeback-config {:selector/sku-ids needed-skus}))
+           order-products :products
+           order-images   :images} (when (seq needed-skus)
+                                     (api/fetch-v3-products storeback-config {:selector/sku-ids needed-skus}))
           {pdp-skus     :skus
-           pdp-products :products}   (when-let [product-id (-> req :nav-message second :catalog/product-id)]
-                                       (api/fetch-v2-products storeback-config {:catalog/product-id product-id}))
+           pdp-products :products
+           pdp-images   :images}   (when-let [product-id (-> req :nav-message second :catalog/product-id)]
+                                     (api/fetch-v3-products storeback-config {:catalog/product-id product-id}))
 
           {service-skus :skus} (when (seq needed-service-skus)
                                  (api/fetch-v2-skus storeback-config {:catalog/sku-id needed-service-skus}))
 
-          {:keys [facets]}     (when-not (get-in-req-state req keypaths/v2-facets)
-                                 (api/fetch-v2-facets storeback-config))]
+          {:keys [facets]} (when-not (get-in-req-state req keypaths/v2-facets)
+                             (api/fetch-v2-facets storeback-config))]
       (h (-> req
              (update-in-req-state keypaths/v2-products merge (products/index-products (concat order-products pdp-products)))
-             (update-in-req-state keypaths/v2-skus merge (products/index-skus (concat order-skus pdp-skus service-skus)))
+             (update-in-req-state keypaths/v2-skus merge order-skus pdp-skus (products/index-skus service-skus))
+             (update-in-req-state keypaths/v2-images merge order-images pdp-images)
              (assoc-in-req-state keypaths/v2-facets (map #(update % :facet/slug keyword) facets))
              (assoc-in-req-state keypaths/categories categories/initial-categories))))))
 
@@ -638,7 +641,7 @@
 (defn- assoc-category-route-data [data storeback-config params]
   (let [category                (accessors.categories/id->category (:catalog/category-id params)
                                                                    (get-in data keypaths/categories))
-        {:keys [skus products]} (api/fetch-v2-products storeback-config (spice.maps/map-values vec (skuers/essentials category)))]
+        {:keys [skus products]} (api/fetch-v2-products storeback-config (maps/map-values vec (skuers/essentials category)))]
     (-> data
         (assoc-in catalog.keypaths/category-id (:catalog/category-id params))
         (update-in keypaths/v2-products merge (products/index-products products))
@@ -749,7 +752,7 @@
   (if (seq subdomains)
     (if-let [hit (not-empty @(:atom sitemap-cache))]
       hit
-      (if-let [launched-products (->> (api/fetch-v2-products storeback-config {})
+      (if-let [launched-products (->> (api/fetch-v3-products storeback-config {:_keys "products"})
                                       :products
                                       (filter :catalog/launched-at)
                                       (remove :catalog/discontinued-at)

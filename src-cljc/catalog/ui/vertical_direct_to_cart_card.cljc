@@ -2,6 +2,7 @@
   (:require [storefront.component :as c]
             [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
+            [storefront.accessors.images :as images]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
@@ -10,16 +11,16 @@
 (defn query
   [data product]
   (let [service-sku  (-> (get-in data keypaths/v2-skus)
-                               (select-keys (:selector/skus product))
-                               vals
-                               first)
+                         (select-keys (:selector/skus product))
+                         vals
+                         first)
         image        (->> service-sku
-                                :selector/images
-                                (filter (comp #{"catalog"} :use-case))
-                                first)
+                          (images/for-skuer (get-in data keypaths/v2-images))
+                          (filter (comp #{"catalog"} :use-case))
+                          first)
         product-slug (:page/slug product)
         disabled?    (boolean (some #(= (:catalog/sku-id service-sku) (:sku %))
-                                 (orders/service-line-items (get-in data keypaths/order))))]
+                                    (orders/service-line-items (get-in data keypaths/order))))]
     {:card-image/src                             (str (:url image) "-/format/auto/" (:filename image))
      :card/type                                  :vertical-direct-to-cart-card
      :card-image/alt                             (:alt image)

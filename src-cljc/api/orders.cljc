@@ -6,6 +6,7 @@
             [storefront.accessors.images :as images]
             [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.images :as images]
             [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
             [storefront.events :as e]
@@ -156,7 +157,7 @@
 
   This is deprecated. There isn't a directly equivalent model to replace it.
   It has been conceptually superseded by 'free-mayvenn-service'"
-  [order servicing-stylist sku-catalog promotion-helper?]
+  [order servicing-stylist sku-catalog images-catalog promotion-helper?]
   (let [shipment                (-> order :shipments first)
         any-wig?                (->> shipment
                                      :line-items
@@ -205,7 +206,7 @@
      :mayvenn-install/service-title                      sku-title
      :mayvenn-install/service-discount                   (- (line-items/service-line-item-price mayvenn-install-line-item))
      :mayvenn-install/any-wig?                           any-wig?
-     :mayvenn-install/service-image-url                  (->> mayvenn-install-sku (images/skuer->image "cart") :url)
+     :mayvenn-install/service-image-url                  (->> mayvenn-install-sku (images/skuer->image images-catalog "cart") :url)
      :mayvenn-install/addon-services                     addon-services-skus
      :mayvenn-install/service-type                       service-type}))
 
@@ -313,13 +314,14 @@
 (defn ->order
   [app-state order]
   (let [waiter-order      order
+        images-catalog    (get-in app-state storefront.keypaths/v2-images)
         servicing-stylist (if (= "aladdin" (get-in app-state storefront.keypaths/store-experience))
                             (get-in app-state storefront.keypaths/store)
                             (get-in app-state adventure.keypaths/adventure-servicing-stylist))
         sku-catalog       (get-in app-state storefront.keypaths/v2-skus)
         store-slug        (get-in app-state storefront.keypaths/store-slug)
         promotion-helper? (experiments/promotion-helper? app-state)
-        mayvenn-install   (mayvenn-install waiter-order servicing-stylist sku-catalog promotion-helper?)]
+        mayvenn-install   (mayvenn-install waiter-order servicing-stylist sku-catalog images-catalog promotion-helper?)]
     (merge
      mayvenn-install
      {:waiter/order         waiter-order
