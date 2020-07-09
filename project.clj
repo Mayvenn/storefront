@@ -119,6 +119,7 @@
                         :externs          ["externs/luckyorange.js"
                                            "externs/jsQR.js"
                                            "externs/bugsnag.js"
+                                           "externs/browser.js"
                                            "externs/convert.js"
                                            "externs/facebook.js"
                                            "externs/google_maps.js"
