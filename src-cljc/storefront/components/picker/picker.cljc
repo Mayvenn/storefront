@@ -333,7 +333,6 @@
                    checkmark-circle]])])])
 
 (defn- slide-animate [enabled? content]
-  (prn enabled?)
   (css-transitions/transition-group
    {:classNames    "picker"
     :key           "picker"
