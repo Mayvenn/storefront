@@ -197,9 +197,9 @@
                          "Component is at: " (:file debug-data) ":" (:line debug-data)
                          "\n Details: ")
                     (clj->js (map (fn [f]
-                                    #js {:keypath           (pr-str (:keypath f))
-                                         :value             (pr-str (:value f))
-                                         :offending-element (pr-str (:offending-element f))})
+                                    #js {:keypath           (:keypath f)
+                                         :value             (:value f)
+                                         :offending-element (:offending-element f)})
                                   @problems))))))
              (cond
                (gobj/get component "isNewStyleComponent" false)
