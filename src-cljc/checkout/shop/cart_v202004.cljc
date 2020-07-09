@@ -290,10 +290,9 @@
     [service-title addon-services service-image-url
      discountable-services-on-order? locked?
      cart-helper-copy action-label stylist service-discount
-     quantity-required quantity-added]}
+     quantity-required quantity-added service-sku]}
    add-items-action
-   promotion-helper?
-   {:keys [promo.mayvenn-install/requirement-copy]}]
+   promotion-helper?]
   (cond-> []
     discountable-services-on-order?
     (conj (let [matched? (boolean stylist)]
@@ -301,7 +300,7 @@
                      :cart-item-title/id                       "line-item-title-upsell-free-service"
                      :cart-item-title/primary                  service-title
                      :cart-item-copy/value                     (if promotion-helper?
-                                                                 requirement-copy
+                                                                 (:promo.mayvenn-install/requirement-copy service-sku)
                                                                  cart-helper-copy)
                      :cart-item-floating-box/id                "line-item-freeinstall-price"
                      :cart-item-floating-box/value             (some-> service-discount - mf/as-money)
@@ -743,8 +742,7 @@
                                            (free-service-line-items-query data
                                                                           mayvenn-install
                                                                           add-items-action
-                                                                          promotion-helper?
-                                                                          service-product))
+                                                                          promotion-helper?))
                                          (standalone-service-line-items-query data))
              :quadpay/order-total       (when-not locked? (:total order))
              :quadpay/show?             (get-in data keypaths/loaded-quadpay)
