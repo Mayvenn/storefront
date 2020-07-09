@@ -179,25 +179,26 @@
                                                :width  "18px"})
 
            :details [{:section-details/title   "Experience"
-                      :section-details/content [:div
-                                                [:div (string/join ", "
-                                                                   (remove nil?
-                                                                           [(when-let [stylist-since (:stylist-since stylist)]
-                                                                              (ui/pluralize-with-amount
-                                                                               (- (date/year (date/now)) stylist-since)
-                                                                               "year"))
-                                                                            (case (-> stylist :salon :salon-type)
-                                                                              "salon"   "in-salon"
-                                                                              "in-home" "in-home"
-                                                                              nil)
-                                                                            (when (:licensed stylist)
-                                                                              "licensed")]))]
-                                                (when (and (> rating-count 0)
-                                                           (not (experiments/hide-bookings? data)))
-                                                  [:div (str "Booked " (ui/pluralize-with-amount rating-count "time") " with Mayvenn")])]}
+                      :section-details/content ^:ignore-interpret-warning [:div
+                                                                           [:div (string/join ", "
+                                                                                              (remove nil?
+                                                                                                      [(when-let [stylist-since (:stylist-since stylist)]
+                                                                                                         (ui/pluralize-with-amount
+                                                                                                          (- (date/year (date/now)) stylist-since)
+                                                                                                          "year"))
+                                                                                                       (case (-> stylist :salon :salon-type)
+                                                                                                         "salon"   "in-salon"
+                                                                                                         "in-home" "in-home"
+                                                                                                         nil)
+                                                                                                       (when (:licensed stylist)
+                                                                                                         "licensed")]))]
+                                                                           (when (and (> rating-count 0)
+                                                                                      (not (experiments/hide-bookings? data)))
+                                                                             [:div (str "Booked " (ui/pluralize-with-amount rating-count "time") " with Mayvenn")])]}
                      (when (:specialty-sew-in-leave-out service-menu)
                        {:section-details/title "Specialties"
                         :section-details/content
+                        ^:ignore-interpret-warning
                         [:div.mt1.col-12.col
                          (for [s [["Leave Out Install"         (:specialty-sew-in-leave-out service-menu)]
                                   ["Closure Install"           (:specialty-sew-in-closure service-menu)]
