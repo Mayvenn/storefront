@@ -75,3 +75,14 @@ video.hide-chromecast-icon::-internal-media-controls-overlay-cast-button {
     --s-color:   #6bc8ad;
     --cool-gray: #EEEFEF;
 }
+
+.fade-in {
+    animation: fadeInAnimation 0.2s ease;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeInAnimation {
+    0% { opacity: 0 }
+    100% { opacity: 1 }
+}

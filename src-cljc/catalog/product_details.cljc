@@ -163,9 +163,13 @@
 (defn image-body [{:keys [filename url alt]}]
   (ui/aspect-ratio
    640 580
-   [:img.col-12
-    {:src (str url "-/format/auto/-/resize/640x/" filename)
-     :alt alt}]))
+   (ui/defer-ucare-img
+     {:class       "col-12"
+      :alt         alt
+      :width       640
+      :placeholder (ui/large-spinner {:style {:height     "60px"
+                                              :margin-top "130px"}})}
+     url)))
 
 (defn carousel [images _]
   (component/build carousel/component
@@ -434,7 +438,7 @@
            standalone-service?
            {:price-block/primary (mf/as-money sku-price)}
 
-           :else
+           sku-price
            {:price-block/primary   (mf/as-money sku-price)
             :price-block/secondary "each"})
          (add-to-cart-query data selected-sku sku-price)

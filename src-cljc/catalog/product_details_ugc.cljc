@@ -24,7 +24,7 @@
     (ui/aspect-ratio
      1 1
      {:class "flex items-center"}
-     [:img.col-12 {:src image-url}])]])
+     (ui/basic-defer-img {:class "col-12"} image-url))]])
 
 (defn ->title-case [s]
   #?(:clj (str/capitalize s)
@@ -36,7 +36,7 @@
 
 (defn ^:private popup-slide [long-name social-card]
   ;; NOTE: desktop-aware? should always be false because we want the slide to take up the full width
-  (component/build ugc/social-image-card-component
+  (ui/screen-aware ugc/social-image-card-component
                    (assoc social-card :desktop-aware? false)
                    {:opts {:copy {:back-copy (str "back to " (->title-case long-name))
                                   :button-copy "View this look"}}}))

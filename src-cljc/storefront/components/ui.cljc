@@ -1,6 +1,7 @@
 (ns storefront.components.ui
   (:require #?@(:cljs [[storefront.loader :as loader]
                        goog.events
+                       ["react" :as react]
                        [goog.object :as gobj]])
             [cemerick.url :as url]
             [clojure.string :as string]
@@ -540,17 +541,20 @@
 
 (defn ucare-img
   [{:as   img-attrs
-    :keys [width retina-quality default-quality picture-classes]
+    :keys [width retina-quality default-quality picture-classes retina?]
     :or   {retina-quality  "lightest"
-           default-quality "normal"}}
+           default-quality "normal"
+           retina?         true}}
    image-id]
   (component/html
-   (let [width       (spice/parse-int width)
-         image-id    (ucare-img-id image-id)
-         retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" retina-quality "/")
-                       width (str "-/resize/" (* 2 width) "x/"))
-         default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" default-quality "/")
-                       width (str "-/resize/" width "x/"))
+   (let [width         (spice/parse-int width)
+         image-id      (ucare-img-id image-id)
+         default-url   (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" default-quality "/")
+                         width (str "-/resize/" width "x/"))
+         retina-url    (if retina?
+                         (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" retina-quality "/")
+                           width (str "-/resize/" (* 2 width) "x/"))
+                         default-url)
          picture-attrs (merge {:key image-id}
                               (when picture-classes
                                 {:class picture-classes}))]
@@ -558,7 +562,7 @@
        [:picture ^:attrs picture-attrs
         [:source {:src-set (str retina-url " 2x," default-url " 1x")}]
         [:img ^:attrs (-> img-attrs
-                          (dissoc :width :retina-quality :default-quality :picture-classses)
+                          (dissoc :width :retina-quality :default-quality :picture-classses :retina?)
                           (assoc :src default-url))]]
        [:picture ^:attrs picture-attrs]))))
 
@@ -905,14 +909,16 @@
                                (component/build embed
                                                 (assoc data
                                                        :screen/seen? nil
-                                                       :screen/visible? nil)
+                                                       :screen/visible? nil
+                                                       :screen/loaded? nil)
                                                 opts)]))
      :cljs (component/create-dynamic
             "screen-aware-component"
             (constructor [this props]
                          (component/create-ref! this "trigger")
                          {:seen?    false
-                          :visible? nil})
+                          :visible? nil
+                          :loaded?  false})
             (did-mount [this]
                        (if (.hasOwnProperty js/window "IntersectionObserver")
                          (when-let [ref (component/get-ref this "trigger")]
@@ -944,18 +950,21 @@
                               (.unobserve observer element)
                               (.disconnect observer))))
             (render [this]
-                    (let [trigger                            (component/use-ref this "trigger")
-                          {:keys [seen? visible?] :as state} (component/get-state this)
-                          data                               (component/get-props this)
-                          {:keys [embed opts]}               (component/get-opts this)]
+                    (let [trigger                                    (component/use-ref this "trigger")
+                          {:keys [seen? visible? loaded?] :as state} (component/get-state this)
+                          data                                       (component/get-props this)
+                          {:keys [embed opts]}                       (component/get-opts this)]
                       (component/html
                        [:div {:ref trigger}
                         (when-not seen? nbsp)  ; When the content has no height, isIntersecting is always false.
                         (component/build embed
                                          (assoc data
                                                 :screen/seen? seen?
-                                                :screen/visible? visible?)
-                                         (merge {:key "embed"} opts))]))))))
+                                                ;;:screen/visible? visible?
+                                                :screen/loaded? loaded?)
+                                         (-> {:key "embed"}
+                                             (merge opts)
+                                             (update :opts assoc :screen/loaded (fn [] (component/set-state! this :loaded? true)))))]))))))
 
 (defn screen-aware
   "A decorator around component/build that sets the screen information data to
@@ -965,13 +974,27 @@
 
    :screen/seen? (bool) if the user's screen has this element on the screen at
       least once
+   :screen/loaded? (bool) used to indicate extra resources have loaded. This
+      boolean is set to true when the callback function is called (see below)
 
-  If :screen/seen? and :screen/visible? is nil, then the component is under a
+  If :screen/seen? and :screen/loaded? is nil, then the component is under a
   server-side render.
 
-  Note that this is best-effort and not a guarantee of accuracy. This requires
-  browsers to support the IntersectionObserver APIs. A browser that does not support
-  this API will have :screen/seen? and :screen/visible? both sets to true.
+  Loaded Semantics:
+
+    :screen/loaded? is useful if the inner component needs to explicitly load
+    extra resources (eg - wait for images to load). The completion handler is
+    passed along to the inner component's options via the :screen/loaded key.
+
+    :screen/loaded key contains a 0-arity function that indicates success. For an
+    example of using this, see defer-ucare-img-component
+
+
+  Notes:
+
+    this is best-effort and not a guarantee of accuracy. This requires
+    browsers to support the IntersectionObserver APIs. A browser that does not support
+    this API will have :screen/seen? set to true.
   "
   ([component] (screen-aware component nil nil))
   ([component data] (screen-aware component data nil))
@@ -985,11 +1008,34 @@
      {:opts {:embed component
              :opts  opts}}))))
 
-(defcomponent ^:private defer-ucare-img-component [{:screen/keys [seen?] :keys [id attrs]} owner opts]
+(defcomponent ^:private defer-img-component [{:screen/keys [seen?] :keys [attrs]} _ _]
   (let [placeholder-attrs (select-keys attrs [:class :width :height])]
     (cond
-      seen? (ucare-img attrs id)
+      seen? [:img attrs]
       :else [:div placeholder-attrs])))
+
+(defn basic-defer-img [attrs image-url]
+  (screen-aware defer-img-component {:attrs (assoc attrs :src image-url)}
+                {:key image-url}))
+
+(defcomponent ^:private defer-ucare-img-component [{:screen/keys [seen? loaded?] :keys [id attrs]} _ {:screen/keys [placeholder placeholder-class placeholder-attrs loaded]}]
+  (let [placeholder-attrs (merge (select-keys attrs [:class :width :height]) placeholder-attrs)]
+    [:div
+     (when-not loaded?
+       [:div
+        ^:attrs
+        (update placeholder-attrs
+                :class
+                str " " placeholder-class)
+        placeholder])
+     ;; try and preserve same DOM element so image loading via on-load doesn't double-load the image
+     (when seen?
+       (ucare-img #?(:cljs (cond-> attrs
+                             (not loaded?) (assoc :on-load #(loaded))
+                             (not loaded?) (update :class str " hide")
+                             loaded?       (update :class str " fade-in"))
+                     :clj attrs)
+                  id))]))
 
 (defn defer-ucare-img
   "A particular instance of screen-aware that only loads the image when the
@@ -998,13 +1044,16 @@
   Server side renders this via noscript.
   "
   [{:as   img-attrs
-    :keys [width retina-quality default-quality]
+    :keys [width retina-quality default-quality placeholder placeholder-class placeholder-attrs]
     :or   {retina-quality  "lightest"
            default-quality "normal"}}
    image-id]
-  (screen-aware defer-ucare-img-component {:attrs img-attrs
+  (screen-aware defer-ucare-img-component {:attrs (dissoc img-attrs :placeholder :placeholder-class :placeholder-attrs)
                                            :id    image-id}
-                {:key image-id}))
+                {:key  image-id
+                 :opts {:screen/placeholder       placeholder
+                        :screen/placeholder-class placeholder-class
+                        :screen/placeholder-attrs placeholder-attrs}}))
 
 (defn navigator-share
   [{:share-icon/keys [target icon]}]

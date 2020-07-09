@@ -26,6 +26,7 @@
 (defcomponent social-image-card-component
   [{:keys                [desktop-aware?
                           id image-url overlay description social-service icon-url title]
+    :screen/keys         [seen?]
     [nav-event nav-args] :cta/navigation-message
     button-type          :cta/button-type}
    owner
@@ -51,7 +52,7 @@
       [:div.h5.medium.mt1.mb2
        [:div.flex.items-center.justify-between.mb2
         [:div.flex.items-center
-         (when icon-url
+         (when (and seen? icon-url)
            [:img.mr2.rounded-0
             {:height "41px"
              :width  "64px"
