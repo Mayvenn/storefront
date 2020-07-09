@@ -48,9 +48,7 @@
      [:div.proxima.title-2.m2.shout "#MayvennMade"]
      (component/build
       carousel/component
-      {:slides   (map-indexed
-                  (partial carousel-slide destination-event product-id page-slug sku-id "mayvenn-made-slide-")
-                  social-cards)
+      {:data     social-cards
        :settings {:nav         false
                   :startIndex  0
                   :edgePadding 50
@@ -62,7 +60,10 @@
                   ;; 1000 means 1000 and above.
                   :items       2
                   :responsive  {1000 {:items 3}}}}
-      opts)
+      (assoc-in opts [:opts :slides]
+                (map-indexed
+                 (partial carousel-slide destination-event product-id page-slug sku-id "mayvenn-made-slide-")
+                 social-cards)))
      [:p.center.px6.mb2.mt4.content-2.proxima
       "Want to show up on our homepage? "
       "Tag your best pictures wearing Mayvenn with "]
@@ -75,13 +76,13 @@
      {:close-attrs close-attrs}
      [:div.relative
       (component/build carousel/component
-                       {:slides   (map (partial popup-slide (:product-name carousel-data))
-                                       (:social-cards carousel-data))
+                       {:data     (:social-cards carousel-data)
                         :settings {:items       1
                                    :edgePadding 0
                                    :nav         false
                                    :startIndex  (parse-int offset)}}
-                       {})
+                       {:opts {:slides (map (partial popup-slide (:product-name carousel-data))
+                                            (:social-cards carousel-data))}})
       [:div.absolute
        {:style {:top "1.5rem" :right "1.5rem"}}
        (ui/modal-close {:class       "stroke-black fill-gray"

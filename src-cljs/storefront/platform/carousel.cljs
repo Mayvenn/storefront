@@ -35,8 +35,8 @@
                 (safely-destroy (.-carousel this)))
   (render [this]
           (component/html
-           (let [{:keys [slides]}                       (component/get-props this)
-                 {:keys [controls] :or {controls true}} (:settings (component/get-opts this))]
+           (let [{:keys [settings slides]}              (component/get-opts this)
+                 {:keys [controls] :or {controls true}} settings]
              [:div.relative
               (when controls
                 [:div.z2.carousel-prev {:style {:height "50px" :width "50px"}
@@ -52,18 +52,21 @@
 
 ;; Important note: carousels should be provided a react key, otherwise we'll get strange behavior
 ;; from dirty state when going between pages containing different carousels.
-(defcomponent component [{:keys [slides] :as data} _ _]
-  (component/build inner-component
-                   {:slides slides}
-                   (let [opts (cond-> (assoc-in data [:settings :autoplay] false)
+(defcomponent component [data _ {:keys [slides]}]
+  ;; slides from data is legacy and shouldn't be used at risk of lots of re-renders
+  (let [slides (or slides (:slides data))]
+    (component/build inner-component
+                     {} ;; we're using key to invalidate the component
+                     (let [opts (cond-> (assoc-in data [:settings :autoplay] false)
+                                  :always (assoc :slides slides)
 
-                                (= (count slides) 1)
-                                (update-in [:settings] merge {:arrows    false
-                                                              :nav       false
-                                                              :touch     false
-                                                              :controls  false
-                                                              :mouseDrag false}))]
-                     {:opts opts
-                      :key  (->> [slides opts]
-                                 hash
-                                 (str "product-carousel-inner-"))})))
+                                  (= (count slides) 1)
+                                  (update-in [:settings] merge {:arrows    false
+                                                                :nav       false
+                                                                :touch     false
+                                                                :controls  false
+                                                                :mouseDrag false}))]
+                       {:opts opts
+                        :key  (->> data
+                                   hash
+                                   (str "product-carousel-inner-"))}))))

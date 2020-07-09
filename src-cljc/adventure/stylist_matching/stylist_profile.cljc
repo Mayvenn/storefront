@@ -236,24 +236,25 @@
   (when (seq items)
     (component/build
      carousel/component
-     {:slides   (map (fn [{:keys [target-message
-                                  key
-                                  ucare-img-url]}]
-                       [:a.px1.block
-                        (merge (apply utils/route-to target-message)
-                               {:key key})
-                        (ui/aspect-ratio
-                         1 1
-                         [:img {:src   (str ucare-img-url "-/scale_crop/204x204/-/format/auto/")
-                                :class "col-12"}])])
-                     items)
+     {:data     items
       :settings {:controls true
                  :nav      false
                  :items    3
                  ;; setting this to true causes some of our event listeners to
                  ;; get dropped by tiny-slider.
                  :loop     false}}
-     {})))
+     {:opts {:slides (map (fn [{:keys [target-message
+                                       key
+                                       ucare-img-url]}]
+                            (component/html
+                             [:a.px1.block
+                              (merge (apply utils/route-to target-message)
+                                     {:key key})
+                              (ui/aspect-ratio
+                               1 1
+                               [:img {:src   (str ucare-img-url "-/scale_crop/204x204/-/format/auto/")
+                                      :class "col-12"}])]))
+                            items)}})))
 
 (defn cta-molecule
   [{:cta/keys [id label target]}]

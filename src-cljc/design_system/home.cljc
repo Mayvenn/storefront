@@ -606,41 +606,37 @@
    [:div.flex.items-center.col-12
     [:div.col-4
      (component/build carousel/component
-                      {:slides [[:img.mx-auto {:src "http://lorempixel.com/200/200/cats/1"}]
-                                [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/2"}]
-                                [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/3"}]
-                                [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/4"}]]
-                       :settings {:swipe true
+                      {:settings {:swipe true
                                   :arrows true
                                   :dots true}}
-                      {})]
+                      {:opts {:slides [[:img.mx-auto {:src "http://lorempixel.com/200/200/cats/1"}]
+                                       [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/2"}]
+                                       [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/3"}]
+                                       [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/4"}]]}})]
 
     [:div.col-4
      (component/build carousel/component
-                      {:slides [[:img.mx-auto {:src "http://lorempixel.com/200/200/cats/5"}]
-                                [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/6"}]
-                                [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/7"}]
-                                [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/8"}]]
-                       :settings {:swipe true
+                      {:settings {:swipe true
                                   :arrows true}}
-                      {})]
+                      {:opts {:slides [[:img.mx-auto {:src "http://lorempixel.com/200/200/cats/5"}]
+                                       [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/6"}]
+                                       [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/7"}]
+                                       [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/8"}]]}})]
 
     [:div.col-4
      (component/build carousel/component
-                      {:slides [[:img.mx-auto {:src "http://lorempixel.com/200/200/cats/9"}]]
-                       :settings {:swipe true
+                      {:settings {:swipe true
                                   :arrows false}}
-                      {})]]
+                      {:opts {:slides [[:img.mx-auto {:src "http://lorempixel.com/200/200/cats/9"}]]}})]]
 
    [:div.mt1
     (component/build carousel/component
-                     {:slides (for [i (range 12)]
-                                [:img.mx-auto {:src (str "http://lorempixel.com/200/200/animals/" i)}])
-                      :settings {:swipe true
+                     {:settings {:swipe true
                                  :slidesToShow 3
                                  :arrows true
                                  :dots true}}
-                     {})]])
+                     {:opts {:slides (for [i (range 12)]
+                                       [:img.mx-auto {:src (str "http://lorempixel.com/200/200/animals/" i)}])}})]])
 
 (def model-img
   "http://ucarecdn.com/1a3ce0a2-d8a4-4c72-b20b-62b5ff445096/-/format/auto/-/resize/110x/")

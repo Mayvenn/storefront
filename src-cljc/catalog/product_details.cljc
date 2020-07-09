@@ -173,9 +173,10 @@
 
 (defn carousel [images _]
   (component/build carousel/component
-                   {:slides   (mapv image-body images)
+                   {:images   images
                     :settings {:edgePadding 0
-                               :items       1}}))
+                               :items       1}}
+                   {:opts {:slides (mapv image-body images)}}))
 
 (defn get-selected-options [selections options]
   (reduce
@@ -227,33 +228,35 @@
         [:div
          {:key "page"}
          (page
-          [:div
-           (carousel carousel-images product)
-           [:div.hide-on-mb (component/build ugc/component ugc opts)]
-           (when how-it-works
-             [:div.container.mx-auto.mt4.px4.hide-on-mb
-              (component/build how-it-works/organism how-it-works)])]
-          [:div
+          (component/html
            [:div
-            (full-bleed-narrow (carousel carousel-images product))]
-           (component/build product-summary-organism data)
-           [:div.px2
-            (component/build picker/component picker-data opts)]
+            ^:inline (carousel carousel-images product)
+            [:div.hide-on-mb (component/build ugc/component ugc opts)]
+            (when how-it-works
+              [:div.container.mx-auto.mt4.px4.hide-on-mb
+               (component/build how-it-works/organism how-it-works)])])
+          (component/html
            [:div
-            (cond
-              unavailable? unavailable-button
-              sold-out?    sold-out-button
-              :else        (component/build add-to-cart/organism data))]
-           (when (products/stylist-only? product)
-             shipping-and-guarantee)
-           (if (accessors.products/service? product)
-             (component/build catalog.M/service-description data opts)
-             (component/build catalog.M/product-description data opts))
-           (when how-it-works
-             [:div.container.mx-auto.mt4.px4.hide-on-dt.hide-on-tb
-              (component/build how-it-works/organism how-it-works)])
-           (component/build freeinstall-banner/organism data opts)
-           [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
+            [:div
+             (full-bleed-narrow (carousel carousel-images product))]
+            (component/build product-summary-organism data)
+            [:div.px2
+             (component/build picker/component picker-data opts)]
+            [:div
+             (cond
+               unavailable? unavailable-button
+               sold-out?    sold-out-button
+               :else        (component/build add-to-cart/organism data))]
+            (when (products/stylist-only? product)
+              shipping-and-guarantee)
+            (if (accessors.products/service? product)
+              (component/build catalog.M/service-description data opts)
+              (component/build catalog.M/product-description data opts))
+            (when how-it-works
+              [:div.container.mx-auto.mt4.px4.hide-on-dt.hide-on-tb
+               (component/build how-it-works/organism how-it-works)])
+            (component/build freeinstall-banner/organism data opts)
+            [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]]))]]
        (when aladdin?
          [:div.py10.bg-pale-purple.col-on-tb-dt.mt4
           (component/build v2/get-a-free-install get-a-free-install-section-data)])

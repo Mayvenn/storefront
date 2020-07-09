@@ -9,10 +9,10 @@
                          (ui/ucare-img {:class "col-12"} ucare-id))])
 
 (defn simple
-  [{:keys [slides open? close-event]}]
+  [{:keys [slides open? close-event data]}]
   (when open?
     (let [close-attrs (merge (utils/fake-href close-event)
-                             {:style {:margin-top "-60px"
+                             {:style {:margin-top   "-60px"
                                       :margin-right "-15px"}})]
       (ui/modal
        {:close-attrs close-attrs
@@ -20,12 +20,12 @@
        [:div.relative.mx-auto
         {:style {:max-width "750px"}}
         (component/build carousel/component
-                         {:slides   slides
+                         {:data     data
                           :settings {:controls    true
                                      :nav         false
                                      :edgePadding 0
                                      :items       1}}
-                         {})
+                         {:opts {:slides slides}})
         [:div.absolute
          {:style {:top "1.5rem" :right "1.5rem"}}
          (ui/modal-close {:class       "stroke-black fill-gray"

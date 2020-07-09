@@ -49,13 +49,14 @@
                               (get-in app-state keypaths/store-stylist-id)
                               (get-in app-state keypaths/order-servicing-stylist-id)))
 
-(defn carousel [imgs]
+(defn carousel [data imgs]
   (component/build carousel/component
-                   {:slides   imgs
-                    :settings {:nav         true
-                               :edgePadding 0
-                               :controls    true
-                               :items       1}}))
+                   {:dependencies data
+                    :settings     {:nav         true
+                                   :edgePadding 0
+                                   :controls    true
+                                   :items       1}}
+                   {:opts {:slides imgs}}))
 
 (defn get-model-image
   [images-catalog {:keys [copy/title] :as skuer}]
@@ -133,7 +134,7 @@
       (when desktop-two-column?
         {:class "col-on-tb-dt col-6-on-tb-dt px3-on-tb-dt"})
       (when shared-cart
-        (carousel (imgs images-catalog look shared-cart)))
+        (carousel {:look look :shared-cart shared-cart} (imgs images-catalog look shared-cart)))
       [:div.px3.pb3.pt1
        [:div.flex.items-center
         [:div.flex-auto.content-1.proxima {:style {:word-break "break-all"}}

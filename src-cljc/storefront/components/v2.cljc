@@ -17,7 +17,7 @@
            stylist-name
            modal?
            stylist-gallery-open?]
-    :as data}
+    :as   data}
    _ _]
   (let [step (fn [{:keys [icon-uuid icon-width title description]}]
                [:div.col-12.mt2.center
@@ -85,6 +85,7 @@
           "Hair Gallery"]
          (modal-gallery/simple
           {:slides      (map modal-gallery/ucare-img-slide gallery-ucare-ids)
+           :data        gallery-ucare-ids
            :open?       stylist-gallery-open?
            :close-event events/control-stylist-gallery-close})])]]))
 
