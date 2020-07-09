@@ -104,7 +104,7 @@
             :promotion-helper.ui.drawer-contents.condition.progress/id        "stylist"
             :promotion-helper.ui.drawer-contents.condition.action/id          "condition-add-stylist-button"
             :promotion-helper.ui.drawer-contents.condition.action/label       "add"
-            :promotion-helper.ui.drawer-contents.condition.action/target      [e/navigate-adventure-match-stylist]})]}
+            :promotion-helper.ui.drawer-contents.condition.action/target      [behavior/control-promotion-helper-add-stylist-button-clicked]})]}
        (when (zero? failed-criteria-count)
          {:promotion-helper.ui.drawer-contents.footer/id         "promotion-helper-conditions-fulfilled-footer"
           :promotion-helper.ui.drawer-contents.footer/primary    "🎉 Great work! Free service unlocked!"
