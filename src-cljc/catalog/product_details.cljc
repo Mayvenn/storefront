@@ -160,23 +160,27 @@
    [:div.border-top.border-bottom.border-gray.p2.my2.center.shout.medium.h6
     "Free shipping & 30 day guarantee"]))
 
-(defn image-body [{:keys [filename url alt]}]
+(defn image-body [i {:keys [filename url alt]}]
   (ui/aspect-ratio
    640 580
-   (ui/defer-ucare-img
-     {:class       "col-12"
-      :alt         alt
-      :width       640
-      :placeholder (ui/large-spinner {:style {:height     "60px"
-                                              :margin-top "130px"}})}
-     url)))
+   (if (zero? i)
+     [:img.col-12
+      {:src (str url "-/format/auto/-/resize/640x/" filename)
+       :alt alt}]
+     (ui/defer-ucare-img
+       {:class       "col-12"
+        :alt         alt
+        :width       640
+        :placeholder (ui/large-spinner {:style {:height     "60px"
+                                                :margin-top "130px"}})}
+       url))))
 
 (defn carousel [images _]
   (component/build carousel/component
                    {:images   images
                     :settings {:edgePadding 0
                                :items       1}}
-                   {:opts {:slides (mapv image-body images)}}))
+                   {:opts {:slides (map-indexed image-body images)}}))
 
 (defn get-selected-options [selections options]
   (reduce

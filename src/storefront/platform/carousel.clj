@@ -1,7 +1,7 @@
 (ns storefront.platform.carousel
   (:require [storefront.component :as component]))
 
-(defn component [{:keys [slides]} _ _]
+(defn component [_ _ {:keys [slides]}]
   (component/create
    [:div.overflow-hidden.nowrap
     (for [slide slides]
