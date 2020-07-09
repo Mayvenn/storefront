@@ -332,12 +332,14 @@
                   [:div.col-12.flex.justify-end.m2
                    checkmark-circle]])])])
 
-(defn- slide-animate [content]
+(defn- slide-animate [enabled? content]
+  (prn enabled?)
   (css-transitions/transition-group
-   {:classNames "picker"
-    :key        "picker"
-    :in         (boolean (not-empty content))
-    :timeout    250}
+   {:classNames    "picker"
+    :key           "picker"
+    :in            (boolean enabled?) #_ (boolean (not-empty content))
+    :unmountOnExit true
+    :timeout       1000}
    (component/html (or content [:div]))))
 
 (defn picker-dialog
@@ -368,45 +370,46 @@
            selections
            options
            sku-quantity
-           color-picker-redesign?]
+           color-picker-redesign?
+           picker-visible?]
     :as   data} owner _]
   (let [color-option-fn (if color-picker-redesign? color-option-new color-option)]
     [:div
      (slide-animate
-      (when (seq options)
-        (condp = selected-picker
-          :hair/color    (picker-dialog {:title               (get-in facets [selected-picker :facet/name])
-                                         :items               (sort-by :option/order (get options selected-picker))
-                                         :wrap?               color-picker-redesign?
-                                         :cell-component-fn   (fn [item]
-                                                                (color-option-fn
-                                                                 {:key              (str "color-" (:option/name item))
-                                                                  :selected-picker  selected-picker
-                                                                  :navigation-event navigation-event
-                                                                  :color            item
-                                                                  :checked?         (= (:hair/color selections)
-                                                                                       (:option/slug item))
-                                                                  :sku-image        (:option/sku-swatch item)}))})
-          :hair/length   (picker-dialog {:title               (get-in facets [selected-picker :facet/name])
-                                         :items               (sort-by :option/order (get options selected-picker))
-                                         :cell-component-fn   (fn [item]
-                                                                (length-option
-                                                                 {:key              (str "length-" (:option/name item))
-                                                                  :primary-label    (:option/name item)
-                                                                  :navigation-event navigation-event
-                                                                  :checked?         (= (:hair/length selections)
-                                                                                       (:option/slug item))
-                                                                  :selected-picker  selected-picker
-                                                                  :item             item}))})
-          :item/quantity (picker-dialog {:title               "Quantity"
-                                         :items               (range 1 11)
-                                         :cell-component-fn   (fn [quantity]
-                                                                (quantity-option
-                                                                 {:key           (str "quantity-" quantity)
-                                                                  :primary-label (str quantity)
-                                                                  :checked?      (= quantity sku-quantity)
-                                                                  :quantity      quantity}))})
-          nil)))
+      picker-visible?
+      (condp = selected-picker
+        :hair/color    (picker-dialog {:title               (get-in facets [selected-picker :facet/name])
+                                       :items               (sort-by :option/order (get options selected-picker))
+                                       :wrap?               color-picker-redesign?
+                                       :cell-component-fn   (fn [item]
+                                                              (color-option-fn
+                                                               {:key              (str "color-" (:option/name item))
+                                                                :selected-picker  selected-picker
+                                                                :navigation-event navigation-event
+                                                                :color            item
+                                                                :checked?         (= (:hair/color selections)
+                                                                                     (:option/slug item))
+                                                                :sku-image        (:option/sku-swatch item)}))})
+        :hair/length   (picker-dialog {:title               (get-in facets [selected-picker :facet/name])
+                                       :items               (sort-by :option/order (get options selected-picker))
+                                       :cell-component-fn   (fn [item]
+                                                              (length-option
+                                                               {:key              (str "length-" (:option/name item))
+                                                                :primary-label    (:option/name item)
+                                                                :navigation-event navigation-event
+                                                                :checked?         (= (:hair/length selections)
+                                                                                     (:option/slug item))
+                                                                :selected-picker  selected-picker
+                                                                :item             item}))})
+        :item/quantity (picker-dialog {:title               "Quantity"
+                                       :items               (range 1 11)
+                                       :cell-component-fn   (fn [quantity]
+                                                              (quantity-option
+                                                               {:key           (str "quantity-" quantity)
+                                                                :primary-label (str quantity)
+                                                                :checked?      (= quantity sku-quantity)
+                                                                :quantity      quantity}))})
+        nil))
      (if (seq options)
        (picker-rows data)
        [:div.py2])]))
@@ -415,11 +418,13 @@
   [data]
   (let [options           (get-in data catalog.keypaths/detailed-product-options)
         selected-picker   (get-in data catalog.keypaths/detailed-product-selected-picker)
+        picker-visible?   (get-in data catalog.keypaths/detailed-product-picker-visible?)
         product-skus      (products/extract-product-skus data (products/current-product data))
         product-sold-out? (every? (comp not :inventory/in-stock?) product-skus)
         facets            (facets/by-slug data)
         selections        (get-in data catalog.keypaths/detailed-product-selections)]
     {:selected-picker        selected-picker
+     :picker-visible?        (and options selected-picker picker-visible?)
      :color-picker-redesign? (experiments/color-picker-redesign? data)
      :facets                 facets
      :selections             selections

@@ -668,6 +668,7 @@
         (assoc-in keypaths/browse-recently-added-skus [])
         (assoc-in keypaths/browse-sku-quantity 1)
         (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
+        (assoc-in catalog.keypaths/detailed-product-picker-visible? nil)
         (cond-> sku (assoc-selections sku))  ; can be nil if not yet fetched
         (assoc-in catalog.keypaths/detailed-product-options options))))
 
@@ -698,17 +699,19 @@
 
 (defmethod transitions/transition-state events/control-product-detail-picker-open
   [_ event {:keys [facet-slug]} app-state]
-  (assoc-in app-state catalog.keypaths/detailed-product-selected-picker facet-slug))
+  (-> app-state
+      (assoc-in catalog.keypaths/detailed-product-selected-picker facet-slug)
+      (assoc-in catalog.keypaths/detailed-product-picker-visible? true)))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-option-quantity-select
   [_ event {:keys [value]} app-state]
   (-> app-state
       (assoc-in keypaths/browse-sku-quantity value)
-      (assoc-in catalog.keypaths/detailed-product-selected-picker nil)))
+      (assoc-in catalog.keypaths/detailed-product-picker-visible? false)))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-close
   [_ event _ app-state]
-  (assoc-in app-state catalog.keypaths/detailed-product-selected-picker nil))
+  (assoc-in app-state catalog.keypaths/detailed-product-picker-visible? false))
 
 #?(:cljs
    (defmethod effects/perform-effects events/control-product-detail-picker-open
