@@ -42,9 +42,7 @@
    {:drawer-face
     (merge
      {:promotion-helper.ui.drawer-face.action/id      "promotion-helper"
-      :promotion-helper.ui.drawer-face.action/target  [(if opened?
-                                                        behavior/ui-promotion-helper-closed
-                                                        behavior/ui-promotion-helper-opened)]
+      :promotion-helper.ui.drawer-face.action/target  [(if opened? behavior/closed behavior/opened)]
       :promotion-helper.ui.drawer-face.action/opened? opened?}
      (if (pos? failed-criteria-count)
        {:promotion-helper.ui.drawer-face.circle/color "bg-red white"
@@ -80,7 +78,9 @@
               :promotion-helper.ui.drawer-contents.condition.progress/remaining hair-missing-quantity
               :promotion-helper.ui.drawer-contents.condition.action/id          "condition-add-hair-button" ;; COREY
               :promotion-helper.ui.drawer-contents.condition.action/label       "add"
-              :promotion-helper.ui.drawer-contents.condition.action/target      failure-navigation-event})
+              :promotion-helper.ui.drawer-contents.condition.action/target
+              [behavior/followed {:target    failure-navigation-event
+                                  :condition "add-hair"}]})
            {:promotion-helper.ui.drawer-contents.condition.title/id             "hair"
             :promotion-helper.ui.drawer-contents.condition.title/primary-struck "Add Your Hair"
             :promotion-helper.ui.drawer-contents.condition.title/secondary      hair-success
@@ -104,7 +104,9 @@
             :promotion-helper.ui.drawer-contents.condition.progress/id        "stylist"
             :promotion-helper.ui.drawer-contents.condition.action/id          "condition-add-stylist-button"
             :promotion-helper.ui.drawer-contents.condition.action/label       "add"
-            :promotion-helper.ui.drawer-contents.condition.action/target      [behavior/control-promotion-helper-add-stylist-button-clicked]})]}
+            :promotion-helper.ui.drawer-contents.condition.action/target
+            [behavior/followed {:target    [e/navigate-adventure-match-stylist]
+                                :condition "add-stylist"}]})]}
        (when (zero? failed-criteria-count)
          {:promotion-helper.ui.drawer-contents.footer/id         "promotion-helper-conditions-fulfilled-footer"
           :promotion-helper.ui.drawer-contents.footer/primary    "🎉 Great work! Free service unlocked!"

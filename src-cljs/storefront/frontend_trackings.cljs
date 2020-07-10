@@ -466,3 +466,9 @@
   [_ _ {:keys [stylist-id error]} _]
   (stringer/track-event "stylist_profile_share_error" {:current_servicing_stylist_id stylist-id
                                                        :error_message                error}))
+
+(defn cart-items-model<-
+  [order images-db skus-db]
+  (->> (orders/product-and-service-items order)
+       (waiter-line-items->line-item-skuer skus-db)
+       (mapv (partial line-item-skuer->stringer-cart-item images-db))))

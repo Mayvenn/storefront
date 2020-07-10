@@ -1,43 +1,94 @@
 (ns promotion-helper.behavior
   (:require #?@(:cljs [[storefront.frontend-trackings :as frontend-trackings]
                        [storefront.hooks.stringer :as stringer]])
-            [storefront.transitions :as t]
+            [storefront.transitions :refer [transition-state]]
             [storefront.events :as e]
-            [storefront.effects :as effects]
+            [storefront.effects :refer [perform-effects]]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages]
             [storefront.accessors.orders :as orders]
             [promotion-helper.keypaths :as k]
             [storefront.trackings :refer [perform-track]]))
 
-;; Promotion Helper events
-(def ui-promotion-helper-closed [:ui :promotion-helper :closed])
-(def ui-promotion-helper-opened [:ui :promotion-helper :opened])
-(def control-promotion-helper-add-stylist-button-clicked [:control :promotion-helper :add-stylist-button-clicked])
+;;; COREY
+;;; Open and close might happen from user input or something else, should that be in the event data?
 
-(defmethod t/transition-state ui-promotion-helper-opened
+(declare track)
+
+;;;;
+;;;; Event Domain
+;;;;
+
+(def promotion-helper [:ui :promotion-helper])
+
+(def ^{:doc "The drawer is opened"}      opened   (conj promotion-helper :opened))
+(def ^{:doc "The drawer is closed"}      closed   (conj promotion-helper :closed))
+(def ^{:doc "A suggestion was followed"} followed (conj promotion-helper :followed))
+
+;;;
+;;; Event promotion-helper/opened
+;;;
+
+(defmethod transition-state opened
   [_ event args app-state]
   (-> app-state
       (assoc-in k/ui-promotion-helper-opened true)))
 
-(defmethod t/transition-state ui-promotion-helper-closed
+(defmethod perform-track opened
+  [_ _ _ app-state]
+  (track "helper_opened"
+         (get-in app-state keypaths/order)
+         (get-in app-state keypaths/v2-images)
+         (get-in app-state keypaths/v2-skus)))
+
+;;;
+;;; Event promotion-helper/closed
+;;;
+
+(defmethod transition-state closed
   [_ event args app-state]
   (-> app-state
       (assoc-in k/ui-promotion-helper-opened false)))
 
-(defmethod effects/perform-effects control-promotion-helper-add-stylist-button-clicked
-  [_ _ _ _ app-state]
-  (messages/handle-message e/navigate-adventure-match-stylist {}))
-
-(defmethod perform-track control-promotion-helper-add-stylist-button-clicked
+(defmethod perform-track closed
   [_ _ _ app-state]
+  (track "helper_closed"
+         (get-in app-state keypaths/order)
+         (get-in app-state keypaths/v2-images)
+         (get-in app-state keypaths/v2-skus)))
+
+;;;
+;;; Event promotion-helper/followed
+;;;
+
+(defmethod perform-effects followed
+  [_ _ {:keys [target]} _ app-state]
+  (apply messages/handle-message target))
+
+(defmethod perform-track followed
+  [_ _ {:keys [condition]} app-state]
+  (when-let [data-team-event (case condition
+                               "add-hair"    "helper_add_hair_button_pressed"
+                               "add-stylist" "helper_add_stylist_button_pressed"
+                               nil)]
+    (track data-team-event
+           (get-in app-state keypaths/order)
+           (get-in app-state keypaths/v2-images)
+           (get-in app-state keypaths/v2-skus))))
+
+;;;;
+;;;; utils
+;;;;
+
+(defn ^:private track
+  [event-name {:keys [current-servicing-stylist-id] :as waiter-order} images-db skus-db]
   #?(:cljs
-     (let [order          (get-in app-state keypaths/order)
-           images-catalog (get-in app-state keypaths/v2-images)
-           cart-items     (->> order
-                               orders/product-and-service-items
-                               (frontend-trackings/waiter-line-items->line-item-skuer
-                                (get-in app-state keypaths/v2-skus))
-                               (mapv (partial frontend-trackings/line-item-skuer->stringer-cart-item images-catalog)))]
-       (stringer/track-event "helper_add_stylist_button_pressed" {:context     {:cart_items cart-items}
-                                                                  :helper_name "promotion-helper"}))))
+     (stringer/track-event
+      event-name
+      (-> {:helper_name "promotion-helper"}
+          (assoc :current_servicing_stylist_id
+                 current-servicing-stylist-id)
+          (assoc :cart_items
+                 (frontend-trackings/cart-items-model<- waiter-order
+                                                        images-db
+                                                        skus-db))))))
