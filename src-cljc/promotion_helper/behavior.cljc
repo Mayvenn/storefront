@@ -25,48 +25,49 @@
   (-> app-state
       (assoc-in k/ui-promotion-helper-opened false)))
 
-(defmethod perform-track ui-promotion-helper-opened
-  [_ _ _ app-state]
-  #?(:cljs
-     (let [order          (get-in app-state keypaths/order)
-           images-catalog (get-in app-state keypaths/v2-images)
-           cart-items     (->> order
-                               orders/product-and-service-items
-                               (frontend-trackings/waiter-line-items->line-item-skuer
-                                (get-in app-state keypaths/v2-skus))
-                               (mapv (partial frontend-trackings/line-item-skuer->stringer-cart-item images-catalog)))]
-       (stringer/track-event "helper_opened" {:current_servicing_stylist_id (:servicing-stylist-id order)
-                                              :context                      {:cart_items cart-items}
-                                              :helper_name                  "promotion-helper"}))))
-
-(defmethod perform-track ui-promotion-helper-closed
-  [_ _ _ app-state]
-  #?(:cljs
-     (let [order          (get-in app-state keypaths/order)
-           images-catalog (get-in app-state keypaths/v2-images)
-           cart-items     (->> order
-                               orders/product-and-service-items
-                               (frontend-trackings/waiter-line-items->line-item-skuer
-                                (get-in app-state keypaths/v2-skus))
-                               (mapv (partial frontend-trackings/line-item-skuer->stringer-cart-item images-catalog)))]
-       (stringer/track-event "helper_closed" {:current_servicing_stylist_id (:servicing-stylist-id order)
-                                              :context                      {:cart_items cart-items}
-                                              :helper_name                  "promotion-helper"}))))
-
 (defmethod effects/perform-effects control-promotion-helper-add-stylist-button-clicked
   [_ _ _ _ app-state]
   (messages/handle-message e/navigate-adventure-match-stylist {}))
 
-(defmethod perform-track control-promotion-helper-add-stylist-button-clicked
-  [_ _ _ app-state]
-  #?(:cljs
-     (let [order          (get-in app-state keypaths/order)
-           images-catalog (get-in app-state keypaths/v2-images)
-           cart-items     (->> order
-                               orders/product-and-service-items
-                               (frontend-trackings/waiter-line-items->line-item-skuer
-                                (get-in app-state keypaths/v2-skus))
-                               (mapv (partial frontend-trackings/line-item-skuer->stringer-cart-item images-catalog)))]
-       (stringer/track-event "helper_add_hair_button_pressed" {:current_servicing_stylist_id (:servicing-stylist-id order)
-                                                               :context                      {:cart_items cart-items}
-                                                               :helper_name                  "promotion-helper"}))))
+(comment
+  (defmethod perform-track ui-promotion-helper-opened
+    [_ _ _ app-state]
+    #?(:cljs
+       (let [order          (get-in app-state keypaths/order)
+             images-catalog (get-in app-state keypaths/v2-images)
+             cart-items     (->> order
+                                 orders/product-and-service-items
+                                 (frontend-trackings/waiter-line-items->line-item-skuer
+                                  (get-in app-state keypaths/v2-skus))
+                                 (mapv (partial frontend-trackings/line-item-skuer->stringer-cart-item images-catalog)))]
+         (stringer/track-event "helper_opened" {:current_servicing_stylist_id (:servicing-stylist-id order)
+                                                :context                      {:cart_items cart-items}
+                                                :helper_name                  "promotion-helper"}))))
+
+  (defmethod perform-track ui-promotion-helper-closed
+    [_ _ _ app-state]
+    #?(:cljs
+       (let [order          (get-in app-state keypaths/order)
+             images-catalog (get-in app-state keypaths/v2-images)
+             cart-items     (->> order
+                                 orders/product-and-service-items
+                                 (frontend-trackings/waiter-line-items->line-item-skuer
+                                  (get-in app-state keypaths/v2-skus))
+                                 (mapv (partial frontend-trackings/line-item-skuer->stringer-cart-item images-catalog)))]
+         (stringer/track-event "helper_closed" {:current_servicing_stylist_id (:servicing-stylist-id order)
+                                                :context                      {:cart_items cart-items}
+                                                :helper_name                  "promotion-helper"}))))
+
+  (defmethod perform-track control-promotion-helper-add-stylist-button-clicked
+    [_ _ _ app-state]
+    #?(:cljs
+       (let [order          (get-in app-state keypaths/order)
+             images-catalog (get-in app-state keypaths/v2-images)
+             cart-items     (->> order
+                                 orders/product-and-service-items
+                                 (frontend-trackings/waiter-line-items->line-item-skuer
+                                  (get-in app-state keypaths/v2-skus))
+                                 (mapv (partial frontend-trackings/line-item-skuer->stringer-cart-item images-catalog)))]
+         (stringer/track-event "helper_add_hair_button_pressed" {:current_servicing_stylist_id (:servicing-stylist-id order)
+                                                                 :context                      {:cart_items cart-items}
+                                                                 :helper_name                  "promotion-helper"})))))
