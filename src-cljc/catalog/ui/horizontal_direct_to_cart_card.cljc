@@ -35,8 +35,8 @@
              :horizontal-direct-to-cart-card-title/id            (some->> product-slug (str "product-card-title-"))
              :horizontal-direct-to-cart-card/primary             (:copy/title product)
              :horizontal-direct-to-cart-card/secondary           (list
-                                                                  [:span.strike (mf/as-money (:sku/price service-sku))]
-                                                                  [:span.ml2.s-color "FREE"])
+                                                                  ^:ignore-interpret-warning [:span.strike (mf/as-money (:sku/price service-sku))]
+                                                                  ^:ignore-interpret-warning [:span.ml2.s-color "FREE"])
              :horizontal-direct-to-cart-card/tertiary            (:promo.mayvenn-install/requirement-copy product)
              :horizontal-direct-to-cart-card/card-target         [events/navigate-product-details
                                                                   {:catalog/product-id (:catalog/product-id product)
