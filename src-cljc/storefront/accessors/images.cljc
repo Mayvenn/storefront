@@ -4,11 +4,13 @@
 (defn for-skuer [images-catalog skuer]
   (or (not-empty ;; v3/products style - normalized
        (into []
-             (keep (fn [[use-case order catalog-id]]
-                     (some-> catalog-id
-                             images-catalog
-                             (assoc :use-case use-case
-                                    :order order))))
+             (comp
+              (filter #(>= (count %) 3))
+              (keep (fn [[use-case order catalog-id]]
+                      (some-> catalog-id
+                              images-catalog
+                              (assoc :use-case use-case
+                                     :order order)))))
              (:selector/image-cases skuer)))
       ;; GROT: v2/skus, ~~v2/products~~, shared-cart style - denormalized already
       (:selector/images skuer)))
