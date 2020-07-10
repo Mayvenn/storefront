@@ -242,8 +242,7 @@
                                                 3
                                                 2)
                               :order_number   (:number order)
-                              :stylist_rating (:rating servicing-stylist)})
-       (frontend-trackings/track-pseudo-add-default-base-service-to-bag app-state)]))
+                              :stylist_rating (:rating servicing-stylist)})]))
 
 (defmethod trackings/perform-track events/adventure-stylist-search-results-displayed
   [_ event args app-state]
