@@ -7,8 +7,7 @@
              (comp
               (filter #(>= (count %) 3))
               (keep (fn [[use-case order catalog-id]]
-                      (some-> catalog-id
-                              images-catalog
+                      (some-> (get images-catalog catalog-id)
                               (assoc :use-case use-case
                                      :order order)))))
              (:selector/image-cases skuer)))
