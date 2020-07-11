@@ -113,7 +113,8 @@
    ;; The -5px prevents a sliver of the background from being visible above the filters
    ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
    {:style {:top "-5px"}
-    :class (if open-panel "z2" "z1")}
+    :class (if open-panel "z2" "z1")
+    :data-test "category-filters-panel"}
    (let [tabs (c/build filter-tabs tabs nil)]
      (if open-panel
        (let [panel (c/build filter-panel filter-panel-data)]
