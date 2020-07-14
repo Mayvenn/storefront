@@ -14,9 +14,10 @@
   [{:delivery.note/keys [id copy]}]
   (c/html
    (if id
-     (ui/note-box {:data-test id
-                   :color "s-color"}
-                  [:div.proxima.content-3.px4.py2 copy])
+     [:div.pt2
+      (ui/note-box {:data-test id
+                    :color      "s-color"}
+                   [:div.proxima.content-3.px4.py2 copy])]
      [:div])))
 
 (defcomponent component
@@ -24,7 +25,7 @@
   [:div.pb2.pt4.mx3
    [:div.proxima.title-2 primary]
    (delivery-note-box data)
-   [:div.py1
+   [:div
     (for [option options]
       [:div.my2 {:key (:react/key option)}
        (ui/radio-section
