@@ -81,13 +81,12 @@
 ;;;;
 
 (defn ^:private track
-  [event-name {:keys [current-servicing-stylist-id] :as waiter-order} images-db skus-db]
+  [event-name {:keys [servicing-stylist-id] :as waiter-order} images-db skus-db]
   #?(:cljs
      (stringer/track-event
       event-name
       (-> {:helper_name "promotion-helper"}
-          (assoc :current_servicing_stylist_id
-                 current-servicing-stylist-id)
+          (assoc :current_servicing_stylist_id servicing-stylist-id)
           (assoc :cart_items
                  (frontend-trackings/cart-items-model<- waiter-order
                                                         images-db
