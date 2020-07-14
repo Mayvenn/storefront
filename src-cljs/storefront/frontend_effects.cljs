@@ -40,6 +40,7 @@
             [storefront.keypaths :as keypaths]
             [adventure.keypaths :as adv-keypaths]
             [promotion-helper.behavior :as promotion-helper]
+            promotion-helper.keypaths
             [storefront.platform.messages :as messages]
             [storefront.routes :as routes]
             [storefront.components.share-links :as share-links]
@@ -211,7 +212,8 @@
         new-nav-event?                 (not= previous-nav-event current-nav-event)
         video-query-param?             (:video query-params)
         module-load?                   (= caused-by :module-load)]
-    (messages/handle-message promotion-helper/closed {:event/source event})
+    (when (get-in app-state promotion-helper.keypaths/ui-promotion-helper-opened)
+     (messages/handle-message promotion-helper/closed {:event/source event}))
     (messages/handle-message events/control-menu-collapse-all)
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})
 

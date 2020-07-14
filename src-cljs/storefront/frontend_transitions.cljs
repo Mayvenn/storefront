@@ -199,8 +199,7 @@
         (assoc-in keypaths/navigation-uri uri)
         ;; order is important from here on
         (assoc-in keypaths/redirecting? false)
-        (assoc-in keypaths/navigation-message new-nav-message)
-        (assoc-in promotion-helper.keypaths/ui-promotion-helper-opened false))))
+        (assoc-in keypaths/navigation-message new-nav-message))))
 
 (def ^:private hostname (comp :host url/url))
 
