@@ -37,6 +37,7 @@
             [storefront.config :as config]
             [storefront.cookies :as cookies]
             [storefront.events :as events]
+            [storefront.feature-flags :as feature-flags]
             [adventure.keypaths :as adventure-keypaths]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
@@ -449,9 +450,16 @@
                             (or (first (get-in-req-state req keypaths/order-promotion-codes))
                                 (get-in-req-state req keypaths/pending-promo-code)))))))
 
+(defn wrap-add-feature-flags [h launch-darkly]
+  (fn [req]
+    (h (cond-> req
+         (feature-flags/retrieve-flag launch-darkly "stylist-results-test" false)
+         (assoc-in-req-state keypaths/features ["stylist-results-test"])))))
+
 ;;TODO Have all of these middleswarez perform event transitions, just like the frontend
-(defn wrap-state [routes {:keys [storeback-config welcome-config contentful environment]}]
+(defn wrap-state [routes {:keys [storeback-config welcome-config contentful launchdarkly environment]}]
   (-> routes
+      (wrap-add-feature-flags launchdarkly)
       (wrap-set-cms-cache contentful)
       (wrap-fetch-promotions storeback-config)
       (wrap-fetch-catalog storeback-config)

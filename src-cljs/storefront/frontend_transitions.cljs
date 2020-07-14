@@ -578,7 +578,9 @@
   (update-in app-state keypaths/experiments-bucketed conj experiment))
 
 (defmethod transition-state events/enable-feature [_ event {:keys [feature]} app-state]
-  (update-in app-state keypaths/features conj feature))
+  (if (some (partial = feature) (get-in app-state keypaths/features))
+    app-state
+    (update-in app-state keypaths/features conj feature)))
 
 (defmethod transition-state events/clear-features [_ event _ app-state]
   (assoc-in app-state keypaths/features []))

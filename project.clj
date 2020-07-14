@@ -6,6 +6,7 @@
                  [com.stuartsierra/component "0.3.2"]
                  [com.cognitect/transit-clj "0.8.313"]
                  [com.cognitect/transit-cljs "0.8.256"]
+                 [com.launchdarkly/launchdarkly-java-server-sdk "4.11.1"]
                  [environ "1.1.0"]
                  [tocsin "0.1.4"]
                  [tugboat "0.1.25"]

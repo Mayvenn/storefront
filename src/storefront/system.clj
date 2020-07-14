@@ -3,6 +3,7 @@
             [ring.component.jetty :refer [jetty-server]]
             [spice.date :as date]
             [storefront.config :as config]
+            [storefront.feature-flags :as feature-flags]
             [storefront.handler :refer [create-handler]]
             [storefront.jetty :as jetty]
             [storefront.system.contentful :as contentful]
@@ -31,6 +32,7 @@
    :logger (logger/create-logger (config :logging))
    :contentful  (contentful/map->ContentfulContext (merge (:contentful-config config)
                                                           (select-keys config [:environment])))
+   :launchdarkly (feature-flags/map->LaunchDarkly (select-keys config [:launchdarkly-config]))
    :app-handler (map->AppHandler (select-keys config [:storeback-config
                                                       :welcome-config
                                                       :environment
@@ -41,7 +43,7 @@
    :exception-handler (exception-handler (config :bugsnag-token) (config :environment))))
 
 (def dependency-map
-  {:app-handler     [:logger :exception-handler :contentful :sitemap-cache]
+  {:app-handler     [:logger :exception-handler :contentful :launchdarkly :sitemap-cache]
    :contentful      [:logger :exception-handler]
    :embedded-server {:app :app-handler}})
 

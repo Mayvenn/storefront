@@ -78,16 +78,18 @@
                                          :endpoint      "https://cdn.contentful.com"}
                      :logging           {:system-name "storefront.system"}})
 
-(def env-config {:environment       (env :environment)
-                 :bugsnag-token     (env :bugsnag-token)
-                 ;;TODO Update env-vars
-                 :welcome-config    {:url (env :welcome-url)}
-                 :contentful-config {:api-key  (env :contentful-content-delivery-api-key)
-                                     :space-id (env :contentful-space-id)}
-                 :storeback-config  {:endpoint          (env :storeback-endpoint)
-                                     :internal-endpoint (or
-                                                         (env :storeback-v2-internal-endpoint)
-                                                         (env :storeback-internal-endpoint))}})
+(defn env-config []
+  {:environment         (env :environment)
+   :bugsnag-token       (env :bugsnag-token)
+   ;;TODO Update env-vars
+   :welcome-config      {:url (env :welcome-url)}
+   :contentful-config   {:api-key  (env :contentful-content-delivery-api-key)
+                         :space-id (env :contentful-space-id)}
+   :launchdarkly-config {:sdk-key (env :launchdarkly-sdk-key)}
+   :storeback-config    {:endpoint          (env :storeback-endpoint)
+                         :internal-endpoint (or
+                                             (env :storeback-v2-internal-endpoint)
+                                             (env :storeback-internal-endpoint))}})
 
 (defn deep-merge
   [& maps]
@@ -96,6 +98,6 @@
     (last maps)))
 
 (defn system-config [overrides]
-  (deep-merge default-config env-config overrides))
+  (deep-merge default-config (env-config) overrides))
 
 (def pixlee {})
