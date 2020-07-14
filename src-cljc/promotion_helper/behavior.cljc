@@ -70,6 +70,7 @@
   (when-let [data-team-event (case condition
                                "add-hair"    "helper_add_hair_button_pressed"
                                "add-stylist" "helper_add_stylist_button_pressed"
+                               "view-cart"   "helper_view_cart_button_pressed"
                                nil)]
     (track data-team-event
            (get-in app-state keypaths/order)

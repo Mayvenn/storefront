@@ -111,7 +111,8 @@
          {:promotion-helper.ui.drawer-contents.footer/id         "promotion-helper-conditions-fulfilled-footer"
           :promotion-helper.ui.drawer-contents.footer/primary    "🎉 Great work! Free service unlocked!"
           :promotion-helper.ui.drawer-contents.footer/cta-label  "View Cart"
-          :promotion-helper.ui.drawer-contents.footer/cta-target [e/navigate-cart]}))})))
+          :promotion-helper.ui.drawer-contents.footer/cta-target [behavior/followed {:target    [e/navigate-cart]
+                                                                                     :condition "view-cart"}]}))})))
 
 (defn promotion-helper-model<-
   "Model depends on existence of a mayvenn service that can be gratis"
