@@ -128,7 +128,7 @@
      [:div.content-3.proxima.bold.flex.items-center.flex.border.border-dark-gray.px2
       {:data-test id}
       [:img {:src "https://ucarecdn.com/b0f70f0a-51bf-4369-b6b8-80480b54b6f1/-/format/auto/" :alt "" :width 9 :height 14}]
-      [:div.pl1.shout.dark-gray content]]]))
+      [:div.pl1.shout.dark-gray.letter-spacing-1 content]]]))
 
 (defn stylist-card-experience-molecule
   [{:stylist-experience/keys [content id]}]
