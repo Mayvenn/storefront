@@ -1022,7 +1022,7 @@
   (let [placeholder-attrs (merge (select-keys attrs [:class :width :height]) placeholder-attrs)]
     [:div
      (when-not loaded?
-       [:div
+       [:div.inline-block
         ^:attrs
         (update placeholder-attrs
                 :class

@@ -40,7 +40,7 @@
   [{:stylist-card.address-marker/keys [id value]}]
   (when id
     (component/html
-     [:div.content-3.col-12.flex.items-center
+     [:div.content-3.col-12.flex.items-center.pyp1
       (svg/map-pin {:class  "mrp3"
                     :width  "14px"
                     :height "14px"})
@@ -104,20 +104,42 @@
        [:div {:style {:height "72px" :width "72px"}}]))))
 
 (defn stylist-ratings-molecule
-  [{:stylist-ratings/keys [content]}]
-  (when content
+  [{:stylist-ratings/keys [id content]}]
+  (when id
     [:div.flex.items-center.content-3.ml1
+     {:data-test id}
      content]))
 
 (defn stylist-card-bookings-count-molecule
-  [{:rating/keys [count id]}]
+  [{:stylist-bookings/keys [content id]}]
   (when id
     [:div.content-3.col-12.flex.items-center.flex
+     {:data-test id}
      (svg/calendar {:class "mrp3 fill-p-color"
                     :style {:margin-bottom "2px"}
                     :width  "12px"
                     :height "12px"})
-     [:span "Booked " (ui/pluralize-with-amount count "time")]]))
+     [:span content]]))
+
+(defn stylist-just-added-molecule
+  [{:stylist.just-added/keys [content id]}]
+  (when id
+    [:div.pb1
+     [:div.content-3.proxima.bold.flex.items-center.flex.border.border-dark-gray.px2
+      {:data-test id}
+      [:img {:src "https://ucarecdn.com/b0f70f0a-51bf-4369-b6b8-80480b54b6f1/-/format/auto/" :alt "" :width 9 :height 14}]
+      [:div.pl1.shout.dark-gray content]]]))
+
+(defn stylist-card-experience-molecule
+  [{:stylist-experience/keys [content id]}]
+  (when id
+    [:div.content-3.col-12.flex.items-center.flex
+     {:data-test id}
+     (svg/experience-badge {:class  "mrp3 stroke-p-color"
+                            :style  {:margin-bottom "2px"}
+                            :width  "12px"
+                            :height "12px"})
+     [:span content]]))
 
 (defn stylist-card-header-molecule
   [{:stylist-card.header/keys [target id hide-stylist-specialty?] :as data}]
@@ -130,10 +152,12 @@
       (stylist-card-title-molecule data)
       [:div.flex.items-center
        (molecules/stars-rating-molecule data)
-       (stylist-ratings-molecule data)]
+       (stylist-ratings-molecule data)
+       (stylist-just-added-molecule data)]
       (stylist-card-salon-name-molecule data)
       (stylist-card-address-marker-molecule data)
       (stylist-card-bookings-count-molecule data)
+      (stylist-card-experience-molecule data)
       (when-not hide-stylist-specialty?
         (stylist-card-services-list-molecule data))]]))
 

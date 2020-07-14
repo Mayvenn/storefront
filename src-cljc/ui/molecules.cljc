@@ -20,11 +20,12 @@
         [:span.ml1.border-bottom.border-black.border-width-3 copy]]]])))
 
 (defn stars-rating-molecule
-  [{rating :rating/value}]
+  [{:rating/keys [value id]}]
   (component/html
-   (when rating
-     (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars rating "13px")]
+   (when (and id value)
+     (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value "13px")]
        [:div.flex.items-center.button-font-3.s-color
+        {:data-test id}
         whole-stars
         partial-star
         empty-stars]))))

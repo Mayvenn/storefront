@@ -765,7 +765,8 @@
           :servicing-stylist-portrait-url     (-> servicing-stylist :portrait :resizable-url)
           :servicing-stylist-banner/id        "servicing-stylist-banner"
           :servicing-stylist-banner/title     (stylists/->display-name servicing-stylist)
-          :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)}
+          :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)
+                                               :rating/id    "stylist-rating-id"}
           :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)
           :servicing-stylist-banner/target    [events/control-change-stylist {:stylist-id (:stylist-id servicing-stylist)}]
           :servicing-stylist-banner/action-id (when shop? "stylist-swap")}

@@ -113,3 +113,19 @@
 (defn shipping-estimates?
   [data]
   (display-feature? data "shipping-estimates"))
+
+(defn stylist-results-test?
+  [data]
+  (display-feature? data "stylist-results-test"))
+
+(defn just-added-control?
+  [data]
+  (display-feature? data "just-added-control"))
+
+(defn just-added-experience?
+  [data]
+  (display-feature? data "just-added-experience"))
+
+(defn just-added-only?
+  [data]
+  (display-feature? data "just-added-only"))

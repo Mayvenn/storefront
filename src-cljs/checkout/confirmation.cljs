@@ -517,7 +517,8 @@
         :servicing-stylist-banner/heading   "Your Mayvenn Certified Stylist"
         :servicing-stylist-banner/title     (stylists/->display-name stylist)
         :servicing-stylist-banner/subtitle  (-> stylist :salon :name)
-        :servicing-stylist-banner/rating    {:rating/value (:rating stylist)}
+        :servicing-stylist-banner/rating    {:rating/value (:rating stylist)
+                                             :rating/id    "stylist-rating-id"}
         :servicing-stylist-banner/image-url (some-> stylist :portrait :resizable-url)}))))
 
 (defn ^:private built-non-auth-component [data opts]

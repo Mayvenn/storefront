@@ -285,7 +285,7 @@
             :header.cart/color "white"})))
 
 (defn stylist-card-query
-  [post-purchase? hide-stylist-specialty? hide-bookings? idx stylist]
+  [post-purchase? hide-stylist-specialty? hide-bookings? just-added-only? just-added-experience? stylist-results-test? idx stylist]
   (let [{:keys [rating-star-counts
                 salon
                 service-menu
@@ -293,8 +293,12 @@
                 store-slug
                 store-nickname
                 stylist-id
-                rating]}               stylist
+                rating]}                      stylist
         rating-count                          (->> rating-star-counts vals (reduce +))
+        newly-added-stylist                   (< rating-count 3)
+        show-newly-added-stylist-ui?          (and newly-added-stylist
+                                                   (or (and stylist-results-test? just-added-only?)
+                                                       (and stylist-results-test? just-added-experience?)))
         {salon-name :name
          :keys      [address-1
                      address-2
@@ -309,25 +313,38 @@
         cta-event                             (if post-purchase?
                                                 events/control-adventure-select-stylist-post-purchase
                                                 events/control-adventure-select-stylist-pre-purchase)]
-    {:react/key                           (str "stylist-card-" store-slug)
+    {:react/key                                   (str "stylist-card-" store-slug)
      :stylist-card.header/hide-stylist-specialty? hide-stylist-specialty?
-     :stylist-card.header/target          (if post-purchase?
-                                            [events/navigate-adventure-stylist-profile-post-purchase {:stylist-id stylist-id
-                                                                                                      :store-slug store-slug}]
-                                            [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
-                                                                                        :store-slug store-slug}])
-     :stylist-card.header/id              (str "stylist-card-header-" store-slug)
-     :stylist-card.thumbnail/id           (str "stylist-card-thumbnail-" store-slug)
-     :stylist-card.thumbnail/ucare-id     (-> stylist :portrait :resizable-url)
+     :stylist-card.header/target                  (if post-purchase?
+                                                    [events/navigate-adventure-stylist-profile-post-purchase {:stylist-id stylist-id
+                                                                                                              :store-slug store-slug}]
+                                                    [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
+                                                                                                :store-slug store-slug}])
+     :stylist-card.header/id                      (str "stylist-card-header-" store-slug)
+     :stylist-card.thumbnail/id                   (str "stylist-card-thumbnail-" store-slug)
+     :stylist-card.thumbnail/ucare-id             (-> stylist :portrait :resizable-url)
 
      :stylist-card.title/id            "stylist-name"
      :stylist-card.title/primary       (stylists/->display-name stylist)
      :rating/value                     rating
-     :rating/count                    rating-count
-     :rating/id                        (when (and rating-count
-                                                  (not hide-bookings?))
-                                         "rating-count")
+     :rating/count                     rating-count
+     :rating/id                        (when (not show-newly-added-stylist-ui?)
+                                         (str "rating-count-" store-slug))
+     :stylist-bookings/id              (when (not (or show-newly-added-stylist-ui?
+                                                      hide-bookings?))
+                                         (str "booking-count-" store-slug))
+     :stylist-bookings/content         (str "Booked " (ui/pluralize-with-amount rating-count "time"))
+     :stylist.just-added/id            (when show-newly-added-stylist-ui?
+                                         (str "just-added-" store-slug))
+     :stylist.just-added/content       "Just Added"
+     :stylist-ratings/id               (when (not show-newly-added-stylist-ui?)
+                                         (str "stylist-ratings-" store-slug))
      :stylist-ratings/content          rating
+     :stylist-experience/id            (when (and newly-added-stylist
+                                                  stylist-results-test?
+                                                  just-added-experience?)
+                                         (str "stylist-experience-" store-slug))
+     :stylist-experience/content       (str (ui/pluralize-with-amount 1 "year") " of experience")
      :stylist-card.services-list/id    (str "stylist-card-services-" store-slug)
      :stylist-card.services-list/items [{:id         (str "stylist-service-leave-out-" store-slug)
                                          :label      "Leave Out"
@@ -376,8 +393,17 @@
                                                       zipcode])}))
 
 (defn stylist-cards-query
-  [post-purchase? hide-stylist-specialty? hide-bookings? stylists]
-  (map-indexed (partial stylist-card-query post-purchase? hide-stylist-specialty? hide-bookings?) stylists))
+  [{:keys [post-purchase? hide-stylist-specialty? hide-bookings?
+           just-added-only? just-added-experience? stylist-results-test?]} stylists]
+  (map-indexed
+   (partial stylist-card-query
+            post-purchase?
+            hide-stylist-specialty?
+            hide-bookings?
+            just-added-only?
+            just-added-experience?
+            stylist-results-test?)
+   stylists))
 
 (defn gallery-modal-query
   [app-state]
@@ -525,26 +551,35 @@
                                                    :shopping-method-choice.button/ucare-id "71dcdd17-f9cc-456f-b763-2c1c047c30b4"}]})
 
 (defn stylist-data->stylist-cards
-  [stylists preferences post-purchase? hide-stylist-specialty? hide-bookings?]
+  [{:keys [stylists] :as data}]
   (when (seq stylists)
-    (mapcat identity
-            [(->> stylists
-                  (stylist-cards-query post-purchase? hide-stylist-specialty? hide-bookings?))])))
+    (mapcat identity [(stylist-cards-query data stylists)])))
 
 (defn page
   [app-state]
-  (let [current-order                      (api.orders/current app-state)
-        stylist-search-results             (get-in app-state adventure.keypaths/adventure-matched-stylists)
-        nav-event                          (get-in app-state storefront.keypaths/navigation-event)
-        post-purchase?                     (#{events/navigate-adventure-stylist-results-post-purchase} nav-event)
-        preferences                        (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)
-        matches-preferences?               (fn matches-preferences?
-                                             [{:keys [service-menu]}]
-                                             (every? #(service-menu (accessors.filters/service-sku-id->service-menu-key %)) preferences))
-        skus                               (get-in app-state storefront.keypaths/v2-skus)
-        {matching true non-matching false} (group-by matches-preferences? stylist-search-results)
-        hide-stylist-specialty?            (experiments/hide-stylist-specialty? app-state)
-        hide-bookings?                     (experiments/hide-bookings? app-state)]
+  (let [current-order                                        (api.orders/current app-state)
+        stylist-search-results                               (get-in app-state adventure.keypaths/adventure-matched-stylists)
+        nav-event                                            (get-in app-state storefront.keypaths/navigation-event)
+        post-purchase?                                       (#{events/navigate-adventure-stylist-results-post-purchase} nav-event)
+        preferences                                          (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)
+        matches-preferences?                                 (fn matches-preferences?
+                                                               [{:keys [service-menu]}]
+                                                               (every? #(service-menu (accessors.filters/service-sku-id->service-menu-key %)) preferences))
+        skus                                                 (get-in app-state storefront.keypaths/v2-skus)
+        {matching-stylists true non-matching-stylists false} (group-by matches-preferences? stylist-search-results)
+        hide-stylist-specialty?                              (experiments/hide-stylist-specialty? app-state)
+        hide-bookings?                                       (experiments/hide-bookings? app-state)
+        just-added-only?                                     (experiments/just-added-only? app-state)
+        just-added-experience?                               (experiments/just-added-experience? app-state)
+        just-added-control?                                  (experiments/just-added-control? app-state)
+        stylist-results-test?                                (experiments/stylist-results-test? app-state)
+        stylist-data                                         {:filter-prefences        preferences
+                                                              :post-purchase?          post-purchase?
+                                                              :hide-stylist-specialty? hide-stylist-specialty?
+                                                              :hide-bookings?          hide-bookings?
+                                                              :just-added-only?        just-added-only?
+                                                              :just-added-experience?  just-added-experience?
+                                                              :stylist-results-test?   stylist-results-test?}]
 
     (component/build template
                      {:gallery-modal              (gallery-modal-query app-state)
@@ -570,13 +605,13 @@
                       :header                     (header-query current-order
                                                                 (first (get-in app-state storefront.keypaths/navigation-undo-stack))
                                                                 post-purchase?)
-                      :stylist-results-present?   (seq (concat matching non-matching))
-                      :list.stylist-counter/title (str (count matching) " Stylists Found")
+                      :stylist-results-present?   (seq (concat matching-stylists non-matching-stylists))
+                      :list.stylist-counter/title (str (count matching-stylists) " Stylists Found")
                       :list.stylist-counter/key   (when (seq preferences) "stylist-count-content")
-                      :list.matching/key          (when (seq matching) "stylist-matching")
-                      :list.matching/cards        (stylist-data->stylist-cards matching preferences post-purchase? hide-stylist-specialty? hide-bookings?)
-                      :list.breaker/id            (when (seq non-matching) "non-matching-breaker")
+                      :list.matching/key          (when (seq matching-stylists) "stylist-matching")
+                      :list.matching/cards        (stylist-data->stylist-cards (assoc stylist-data :stylists matching-stylists))
+                      :list.breaker/id            (when (seq non-matching-stylists) "non-matching-breaker")
                       :list.breaker/content       "Other stylists in your area"
-                      :list.non-matching/key      (when (seq non-matching) "non-matching-stylists")
-                      :list.non-matching/cards    (stylist-data->stylist-cards non-matching preferences post-purchase? hide-stylist-specialty? hide-bookings?)
+                      :list.non-matching/key      (when (seq non-matching-stylists) "non-matching-stylists")
+                      :list.non-matching/cards    (stylist-data->stylist-cards (assoc stylist-data :stylists non-matching-stylists))
                       :shopping-method-choice     (shopping-method-choice-query)})))

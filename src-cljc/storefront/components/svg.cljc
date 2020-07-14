@@ -447,6 +447,11 @@
    [:svg opts
     ^:inline (svg-xlink "shipping")]))
 
+(defn experience-badge [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "experience-badge")]))
+
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.
 
