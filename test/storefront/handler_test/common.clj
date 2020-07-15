@@ -6,7 +6,8 @@
             [standalone-test-server.core :refer [txfm-request txfm-requests
                                                  with-standalone-server standalone-server
                                                  with-requests-chan]]
-            [storefront.system :refer [create-system]]))
+            [storefront.system :refer [create-system]]
+            [storefront.feature-flags :as feature-flags]))
 
 (def contentful-port 4335)
 
@@ -897,7 +898,9 @@
 (defmacro with-handler
   "Override storefront handler"
   [handler & body]
-  `(let [unstarted-system# (create-system test-overrides)]
+  `(let [unstarted-system# (create-system test-overrides
+                                          (fn [sys#]
+                                            (assoc sys# :launchdarkly (feature-flags/map->TestFeatureFlags {}))))]
      (with-resource [sys# (component/start unstarted-system#)
                      ~handler (-> sys# :app-handler :handler)]
        component/stop

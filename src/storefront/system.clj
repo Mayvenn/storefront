@@ -49,8 +49,9 @@
 
 (defn create-system
   ([] (create-system {}))
-  ([config-overrides]
+  ([config-overrides] (create-system config-overrides identity))
+  ([config-overrides component-overrides-fn]
    (let [config (config/system-config config-overrides)]
      (component/system-using
-      (system-map config)
+      (component-overrides-fn (system-map config))
       dependency-map))))
