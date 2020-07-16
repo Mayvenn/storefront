@@ -16,7 +16,7 @@
 
 (defmethod effects/perform-effects events/did-insert-convert [_ _ _ _ app-state]
   (when (not (get-in app-state keypaths/loaded-convert))
-    (exception-handler/report :convert-not-loaded-error {})))
+    (exception-handler/report :convert-not-loaded {})))
 
 (defn insert-tracking []
   (ensure-queue)
@@ -25,7 +25,7 @@
                                                     ".js")
                                                "convert")
                                  #(m/handle-message events/inserted-convert))
-  (m/handle-later events/did-insert-convert 15000))
+  (m/handle-later events/did-insert-convert 30000))
 
 (defn remove-tracking []
   (tags/remove-tags-by-class "convert"))
