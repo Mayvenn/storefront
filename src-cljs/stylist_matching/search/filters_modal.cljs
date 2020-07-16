@@ -136,10 +136,6 @@
   [_ event args app-state]
   (update-in app-state stylist-directory.keypaths/stylist-search-show-filters? not))
 
-(defmethod effects/perform-effects events/control-stylist-search-filters-dismiss
-  [_ event _ _ app-state]
-  (messages/handle-message events/adventure-stylist-search-results-displayed {}))
-
 (defmethod transitions/transition-state events/control-stylist-search-filters-dismiss
   [_ event args app-state]
   (-> (update-in app-state stylist-directory.keypaths/stylist-search-show-filters? not)

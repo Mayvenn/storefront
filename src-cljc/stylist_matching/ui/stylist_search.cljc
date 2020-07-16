@@ -112,11 +112,3 @@
                (stylist-search-location-search-box data)]
               [:div
                (stylist-search-button data)]]))))
-
-(defmethod effects/perform-effects events/api-success-fetch-stylists-within-radius
-  [_ _ _ app-state]
-  (messages/handle-message events/adventure-stylist-search-results-displayed {}))
-
-(defmethod effects/perform-effects events/api-success-fetch-stylists-matching-filters
-  [_ _ _ app-state]
-  (messages/handle-message events/adventure-stylist-search-results-displayed {}))

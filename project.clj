@@ -10,7 +10,7 @@
                  [environ "1.1.0"]
                  [tocsin "0.1.4"]
                  [tugboat "0.1.25"]
-                 [mayvenn/spice "0.1.62"]
+                 [mayvenn/spice "0.1.65"]
                  [compojure "1.6.1"]
                  [noir-exception "0.2.3"]
                  [ring "1.7.1"]

@@ -33,7 +33,9 @@
             [storefront.platform.messages :as messages]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [spice.maps :as maps]))
+            [spice.maps :as maps]
+            [storefront.keypaths :as storefront.keypaths]
+            [spice.date :as date]))
 
 (def query-param-separator "~")
 
@@ -244,20 +246,39 @@
                               :order_number   (:number order)
                               :stylist_rating (:rating servicing-stylist)})]))
 
+(defn stylist-results->stringer-event
+  [stylist]
+  (let [{:analytics/keys [stylist-id bookings-count lat long rating just-added? years-of-experience]}
+        (select-keys stylist [:analytics/stylist-id
+                              :anaylitcs/bookings-count
+                              :analytics/lat
+                              :analytics/long
+                              :analytics/rating
+                              :analytics/just-added?
+                              :analytics/years-of-experience])]
+    {:stylist_id                 stylist-id
+     :displayed_bookings_count   bookings-count
+     :latitude                   (spice.core/parse-double lat)
+     :longitude                  (spice.core/parse-double long)
+     :displayed_rating           (spice.core/parse-double rating)
+     :just_added                 just-added?
+     :displayed_years_experience years-of-experience}))
+
 (defmethod trackings/perform-track events/adventure-stylist-search-results-displayed
-  [_ event args app-state]
+  [_ event {:keys [stylist-results]} app-state]
   #?(:cljs
-     (when-not (get-in app-state stylist-directory.keypaths/user-toggled-preference)
-       (let [{:keys [latitude longitude radius]} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
-             location-submitted                  (get-in app-state adventure.keypaths/adventure-stylist-match-address)
-             results                             (map :stylist-id (get-in app-state adventure.keypaths/adventure-matched-stylists))]
-         (stringer/track-event "stylist_search_results_displayed"
-                               {:results            results
-                                :latitude           latitude
-                                :longitude          longitude
-                                :location_submitted location-submitted
-                                :radius             radius
-                                :current_step       2})))))
+     (let [{:keys [latitude longitude radius]} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
+           location-submitted                  (get-in app-state adventure.keypaths/adventure-stylist-match-address)
+           preferences                         (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)
+           results                             (map stylist-results->stringer-event stylist-results)]
+       (stringer/track-event "stylist_search_results_displayed"
+                             {:results            results
+                              :filters_on         preferences
+                              :latitude           latitude
+                              :longitude          longitude
+                              :location_submitted location-submitted
+                              :radius             radius
+                              :current_step       2}))))
 
 (defmethod trackings/perform-track events/adventure-stylist-search-results-post-purchase-displayed
   [_ event args app-state]
@@ -293,18 +314,22 @@
                 store-slug
                 store-nickname
                 stylist-id
+                stylist-since
                 rating]}                      stylist
         rating-count                          (->> rating-star-counts vals (reduce +))
-        newly-added-stylist                   (< rating-count 3)
+        newly-added-stylist                   true #_ (< rating-count 3)
         show-newly-added-stylist-ui?          (and newly-added-stylist
                                                    (or (and stylist-results-test? just-added-only?)
                                                        (and stylist-results-test? just-added-experience?)))
+        years-of-experience                   (some->> stylist-since (- (date/year (date/now))))
         {salon-name :name
          :keys      [address-1
                      address-2
                      city
                      state
-                     zipcode]}                salon
+                     zipcode
+                     latitude
+                     longitude]}                salon
         {:keys [specialty-sew-in-leave-out
                 specialty-sew-in-closure
                 specialty-sew-in-360-frontal
@@ -330,6 +355,21 @@
      :rating/count                     rating-count
      :rating/id                        (when (not show-newly-added-stylist-ui?)
                                          (str "rating-count-" store-slug))
+     :analytics/rating                 (when (not show-newly-added-stylist-ui?)
+                                         rating)
+     :analytics/lat                    latitude
+     :analytics/long                   longitude
+     :analytics/bookings-count         (when (not (or show-newly-added-stylist-ui?
+                                                      hide-bookings?))
+                                         rating-count)
+     :analytics/just-added?            (when newly-added-stylist
+                                         show-newly-added-stylist-ui?)
+     :analytics/years-of-experience    (when (and newly-added-stylist
+                                                  stylist-results-test?
+                                                  just-added-experience?
+                                                  years-of-experience)
+                                         years-of-experience)
+     :analytics/stylist-id             stylist-id
      :stylist-bookings/id              (when (not (or show-newly-added-stylist-ui?
                                                       hide-bookings?))
                                          (str "booking-count-" store-slug))
@@ -344,7 +384,7 @@
                                                   stylist-results-test?
                                                   just-added-experience?)
                                          (str "stylist-experience-" store-slug))
-     :stylist-experience/content       (str (ui/pluralize-with-amount 1 "year") " of experience")
+     :stylist-experience/content       (str (ui/pluralize-with-amount years-of-experience "year") " of experience")
      :stylist-card.services-list/id    (str "stylist-card-services-" store-slug)
      :stylist-card.services-list/items [{:id         (str "stylist-service-leave-out-" store-slug)
                                          :label      "Leave Out"
@@ -472,49 +512,56 @@
   [:div.my5.content-2
    breaker-content])
 
-(defcomponent template
-  [{:keys [popup spinning? stylist-results-present? filters-modal gallery-modal
-           header location-search-box shopping-method-choice]
-    :as   data} _ _]
-  [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
-  #?(:cljs (component/build filters-modal/component filters-modal nil))
+(defdynamic-component template
+  (did-mount
+   [this]
+   (messages/handle-message events/adventure-stylist-search-results-displayed
+                            {:stylist-results (:stylist.analytics/cards (component/get-props this))}))
+  (render
+   [this]
+   (let [{:keys [popup spinning? stylist-results-present? filters-modal gallery-modal
+                 header location-search-box shopping-method-choice]
+          :as   data} (component/get-props this)]
+     (component/html
+      [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
+       #?(:cljs (component/build filters-modal/component filters-modal nil))
 
-   (component/build gallery-modal/organism gallery-modal nil)
-   (components.header/adventure-header header)
+       (component/build gallery-modal/organism gallery-modal nil)
+       (components.header/adventure-header header)
 
-   (when (:stylist.results.location-search-box/id location-search-box)
-     (component/build location-input-and-filters-molecule location-search-box nil))
+       (when (:stylist.results.location-search-box/id location-search-box)
+         (component/build location-input-and-filters-molecule location-search-box nil))
 
-   (cond
-     spinning?
-     [:div.mt6 ui/spinner]
+       (cond
+         spinning?
+         [:div.mt6 ui/spinner]
 
-     stylist-results-present?
-     [:div
-      (when-let [count-id (:list.stylist-counter/key data)]
-        [:div
-         {:key count-id}
-         (ui/screen-aware matching-count-organism
-                          {:stylist-count-content (:list.stylist-counter/title data)}
-                          (component/component-id count-id))])
-      (when (:list.matching/key data)
-        [:div
-         (for [card (:list.matching/cards data)]
-           [:div {:key (:react/key card)}
-            (ui/screen-aware stylist-cards/organism card (component/component-id (:react/key card)))])])
-      (when (:list.breaker/id data)
-        [:div
-         {:key       "non-matching-breaker"
-          :data-test (:list.breaker/id data)}
-         (component/build non-matching-breaker {:breaker-content (:list.breaker/content data)})])
-      (when (:list.non-matching/key data)
-        [:div
-         (for [card (:list.non-matching/cards data)]
-           [:div {:key (:react/key card)}
-            (ui/screen-aware stylist-cards/organism card (component/component-id (:react/key card)))])])]
+         stylist-results-present?
+         [:div
+          (when-let [count-id (:list.stylist-counter/key data)]
+            [:div
+             {:key count-id}
+             (ui/screen-aware matching-count-organism
+                              {:stylist-count-content (:list.stylist-counter/title data)}
+                              (component/component-id count-id))])
+          (when (:list.matching/key data)
+            [:div
+             (for [card (:list.matching/cards data)]
+               [:div {:key (:react/key card)}
+                (ui/screen-aware stylist-cards/organism card (component/component-id (:react/key card)))])])
+          (when (:list.breaker/id data)
+            [:div
+             {:key       "non-matching-breaker"
+              :data-test (:list.breaker/id data)}
+             (component/build non-matching-breaker {:breaker-content (:list.breaker/content data)})])
+          (when (:list.non-matching/key data)
+            [:div
+             (for [card (:list.non-matching/cards data)]
+               [:div {:key (:react/key card)}
+                (ui/screen-aware stylist-cards/organism card (component/component-id (:react/key card)))])])]
 
-     :else
-     (component/build shopping-method-choice/organism shopping-method-choice nil))])
+         :else
+         (component/build shopping-method-choice/organism shopping-method-choice nil))]))))
 
 (defn shopping-method-choice-query []
   {:shopping-method-choice.error-title/id        "stylist-matching-shopping-method-choice"
@@ -579,14 +626,21 @@
                                                               :hide-bookings?          hide-bookings?
                                                               :just-added-only?        just-added-only?
                                                               :just-added-experience?  just-added-experience?
-                                                              :stylist-results-test?   stylist-results-test?}]
+                                                              :stylist-results-test?   stylist-results-test?}
+        matching-stylist-cards                               (stylist-data->stylist-cards (assoc stylist-data :stylists matching-stylists))
+        non-matching-stylist-cards                           (stylist-data->stylist-cards (assoc stylist-data :stylists non-matching-stylists))]
 
     (component/build template
                      {:gallery-modal              (gallery-modal-query app-state)
                       :spinning?                  (or (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
                                                       (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-within-radius)
                                                       (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters)
-                                                      (utils/requesting-from-endpoint? app-state request-keys/get-products))
+                                                      (utils/requesting-from-endpoint? app-state request-keys/get-products)
+                                                      (and (not (get-in app-state storefront.keypaths/loaded-convert))
+                                                           stylist-results-test?
+                                                           (or (not just-added-control?)
+                                                               (not just-added-only?)
+                                                               (not just-added-experience?))))
                       :filters-modal              #?(:cljs (filters-modal/query app-state)
                                                      :clj  nil)
                       :location-search-box        (when (and (get-in app-state storefront.keypaths/loaded-google-maps)
@@ -609,9 +663,11 @@
                       :list.stylist-counter/title (str (count matching-stylists) " Stylists Found")
                       :list.stylist-counter/key   (when (seq preferences) "stylist-count-content")
                       :list.matching/key          (when (seq matching-stylists) "stylist-matching")
-                      :list.matching/cards        (stylist-data->stylist-cards (assoc stylist-data :stylists matching-stylists))
+                      :list.matching/cards        matching-stylist-cards
                       :list.breaker/id            (when (seq non-matching-stylists) "non-matching-breaker")
                       :list.breaker/content       "Other stylists in your area"
                       :list.non-matching/key      (when (seq non-matching-stylists) "non-matching-stylists")
-                      :list.non-matching/cards    (stylist-data->stylist-cards (assoc stylist-data :stylists non-matching-stylists))
-                      :shopping-method-choice     (shopping-method-choice-query)})))
+                      :list.non-matching/cards    non-matching-stylist-cards
+                      :stylist.analytics/cards    (into matching-stylist-cards non-matching-stylist-cards)
+                      :shopping-method-choice     (shopping-method-choice-query)}
+                     {:key (str "stylist-results-" (hash stylist-search-results) "-" (hash stylist-data))})))

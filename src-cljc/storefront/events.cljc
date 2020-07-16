@@ -412,6 +412,8 @@
 (defpath inserted-stripe)
 (defpath inserted-uploadcare)
 
+(defpath did-insert-convert)
+
 (defpath autocomplete-update-address)
 
 (defpath checkout-address)
