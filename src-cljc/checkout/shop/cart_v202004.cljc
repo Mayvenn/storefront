@@ -486,6 +486,7 @@
         :freeinstall-informational/primary               "Don't miss out on free Wig Customization"
         :freeinstall-informational/secondary             "Get a free customization by a licensed stylist when you add a Wig Customization to your cart below."
         :freeinstall-informational/cta-label             "Add Wig Customization"
+        :freeinstall-informational/cta-target            [events/navigate-product-details {:catalog/product-id "223" :page/slug "wig-customization" :query-params {:SKU "SRV-WGC-000"}}]
         :freeinstall-informational/secondary-link-id     "Learn More"
         :freeinstall-informational/secondary-link-target [events/popup-show-wigs-customization]
         :freeinstall-informational/fine-print            "*Wig Customization cannot be combined with other promo codes, and excludes Ready to Wear Wigs"}))))
