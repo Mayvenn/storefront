@@ -3,7 +3,7 @@
 
 event_dups_for_file () {
     grep "defmethod \(\S\+\/\\)\?$1" -r src* \
-        | perl -pe "s/.*(\S+\/)?$1 (\S+).*/\2/" \
+        | sed -E "s/.*(\S+\/)?$1 (\S+).*/\2/" \
         | sort | uniq -c | egrep '  1 ' -v
 }
 
