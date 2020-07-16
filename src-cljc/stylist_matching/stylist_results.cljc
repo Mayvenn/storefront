@@ -317,7 +317,7 @@
                 stylist-since
                 rating]}                      stylist
         rating-count                          (->> rating-star-counts vals (reduce +))
-        newly-added-stylist                   true #_ (< rating-count 3)
+        newly-added-stylist                   (< rating-count 3)
         show-newly-added-stylist-ui?          (and newly-added-stylist
                                                    (or (and stylist-results-test? just-added-only?)
                                                        (and stylist-results-test? just-added-experience?)))
