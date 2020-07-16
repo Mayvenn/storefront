@@ -268,7 +268,7 @@
   [_ event {:keys [stylist-results]} app-state]
   #?(:cljs
      (let [{:keys [latitude longitude radius]} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
-           location-submitted                  (get-in app-state adventure.keypaths/adventure-stylist-match-address)
+           location-submitted                  (get-in app-state stylist-directory.keypaths/stylist-search-address-input)
            preferences                         (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)
            results                             (map stylist-results->stringer-event stylist-results)]
        (stringer/track-event "stylist_search_results_displayed"
