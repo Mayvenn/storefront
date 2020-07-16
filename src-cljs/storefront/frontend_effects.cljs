@@ -194,12 +194,11 @@
 
 (defn add-pending-promo-code [app-state {:keys [number token]}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
-    (api/add-promotion-code {:shop?              (= "shop" (get-in app-state keypaths/store-slug))
-                             :session-id         (get-in app-state keypaths/session-id)
-                             :number             number
-                             :token              token
-                             :promo-code         pending-promo-code
-                             :allow-dormant?     true})))
+    (api/add-promotion-code {:session-id     (get-in app-state keypaths/session-id)
+                             :number         number
+                             :token          token
+                             :promo-code     pending-promo-code
+                             :allow-dormant? true})))
 
 (defmethod effects/perform-effects events/navigate
   [_ event {:keys [navigate/caused-by query-params nav-stack-item]} prev-app-state app-state]
@@ -213,7 +212,7 @@
         video-query-param?             (:video query-params)
         module-load?                   (= caused-by :module-load)]
     (when (get-in app-state promotion-helper.keypaths/ui-promotion-helper-opened)
-     (messages/handle-message promotion-helper/closed {:event/source event}))
+      (messages/handle-message promotion-helper/closed {:event/source event}))
     (messages/handle-message events/control-menu-collapse-all)
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})
 
@@ -643,9 +642,7 @@
   (api/remove-freeinstall-line-item (get-in app-state keypaths/session-id) (get-in app-state keypaths/order)))
 
 (defmethod effects/perform-effects events/control-checkout-remove-promotion [_ _ {:as args :keys [code]} _ app-state]
-  (if (promos/freeinstall? code)
-    (messages/handle-message events/order-remove-freeinstall-line-item)
-    (messages/handle-message events/order-remove-promotion args)))
+  (messages/handle-message events/order-remove-promotion args))
 
 (defmethod effects/perform-effects events/control-checkout-confirmation-submit [_ event {:keys [place-order?] :as args} _ app-state]
   (let [order (get-in app-state keypaths/order)]

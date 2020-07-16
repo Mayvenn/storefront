@@ -529,22 +529,19 @@
 
                                      (when locked?
                                        ;; When FREEINSTALL is merely locked (and so not yet an adjustment) we must special case it, so:
-                                       [(merge
-                                         {:cart-summary-line/id    (if any-wig?
-                                                                     "wig-customization-locked"
-                                                                     "freeinstall-locked")
-                                          :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-gray pr1"
-                                                                                       :height "2em" :width "2em"}]
-                                          :cart-summary-line/label (str "Free " service-title)
-                                          :cart-summary-line/value (if any-wig?
-                                                                     (mf/as-money-or-free -75.0)
-                                                                     (mf/as-money-or-free service-discount))
-                                          :cart-summary-line/class "p-color"}
-                                         (coupon-code->remove-promo-action "freeinstall"))
-
-                                        {:cart-summary-line/action-id     "cart-remove-promo"
+                                       [{:cart-summary-line/id    (if any-wig?
+                                                                    "wig-customization-locked"
+                                                                    "freeinstall-locked")
+                                         :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-gray pr1"
+                                                                                      :height "2em" :width "2em"}]
+                                         :cart-summary-line/label (str "Free " service-title)
+                                         :cart-summary-line/value (if any-wig?
+                                                                    (mf/as-money-or-free -75.0)
+                                                                    (mf/as-money-or-free service-discount))
+                                         :cart-summary-line/class "p-color"
+                                         :cart-summary-line/action-id "cart-remove-promo"
                                          :cart-summary-line/action-icon   [:svg/close-x {:class "stroke-white fill-gray"}]
-                                         :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code "freeinstall"}]}])
+                                         :cart-summary-line/action-target [events/order-remove-freeinstall-line-item]}])
 
                                      (for [{:keys [name price coupon-code] :as adjustment}
                                            (filter adjustments/non-zero-adjustment? adjustments)
@@ -557,10 +554,14 @@
                                                 :cart-summary-line/value (mf/as-money-or-free price)}
 
                                          install-summary-line?
-                                         (merge {:cart-summary-line/id    "free-service-adjustment"
-                                                 :cart-summary-line/value (mf/as-money-or-free service-discount)
-                                                 :cart-summary-line/label (str "Free " service-title)}
-                                                (coupon-code->remove-promo-action "freeinstall"))
+                                         (merge
+                                          {:cart-summary-line/id    "free-service-adjustment"
+                                           :cart-summary-line/value (mf/as-money-or-free service-discount)
+                                           :cart-summary-line/label (str "Free " service-title)
+
+                                           :cart-summary-line/action-id     "cart-remove-promo"
+                                           :cart-summary-line/action-icon   [:svg/close-x {:class "stroke-white fill-gray"}]
+                                           :cart-summary-line/action-target [events/order-remove-freeinstall-line-item]})
 
                                          coupon-code
                                          (merge (coupon-code->remove-promo-action coupon-code))))

@@ -3,44 +3,15 @@
    #?@(:cljs [[cemerick.url :refer [url-encode]]
               [storefront.api :as api]
               [storefront.accessors.orders :as orders]
-              [storefront.accessors.promos :as promos]
-              [storefront.accessors.sites :as sites]
               [storefront.config :as config]
               [storefront.accessors.stylist-urls :as stylist-urls]
+              [storefront.platform.messages :as messages]
               [storefront.history :as history]
               [goog.labs.userAgent.device :as device]])
    [storefront.effects :as effects]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
-   [storefront.platform.messages :as messages]
    [storefront.transitions :as transitions]))
-
-(defmethod effects/perform-effects events/add-default-base-service-to-bag
-  [_ _ {:keys [added-from-promo?]} _ app-state]
-  #?(:cljs
-     ;; NOTE: Will be removed once we stop calculating the base
-     ;; mayvenn-install service the user
-     (let [quantity 1
-           sku      (get-in app-state (conj keypaths/v2-skus "SRV-LBI-000"))]
-       (api/add-sku-to-bag (get-in app-state keypaths/session-id)
-                           {:token              (get-in app-state keypaths/order-token)
-                            :number             (get-in app-state keypaths/order-number)
-                            :stylist-id         (get-in app-state keypaths/store-stylist-id)
-                            :user-id            (get-in app-state keypaths/user-id)
-                            :user-token         (get-in app-state keypaths/user-token)
-                            :heat-feature-flags (get-in app-state keypaths/features)
-                            ;; Not necessarily an actual leave-out service, just need to use any install service
-                            ;; line item.  The actual SKU will be calculated by waiter on every cart modification.
-                            :sku                sku
-                            :quantity           quantity}
-                           #(messages/handle-message events/api-success-add-sku-to-bag
-                                                     {:order    %
-                                                      :quantity quantity
-                                                      :sku      sku})))))
-
-(defmethod effects/perform-effects events/control-cart-add-base-service
-  [_ _ _ _ app-state]
-  (messages/handle-message events/add-default-base-service-to-bag))
 
 (defmethod effects/perform-effects events/control-pick-stylist-button
   [_ _ _ _ _]
@@ -57,18 +28,13 @@
 (defmethod effects/perform-effects events/control-cart-update-coupon
   [_ _ _ _ app-state]
   #?(:cljs
-     (let [coupon-code (get-in app-state keypaths/cart-coupon-code)
-           site        (sites/determine-site app-state)]
+     (let [coupon-code (get-in app-state keypaths/cart-coupon-code)]
        (when-not (empty? coupon-code)
-         (if (and (#{:aladdin :shop} site)
-                  (promos/freeinstall? coupon-code))
-           (messages/handle-message events/add-default-base-service-to-bag)
-           (api/add-promotion-code {:shop?          (= :shop site)
-                                    :session-id     (get-in app-state keypaths/session-id)
-                                    :number         (get-in app-state keypaths/order-number)
-                                    :token          (get-in app-state keypaths/order-token)
-                                    :promo-code     coupon-code
-                                    :allow-dormant? false}))))))
+         (api/add-promotion-code {:session-id     (get-in app-state keypaths/session-id)
+                                  :number         (get-in app-state keypaths/order-number)
+                                  :token          (get-in app-state keypaths/order-token)
+                                  :promo-code     coupon-code
+                                  :allow-dormant? false})))))
 
 (defmethod effects/perform-effects events/control-cart-share-show
   [_ _ _ _ app-state]

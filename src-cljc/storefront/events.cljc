@@ -200,7 +200,6 @@
 
 (defpath control-create-order-from-shared-cart)
 
-(defpath control-cart-add-base-service)
 (defpath control-cart-update-coupon)
 (defpath control-cart-line-item-inc)
 (defpath control-cart-line-item-dec)
@@ -445,7 +444,6 @@
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)
 
-(defpath add-default-base-service-to-bag)
 (defpath browse-addon-service-menu-button-enabled)
 
 (defpath sign-out)

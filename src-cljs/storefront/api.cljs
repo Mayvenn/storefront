@@ -872,42 +872,28 @@
     :handler #(messages/handle-message events/api-success-get-order (orders/TEMP-pretend-service-items-do-not-exist %))
     :error-handler (constantly nil)}))
 
-;; HACK: Move to backend
-(defn alter-shop-freeinstall-promotion-error
-  [shop? promo-code error-response]
-  (cond-> error-response
-    (and shop?
-         (= "ineligible-for-promotion" (-> error-response :response :body :error-code))
-         (promos/freeinstall? promo-code))
-    (assoc-in [:response :body :error-message]
-              "You need at least 3 bundles (closures and frontals included) to use promo code \"freeinstall\"")))
-
 (defn add-promotion-code
-  [{:keys [shop? session-id number token promo-code allow-dormant?]}]
-  (let [freeinstall-promo?         (promos/freeinstall? promo-code)
-        allow-without-eligibility? (boolean (and shop? freeinstall-promo?))]
-    (storeback-api-req
-     POST
-     "/v2/add-promotion-code"
-     request-keys/add-promotion-code
-     {:params        {:session-id    session-id
-                      :number        number
-                      :token         token
-                      :code          promo-code
-                      :allow-dormant allow-dormant?
-                      :add-silently? allow-without-eligibility?}
-      :handler       #(messages/handle-message events/api-success-update-order-add-promotion-code
-                                               {:order          (orders/TEMP-pretend-service-items-do-not-exist %)
-                                                :promo-code     promo-code
-                                                :allow-dormant? allow-dormant?})
-      :error-handler #(if allow-dormant?
-                        (messages/handle-message events/api-failure-pending-promo-code %)
-                        (let [response-body (get-in % [:response :body])]
-                          (if (and (waiter-style? response-body)
-                                   (= (:error-code response-body) "promotion-not-found"))
-                            (messages/handle-message events/api-failure-errors-invalid-promo-code
-                                                     (assoc (waiter-style->std-error response-body) :promo-code promo-code))
-                            (default-error-handler (alter-shop-freeinstall-promotion-error shop? promo-code %)))))})))
+  [{:keys [session-id number token promo-code allow-dormant?]}]
+  (storeback-api-req
+   POST
+   "/v2/add-promotion-code"
+   request-keys/add-promotion-code
+   {:params        {:session-id    session-id
+                    :number        number
+                    :token         token
+                    :code          promo-code
+                    :allow-dormant allow-dormant?}
+    :handler       #(messages/handle-message events/api-success-update-order-add-promotion-code
+                                             {:order          (orders/TEMP-pretend-service-items-do-not-exist %)
+                                              :promo-code     promo-code
+                                              :allow-dormant? allow-dormant?})
+    :error-handler #(if allow-dormant?
+                      (messages/handle-message events/api-failure-pending-promo-code %)
+                      (let [response-body (get-in % [:response :body])]
+                        (when (and (waiter-style? response-body)
+                                 (= (:error-code response-body) "promotion-not-found"))
+                          (messages/handle-message events/api-failure-errors-invalid-promo-code
+                                                   (assoc (waiter-style->std-error response-body) :promo-code promo-code)))))}))
 
 (defn add-sku-to-bag [session-id {:keys [token number sku heat-feature-flags] :as params} handler]
   (storeback-api-req
