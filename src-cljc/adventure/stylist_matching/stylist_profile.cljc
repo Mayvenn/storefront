@@ -36,19 +36,21 @@
 
 ;; fork of molecules/stars-rating-molecule
 (defn stars-rating-molecule
-  [{:star-rating/keys [value rating-content rating-count]}]
-  (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value "13px")]
-    [:div.flex.items-center.mtn1
-     whole-stars
-     partial-star
-     empty-stars
-     (when rating-content
-       (if (> rating-count 0)
-         (ui/button-small-underline-secondary
-          (merge {:class "mx1 shout"}
-                 (utils/scroll-href "reviews"))
-          rating-content)
-         [:div.s-color.proxima.title-3.ml1 rating-content]))]))
+  [{:star-rating/keys [id value rating-content rating-count]}]
+  (when id
+    (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value "13px")]
+     [:div.flex.items-center.mtn1
+      {:data-test id}
+      whole-stars
+      partial-star
+      empty-stars
+      (when rating-content
+        (if (> rating-count 0)
+          (ui/button-small-underline-secondary
+           (merge {:class "mx1 shout"}
+                  (utils/scroll-href "reviews"))
+           rating-content)
+          [:div.s-color.proxima.title-3.ml1 rating-content]))])))
 
 (defn stylist-phone-molecule
   [{:phone-link/keys [target phone-number]}]
@@ -70,13 +72,23 @@
   [:div.flex.items-top.justify-center.mr2.col-1
    (ui/navigator-share share-icon-data)])
 
+(defn stylist-just-added-molecule
+  [{:stylist.just-added/keys [content id]}]
+  (when id
+    [:div.pb1.flex
+     [:div.content-3.proxima.bold.items-center.flex.border.border-dark-gray.px2
+      {:data-test id}
+      [:img {:src "https://ucarecdn.com/b0f70f0a-51bf-4369-b6b8-80480b54b6f1/-/format/auto/" :alt "" :width 9 :height 14}]
+      [:div.pl1.shout.dark-gray.letter-spacing-1 content]]]))
+
 (defcomponent stylist-profile-card-component
   [query _ _]
   [:div.flex.bg-white.rounded.p2
    (circle-portrait-molecule query)
-   [:div.flex-grow-1.left-align.ml2
+   [:div.left-align.ml2
     (transposed-title-molecule query)
     (stars-rating-molecule query)
+    (stylist-just-added-molecule query)
     (stylist-phone-molecule query)]
    (share-icon-molecule query)])
 
@@ -101,22 +113,30 @@
         service-menu                        (:service-menu stylist)
         stylist-rating                      (:rating stylist)
         stylist-name                        (stylists/->display-name stylist)
+        store-slug                          (:store-slug stylist)
         {stylist-reviews :reviews
          :as             paginated-reviews} (get-in data stylist-directory.keypaths/paginated-reviews)
         current-order                       (api.orders/current data)
         post-purchase?                      (post-purchase? (get-in data storefront.keypaths/navigation-event))
         undo-history                        (get-in data storefront.keypaths/navigation-undo-stack)
         fetching-reviews?                   (utils/requesting? data request-keys/fetch-stylist-reviews)
-
-        main-cta-target [(if post-purchase?
-                           events/control-adventure-select-stylist-post-purchase
-                           events/control-adventure-select-stylist-pre-purchase)
-                         {:servicing-stylist stylist
-                          :card-index        0}]
-        environment     (case (get-in data storefront.keypaths/environment)
-                          "production" "mayvenn"
-                          "diva-acceptance")
-        rating-count    (reduce + (vals (:rating-star-counts stylist)))]
+        rating-count                        (reduce + (vals (:rating-star-counts stylist)))
+        stylist-results-test?               (experiments/stylist-results-test? data)
+        just-added-only?                    (experiments/just-added-only? data)
+        just-added-experience?              (experiments/just-added-experience? data)
+        newly-added-stylist                 2 #_(< rating-count 3)
+        show-newly-added-stylist-ui?        (and newly-added-stylist
+                                                 (or (and stylist-results-test? just-added-only?)
+                                                     (and stylist-results-test? just-added-experience?)))
+        main-cta-target                     [(if post-purchase?
+                                               events/control-adventure-select-stylist-post-purchase
+                                               events/control-adventure-select-stylist-pre-purchase)
+                                             {:servicing-stylist stylist
+                                              :card-index        0}]
+        environment                         (case (get-in data storefront.keypaths/environment)
+                                              "production" "mayvenn"
+                                              "diva-acceptance")
+        ]
     (when stylist
       (cond->
           {:header-data (cond-> {:header.title/id               "adventure-title"
@@ -140,6 +160,9 @@
                                          rating-count)
            :star-rating/rating-content (str "(" stylist-rating ")")
 
+           :star-rating/id             (when (not show-newly-added-stylist-ui?)
+                                         (str "rating-count-" store-slug))
+
            :ratings-bar-chart/id                 (when (and (> rating-count 0)
                                                             (not (experiments/hide-star-distribution? data)))
                                                    "star-distribution-table")
@@ -151,6 +174,11 @@
            :cta/id          "select-stylist"
            :cta/target      main-cta-target
            :cta/label       (str "Select " stylist-name)
+
+
+           :stylist.just-added/id            (when show-newly-added-stylist-ui?
+                                               (str "just-added-" store-slug))
+           :stylist.just-added/content       "Just Added"
 
            :transposed-title/id          "stylist-name"
            :transposed-title/primary     stylist-name
