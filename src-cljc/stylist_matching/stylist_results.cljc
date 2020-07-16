@@ -600,7 +600,7 @@
 (defn stylist-data->stylist-cards
   [{:keys [stylists] :as data}]
   (when (seq stylists)
-    (mapcat identity [(stylist-cards-query data stylists)])))
+    (into [] (mapcat identity [(stylist-cards-query data stylists)]))))
 
 (defn page
   [app-state]
