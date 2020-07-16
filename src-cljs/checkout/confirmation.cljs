@@ -2,8 +2,6 @@
   (:require api.orders
             [catalog.images :as catalog-images]
             [checkout.shop.cart-v202004 :as cart]
-            [checkout.templates.item-card :as item-card]
-            [checkout.ui.cart-item :as cart-item]
             [checkout.ui.cart-item-v202004 :as cart-item-v202004]
             [checkout.ui.cart-summary-v202004 :as cart-summary]
             [clojure.string :as string]
@@ -110,19 +108,6 @@
                            :order_total  order-total}
                           events/external-redirect-quadpay-checkout
                           {:quadpay-redirect-url redirect-url})))
-
-(defn ^:private servicing-stylist-banner-component
-  [{:servicing-stylist-banner/keys [id heading title subtitle image-url rating]}]
-  (when id
-    [:div.px3
-     [:div.h3.mb2 heading]
-     [:div.flex.items-center.ml1.mb2 {:data-test id}
-      [:div.mr4
-       (ui/circle-picture {:width 50} (ui/square-image {:resizable-url image-url} 50))]
-      [:div.flex-grow-1.line-height-1
-       [:div.h5.medium.mbn1 title]
-       [:div.h6 subtitle]
-       [:div (ui.molecules/stars-rating-molecule rating)]]]]))
 
 (defcomponent component
   [{:as   queried-data
