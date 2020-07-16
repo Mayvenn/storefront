@@ -71,11 +71,11 @@
      [:div.col.col-12.col-6-on-tb-dt
       [:div.border.border-cool-gray.m1
        [:div.container-height.flex.justify-between
-        [:div.col-5
+        [:a.col-5.inherit-color
          non-cta-action
          (ui/screen-aware card-image-molecule data)]
         [:div.px3.py2.col-7.flex.flex-column
-         [:div.flex.flex-column.justify-between
+         [:a.inherit-color.flex.flex-column.justify-between
           non-cta-action
           [:div.content-1 primary]
           [:div.content-3 {:style {:line-height "12px"}} tertiary]

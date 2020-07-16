@@ -73,10 +73,11 @@
        :data-test react-key}
       [:div.border.border-cool-gray.container-height.center.flex.flex-column.justify-between
        [:a.inherit-color.mb2 non-cta-action (ui/screen-aware card-image-molecule data)]
-       [:div.pointer non-cta-action primary]
-       [:div.pointer non-cta-action secondary]
+       [:a.inherit-color non-cta-action primary]
+       [:a.inherit-color non-cta-action secondary]
        [:div.my2.mx5
-        (ui/button-small-secondary (merge (apply utils/fake-href cta-target)
-                                          {:data-test (str "add-to-cart-" react-key)
-                                           :disabled? cta-disabled?})
-                                   cta-label)]]])))
+        (ui/button-small-secondary
+         (merge (apply utils/fake-href cta-target)
+                {:data-test (str "add-to-cart-" react-key)
+                 :disabled? cta-disabled?})
+         cta-label)]]])))
