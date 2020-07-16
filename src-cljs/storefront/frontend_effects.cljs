@@ -234,7 +234,7 @@
           ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
           (scroll/snap-to-top)
           ;; Otherwise give the screen some time to render before trying to restore scroll
-          (messages/handle-later events/snap {:top restore-scroll-top} 300))))
+          (messages/handle-later events/snap {:top restore-scroll-top} 1000))))
 
     (when-let [pending-promo-code (:sha query-params)]
       (cookie-jar/save-pending-promo-code
