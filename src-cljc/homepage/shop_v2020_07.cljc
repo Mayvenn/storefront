@@ -1,5 +1,5 @@
-(ns homepage.shop-v2020-06
-  (:require [homepage.ui-v2020-06 :as ui]
+(ns homepage.shop-v2020-07
+  (:require [homepage.ui-v2020-07 :as ui]
             [storefront.component :as c]
             [storefront.keypaths :as k]))
 
@@ -19,7 +19,5 @@
       :hashtag-mayvenn-hair (ui/hashtag-mayvenn-hair-query ugc)
       :shopping-categories  (ui/shopping-categories-query categories)
       :mayvenn-install      ui/mayvenn-install-query
-      :wig-customization    ui/wig-customization-query
-      :faq                  (ui/faq-query expanded-index)
-      :quality-hair         ui/quality-hair-query
-      :quality-stylists     (ui/quality-stylists-query true)})))
+      :salon-services       ui/salon-services-query
+      :faq                  (ui/faq-query expanded-index)})))

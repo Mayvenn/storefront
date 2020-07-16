@@ -1,18 +1,13 @@
-(ns homepage.ui-v2020-06
-  (:require [clojure.string :refer [join]]
-            [homepage.ui.atoms :as A]
+(ns homepage.ui-v2020-07
+  (:require [homepage.ui.atoms :as A]
             [homepage.ui.contact-us :as contact-us]
             [homepage.ui.diishan :as diishan]
             [homepage.ui.faq :as faq]
             [homepage.ui.guarantees :as guarantees]
             [homepage.ui.hashtag-mayvenn-hair :as hashtag-mayvenn-hair]
             [homepage.ui.hero :as hero]
-            [homepage.ui.mayvenn-install :as mayvenn-install]
-            [homepage.ui.quality-hair :as quality-hair]
-            [homepage.ui.quality-stylists :as quality-stylists]
+            [homepage.ui.services-section :as services-section]
             [homepage.ui.shopping-categories :as shopping-categories]
-            [homepage.ui.wig-customization :as wig-customization]
-            [storefront.accessors.categories :refer [query-param-separator]]
             [storefront.accessors.contentful :as contentful]
             [storefront.component :as c]
             [storefront.components.homepage-hero :as homepage-hero]
@@ -31,26 +26,15 @@
            quality-hair
            quality-stylists
            shopping-categories
-           wig-customization]} _ _]
+           salon-services]} _ _]
   [:div
    (c/build hero/organism hero)
    (c/build shopping-categories/organism shopping-categories)
 
    A/horizontal-rule-atom
 
-   (c/build mayvenn-install/organism mayvenn-install)
-   (c/build wig-customization/organism wig-customization)
-
-   ;; HACK:
-   ;; This is to get desktop (1 3 2) and mobile (1 2 3) ordering
-   ;; The when is needed for the conditional divider, as it's unclear
-   ;; whether this is an organism together or not
-   (when quality-stylists
-     [:div
-      (A/divider-atom "2d3a98e3-b49a-4f0f-9340-828d12865315")
-      [:div.flex-on-dt.flex-wrap.justify-center
-       (c/build quality-stylists/organism quality-stylists)
-       (c/build quality-hair/organism quality-hair)]])
+   (c/build services-section/organism salon-services)
+   (c/build services-section/organism mayvenn-install)
 
    (A/divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
 
@@ -99,60 +83,30 @@
      :shopping-categories.box/alt-label ["Need Inspiration?" "Try shop by look."]})})
 
 (def mayvenn-install-query
-  {:mayvenn-install.title/primary   "Free Mayvenn Install"
-   :mayvenn-install.title/secondary (str "Purchase 3+ bundles or closure and get a mayvenn install "
-                                         "valued up to $200 for absolutely free!")
-   :mayvenn-install.image/ucare-id  "625b63a0-5724-4a57-ad79-c9e7a72a7f5b"
-   :mayvenn-install.list/primary    "What's included?"
-   :list/bullets                    ["Shampoo" "Braid down" "Sew-in and style"]
-   :mayvenn-install.cta/id          "shop-now"
-   :mayvenn-install.cta/value       "Shop Now"
-   :mayvenn-install.cta/target      [e/navigate-category {:page/slug           "human-hair-bundles"
-                                                          :catalog/category-id "27"}]})
+  {:services-section.title/primary        "Free Mayvenn Install"
+   :services-section.title/secondary      "Purchase qualifying Mayvenn hair and receive service for free!"
+   :services-section.image/ucare-id       "625b63a0-5724-4a57-ad79-c9e7a72a7f5b"
+   :services-section/orientation          "image-last"
+   :services-section.cta/id               "browse-mayvenn-services"
+   :services-section.cta/value            "Browse Mayvenn Services"
+   :services-section.cta/target           [e/navigate-category {:page/slug           "free-mayvenn-services"
+                                                                :catalog/category-id "31"}]
+   :services-section.secondary-cta/id     "browse-stylists"
+   :services-section.secondary-cta/value  "Browse Stylists"
+   :services-section.secondary-cta/target [e/navigate-adventure-find-your-stylist]})
 
-(def wig-customization-query
-  {:wig-customization.title/primary   "Free Wig Customization"
-   :wig-customization.title/secondary (str "Purchase any of our virgin lace front wigs or virgin 360 "
-                                           "lace wigs and we’ll customize it for free.")
-   :wig-customization.image/ucare-id  "beaa9641-35dd-4811-8f57-a10481c5132d"
-   :wig-customization.list/primary    "What's included?"
-   :list/bullets                      ["Bleaching the knots"
-                                       "Tinting the lace"
-                                       "Cutting the lace"
-                                       "Customize your hairline"]
-   :wig-customization.cta/id          "show-wigs"
-   :wig-customization.cta/value       "Shop Wigs"
-   :wig-customization.cta/target      (let [family (join query-param-separator
-                                                         ["360-wigs" "lace-front-wigs"])]
-                                        [e/navigate-category
-                                         {:catalog/category-id "13"
-                                          :page/slug           "wigs"
-                                          :query-params        {:family family}}])})
-
-(def quality-hair-query
-  {:quality-hair.title/primary   "Hold your hair"
-   :quality-hair.title/secondary "high"
-   :quality-hair.body/primary    "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
-   :quality-hair.cta/id          "shop-hair"
-   :quality-hair.cta/label       "shop hair"
-   :quality-hair.cta/target      [e/navigate-category {:page/slug           "human-hair-bundles"
-                                                       :catalog/category-id "27"}]})
-
-
-(defn quality-stylists-query
-  [shop?]
-  (cond-> {:quality-stylists.title/primary   "Sit back and"
-           :quality-stylists.title/secondary "relax"
-           :quality-stylists.body/primary    "We’ve rounded up the best stylists in the country so you can be sure your hair is in really, really good hands."
-           :quality-stylists.image/ucare-ids {:desktop "ac46cdbc-fe7f-469e-bcb8-1efe5e65ea97"
-                                              :mobile  "8f14c17b-ffef-4178-8915-640573a8bf3a"}}
-    shop?
-    (merge
-     {:quality-stylists.cta/id     "info-certified-stylists"
-      :quality-stylists.cta/label  "Learn more"
-      :quality-stylists.cta/target [e/navigate-info-certified-stylists]})))
-
-
+(def salon-services-query
+  {:services-section.title/primary        "Mayvenn Salon Services" ;; note there is a non breaking space here
+   :services-section.title/secondary      "No hair purchase needed! Now you can book salon services with your favorite Mayvenn Stylists!"
+   :services-section.image/ucare-id       "8f14c17b-ffef-4178-8915-640573a8bf3a"
+   :services-section/orientation          "image-first"
+   :services-section.cta/id               "browse-services-section"
+   :services-section.cta/value            "Browse Salon Services"
+   :services-section.cta/target           [e/navigate-category {:page/slug           "services-section"
+                                                                :catalog/category-id "30"}]
+   :services-section.secondary-cta/id     "browse-stylists"
+   :services-section.secondary-cta/value  "Browse Stylists"
+   :services-section.secondary-cta/target [e/navigate-adventure-find-your-stylist]})
 
 (defn hashtag-mayvenn-hair-query
   [ugc]
@@ -247,8 +201,14 @@
    :specialty-sew-in-closure
    :specialty-sew-in-frontal
    :specialty-sew-in-leave-out])
+(def salon-services
+  [:specialty-silk-press
+   :specialty-weave-maintenance
+   :specialty-wig-install
+   :specialty-braid-down])
+
 (def services
-  (into mayvenn-installs wig-customizations))
+  (into mayvenn-installs (concat salon-services wig-customizations)))
 
 (defn offers?
   [menu services]

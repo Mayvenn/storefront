@@ -1,7 +1,7 @@
 (ns homepage.core
   "Homepages are apt to change often, fork and use feature-flags."
-  (:require [homepage.unified-v2020-06 :as unified]
-            [homepage.shop-v2020-06 :as shop]
+  (:require [homepage.unified-v2020-07 :as unified]
+            [homepage.shop-v2020-07 :as shop]
             [storefront.accessors.sites :as sites]))
 
 (defn page
