@@ -83,7 +83,7 @@
      :shopping-categories.box/alt-label ["Need Inspiration?" "Try shop by look."]})})
 
 (def mayvenn-install-query
-  {:services-section.title/primary        "Free Mayvenn Install"
+  {:services-section.title/primary        "Free Mayvenn Services"
    :services-section.title/secondary      "Purchase qualifying Mayvenn hair and receive service for free!"
    :services-section.image/ucare-id       "625b63a0-5724-4a57-ad79-c9e7a72a7f5b"
    :services-section/orientation          "image-last"
@@ -93,7 +93,7 @@
                                                                 :catalog/category-id "31"}]
    :services-section.secondary-cta/id     "browse-stylists"
    :services-section.secondary-cta/value  "Browse Stylists"
-   :services-section.secondary-cta/target [e/navigate-adventure-find-your-stylist]})
+   :services-section.secondary-cta/target [e/navigate-adventure-match-stylist]})
 
 (def salon-services-query
   {:services-section.title/primary        "Mayvenn Salon Services" ;; note there is a non breaking space here
@@ -102,11 +102,11 @@
    :services-section/orientation          "image-first"
    :services-section.cta/id               "browse-services-section"
    :services-section.cta/value            "Browse Salon Services"
-   :services-section.cta/target           [e/navigate-category {:page/slug           "services-section"
+   :services-section.cta/target           [e/navigate-category {:page/slug           "salon-services"
                                                                 :catalog/category-id "30"}]
    :services-section.secondary-cta/id     "browse-stylists"
    :services-section.secondary-cta/value  "Browse Stylists"
-   :services-section.secondary-cta/target [e/navigate-adventure-find-your-stylist]})
+   :services-section.secondary-cta/target [e/navigate-adventure-match-stylist]})
 
 (defn hashtag-mayvenn-hair-query
   [ugc]
