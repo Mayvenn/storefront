@@ -903,6 +903,7 @@
     :opengraph/title               					"Free Mayvenn Services Menu - Buy 3 items and we'll pay for your hair service."
     :opengraph/description         					"Buy 3 items and Mayvenn will pay for your hair service! Shop our selection of natural human hair bundles and get connected with a stylist near you."
     :copy/description                   "These standout services, with Certified Stylists, are included with qualifying purchases."
+    :seo/sitemap                        true
     :how-it-works/title-primary         "Your hair deserves a Mayvenn–Certified Stylist."
     :how-it-works/title-secondary       "Here’s how it works."
     :how-it-works/step-elements
