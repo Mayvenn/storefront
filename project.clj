@@ -47,8 +47,6 @@
   :plugins [[s3-wagon-private "1.3.1"]
             [lein-cljsbuild "1.1.7"]
             [lein-cljfmt "0.6.4"]]
-  :figwheel {:nrepl-port 4000
-             :css-dirs   ["resources/public/css"]}
   :main storefront.core
   :repl-options {:init-ns user}
   :jvm-opts ~(concat
