@@ -25,7 +25,7 @@
                                                     ".js")
                                                "convert")
                                  #(m/handle-message events/inserted-convert))
-  (m/handle-later events/did-insert-convert 30000))
+  (m/handle-later events/did-insert-convert {} 30000))
 
 (defn remove-tracking []
   (tags/remove-tags-by-class "convert"))
