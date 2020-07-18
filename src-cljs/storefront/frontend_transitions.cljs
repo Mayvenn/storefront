@@ -5,7 +5,6 @@
             [clojure.string :as string]
             [cljs-bean.core :as cljs-bean]
             promotion-helper.keypaths
-            [rng :as rng]
             [spice.core :as spice]
             [spice.maps :as maps]
             [storefront.accessors.nav :as nav]
@@ -337,9 +336,6 @@
 (defmethod transition-state events/control-create-order-from-shared-cart
   [_ event {:keys [look-id]} app-state]
   (assoc-in app-state keypaths/selected-look-id look-id))
-
-(defn random-number-generator [seed]
-  (rng/mulberry32 (hash seed)))
 
 (defmethod transition-state events/api-start
   [_ event request app-state]

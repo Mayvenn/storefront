@@ -22,7 +22,6 @@
  :static-fns       true
  :fn-invoke-direct true
  :parallel-build   true
- :libs             ["src-cljs/rng/rng.js"]
  :npm-deps         false
  :install-deps     false
  :foreign-libs     [{:file     "src-cljs/storefront/jsQR.js"
