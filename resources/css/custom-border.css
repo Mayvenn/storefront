@@ -56,6 +56,10 @@
     border-width: var(--border-width-3);
 }
 
+.border-width-4 {
+    border-width: var(--border-width-4);
+}
+
 .rounded-item:first-child {
     border-radius: calc(var(--border-radius) - 1px) 0 0 calc(var(--border-radius) - 1px);
 }
@@ -94,6 +98,7 @@
   --border-width-1:    1px;
   --border-width-2:    2px;
   --border-width-3:    3px;
+  --border-width-4:    4px;
   --border-radius:     3px;
   --border-radius-0:   3px;
   --border-radius-1:   6px;

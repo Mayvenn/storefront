@@ -282,6 +282,11 @@
    [:svg opts
     ^:inline (svg-xlink "info-filled")]))
 
+(defn info-black-circle [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "info-black-circle")]))
+
 (defn lock [opts]
   (component/html
    [:svg opts
@@ -357,9 +362,9 @@
    [:svg opts
     ^:inline (svg-xlink "alert-icon")]))
 
-(defn heart [opts]
+(defn heart [{:keys [fill-color-class] :as opts}]
   (component/html
-   [:svg opts
+   [:svg (maps/deep-merge {:class fill-color-class} opts)
     ^:inline (svg-xlink "heart")]))
 
 (defn calendar [opts]
@@ -451,6 +456,11 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "experience-badge")]))
+
+(defn description [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "description")]))
 
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.

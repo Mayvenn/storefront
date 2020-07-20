@@ -34,6 +34,7 @@
             [storefront.components.money-formatters :as mf]
             [storefront.components.picker.picker :as picker]
             [storefront.components.svg :as svg]
+            [storefront.components.product-detail-tabs :as pdtabs]
             [storefront.components.ui :as ui]
             [storefront.components.v2 :as v2]
             [storefront.effects :as effects]
@@ -216,9 +217,12 @@
            picker-data
            aladdin?
            sticky-add-to-bag?
-           ugc] :as data} owner opts]
-  (let [unavailable? (not (seq selected-sku))
-        sold-out?    (not (:inventory/in-stock? selected-sku))]
+           ugc
+           tabs?] :as data} owner opts]
+  (let [unavailable?    (not (seq selected-sku))
+        sold-out?       (not (:inventory/in-stock? selected-sku))
+        ;; TODO Make this dynamic
+        active-tab-name :description]
     (if-not product
       [:div.flex.h2.p1.m1.items-center.justify-center
        {:style {:height "25em"}}
@@ -247,6 +251,35 @@
             [:div.px2
              (component/build picker/component picker-data opts)]
             [:div
+             (when tabs? (component/build pdtabs/component {:active-tab-name active-tab-name
+                                                            :product         product
+                                                            :tabs            [{:title       "Description"
+                                                                               :id          "description"
+                                                                               :tab-content {:description        (:product-description/description data)
+                                                                                             :hair-type          nil
+                                                                                             :whats-included     (:product-description/whats-included data)
+                                                                                             :model-wearing      nil
+                                                                                             :available-services nil}}
+                                                                              {:title       "Hair Info"
+                                                                               :id          "hair-info"
+                                                                               :tab-content {:unit-weight              nil
+                                                                                             :hair-quality             nil
+                                                                                             :hair-origin              nil
+                                                                                             :hair-weft-type           nil
+                                                                                             :part-design              nil
+                                                                                             :features                 nil
+                                                                                             :available-materials      nil
+                                                                                             :lace-size                nil
+                                                                                             :lace-color               nil
+                                                                                             :silk-size                nil
+                                                                                             :silk-color               nil
+                                                                                             :cap-size                 nil
+                                                                                             :wig-density              nil
+                                                                                             :tape-in-glue-information nil}}
+                                                                              {:title       "Care"
+                                                                               :id          "care"
+                                                                               :tab-content {:maintenance-level nil
+                                                                                             :can-it-be-dyed?   nil}}]}))
              (cond
                unavailable? unavailable-button
                sold-out?    sold-out-button
@@ -255,7 +288,7 @@
               shipping-and-guarantee)
             (if (accessors.products/service? product)
               (component/build catalog.M/service-description data opts)
-              (component/build catalog.M/product-description data opts))
+              (when-not tabs? (component/build catalog.M/product-description data opts)))
             (when how-it-works
               [:div.container.mx-auto.mt4.px4.hide-on-dt.hide-on-tb
                (component/build how-it-works/organism how-it-works)])
@@ -406,11 +439,13 @@
         sku-price           (:sku/price selected-sku)
         review-data         (review-component/query data)
         standalone-service? (accessors.products/standalone-service? product)
+        tabs?               (experiments/tabs? data)
         wig-customization?  (seq (spice.selector/match-all {} {:catalog/department "service"
                                                                :service/category   "customization"} [product]))]
     (cond->
         (merge
          {:reviews                            review-data
+          :tabs?                              tabs?
           :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
           :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
           :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
