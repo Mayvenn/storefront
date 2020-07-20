@@ -282,10 +282,10 @@
    [:svg opts
     ^:inline (svg-xlink "info-filled")]))
 
-(defn info-black-circle [opts]
+(defn info-color-circle [{:keys [fill-color-class] :as opts}]
   (component/html
-   [:svg opts
-    ^:inline (svg-xlink "info-black-circle")]))
+   [:svg (maps/deep-merge {:class fill-color-class} opts)
+    ^:inline (svg-xlink "info-color-circle")]))
 
 (defn lock [opts]
   (component/html
@@ -457,9 +457,9 @@
    [:svg opts
     ^:inline (svg-xlink "experience-badge")]))
 
-(defn description [opts]
+(defn description [{:keys [fill-color-class] :as opts}]
   (component/html
-   [:svg opts
+   [:svg (maps/deep-merge {:class fill-color-class} opts)
     ^:inline (svg-xlink "description")]))
 
 (defn symbolic->html

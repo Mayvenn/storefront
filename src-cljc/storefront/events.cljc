@@ -453,7 +453,7 @@
 (defpath viewed-sku)
 
 (defpath faq-section-selected)
-
+(defpath pdtab-selected)
 
 (defpath voucher-camera-permission-denied)
 
