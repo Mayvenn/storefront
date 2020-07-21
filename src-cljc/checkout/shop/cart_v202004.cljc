@@ -181,15 +181,7 @@
                                      [:span.medium.italic "PayPal™"]]))]]
          [:div
           [:div.content-3.proxima.center.my2.red
-           disabled-reasons]
-          [:div.h5.py1.flex.items-center
-           [:div.flex-grow-1.border-bottom.border-gray]
-           [:div.content-3.proxima.mx2 "or"]
-           [:div.flex-grow-1.border-bottom.border-gray]]
-          [:div.mb4.mt3
-           (ui/button-small-underline-secondary
-            (apply utils/fake-href remove-freeinstall-event)
-            "Checkout without service")]])
+           disabled-reasons]])
 
        #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])]]
 
@@ -731,7 +723,6 @@
              :needs-more-items-for-free-service? needs-more-items-for-free-service?
              :discountable-services-on-order?                  discountable-services-on-order?
              :applied?                  applied?
-             :remove-freeinstall-event  [events/control-checkout-remove-promotion {:code "freeinstall"}]
              :cart-summary              (merge
                                          (cart-summary-query order mayvenn-install)
                                          {:promo-field-data (promo-input-query data order discountable-services-on-order?)})
