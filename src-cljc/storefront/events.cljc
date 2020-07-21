@@ -33,7 +33,6 @@
 (defpath navigate-info-about-our-hair)
 
 (defpath navigate-category)
-(defpath navigate-category-update)
 (defpath navigate-legacy-product-page)
 (defpath navigate-legacy-named-search)
 (defpath navigate-legacy-ugc-named-search)
