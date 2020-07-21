@@ -479,35 +479,31 @@
                                                                        standalone-service?)
                                                            events/navigate-content-our-hair)}
             (when tabs?
-              #:tabs{:active-tab-name (or (get-in data keypaths/product-details-tab) :description)
-                     :id              "product-description-tabs"
-                     :tabs-content    [{:title       "Description"
-                                        :id          "description"
-                                        :tab-content {:description        description
-                                                      :hair-type          nil
-                                                      :whats-included     whats-included
-                                                      :model-wearing      nil
-                                                      :available-services nil}}
-                                       {:title       "Hair Info"
-                                        :id          "hair-info"
-                                        :tab-content {:unit-weight              nil
-                                                      :hair-quality             nil
-                                                      :hair-origin              nil
-                                                      :hair-weft-type           nil
-                                                      :part-design              nil
-                                                      :features                 nil
-                                                      :available-materials      nil
-                                                      :lace-size                nil
-                                                      :lace-color               nil
-                                                      :silk-size                nil
-                                                      :silk-color               nil
-                                                      :cap-size                 nil
-                                                      :wig-density              nil
-                                                      :tape-in-glue-information nil}}
-                                       {:title       "Care"
-                                        :id          "care"
-                                        :tab-content {:maintenance-level nil
-                                                      :can-it-be-dyed?   nil}}]}))))
+              (let [active-tab-name (or (keyword (get-in data keypaths/product-details-tab)) :description)]
+                #:tabbed-information{:id      "product-description-tabs"
+                                     :tabs    [{:title   "Description"
+                                                :id      "description"
+                                                :active? (= active-tab-name :description)
+                                                :icon    {:opts {:height "18px"
+                                                                 :width  "18px"}
+                                                          :id   "description"}
+                                                :content {:main description
+                                                          :sections [{:heading "Model Wearing"
+                                                                      :content (:copy/model-wearing product)}
+                                                                     {:heading "Available Services"
+                                                                      :content (:copy/available-services product)}]}}
+                                               {:title   "Hair Info"
+                                                :id      "hair-info"
+                                                :active? (= active-tab-name :hair-info)
+                                                :icon    {:opts {:height "20px"
+                                                                 :width  "20px"}
+                                                          :id   "info-color-circle"}}
+                                               {:title   "Care"
+                                                :id      "care"
+                                                :active? (= active-tab-name :care)
+                                                :icon    {:opts {:height "20px"
+                                                                 :width  "20px"}
+                                                          :id   "heart"}}]})))))
 
       (and (= "shop" (get-in data keypaths/store-slug))
            (not standalone-service?))
