@@ -250,7 +250,7 @@
   [stylist]
   (let [{:analytics/keys [stylist-id bookings-count lat long rating just-added? years-of-experience]}
         (select-keys stylist [:analytics/stylist-id
-                              :anaylitcs/bookings-count
+                              :analytics/bookings-count
                               :analytics/lat
                               :analytics/long
                               :analytics/rating
