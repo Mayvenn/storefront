@@ -1,9 +1,7 @@
-(ns storefront.components.product-detail-tabs
-  (:require [storefront.component :as component :refer [defcomponent]]
+(ns storefront.components.tabbed-information
+  (:require [storefront.component :as c]
             [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]
-            [storefront.css-transitions :as css-transitions]
-            [storefront.component :as c]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.transitions :as transitions]))
@@ -16,7 +14,7 @@
        {:react-key (str tab-id "-tab")}
        (first (:description tab-content))])))
 
-(defcomponent component [{:tabs/keys [active-tab-name tabs-content id]} owner _]
+(c/defcomponent component [{:tabs/keys [active-tab-name tabs-content id]} owner _]
   (when id
     [:div.mx4
      [:div.flex.mx-auto.justify-between.pointer

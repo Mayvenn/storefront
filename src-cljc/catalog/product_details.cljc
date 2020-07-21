@@ -34,7 +34,7 @@
             [storefront.components.money-formatters :as mf]
             [storefront.components.picker.picker :as picker]
             [storefront.components.svg :as svg]
-            [storefront.components.product-detail-tabs :as pdtabs]
+            [storefront.components.tabbed-information :as tabbed-information]
             [storefront.components.ui :as ui]
             [storefront.components.v2 :as v2]
             [storefront.effects :as effects]
@@ -257,7 +257,7 @@
               shipping-and-guarantee)
             (cond
               (accessors.products/service? product) (component/build catalog.M/service-description data opts)
-              tabs?                                 (component/build pdtabs/component data)
+              tabs?                                 (component/build tabbed-information/component data)
               :else                                 (component/build catalog.M/product-description data opts))
             (when how-it-works
               [:div.container.mx-auto.mt4.px4.hide-on-dt.hide-on-tb
