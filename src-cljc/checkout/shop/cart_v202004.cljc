@@ -306,7 +306,7 @@
                      :cart-item-floating-box/value             (some-> service-discount - mf/as-money)
                      :cart-item-remove-action/id               "line-item-remove-freeinstall"
                      :cart-item-remove-action/spinning?        (utils/requesting? app-state request-keys/remove-freeinstall-line-item)
-                     :cart-item-remove-action/target           [events/control-checkout-remove-promotion {:code "freeinstall"}]
+                     :cart-item-remove-action/target           [events/control-cart-remove (:legacy/variant-id service-sku)]
                      :cart-item-service-thumbnail/id           "freeinstall"
                      :cart-item-service-thumbnail/image-url    service-image-url
                      :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)
