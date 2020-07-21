@@ -204,8 +204,7 @@
    (catalog.M/yotpo-reviews-summary data)])
 
 (defcomponent component
-  [{:keys [active-tab-name
-           adding-to-bag?
+  [{:keys [adding-to-bag?
            carousel-images
            product
            reviews
@@ -220,8 +219,8 @@
            sticky-add-to-bag?
            ugc
            tabs?] :as data} owner opts]
-  (let [unavailable?    (not (seq selected-sku))
-        sold-out?       (not (:inventory/in-stock? selected-sku))]
+  (let [unavailable? (not (seq selected-sku))
+        sold-out?    (not (:inventory/in-stock? selected-sku))]
     (if-not product
       [:div.flex.h2.p1.m1.items-center.justify-center
        {:style {:height "25em"}}
@@ -257,40 +256,9 @@
             (when (products/stylist-only? product)
               shipping-and-guarantee)
             (cond
-              (accessors.products/service? product)
-              (component/build catalog.M/service-description data opts)
-
-              tabs?
-              (component/build pdtabs/component {:active-tab-name active-tab-name
-                                                 :tabs            [{:title       "Description"
-                                                                    :id          "description"
-                                                                    :tab-content {:description        (:product-description/description data)
-                                                                                  :hair-type          nil
-                                                                                  :whats-included     (:product-description/whats-included data)
-                                                                                  :model-wearing      nil
-                                                                                  :available-services nil}}
-                                                                   {:title       "Hair Info"
-                                                                    :id          "hair-info"
-                                                                    :tab-content {:unit-weight              nil
-                                                                                  :hair-quality             nil
-                                                                                  :hair-origin              nil
-                                                                                  :hair-weft-type           nil
-                                                                                  :part-design              nil
-                                                                                  :features                 nil
-                                                                                  :available-materials      nil
-                                                                                  :lace-size                nil
-                                                                                  :lace-color               nil
-                                                                                  :silk-size                nil
-                                                                                  :silk-color               nil
-                                                                                  :cap-size                 nil
-                                                                                  :wig-density              nil
-                                                                                  :tape-in-glue-information nil}}
-                                                                   {:title       "Care"
-                                                                    :id          "care"
-                                                                    :tab-content {:maintenance-level nil
-                                                                                  :can-it-be-dyed?   nil}}]})
-              :else
-              (component/build catalog.M/product-description data opts))
+              (accessors.products/service? product) (component/build catalog.M/service-description data opts)
+              tabs?                                 (component/build pdtabs/component data)
+              :else                                 (component/build catalog.M/product-description data opts))
             (when how-it-works
               [:div.container.mx-auto.mt4.px4.hide-on-dt.hide-on-tb
                (component/build how-it-works/organism how-it-works)])
@@ -447,7 +415,6 @@
     (cond->
         (merge
          {:reviews                            review-data
-          :active-tab-name                    (or (get-in data keypaths/product-details-tab) :description)
           :tabs?                              tabs?
           :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
           :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
@@ -496,20 +463,51 @@
                        copy/summary
                        copy/duration
                        hair/family]} product]
-           #:product-description {:duration             duration
-                                  :summary              summary
-                                  :description          description
-                                  :materials            materials
-                                  :colors               colors
-                                  :density              density
-                                  :whats-included       whats-included
-                                  :weights              (when-not density
-                                                          weights)
-                                  :learn-more-nav-event (when-not (or (contains? family "seamless-clip-ins")
-                                                                      (contains? family "tape-ins")
-                                                                      (contains? (:stylist-exclusives/family product) "kits")
-                                                                      standalone-service?)
-                                                          events/navigate-content-our-hair)}))
+           (merge
+            #:product-description {:duration             duration
+                                   :summary              summary
+                                   :description          description
+                                   :materials            materials
+                                   :colors               colors
+                                   :density              density
+                                   :whats-included       whats-included
+                                   :weights              (when-not density
+                                                           weights)
+                                   :learn-more-nav-event (when-not (or (contains? family "seamless-clip-ins")
+                                                                       (contains? family "tape-ins")
+                                                                       (contains? (:stylist-exclusives/family product) "kits")
+                                                                       standalone-service?)
+                                                           events/navigate-content-our-hair)}
+            (when tabs?
+              #:tabs{:active-tab-name (or (get-in data keypaths/product-details-tab) :description)
+                     :id              "product-description-tabs"
+                     :tabs-content    [{:title       "Description"
+                                        :id          "description"
+                                        :tab-content {:description        description
+                                                      :hair-type          nil
+                                                      :whats-included     whats-included
+                                                      :model-wearing      nil
+                                                      :available-services nil}}
+                                       {:title       "Hair Info"
+                                        :id          "hair-info"
+                                        :tab-content {:unit-weight              nil
+                                                      :hair-quality             nil
+                                                      :hair-origin              nil
+                                                      :hair-weft-type           nil
+                                                      :part-design              nil
+                                                      :features                 nil
+                                                      :available-materials      nil
+                                                      :lace-size                nil
+                                                      :lace-color               nil
+                                                      :silk-size                nil
+                                                      :silk-color               nil
+                                                      :cap-size                 nil
+                                                      :wig-density              nil
+                                                      :tape-in-glue-information nil}}
+                                       {:title       "Care"
+                                        :id          "care"
+                                        :tab-content {:maintenance-level nil
+                                                      :can-it-be-dyed?   nil}}]}))))
 
       (and (= "shop" (get-in data keypaths/store-slug))
            (not standalone-service?))
