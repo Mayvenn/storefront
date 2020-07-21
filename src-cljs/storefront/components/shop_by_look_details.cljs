@@ -180,8 +180,6 @@
 
 (defn ^:private get-model-image
   [images-catalog {:keys [copy/title] :as skuer}]
-  (prn "get model image")
-  (spice.core/spy skuer)
   (when-let [image (->> (images/for-skuer images-catalog skuer)
                         (selector/match-all {:selector/strict? true}
                                             {:image/of #{"model"}})
