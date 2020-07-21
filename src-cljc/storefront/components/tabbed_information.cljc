@@ -35,15 +35,15 @@
               "description"
               (svg/description {:height           "18px"
                                 :width            "18px"
-                                :fill-color-class fill-color-class})
+                                :class fill-color-class})
               "hair-info"
               (svg/info-color-circle {:height           "20px"
                                       :width            "20px"
-                                      :fill-color-class fill-color-class})
+                                      :class fill-color-class})
               "care"
               (svg/heart {:height           "19px"
                           :width            "21px"
-                          :fill-color-class fill-color-class}))]
+                          :class fill-color-class}))]
            [:div.center title]]))]
 
      (for [{:keys [id tab-content] :as tab} tabs-content]

@@ -282,9 +282,9 @@
    [:svg opts
     ^:inline (svg-xlink "info-filled")]))
 
-(defn info-color-circle [{:keys [fill-color-class] :as opts}]
+(defn info-color-circle [opts]
   (component/html
-   [:svg (maps/deep-merge {:class fill-color-class} opts)
+   [:svg opts
     ^:inline (svg-xlink "info-color-circle")]))
 
 (defn lock [opts]
@@ -362,9 +362,9 @@
    [:svg opts
     ^:inline (svg-xlink "alert-icon")]))
 
-(defn heart [{:keys [fill-color-class] :as opts}]
+(defn heart [opts]
   (component/html
-   [:svg (maps/deep-merge {:class fill-color-class} opts)
+   [:svg opts
     ^:inline (svg-xlink "heart")]))
 
 (defn calendar [opts]
@@ -457,9 +457,9 @@
    [:svg opts
     ^:inline (svg-xlink "experience-badge")]))
 
-(defn description [{:keys [fill-color-class] :as opts}]
+(defn description [opts]
   (component/html
-   [:svg (maps/deep-merge {:class fill-color-class} opts)
+   [:svg opts
     ^:inline (svg-xlink "description")]))
 
 (defn symbolic->html
