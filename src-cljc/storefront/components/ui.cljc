@@ -678,7 +678,7 @@
       [:div.relative.container-size.flex.items-center.justify-center
        (svg/shopping-bag {:width  "33px"
                           :height "44px"})
-       [:div.absolute.flex.items-center.justify-center;.border.border-red
+       [:div.absolute.flex.items-center.justify-center
         {:style (merge {:margin-top "8px" :font "900 14px/17px 'Proxima Nova'"}
                        (when two-digits?
                          {:margin-right "1px"}))}
