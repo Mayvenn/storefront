@@ -487,11 +487,15 @@
                                                 :icon    {:opts {:height "18px"
                                                                  :width  "18px"}
                                                           :id   "description"}
-                                                :content {:main description
-                                                          :sections [{:heading "Model Wearing"
-                                                                      :content (:copy/model-wearing product)}
-                                                                     {:heading "Available Services"
-                                                                      :content (:copy/available-services product)}]}}
+                                                :primary description
+                                                :sections (keep (fn [[heading content-key]]
+                                                                  (when-let [content (get product content-key)]
+                                                                    {:heading heading
+                                                                     :content content}))
+                                                                [["Hair Type" :copy/hair-type]
+                                                                 ["What's Included" :copy/whats-included]
+                                                                 ["Model Wearing" :copy/model-wearing]
+                                                                 ["Available Services" :copy/available-services]])}
                                                {:title   "Hair Info"
                                                 :id      "hair-info"
                                                 :active? (= active-tab-name :hair-info)

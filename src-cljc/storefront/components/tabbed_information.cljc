@@ -8,15 +8,15 @@
             [clojure.string :as string]))
 
 (defn ^:private tab-element
-  [{:keys [id content active?]}]
+  [{:keys [id primary sections active?]}]
   (when (or active? #?(:clj true))  ;; always show for server-side rendered html
     [:div.my3
      {:key (str id "-tab")}
-     [:div (:main content)]
-     (for [section (:sections content)]
+     [:div primary]
+     (for [{:keys [content heading]} sections]
        [:div.my2
-        [:div.proxima.title-3.shout (:heading section)]
-        [:div (:content section)]])]))
+        [:div.proxima.title-3.shout heading]
+        [:div content]])]))
 
 (c/defcomponent component [{:tabbed-information/keys [tabs id content]} owner _]
   (when id
