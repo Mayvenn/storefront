@@ -11,20 +11,20 @@
 (defn ^:private carousel-slide
   [destination-event product-id page-slug sku-id dt-prefix idx
    {:keys [image-url]}]
-  ^:ignore-interpret-warning
-  [:div.p1
-   (when dt-prefix {:data-test (str dt-prefix idx)})
-   [:a (if destination-event
-         (util/fake-href destination-event {:offset idx})
-         (util/route-to events/navigate-product-details
-                        {:catalog/product-id product-id
-                         :page/slug          page-slug
-                         :query-params       {:SKU    sku-id
-                                              :offset idx}}))
-    (ui/aspect-ratio
-     1 1
-     {:class "flex items-center"}
-     (ui/basic-defer-img {:class "col-12"} image-url))]])
+  (component/html
+   [:div.p1
+    (when dt-prefix {:data-test (str dt-prefix idx)})
+    [:a (if destination-event
+          (util/fake-href destination-event {:offset idx})
+          (util/route-to events/navigate-product-details
+                         {:catalog/product-id product-id
+                          :page/slug          page-slug
+                          :query-params       {:SKU    sku-id
+                                               :offset idx}}))
+     (ui/aspect-ratio
+      1 1
+      {:class "flex items-center"}
+      (ui/basic-defer-img {:class "col-12"} image-url))]]))
 
 (defn ->title-case [s]
   #?(:clj (str/capitalize s)
@@ -74,16 +74,17 @@
     ;; navigation event of the PDP page (freeinstall and classic have different events)
     (ui/modal
      {:close-attrs close-attrs}
-     [:div.relative
-      (component/build carousel/component
-                       {:data     (:social-cards carousel-data)
-                        :settings {:items       1
-                                   :edgePadding 0
-                                   :nav         false
-                                   :startIndex  (parse-int offset)}}
-                       {:opts {:slides (map (partial popup-slide (:product-name carousel-data))
-                                            (:social-cards carousel-data))}})
-      [:div.absolute
-       {:style {:top "1.5rem" :right "1.5rem"}}
-       (ui/modal-close {:class       "stroke-black fill-gray"
-                        :close-attrs close-attrs})]])))
+     (component/html
+      [:div.relative
+       (component/build carousel/component
+                        {:data     (:social-cards carousel-data)
+                         :settings {:items       1
+                                    :edgePadding 0
+                                    :nav         false
+                                    :startIndex  (parse-int offset)}}
+                        {:opts {:slides (map (partial popup-slide (:product-name carousel-data))
+                                             (:social-cards carousel-data))}})
+       [:div.absolute
+        {:style {:top "1.5rem" :right "1.5rem"}}
+        (ui/modal-close {:class       "stroke-black fill-gray"
+                         :close-attrs close-attrs})]]))))

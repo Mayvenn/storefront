@@ -306,73 +306,77 @@
 
 (defn stars-rating-large-molecule
   [{:rating/keys [value rating-count]}]
-  (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value "20px")]
-    (when rating-count
-      [:div.flex.justify-center
-       whole-stars
-       partial-star
-       empty-stars
-       [:div.pl1
-        (str "(" rating-count ")")]])))
+  (component/html
+   (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value "20px")]
+     (when rating-count
+       [:div.flex.justify-center
+        whole-stars
+        partial-star
+        empty-stars
+        [:div.pl1
+         (str "(" rating-count ")")]]))))
 
 (defn rating-bar-molecule [star-rating star-count max-ratings-count]
-  (let [green-bar-percentage (/ star-count max-ratings-count)]
-    [:div.flex.px8.items-center
-     [:div.flex.items-baseline
-      [:div.bold.proxima.title-3 (name star-rating)]
-      [:div.px2 (svg/whole-star {:class  "fill-dark-gray"
-                                 :height "13px"
-                                 :width  "13px"})]]
-     [:div.flex-grow-1.flex
-      [:div.bg-s-color {:style {:width (str (* 100 green-bar-percentage) "%") :height "12px"}} ui/nbsp]
-      [:div.bg-white {:style {:width (str (* 100 (- 1 green-bar-percentage)) "%") :height "12px"}} ui/nbsp]]
-     [:div.proxima.content-3.pl2
-      {:style {:width "20px"}}(str "(" star-count ")")]]))
+  (component/html
+   (let [green-bar-percentage (/ star-count max-ratings-count)]
+     [:div.flex.px8.items-center
+      [:div.flex.items-baseline
+       [:div.bold.proxima.title-3 (name star-rating)]
+       [:div.px2 (svg/whole-star {:class  "fill-dark-gray"
+                                  :height "13px"
+                                  :width  "13px"})]]
+      [:div.flex-grow-1.flex
+       [:div.bg-s-color {:style {:width (str (* 100 green-bar-percentage) "%") :height "12px"}} ui/nbsp]
+       [:div.bg-white {:style {:width (str (* 100 (- 1 green-bar-percentage)) "%") :height "12px"}} ui/nbsp]]
+      [:div.proxima.content-3.pl2
+       {:style {:width "20px"}}(str "(" star-count ")")]])))
 
 (defn ratings-bar-chart-molecule
   [{:ratings-bar-chart/keys [id rating-star-counts] :as data}]
-  (when id
-    (let [max-ratings-count   (apply max (vals rating-star-counts))
-          sorted-rating-count (sort-by key > rating-star-counts)]
-      [:div.bg-cool-gray.flex-column.center.py5.mt3
-       [:div.shout.bold.proxima.title-3 "Ratings"]
-       [:div.pb2.pt1 (stars-rating-large-molecule data)]
-       (for [[star-rating star-count] sorted-rating-count]
-         (rating-bar-molecule star-rating star-count max-ratings-count))])))
+  (component/html
+   (when id
+     (let [max-ratings-count   (apply max (vals rating-star-counts))
+           sorted-rating-count (sort-by key > rating-star-counts)]
+       [:div.bg-cool-gray.flex-column.center.py5.mt3
+        [:div.shout.bold.proxima.title-3 "Ratings"]
+        [:div.pb2.pt1 (stars-rating-large-molecule data)]
+        (for [[star-rating star-count] sorted-rating-count]
+          (rating-bar-molecule star-rating star-count max-ratings-count))]))))
 
 (defn reviews-molecule
   [{:reviews/keys [spinning? cta-target cta-id cta-label id review-count reviews]}]
-  (when id
-    [:div.mx3.my6
-     {:key id
-      :id "reviews"}
-     [:div.flex.justify-between
-      [:div.flex.items-center
-       [:div.h6.title-3.proxima.shout "REVIEWS"]
-       [:div.content-3.proxima.ml1
-        (str "(" review-count ")")]]]
+  (component/html
+   (when id
+     [:div.mx3.my6
+      {:key id
+       :id "reviews"}
+      [:div.flex.justify-between
+       [:div.flex.items-center
+        [:div.h6.title-3.proxima.shout "REVIEWS"]
+        [:div.content-3.proxima.ml1
+         (str "(" review-count ")")]]]
 
-     (for [{:keys [review-id stars install-type review-content reviewer-name review-date]} reviews]
-       [:div.py2.border-bottom.border-cool-gray
-        {:key review-id}
-        [:div
-         (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "13px")]
-           [:div.flex
-            whole-stars
-            partial-star
-            empty-stars
-            [:div.ml2.content-3.proxima (get install-type->display-name install-type)]])]
-        [:div.py1 review-content]
-        [:div.flex
-         [:div "— " reviewer-name]
-         [:div.ml1.dark-gray review-date]]])
-     (when cta-id
-       [:div.p5.center
-        {:data-test cta-id}
-        (if spinning?
-          ui/spinner
-          (ui/button-medium-underline-primary
-           {:on-click (apply utils/send-event-callback cta-target)} cta-label))])]))
+      (for [{:keys [review-id stars install-type review-content reviewer-name review-date]} reviews]
+        [:div.py2.border-bottom.border-cool-gray
+         {:key review-id}
+         [:div
+          (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "13px")]
+            [:div.flex
+             whole-stars
+             partial-star
+             empty-stars
+             [:div.ml2.content-3.proxima (get install-type->display-name install-type)]])]
+         [:div.py1 review-content]
+         [:div.flex
+          [:div "— " reviewer-name]
+          [:div.ml1.dark-gray review-date]]])
+      (when cta-id
+        [:div.p5.center
+         {:data-test cta-id}
+         (if spinning?
+           ui/spinner
+           (ui/button-medium-underline-primary
+            {:on-click (apply utils/send-event-callback cta-target)} cta-label))])])))
 
 (defmethod effects/perform-effects events/control-fetch-stylist-reviews
   [dispatch event args prev-app-state app-state]
@@ -386,23 +390,25 @@
 
 (defn footer-body-molecule
   [{:footer/keys [copy id]}]
-  (when id
-    [:div.h5.mb2
-     {:data-test id}
-     copy]))
+  (component/html
+   (when id
+     [:div.h5.mb2
+      {:data-test id}
+      copy])))
 
 (defn footer-cta-molecule
   [{:cta/keys [id label]
     [event :as target]
     :cta/target}]
-  (when id
-    [:div.col-5.mx-auto
-     (ui/button-small-secondary
-      (merge {:data-test id}
-             (if (= :navigate (first event))
-               (apply utils/route-to target)
-               (apply utils/fake-href target)))
-      label)]))
+  (component/html
+   (when id
+     [:div.col-5.mx-auto
+      (ui/button-small-secondary
+       (merge {:data-test id}
+              (if (= :navigate (first event))
+                (apply utils/route-to target)
+                (apply utils/fake-href target)))
+       label)])))
 
 (defcomponent footer [data _ _]
   (when (seq data)
