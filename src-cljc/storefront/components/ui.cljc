@@ -671,15 +671,18 @@
    TODO(corey,stella) fix colors after colors land"
   [opts {:keys [quantity]}]
   (component/html
-   [:a.relative.pointer.block.p-color.mtn1
-    ^:attrs (merge (utils/route-to events/navigate-cart)
-                   opts)
-    [:div.relative.container-size.flex.items-center.justify-center
-     (svg/shopping-bag {:width  "33px"
-                        :height "44px"})
-     [:div.absolute.bold.flex.items-center.justify-center.content-3.mtp4
-      {:style {:font "900 14px/17px 'Proxima Nova'"}}
-      quantity]]]))
+   (let [two-digits? (< 9 quantity)]
+     [:a.relative.pointer.block.p-color.mtn1
+      ^:attrs (merge (utils/route-to events/navigate-cart)
+                     opts)
+      [:div.relative.container-size.flex.items-center.justify-center
+       (svg/shopping-bag {:width  "33px"
+                          :height "44px"})
+       [:div.absolute.flex.items-center.justify-center;.border.border-red
+        {:style (merge {:margin-top "8px" :font "900 14px/17px 'Proxima Nova'"}
+                       (when two-digits?
+                         {:margin-right "1px"}))}
+        quantity]]])))
 
 (defn lqip
   "Generates a Low Quality Image Placeholder.
