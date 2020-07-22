@@ -3,11 +3,9 @@
             [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
-            [storefront.transitions :as transitions]
-            [clojure.string :as string]))
+            [storefront.transitions :as transitions]))
 
-(defn ^:private tab-element
+(defn ^:private tab-content
   [{:keys [id primary sections active?]}]
   (when (or active? #?(:clj true))  ;; always show for server-side rendered html
     [:div.my3
@@ -23,24 +21,24 @@
 (c/defcomponent component [{:tabbed-information/keys [tabs id content keypath]} owner _]
   (when id
     [:div.mx4
-     [:div.flex.mx-auto.justify-between.pointer
+     [:div.flex.mx-auto.justify-between
       (for [{:keys [title id icon active?]} tabs]
-        [:div.canela.title-3.col-4.border-bottom.flex.flex-column.justify-end
-         ^:attrs (merge (utils/fake-href events/tabbed-information-tab-selected {:tab id
-                                                                                 :keypath keypath})
-                        {:class     (if active?
-                                      "black border-width-4 border-black"
-                                      "dark-gray border-width-2 border-cool-gray")
-                         :style {:padding-bottom (when-not active? "2px")} ; counter the thick border
-                         :key (str "tab-" (name id))
-                         :data-test (str "tab-" (name id))})
+        [:a.block.canela.title-3.col-4.border-bottom.flex.flex-column.justify-end.pt3
+         ^:attrs (merge
+                  (utils/fake-href events/tabbed-information-tab-selected {:tab     id
+                                                                           :keypath keypath})
+                  {:class     (if active?
+                                "black border-width-4 border-black"
+                                "dark-gray border-width-2 border-cool-gray")
+                   :style     {:padding-bottom (when-not active? "2px")} ; counter the thick border
+                   :key       (str "tab-" (name id))
+                   :data-test (str "tab-" (name id))})
 
          [:div.flex.justify-center
-          (c/html
-           [:svg (assoc (:opts icon) :class (if active? "fill-black" "fill-gray"))
-            ^:inline (svg/svg-xlink (:id icon))])]
+          [:svg (assoc (:opts icon) :class (if active? "fill-black" "fill-gray"))
+           ^:inline (svg/svg-xlink (:id icon))]]
          [:div.center title]])]
-     (map tab-element tabs)]))
+     (map tab-content tabs)]))
 
 (defmethod transitions/transition-state events/tabbed-information-tab-selected [_ _ {:keys [tab keypath]} app-state]
   (let [selected-tab (get-in app-state keypath)]

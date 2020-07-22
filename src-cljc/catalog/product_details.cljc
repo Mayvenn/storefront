@@ -74,16 +74,18 @@
     [:span.h4 "Currently out of stock"]))
 
 (def sold-out-button
-  (ui/button-large-primary {:on-click  utils/noop-callback
-                            :data-test "sold-out"
-                            :disabled? true}
-                           "Sold Out"))
+  [:div.pt1.pb3.px3
+   (ui/button-large-primary {:on-click  utils/noop-callback
+                             :data-test "sold-out"
+                             :disabled? true}
+                            "Sold Out")])
 
 (def unavailable-button
-  (ui/button-large-primary {:on-click  utils/noop-callback
-                            :data-test "unavailable"
-                            :disabled? true}
-                           "Unavailable"))
+  [:div.pt1.pb3.px3
+   (ui/button-large-primary {:on-click  utils/noop-callback
+                             :data-test "unavailable"
+                             :disabled? true}
+                            "Unavailable")])
 
 (defn ^:private handle-scroll [component e]
   #?(:cljs (component/set-state! component :show? (< 866 (.-y (goog.dom/getDocumentScroll))))))
