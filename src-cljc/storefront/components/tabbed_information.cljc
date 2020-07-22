@@ -23,11 +23,12 @@
     [:div.mx4
      [:div.flex.mx-auto.justify-between.pointer
       (for [{:keys [title id icon active?]} tabs]
-        [:div.canela.title-3.col-4.border-bottom
+        [:div.canela.title-3.col-4.border-bottom.flex.flex-column.justify-end
          ^:attrs (merge (utils/fake-href events/pdtab-selected {:tab id})
                         {:class     (if active?
                                       "black border-width-4 border-black"
                                       "dark-gray border-width-2 border-cool-gray")
+                         :style {:padding-bottom (when-not active? "2px")} ; counter the thick border
                          :key (str "tab-" (name id))
                          :data-test (str "tab-" (name id))})
 
