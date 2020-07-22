@@ -13,10 +13,12 @@
     [:div.my3
      {:key (str id "-tab")}
      [:div primary]
-     (for [{:keys [content heading]} sections]
-       [:div.my2
-        [:div.proxima.title-3.shout heading]
-        [:div content]])]))
+     [:div.flex.flex-wrap.justify-between
+      (for [{:keys [content heading]} sections]
+        [:div.my2
+         {:style {:min-width "50%"}}
+         [:div.proxima.title-3.shout heading]
+         [:div content]])]]))
 
 (c/defcomponent component [{:tabbed-information/keys [tabs id content]} owner _]
   (when id
