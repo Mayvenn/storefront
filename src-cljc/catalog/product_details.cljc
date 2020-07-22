@@ -501,13 +501,37 @@
                                                 :active? (= active-tab-name :hair-info)
                                                 :icon    {:opts {:height "20px"
                                                                  :width  "20px"}
-                                                          :id   "info-color-circle"}}
+                                                          :id   "info-color-circle"}
+                                                :sections (keep (fn [[heading content-key]]
+                                                                  (when-let [content (get product content-key)]
+                                                                    {:heading heading
+                                                                     :content content}))
+                                                                [["Unit Weight" :copy/weights]
+                                                                 ["Hair Quality" :copy/quality]
+                                                                 ["Hair Origin" :copy/origin]
+                                                                 ["Hair Weft Type" :copy/weft-type]
+                                                                 ["Part Design" :copy/part-design]
+                                                                 ["Features" :copy/features]
+                                                                 ["Available Materials" :copy/materials]
+                                                                 ["Lace Size" :copy/lace-size]
+                                                                 ["Lace Color" :copy/lace-color]
+                                                                 ["Silk Size" :copy/silk-size]
+                                                                 ["Silk Color" :copy/silk-color]
+                                                                 ["Cap Size" :copy/cap-size]
+                                                                 ["Wig Density" :copy/density]
+                                                                 ["Tape-in Glue Information" :copy/tape-in-glue]])}
                                                {:title   "Care"
                                                 :id      "care"
                                                 :active? (= active-tab-name :care)
                                                 :icon    {:opts {:height "20px"
                                                                  :width  "20px"}
-                                                          :id   "heart"}}]})))))
+                                                          :id   "heart"}
+                                                :sections (keep (fn [[heading content-key]]
+                                                                  (when-let [content (get product content-key)]
+                                                                    {:heading heading
+                                                                     :content content}))
+                                                                [["Maintenance Level" :copy/maintenance-level]
+                                                                 ["Can it be Dyed?" :copy/dyeable?]])}]})))))
 
       (and (= "shop" (get-in data keypaths/store-slug))
            (not standalone-service?))
