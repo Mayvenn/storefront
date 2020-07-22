@@ -393,230 +393,229 @@
                                                    "you purchase a Virgin Lace Front Wig or Virgin 360 Wig.")}))))
 
 (defn query [data]
-  (let [selected-sku        (get-in data catalog.keypaths/detailed-product-selected-sku)
-        selections          (get-in data catalog.keypaths/detailed-product-selections)
-        product             (products/current-product data)
-        product-skus        (products/extract-product-skus data product)
-        images-catalog      (get-in data keypaths/v2-images)
-        facets              (facets/by-slug data)
-        carousel-images     (find-carousel-images product product-skus images-catalog
-                                                  (select-keys selections [:hair/color])
-                                                  selected-sku)
-        options             (get-in data catalog.keypaths/detailed-product-options)
-        ugc                 (ugc-query product selected-sku data)
-        sku-price           (:sku/price selected-sku)
-        review-data         (review-component/query data)
-        standalone-service? (accessors.products/standalone-service? product)
-        hair?               (accessors.products/hair? product)
-        wig-customization?  (seq (spice.selector/match-all {} {:catalog/department "service"
-                                                               :service/category   "customization"} [product]))]
-    (cond->
-        (merge
-         {:reviews                            review-data
-          :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
-          :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
-          :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
-          :title/primary                      (:copy/title product)
-          :ugc                                ugc
-          :aladdin?                           (experiments/aladdin-experience? data)
-          :fetching-product?                  (utils/requesting? data (conj request-keys/get-products
-                                                                            (:catalog/product-id product)))
-          :adding-to-bag?                     (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-          :sku-quantity                       (get-in data keypaths/browse-sku-quantity 1)
-          :options                            options
-          :product                            product
-          :selections                         selections
-          :selected-options                   (get-selected-options selections options)
-          :selected-sku                       selected-sku
-          :facets                             facets
-          :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
-          :picker-data                        (picker/query data)
-          :carousel-images                    carousel-images
-          :sticky-add-to-bag?                 (and (nil? (:offset ugc))
-                                                   (not (products/stylist-only? product))
-                                                   (not
-                                                    (accessors.products/product-is-mayvenn-install-service? product))
-                                                   (not standalone-service?)
-                                                   (not (experiments/promotion-helper? data)))}
-         (cond
-           (accessors.products/product-is-mayvenn-install-service? product)
-           {:price-block/primary-struck (mf/as-money sku-price)
-            :price-block/secondary      [:span.teal "FREE"]
-            :title/secondary            (:promo.mayvenn-install/requirement-copy product)}
+  (let [selected-sku          (get-in data catalog.keypaths/detailed-product-selected-sku)
+        selections            (get-in data catalog.keypaths/detailed-product-selections)
+        product               (products/current-product data)
+        product-skus          (products/extract-product-skus data product)
+        images-catalog        (get-in data keypaths/v2-images)
+        facets                (facets/by-slug data)
+        carousel-images       (find-carousel-images product product-skus images-catalog
+                                                    (select-keys selections [:hair/color])
+                                                    selected-sku)
+        options               (get-in data catalog.keypaths/detailed-product-options)
+        ugc                   (ugc-query product selected-sku data)
+        sku-price             (:sku/price selected-sku)
+        review-data           (review-component/query data)
+        shop?                 (= "shop" (get-in data keypaths/store-slug))
+        free-mayvenn-service? (accessors.products/product-is-mayvenn-install-service? product)
+        standalone-service?   (accessors.products/standalone-service? product)
+        service?              (accessors.products/service? product)
+        hair?                 (accessors.products/hair? product)
+        wig?                  (accessors.products/wig-product? product)
+        wig-customization?    (seq (spice.selector/match-all {} {:catalog/department "service"
+                                                                 :service/category   "customization"} [product]))]
+    (merge
+     {:reviews                            review-data
+      :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
+      :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
+      :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
+      :title/primary                      (:copy/title product)
+      :ugc                                ugc
+      :aladdin?                           (experiments/aladdin-experience? data)
+      :fetching-product?                  (utils/requesting? data (conj request-keys/get-products
+                                                                        (:catalog/product-id product)))
+      :adding-to-bag?                     (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+      :sku-quantity                       (get-in data keypaths/browse-sku-quantity 1)
+      :options                            options
+      :product                            product
+      :selections                         selections
+      :selected-options                   (get-selected-options selections options)
+      :selected-sku                       selected-sku
+      :facets                             facets
+      :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
+      :picker-data                        (picker/query data)
+      :carousel-images                    carousel-images
+      :sticky-add-to-bag?                 (and (nil? (:offset ugc))
+                                               (not (products/stylist-only? product))
+                                               (not
+                                                (accessors.products/product-is-mayvenn-install-service? product))
+                                               (not standalone-service?)
+                                               (not (experiments/promotion-helper? data)))}
 
-           standalone-service?
-           {:price-block/primary (mf/as-money sku-price)}
+     (when (and (not service?) sku-price)
+       {:price-block/primary   (mf/as-money sku-price)
+        :price-block/secondary "each"})
 
-           sku-price
-           {:price-block/primary   (mf/as-money sku-price)
-            :price-block/secondary "each"})
+     (add-to-cart-query data selected-sku sku-price)
 
-         (add-to-cart-query data selected-sku sku-price)
+     (when hair?
+       (let [active-tab-name (or (keyword (get-in data keypaths/product-details-tab)) :description)]
+         #:tabbed-information{:id      "product-description-tabs"
+                              :keypath keypaths/product-details-tab
+                              :tabs    [{:title    "Description"
+                                         :id       "description"
+                                         :active?  (= active-tab-name :description)
+                                         :icon     {:opts {:height "18px"
+                                                           :width  "18px"}
+                                                    :id   "description"}
+                                         :primary  (:copy/description product)
+                                         :sections (keep (fn [[heading content-key]]
+                                                           (when-let [content (get product content-key)]
+                                                             {:heading heading
+                                                              :content content}))
+                                                         [["Hair Type" :copy/hair-type]
+                                                          ["What's Included" :copy/whats-included]
+                                                          ["Model Wearing" :copy/model-wearing]
+                                                          ["Available Services" :copy/available-services]])}
+                                        {:title    "Hair Info"
+                                         :id       "hair-info"
+                                         :active?  (= active-tab-name :hair-info)
+                                         :icon     {:opts {:height "20px"
+                                                           :width  "20px"}
+                                                    :id   "info-color-circle"}
+                                         :sections (keep (fn [[heading content-key]]
+                                                           (when-let [content (get product content-key)]
+                                                             {:heading heading
+                                                              :content content}))
+                                                         [["Unit Weight" :copy/weights]
+                                                          ["Hair Quality" :copy/quality]
+                                                          ["Hair Origin" :copy/origin]
+                                                          ["Hair Weft Type" :copy/weft-type]
+                                                          ["Part Design" :copy/part-design]
+                                                          ["Features" :copy/features]
+                                                          ["Available Materials" :copy/materials]
+                                                          ["Lace Size" :copy/lace-size]
+                                                          ["Lace Color" :copy/lace-color]
+                                                          ["Silk Size" :copy/silk-size]
+                                                          ["Silk Color" :copy/silk-color]
+                                                          ["Cap Size" :copy/cap-size]
+                                                          ["Wig Density" :copy/density]
+                                                          ["Tape-in Glue Information" :copy/tape-in-glue]])}
+                                        {:title    "Care"
+                                         :id       "care"
+                                         :active?  (= active-tab-name :care)
+                                         :icon     {:opts {:height "20px"
+                                                           :width  "20px"}
+                                                    :id   "heart"}
+                                         :sections (keep (fn [[heading content-key]]
+                                                           (when-let [content (get product content-key)]
+                                                             {:heading heading
+                                                              :content content}))
+                                                         [["Maintenance Level" :copy/maintenance-level]
+                                                          ["Can it be Dyed?" :copy/dyeable?]])}]}))
 
-         (if hair?
-           (let [active-tab-name (or (keyword (get-in data keypaths/product-details-tab)) :description)]
-             #:tabbed-information{:id      "product-description-tabs"
-                                  :keypath keypaths/product-details-tab
-                                  :tabs    [{:title   "Description"
-                                             :id      "description"
-                                             :active? (= active-tab-name :description)
-                                             :icon    {:opts {:height "18px"
-                                                              :width  "18px"}
-                                                       :id   "description"}
-                                             :primary (:copy/description product)
-                                             :sections (keep (fn [[heading content-key]]
-                                                               (when-let [content (get product content-key)]
-                                                                 {:heading heading
-                                                                  :content content}))
-                                                             [["Hair Type" :copy/hair-type]
-                                                              ["What's Included" :copy/whats-included]
-                                                              ["Model Wearing" :copy/model-wearing]
-                                                              ["Available Services" :copy/available-services]])}
-                                            {:title   "Hair Info"
-                                             :id      "hair-info"
-                                             :active? (= active-tab-name :hair-info)
-                                             :icon    {:opts {:height "20px"
-                                                              :width  "20px"}
-                                                       :id   "info-color-circle"}
-                                             :sections (keep (fn [[heading content-key]]
-                                                               (when-let [content (get product content-key)]
-                                                                 {:heading heading
-                                                                  :content content}))
-                                                             [["Unit Weight" :copy/weights]
-                                                              ["Hair Quality" :copy/quality]
-                                                              ["Hair Origin" :copy/origin]
-                                                              ["Hair Weft Type" :copy/weft-type]
-                                                              ["Part Design" :copy/part-design]
-                                                              ["Features" :copy/features]
-                                                              ["Available Materials" :copy/materials]
-                                                              ["Lace Size" :copy/lace-size]
-                                                              ["Lace Color" :copy/lace-color]
-                                                              ["Silk Size" :copy/silk-size]
-                                                              ["Silk Color" :copy/silk-color]
-                                                              ["Cap Size" :copy/cap-size]
-                                                              ["Wig Density" :copy/density]
-                                                              ["Tape-in Glue Information" :copy/tape-in-glue]])}
-                                            {:title   "Care"
-                                             :id      "care"
-                                             :active? (= active-tab-name :care)
-                                             :icon    {:opts {:height "20px"
-                                                              :width  "20px"}
-                                                       :id   "heart"}
-                                             :sections (keep (fn [[heading content-key]]
-                                                               (when-let [content (get product content-key)]
-                                                                 {:heading heading
-                                                                  :content content}))
-                                                             [["Maintenance Level" :copy/maintenance-level]
-                                                              ["Can it be Dyed?" :copy/dyeable?]])}]})
-           (let [{:keys [copy/description
-                         copy/colors
-                         copy/weights
-                         copy/density
-                         copy/materials
-                         copy/whats-included
-                         copy/summary
-                         copy/duration]} product]
-             #:product-description {:service?             (accessors.products/service? product)
-                                    :duration             duration
-                                    :summary              summary
-                                    :description          description
-                                    :materials            materials
-                                    :colors               colors
-                                    :density              density
-                                    :whats-included       whats-included
-                                    :weights              (when-not density
-                                                            weights)
-                                    :learn-more-nav-event (when-not (or (contains? (:stylist-exclusives/family product) "kits")
-                                                                        standalone-service?)
-                                                            events/navigate-content-our-hair)})))
+     (when-not hair?
+       (let [{:keys [copy/description
+                     copy/colors
+                     copy/weights
+                     copy/density
+                     copy/materials
+                     copy/whats-included
+                     copy/summary
+                     copy/duration]} product]
+         #:product-description {:service?             (accessors.products/service? product)
+                                :duration             duration
+                                :summary              summary
+                                :description          description
+                                :materials            materials
+                                :colors               colors
+                                :density              density
+                                :whats-included       whats-included
+                                :weights              (when-not density
+                                                        weights)
+                                :learn-more-nav-event (when-not (or (contains? (:stylist-exclusives/family product) "kits")
+                                                                    standalone-service?)
+                                                        events/navigate-content-our-hair)}))
 
-      (and (= "shop" (get-in data keypaths/store-slug))
-           (not standalone-service?))
-      (merge #:freeinstall-banner {:title       "Buy 3 items and we'll pay for your hair install"
-                                   :subtitle    "Choose any Mayvenn stylist in your area"
-                                   :button-copy "browse stylists"
-                                   :nav-event   [events/navigate-adventure-match-stylist]
-                                   :class       "bg-pale-purple"
-                                   :id          "freeinstall-banner-cta"})
+     (when (and shop? (not standalone-service?))
+       #:freeinstall-banner {:title       "Buy 3 items and we'll pay for your hair install"
+                             :subtitle    "Choose any Mayvenn stylist in your area"
+                             :button-copy "browse stylists"
+                             :nav-event   [events/navigate-adventure-match-stylist]
+                             :class       "bg-pale-purple"
+                             :id          "freeinstall-banner-cta"})
 
-      (accessors.products/product-is-mayvenn-install-service? product)
-      (merge #:freeinstall-banner
-             {:title          "Amazing Stylists"
-              :icon           (svg/heart {:class  "fill-p-color"
-                                          :width  "32px"
-                                          :height "29px"})
-              :subtitle       (str "We’ve rounded up the best stylists in the country so you can be "
-                                   "sure your hair is in really, really good hands.")
-              :button-copy    "browse stylists"
-              :nav-event      [events/navigate-adventure-match-stylist]
-              :image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
-              :class          "bg-refresh-gray"
-              :id             "freeinstall-banner-cta"}
-             {:how-it-works
-              {:how-it-works/title-secondary "Here’s how it works."
-               :how-it-works/step-elements
-               [{:how-it-works.step.title/primary   "01"
-                 :how-it-works.step.title/secondary "Pick your service"
-                 :how-it-works.step.body/primary    "Choose the service you’d like to book from our full list of complimentary Mayvenn service offerings."}
-                {:how-it-works.step.title/primary   "02"
-                 :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
-                 :how-it-works.step.body/primary    (str "We've hand-picked thousands of talented stylists around the country. "
-                                                         "Browse the stylists in your area to find your perfect match.") }
-                {:how-it-works.step.title/primary   "03"
-                 :how-it-works.step.title/secondary "Schedule your appointment"
-                 :how-it-works.step.body/primary    (str "We’ll connect you with your stylist to set up your service. "
-                                                         "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}})
-      wig-customization?
-      (merge {:how-it-works
-              {:how-it-works/title-secondary "Here’s how it works."
-               :how-it-works/step-elements
-               [{:how-it-works.step.title/primary   "01"
-                 :how-it-works.step.title/secondary "Select Your Wig"
-                 :how-it-works.step.body/primary    "Decide which wig you want and buy it from Mayvenn. Shop Lace Front & 360 Lace Wigs."}
-                {:how-it-works.step.title/primary   "02"
-                 :how-it-works.step.title/secondary "Choose a Mayvenn Certified Stylist"
-                 :how-it-works.step.body/primary    "Browse our network of professional stylists in your area and make an appointment." }
-                {:how-it-works.step.title/primary   "03"
-                 :how-it-works.step.title/secondary "Drop Off Your Wig"
-                 :how-it-works.step.body/primary    (str "Leave the wig with your stylist and talk about what you want. "
-                                                         "Your stylist will bleach the knots, tint the lace, cut the lace, customize your hairline and make sure it fits perfectly.  ")}
-                {:how-it-works.step.title/primary   "04"
-                 :how-it-works.step.title/secondary "Schedule Your Pickup"
-                 :how-it-works.step.body/primary    "Make an appointment to pick up your wig with your stylist in a week."}
-                {:how-it-works.step.title/primary   "05"
-                 :how-it-works.step.title/secondary "Go Get Your Wig"
-                 :how-it-works.step.body/primary    "You pick up your wig. Let us pick up the tab. Let us cover the cost of your customization—we insist."}]}})
+     (when free-mayvenn-service?
+       {:price-block/primary-struck (mf/as-money sku-price)
+        :price-block/secondary      [:span.teal "FREE"]
+        :title/secondary            (:promo.mayvenn-install/requirement-copy product)
+        :freeinstall-banner/title          "Amazing Stylists"
+        :freeinstall-banner/icon           (svg/heart {:class  "fill-p-color"
+                                                       :width  "32px"
+                                                       :height "29px"})
+        :freeinstall-banner/subtitle       (str "We’ve rounded up the best stylists in the country so you can be "
+                                                "sure your hair is in really, really good hands.")
+        :freeinstall-banner/button-copy    "browse stylists"
+        :freeinstall-banner/nav-event      [events/navigate-adventure-match-stylist]
+        :freeinstall-banner/image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
+        :freeinstall-banner/class          "bg-refresh-gray"
+        :freeinstall-banner/id             "freeinstall-banner-cta"
+        :how-it-works
+        {:how-it-works/title-secondary "Here’s how it works."
+         :how-it-works/step-elements
+         [{:how-it-works.step.title/primary   "01"
+           :how-it-works.step.title/secondary "Pick your service"
+           :how-it-works.step.body/primary    "Choose the service you’d like to book from our full list of complimentary Mayvenn service offerings."}
+          {:how-it-works.step.title/primary   "02"
+           :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
+           :how-it-works.step.body/primary    (str "We've hand-picked thousands of talented stylists around the country. "
+                                                   "Browse the stylists in your area to find your perfect match.") }
+          {:how-it-works.step.title/primary   "03"
+           :how-it-works.step.title/secondary "Schedule your appointment"
+           :how-it-works.step.body/primary    (str "We’ll connect you with your stylist to set up your service. "
+                                                   "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}})
+     (when wig-customization?
+       {:how-it-works
+        {:how-it-works/title-secondary "Here’s how it works."
+         :how-it-works/step-elements
+         [{:how-it-works.step.title/primary   "01"
+           :how-it-works.step.title/secondary "Select Your Wig"
+           :how-it-works.step.body/primary    "Decide which wig you want and buy it from Mayvenn. Shop Lace Front & 360 Lace Wigs."}
+          {:how-it-works.step.title/primary   "02"
+           :how-it-works.step.title/secondary "Choose a Mayvenn Certified Stylist"
+           :how-it-works.step.body/primary    "Browse our network of professional stylists in your area and make an appointment." }
+          {:how-it-works.step.title/primary   "03"
+           :how-it-works.step.title/secondary "Drop Off Your Wig"
+           :how-it-works.step.body/primary    (str "Leave the wig with your stylist and talk about what you want. "
+                                                   "Your stylist will bleach the knots, tint the lace, cut the lace, customize your hairline and make sure it fits perfectly.  ")}
+          {:how-it-works.step.title/primary   "04"
+           :how-it-works.step.title/secondary "Schedule Your Pickup"
+           :how-it-works.step.body/primary    "Make an appointment to pick up your wig with your stylist in a week."}
+          {:how-it-works.step.title/primary   "05"
+           :how-it-works.step.title/secondary "Go Get Your Wig"
+           :how-it-works.step.body/primary    "You pick up your wig. Let us pick up the tab. Let us cover the cost of your customization—we insist."}]}})
 
-      standalone-service?
-      (merge #:freeinstall-banner {:title          "Amazing Stylists"
-                                   :icon           (svg/heart {:class  "fill-p-color"
-                                                               :width  "32px"
-                                                               :height "29px"})
-                                   :subtitle       (str "We’ve rounded up the best stylists in the country so you can be "
-                                                        "sure your hair is in really, really good hands.")
-                                   :button-copy    "browse stylists"
-                                   :nav-event      [events/navigate-adventure-match-stylist]
-                                   :image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
-                                   :class          "bg-refresh-gray"
-                                   :id             "freeinstall-banner-cta"}
-             {:how-it-works
-              {:how-it-works/title-secondary "Here’s how it works."
-               :how-it-works/step-elements
-               [{:how-it-works.step.title/primary   "01"
-                 :how-it-works.step.title/secondary "Pick your service"
-                 :how-it-works.step.body/primary    (str "Choose the service you’d like to book from our full list of salon service offerings. "
-                                                         "Next, you’ll see which stylists are nearby and decide who you want to book.")}
-                {:how-it-works.step.title/primary   "02"
-                 :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
-                 :how-it-works.step.body/primary    (str "We've hand-picked thousands of talented stylists around the country. "
-                                                         "Browse the stylists in your area to find your perfect match.") }
-                {:how-it-works.step.title/primary   "03"
-                 :how-it-works.step.title/secondary "Schedule your appointment"
-                 :how-it-works.step.body/primary    (str "We’ll connect you with your stylist to set up your service. "
-                                                         "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}})
+     (when standalone-service?
+       {:price-block/primary               (mf/as-money sku-price)
+        :freeinstall-banner/title          "Amazing Stylists"
+        :freeinstall-banner/icon           (svg/heart {:class  "fill-p-color"
+                                                       :width  "32px"
+                                                       :height "29px"})
+        :freeinstall-banner/subtitle       (str "We’ve rounded up the best stylists in the country so you can be "
+                                                "sure your hair is in really, really good hands.")
+        :freeinstall-banner/button-copy    "browse stylists"
+        :freeinstall-banner/nav-event      [events/navigate-adventure-match-stylist]
+        :freeinstall-banner/image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
+        :freeinstall-banner/class          "bg-refresh-gray"
+        :freeinstall-banner/id             "freeinstall-banner-cta"
+        :how-it-works
+        {:how-it-works/title-secondary "Here’s how it works."
+         :how-it-works/step-elements
+         [{:how-it-works.step.title/primary   "01"
+           :how-it-works.step.title/secondary "Pick your service"
+           :how-it-works.step.body/primary    (str "Choose the service you’d like to book from our full list of salon service offerings. "
+                                                   "Next, you’ll see which stylists are nearby and decide who you want to book.")}
+          {:how-it-works.step.title/primary   "02"
+           :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
+           :how-it-works.step.body/primary    (str "We've hand-picked thousands of talented stylists around the country. "
+                                                   "Browse the stylists in your area to find your perfect match.") }
+          {:how-it-works.step.title/primary   "03"
+           :how-it-works.step.title/secondary "Schedule your appointment"
+           :how-it-works.step.body/primary    (str "We’ll connect you with your stylist to set up your service. "
+                                                   "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}})
 
-      (#{"360-wigs" "ready-wigs" "lace-front-wigs"} (-> product :hair/family first))
-      (merge {:freeinstall-banner/title "Buy any Lace Front or 360 Wig and we'll pay for your wig customization"}))))
+     (when wig?
+       {:freeinstall-banner/title "Buy any Lace Front or 360 Wig and we'll pay for your wig customization"}))))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
