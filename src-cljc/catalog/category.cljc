@@ -12,6 +12,7 @@
    [catalog.ui.category-hero :as category-hero]
    [catalog.ui.how-it-works :as how-it-works]
    [catalog.ui.product-card-listing :as product-card-listing]
+   [catalog.ui.service-card-listing :as service-card-listing]
    [storefront.accessors.categories :as accessors.categories]
    [storefront.assets :as assets]
    [storefront.component :as c]
@@ -26,7 +27,8 @@
   [{:keys [category-hero
            how-it-works
            category-filters
-           product-card-listing]} _ _]
+           card-listing
+           service-category-page?]} _ _]
   [:div
    (c/build category-hero/organism category-hero)
    [:div.max-960.mx-auto
@@ -34,7 +36,7 @@
     (when-let [title (:title category-filters)]
       [:div.canela.title-1.center.mt3.py4 title])
     (c/build category-filters/organism category-filters {})
-    (c/build product-card-listing/organism product-card-listing {})]
+    (c/build product-card-listing/organism card-listing {})]
    [:div.col-10.mx-auto.mt6
     (c/build how-it-works/organism how-it-works)]])
 
@@ -59,31 +61,31 @@
 
 (defn page
   [app-state opts]
-  (let [current                  (accessors.categories/current-category app-state)
-        selections               (get-in app-state catalog.keypaths/category-selections)
-        loaded-category-products (selector/match-all
-                                  {:selector/strict? true}
-                                  (merge
-                                   (skuers/electives current)
-                                   (skuers/essentials current))
-                                  (vals (get-in app-state k/v2-products)))
-        category-products-matching-criteria
-        (selector/match-all {:selector/strict? true}
-                            (merge
-                             (skuers/essentials current)
-                             selections)
-                            loaded-category-products)]
+  (let [current                             (accessors.categories/current-category app-state)
+        selections                          (get-in app-state catalog.keypaths/category-selections)
+        loaded-category-products            (selector/match-all
+                                             {:selector/strict? true}
+                                             (merge
+                                              (skuers/electives current)
+                                              (skuers/essentials current))
+                                             (vals (get-in app-state k/v2-products)))
+        category-products-matching-criteria (selector/match-all {:selector/strict? true}
+                                                                (merge
+                                                                 (skuers/essentials current)
+                                                                 selections)
+                                                                loaded-category-products)
+        cart-listing-query                  (if (contains? (:catalog/department current) "service")
+                                              service-card-listing/query
+                                              product-card-listing/query)]
     (c/build template
-             {:category-hero        (category-hero-query current)
-              :category-filters     (category-filters/query app-state
-                                                            current
-                                                            loaded-category-products
-                                                            category-products-matching-criteria
-                                                            selections)
-              :how-it-works         current
-              :product-card-listing (product-card-listing/query app-state
-                                                                current
-                                                                category-products-matching-criteria)}
+             {:category-hero          (category-hero-query current)
+              :category-filters       (category-filters/query app-state
+                                                              current
+                                                              loaded-category-products
+                                                              category-products-matching-criteria
+                                                              selections)
+              :how-it-works           current
+              :card-listing           (cart-listing-query app-state current category-products-matching-criteria)}
              opts)))
 
 (defn ^:export built-component
