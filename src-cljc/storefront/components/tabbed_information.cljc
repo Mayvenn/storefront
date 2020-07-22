@@ -20,13 +20,14 @@
          [:div.proxima.title-3.shout heading]
          [:div content]])]]))
 
-(c/defcomponent component [{:tabbed-information/keys [tabs id content]} owner _]
+(c/defcomponent component [{:tabbed-information/keys [tabs id content keypath]} owner _]
   (when id
     [:div.mx4
      [:div.flex.mx-auto.justify-between.pointer
       (for [{:keys [title id icon active?]} tabs]
         [:div.canela.title-3.col-4.border-bottom.flex.flex-column.justify-end
-         ^:attrs (merge (utils/fake-href events/pdtab-selected {:tab id})
+         ^:attrs (merge (utils/fake-href events/tabbed-information-tab-selected {:tab id
+                                                                                 :keypath keypath})
                         {:class     (if active?
                                       "black border-width-4 border-black"
                                       "dark-gray border-width-2 border-cool-gray")
@@ -41,7 +42,7 @@
          [:div.center title]])]
      (map tab-element tabs)]))
 
-(defmethod transitions/transition-state events/pdtab-selected [_ _ {:keys [tab]} app-state]
-  (let [selected-tab (get-in app-state keypaths/product-details-tab)]
+(defmethod transitions/transition-state events/tabbed-information-tab-selected [_ _ {:keys [tab keypath]} app-state]
+  (let [selected-tab (get-in app-state keypath)]
     (when-not (= tab selected-tab)
-      (assoc-in app-state keypaths/product-details-tab tab))))
+      (assoc-in app-state keypath tab))))

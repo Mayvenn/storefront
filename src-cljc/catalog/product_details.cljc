@@ -481,6 +481,7 @@
             (when tabs?
               (let [active-tab-name (or (keyword (get-in data keypaths/product-details-tab)) :description)]
                 #:tabbed-information{:id      "product-description-tabs"
+                                     :keypath keypaths/product-details-tab
                                      :tabs    [{:title   "Description"
                                                 :id      "description"
                                                 :active? (= active-tab-name :description)
