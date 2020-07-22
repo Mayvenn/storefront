@@ -30,6 +30,10 @@
 (defn service? [product]
   (seq (:service/type product)))
 
+(defn hair? [product]
+  (contains? (set (:catalog/department product))
+             "hair"))
+
 (defn base-service?
   [product]
   (contains? (set (:service/type product))

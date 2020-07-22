@@ -34,7 +34,7 @@
                          :data-product-id product-id
                          :data-url        data-url}})])])
 
-(defcomponent product-description
+(defcomponent non-hair-product-description
   [{:product-description/keys
     [duration
      description
@@ -44,8 +44,9 @@
      materials
      whats-included
      summary
-     learn-more-nav-event]} _ _]
-  (when (seq description)
+     learn-more-nav-event
+     service?]} _ _]
+  (when (and (not service?) (seq description))
     [:div.border.border-width-2.m3.p4.border-cool-gray
      [:div.light.canela.title-2 "Description"]
      [:div
@@ -88,8 +89,9 @@
      materials
      whats-included
      summary
-     learn-more-nav-event]} _ _]
-  (when (seq description)
+     learn-more-nav-event
+     service?]} _ _]
+  (when (and service? (seq description))
     [:div.border.border-width-2.m3.p4.border-cool-gray
      [:div.light.canela.title-2 "Description"]
      (for [[idx item] (map-indexed vector description)]

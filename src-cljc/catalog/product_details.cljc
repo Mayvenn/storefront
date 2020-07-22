@@ -217,8 +217,7 @@
            picker-data
            aladdin?
            sticky-add-to-bag?
-           ugc
-           tabs?] :as data} owner opts]
+           ugc] :as data} owner opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (if-not product
@@ -255,10 +254,9 @@
                :else        (component/build add-to-cart/organism data))]
             (when (products/stylist-only? product)
               shipping-and-guarantee)
-            (cond
-              (accessors.products/service? product) (component/build catalog.M/service-description data opts)
-              tabs?                                 (component/build tabbed-information/component data)
-              :else                                 (component/build catalog.M/product-description data opts))
+            (component/build catalog.M/service-description data opts)
+            (component/build tabbed-information/component data)
+            (component/build catalog.M/non-hair-product-description data opts)
             (when how-it-works
               [:div.container.mx-auto.mt4.px4.hide-on-dt.hide-on-tb
                (component/build how-it-works/organism how-it-works)])
@@ -409,13 +407,12 @@
         sku-price           (:sku/price selected-sku)
         review-data         (review-component/query data)
         standalone-service? (accessors.products/standalone-service? product)
-        tabs?               (experiments/tabs? data)
+        hair?               (accessors.products/hair? product)
         wig-customization?  (seq (spice.selector/match-all {} {:catalog/department "service"
                                                                :service/category   "customization"} [product]))]
     (cond->
         (merge
          {:reviews                            review-data
-          :tabs?                              tabs?
           :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
           :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
           :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
@@ -453,86 +450,85 @@
            sku-price
            {:price-block/primary   (mf/as-money sku-price)
             :price-block/secondary "each"})
+
          (add-to-cart-query data selected-sku sku-price)
-         (let [{:keys [copy/description
-                       copy/colors
-                       copy/weights
-                       copy/density
-                       copy/materials
-                       copy/whats-included
-                       copy/summary
-                       copy/duration
-                       hair/family]} product]
-           (merge
-            #:product-description {:duration             duration
-                                   :summary              summary
-                                   :description          description
-                                   :materials            materials
-                                   :colors               colors
-                                   :density              density
-                                   :whats-included       whats-included
-                                   :weights              (when-not density
-                                                           weights)
-                                   :learn-more-nav-event (when-not (or (contains? family "seamless-clip-ins")
-                                                                       (contains? family "tape-ins")
-                                                                       (contains? (:stylist-exclusives/family product) "kits")
-                                                                       standalone-service?)
-                                                           events/navigate-content-our-hair)}
-            (when tabs?
-              (let [active-tab-name (or (keyword (get-in data keypaths/product-details-tab)) :description)]
-                #:tabbed-information{:id      "product-description-tabs"
-                                     :keypath keypaths/product-details-tab
-                                     :tabs    [{:title   "Description"
-                                                :id      "description"
-                                                :active? (= active-tab-name :description)
-                                                :icon    {:opts {:height "18px"
-                                                                 :width  "18px"}
-                                                          :id   "description"}
-                                                :primary description
-                                                :sections (keep (fn [[heading content-key]]
-                                                                  (when-let [content (get product content-key)]
-                                                                    {:heading heading
-                                                                     :content content}))
-                                                                [["Hair Type" :copy/hair-type]
-                                                                 ["What's Included" :copy/whats-included]
-                                                                 ["Model Wearing" :copy/model-wearing]
-                                                                 ["Available Services" :copy/available-services]])}
-                                               {:title   "Hair Info"
-                                                :id      "hair-info"
-                                                :active? (= active-tab-name :hair-info)
-                                                :icon    {:opts {:height "20px"
-                                                                 :width  "20px"}
-                                                          :id   "info-color-circle"}
-                                                :sections (keep (fn [[heading content-key]]
-                                                                  (when-let [content (get product content-key)]
-                                                                    {:heading heading
-                                                                     :content content}))
-                                                                [["Unit Weight" :copy/weights]
-                                                                 ["Hair Quality" :copy/quality]
-                                                                 ["Hair Origin" :copy/origin]
-                                                                 ["Hair Weft Type" :copy/weft-type]
-                                                                 ["Part Design" :copy/part-design]
-                                                                 ["Features" :copy/features]
-                                                                 ["Available Materials" :copy/materials]
-                                                                 ["Lace Size" :copy/lace-size]
-                                                                 ["Lace Color" :copy/lace-color]
-                                                                 ["Silk Size" :copy/silk-size]
-                                                                 ["Silk Color" :copy/silk-color]
-                                                                 ["Cap Size" :copy/cap-size]
-                                                                 ["Wig Density" :copy/density]
-                                                                 ["Tape-in Glue Information" :copy/tape-in-glue]])}
-                                               {:title   "Care"
-                                                :id      "care"
-                                                :active? (= active-tab-name :care)
-                                                :icon    {:opts {:height "20px"
-                                                                 :width  "20px"}
-                                                          :id   "heart"}
-                                                :sections (keep (fn [[heading content-key]]
-                                                                  (when-let [content (get product content-key)]
-                                                                    {:heading heading
-                                                                     :content content}))
-                                                                [["Maintenance Level" :copy/maintenance-level]
-                                                                 ["Can it be Dyed?" :copy/dyeable?]])}]})))))
+
+         (if hair?
+           (let [active-tab-name (or (keyword (get-in data keypaths/product-details-tab)) :description)]
+             #:tabbed-information{:id      "product-description-tabs"
+                                  :keypath keypaths/product-details-tab
+                                  :tabs    [{:title   "Description"
+                                             :id      "description"
+                                             :active? (= active-tab-name :description)
+                                             :icon    {:opts {:height "18px"
+                                                              :width  "18px"}
+                                                       :id   "description"}
+                                             :primary (:copy/description product)
+                                             :sections (keep (fn [[heading content-key]]
+                                                               (when-let [content (get product content-key)]
+                                                                 {:heading heading
+                                                                  :content content}))
+                                                             [["Hair Type" :copy/hair-type]
+                                                              ["What's Included" :copy/whats-included]
+                                                              ["Model Wearing" :copy/model-wearing]
+                                                              ["Available Services" :copy/available-services]])}
+                                            {:title   "Hair Info"
+                                             :id      "hair-info"
+                                             :active? (= active-tab-name :hair-info)
+                                             :icon    {:opts {:height "20px"
+                                                              :width  "20px"}
+                                                       :id   "info-color-circle"}
+                                             :sections (keep (fn [[heading content-key]]
+                                                               (when-let [content (get product content-key)]
+                                                                 {:heading heading
+                                                                  :content content}))
+                                                             [["Unit Weight" :copy/weights]
+                                                              ["Hair Quality" :copy/quality]
+                                                              ["Hair Origin" :copy/origin]
+                                                              ["Hair Weft Type" :copy/weft-type]
+                                                              ["Part Design" :copy/part-design]
+                                                              ["Features" :copy/features]
+                                                              ["Available Materials" :copy/materials]
+                                                              ["Lace Size" :copy/lace-size]
+                                                              ["Lace Color" :copy/lace-color]
+                                                              ["Silk Size" :copy/silk-size]
+                                                              ["Silk Color" :copy/silk-color]
+                                                              ["Cap Size" :copy/cap-size]
+                                                              ["Wig Density" :copy/density]
+                                                              ["Tape-in Glue Information" :copy/tape-in-glue]])}
+                                            {:title   "Care"
+                                             :id      "care"
+                                             :active? (= active-tab-name :care)
+                                             :icon    {:opts {:height "20px"
+                                                              :width  "20px"}
+                                                       :id   "heart"}
+                                             :sections (keep (fn [[heading content-key]]
+                                                               (when-let [content (get product content-key)]
+                                                                 {:heading heading
+                                                                  :content content}))
+                                                             [["Maintenance Level" :copy/maintenance-level]
+                                                              ["Can it be Dyed?" :copy/dyeable?]])}]})
+           (let [{:keys [copy/description
+                         copy/colors
+                         copy/weights
+                         copy/density
+                         copy/materials
+                         copy/whats-included
+                         copy/summary
+                         copy/duration]} product]
+             #:product-description {:service?             (accessors.products/service? product)
+                                    :duration             duration
+                                    :summary              summary
+                                    :description          description
+                                    :materials            materials
+                                    :colors               colors
+                                    :density              density
+                                    :whats-included       whats-included
+                                    :weights              (when-not density
+                                                            weights)
+                                    :learn-more-nav-event (when-not (or (contains? (:stylist-exclusives/family product) "kits")
+                                                                        standalone-service?)
+                                                            events/navigate-content-our-hair)})))
 
       (and (= "shop" (get-in data keypaths/store-slug))
            (not standalone-service?))
