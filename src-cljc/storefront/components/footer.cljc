@@ -150,13 +150,13 @@
         non-category-links (concat (when shop?
                                      [{:title       "Free Services"
                                        :sort-order  0
-                                       :id          "freeinstall"
+                                       :id          "free-services"
                                        :new-link?   false
                                        :nav-message [events/navigate-category {:page/slug           "free-mayvenn-services"
                                                                                :catalog/category-id "31"}]}
                                       {:title       "Find a Stylist"
                                        :sort-order  2
-                                       :id          "freeinstall"
+                                       :id          "find-a-stylist"
                                        :new-link?   false
                                        :nav-message [events/navigate-adventure-match-stylist]}])
                                    (when (not classic?)
