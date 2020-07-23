@@ -1,9 +1,6 @@
 (ns catalog.ui.product-card-listing
-  (:require adventure.keypaths
-            [catalog.skuers :as skuers]
+  (:require [catalog.skuers :as skuers]
             [catalog.ui.product-card :as product-card]
-            [catalog.ui.vertical-direct-to-cart-card :as vertical-direct-to-cart-card]
-            [catalog.ui.horizontal-direct-to-cart-card :as horizontal-direct-to-cart-card]
             clojure.set
             [spice.maps :as maps]
             [storefront.component :as c]
@@ -15,7 +12,7 @@
 
 (defn subsections-query
   [facets
-   {:keys [subsections/category-selector subsections catalog/department]}
+   {:keys [subsections/category-selector subsections]}
    products-matching-criteria
    data]
   (let [subsection-facet-options (when category-selector

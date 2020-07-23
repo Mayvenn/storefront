@@ -15,7 +15,6 @@
 
 (defn product->card
   [data {:as                          product
-         catalog-department           :catalog/department
          mayvenn-install-discountable :promo.mayvenn-install/discountable}]
   (cond
     (contains? mayvenn-install-discountable true) ;; Free services
@@ -45,7 +44,7 @@
 
 (defn subsections-query
   [facets
-   {:keys [subsections/category-selector subsections catalog/department]}
+   {:keys [subsections]}
    products-matching-criteria
    data]
   (let [subsection-order         (->> (map-indexed vector subsections)
