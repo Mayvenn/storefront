@@ -82,7 +82,7 @@
     :vertical-direct-to-cart-card   (vertical-direct-to-cart-card/organism card)
     :horizontal-direct-to-cart-card (horizontal-direct-to-cart-card/organism card)))
 
-(c/defcomponent ^:private product-list-subsection-component
+(c/defcomponent ^:private service-list-subsection-component
   [{:keys [product-cards subsection-key] primary-title :title/primary} _ {:keys [id]}]
   [:div
    {:id id :data-test id}
@@ -101,7 +101,7 @@
      no-product-cards? (c/build product-cards-empty-state {} {})
 
      :else             (mapv (fn build [{:as subsection :keys [subsection-key]}]
-                               (c/build product-list-subsection-component
+                               (c/build service-list-subsection-component
                                         subsection
                                         (c/component-id (str "subsection-" subsection-key))))
                              subsections))])

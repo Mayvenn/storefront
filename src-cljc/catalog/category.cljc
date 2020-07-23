@@ -36,7 +36,9 @@
     (when-let [title (:title category-filters)]
       [:div.canela.title-1.center.mt3.py4 title])
     (c/build category-filters/organism category-filters {})
-    (c/build product-card-listing/organism card-listing {})]
+    (if service-category-page?
+      (c/build service-card-listing/organism card-listing {})
+      (c/build product-card-listing/organism card-listing {}))]
    [:div.col-10.mx-auto.mt6
     (c/build how-it-works/organism how-it-works)]])
 
@@ -74,7 +76,8 @@
                                                                  (skuers/essentials current)
                                                                  selections)
                                                                 loaded-category-products)
-        cart-listing-query                  (if (contains? (:catalog/department current) "service")
+        service-category-page?              (contains? (:catalog/department current) "service")
+        cart-listing-query                  (if service-category-page?
                                               service-card-listing/query
                                               product-card-listing/query)]
     (c/build template
@@ -85,7 +88,8 @@
                                                               category-products-matching-criteria
                                                               selections)
               :how-it-works           current
-              :card-listing           (cart-listing-query app-state current category-products-matching-criteria)}
+              :card-listing           (cart-listing-query app-state current category-products-matching-criteria)
+              :service-category-page? service-category-page?}
              opts)))
 
 (defn ^:export built-component
