@@ -136,7 +136,7 @@
 
 (def product-details (conj ui :product-details))
 (def product-details-url-sku-code (conj product-details :url-sku-code))
-(def product-details-tab (conj product-details :tab))
+(def product-details-information-tab (conj product-details :information-tab))
 
 (def phone-capture-session (conj ui :phone-capture-session))
 

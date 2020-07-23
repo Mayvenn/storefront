@@ -154,6 +154,8 @@
           :store-info-expanded            false
           :popup                          nil
 
+          :product-details {:information-tab :hair-info}
+
           :expanded-commission-order-id #{nil}
 
           :phone-capture-session  (cookie-jar/get-phone-capture-session cookie)

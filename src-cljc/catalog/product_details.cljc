@@ -447,11 +447,11 @@
      (add-to-cart-query data selected-sku sku-price)
 
      (when hair?
-       (let [active-tab-name (or (keyword (get-in data keypaths/product-details-tab)) :description)]
+       (let [active-tab-name (get-in data keypaths/product-details-information-tab)]
          #:tabbed-information{:id      "product-description-tabs"
-                              :keypath keypaths/product-details-tab
+                              :keypath keypaths/product-details-information-tab
                               :tabs    [{:title    "Hair Info"
-                                         :id       "hair-info"
+                                         :id       :hair-info
                                          :active?  (= active-tab-name :hair-info)
                                          :icon     {:opts {:height "20px"
                                                            :width  "20px"}
@@ -475,7 +475,7 @@
                                                           ["Wig Density" :copy/density]
                                                           ["Tape-in Glue Information" :copy/tape-in-glue]])}
                                         {:title    "Description"
-                                         :id       "description"
+                                         :id       :description
                                          :active?  (= active-tab-name :description)
                                          :icon     {:opts {:height "18px"
                                                            :width  "18px"}
@@ -490,7 +490,7 @@
                                                           ["Model Wearing" :copy/model-wearing]
                                                           ["Available Services" :copy/available-services]])}
                                         {:title    "Care"
-                                         :id       "care"
+                                         :id       :care
                                          :active?  (= active-tab-name :care)
                                          :icon     {:opts {:height "20px"
                                                            :width  "20px"}
