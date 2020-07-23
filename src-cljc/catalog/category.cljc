@@ -5,11 +5,13 @@
               [storefront.platform.messages :as messages]
               [storefront.browser.scroll :as scroll]
               [storefront.hooks.facebook-analytics :as facebook-analytics]])
+   adventure.keypaths
    [catalog.icp :as icp]
    [catalog.skuers :as skuers]
    catalog.keypaths
    [catalog.ui.category-filters :as category-filters]
    [catalog.ui.category-hero :as category-hero]
+   [catalog.ui.molecules :as molecules]
    [catalog.ui.how-it-works :as how-it-works]
    [catalog.ui.product-card-listing :as product-card-listing]
    [catalog.ui.service-card-listing :as service-card-listing]
@@ -21,16 +23,18 @@
    [storefront.keypaths :as k]
    [storefront.trackings :as trackings]
    [storefront.transitions :as transitions]
-   [spice.selector :as selector]))
+   [spice.selector :as selector]
+   [storefront.events :as events]))
 
 (c/defcomponent ^:private template
   [{:keys [category-hero
            how-it-works
            category-filters
            card-listing
-           service-category-page?]} _ _]
+           service-category-page?] :as queried-data} _ _]
   [:div
    (c/build category-hero/organism category-hero)
+   (c/build molecules/stylist-bar queried-data {})
    [:div.max-960.mx-auto
     [:div.pt4]
     (when-let [title (:title category-filters)]
@@ -79,17 +83,28 @@
         service-category-page?              (contains? (:catalog/department current) "service")
         cart-listing-query                  (if service-category-page?
                                               service-card-listing/query
-                                              product-card-listing/query)]
+                                              product-card-listing/query)
+        servicing-stylist                   (get-in app-state adventure.keypaths/adventure-servicing-stylist)]
     (c/build template
-             {:category-hero          (category-hero-query current)
-              :category-filters       (category-filters/query app-state
-                                                              current
-                                                              loaded-category-products
-                                                              category-products-matching-criteria
-                                                              selections)
-              :how-it-works           current
-              :card-listing           (cart-listing-query app-state current category-products-matching-criteria)
-              :service-category-page? service-category-page?}
+             (merge {:category-hero          (category-hero-query current)
+                     :category-filters       (category-filters/query app-state
+                                                                     current
+                                                                     loaded-category-products
+                                                                     category-products-matching-criteria
+                                                                     selections)
+                     :how-it-works           current
+                     :card-listing           (cart-listing-query app-state current category-products-matching-criteria)
+                     :service-category-page? service-category-page?}
+                    (when (and service-category-page? servicing-stylist)
+                      {:stylist-bar/id             "category-page-stylist-bar"
+                       :stylist-bar/primary        (:store-nickname servicing-stylist)
+                       :stylist-bar/secondary      "Your Certified Mayvenn Stylist"
+                       :stylist-bar/rating         {:rating/id    "rating-stuff"
+                                                    :rating/value (:rating servicing-stylist)}
+                       :stylist-bar.thumbnail/id   "stylist-bar-thumbnail"
+                       :stylist-bar.thumbnail/url  (-> servicing-stylist :portrait :resizable-url)
+                       :stylist-bar.action/primary "change"
+                       :stylist-bar.action/target  [events/navigate-adventure-find-your-stylist {}]}))
              opts)))
 
 (defn ^:export built-component

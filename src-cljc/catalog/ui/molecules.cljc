@@ -2,7 +2,8 @@
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.reviews :as review-component]))
+            [storefront.platform.reviews :as review-component]
+            ui.molecules))
 
 (defn product-title
   "TODO empty state"
@@ -118,3 +119,24 @@
          [:ul.list-reset.h5.medium
           (for [[idx item] (map-indexed vector summary)]
             [:li.mbp3 {:key (str "item-" idx)} item])]])]]))
+
+(defn stylist-bar-thumbnail-molecule
+  [{:stylist-bar.thumbnail/keys [id url] :as data}]
+  (when id
+    (component/html
+     (ui/circle-picture {:width "40px"}
+                        (ui/square-image {:resizable-url url}
+                                         72)))))
+
+(defcomponent stylist-bar
+  [{:stylist-bar/keys [id primary secondary rating] :as queried-data} _ _]
+  (when id
+    [:div.bg-refresh-gray.flex.py2.px3
+     {:data-test id}
+     (stylist-bar-thumbnail-molecule queried-data)
+     [:div.flex-grow-1.flex-column.mx3
+      [:div.flex [:div.mr2 primary] (ui.molecules/stars-rating-molecule rating)]
+      [:div.proxima.content-3 secondary]]
+     (let [{:stylist-bar.action/keys [primary target]} queried-data]
+       [:div.flex.items-center
+        (ui/button-small-underline-primary (apply utils/route-to target) primary)])]))
