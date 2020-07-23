@@ -13,7 +13,7 @@
      [:div primary]
      [:div.flex.flex-wrap.justify-between
       (for [{:keys [content heading]} sections]
-        [:div.my2
+        [:div.my2.pr2
          {:style {:min-width "50%"}}
          [:div.proxima.title-3.shout heading]
          [:div content]])]]))
