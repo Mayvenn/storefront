@@ -981,6 +981,8 @@
                (GET "/sitemap-pages.xml" req (sitemap-pages ctx req))
                (GET "/blog" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/blog/"))))
                (GET "/blog/" req (util.response/redirect (store-url "shop" environment req)))
+               (GET "/info" req (util.response/redirect (store-url "shop" environment req)))
+               (GET "/info/*" req (util.response/redirect (store-url "shop" environment req)))
                (GET "/install" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/"))))
                (GET "/adv/home" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/")) :moved-permanently))
                (GET "/stylist/edit" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))

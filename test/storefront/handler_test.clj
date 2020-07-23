@@ -114,6 +114,14 @@
         (testing "It redirects to the shop subdomain"
           (is-redirected-to resp "shop" "/"))))))
 
+(deftest info-path-redirects-to-shop-and-preserves-path
+  (doseq [info-path ["/info" "/info/" "/info/preference-center"]]
+    (with-services
+      (with-handler handler
+        (let [resp (handler (mock/request :get (str "https://classic.mayvenn.com" info-path)))]
+          (testing "It redirects to the shop subdomain, keeping "
+            (is-redirected-to resp "shop" info-path)))))))
+
 (deftest peakmill-subdomain-redirects-to-shop-and-preserves-path
   (with-services
     (with-handler handler
