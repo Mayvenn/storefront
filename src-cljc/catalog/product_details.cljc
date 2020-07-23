@@ -262,7 +262,7 @@
             (when how-it-works
               [:div.container.mx-auto.mt4.px4.hide-on-dt.hide-on-tb
                (component/build how-it-works/organism how-it-works)])
-            (component/build freeinstall-banner/organism data opts)
+            [:div.m3 (component/build freeinstall-banner/organism data opts)]
             [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]]))]]
        (when aladdin?
          [:div.py10.bg-pale-purple.col-on-tb-dt.mt4

@@ -6,7 +6,7 @@
 (defcomponent organism
   [{:freeinstall-banner/keys [id icon title subtitle image-ucare-id button-copy nav-event] :as data} _ _]
   (when id
-    [:div.cursor.m3
+    [:a.block.inherit-color
      (merge {:data-test id}
             (apply utils/route-to nav-event))
      [:div.flex.justify-center
