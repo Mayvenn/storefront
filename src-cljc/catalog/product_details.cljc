@@ -19,10 +19,7 @@
             [catalog.selector.sku :as sku-selector]
             [catalog.ui.molecules :as catalog.M]
             [catalog.ui.how-it-works :as how-it-works]
-            [clojure.string :as string]
-            [spice.date :as date]
             [spice.selector :as selector]
-            [spice.maps :as maps]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
@@ -30,7 +27,6 @@
             [storefront.accessors.skus :as skus]
             [storefront.accessors.images :as images]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
-            [storefront.components.marquee :as marquee]
             [storefront.components.money-formatters :as mf]
             [storefront.components.picker.picker :as picker]
             [storefront.components.svg :as svg]
@@ -46,9 +42,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             [catalog.ui.add-to-cart :as add-to-cart]
-            [catalog.ui.freeinstall-banner :as freeinstall-banner]
-            [catalog.keypaths :as catalog.keypaths]
-            [spice.core :as core]))
+            [catalog.ui.browse-stylists-banner :as browse-stylists-banner]))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
@@ -238,9 +232,10 @@
           (component/html
            [:div
             ^:inline (carousel carousel-images product)
-            [:div.hide-on-mb (component/build ugc/component ugc opts)]
+            [:div.my5 (component/build browse-stylists-banner/organism data opts)]
+            (component/build ugc/component ugc opts)
             (when how-it-works
-              [:div.container.mx-auto.mt4.px4.hide-on-mb
+              [:div.container.mx-auto.mt4.px4
                (component/build how-it-works/organism how-it-works)])])
           (component/html
            [:div
@@ -259,11 +254,12 @@
             (component/build catalog.M/service-description data opts)
             (component/build tabbed-information/component data)
             (component/build catalog.M/non-hair-product-description data opts)
-            (when how-it-works
-              [:div.container.mx-auto.mt4.px4.hide-on-dt.hide-on-tb
-               (component/build how-it-works/organism how-it-works)])
-            [:div.m3 (component/build freeinstall-banner/organism data opts)]
-            [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]]))]]
+            [:div.hide-on-tb-dt
+             (when how-it-works
+               [:div.container.mx-auto.mt4.px4
+                (component/build how-it-works/organism how-it-works)])
+             [:div.m3 (component/build browse-stylists-banner/organism data opts)]
+             [:div.mxn2.mb3 (component/build ugc/component ugc opts)]]]))]]
        (when aladdin?
          [:div.py10.bg-pale-purple.col-on-tb-dt.mt4
           (component/build v2/get-a-free-install get-a-free-install-section-data)])
@@ -271,8 +267,8 @@
          [:div.container.col-7-on-tb-dt.px2
           (component/build review-component/reviews-component reviews opts)])
        (when sticky-add-to-bag?
-           ;; We use visibility:hidden rather than display:none so that this component has a height.
-           ;; We use the height on mobile view to slide it on/off the bottom of the page.
+         ;; We use visibility:hidden rather than display:none so that this component has a height.
+         ;; We use the height on mobile view to slide it on/off the bottom of the page.
          [:div.invisible-on-tb-dt
           (component/build sticky-add-component
                            {:image            (->> options
@@ -530,28 +526,28 @@
                                                         events/navigate-content-our-hair)}))
 
      (when (and shop? (not standalone-service?))
-       #:freeinstall-banner {:title       "Buy 3 items and we'll pay for your hair install"
-                             :subtitle    "Choose any Mayvenn stylist in your area"
-                             :button-copy "browse stylists"
-                             :nav-event   [events/navigate-adventure-match-stylist]
-                             :class       "bg-pale-purple"
-                             :id          "freeinstall-banner-cta"})
+       #:browse-stylists-banner {:title       "Buy 3 items and we'll pay for your hair install"
+                                 :subtitle    "Choose any Mayvenn stylist in your area"
+                                 :button-copy "browse stylists"
+                                 :nav-event   [events/navigate-adventure-match-stylist]
+                                 :class       "bg-pale-purple"
+                                 :id          "browse-stylists-banner-cta"})
 
      (when free-mayvenn-service?
        {:price-block/primary-struck (mf/as-money sku-price)
         :price-block/secondary      [:span.teal "FREE"]
         :title/secondary            (:promo.mayvenn-install/requirement-copy product)
-        :freeinstall-banner/title          "Amazing Stylists"
-        :freeinstall-banner/icon           (svg/heart {:class  "fill-p-color"
-                                                       :width  "32px"
-                                                       :height "29px"})
-        :freeinstall-banner/subtitle       (str "We’ve rounded up the best stylists in the country so you can be "
-                                                "sure your hair is in really, really good hands.")
-        :freeinstall-banner/button-copy    "browse stylists"
-        :freeinstall-banner/nav-event      [events/navigate-adventure-match-stylist]
-        :freeinstall-banner/image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
-        :freeinstall-banner/class          "bg-refresh-gray"
-        :freeinstall-banner/id             "freeinstall-banner-cta"
+        :browse-stylists-banner/title          "Amazing Stylists"
+        :browse-stylists-banner/icon           (svg/heart {:class  "fill-p-color"
+                                                           :width  "32px"
+                                                           :height "29px"})
+        :browse-stylists-banner/subtitle       (str "We’ve rounded up the best stylists in the country so you can be "
+                                                    "sure your hair is in really, really good hands.")
+        :browse-stylists-banner/button-copy    "browse stylists"
+        :browse-stylists-banner/nav-event      [events/navigate-adventure-match-stylist]
+        :browse-stylists-banner/image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
+        :browse-stylists-banner/class          "bg-refresh-gray"
+        :browse-stylists-banner/id             "browse-stylists-banner-cta"
         :how-it-works
         {:how-it-works/title-secondary "Here’s how it works."
          :how-it-works/step-elements
@@ -589,17 +585,17 @@
 
      (when standalone-service?
        {:price-block/primary               (mf/as-money sku-price)
-        :freeinstall-banner/title          "Amazing Stylists"
-        :freeinstall-banner/icon           (svg/heart {:class  "fill-p-color"
-                                                       :width  "32px"
-                                                       :height "29px"})
-        :freeinstall-banner/subtitle       (str "We’ve rounded up the best stylists in the country so you can be "
-                                                "sure your hair is in really, really good hands.")
-        :freeinstall-banner/button-copy    "browse stylists"
-        :freeinstall-banner/nav-event      [events/navigate-adventure-match-stylist]
-        :freeinstall-banner/image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
-        :freeinstall-banner/class          "bg-refresh-gray"
-        :freeinstall-banner/id             "freeinstall-banner-cta"
+        :browse-stylists-banner/title          "Amazing Stylists"
+        :browse-stylists-banner/icon           (svg/heart {:class  "fill-p-color"
+                                                           :width  "32px"
+                                                           :height "29px"})
+        :browse-stylists-banner/subtitle       (str "We’ve rounded up the best stylists in the country so you can be "
+                                                    "sure your hair is in really, really good hands.")
+        :browse-stylists-banner/button-copy    "browse stylists"
+        :browse-stylists-banner/nav-event      [events/navigate-adventure-match-stylist]
+        :browse-stylists-banner/image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
+        :browse-stylists-banner/class          "bg-refresh-gray"
+        :browse-stylists-banner/id             "browse-stylists-banner-cta"
         :how-it-works
         {:how-it-works/title-secondary "Here’s how it works."
          :how-it-works/step-elements
@@ -617,7 +613,7 @@
                                                    "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}})
 
      (when wig?
-       {:freeinstall-banner/title "Buy any Lace Front or 360 Wig and we'll pay for your wig customization"}))))
+       {:browse-stylists-banner/title "Buy any Lace Front or 360 Wig and we'll pay for your wig customization"}))))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
@@ -642,13 +638,13 @@
     ;; When given a sku-id use it
     ;; Else on direct load use the epitome
     ;; otherwise return nil to indicate an unavailable combination of items
-     (or (valid-sku-ids selected-sku-id)
-         (when (or direct-load?
-                   direct-to-details?)
-           (:catalog/sku-id
-            (skus/determine-epitome
-             (facets/color-order-map (get-in app-state storefront.keypaths/v2-facets))
-             valid-product-skus))))))
+    (or (valid-sku-ids selected-sku-id)
+        (when (or direct-load?
+                  direct-to-details?)
+          (:catalog/sku-id
+           (skus/determine-epitome
+            (facets/color-order-map (get-in app-state storefront.keypaths/v2-facets))
+            valid-product-skus))))))
 
 (defn url-points-to-invalid-sku? [selected-sku query-params]
   (boolean

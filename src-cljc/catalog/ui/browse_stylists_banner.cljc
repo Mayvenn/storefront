@@ -1,16 +1,16 @@
-(ns catalog.ui.freeinstall-banner
+(ns catalog.ui.browse-stylists-banner
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]))
 
 (defcomponent organism
-  [{:freeinstall-banner/keys [id icon title subtitle image-ucare-id button-copy nav-event] :as data} _ _]
+  [{:browse-stylists-banner/keys [id icon title subtitle image-ucare-id button-copy nav-event] :as data} _ _]
   (when id
     [:a.block.inherit-color
      (merge {:data-test id}
             (apply utils/route-to nav-event))
      [:div.flex.justify-center
-      {:class (:freeinstall-banner/class data)}
+      {:class (:browse-stylists-banner/class data)}
       [:div.p5.center.col-12.flex.flex-column.items-center
        icon
        [:div.title-2.canela title]

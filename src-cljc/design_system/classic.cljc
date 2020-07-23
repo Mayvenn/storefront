@@ -4,7 +4,6 @@
             [design-system.molecules :as molecules]
             [catalog.ui.molecules :as ui-molecules]
             [catalog.ui.add-to-cart :as add-to-cart]
-            [catalog.ui.freeinstall-banner :as freeinstall-banner]
             [popup.organisms :as popup]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.effects :as effects]
@@ -44,4 +43,3 @@
              (reviews/insert-reviews)
              ;; hack to unhack the fact that reviews expect two instances of reviews
              (js/setTimeout #(reviews/start) 2000))))
-
