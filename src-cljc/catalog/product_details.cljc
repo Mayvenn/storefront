@@ -450,22 +450,7 @@
        (let [active-tab-name (or (keyword (get-in data keypaths/product-details-tab)) :description)]
          #:tabbed-information{:id      "product-description-tabs"
                               :keypath keypaths/product-details-tab
-                              :tabs    [{:title    "Description"
-                                         :id       "description"
-                                         :active?  (= active-tab-name :description)
-                                         :icon     {:opts {:height "18px"
-                                                           :width  "18px"}
-                                                    :id   "description"}
-                                         :primary  (:copy/description product)
-                                         :sections (keep (fn [[heading content-key]]
-                                                           (when-let [content (get product content-key)]
-                                                             {:heading heading
-                                                              :content content}))
-                                                         [["Hair Type" :copy/hair-type]
-                                                          ["What's Included" :copy/whats-included]
-                                                          ["Model Wearing" :copy/model-wearing]
-                                                          ["Available Services" :copy/available-services]])}
-                                        {:title    "Hair Info"
+                              :tabs    [{:title    "Hair Info"
                                          :id       "hair-info"
                                          :active?  (= active-tab-name :hair-info)
                                          :icon     {:opts {:height "20px"
@@ -489,6 +474,21 @@
                                                           ["Cap Size" :copy/cap-size]
                                                           ["Wig Density" :copy/density]
                                                           ["Tape-in Glue Information" :copy/tape-in-glue]])}
+                                        {:title    "Description"
+                                         :id       "description"
+                                         :active?  (= active-tab-name :description)
+                                         :icon     {:opts {:height "18px"
+                                                           :width  "18px"}
+                                                    :id   "description"}
+                                         :primary  (:copy/description product)
+                                         :sections (keep (fn [[heading content-key]]
+                                                           (when-let [content (get product content-key)]
+                                                             {:heading heading
+                                                              :content content}))
+                                                         [["Hair Type" :copy/hair-type]
+                                                          ["What's Included" :copy/whats-included]
+                                                          ["Model Wearing" :copy/model-wearing]
+                                                          ["Available Services" :copy/available-services]])}
                                         {:title    "Care"
                                          :id       "care"
                                          :active?  (= active-tab-name :care)
