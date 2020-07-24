@@ -25,14 +25,16 @@
    [storefront.transitions :as transitions]
    [spice.selector :as selector]
    spice.core
-   [storefront.events :as events]))
+   [storefront.events :as events]
+   [storefront.accessors.experiments :as experiments]))
 
 (c/defcomponent ^:private template
   [{:keys [category-hero
            how-it-works
            category-filters
            card-listing
-           service-category-page?] :as queried-data} _ _]
+           service-category-page?
+           stylist-mismatch?] :as queried-data} _ _]
   [:div
    (c/build category-hero/organism category-hero)
    (c/build molecules/stylist-bar queried-data {})
@@ -41,7 +43,7 @@
     (when-let [title (:title category-filters)]
       [:div.canela.title-1.center.mt3.py4 title])
     (c/build category-filters/organism category-filters {})
-    (if service-category-page?
+    (if (and service-category-page? stylist-mismatch?)
       (c/build service-card-listing/organism card-listing {})
       (c/build product-card-listing/organism card-listing {}))]
    [:div.col-10.mx-auto.mt6
@@ -68,7 +70,8 @@
 
 (defn page
   [app-state opts]
-  (let [current                             (accessors.categories/current-category app-state)
+  (let [stylist-mismatch?                   (experiments/stylist-mismatch? app-state)
+        current                             (accessors.categories/current-category app-state)
         selections                          (get-in app-state catalog.keypaths/category-selections)
         loaded-category-products            (selector/match-all
                                              {:selector/strict? true}
@@ -82,7 +85,7 @@
                                                                  selections)
                                                                 loaded-category-products)
         service-category-page?              (contains? (:catalog/department current) "service")
-        card-listing-query                  (if service-category-page?
+        card-listing-query                  (if (and service-category-page? stylist-mismatch?)
                                               service-card-listing/query
                                               product-card-listing/query)
         servicing-stylist                   (get-in app-state adventure.keypaths/adventure-servicing-stylist)]
@@ -95,8 +98,9 @@
                                                                      selections)
                      :how-it-works           current
                      :card-listing           (card-listing-query app-state current category-products-matching-criteria)
-                     :service-category-page? service-category-page?}
-                    (when (and service-category-page? servicing-stylist)
+                     :service-category-page? service-category-page?
+                     :stylist-mismatch?      stylist-mismatch?}
+                    (when (and service-category-page? servicing-stylist stylist-mismatch?)
                       {:stylist-bar/id             "category-page-stylist-bar"
                        :stylist-bar/primary        (:store-nickname servicing-stylist)
                        :stylist-bar/secondary      "Your Certified Mayvenn Stylist"

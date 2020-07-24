@@ -129,3 +129,7 @@
 (defn just-added-only?
   [data]
   (display-feature? data "just-added-only"))
+
+(defn stylist-mismatch?
+  [data]
+  (display-feature? data "stylist-mismatch"))
