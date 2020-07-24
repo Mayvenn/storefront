@@ -1,16 +1,12 @@
 (ns storefront.components.shop-by-look-details
   (:require [catalog.images :as catalog-images]
             [catalog.facets :as facets]
-            [clojure.set :as set]
             [clojure.string :as str]
             [checkout.ui.cart-item-v202004 :as cart-item]
             [spice.core :as spice]
             [spice.selector :as selector]
             [storefront.accessors.images :as images]
             [storefront.accessors.contentful :as contentful]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.line-items :as line-items]
-            [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
             [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
@@ -18,7 +14,6 @@
             [storefront.component :as component :refer [defcomponent]]
             [storefront.effects :as effects]
             [storefront.api :as api]
-            [adventure.keypaths :as adv-keypaths]
             [storefront.ugc :as ugc]
             [storefront.events :as events]
             [storefront.hooks.quadpay :as quadpay]
@@ -27,7 +22,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.reviews :as reviews]
             [storefront.request-keys :as request-keys]
-            [ui.molecules :as ui-molecules]))
+            [spice.maps :as maps]))
 
 (defn add-to-cart-button
   [sold-out? creating-order? look {:keys [number]}]
@@ -132,15 +127,14 @@
              [(first department) price])
            items))
 
-(defn ^:private enrich-line-items-with-sku-data [catalog-skus shared-cart-line-items]
-  (map
-   (fn [line-item]
-     (merge line-item
-            (->> catalog-skus
-                 vals
-                 (filterv (fn [sku] (= (:legacy/variant-id line-item) (:legacy/variant-id sku))))
-                 first)))
-   shared-cart-line-items))
+(defn ^:private enrich-line-items-with-sku-data
+  [catalog-skus shared-cart-line-items]
+  (let [indexed-catalog-skus (maps/index-by :legacy/variant-id (vals catalog-skus))]
+    (map
+     (fn [line-item]
+       (merge line-item
+              (get indexed-catalog-skus (:legacy/variant-id line-item))))
+     shared-cart-line-items)))
 
 (defn ^:private shared-cart->discount
   [{:keys [promotions base-price shared-cart-promo base-service]}]
@@ -209,11 +203,11 @@
      (get-cart-product-image images-catalog (first sorted-line-items)))))
 
 (defn service-line-item-query
-  [app-state service-sku service-product]
+  [service-sku service-product]
   {:react/key                             "service-line-item"
    :cart-item-title/id                    "line-item-title-upsell-service"
    :cart-item-title/primary               (or (:copy/title service-product) (:legacy/product-name service-sku))
-   :cart-item-copy/value                  (or (:copy/whats-included service-product) (:copy/description service-sku))
+   :cart-item-copy/value                  (:copy/whats-included service-sku)
    :cart-item-floating-box/id             "line-item-service-price"
    :cart-item-floating-box/value          (some-> service-sku :sku/price mf/as-money)
    :cart-item-service-thumbnail/id        "service"
@@ -222,35 +216,32 @@
                                                :ucare/id)})
 
 (defn cart-items-query
-  [app-state line-items]
-  (let [images     (get-in app-state keypaths/v2-images)
-        cart-items (for [{sku-id     :catalog/sku-id
-                          images     :selector/images
-                          variant-id :variant/id
-                          :as        line-item} line-items
+  [line-items]
+  (for [{sku-id     :catalog/sku-id
+         images     :selector/images
+         :as        line-item} line-items
 
-                         :let [price (or (:sku/price line-item)
-                                         (:unit-price line-item))]]
-                     {:react/key                                (str sku-id "-" (:quantity line-item))
-                      :cart-item-title/id                       (str "line-item-title-" sku-id)
-                      :cart-item-title/primary                  (or (:product-title line-item)
-                                                                    (:product-name line-item))
-                      :cart-item-title/secondary                (:color-name line-item)
-                      :cart-item-copy/id                        "line-item-quantity"
-                      :cart-item-copy/value                     (str "qty. " (:item/quantity line-item))
-                      :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku-id)
-                      :cart-item-floating-box/value             ^:ignore-interpret-warning [:div {:data-test (str "line-item-price-ea-" sku-id)}
-                                                                                            (mf/as-money price)
-                                                                                            ^:ignore-interpret-warning
-                                                                                            [:div.proxima.content-4 " each"]]
-                      :cart-item-square-thumbnail/id            sku-id
-                      :cart-item-square-thumbnail/sku-id        sku-id
-                      :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> line-item :hair/length first)]
-                                                                  (str length-circle-value "”"))
-                      :cart-item-square-thumbnail/ucare-id      (->> line-item
-                                                                     (catalog-images/image images "cart")
-                                                                     :ucare/id)})]
-    cart-items))
+        :let [price (or (:sku/price line-item)
+                        (:unit-price line-item))]]
+    {:react/key                                (str sku-id "-" (:quantity line-item))
+     :cart-item-title/id                       (str "line-item-title-" sku-id)
+     :cart-item-title/primary                  (or (:product-title line-item)
+                                                   (:product-name line-item))
+     :cart-item-title/secondary                (:color-name line-item)
+     :cart-item-copy/id                        "line-item-quantity"
+     :cart-item-copy/value                     (str "qty. " (:item/quantity line-item))
+     :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku-id)
+     :cart-item-floating-box/value             ^:ignore-interpret-warning [:div {:data-test (str "line-item-price-ea-" sku-id)}
+                                                                           (mf/as-money price)
+                                                                           ^:ignore-interpret-warning
+                                                                           [:div.proxima.content-4 " each"]]
+     :cart-item-square-thumbnail/id            sku-id
+     :cart-item-square-thumbnail/sku-id        sku-id
+     :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> line-item :hair/length first)]
+                                                 (str length-circle-value "”"))
+     :cart-item-square-thumbnail/ucare-id      (->> line-item
+                                                    (catalog-images/image images "cart")
+                                                    :ucare/id)}))
 
 (defn query [data]
   (let [shared-cart-discount-parser-fn shared-cart->discount
@@ -294,7 +285,7 @@
             :discount-text         (:discount-text discount)
             :cart-items            (->> line-items
                                         (remove service?)
-                                        (cart-items-query data)
+                                        cart-items-query
                                         sort-by-depart-and-price)
             :service-line-items    (for [line-item (->> line-items
                                                         (filter service?)
@@ -304,7 +295,7 @@
                                                                              first
                                                                              ;; TODO: not resilient to skus belonging to multiple products
                                                                              (get products))]]
-                                     (service-line-item-query data line-item service-product))
+                                     (service-line-item-query line-item service-product))
             :carousel/images       (imgs (get-in data keypaths/v2-images) look line-items)
             :items-title/id        "item-quantity-in-look"
             :items-title/primary   (str item-count " items in this " (:short-name album-copy))
