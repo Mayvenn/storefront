@@ -82,7 +82,7 @@
                                                                  selections)
                                                                 loaded-category-products)
         service-category-page?              (contains? (:catalog/department current) "service")
-        cart-listing-query                  (if service-category-page?
+        card-listing-query                  (if service-category-page?
                                               service-card-listing/query
                                               product-card-listing/query)
         servicing-stylist                   (get-in app-state adventure.keypaths/adventure-servicing-stylist)]
@@ -94,7 +94,7 @@
                                                                      category-products-matching-criteria
                                                                      selections)
                      :how-it-works           current
-                     :card-listing           (cart-listing-query app-state current category-products-matching-criteria)
+                     :card-listing           (card-listing-query app-state current category-products-matching-criteria)
                      :service-category-page? service-category-page?}
                     (when (and service-category-page? servicing-stylist)
                       {:stylist-bar/id             "category-page-stylist-bar"

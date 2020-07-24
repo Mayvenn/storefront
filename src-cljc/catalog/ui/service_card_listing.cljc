@@ -52,7 +52,8 @@
                                       clojure.set/map-invert)
         servicing-stylist         (get-in data adventure.keypaths/adventure-servicing-stylist)]
     (->> products-matching-criteria
-         (group-by (partial stylist-provides-service servicing-stylist))
+         (map #(assoc % :stylist-provides-service (stylist-provides-service servicing-stylist %)))
+         (group-by :stylist-provides-service)
 
          (into []
                (comp
