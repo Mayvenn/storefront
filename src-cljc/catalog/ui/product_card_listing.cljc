@@ -1,6 +1,8 @@
 (ns catalog.ui.product-card-listing
   (:require [catalog.skuers :as skuers]
             [catalog.ui.product-card :as product-card]
+            [catalog.ui.vertical-direct-to-cart-card :as vertical-direct-to-cart-card]
+            [catalog.ui.horizontal-direct-to-cart-card :as horizontal-direct-to-cart-card]
             clojure.set
             [spice.maps :as maps]
             [storefront.component :as c]
@@ -9,6 +11,22 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]))
+
+(defn product->card
+  [data {:as                          product
+         catalog-department           :catalog/department
+         mayvenn-install-discountable :promo.mayvenn-install/discountable}]
+  (cond
+    (and (contains? catalog-department "service")
+         (contains? mayvenn-install-discountable true)) ;; Free services
+    (horizontal-direct-to-cart-card/query data product)
+
+    (and (contains? catalog-department "service")
+         (contains? mayvenn-install-discountable false))
+    (vertical-direct-to-cart-card/query data product)
+
+    :else
+    (product-card/query data product)))
 
 (defn subsections-query
   [facets
@@ -32,10 +50,10 @@
          (into []
                (comp
                 (map (fn [[subsection-key products]]
-                       {:title/primary  (:option/name (get subsection-facet-options subsection-key))
+                       {:title/primary (:option/name (get subsection-facet-options subsection-key))
                         :products       products
                         :subsection-key subsection-key}))
-                (map #(update % :products (partial map (fn [product] (product-card/query data product)))))
+                (map #(update % :products (partial map (partial product->card data))))
                 (map #(clojure.set/rename-keys % {:products :product-cards}))
                 (map #(update % :product-cards (partial sort-by :sort/value)))))
          (sort-by (comp subsection-order :subsection-key)))))
@@ -49,6 +67,14 @@
     [:a.p-color (utils/fake-href events/control-category-option-clear) "Clear all filters"]
     " to see more hair."]])
 
+(defn card->component
+  [{:as       card
+    card-type :card/type}]
+  (case card-type
+    :product                        (product-card/organism card)
+    :vertical-direct-to-cart-card   (vertical-direct-to-cart-card/organism card)
+    :horizontal-direct-to-cart-card (horizontal-direct-to-cart-card/organism card)))
+
 (c/defcomponent ^:private product-list-subsection-component
   [{:keys [product-cards subsection-key] primary-title :title/primary} _ {:keys [id]}]
   [:div
@@ -57,7 +83,7 @@
      [:div.canela.title-2.center.mt8.mb2 primary-title])
    [:div.flex.flex-wrap
     (for [card product-cards]
-      ^:inline (product-card/organism card))]])
+      ^:inline (card->component card))]])
 
 (c/defcomponent organism
   [{:keys [subsections title no-product-cards? loading-products?]} _ _]

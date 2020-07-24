@@ -7,23 +7,25 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.accessors.orders :as orders]))
+            [storefront.accessors.orders :as orders]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn query
   [data product]
-  (let [service-sku    (-> (get-in data keypaths/v2-skus)
+  (let [service-sku       (-> (get-in data keypaths/v2-skus)
                            (select-keys (:selector/skus product))
                            vals
                            first)
-        image          (->> service-sku
+        image             (->> service-sku
                             (images/for-skuer (get-in data keypaths/v2-images))
                             (filter (comp #{"catalog"} :use-case))
                             first)
-        product-slug   (:page/slug product)
-        disabled?      (boolean (some #(= (:catalog/sku-id service-sku) (:sku %))
+        product-slug      (:page/slug product)
+        disabled?         (boolean (some #(= (:catalog/sku-id service-sku) (:sku %))
                                       (orders/service-line-items (get-in data keypaths/order))))
-        store-nickname (:store-nickname (get-in data adventure.keypaths/adventure-servicing-stylist))
-        offered?       (:stylist-provides-service product)]
+        store-nickname    (:store-nickname (get-in data adventure.keypaths/adventure-servicing-stylist))
+        offered?          (:stylist-provides-service product)
+        stylist-mismatch? (experiments/stylist-mismatch? data)]
     {:card-image/src                                     (str (:url image) "-/format/auto/" (:filename image))
      :card/type                                          :horizontal-direct-to-cart-card
      :card-image/alt                                     (:alt image)
@@ -44,6 +46,7 @@
      :horizontal-direct-to-cart-card/cta-target          [events/control-add-sku-to-bag {:sku      service-sku
                                                                                          :quantity 1}]
      :horizontal-direct-to-cart-card/not-offered-primary (str "Not Available with " store-nickname)
+     :horizontal-direct-to-cart-card/stylist-mismatch?   stylist-mismatch?
      :horizontal-direct-to-cart-card/not-offered-id      (if offered? false "not-offered-id")}))
 
 (c/defcomponent card-image-molecule
@@ -68,7 +71,8 @@
   [{:as                data react-key :react/key
     :horizontal-direct-to-cart-card/keys [primary secondary tertiary cta-target card-target
                                           cta-disabled? cta-label cta-max-width
-                                          not-offered-primary not-offered-id]}]
+                                          not-offered-primary not-offered-id
+                                          stylist-mismatch?]}]
   (c/html
    (let [non-cta-action
          (merge (apply utils/route-to card-target)
@@ -76,7 +80,7 @@
                  :data-test react-key})]
      [:div.col.col-12.col-6-on-tb-dt
       [:div.border.border-cool-gray.m1
-       {:class (when not-offered-id "bg-cool-gray")}
+       {:class (when (and stylist-mismatch? not-offered-id) "bg-cool-gray")}
        [:div.container-height.flex.justify-between
         [:a.col-5.inherit-color
          non-cta-action
@@ -87,7 +91,7 @@
           [:div.content-1 primary]
           [:div.content-3 {:style {:line-height "12px"}} tertiary]
           [:div.mt1 secondary]]
-         (if not-offered-id
+         (if (and stylist-mismatch? not-offered-id)
            [:a.red.content-3 non-cta-action
             not-offered-primary]
            [:div.mbn1 {:style {:max-width cta-max-width}}
