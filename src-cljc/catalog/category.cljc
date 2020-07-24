@@ -24,6 +24,7 @@
    [storefront.trackings :as trackings]
    [storefront.transitions :as transitions]
    [spice.selector :as selector]
+   spice.core
    [storefront.events :as events]))
 
 (c/defcomponent ^:private template
@@ -100,7 +101,7 @@
                        :stylist-bar/primary        (:store-nickname servicing-stylist)
                        :stylist-bar/secondary      "Your Certified Mayvenn Stylist"
                        :stylist-bar/rating         {:rating/id    "rating-stuff"
-                                                    :rating/value (:rating servicing-stylist)}
+                                                    :rating/value (spice.core/parse-double (:rating servicing-stylist))}
                        :stylist-bar.thumbnail/id   "stylist-bar-thumbnail"
                        :stylist-bar.thumbnail/url  (-> servicing-stylist :portrait :resizable-url)
                        :stylist-bar.action/primary "change"
