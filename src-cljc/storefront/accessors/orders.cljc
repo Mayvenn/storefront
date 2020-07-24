@@ -215,8 +215,9 @@
                     (:last-name shipping-address)))
          ".")))
 
-(defn returned-quantities [order]
+(defn returned-quantities
   "Returns a map of returned items, with variant-id as the key and quantity as the value"
+  [order]
   (->> order
        :returns
        (mapcat :line-items)
@@ -224,8 +225,8 @@
                  (update acc id (fnil + 0) quantity)) {})))
 
 (defn TEMP-pretend-service-items-do-not-exist
-  [order]
   "Defines shipments' :line-items as not containing services. Also defines :storefront/all-line-items as including them."
+  [order]
   (utils/?update order :shipments
                  (partial map
                           (fn [{:keys [line-items storefront/all-line-items] :as shipment}]
