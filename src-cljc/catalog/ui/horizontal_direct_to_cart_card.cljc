@@ -119,7 +119,7 @@
             {:style {:max-width cta-max-width}
              :key   cta-id}
             (ui/button-small-secondary
-             (merge (apply utils/fake-href cta-target)
+             (merge (utils/fake-href cta-target)
                     {:key       (str "add-to-cart-" react-key)
                      :class     "px0"
                      :data-test (str "add-to-cart-" react-key)
