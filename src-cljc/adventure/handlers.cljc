@@ -24,8 +24,9 @@
 
 (defmethod transitions/transition-state events/api-success-fetch-stylists-within-radius
   [_ _ {:keys [stylists query]} app-state]
-  (cond->
-   (assoc-in app-state adventure.keypaths/adventure-matched-stylists stylists)
+  (cond-> (assoc-in app-state adventure.keypaths/adventure-matched-stylists stylists)
+    true
+    (assoc-in adventure.keypaths/adventure-stylist-results-returned true)
 
     (seq query)
     (assoc-in adventure.keypaths/adventure-stylist-match-location

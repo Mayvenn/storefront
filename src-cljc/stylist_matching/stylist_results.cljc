@@ -35,7 +35,8 @@
             [storefront.request-keys :as request-keys]
             [spice.maps :as maps]
             [storefront.keypaths :as storefront.keypaths]
-            [spice.date :as date]))
+            [spice.date :as date]
+            [adventure.keypaths :as adventure-keypaths]))
 
 (def query-param-separator "~")
 
@@ -60,7 +61,10 @@
 
       (nil? (get-in app-state stylist-directory.keypaths/stylist-search-address-input))
       (assoc-in stylist-directory.keypaths/stylist-search-address-input
-                (get-in app-state adventure.keypaths/adventure-stylist-match-address)))))
+                (get-in app-state adventure.keypaths/adventure-stylist-match-address))
+
+      true
+      (assoc-in adventure.keypaths/adventure-stylist-results-returned false))))
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results
   [_ _ {:keys [query-params]} prev-app-state app-state]
@@ -190,6 +194,8 @@
   [_ event {:keys [stylists query]} app-state]
   #?(:cljs
      (cond-> (assoc-in app-state adventure.keypaths/adventure-matched-stylists stylists)
+       true
+       (assoc-in adventure.keypaths/adventure-stylist-results-returned true)
 
          (seq query)
          (assoc-in stylist-directory.keypaths/stylist-search-selected-location
@@ -279,6 +285,7 @@
                               :location_submitted location-submitted
                               :radius             radius
                               :current_step       2}))))
+
 
 (defmethod trackings/perform-track events/adventure-stylist-search-results-post-purchase-displayed
   [_ event args app-state]
@@ -515,8 +522,10 @@
 (defdynamic-component template
   (did-mount
    [this]
-   (messages/handle-message events/adventure-stylist-search-results-displayed
-                            {:stylist-results (:stylist.analytics/cards (component/get-props this))}))
+   (let [{:keys [stylist.analytics/cards stylist-results-returned?]} (component/get-props this)]
+     (when stylist-results-returned?
+       (messages/handle-message events/adventure-stylist-search-results-displayed
+                                {:stylist-results cards}))))
   (render
    [this]
    (let [{:keys [popup spinning? stylist-results-present? filters-modal gallery-modal
@@ -629,37 +638,38 @@
                                                               :stylist-results-test?   stylist-results-test?}
         matching-stylist-cards                               (stylist-data->stylist-cards (assoc stylist-data :stylists matching-stylists))
         non-matching-stylist-cards                           (stylist-data->stylist-cards (assoc stylist-data :stylists non-matching-stylists))]
-
     (component/build template
-                     {:gallery-modal              (gallery-modal-query app-state)
-                      :spinning?                  (or (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
-                                                      (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-within-radius)
-                                                      (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters)
-                                                      (utils/requesting-from-endpoint? app-state request-keys/get-products)
-                                                      (and (not (get-in app-state storefront.keypaths/loaded-convert))
-                                                           stylist-results-test?
-                                                           (or (not just-added-control?)
-                                                               (not just-added-only?)
-                                                               (not just-added-experience?))))
-                      :filters-modal              #?(:cljs (filters-modal/query app-state)
-                                                     :clj  nil)
-                      :location-search-box        (when (and (get-in app-state storefront.keypaths/loaded-google-maps)
-                                                             (not post-purchase?))
-                                                    {:stylist.results.location-search-box/id          "stylist-search-input"
-                                                     :stylist.results.location-search-box/value       (get-in app-state stylist-directory.keypaths/stylist-search-address-input)
-                                                     :stylist.results.location-search-box/keypath     stylist-directory.keypaths/stylist-search-address-input
-                                                     :stylist.results.location-search-box/errors      []
-                                                     :stylist.results.location-search-box/preferences (mapv
-                                                                                                       (fn [preference]
-                                                                                                         {:preference-pill/target  [events/control-stylist-search-toggle-filter
-                                                                                                                                    {:previously-checked? true :stylist-filter-selection preference}]
-                                                                                                          :preference-pill/id      (str "remove-preference-button-" (name preference))
-                                                                                                          :preference-pill/primary (get-in skus [preference :sku/name])})
-                                                                                                       (vec preferences))})
-                      :header                     (header-query current-order
-                                                                (first (get-in app-state storefront.keypaths/navigation-undo-stack))
-                                                                post-purchase?)
-                      :stylist-results-present?   (seq (concat matching-stylists non-matching-stylists))
+                     {:gallery-modal            (gallery-modal-query app-state)
+                      :spinning?                (or (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
+                                                    (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-within-radius)
+                                                    (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters)
+                                                    (utils/requesting-from-endpoint? app-state request-keys/get-products)
+                                                    (and (not (get-in app-state storefront.keypaths/loaded-convert))
+                                                         stylist-results-test?
+                                                         (or (not just-added-control?)
+                                                             (not just-added-only?)
+                                                             (not just-added-experience?))))
+                      :filters-modal            #?(:cljs (filters-modal/query app-state)
+                                                   :clj  nil)
+                      :location-search-box      (when (and (get-in app-state storefront.keypaths/loaded-google-maps)
+                                                           (not post-purchase?))
+                                                  {:stylist.results.location-search-box/id          "stylist-search-input"
+                                                   :stylist.results.location-search-box/value       (get-in app-state stylist-directory.keypaths/stylist-search-address-input)
+                                                   :stylist.results.location-search-box/keypath     stylist-directory.keypaths/stylist-search-address-input
+                                                   :stylist.results.location-search-box/errors      []
+                                                   :stylist.results.location-search-box/preferences (mapv
+                                                                                                     (fn [preference]
+                                                                                                       {:preference-pill/target  [events/control-stylist-search-toggle-filter
+                                                                                                                                  {:previously-checked? true :stylist-filter-selection preference}]
+                                                                                                        :preference-pill/id      (str "remove-preference-button-" (name preference))
+                                                                                                        :preference-pill/primary (get-in skus [preference :sku/name])})
+                                                                                                     (vec preferences))})
+                      :header                   (header-query current-order
+                                                              (first (get-in app-state storefront.keypaths/navigation-undo-stack))
+                                                              post-purchase?)
+                      :stylist-results-present? (seq (concat matching-stylists non-matching-stylists))
+
+                      :stylist-results-returned?  (get-in app-state adventure.keypaths/adventure-stylist-results-returned)
                       :list.stylist-counter/title (str (count matching-stylists) " Stylists Found")
                       :list.stylist-counter/key   (when (seq preferences) "stylist-count-content")
                       :list.matching/key          (when (seq matching-stylists) "stylist-matching")
