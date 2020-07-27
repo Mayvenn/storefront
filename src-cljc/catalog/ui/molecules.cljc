@@ -131,12 +131,13 @@
 (defcomponent stylist-bar
   [{:stylist-bar/keys [id primary secondary rating] :as queried-data} _ _]
   (when id
-    [:div.bg-refresh-gray.flex.py2.px3
-     {:data-test id}
-     (stylist-bar-thumbnail-molecule queried-data)
-     [:div.flex-grow-1.flex-column.mx3
-      [:div.flex [:div.mr2 primary] (ui.molecules/stars-rating-molecule rating)]
-      [:div.proxima.content-3 secondary]]
-     (let [{:stylist-bar.action/keys [primary target]} queried-data]
-       [:div.flex.items-center
-        (ui/button-small-underline-primary (apply utils/route-to target) primary)])]))
+    [:div.bg-refresh-gray.py2.px3
+     [:div.flex.col-6-on-tb-dt.mx-auto
+      {:data-test id}
+      (stylist-bar-thumbnail-molecule queried-data)
+      [:div.flex-grow-1.flex-column.mx3
+       [:div.flex [:div.mr2 primary] (ui.molecules/stars-rating-molecule rating)]
+       [:div.proxima.content-3 secondary]]
+      (let [{:stylist-bar.action/keys [primary target]} queried-data]
+        [:div.flex.items-center
+         (ui/button-small-underline-primary (apply utils/route-to target) primary)])]]))
