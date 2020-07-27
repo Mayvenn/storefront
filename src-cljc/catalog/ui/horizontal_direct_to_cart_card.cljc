@@ -23,7 +23,8 @@
         product-slug      (:page/slug product)
         disabled?         (boolean (some #(= (:catalog/sku-id service-sku) (:sku %))
                                       (orders/service-line-items (get-in data keypaths/order))))
-        store-nickname    (:store-nickname (get-in data adventure.keypaths/adventure-servicing-stylist))
+        servicing-stylist (get-in data adventure.keypaths/adventure-servicing-stylist)
+        store-nickname    (:store-nickname servicing-stylist)
         offered?          (:stylist-provides-service product)
         stylist-mismatch? (experiments/stylist-mismatch? data)]
     {:card-image/src                                     (str (:url image) "-/format/auto/" (:filename image))
@@ -47,7 +48,7 @@
                                                                                          :quantity 1}]
      :horizontal-direct-to-cart-card/not-offered-primary (str "Not Available with " store-nickname)
      :horizontal-direct-to-cart-card/stylist-mismatch?   stylist-mismatch?
-     :horizontal-direct-to-cart-card/not-offered-id      (if offered? false "not-offered-id")}))
+     :horizontal-direct-to-cart-card/not-offered-id      (when (and servicing-stylist (not offered?)) "not-offered-id")}))
 
 (c/defcomponent card-image-molecule
   [{:keys [card-image/src card-image/alt screen/seen?]}
@@ -68,7 +69,7 @@
     :else        [:div.col-12 {:style {:height "100%"}}]))
 
 (defn organism
-  [{:as                data react-key :react/key
+  [{:as                                  data react-key :react/key
     :horizontal-direct-to-cart-card/keys [primary secondary tertiary cta-target card-target
                                           cta-disabled? cta-label cta-max-width
                                           not-offered-primary not-offered-id
@@ -92,7 +93,9 @@
           [:div.content-3 {:style {:line-height "12px"}} tertiary]
           [:div.mt1 secondary]]
          (if (and stylist-mismatch? not-offered-id)
-           [:a.red.content-3 non-cta-action
+           [:a.red.content-3
+            (merge {:data-test not-offered-id }
+                   non-cta-action)
             not-offered-primary]
            [:div.mbn1 {:style {:max-width cta-max-width}}
             (ui/button-small-secondary

@@ -40,7 +40,7 @@
        :title/secondary     "Mayvenn Services that are not available with your stylist"
        :title.action/target []
        :title.action/copy   "change stylist"})
-    {:title/primary "Available services"}))
+    {:title/primary "Available Services"}))
 
 (defn subsections-query
   [facets
