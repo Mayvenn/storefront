@@ -48,7 +48,7 @@
 
 (c/defcomponent organism
   [data _ _]
-  (when (seq data)
+  (when (:how-it-works data)
     [:div.center
      (how-it-works-title-molecule data)
      how-it-works-straight-line-atom
