@@ -29,7 +29,8 @@
        :selector/sku-ids
        first
        stylist-filters/service-sku-id->service-menu-key
-       (get (:service-menu stylist))))
+       (get (:service-menu stylist))
+       boolean))
 
 (defn service-subsection-query
   [stylist stylist-provides-service?]
