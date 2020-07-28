@@ -15,8 +15,9 @@
             [stylist-matching.search.accessors.filters :as stylist-filters]))
 
 (defn product->card
-  [data {:as                          product
-         mayvenn-install-discountable :promo.mayvenn-install/discountable}]
+  [data
+   {:as                          product
+    mayvenn-install-discountable :promo.mayvenn-install/discountable}]
   (cond
     (contains? mayvenn-install-discountable true) ;; Free services
     (horizontal-direct-to-cart-card/query data product)
@@ -32,45 +33,6 @@
        stylist-filters/service-sku-id->service-menu-key
        (get (:service-menu stylist))
        boolean))
-
-(defn service-subsection-query
-  [stylist stylist-provides-service?]
-  (if stylist
-    (if stylist-provides-service?
-      {:title/primary (str "Available with " (:store-nickname stylist))}
-      {:title/primary       "Other Free Mayvenn Services"
-       :title/secondary     "Mayvenn Services that are not available with your stylist"
-       :title.action/target []
-       :title.action/copy   "change stylist"})
-    {:title/primary "Available Services"}))
-
-(defn subsections-query
-  [facets
-   {:keys [subsections]}
-   products-matching-criteria
-   data]
-  (let [subsection-order          (->> (map-indexed vector subsections)
-                                       (into {})
-                                       clojure.set/map-invert)
-        servicing-stylist         (get-in data adventure.keypaths/adventure-servicing-stylist)
-        hide-stylist-subsections? (-> (get-in data keypaths/order)
-                                      orders/service-line-items
-                                      empty?)]
-    (->> products-matching-criteria
-         (map #(assoc % :stylist-provides-service (or hide-stylist-subsections? (stylist-provides-service servicing-stylist %))))
-         (group-by :stylist-provides-service)
-
-         (into []
-               (comp
-                (map (fn [[subsection-key products]]
-                       (merge
-                        {:products       products
-                         :subsection-key subsection-key}
-                        (service-subsection-query (when (not hide-stylist-subsections?) servicing-stylist) subsection-key))))
-                (map #(update % :products (partial map (partial product->card data))))
-                (map #(clojure.set/rename-keys % {:products :product-cards}))
-                (map #(update % :product-cards (partial sort-by :sort/value)))))
-         (sort-by (comp subsection-order :subsection-key)))))
 
 (c/defcomponent ^:private product-cards-empty-state
   [_ _ _]
@@ -113,15 +75,21 @@
                              subsections))])
 
 (defn query
-  [app-state category products-matching-filter-selections]
-  (let [facets            (maps/index-by :facet/slug (get-in app-state keypaths/v2-facets))
-        subsections       (subsections-query
-                                    (vals facets)
-                                    category
-                                    products-matching-filter-selections
-                                    app-state)
-        no-product-cards? (empty? (mapcat :product-cards subsections))]
-    {:subsections       subsections
+  [app-state category matching-products]
+  (let [servicing-stylist    (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        no-services-in-cart? (-> (get-in app-state keypaths/order)
+                                 orders/service-line-items
+                                 empty?)
+        sort-fn              (if (or (not servicing-stylist)
+                                     no-services-in-cart?)
+                               :sort/value
+                               (juxt (comp not :stylist-provides-service) :sort/value))
+        product-cards        (->> matching-products
+                                  (map #(assoc % :stylist-provides-service (stylist-provides-service servicing-stylist %)))
+                                  (sort-by sort-fn)
+                                  (map (partial product->card app-state)))
+        no-product-cards?    (empty? product-cards)]
+    {:subsections       [{:product-cards product-cards}]
      :no-product-cards? no-product-cards?
      :loading-products? (and no-product-cards?
                              (utils/requesting? app-state (conj request-keys/get-products

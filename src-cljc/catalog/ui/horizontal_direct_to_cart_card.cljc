@@ -12,22 +12,26 @@
 
 (defn query
   [data product]
-  (let [service-sku       (-> (get-in data keypaths/v2-skus)
-                              (select-keys (:selector/skus product))
-                              vals
-                              first)
-        image             (->> service-sku
-                               (images/for-skuer (get-in data keypaths/v2-images))
-                               (filter (comp #{"catalog"} :use-case))
-                               first)
-        product-slug      (:page/slug product)
-        cta-disabled?     (boolean (some #(= (:catalog/sku-id service-sku) (:sku %))
-                                         (orders/service-line-items (get-in data keypaths/order))))
-        servicing-stylist (get-in data adventure.keypaths/adventure-servicing-stylist)
-        store-nickname    (:store-nickname servicing-stylist)
-        card-disabled?    (and (experiments/stylist-mismatch? data)
-                               servicing-stylist
-                               (not (:stylist-provides-service product)))]
+  (let [service-sku          (-> (get-in data keypaths/v2-skus)
+                                 (select-keys (:selector/skus product))
+                                 vals
+                                 first)
+        image                (->> service-sku
+                                  (images/for-skuer (get-in data keypaths/v2-images))
+                                  (filter (comp #{"catalog"} :use-case))
+                                  first)
+        product-slug         (:page/slug product)
+        cta-disabled?        (boolean (some #(= (:catalog/sku-id service-sku) (:sku %))
+                                            (orders/service-line-items (get-in data keypaths/order))))
+        servicing-stylist    (get-in data adventure.keypaths/adventure-servicing-stylist)
+        store-nickname       (:store-nickname servicing-stylist)
+        no-services-in-cart? (-> (get-in data keypaths/order)
+                                 orders/service-line-items
+                                 empty?)
+        card-disabled?       (and (experiments/stylist-mismatch? data)
+                                  servicing-stylist
+                                  (not no-services-in-cart?)
+                                  (not (:stylist-provides-service product)))]
     (cond-> {:card-image/src                                     (str (:url image) "-/format/auto/" (:filename image))
              :card/type                                          :horizontal-direct-to-cart-card
              :card-image/alt                                     (:alt image)
