@@ -16,6 +16,7 @@
    [catalog.ui.product-card-listing :as product-card-listing]
    [catalog.ui.service-card-listing :as service-card-listing]
    [storefront.accessors.categories :as accessors.categories]
+   [storefront.accessors.orders :as orders]
    [storefront.assets :as assets]
    [storefront.component :as c]
    [storefront.effects :as effects]
@@ -88,7 +89,10 @@
         card-listing-query                  (if (and service-category-page? stylist-mismatch?)
                                               service-card-listing/query
                                               product-card-listing/query)
-        servicing-stylist                   (get-in app-state adventure.keypaths/adventure-servicing-stylist)]
+        servicing-stylist                   (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        hide-stylist-bar?                   (-> (get-in app-state k/order)
+                                                 orders/service-line-items
+                                                 empty?)]
     (c/build template
              (merge {:category-hero          (category-hero-query current)
                      :category-filters       (category-filters/query app-state
@@ -100,7 +104,7 @@
                      :card-listing           (card-listing-query app-state current category-products-matching-criteria)
                      :service-category-page? service-category-page?
                      :stylist-mismatch?      stylist-mismatch?}
-                    (when (and service-category-page? servicing-stylist stylist-mismatch?)
+                    (when (and service-category-page? servicing-stylist stylist-mismatch? (not hide-stylist-bar?))
                       {:stylist-bar/id             "category-page-stylist-bar"
                        :stylist-bar/primary        (:store-nickname servicing-stylist)
                        :stylist-bar/secondary      "Your Certified Mayvenn Stylist"

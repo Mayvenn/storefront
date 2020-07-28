@@ -5,6 +5,7 @@
             [catalog.ui.horizontal-direct-to-cart-card :as horizontal-direct-to-cart-card]
             clojure.set
             [spice.maps :as maps]
+            [storefront.accessors.orders :as orders]
             [storefront.component :as c]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
@@ -48,12 +49,15 @@
    {:keys [subsections]}
    products-matching-criteria
    data]
-  (let [subsection-order         (->> (map-indexed vector subsections)
-                                      (into {})
-                                      clojure.set/map-invert)
-        servicing-stylist         (get-in data adventure.keypaths/adventure-servicing-stylist)]
+  (let [subsection-order          (->> (map-indexed vector subsections)
+                                       (into {})
+                                       clojure.set/map-invert)
+        servicing-stylist         (get-in data adventure.keypaths/adventure-servicing-stylist)
+        hide-stylist-subsections? (-> (get-in data keypaths/order)
+                                      orders/service-line-items
+                                      empty?)]
     (->> products-matching-criteria
-         (map #(assoc % :stylist-provides-service (stylist-provides-service servicing-stylist %)))
+         (map #(assoc % :stylist-provides-service (or hide-stylist-subsections? (stylist-provides-service servicing-stylist %))))
          (group-by :stylist-provides-service)
 
          (into []
@@ -62,7 +66,7 @@
                        (merge
                         {:products       products
                          :subsection-key subsection-key}
-                        (service-subsection-query servicing-stylist subsection-key))))
+                        (service-subsection-query (when (not hide-stylist-subsections?) servicing-stylist) subsection-key))))
                 (map #(update % :products (partial map (partial product->card data))))
                 (map #(clojure.set/rename-keys % {:products :product-cards}))
                 (map #(update % :product-cards (partial sort-by :sort/value)))))
