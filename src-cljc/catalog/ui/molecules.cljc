@@ -132,7 +132,7 @@
   [{:stylist-bar/keys [id primary secondary rating] :as queried-data} _ _]
   (when id
     [:div.bg-refresh-gray.py2.px3
-     [:div.flex.col-6-on-tb-dt.mx-auto
+     [:div.flex.mx-auto.max-580
       {:data-test id}
       (stylist-bar-thumbnail-molecule queried-data)
       [:div.flex-grow-1.flex-column.mx3
