@@ -77,16 +77,9 @@
 (defn query
   [app-state category matching-products]
   (let [servicing-stylist    (get-in app-state adventure.keypaths/adventure-servicing-stylist)
-        no-services-in-cart? (-> (get-in app-state keypaths/order)
-                                 orders/service-line-items
-                                 empty?)
-        sort-fn              (if (or (not servicing-stylist)
-                                     no-services-in-cart?)
-                               :sort/value
-                               (juxt (comp not :stylist-provides-service) :sort/value))
         product-cards        (->> matching-products
                                   (map #(assoc % :stylist-provides-service (stylist-provides-service servicing-stylist %)))
-                                  (sort-by sort-fn)
+                                  (sort-by (juxt (comp not :stylist-provides-service) :sort/value))
                                   (map (partial product->card app-state)))
         no-product-cards?    (empty? product-cards)]
     {:subsections       [{:product-cards product-cards}]
