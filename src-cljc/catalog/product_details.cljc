@@ -365,6 +365,7 @@
         wig-customization-incentive-families #{"360-wigs" "lace-front-wigs"}
         base-service-already-in-cart?        (boolean (some #(= (:catalog/sku-id selected-sku) (:sku %))
                                                             (orders/service-line-items (get-in data keypaths/order))))]
+        service?                             (accessors.products/service? product)
     (cond-> {:cta/id        "add-to-cart"
              :cta/label     (if base-service-already-in-cart? "Already In Cart" "Add to Cart")
              :cta/target    [events/control-add-sku-to-bag
@@ -379,7 +380,9 @@
        {:add-to-cart.quadpay/loaded? (get-in data keypaths/loaded-quadpay)
         :add-to-cart.quadpay/price   sku-price})
 
-      (and shop? (mayvenn-install-incentive-families sku-family))
+      (and shop?
+           (not service?)
+           (mayvenn-install-incentive-families sku-family))
       (merge
        {:add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
         :add-to-cart.incentive-block/footnote    "*Mayvenn Services cannot be combined with other promotions"
@@ -388,7 +391,9 @@
         :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
         :add-to-cart.incentive-block/message     (str "Get a free Mayvenn Service by a licensed "
                                                       "stylist with qualifying purchases.* ")})
-      (and shop? (wig-customization-incentive-families sku-family))
+      (and shop?
+           (not service?)
+           (wig-customization-incentive-families sku-family))
       (merge
        {:add-to-cart.incentive-block/id       "add-to-cart-incentive-block"
         :add-to-cart.incentive-block/callout  "✋Don't miss out on free Wig Customization"
