@@ -12,6 +12,7 @@
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.platform.messages :as messages]
                        [storefront.trackings :as trackings]])
+            adventure.keypaths
             [catalog.facets :as facets]
             [catalog.keypaths]
             [catalog.product-details-ugc :as ugc]
@@ -20,6 +21,7 @@
             [catalog.ui.molecules :as catalog.M]
             [catalog.ui.how-it-works :as how-it-works]
             [spice.selector :as selector]
+            [spice.core :as spice]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
@@ -231,6 +233,7 @@
          (page
           (component/html
            [:div
+            (component/build catalog.M/stylist-bar data {})
             ^:inline (carousel carousel-images product)
             [:div.my5 (component/build browse-stylists-banner/organism data opts)]
             (component/build ugc/component ugc opts)
@@ -240,7 +243,10 @@
           (component/html
            [:div
             [:div
-             (full-bleed-narrow (carousel carousel-images product))]
+             (full-bleed-narrow
+              [:div
+               (component/build catalog.M/stylist-bar data {})
+               (carousel carousel-images product)])]
             (component/build product-summary-organism data)
             [:div.px2
              (component/build picker/component picker-data opts)]
@@ -411,7 +417,9 @@
         hair?                 (accessors.products/hair? product)
         wig?                  (accessors.products/wig-product? product)
         wig-customization?    (seq (spice.selector/match-all {} {:catalog/department "service"
-                                                                 :service/category   "customization"} [product]))]
+                                                                 :service/category   "customization"} [product]))
+        stylist-mismatch?     (experiments/stylist-mismatch? data)
+        servicing-stylist     (get-in data adventure.keypaths/adventure-servicing-stylist)]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -534,9 +542,9 @@
                                  :id          "browse-stylists-banner-cta"})
 
      (when free-mayvenn-service?
-       {:price-block/primary-struck (mf/as-money sku-price)
-        :price-block/secondary      [:span.teal "FREE"]
-        :title/secondary            (:promo.mayvenn-install/requirement-copy product)
+       {:price-block/primary-struck            (mf/as-money sku-price)
+        :price-block/secondary                 [:span.teal "FREE"]
+        :title/secondary                       (:promo.mayvenn-install/requirement-copy product)
         :browse-stylists-banner/title          "Amazing Stylists"
         :browse-stylists-banner/icon           (svg/heart {:class  "fill-p-color"
                                                            :width  "32px"
@@ -584,7 +592,7 @@
            :how-it-works.step.body/primary    "You pick up your wig. Let us pick up the tab. Let us cover the cost of your customization—we insist."}]}})
 
      (when standalone-service?
-       {:price-block/primary               (mf/as-money sku-price)
+       {:price-block/primary                   (mf/as-money sku-price)
         :browse-stylists-banner/title          "Amazing Stylists"
         :browse-stylists-banner/icon           (svg/heart {:class  "fill-p-color"
                                                            :width  "32px"
@@ -613,7 +621,18 @@
                                                    "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}})
 
      (when wig?
-       {:browse-stylists-banner/title "Buy any Lace Front or 360 Wig and we'll pay for your wig customization"}))))
+       {:browse-stylists-banner/title "Buy any Lace Front or 360 Wig and we'll pay for your wig customization"})
+
+     (when (and service? servicing-stylist stylist-mismatch?)
+       {:stylist-bar/id             "product-details-page-stylist-bar"
+        :stylist-bar/primary        (:store-nickname servicing-stylist)
+        :stylist-bar/secondary      "Your Certified Mayvenn Stylist"
+        :stylist-bar/rating         {:rating/id    "rating-stuff"
+                                     :rating/value (spice/parse-double (:rating servicing-stylist))}
+        :stylist-bar.thumbnail/id   "stylist-bar-thumbnail"
+        :stylist-bar.thumbnail/url  (-> servicing-stylist :portrait :resizable-url)
+        :stylist-bar.action/primary "change"
+        :stylist-bar.action/target  [events/navigate-adventure-find-your-stylist {}]}))))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
