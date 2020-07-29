@@ -3,7 +3,6 @@
             [catalog.products :as products]
             [cemerick.url :as url]
             [clojure.string :as string]
-            [cljs-bean.core :as cljs-bean]
             promotion-helper.keypaths
             [spice.core :as spice]
             [spice.maps :as maps]

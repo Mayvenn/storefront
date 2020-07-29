@@ -14,8 +14,7 @@
             [storefront.request-keys :as request-keys]
             [spice.maps :as maps]
             [clojure.set :as set]
-            [storefront.accessors.promos :as promos]
-            [cljs-bean.core :as cljs-bean]))
+            [storefront.accessors.promos :as promos]))
 
 (defn is-rails-style? [resp]
   (or (seq (:error resp))
@@ -89,9 +88,6 @@
 
 (defn ^:private slow-json->clj [json]
   (js->clj (js/JSON.parse json) :keywordize-keys true))
-
-(defn ^:private fast-json->bean [json]
-  (cljs-bean/->clj (js/JSON.parse json)))
 
 ;; (defn json-response-format-with-app-version [config]
 ;;   (let [default (ajax/json-response-format config)
