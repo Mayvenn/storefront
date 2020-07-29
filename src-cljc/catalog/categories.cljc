@@ -923,12 +923,59 @@
       (str "We’ll connect you with your stylist to set up your service. "
            "Then, we’ll send you a prepaid voucher to cover the cost.")}]}])
 
+(def services-icp
+  [{:catalog/category-id           "35"
+    :page/slug                     "services"
+    :page/icp?                     true
+    :catalog/department            #{"service"}
+    :service/type                  #{"base"}
+    :selector/essentials           [:catalog/department
+                                    :service/type]
+    :selector/electives            []
+    :copy/title                    "Services"
+    :seo/title                     "Services"
+    :category/description          (copy "Our Mayvenn Certified Stylists are full-service hair experts, guiding"
+                                         "you to live in the full potential of your hair.")
+    :copy/description              (copy "Our Mayvenn Certified Stylists are full-service hair experts, guiding"
+                                         "you to live in the full potential of your hair.")
+    :product-list/title            "All Services"
+
+    :subsections/category-selector :promo.mayvenn-install/discountable
+    :subcategories/ids             ["31" "30"]
+    :subsections                   ["FREE Mayvenn Services" "À la carte services"]
+    :subcategories/layout          :list
+
+    ;; :legacy/named-search-slug      "services"
+    ;; :menu/hide?                    true
+    ;; :flyout-menu/title             "Frontals"
+    ;; :flyout-menu/order             2
+    ;; :homepage.ui-v2020-07/order    3
+    ;; :homepage.ui-v2020-07/image-id "b6dc646c-039f-48a8-b932-bd03350a3beb"
+
+    ;; :footer/order                  10
+    ;; :footer/title                  "Services"
+
+    ;; :content-block/type            :about-attributes
+    ;; :content-block/title           "Frontals 101:"
+    ;; :content-block/header          "How to Choose Your Hair Frontal"
+    ;; :content-block/summary         "Frontals are a great solution if you want to conceal hair loss or achieve an up-do, but how do you choose the right unit? Check out different factors to look for when picking the perfect lace frontal:"
+    ;; :content-block/sections        [{:title "Origin"
+    ;;                                  :body  "The origin of your lace frontal will determine the thickness and density of your hair. From thick and smooth, to light and bouncy, Mayvenn offers hair frontals for every style: Brazilian, Malaysian, Peruvian, and Indian."}
+    ;;                                 {:title "Texture"
+    ;;                                  :body  "You want texture? We’ve got options. From straight to curly, deep to loose waves, our lace frontals are designed to beautifully blend with your hair bundles to create a versatile style for any occasion."}
+    ;;                                 {:title "Get Your Frontals Installed–For Free!"
+    ;;                                  :body  "Yes, that’s right–when you select your lace frontal, click the Free Install option at checkout, and we'll help you find a Mayvenn Certified Stylist near you! Your install includes a shampoo and condition, braid down, sew-in, and basic style."}
+    ;;                                 {:title "Need Help Choosing a Frontal?"
+    ;;                                  :body  "Choosing between different lace frontals, textures, and colors can be overwhelming. Whether you’re investing in a frontal for the first time or are a pro, Mayvenn’s team is ready to answer your questions. Connect with us today to learn more!"}]
+    }])
+
 (def menu-categories
   (concat virgin-hair
           closures))
 
 (def initial-categories
-  (concat wigs
+  (concat services-icp
+          wigs
           hair-extensions-category
           mayvenn-install-eligible
           stylist-exclusives
