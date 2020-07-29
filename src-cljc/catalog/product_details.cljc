@@ -55,9 +55,7 @@
    [:div.col-on-tb-dt.col-5-on-tb-dt.px2 wide-right-and-narrow]])
 
 (defn full-bleed-narrow [body]
-  ;; The mxn2 pairs with the p2 of the container, to make the body full width
-  ;; on mobile.
-  [:div.hide-on-tb-dt.mxn2 body])
+  [:div.hide-on-tb-dt body])
 
 (defn counter-or-out-of-stock [can-supply? quantity]
   (if can-supply?
