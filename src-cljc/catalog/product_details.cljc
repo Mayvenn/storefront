@@ -13,6 +13,7 @@
                        [storefront.platform.messages :as messages]
                        [storefront.trackings :as trackings]])
             adventure.keypaths
+            [catalog.categories :as categories]
             [catalog.facets :as facets]
             [catalog.keypaths]
             [catalog.product-details-ugc :as ugc]
@@ -43,6 +44,7 @@
             [storefront.platform.reviews :as review-component]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
+            [stylist-matching.search.accessors.filters :as stylist-filters]
             [catalog.ui.add-to-cart :as add-to-cart]
             [catalog.ui.browse-stylists-banner :as browse-stylists-banner]))
 
@@ -364,8 +366,19 @@
         mayvenn-install-incentive-families   #{"bundles" "closures" "frontals" "360-frontals"}
         wig-customization-incentive-families #{"360-wigs" "lace-front-wigs"}
         base-service-already-in-cart?        (boolean (some #(= (:catalog/sku-id selected-sku) (:sku %))
-                                                            (orders/service-line-items (get-in data keypaths/order))))]
+                                                            (orders/service-line-items (get-in data keypaths/order))))
+        stylist-mismatch?                    (experiments/stylist-mismatch? data)
+        product                              (products/current-product data)
         service?                             (accessors.products/service? product)
+        free-mayvenn-service?                (accessors.products/product-is-mayvenn-install-service? product)
+        standalone-service?                  (accessors.products/standalone-service? product)
+        servicing-stylist                    (get-in data adventure.keypaths/adventure-servicing-stylist)
+        stylist-provides-service?            (stylist-filters/stylist-provides-service servicing-stylist product)
+        service-category                     (cond
+                                               free-mayvenn-service? {:page/slug           "free-mayvenn-services"
+                                                                      :catalog/category-id "31"}
+                                               standalone-service?   {:page/slug           "salon-services"
+                                                                      :catalog/category-id "30"})]
     (cond-> {:cta/id        "add-to-cart"
              :cta/label     (if base-service-already-in-cart? "Already In Cart" "Add to Cart")
              :cta/target    [events/control-add-sku-to-bag
@@ -374,6 +387,15 @@
              :cta/spinning? (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
              :cta/disabled? (or (not (:inventory/in-stock? selected-sku))
                                 base-service-already-in-cart?)}
+
+      (and stylist-mismatch?
+           servicing-stylist
+           (not stylist-provides-service?))
+      (merge {:cta/disabled?                       true
+              :cta-disabled-explanation/id         "disabled-explanation"
+              :cta-disabled-explanation/primary    (str "Not available with your stylist " (:store-nickname servicing-stylist))
+              :cta-disabled-explanation/cta-label  "Browse other services"
+              :cta-disabled-explanation/cta-target [events/navigate-category service-category]})
 
       (not (accessors.products/product-is-mayvenn-install-service? selected-sku))
       (merge

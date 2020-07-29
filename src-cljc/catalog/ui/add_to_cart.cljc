@@ -5,7 +5,11 @@
             [storefront.platform.component-utils :as utils]))
 
 (defn cta-molecule
-  [{:cta/keys [id label target spinning? disabled?]}]
+  [{:cta/keys                       [id label target spinning? disabled?]
+    disabled-explanation-id         :cta-disabled-explanation/id
+    disabled-explanation-primary    :cta-disabled-explanation/primary
+    disabled-explanation-cta-label  :cta-disabled-explanation/cta-label
+    disabled-explanation-cta-target :cta-disabled-explanation/cta-target}]
   (when (and id label target)
     [:div
      (ui/button-large-primary
@@ -15,7 +19,17 @@
         :disabled? (boolean disabled?)}
        #?(:clj {:disabled? true})
        (apply utils/fake-href target))
-      (component/html [:div.flex.items-center.justify-center.inherit-color label]))]))
+      (component/html [:div.flex.items-center.justify-center.inherit-color label]))
+     (when disabled-explanation-id
+       [:div.flex.flex-column.items-center
+        [:div.red.m2.content-3
+         {:data-test disabled-explanation-id}
+         disabled-explanation-primary]
+        (ui/button-medium-underline-primary
+         (merge (when disabled-explanation-cta-target
+                  (apply utils/route-to disabled-explanation-cta-target))
+                {:class "m5"})
+         disabled-explanation-cta-label)])]))
 
 (defn add-to-cart-incentive-block-molecule
   [{:add-to-cart.incentive-block/keys

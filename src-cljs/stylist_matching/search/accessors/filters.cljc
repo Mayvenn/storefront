@@ -24,3 +24,11 @@
 (def allowed-stylist-filters
   (->> service-filter-data (map :sku-id) set))
 
+(defn stylist-provides-service
+  [stylist service-product]
+  (->> service-product
+       :selector/sku-ids
+       first
+       service-sku-id->service-menu-key
+       (get (:service-menu stylist))
+       boolean))

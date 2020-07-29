@@ -26,7 +26,6 @@
    [storefront.transitions :as transitions]
    [spice.selector :as selector]
    spice.core
-   [storefront.events :as events]
    [storefront.accessors.experiments :as experiments]))
 
 (c/defcomponent ^:private template
@@ -110,7 +109,7 @@
                        :stylist-bar.thumbnail/id   "stylist-bar-thumbnail"
                        :stylist-bar.thumbnail/url  (-> servicing-stylist :portrait :resizable-url)
                        :stylist-bar.action/primary "change"
-                       :stylist-bar.action/target  [events/navigate-adventure-find-your-stylist {}]}))
+                       :stylist-bar.action/target  [e/navigate-adventure-find-your-stylist {}]}))
              opts)))
 
 (defn ^:export built-component

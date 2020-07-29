@@ -25,15 +25,6 @@
     :else
     (vertical-direct-to-cart-card/query data product)))
 
-(defn stylist-provides-service
-  [stylist service-product]
-  (->> service-product
-       :selector/sku-ids
-       first
-       stylist-filters/service-sku-id->service-menu-key
-       (get (:service-menu stylist))
-       boolean))
-
 (c/defcomponent ^:private product-cards-empty-state
   [_ _ _]
   [:div.col-12.my8.py4.center
@@ -78,7 +69,9 @@
   [app-state category matching-products]
   (let [servicing-stylist    (get-in app-state adventure.keypaths/adventure-servicing-stylist)
         product-cards        (->> matching-products
-                                  (map #(assoc % :stylist-provides-service (stylist-provides-service servicing-stylist %)))
+                                  (map #(assoc %
+                                               :stylist-provides-service
+                                               (stylist-filters/stylist-provides-service servicing-stylist %)))
                                   (sort-by (juxt (comp not :stylist-provides-service) :sort/value))
                                   (map (partial product->card app-state)))
         no-product-cards?    (empty? product-cards)]
