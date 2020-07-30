@@ -1,14 +1,18 @@
 (ns catalog.icp
   (:require [adventure.components.layered :as layered]
+            adventure.keypaths
             catalog.keypaths
             [catalog.skuers :as skuers]
             [catalog.ui.category-filters :as category-filters]
             [catalog.ui.category-hero :as category-hero]
+            [catalog.ui.molecules :as molecules]
             [catalog.ui.product-card-listing :as product-card-listing]
             [homepage.ui.faq :as faq]
+            spice.core
             [spice.maps :as maps]
             [spice.selector :as selector]
             [storefront.accessors.categories :as accessors.categories]
+            [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
@@ -234,7 +238,7 @@
            drill-category-list
            footer
            header
-           product-card-listing]} _ _]
+           product-card-listing] :as queried-data} _ _]
   [:div
    (component/build header-organism header)
    [:div
@@ -243,7 +247,8 @@
     [:div.max-960.mx-auto
      (component/build drill-category-list-organism drill-category-list)
      (component/build drill-category-grid-organism drill-category-grid)]
-    [:div.mb10 purple-divider-atom]
+    [:div.mb10 purple-divider-atom
+     (component/build molecules/stylist-bar queried-data {})]
     [:div.max-960.mx-auto
      (when-let [title (:title category-filters)]
        [:div.canela.title-1.center.mb2 title])
@@ -274,21 +279,23 @@
 
 (defn query
   [app-state]
-  (let [current                  (accessors.categories/current-category app-state)
-        subcategories            (category->subcategories (get-in app-state keypaths/categories) current)
-        selections               (get-in app-state catalog.keypaths/category-selections)
-        loaded-category-products (selector/match-all
-                                  {:selector/strict? true}
-                                  (merge
-                                   (skuers/electives current)
-                                   (skuers/essentials current))
-                                  (vals (get-in app-state keypaths/v2-products)))
-        category-products-matching-criteria
-        (selector/match-all {:selector/strict? true}
-                            (merge
-                             (skuers/essentials current)
-                             selections)
-                            loaded-category-products)]
+  (let [current                             (accessors.categories/current-category app-state)
+        subcategories                       (category->subcategories (get-in app-state keypaths/categories) current)
+        selections                          (get-in app-state catalog.keypaths/category-selections)
+        loaded-category-products            (selector/match-all
+                                             {:selector/strict? true}
+                                             (merge
+                                              (skuers/electives current)
+                                              (skuers/essentials current))
+                                             (vals (get-in app-state keypaths/v2-products)))
+        category-products-matching-criteria (selector/match-all {:selector/strict? true}
+                                                                (merge
+                                                                 (skuers/essentials current)
+                                                                 selections)
+                                                                loaded-category-products)
+        stylist-mismatch?                   (experiments/stylist-mismatch? app-state)
+        servicing-stylist                   (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        service-category-page?              (contains? (:catalog/department current) "service")]
     (cond->
         {:header                {}
          :footer                {}
@@ -317,7 +324,18 @@
       (merge (let [values (mapv category->drill-category-list-entry subcategories)]
                {:drill-category-list {:drill-category-list/values                   values
                                       :drill-category-list/use-three-column-layout? (>= (count values) 3)
-                                      :drill-category-list/tablet-desktop-columns   (max 1 (min 3 (count values)))}})))))
+                                      :drill-category-list/tablet-desktop-columns   (max 1 (min 3 (count values)))}}))
+
+      (and service-category-page? servicing-stylist stylist-mismatch?)
+      (merge {:stylist-bar/id             "category-page-stylist-bar"
+              :stylist-bar/primary        (:store-nickname servicing-stylist)
+              :stylist-bar/secondary      "Your Certified Mayvenn Stylist"
+              :stylist-bar/rating         {:rating/id    "rating-stuff"
+                                           :rating/value (spice.core/parse-double (:rating servicing-stylist))}
+              :stylist-bar.thumbnail/id   "stylist-bar-thumbnail"
+              :stylist-bar.thumbnail/url  (-> servicing-stylist :portrait :resizable-url)
+              :stylist-bar.action/primary "change"
+              :stylist-bar.action/target  [events/navigate-adventure-find-your-stylist {}]}))))
 
 (defn page
   [app-state opts]
