@@ -857,12 +857,14 @@
     :flyout-menu/title                  "Salon Services"
     :footer/order                       1
     :footer/title                       "Salon Services"
-    :copy/title                         "Salon Services"
+    :copy/title                         "À la carte services"
+    :copy/icp-action-label              "Learn More"
     :page/slug                          "salon-services"
     :page/title                         "Hair Salon Services Menu | Mayvenn"
     :page.meta/description              (copy "Shop our selection of salon services for the ultimate hair install or maintenance experience."
                                               "Check out our menu to learn about these premium offerings.")
-    :copy/description                   "Book services that protect and maintain your hair with an amazing network of stylists near you."
+    :copy/description                   "Just looking for a salon appointment? Choose from our list of services and find a Certified Stylist in your area."
+    :subcategory/image-uri              "//ucarecdn.com/09c9d73e-ea5c-4482-9caf-94d3e54444bc/-/format/auto/-/scale_crop/124x124/"
     :seo/sitemap                        true
 
     :how-it-works/title-primary   "Your hair deserves a Mayvenn–Certified Stylist."
@@ -896,13 +898,15 @@
     :page/icp?                          false
     :category/new?                      true
     :copy/title                         "FREE Mayvenn Services"
+    :copy/icp-action-label              "Learn More"
     :page/slug                          "free-mayvenn-services"
     :page/title                         "Hair Free Mayvenn Services Menu | Mayvenn"
     :page.meta/description              (copy "Shop our selection of free Mayvenn Services for the ultimate hair install or wig customization"
                                                "experience. Check out our menu to learn about these exclusive offers.")
     :opengraph/title               					"Free Mayvenn Services Menu - Buy 3 items and we'll pay for your hair service."
     :opengraph/description         					"Buy 3 items and Mayvenn will pay for your hair service! Shop our selection of natural human hair bundles and get connected with a stylist near you."
-    :copy/description                   "These standout services, with Certified Stylists, are included with qualifying purchases."
+    :copy/description                   "You buy the hair, we cover the service. See which products apply."
+    :subcategory/image-uri              "//ucarecdn.com/8a99154d-f552-4f8a-aab2-1a4f71cbdb06/-/format/auto/-/resize/124x/"
     :seo/sitemap                        true
     :how-it-works/title-primary         "Your hair deserves a Mayvenn–Certified Stylist."
     :how-it-works/title-secondary       "Here’s how it works."

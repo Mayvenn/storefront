@@ -96,7 +96,11 @@
        [:div.col-3
         [:div.flex.justify-end.mr4.mt1
          (when image-url
-           (ui/ucare-img {:width "62"} image-url))]]
+           (let [image-id (ui/ucare-img-id image-url)]
+             [:picture
+              [:source {:src-set (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/lightest/-/resize/124x/" " 2x,"
+                                      "//ucarecdn.com/" image-id "/-/format/auto/-/quality/normal/-/resize/62x/" " 1x")}]
+              [:img ^:attrs {:src (str image-url "-/scale_crop/62x62/center/")}]]))]]
        [:div.col-9
         [:div.title-2.proxima.shout title]
         [:div.content-2.proxima.py1 description]
@@ -167,7 +171,7 @@
                                                                       {:query-params {:SKU sku-id}}))]
                                   [events/navigate-category category])
    :drill-category/action-id    (str "drill-category-action-" (:page/slug category))
-   :drill-category/action-label (str "Shop " (:copy/title category))})
+   :drill-category/action-label (or (:copy/icp-action-label category) (str "Shop " (:copy/title category)))})
 
 (defn ^:private category->drill-category-grid-entry
   [category]
