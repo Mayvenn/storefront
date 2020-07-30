@@ -946,7 +946,7 @@
 
     :subsections/category-selector :promo.mayvenn-install/discountable
     :subcategories/ids             ["31" "30"]
-    :subsections                   ["FREE Mayvenn Services" "À la carte services"]
+    :subsections                   ["FREE Mayvenn Services" "A la carte services"]
     :subcategories/layout          :list
 
     ;; :legacy/named-search-slug      "services"
