@@ -5,6 +5,7 @@
             [catalog.ui.category-filters :as category-filters]
             [catalog.ui.category-hero :as category-hero]
             [catalog.ui.product-card-listing :as product-card-listing]
+            [homepage.ui.faq :as faq]
             [spice.maps :as maps]
             [spice.selector :as selector]
             [storefront.accessors.categories :as accessors.categories]
@@ -228,6 +229,7 @@
   [{:keys [category-filters
            category-hero
            content-box
+           expanding-content-box
            drill-category-grid
            drill-category-list
            footer
@@ -252,8 +254,12 @@
        [:div.mb10.mt8
         (component/build category-filters/organism category-filters {})])
      (component/build product-card-listing/organism product-card-listing {})]
-    (when content-box green-divider-atom)
-    (when content-box (component/build content-box-organism content-box))
+    (when content-box
+      [:div green-divider-atom
+       (component/build content-box-organism content-box)])
+    (when expanding-content-box
+      [:div green-divider-atom
+       (component/build faq/organism expanding-content-box)])
     (component/build layered/shop-contact contact-query)]
    (component/build footer-organism footer)])
 
@@ -284,20 +290,22 @@
                              selections)
                             loaded-category-products)]
     (cond->
-        {:header               {}
-         :footer               {}
-         :category-hero        (category-hero-query current)
-         :content-box          (when (:content-block/type current)
-                                 {:title    (:content-block/title current)
-                                  :header   (:content-block/header current)
-                                  :summary  (:content-block/summary current)
-                                  :sections (:content-block/sections current)})
-         :category-filters     (category-filters/query app-state
+        {:header                {}
+         :footer                {}
+         :category-hero         (category-hero-query current)
+         :content-box           (when (:content-block/type current)
+                                  {:title    (:content-block/title current)
+                                   :header   (:content-block/header current)
+                                   :summary  (:content-block/summary current)
+                                   :sections (:content-block/sections current)})
+         :expanding-content-box (when (:expanding-content-block/sections current)
+                                  {:list/sections (:expanding-content-block/sections current)})
+         :category-filters      (category-filters/query app-state
                                                        current
                                                        loaded-category-products
                                                        category-products-matching-criteria
                                                        selections)
-         :product-card-listing (product-card-listing/query app-state
+         :product-card-listing  (product-card-listing/query app-state
                                                            current
                                                            category-products-matching-criteria)}
 
