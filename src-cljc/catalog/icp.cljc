@@ -308,7 +308,8 @@
                                    :summary  (:content-block/summary current)
                                    :sections (:content-block/sections current)})
          :expanding-content-box (when (:expanding-content-block/sections current)
-                                  {:list/sections (:expanding-content-block/sections current)})
+                                  {:list/sections      (:expanding-content-block/sections current)
+                                   :faq/expanded-index (get-in app-state keypaths/faq-expanded-section)})
          :category-filters      (category-filters/query app-state
                                                        current
                                                        loaded-category-products
