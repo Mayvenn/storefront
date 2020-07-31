@@ -71,8 +71,14 @@
     (update :category-hero.body/primary
             str " Get free customization with qualifying purchases.")))
 
+(defn drill-category-image [image-id]
+  [:picture
+   [:source {:src-set (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/lightest/-/resize/124x/" " 2x,"
+                           "//ucarecdn.com/" image-id "/-/format/auto/-/quality/normal/-/resize/62x/" " 1x")}]
+   [:img ^:attrs {:src (str "//ucarecdn.com/" image-id "/-/format/auto/-/scale_crop/62x62/center/")}]])
+
 (defcomponent ^:private drill-category-list-entry-organism
-  [{:drill-category/keys [id title description image-url target action-id action-label use-three-column-layout?]} _ _]
+  [{:drill-category/keys [id title description image-id target action-id action-label use-three-column-layout?]} _ _]
   (when id
     (if use-three-column-layout?
       [:div.p3.flex.flex-wrap.col-12.content-start
@@ -81,11 +87,11 @@
         :class     "col-4-on-tb-dt"}
        [:div.col-12-on-tb-dt.col-3
         [:div.hide-on-tb-dt.flex.justify-end.mr4.mt1
-         (when image-url
-           (ui/ucare-img {:width "62"} image-url))]
+         (when image-id
+           (drill-category-image image-id))]
         [:div.hide-on-mb
-         (when image-url
-           (ui/ucare-img {:width "62"} image-url))]]
+         (when image-id
+           (drill-category-image image-id))]]
        [:div.col-12-on-tb-dt.col-9
         [:div.title-2.proxima.shout title]
         [:div.content-2.proxima.py1 description]
@@ -100,12 +106,8 @@
         :class     "col-6-on-tb-dt"}
        [:div.col-3
         [:div.flex.justify-end.mr4.mt1
-         (when image-url
-           (let [image-id (ui/ucare-img-id image-url)]
-             [:picture
-              [:source {:src-set (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/lightest/-/resize/124x/" " 2x,"
-                                      "//ucarecdn.com/" image-id "/-/format/auto/-/quality/normal/-/resize/62x/" " 1x")}]
-              [:img ^:attrs {:src (str image-url "-/scale_crop/62x62/center/")}]]))]]
+         (when image-id
+           (drill-category-image image-id))]]
        [:div.col-9
         [:div.title-2.proxima.shout title]
         [:div.content-2.proxima.py1 description]
@@ -167,7 +169,7 @@
   {:drill-category/id           (:page/slug category)
    :drill-category/title        (:copy/title category)
    :drill-category/description  (:copy/description category)
-   :drill-category/image-url    (:subcategory/image-uri category)
+   :drill-category/image-id     (:subcategory/image-id category)
    :drill-category/target       (if-let [product-id (:direct-to-details/id category)]
                                   [events/navigate-product-details (merge
                                                                     {:catalog/product-id product-id

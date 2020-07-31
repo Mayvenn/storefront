@@ -146,7 +146,7 @@
            :page/slug                "360-frontals"
            :seo/title                "Virgin 360 Hair Frontals"
            :legacy/named-search-slug "360-frontals"
-           :subcategory/image-uri    "//ucarecdn.com/e6a42693-73a2-4cda-8ad8-bc16b7d8b5f4/-/format/auto/-/resize/124x/"
+           :subcategory/image-id     "e6a42693-73a2-4cda-8ad8-bc16b7d8b5f4"
 
            :catalog/department            #{"hair"}
            :hair/family                   #{"360-frontals"}
@@ -229,7 +229,7 @@
            :category/tags            #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives       [:hair/origin :hair/texture :hair/color]
-           :subcategory/image-uri    "//ucarecdn.com/47e29e97-821e-4c20-aeac-35eadc1a653d/-/format/auto/-/resize/124x/"
+           :subcategory/image-id     "47e29e97-821e-4c20-aeac-35eadc1a653d"
            :copy/description         "Our 13x4 inch virgin lace frontals stretch from ear-to-ear for a look that can be parted in any direction."}
           (category->seo "Lace Frontals"
                          (copy "Mayvenn’s human hair lace frontals blend in seamlessly"
@@ -515,7 +515,7 @@
            :copy/description      (copy "With the lace base in front only,"
                                         "these are ideal for exploring new ways to part your hair."
                                         "Ours are made with virgin lace & real human hair.")
-           :subcategory/image-uri "//ucarecdn.com/71dcdd17-f9cc-456f-b763-2c1c047c30b4/-/format/auto/-/resize/124x/"
+           :subcategory/image-id "71dcdd17-f9cc-456f-b763-2c1c047c30b4"
 
            :catalog/department  #{"hair"}
            :hair/family         #{"lace-front-wigs"}
@@ -541,7 +541,7 @@
            :copy/description      (copy "Made of authentic and high-quality human hair,"
                                         "ready to wear wigs are a quick,"
                                         "convenient way to change up your look instantly.")
-           :subcategory/image-uri "//ucarecdn.com/a4f7ad94-3c2c-41aa-be4d-94d9d83b1602/-/format/auto/-/resize/124x/"
+           :subcategory/image-id "a4f7ad94-3c2c-41aa-be4d-94d9d83b1602"
 
            :catalog/department             #{"hair"}
            :hair/family                    #{"ready-wigs"}
@@ -570,7 +570,7 @@
 
            :copy/description      (copy "Ideal for ponytails, these wigs are denser & fuller."
                                         "360 wigs have lace around the entire crown of your head with a cap in the middle.")
-           :subcategory/image-uri "//ucarecdn.com/fe34e6e9-8927-4b62-94ac-91b37f0a137f/-/format/auto/-/resize/124x/"
+           :subcategory/image-id "fe34e6e9-8927-4b62-94ac-91b37f0a137f"
 
            :catalog/department    #{"hair"}
            :hair/family           #{"360-wigs"}
@@ -741,7 +741,7 @@
      :selector/essentials [:catalog/department :hair/family]
      :selector/electives  [:hair/weight :hair/texture :hair/color]
 
-     :subcategory/image-uri "//ucarecdn.com/d255ccf8-75af-4729-86da-af6e15783fc2/-/format/auto/-/resize/124x/"
+     :subcategory/image-id "d255ccf8-75af-4729-86da-af6e15783fc2"
      :copy/title            "Clip-In Hair Extensions"
      :copy/description      (copy "Get the hair of your dreams in an instant with our seamless clip-in extensions."
                                   "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair."
@@ -774,7 +774,7 @@
 
           :page/slug "tape-ins"
 
-          :subcategory/image-uri    "//ucarecdn.com/1998d5dd-51fa-4ee4-8fef-2ce0d8ed6f8e/-/format/auto/-/resize/124x/"
+          :subcategory/image-id     "1998d5dd-51fa-4ee4-8fef-2ce0d8ed6f8e"
           :direct-to-details/id     "111"
           :direct-to-details/slug   "50g-straight-tape-ins"
           :direct-to-details/sku-id "TAPE-S-1-20"
@@ -864,7 +864,7 @@
     :page.meta/description              (copy "Shop our selection of salon services for the ultimate hair install or maintenance experience."
                                               "Check out our menu to learn about these premium offerings.")
     :copy/description                   "Just looking for a salon appointment? Choose from our list of services and find a Certified Stylist in your area."
-    :subcategory/image-uri              "//ucarecdn.com/09c9d73e-ea5c-4482-9caf-94d3e54444bc/-/format/auto/-/scale_crop/124x124/"
+    :subcategory/image-id               "09c9d73e-ea5c-4482-9caf-94d3e54444bc"
     :seo/sitemap                        true
 
     :how-it-works/title-primary   "Your hair deserves a Mayvenn–Certified Stylist."
@@ -906,7 +906,7 @@
     :opengraph/title               					"Free Mayvenn Services Menu - Buy 3 items and we'll pay for your hair service."
     :opengraph/description         					"Buy 3 items and Mayvenn will pay for your hair service! Shop our selection of natural human hair bundles and get connected with a stylist near you."
     :copy/description                   "You buy the hair, we cover the service. See which products apply."
-    :subcategory/image-uri              "//ucarecdn.com/8a99154d-f552-4f8a-aab2-1a4f71cbdb06/-/format/auto/-/resize/124x/"
+    :subcategory/image-id              "8a99154d-f552-4f8a-aab2-1a4f71cbdb06"
     :seo/sitemap                        true
     :how-it-works/title-primary         "Your hair deserves a Mayvenn–Certified Stylist."
     :how-it-works/title-secondary       "Here’s how it works."
