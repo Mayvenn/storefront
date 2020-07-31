@@ -857,7 +857,7 @@
     :flyout-menu/title                  "Salon Services"
     :footer/order                       1
     :footer/title                       "Salon Services"
-    :copy/title                         "À la carte services"
+    :copy/title                         "A la carte services"
     :copy/icp-action-label              "Learn More"
     :page/slug                          "salon-services"
     :page/title                         "Hair Salon Services Menu | Mayvenn"
