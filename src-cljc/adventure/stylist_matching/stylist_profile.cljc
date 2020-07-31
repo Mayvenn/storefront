@@ -124,7 +124,7 @@
         stylist-results-test?               (experiments/stylist-results-test? data)
         just-added-only?                    (experiments/just-added-only? data)
         just-added-experience?              (experiments/just-added-experience? data)
-        newly-added-stylist                 2 #_(< rating-count 3)
+        newly-added-stylist                 (< rating-count 3)
         show-newly-added-stylist-ui?        (and newly-added-stylist
                                                  (or (and stylist-results-test? just-added-only?)
                                                      (and stylist-results-test? just-added-experience?)))
