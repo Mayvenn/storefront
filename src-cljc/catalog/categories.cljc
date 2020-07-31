@@ -961,31 +961,7 @@
      {:faq/title      "How does this process actually work?"
       :faq/paragraphs ["It’s super simple — after you purchase your hair, we’ll send you a pre-paid voucher that you’ll use during your appointment. When your stylist scans it, they get paid instantly by Mayvenn."]}
      {:faq/title      "What if I want to get my hair done by another stylist? Can I still get the Mayvenn Install?"
-      :faq/paragraphs ["You must get your hair done from a Certified Stylist in order to get your hair installed for free."]}]
-
-    ;; :legacy/named-search-slug      "services"
-    ;; :menu/hide?                    true
-    ;; :flyout-menu/title             "Frontals"
-    ;; :flyout-menu/order             2
-    ;; :homepage.ui-v2020-07/order    3
-    ;; :homepage.ui-v2020-07/image-id "b6dc646c-039f-48a8-b932-bd03350a3beb"
-
-    ;; :footer/order                  10
-    ;; :footer/title                  "Services"
-
-    ;; :content-block/type            :about-attributes
-    ;; :content-block/title           "Frontals 101:"
-    ;; :content-block/header          "How to Choose Your Hair Frontal"
-    ;; :content-block/summary         "Frontals are a great solution if you want to conceal hair loss or achieve an up-do, but how do you choose the right unit? Check out different factors to look for when picking the perfect lace frontal:"
-    ;; :content-block/sections        [{:title "Origin"
-    ;;                                  :body  "The origin of your lace frontal will determine the thickness and density of your hair. From thick and smooth, to light and bouncy, Mayvenn offers hair frontals for every style: Brazilian, Malaysian, Peruvian, and Indian."}
-    ;;                                 {:title "Texture"
-    ;;                                  :body  "You want texture? We’ve got options. From straight to curly, deep to loose waves, our lace frontals are designed to beautifully blend with your hair bundles to create a versatile style for any occasion."}
-    ;;                                 {:title "Get Your Frontals Installed–For Free!"
-    ;;                                  :body  "Yes, that’s right–when you select your lace frontal, click the Free Install option at checkout, and we'll help you find a Mayvenn Certified Stylist near you! Your install includes a shampoo and condition, braid down, sew-in, and basic style."}
-    ;;                                 {:title "Need Help Choosing a Frontal?"
-    ;;                                  :body  "Choosing between different lace frontals, textures, and colors can be overwhelming. Whether you’re investing in a frontal for the first time or are a pro, Mayvenn’s team is ready to answer your questions. Connect with us today to learn more!"}]
-    }])
+      :faq/paragraphs ["You must get your hair done from a Certified Stylist in order to get your hair installed for free."]}]}])
 
 (def menu-categories
   (concat virgin-hair
