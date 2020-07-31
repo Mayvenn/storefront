@@ -59,23 +59,30 @@
 
      no-product-cards? (c/build product-cards-empty-state {} {})
 
-     :else             (mapv (fn build [{:as subsection :keys [subsection-key]}]
-                               (c/build service-list-subsection-component
-                                        subsection
-                                        (c/component-id (str "subsection-" subsection-key))))
-                             subsections))])
+     :else (mapv (fn build [{:as subsection :keys [subsection-key]}]
+                   (c/build service-list-subsection-component
+                            subsection
+                            (c/component-id (str "subsection-" subsection-key))))
+                 subsections))])
 
 (defn query
   [app-state category matching-products]
-  (let [servicing-stylist    (get-in app-state adventure.keypaths/adventure-servicing-stylist)
-        product-cards        (->> matching-products
-                                  (map #(assoc %
-                                               :stylist-provides-service
-                                               (stylist-filters/stylist-provides-service servicing-stylist %)))
-                                  (sort-by (juxt (comp not :stylist-provides-service) :sort/value))
-                                  (map (partial product->card app-state)))
-        no-product-cards?    (empty? product-cards)]
-    {:subsections       [{:product-cards product-cards}]
+  (let [servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        category-selector (:subsections/category-selector category)
+        subsections     (->> matching-products
+                               (map #(assoc %
+                                            :stylist-provides-service
+                                            (stylist-filters/stylist-provides-service servicing-stylist %)))
+                               (group-by (if category-selector
+                                           (comp first category-selector)
+                                           (constantly :no-subsections)))
+                               (maps/map-values #(sort-by (juxt (comp not :stylist-provides-service) :sort/value) %))
+                               (map (fn [[subsection-key products]]
+                                      {:title/primary  "Title"
+                                       :subsection-key subsection-key
+                                       :product-cards  (map #(product->card app-state %) products)})))
+        no-product-cards? (empty? subsections)]
+    {:subsections       subsections
      :no-product-cards? no-product-cards?
      :loading-products? (and no-product-cards?
                              (utils/requesting? app-state (conj request-keys/get-products

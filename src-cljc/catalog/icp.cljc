@@ -7,6 +7,7 @@
             [catalog.ui.category-hero :as category-hero]
             [catalog.ui.molecules :as molecules]
             [catalog.ui.product-card-listing :as product-card-listing]
+            [catalog.ui.service-card-listing :as service-card-listing]
             [homepage.ui.faq :as faq]
             spice.core
             [spice.maps :as maps]
@@ -232,7 +233,7 @@
 
 (defcomponent ^:private template
   "This lays out different ux pieces to form a cohesive ux experience"
-  [{:keys [category-filters
+  [{:keys                     [category-filters
            category-hero
            content-box
            expanding-content-box
@@ -240,7 +241,9 @@
            drill-category-list
            footer
            header
-           product-card-listing] :as queried-data} _ _]
+           product-card-listing
+           service-category-page?
+           stylist-mismatch?] :as queried-data} _ _]
   [:div
    (component/build header-organism header)
    [:div
@@ -260,7 +263,9 @@
                             :height "42px"})]
        [:div.mb10.mt8
         (component/build category-filters/organism category-filters {})])
-     (component/build product-card-listing/organism product-card-listing {})]
+     (if (and service-category-page? stylist-mismatch?)
+       (component/build service-card-listing/organism product-card-listing {})
+       (component/build product-card-listing/organism product-card-listing {}))]
     (when content-box
       [:div green-divider-atom
        (component/build content-box-organism content-box)])
@@ -297,27 +302,31 @@
                                                                 loaded-category-products)
         stylist-mismatch?                   (experiments/stylist-mismatch? app-state)
         servicing-stylist                   (get-in app-state adventure.keypaths/adventure-servicing-stylist)
-        service-category-page?              (contains? (:catalog/department current) "service")]
+        service-category-page?              (contains? (:catalog/department current) "service")
+        card-listing-query                  (if (and service-category-page? stylist-mismatch?)
+                                              service-card-listing/query
+                                              product-card-listing/query)]
     (cond->
-        {:header                {}
-         :footer                {}
-         :category-hero         (category-hero-query current)
-         :content-box           (when (:content-block/type current)
-                                  {:title    (:content-block/title current)
-                                   :header   (:content-block/header current)
-                                   :summary  (:content-block/summary current)
-                                   :sections (:content-block/sections current)})
-         :expanding-content-box (when (:expanding-content-block/sections current)
-                                  {:list/sections      (:expanding-content-block/sections current)
-                                   :faq/expanded-index (get-in app-state keypaths/faq-expanded-section)})
-         :category-filters      (category-filters/query app-state
-                                                       current
-                                                       loaded-category-products
-                                                       category-products-matching-criteria
-                                                       selections)
-         :product-card-listing  (product-card-listing/query app-state
-                                                           current
-                                                           category-products-matching-criteria)}
+        {:header                 {}
+         :footer                 {}
+         :category-hero          (category-hero-query current)
+         :content-box            (when (:content-block/type current)
+                                   {:title    (:content-block/title current)
+                                    :header   (:content-block/header current)
+                                    :summary  (:content-block/summary current)
+                                    :sections (:content-block/sections current)})
+         :expanding-content-box  (when (:expanding-content-block/sections current)
+                                   {:list/sections (:expanding-content-block/sections current)})
+         :category-filters       (category-filters/query app-state
+                                                        current
+                                                        loaded-category-products
+                                                        category-products-matching-criteria
+                                                        selections)
+         :product-card-listing   (card-listing-query app-state
+                                                    current
+                                                    category-products-matching-criteria)
+         :service-category-page? service-category-page?
+         :stylist-mismatch?      stylist-mismatch?}
 
       (= :grid (:subcategories/layout current))
       (merge {:drill-category-grid {:drill-category-grid/values (mapv category->drill-category-grid-entry subcategories)
