@@ -86,7 +86,7 @@
 (defn organism
   [{:as                                  data
     react-key                            :react/key
-    :horizontal-direct-to-cart-card/keys [primary secondary tertiary
+    :horizontal-direct-to-cart-card/keys [id primary secondary tertiary
                                           cta-id cta-target card-target cta-disabled? cta-label cta-max-width
                                           not-offered-id disabled-background?]
     disabled-id                          :horizontal-direct-to-cart-card.disabled/id
@@ -94,9 +94,10 @@
   (c/html
    (let [non-cta-action
          (merge (apply utils/route-to card-target)
-                {:key       react-key
-                 :data-test react-key})]
+                {:data-test id})]
      [:div.col.col-12.col-6-on-tb-dt
+      {:key       react-key
+       :data-test react-key}
       [:div.border.border-cool-gray.m1
        {:class (when disabled-background? "bg-cool-gray")}
        [:div.container-height.flex.justify-between

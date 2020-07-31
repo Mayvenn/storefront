@@ -77,8 +77,8 @@
 
 (c/defcomponent ^:private product-list-subsection-component
   [{:keys [product-cards subsection-key] primary-title :title/primary} _ {:keys [id]}]
-  [:div
-   {:id id :data-test id}
+  [:div.mb6
+   {:id id :data-test id :key id}
    (when primary-title
      [:div.canela.title-2.center.mb2 primary-title])
    [:div.flex.flex-wrap
@@ -93,13 +93,11 @@
 
      no-product-cards? (c/build product-cards-empty-state {} {})
 
-     :else             (interpose
-                        [:div.mb6]
-                        (mapv (fn build [{:as subsection :keys [subsection-key]}]
-                                (c/build product-list-subsection-component
-                                         subsection
-                                         (c/component-id (str "subsection-" subsection-key))))
-                                        subsections)))])
+     :else             (mapv (fn build [{:as subsection :keys [subsection-key]}]
+                               (c/build product-list-subsection-component
+                                        subsection
+                                        (c/component-id (str "subsection-" subsection-key))))
+                             subsections))])
 
 (defn query
   [app-state category products-matching-filter-selections]
