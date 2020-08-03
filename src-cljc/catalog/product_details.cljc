@@ -239,7 +239,7 @@
             (component/build ugc/component ugc opts)
             (when how-it-works
               [:div.container.mx-auto.mt4.px4
-               (component/build how-it-works/organism how-it-works)])])
+               (component/build how-it-works/organism {:how-it-works how-it-works})])])
           (component/html
            [:div
             [:div
@@ -263,7 +263,7 @@
             [:div.hide-on-tb-dt
              (when how-it-works
                [:div.container.mx-auto.mt4.px4
-                (component/build how-it-works/organism how-it-works)])
+                (component/build how-it-works/organism {:how-it-works how-it-works})])
              [:div.m3 (component/build browse-stylists-banner/organism data opts)]
              [:div.mxn2.mb3 (component/build ugc/component ugc opts)]]]))]]
        (when aladdin?

@@ -52,10 +52,10 @@
 
 (c/defcomponent organism
   [data _ _]
-  (when (:how-it-works data)
+  (when-let [how-it-works (:how-it-works data)]
     [:div.center
-     (how-it-works-title-molecule data)
+     (how-it-works-title-molecule how-it-works)
      how-it-works-straight-line-atom
      (elements how-it-works-step-organism
-               data
+               how-it-works
                :how-it-works/step-elements)]))

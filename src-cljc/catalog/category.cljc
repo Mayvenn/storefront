@@ -47,7 +47,7 @@
       (c/build service-card-listing/organism card-listing {})
       (c/build product-card-listing/organism card-listing {}))]
    [:div.col-10.mx-auto.mt6
-    (c/build how-it-works/organism how-it-works)]])
+    (c/build how-it-works/organism queried-data)]])
 
 (defn category-hero-query
   [{:copy/keys [title description learn-more-target]
