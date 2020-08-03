@@ -563,14 +563,14 @@
                                                                                                :sku/price                                    65.0}}})})
                                              common/default-storeback-handler)}
     (with-handler handler
-      (testing "salon service category"
+      (testing "À la carte services category"
         (let [resp (handler (mock/request :get "https://classic.mayvenn.com/categories/30-salon-services"))]
           (is (= 301 (:status resp)) (pr-str resp))
           (is (= "https://shop.mayvenn.com/categories/30-salon-services" (get-in resp [:headers "Location"])))))
-      (testing "salon service PDP"
+      (testing "À la carte service PDP"
         (let [resp (handler (mock/request :get "https://jasmine.mayvenn.com/products/132-weave-maintenance-service"))]
           (is (= 301 (:status resp)) (pr-str resp))
           (is (= "https://shop.mayvenn.com/products/132-weave-maintenance-service" (get-in resp [:headers "Location"])))))
-      (testing "on shop, salon service PDP"
+      (testing "on shop, à la carte PDP"
         (let [resp (handler (mock/request :get "https://shop.mayvenn.com/products/132-weave-maintenance-service"))]
           (is (= 200 (:status resp)) (pr-str resp)))))))

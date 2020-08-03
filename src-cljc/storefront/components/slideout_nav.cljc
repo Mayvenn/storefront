@@ -172,9 +172,9 @@
      [{:link-attrs  (utils/route-to events/navigate-category
                                     {:page/slug           "salon-services"
                                      :catalog/category-id "30"})
-       :data-test   "menu-shop-salon-services"
+       :data-test   "menu-shop-a-la-carte-services"
        :new-content "NEW"
-       :content     [[:span.medium "Salon Services"]]}])
+       :content     [[:span.medium "À la carte service"]]}])
 
    (when show-freeinstall-link?
      [{:link-attrs (utils/route-to events/navigate-adventure-match-stylist)

@@ -620,7 +620,7 @@
          :how-it-works/step-elements
          [{:how-it-works.step.title/primary   "01"
            :how-it-works.step.title/secondary "Pick your service"
-           :how-it-works.step.body/primary    (str "Choose the service you’d like to book from our full list of salon service offerings. "
+           :how-it-works.step.body/primary    (str "Choose the service you’d like to book from our full list of à la carte service offerings. "
                                                    "Next, you’ll see which stylists are nearby and decide who you want to book.")}
           {:how-it-works.step.title/primary   "02"
            :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"

@@ -27,14 +27,14 @@
      :stylist-search-filter/checked?  checked?}))
 
 (defn query [data]
-  (let [selected-filters       (get-in data stylist-directory.keypaths/stylist-search-selected-filters)
-        {free-services  #{true}
-         salon-services #{false}} (->> (get-in data storefront.keypaths/v2-skus)
-                                       vals
-                                       (selector/match-all {:selector/strict? true}
-                                                           {:service/type #{"base"}})
-                                       (sort-by :legacy/variant-id)
-                                       (group-by :promo.mayvenn-install/discountable))]
+  (let [selected-filters               (get-in data stylist-directory.keypaths/stylist-search-selected-filters)
+        {free-services       #{true}
+         a-la-carte-services #{false}} (->> (get-in data storefront.keypaths/v2-skus)
+                                            vals
+                                            (selector/match-all {:selector/strict? true}
+                                                                {:service/type #{"base"}})
+                                            (sort-by :legacy/variant-id)
+                                            (group-by :promo.mayvenn-install/discountable))]
     {:stylist-search-filters/show? (get-in data stylist-directory.keypaths/stylist-search-show-filters?)
      :stylist-search-filters/sections
      [{:stylist-search-filter-section/id      "free-mayvenn-services"
@@ -48,10 +48,10 @@
        (->> free-services
             (mapv (juxt :sku/name :catalog/sku-id (constantly 0)))
             (mapv (partial specialty->filter selected-filters)))}
-      {:stylist-search-filter-section/id    "other-salon-services"
-       :stylist-search-filter-section/title "Other Salon Services"
+      {:stylist-search-filter-section/id    "other-a-la-carte-services"
+       :stylist-search-filter-section/title "À la carte services"
        :stylist-search-filter-section/filters
-       (->> salon-services
+       (->> a-la-carte-services
             (mapv (juxt :sku/name :catalog/sku-id :sku/price))
             (mapv (partial specialty->filter selected-filters)))}]}))
 

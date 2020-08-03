@@ -21,8 +21,8 @@
           :hashtag-mayvenn-hair (ui/hashtag-mayvenn-hair-query ugc)
           :shopping-categories  (ui/shopping-categories-query categories)}
 
-       (ui/offers? menu ui/salon-services)
-       (merge {:salon-services ui/salon-services-query})
+       (ui/offers? menu ui/a-la-carte-services)
+       (merge {:a-la-carte-services ui/a-la-carte-query})
 
        (ui/offers? menu ui/mayvenn-installs)
        (merge {:mayvenn-install ui/mayvenn-install-query})

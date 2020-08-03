@@ -416,13 +416,13 @@
                                    {:header-menu-item/navigation-target [events/navigate-category free-services-category]
                                     :header-menu-item/id                "desktop-get-mayvenn-install"
                                     :header-menu-item/content           "Get a Free Service"})
-                                 (let [salon-services (->> (get-in data keypaths/categories)
-                                                           (filter (comp #{"30"} :catalog/category-id))
-                                                           first)]
-                                   {:header-menu-item/navigation-target [events/navigate-category salon-services]
-                                    :header-menu-item/id                "desktop-salon-services"
-                                    :header-menu-item/new-label?        (:category/new? salon-services)
-                                    :header-menu-item/content           (:flyout-menu/title salon-services)})])
+                                 (let [a-la-carte-services (->> (get-in data keypaths/categories)
+                                                                (filter (comp #{"30"} :catalog/category-id))
+                                                                first)]
+                                   {:header-menu-item/navigation-target [events/navigate-category a-la-carte-services]
+                                    :header-menu-item/id                "desktop-a-la-carte-services"
+                                    :header-menu-item/new-label?        (:category/new? a-la-carte-services)
+                                    :header-menu-item/content           (:flyout-menu/title a-la-carte-services)})])
 
                                (= :classic site)
                                (concat [{:header-menu-item/navigation-target [events/navigate-shop-by-look {:album-keyword :look}]

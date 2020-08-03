@@ -854,10 +854,10 @@
     :page/icp?                          false
     :page/shop-only?                    true
     :category/new?                      true
-    :flyout-menu/title                  "Salon Services"
+    :flyout-menu/title                  "À la carte services"
     :footer/order                       1
-    :footer/title                       "Salon Services"
-    :copy/title                         "A la carte services"
+    :footer/title                       "À la carte services"
+    :copy/title                         "À la carte services"
     :copy/icp-action-label              "Learn More"
     :page/slug                          "salon-services"
     :page/title                         "Hair Salon Services Menu | Mayvenn"
@@ -873,7 +873,7 @@
     [{:how-it-works.step.title/primary   "01"
       :how-it-works.step.title/secondary "Pick your service"
       :how-it-works.step.body/primary
-      (str "Choose the service you’d like to book from our full list of salon service offerings. "
+      (str "Choose the service you’d like to book from our full list of à la carte service offerings. "
            "Next, you’ll see which stylists are nearby and decide who you want to book.")}
      {:how-it-works.step.title/primary   "02"
       :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
@@ -946,7 +946,7 @@
 
     :subsections/category-selector :promo.mayvenn-install/discountable
     :subcategories/ids             ["31" "30"]
-    :subsections                   ["FREE Mayvenn Services" "A la carte services"]
+    :subsections                   ["FREE Mayvenn Services" "À la carte service"]
     :subcategories/layout          :list
 
     :expanding-content-block/sections

@@ -26,14 +26,14 @@
            quality-hair
            quality-stylists
            shopping-categories
-           salon-services]} _ _]
+           a-la-carte-services]} _ _]
   [:div
    (c/build hero/organism hero)
    (c/build shopping-categories/organism shopping-categories)
 
    A/horizontal-rule-atom
 
-   (c/build services-section/organism salon-services)
+   (c/build services-section/organism a-la-carte-services)
    (c/build services-section/organism mayvenn-install)
 
    (A/divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
@@ -95,13 +95,13 @@
    :services-section.secondary-cta/value  "Browse Stylists"
    :services-section.secondary-cta/target [e/navigate-adventure-match-stylist]})
 
-(def salon-services-query
-  {:services-section.title/primary        "Mayvenn Salon Services" ;; note there is a non breaking space here
-   :services-section.title/secondary      "No hair purchase needed! Now you can book salon services with your favorite Mayvenn Stylists!"
+(def a-la-carte-query
+  {:services-section.title/primary        "À la carte service" ;; note there is a non breaking space here
+   :services-section.title/secondary      "No hair purchase needed! Now you can book à la carte salon services with your favorite Mayvenn Stylists!"
    :services-section.image/ucare-id       "8f14c17b-ffef-4178-8915-640573a8bf3a"
    :services-section/orientation          "image-first"
    :services-section.cta/id               "browse-services-section"
-   :services-section.cta/value            "Browse Salon Services"
+   :services-section.cta/value            "Browse À la carte services"
    :services-section.cta/target           [e/navigate-category {:page/slug           "salon-services"
                                                                 :catalog/category-id "30"}]
    :services-section.secondary-cta/id     "browse-stylists"
@@ -201,14 +201,14 @@
    :specialty-sew-in-closure
    :specialty-sew-in-frontal
    :specialty-sew-in-leave-out])
-(def salon-services
+(def a-la-carte-services
   [:specialty-silk-press
    :specialty-weave-maintenance
    :specialty-wig-install
    :specialty-braid-down])
 
 (def services
-  (into mayvenn-installs (concat salon-services wig-customizations)))
+  (into mayvenn-installs (concat a-la-carte-services wig-customizations)))
 
 (defn offers?
   [menu services]
