@@ -313,7 +313,8 @@
                                     :summary  (:content-block/summary interstitial-category)
                                     :sections (:content-block/sections interstitial-category)})
          :expanding-content-box  (when (:expanding-content-block/sections interstitial-category)
-                                   {:list/sections (:expanding-content-block/sections interstitial-category)})
+                                   {:faq/expanded-index (get-in app-state keypaths/faq-expanded-section)
+                                    :list/sections (:expanding-content-block/sections interstitial-category)})
          :category-filters       (category-filters/query app-state
                                                          interstitial-category
                                                          loaded-category-products
