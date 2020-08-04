@@ -270,17 +270,18 @@
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
-(defn layout [app-state nav-event]
-  [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
-   #?(:cljs (popup/built-component app-state nil))
+(defn layout [app-state _]
+  (let [nav-event (get-in app-state keypaths/navigation-event)]
+    [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
+     #?(:cljs (popup/built-component app-state nil))
 
-   ^:inline (promo-banner/built-static-organism app-state nil)
-   (header/built-component app-state nil)
-   [:div.relative.flex.flex-column.flex-auto
-    (flash/built-component app-state nil)
+     ^:inline (promo-banner/built-static-organism app-state nil)
+     (header/built-component app-state nil)
+     [:div.relative.flex.flex-column.flex-auto
+      (flash/built-component app-state nil)
 
-    [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-     (built-component app-state nil)]
+      [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+       (built-component app-state nil)]
 
-    [:footer
-     (storefront.footer/built-component app-state nil)]]])
+      [:footer
+       (storefront.footer/built-component app-state nil)]]]))
