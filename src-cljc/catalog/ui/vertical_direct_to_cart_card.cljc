@@ -94,11 +94,13 @@
    (let [non-cta-action (merge (apply utils/route-to card-target)
                                {:data-test id})]
      [:div.inherit-color.col.col-6.col-4-on-tb-dt.p1
-      {:key       react-key
-       :data-test react-key}
+      {:key react-key}
       [:div.border.border-cool-gray.container-height.center.flex.flex-column.justify-between
        {:class (when disabled-background? "bg-cool-gray")}
-       [:a.inherit-color.mb2 non-cta-action (ui/screen-aware card-image-molecule data)]
+       [:a.inherit-color.mb2 (merge
+                              {:data-test react-key}
+                              non-cta-action )
+        (ui/screen-aware card-image-molecule data)]
        [:a.inherit-color non-cta-action primary]
        [:a.inherit-color non-cta-action secondary]
        (when disabled-id
