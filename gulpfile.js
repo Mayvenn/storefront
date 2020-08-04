@@ -31,8 +31,9 @@ function run(cmd, cb) {
   });
 }
 
-if (process.versions.node.search('12.') === -1) {
-	console.error("Hey, you need to upgrade node to 12.x.x!");
+var nodeVersion = process.versions.node;
+if (nodeVersion.search('12.') === -1 && nodeVersion.search('13.') === -1 && nodeVersion.search('14.') === -1) {
+	console.error("Hey, you need to upgrade node to 14.x.x!");
 	console.error("");
 	console.error("This means running the following:");
 	console.error("  brew upgrade node");
