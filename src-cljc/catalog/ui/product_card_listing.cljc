@@ -64,7 +64,7 @@
 (c/defcomponent organism
   [{:keys [id subsections title no-product-cards? loading-products?]} _ _]
   (when id
-    [:div.px2.pb4
+    [:div.px2.pb4.pt6
      (cond
        loading-products? [:div.col-12.center (ui/large-spinner {:style {:height "4em"}})]
 
@@ -76,7 +76,7 @@
                                           (c/component-id (str "subsection-" subsection-key))))
                                subsections))]))
 
-(defn query ; TODO this should not take app-state
+(defn query
   [app-state category products-matching-filter-selections]
   (let [facets            (maps/index-by :facet/slug (get-in app-state keypaths/v2-facets))
         subsections       (subsections-query

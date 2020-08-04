@@ -59,15 +59,15 @@
      (cond
        loading-products? [:div.col-12.my8.py4.center (ui/large-spinner {:style {:height "4em"}})]
 
-       no-cards? (c/build service-cards-empty-state {} {})
+       no-cards?         (c/build service-cards-empty-state {} {})
 
-       :else (mapv (fn build [{:as subsection :keys [subsection-key]}]
-                     (c/build service-list-subsection-component
-                              subsection
-                              (c/component-id (str "subsection-" subsection-key))))
-                   subsections))]))
+       :else             (mapv (fn build [{:as subsection :keys [subsection-key]}]
+                                 (c/build service-list-subsection-component
+                                          subsection
+                                          (c/component-id (str "subsection-" subsection-key))))
+                               subsections))]))
 
-(defn query ; TODO this should not take app-state
+(defn query
   [app-state category matching-services]
   (let [category-selector        (:subsections/category-selector category)
         subsection-facet-options (->> (get-in app-state keypaths/v2-facets)
