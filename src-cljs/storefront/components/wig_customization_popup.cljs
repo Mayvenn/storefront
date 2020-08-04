@@ -52,7 +52,7 @@
       [:div.stroke-s-color
        (svg/straight-line {:width  "1px"
                            :height "42px"})]
-      (map-indexed (partial shop-step (str #_layer-id "-mb-tb-"))
+      (map-indexed (partial shop-step "-mb-tb-")
                    bullets)]
 
      (ui/button-large-primary {:class              "col-10"

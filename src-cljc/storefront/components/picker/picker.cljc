@@ -336,7 +336,7 @@
   (css-transitions/transition-group
    {:classNames    "picker"
     :key           "picker"
-    :in            (boolean enabled?) #_ (boolean (not-empty content))
+    :in            (boolean enabled?)
     :unmountOnExit true
     :timeout       1000}
    (component/html (or content [:div]))))
