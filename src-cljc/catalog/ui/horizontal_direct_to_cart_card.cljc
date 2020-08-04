@@ -28,20 +28,23 @@
         card-disabled?    (and (experiments/stylist-mismatch? data)
                                servicing-stylist
                                (not (:stylist-provides-service product)))]
-    (cond-> {:card-image/src                                     (str (:url image) "-/format/auto/" (:filename image))
-             :card/type                                          :horizontal-direct-to-cart-card
-             :card-image/alt                                     (:alt image)
-             :react/key                                          (str "product-" product-slug)
-             :horizontal-direct-to-cart-card-title/id            (some->> product-slug (str "product-card-title-"))
-             :horizontal-direct-to-cart-card/primary             (:copy/title product)
-             :horizontal-direct-to-cart-card/secondary           (list
-                                                                  ^:ignore-interpret-warning [:span.strike (mf/as-money (:sku/price service-sku))]
-                                                                  ^:ignore-interpret-warning [:span.ml2.s-color "FREE"])
-             :horizontal-direct-to-cart-card/tertiary            (:promo.mayvenn-install/requirement-copy product)
-             :horizontal-direct-to-cart-card/card-target         [events/navigate-product-details
-                                                                  {:catalog/product-id (:catalog/product-id product)
-                                                                   :page/slug          product-slug
-                                                                   :query-params       {:SKU (:catalog/sku-id service-sku)}}]
+    (cond-> {:card-image/src                                      (str (:url image) "-/format/auto/" (:filename image))
+             :card/type                                           :horizontal-direct-to-cart-card
+             :sort/value                                          [card-disabled?
+                                                                   (if (contains? (:service/category service-sku) "install") 1 2)
+                                                                   (:sku/price service-sku)]
+             :card-image/alt                                      (:alt image)
+             :react/key                                           (str "product-" product-slug)
+             :horizontal-direct-to-cart-card-title/id             (some->> product-slug (str "product-card-title-"))
+             :horizontal-direct-to-cart-card/primary              (:copy/title product)
+             :horizontal-direct-to-cart-card/secondary            (list
+                                                                   ^:ignore-interpret-warning [:span.strike (mf/as-money (:sku/price service-sku))]
+                                                                   ^:ignore-interpret-warning [:span.ml2.s-color "FREE"])
+             :horizontal-direct-to-cart-card/tertiary             (:promo.mayvenn-install/requirement-copy product)
+             :horizontal-direct-to-cart-card/card-target          [events/navigate-product-details
+                                                                   {:catalog/product-id (:catalog/product-id product)
+                                                                    :page/slug          product-slug
+                                                                    :query-params       {:SKU (:catalog/sku-id service-sku)}}]
              :horizontal-direct-to-cart-card/disabled-background? false}
 
       (and (not card-disabled?)

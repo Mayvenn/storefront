@@ -12,23 +12,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]))
 
-(defn product->card
-  [data {:as                          product
-         catalog-department           :catalog/department
-         mayvenn-install-discountable :promo.mayvenn-install/discountable}]
-  (cond
-    (and (contains? catalog-department "service")
-         (contains? mayvenn-install-discountable true)) ;; Free services
-    (horizontal-direct-to-cart-card/query data product)
-
-    (and (contains? catalog-department "service")
-         (contains? mayvenn-install-discountable false))
-    (vertical-direct-to-cart-card/query data product)
-
-    :else
-    (product-card/query data product)))
-
-(defn subsections-query
+(defn ^:private subsections-query
   [facets
    {:keys [subsections/category-selector subsections]}
    products-matching-criteria
@@ -53,7 +37,7 @@
                        {:title/primary (:option/name (get subsection-facet-options subsection-key))
                         :products       products
                         :subsection-key subsection-key}))
-                (map #(update % :products (partial map (partial product->card data))))
+                (map #(update % :products (partial map (partial product-card/query data))))
                 (map #(clojure.set/rename-keys % {:products :product-cards}))
                 (map #(update % :product-cards (partial sort-by :sort/value)))))
          (sort-by (comp subsection-order :subsection-key)))))
@@ -67,14 +51,6 @@
     [:a.p-color (utils/fake-href events/control-category-option-clear) "Clear all filters"]
     " to see more hair."]])
 
-(defn card->component
-  [{:as       card
-    card-type :card/type}]
-  (case card-type
-    :product                        (product-card/organism card)
-    :vertical-direct-to-cart-card   (vertical-direct-to-cart-card/organism card)
-    :horizontal-direct-to-cart-card (horizontal-direct-to-cart-card/organism card)))
-
 (c/defcomponent ^:private product-list-subsection-component
   [{:keys [product-cards subsection-key] primary-title :title/primary} _ {:keys [id]}]
   [:div.mb6
@@ -83,7 +59,7 @@
      [:div.canela.title-2.center.mb2 primary-title])
    [:div.flex.flex-wrap
     (for [card product-cards]
-      ^:inline (card->component card))]])
+      ^:inline (product-card/organism card))]])
 
 (c/defcomponent organism
   [{:keys [id subsections title no-product-cards? loading-products?]} _ _]
@@ -100,7 +76,7 @@
                                           (c/component-id (str "subsection-" subsection-key))))
                                subsections))]))
 
-(defn query
+(defn query ; TODO this should not take app-state
   [app-state category products-matching-filter-selections]
   (let [facets            (maps/index-by :facet/slug (get-in app-state keypaths/v2-facets))
         subsections       (subsections-query

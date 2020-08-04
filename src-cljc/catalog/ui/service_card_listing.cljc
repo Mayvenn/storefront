@@ -12,7 +12,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [stylist-matching.search.accessors.filters :as stylist-filters]))
+            [stylist-matching.search.accessors.filters :as stylist-filters]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn service->card
   [data
@@ -66,32 +67,33 @@
                               (c/component-id (str "subsection-" subsection-key))))
                    subsections))]))
 
-(defn query
+(defn query ; TODO this should not take app-state
   [app-state category matching-services]
-  (let [category-selector (:subsections/category-selector category)
+  (let [category-selector        (:subsections/category-selector category)
         subsection-facet-options (->> (get-in app-state keypaths/v2-facets)
                                       (filter (comp #{category-selector} :facet/slug))
                                       first
                                       :facet/options
                                       (maps/index-by :option/slug))
-        servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
-        subsections       (->> matching-services
-                               (map #(assoc %
-                                            :stylist-provides-service
-                                            (stylist-filters/stylist-provides-service servicing-stylist %)))
-                               (group-by (if category-selector
-                                           (comp first category-selector)
-                                           (constantly :no-subsections)))
-                               (maps/map-values #(sort-by (juxt (comp not :stylist-provides-service) :sort/value) %))
-                               (map (fn [[subsection-key services]]
-                                      (let [facet (get subsection-facet-options subsection-key)]
-                                        {:title/primary  (:option/name facet)
-                                         :subsection-key subsection-key
-                                         :service-cards  (map #(service->card app-state %) services)}))))
-        no-cards? (empty? subsections)]
+        servicing-stylist        (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        subsections              (->> matching-services
+                                      (map #(assoc %
+                                                   :stylist-provides-service
+                                                   (stylist-filters/stylist-provides-service servicing-stylist %)))
+                                      (group-by (if category-selector
+                                                  (comp first category-selector)
+                                                  (constantly :no-subsections)))
+                                      (map (fn [[subsection-key services]]
+                                             (let [facet (get subsection-facet-options subsection-key)]
+                                               {:title/primary  (:option/name facet)
+                                                :subsection-key subsection-key
+                                                :service-cards  (->> services
+                                                                     (map #(service->card app-state %))
+                                                                     (sort-by :sort/value))}))))
+        no-cards?                (empty? subsections)]
     {:id                "service-card-listing"
      :subsections       subsections
-     :no-cards? no-cards?
+     :no-cards?         no-cards?
      :loading-products? (and no-cards?
                              (utils/requesting? app-state (conj request-keys/get-products
                                                                 (skuers/essentials category))))}))

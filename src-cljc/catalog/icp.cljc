@@ -241,8 +241,8 @@
            drill-category-list
            footer
            header
-           new-service-card-listing
-           card-listing
+           product-card-listing
+           service-card-listing
            service-category-page?
            stylist-mismatch?] :as queried-data} _ _]
   [:div
@@ -264,8 +264,8 @@
                             :height "42px"})]
        [:div.mb10.mt8
         (component/build category-filters/organism category-filters {})])
-     (component/build service-card-listing/organism new-service-card-listing {})
-     (component/build product-card-listing/organism card-listing {})]
+     (component/build service-card-listing/organism service-card-listing {})
+     (component/build product-card-listing/organism product-card-listing {})]
     (when content-box
       [:div green-divider-atom
        (component/build content-box-organism content-box)])
@@ -320,13 +320,11 @@
                                                          loaded-category-products
                                                          category-products-matching-criteria
                                                          selections)
-         ;; TODO this should just be product-card-listing but it pulls double duty outside experiment
-         :card-listing  (when-not (and service-category-page? stylist-mismatch?)
-                                  (product-card-listing/query app-state
-                                                              interstitial-category
-                                                              category-products-matching-criteria))
-         ;; TODO get rid of "new-" when product-card-listing stops serving products
-         :new-service-card-listing   (when (and service-category-page? stylist-mismatch?)
+         :product-card-listing   (when-not service-category-page?
+                                    (product-card-listing/query app-state
+                                                                interstitial-category
+                                                                category-products-matching-criteria))
+         :service-card-listing   (when service-category-page?
                                    (service-card-listing/query app-state
                                                                interstitial-category
                                                                category-products-matching-criteria))

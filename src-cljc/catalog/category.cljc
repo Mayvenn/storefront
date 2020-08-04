@@ -32,7 +32,8 @@
   [{:keys [category-hero
            how-it-works
            category-filters
-           card-listing
+           service-card-listing
+           product-card-listing
            service-category-page?
            stylist-mismatch?] :as queried-data} _ _]
   [:div
@@ -43,9 +44,8 @@
     (when-let [title (:title category-filters)]
       [:div.canela.title-1.center.mt3.py4 title])
     (c/build category-filters/organism category-filters {})
-    (if (and service-category-page? stylist-mismatch?)
-      (c/build service-card-listing/organism card-listing {})
-      (c/build product-card-listing/organism card-listing {}))]
+    (c/build service-card-listing/organism service-card-listing {})
+    (c/build product-card-listing/organism product-card-listing {})]
    [:div.col-10.mx-auto.mt6
     (c/build how-it-works/organism queried-data)]])
 
@@ -85,9 +85,6 @@
                                                                  selections)
                                                                 loaded-category-products)
         service-category-page?              (contains? (:catalog/department current) "service")
-        card-listing-query                  (if (and service-category-page? stylist-mismatch?)
-                                              service-card-listing/query
-                                              product-card-listing/query)
         servicing-stylist                   (get-in app-state adventure.keypaths/adventure-servicing-stylist)]
     (c/build template
              (merge {:category-hero          (category-hero-query current)
@@ -97,9 +94,13 @@
                                                                      category-products-matching-criteria
                                                                      selections)
                      :how-it-works           current
-                     :card-listing           (card-listing-query app-state current category-products-matching-criteria)
+                     :service-card-listing   (when service-category-page?
+                                               (service-card-listing/query app-state current category-products-matching-criteria))
+                     :product-card-listing   (when-not service-category-page?
+                                               (product-card-listing/query app-state current category-products-matching-criteria))
                      :service-category-page? service-category-page?
                      :stylist-mismatch?      stylist-mismatch?}
+
                     (when (and service-category-page? servicing-stylist stylist-mismatch?)
                       {:stylist-bar/id             "category-page-stylist-bar"
                        :stylist-bar/primary        (:store-nickname servicing-stylist)
