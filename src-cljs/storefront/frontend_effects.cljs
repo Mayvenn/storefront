@@ -128,11 +128,9 @@
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})))
 
 (defmethod effects/perform-effects events/ensure-sku-ids
-  [_ _ {:keys [sku-ids service-sku-ids]} _ app-state]
+  [_ _ {:keys [sku-ids]} _ app-state]
   (let [ids-in-db               (keys (get-in app-state keypaths/v2-skus))
         missing-ids             (seq (set/difference (set sku-ids)
-                                                     (set ids-in-db)))
-        missing-service-sku-ids (seq (set/difference (set service-sku-ids)
                                                      (set ids-in-db)))
         api-cache               (get-in app-state keypaths/api-cache)
         handler                 (partial messages/handle-message
@@ -140,11 +138,7 @@
     (when missing-ids
       (api/get-products api-cache
                         {:selector/sku-ids missing-ids}
-                        handler))
-    (when missing-service-sku-ids
-      (api/get-skus api-cache
-                    {:catalog/sku-id missing-service-sku-ids}
-                    handler))))
+                        handler))))
 
 (defmethod effects/perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
@@ -665,13 +659,10 @@
                                                 :stylist-id)))]
     (if incomplete-order?
       (do
-        (let [{physical-line-items :spree
-               service-line-items  :service}
-              (->> (:shipments order)
-                   (mapcat :storefront/all-line-items)
-                   (group-by (comp keyword :source)))]
-          (messages/handle-message events/ensure-sku-ids {:sku-ids         (map :sku physical-line-items)
-                                                          :service-sku-ids (map :sku service-line-items)}))
+        (let [sku-ids (->> (:shipments order)
+                           (mapcat :storefront/all-line-items)
+                           (map :sku))]
+          (messages/handle-message events/ensure-sku-ids {:sku-ids sku-ids}))
 
         (when servicing-stylist-not-loaded?
           (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))

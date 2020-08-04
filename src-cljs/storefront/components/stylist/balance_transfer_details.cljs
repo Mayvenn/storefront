@@ -304,15 +304,10 @@
 (defmethod effects/perform-effects events/api-success-stylist-balance-transfer-details
   [_ _ {:keys [data]} _ _]
   (messages/handle-message events/ensure-sku-ids
-                           {:sku-ids         (->> (:order data)
-                                                  orders/first-commissioned-shipment
-                                                  orders/product-items-for-shipment
-                                                  (map :sku))
-                            :service-sku-ids (->> (:order data)
-                                                  orders/first-commissioned-shipment
-                                                  :line-items
-                                                  (filter accessors.line-items/service?)
-                                                  (map :sku))}))
+                           {:sku-ids (->> (:order data)
+                                          orders/first-commissioned-shipment
+                                          :line-items
+                                          (map :sku))}))
 
 (defmethod transitions/transition-state events/api-success-stylist-balance-transfer-details [_ _ balance-transfer app-state]
   (-> app-state
