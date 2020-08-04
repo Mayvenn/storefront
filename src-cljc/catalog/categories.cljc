@@ -864,7 +864,7 @@
     :page.meta/description              (copy "Shop our selection of salon services for the ultimate hair install or maintenance experience."
                                               "Check out our menu to learn about these premium offerings.")
     :copy/description                   "Just looking for a salon appointment? Choose from our list of services and find a Certified Stylist in your area."
-    :subcategory/image-id               "09c9d73e-ea5c-4482-9caf-94d3e54444bc"
+    :subcategory/image-id               "ccd19d57-d6e9-42a3-bf11-bfe077f15eab"
     :seo/sitemap                        true
 
     :how-it-works/title-primary   "Your hair deserves a Mayvenn–Certified Stylist."
