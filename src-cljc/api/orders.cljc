@@ -222,7 +222,7 @@
         wig-success
         "You're all set! Bleaching knots, tinting & cutting lace and hairline customization included."
         sew-in-success
-        "You’re all set! Shampoo, braiding and basic styling included."
+        "Add more bundles for a fuller look"
         install-navigation-message [e/navigate-category {:catalog/category-id "23"
                                                          :page/slug           "mayvenn-install"}]
         wig-navigation-message     [e/navigate-category {:catalog/category-id "13"
@@ -232,22 +232,27 @@
      {:rules                    [["bundle" ?bundles 3]] ;; [word essentials cart-quantity]
       :failure-navigation-event install-navigation-message
 
-      :success sew-in-success}
+      :add-more? true
+      :success   sew-in-success}
      "SRV-CBI-000"
      {:rules                    [["bundle" ?bundles 2] ["closure" ?closures 1]]
       :failure-navigation-event install-navigation-message
+      :add-more?                true
       :success                  sew-in-success}
      "SRV-FBI-000"
      {:rules                    [["bundle" ?bundles 2] ["frontal" ?frontals 1]]
       :failure-navigation-event install-navigation-message
+      :add-more?                true
       :success                  sew-in-success}
      "SRV-3BI-000"
      {:rules                    [["bundle" ?bundles 2] ["360 frontal" ?360-frontals 1]]
       :failure-navigation-event install-navigation-message
+      :add-more?                true
       :success                  sew-in-success}
      "SRV-WGC-000"
      {:rules                    [["Virgin Lace Front or a Virgin 360 Wig" ?wigs 1]]
       :failure-navigation-event wig-navigation-message
+      :add-more?                false
       :success                  wig-success}}))
 
 (defn free-mayvenn-service
@@ -269,6 +274,7 @@
                                                                      (comp :promo.mayvenn-install/discountable :variant-attrs)
                                                                      (orders/service-line-items order)))
         {rules-for-service        :rules
+         add-more?                :add-more?
          failure-navigation-event :failure-navigation-event} (get rules (:sku service-line-item))
         physical-items                                       (->> order :shipments (mapcat :line-items)
                                                                   (filter (fn [item]
@@ -278,22 +284,24 @@
                                                                           (dissoc item :variant-attrs)
                                                                           (:variant-attrs item)))))
         failed-rules                                         (keep (fn [[word essentials rule-quantity]]
-                                                                       (let [cart-quantity    (->> physical-items
-                                                                                                   (match-all
-                                                                                                    {:selector/strict? true}
-                                                                                                    essentials)
-                                                                                                   (map :quantity)
-                                                                                                   (apply +))
-                                                                             missing-quantity (- rule-quantity cart-quantity)]
-                                                                         (when (pos? missing-quantity)
-                                                                           {:word             word
-                                                                            :cart-quantity    cart-quantity
-                                                                            :missing-quantity missing-quantity
-                                                                            :essentials       essentials})))
-                                                                     rules-for-service)]
+                                                                     (let [cart-quantity    (->> physical-items
+                                                                                                 (match-all
+                                                                                                  {:selector/strict? true}
+                                                                                                  essentials)
+                                                                                                 (map :quantity)
+                                                                                                 (apply +))
+                                                                           missing-quantity (- rule-quantity cart-quantity)]
+                                                                       (when (pos? missing-quantity)
+                                                                         {:word             word
+                                                                          :cart-quantity    cart-quantity
+                                                                          :missing-quantity missing-quantity
+                                                                          :essentials       essentials})))
+                                                                   rules-for-service)]
     (when (seq service-line-item)
       #:free-mayvenn-service
-      {:failed-criteria-count    (->> [(seq service-line-item)
+      {;; Some sort of key indicating you can add more after completion
+       :add-more?                add-more?
+       :failed-criteria-count    (->> [(seq service-line-item)
                                        (empty? failed-rules)
                                        (seq servicing-stylist)]
                                       (remove boolean)

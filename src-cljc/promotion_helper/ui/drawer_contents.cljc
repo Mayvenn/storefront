@@ -69,6 +69,15 @@
              :data-test id)
       label))])
 
+(defn drawer-contents-condition-secondary-action-molecule
+  [{:promotion-helper.ui.drawer-contents.condition.secondary.action/keys [id label target]}]
+  [:div
+   (when id
+     (ui/button-small-secondary
+      (assoc (apply utils/route-to target)
+             :data-test id)
+      label))])
+
 (defcomponent drawer-contents-condition-organism
   [data _ _]
   [:div.black.bg-white.my1.p3.flex.items-center
@@ -76,7 +85,8 @@
     (drawer-contents-condition-progress-molecule data)
     (drawer-contents-condition-title-molecule data)]
    [:div.col-2
-    (drawer-contents-condition-action-molecule data)]])
+    (drawer-contents-condition-action-molecule data)
+    (drawer-contents-condition-secondary-action-molecule data)]])
 
 (defn drawer-contents-footer
   [{:promotion-helper.ui.drawer-contents.footer/keys [id primary cta-label cta-target]}]

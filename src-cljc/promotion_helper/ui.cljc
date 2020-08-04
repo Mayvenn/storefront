@@ -37,6 +37,7 @@
                                 hair-missing
                                 hair-missing-quantity
                                 failure-navigation-event
+                                add-more?
                                 stylist]}]
   (merge
    {:drawer-face
@@ -64,29 +65,37 @@
           :promotion-helper.ui.drawer-contents.condition.progress/id          "service"
           :promotion-helper.ui.drawer-contents.condition.progress/remaining   0}
 
-         (if (seq hair-missing)
-           (let [missing-description (->> hair-missing
-                                          (map (fn [{:keys [word missing-quantity]}]
-                                                 (apply str (if (= 1 missing-quantity)
-                                                              ["a " word]
-                                                              [missing-quantity " " word "s"])))))]
+         (cond->
              {:promotion-helper.ui.drawer-contents.condition.title/id           "hair"
-              :promotion-helper.ui.drawer-contents.condition.title/primary      "Add Your Hair"
-              :promotion-helper.ui.drawer-contents.condition.title/secondary    (str "Add " (string/join " and " missing-description))
-              :promotion-helper.ui.drawer-contents.condition.progress/completed (- hair-success-quantity hair-missing-quantity)
               :promotion-helper.ui.drawer-contents.condition.progress/id        "hair"
-              :promotion-helper.ui.drawer-contents.condition.progress/remaining hair-missing-quantity
-              :promotion-helper.ui.drawer-contents.condition.action/id          "condition-add-hair-button" ;; COREY
-              :promotion-helper.ui.drawer-contents.condition.action/label       "add"
-              :promotion-helper.ui.drawer-contents.condition.action/target
-              [behavior/followed {:target    failure-navigation-event
-                                  :condition "add-hair"}]})
-           {:promotion-helper.ui.drawer-contents.condition.title/id             "hair"
-            :promotion-helper.ui.drawer-contents.condition.title/primary-struck "Add Your Hair"
-            :promotion-helper.ui.drawer-contents.condition.title/secondary      hair-success
-            :promotion-helper.ui.drawer-contents.condition.progress/completed   hair-success-quantity
-            :promotion-helper.ui.drawer-contents.condition.progress/id          "hair"
-            :promotion-helper.ui.drawer-contents.condition.progress/remaining   0})
+              :promotion-helper.ui.drawer-contents.condition.progress/remaining hair-missing-quantity}
+
+
+           (seq hair-missing)
+           (merge (let [missing-description (->> hair-missing
+                                                 (map (fn [{:keys [word missing-quantity]}]
+                                                        (apply str (if (= 1 missing-quantity)
+                                                                     ["a " word]
+                                                                     [missing-quantity " " word "s"])))))]
+                    {:promotion-helper.ui.drawer-contents.condition.title/primary      "Add Your Hair"
+                     :promotion-helper.ui.drawer-contents.condition.title/secondary    (str "Add " (string/join " and " missing-description))
+                     :promotion-helper.ui.drawer-contents.condition.progress/completed (- hair-success-quantity hair-missing-quantity)
+                     :promotion-helper.ui.drawer-contents.condition.action/id          "condition-add-hair-button" ;; COREY
+                     :promotion-helper.ui.drawer-contents.condition.action/label       "add"
+                     :promotion-helper.ui.drawer-contents.condition.action/target      [behavior/followed {:target    failure-navigation-event
+                                                                                                           :condition "add-hair"}]}))
+
+           (not (seq hair-missing))
+           (merge {:promotion-helper.ui.drawer-contents.condition.title/primary-struck "Add Your Hair"
+                   :promotion-helper.ui.drawer-contents.condition.title/secondary      hair-success
+                   :promotion-helper.ui.drawer-contents.condition.progress/completed   hair-success-quantity})
+
+           (and (not (seq hair-missing))
+                add-more?)
+           (merge {:promotion-helper.ui.drawer-contents.condition.secondary.action/id     "condition-add-hair-button" ;; COREY
+                   :promotion-helper.ui.drawer-contents.condition.secondary.action/label  "add"
+                   :promotion-helper.ui.drawer-contents.condition.secondary.action/target [behavior/followed {:target    failure-navigation-event
+                                                                                                              :condition "add-hair"}]}))
          (if stylist
            {:promotion-helper.ui.drawer-contents.condition.title/id             "stylist"
             :promotion-helper.ui.drawer-contents.condition.title/primary-struck "Add Your Stylist"
