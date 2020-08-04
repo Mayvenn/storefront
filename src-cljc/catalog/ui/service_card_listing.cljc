@@ -44,10 +44,10 @@
 
 (c/defcomponent ^:private service-list-subsection-component
   [{:keys [service-cards subsection-key] primary-title :title/primary} _ {:keys [id]}]
-  [:div
+  [:div.mb7
    {:id id :data-test id}
    (when primary-title
-     [:div.canela.title-2.center.mt8.mb2 primary-title])
+     [:div.canela.title-2.center.mb2 primary-title])
    [:div.flex.flex-wrap
     (for [card service-cards]
       ^:inline (card->component card))]])
