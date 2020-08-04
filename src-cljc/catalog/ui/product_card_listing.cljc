@@ -86,18 +86,19 @@
       ^:inline (card->component card))]])
 
 (c/defcomponent organism
-  [{:keys [subsections title no-product-cards? loading-products?]} _ _]
-  [:div.px2.pb4
-   (cond
-     loading-products? [:div.col-12.center (ui/large-spinner {:style {:height "4em"}})]
+  [{:keys [id subsections title no-product-cards? loading-products?]} _ _]
+  (when id
+    [:div.px2.pb4
+     (cond
+       loading-products? [:div.col-12.center (ui/large-spinner {:style {:height "4em"}})]
 
-     no-product-cards? (c/build product-cards-empty-state {} {})
+       no-product-cards? (c/build product-cards-empty-state {} {})
 
-     :else             (mapv (fn build [{:as subsection :keys [subsection-key]}]
-                               (c/build product-list-subsection-component
-                                        subsection
-                                        (c/component-id (str "subsection-" subsection-key))))
-                             subsections))])
+       :else             (mapv (fn build [{:as subsection :keys [subsection-key]}]
+                                 (c/build product-list-subsection-component
+                                          subsection
+                                          (c/component-id (str "subsection-" subsection-key))))
+                               subsections))]))
 
 (defn query
   [app-state category products-matching-filter-selections]
@@ -108,7 +109,8 @@
                                     products-matching-filter-selections
                                     app-state)
         no-product-cards? (empty? (mapcat :product-cards subsections))]
-    {:subsections       subsections
+    {:id                "product-card-listing"
+     :subsections       subsections
      :no-product-cards? no-product-cards?
      :loading-products? (and no-product-cards?
                              (utils/requesting? app-state (conj request-keys/get-products

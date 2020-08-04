@@ -14,18 +14,18 @@
             [storefront.request-keys :as request-keys]
             [stylist-matching.search.accessors.filters :as stylist-filters]))
 
-(defn product->card
+(defn service->card
   [data
-   {:as                          product
+   {:as                          service
     mayvenn-install-discountable :promo.mayvenn-install/discountable}]
   (cond
     (contains? mayvenn-install-discountable true) ;; Free services
-    (horizontal-direct-to-cart-card/query data product)
+    (horizontal-direct-to-cart-card/query data service)
 
     :else
-    (vertical-direct-to-cart-card/query data product)))
+    (vertical-direct-to-cart-card/query data service)))
 
-(c/defcomponent ^:private product-cards-empty-state
+(c/defcomponent ^:private service-cards-empty-state
   [_ _ _]
   [:div.col-12.my8.py4.center
    [:p.h1.py4 "😞"]
@@ -42,34 +42,40 @@
     :horizontal-direct-to-cart-card (horizontal-direct-to-cart-card/organism card)))
 
 (c/defcomponent ^:private service-list-subsection-component
-  [{:keys [product-cards subsection-key] primary-title :title/primary} _ {:keys [id]}]
+  [{:keys [service-cards subsection-key] primary-title :title/primary} _ {:keys [id]}]
   [:div
    {:id id :data-test id}
    (when primary-title
      [:div.canela.title-2.center.mt8.mb2 primary-title])
    [:div.flex.flex-wrap
-    (for [card product-cards]
+    (for [card service-cards]
       ^:inline (card->component card))]])
 
 (c/defcomponent organism
-  [{:keys [subsections title no-product-cards? loading-products?]} _ _]
-  [:div.px2.pb4
-   (cond
-     loading-products? [:div.col-12.my8.py4.center (ui/large-spinner {:style {:height "4em"}})]
+  [{:keys [id subsections title no-cards? loading-products?]} _ _]
+  (when id
+    [:div.px2.pb4
+     (cond
+       loading-products? [:div.col-12.my8.py4.center (ui/large-spinner {:style {:height "4em"}})]
 
-     no-product-cards? (c/build product-cards-empty-state {} {})
+       no-cards? (c/build service-cards-empty-state {} {})
 
-     :else (mapv (fn build [{:as subsection :keys [subsection-key]}]
-                   (c/build service-list-subsection-component
-                            subsection
-                            (c/component-id (str "subsection-" subsection-key))))
-                 subsections))])
+       :else (mapv (fn build [{:as subsection :keys [subsection-key]}]
+                     (c/build service-list-subsection-component
+                              subsection
+                              (c/component-id (str "subsection-" subsection-key))))
+                   subsections))]))
 
 (defn query
-  [app-state category matching-products]
-  (let [servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
-        category-selector (:subsections/category-selector category)
-        subsections     (->> matching-products
+  [app-state category matching-services]
+  (let [category-selector (:subsections/category-selector category)
+        subsection-facet-options (->> (get-in app-state keypaths/v2-facets)
+                                      (filter (comp #{category-selector} :facet/slug))
+                                      first
+                                      :facet/options
+                                      (maps/index-by :option/slug))
+        servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        subsections       (->> matching-services
                                (map #(assoc %
                                             :stylist-provides-service
                                             (stylist-filters/stylist-provides-service servicing-stylist %)))
@@ -77,13 +83,15 @@
                                            (comp first category-selector)
                                            (constantly :no-subsections)))
                                (maps/map-values #(sort-by (juxt (comp not :stylist-provides-service) :sort/value) %))
-                               (map (fn [[subsection-key products]]
-                                      {:title/primary  "Title"
-                                       :subsection-key subsection-key
-                                       :product-cards  (map #(product->card app-state %) products)})))
-        no-product-cards? (empty? subsections)]
-    {:subsections       subsections
-     :no-product-cards? no-product-cards?
-     :loading-products? (and no-product-cards?
+                               (map (fn [[subsection-key services]]
+                                      (let [facet (get subsection-facet-options subsection-key)]
+                                        {:title/primary  (:option/name facet)
+                                         :subsection-key subsection-key
+                                         :service-cards  (map #(service->card app-state %) services)}))))
+        no-cards? (empty? subsections)]
+    {:id                "service-card-listing"
+     :subsections       subsections
+     :no-cards? no-cards?
+     :loading-products? (and no-cards?
                              (utils/requesting? app-state (conj request-keys/get-products
                                                                 (skuers/essentials category))))}))

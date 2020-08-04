@@ -35,6 +35,7 @@
              :vertical-direct-to-cart-card-title/id      (some->> product-slug (str "product-card-title-"))
              :vertical-direct-to-cart-card/primary       (:copy/title product)
              :vertical-direct-to-cart-card/secondary     (mf/as-money (:sku/price service-sku))
+             :vertical-direct-to-cart-card/price         (:sku/price service-sku)
              :vertical-direct-to-cart-card/card-target   [events/navigate-product-details
                                                           {:catalog/product-id (:catalog/product-id product)
                                                            :page/slug          product-slug
