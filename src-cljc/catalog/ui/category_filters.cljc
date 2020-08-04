@@ -115,14 +115,17 @@
    {:style {:top "-5px"}
     :class (if open-panel "z2" "z1")
     :data-test "category-filters-panel"}
-   (if open-panel
-     (let [panel (c/build filter-panel filter-panel-data)]
+   (let [tabs (c/build filter-tabs tabs nil)]
+     (if open-panel
+       (let [panel (c/build filter-panel filter-panel-data)]
+         [:div
+          [:div.hide-on-dt.px2.fixed.overlay.overflow-auto.bg-white
+           tabs panel]
+          [:div.hide-on-mb-tb
+           tabs panel]])
        [:div
-        [:div.hide-on-dt.px2.fixed.overlay.overflow-auto.bg-white
-         tabs panel]
-        [:div.hide-on-mb-tb
-         tabs panel]])
-     (c/build filter-tabs tabs nil))])
+        [:div.hide-on-dt tabs]
+        [:div.hide-on-mb-tb tabs]]))])
 
 (defn filter-option-query
   [{facet-slug :facet/slug}
