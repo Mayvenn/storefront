@@ -96,7 +96,51 @@
         _              (transit/write writer sanitized-data)]
     (generate-string (.toString out "UTF-8"))))
 
-(def js-files ["cljs_base.js" "main.js"])
+(def ^:private dashboard-events
+  #{events/navigate-stylist-dashboard-balance-transfer-details
+    events/navigate-stylist-dashboard-order-details
+    events/navigate-stylist-dashboard-cash-out-begin
+    events/navigate-stylist-dashboard-cash-out-pending
+    events/navigate-stylist-dashboard-cash-out-success
+    events/navigate-stylist-share-your-store
+    events/navigate-stylist-account-profile
+    events/navigate-stylist-account-portrait
+    events/navigate-stylist-account-password
+    events/navigate-stylist-account-payout
+    events/navigate-stylist-account-social
+    events/navigate-v2-stylist-dashboard-payments
+    events/navigate-v2-stylist-dashboard-orders
+    events/navigate-gallery-image-picker})
+
+(def ^:private checkout-events
+  #{events/navigate-checkout-returning-or-guest
+    events/navigate-checkout-sign-in
+    events/navigate-checkout-address
+    events/navigate-checkout-payment
+    events/navigate-checkout-confirmation
+    events/navigate-order-complete
+    events/navigate-need-match-order-complete
+    events/navigate-checkout-processing})
+
+(def ^:private catalog-events
+  #{events/navigate-shop-by-look
+    events/navigate-shop-by-look-details
+    events/navigate-category
+    events/navigate-product-details
+    events/navigate-shared-cart
+    events/navigate-cart})
+
+(def ^:private voucher-redeem
+  #{events/navigate-voucher-redeem events/navigate-voucher-redeemed})
+
+(defn js-modules [nav-event]
+  (concat ["cljs_base.js" "ui.js"]
+          (cond
+            (dashboard-events nav-event) ["dashboard.js"]
+            (checkout-events nav-event) ["catalog.js" "checkout.js"]
+            (catalog-events nav-event) ["catalog.js"]
+            (voucher-redeem nav-event) ["redeem.js"])
+          ["main.js"]))
 
 (defn layout
   [{:keys [storeback-config environment client-version]} data initial-content]
@@ -105,7 +149,8 @@
                      shop?)
         index?  (and (not= "acceptance" environment)
                      (or shop?
-                         (= events/navigate-home (get-in data keypaths/navigation-event))))]
+                         (= events/navigate-home (get-in data keypaths/navigation-event))))
+        js-files (js-modules (get-in data keypaths/navigation-event))]
     (html5 {:lang "en"}
            [:head
             [:meta {:name "fragment" :content "!"}]

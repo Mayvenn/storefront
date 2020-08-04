@@ -3,16 +3,22 @@
  ;; Don't forget to update config.clj > define-frontend-modules
  ;; Don't forget to update project.clj
  :modules          {:cljs-base     {:output-to "resources/public/js/out/cljs_base.js"}
-                    :main          {:output-to "resources/public/js/out/main.js"
-                                    :entries   #{storefront.core}}
-                    :dashboard     {:output-to "resources/public/js/out/dashboard.js"
-                                    :entries   #{stylist.dashboard}}
-                    :redeem        {:output-to "resources/public/js/out/redeem.js"
-                                    :entries   #{voucher.redeem}}
-                    :design-system {:output-to "resources/public/js/out/design-system.js"
-                                    :entries   #{design-system.home}}
-                    :catalog       {:output-to "resources/public/js/out/catalog.js"
-                                    :entries   #{catalog.core}}
+                    :ui            {:output-to "resources/public/js/out/ui.js"
+                                    :entries   #{storefront.components.ui}}
+                    :main          {:output-to  "resources/public/js/out/main.js"
+                                    :entries    #{storefront.core}}
+                    :dashboard     {:output-to  "resources/public/js/out/dashboard.js"
+                                    :entries    #{stylist.dashboard}
+                                    :depends-on #{:ui}}
+                    :redeem        {:output-to  "resources/public/js/out/redeem.js"
+                                    :entries    #{voucher.redeem}
+                                    :depends-on #{:ui}}
+                    :design-system {:output-to  "resources/public/js/out/design-system.js"
+                                    :entries    #{design-system.home}
+                                    :depends-on #{:ui}}
+                    :catalog       {:output-to  "resources/public/js/out/catalog.js"
+                                    :entries    #{catalog.core}
+                                    :depends-on #{:ui}}
                     :checkout      {:output-to  "resources/public/js/out/checkout.js"
                                     :entries    #{checkout.core}
                                     :depends-on #{:catalog}}}

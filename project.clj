@@ -80,19 +80,25 @@
                         ;; Don't forget to update config.clj > define-frontend-modules
                         ;; Don't forget to update dev.cljs.edn
                         :modules          {:cljs-base     {:output-to "target/release/js/out/cljs_base.js"}
-                                           :main          {:output-to "target/release/js/out/main.js"
-                                                           :entries   #{storefront.core}}
-                                           :dashboard     {:output-to "target/release/js/out/dashboard.js"
-                                                           :entries   #{stylist.dashboard}}
-                                           :redeem        {:output-to "target/release/js/out/redeem.js"
-                                                           :entries   #{voucher.redeem}}
-                                           :design-system {:output-to "target/release/js/out/design-system.js"
-                                                           :entries   #{design-system.home}}
-                                           :catalog       {:output-to "target/release/js/out/catalog.js"
-                                                           :entries   #{catalog.core}}
+                                           :ui            {:output-to "target/release/js/out/ui.js"
+                                                           :entries   #{storefront.components.ui}}
+                                           :main          {:output-to  "target/release/js/out/main.js"
+                                                           :entries    #{storefront.core}}
+                                           :dashboard     {:output-to  "target/release/js/out/dashboard.js"
+                                                           :entries    #{stylist.dashboard}
+                                                           :depends-on #{:ui}}
+                                           :redeem        {:output-to  "target/release/js/out/redeem.js"
+                                                           :entries    #{voucher.redeem}
+                                                           :depends-on #{:ui}}
+                                           :design-system {:output-to  "target/release/js/out/design-system.js"
+                                                           :entries    #{design-system.home}
+                                                           :depends-on #{:ui}}
+                                           :catalog       {:output-to  "target/release/js/out/catalog.js"
+                                                           :entries    #{catalog.core}
+                                                           :depends-on #{:ui}}
                                            :checkout      {:output-to  "target/release/js/out/checkout.js"
                                                            :entries    #{checkout.core}
-                                                           :depends-on #{:catalog}}}
+                                                           :depends-on #{:ui :catalog}}}
                         ;; rename-prefix: for a ~2% gzipped file size tax, prefixes all
                         ;; storefront's minified vars with m_ to avoid naming conflicts
                         ;; with minified code from google tag manager. Any
