@@ -96,13 +96,13 @@
          (merge (apply utils/route-to card-target)
                 {:data-test id})]
      [:div.col.col-12.col-6-on-tb-dt
-      {:key       react-key
-       :data-test react-key}
+      {:key       react-key}
       [:div.border.border-cool-gray.m1
        {:class (when disabled-background? "bg-cool-gray")}
        [:div.container-height.flex.justify-between
         [:a.col-5.inherit-color
-         non-cta-action
+         (merge {:data-test react-key}
+                non-cta-action)
          (ui/screen-aware card-image-molecule data)]
         [:div.px3.py2.col-7.flex.flex-column
          [:a.inherit-color.flex.flex-column.justify-between
