@@ -2,21 +2,21 @@
     font-family: 'Canela';
     src: url(/fonts/Canela-Light-Web.woff2) format('woff2');
     font-weight: 300;
-    unicode-range: U+0020-007F; /* The bare minimum for the English Language */
+    unicode-range: U+0020-007F, U+00C0, U+00E0; /* The bare minimum for the English Language */
     font-display: swap;
 }
 @font-face {
     font-family: 'Proxima Nova';
     src: url(/fonts/Proxima-Nova.woff2) format('woff2');
     font-weight: 400;
-    unicode-range: U+0020-007F; /* The bare minimum for the English Language */
+    unicode-range: U+0020-007F, U+00C0, U+00E0; /* The bare minimum for the English Language */
     font-display: swap;
 }
 @font-face {
     font-family: 'Proxima Nova';
     src: url(/fonts/Proxima-Nova-Black.woff2) format('woff2');
     font-weight: 900;
-    unicode-range: U+0020-007F; /* The bare minimum for the English Language */
+    unicode-range: U+0020-007F, U+00C0, U+00E0; /* The bare minimum for the English Language */
     font-display: swap;
 }
 
