@@ -79,20 +79,23 @@
                         :source-map       true
                         ;; Don't forget to update config.clj > define-frontend-modules
                         ;; Don't forget to update dev.cljs.edn
+                        ;; Don't forget to update views.clj > js-modules
+                        ;; Read: https://clojurescript.org/news/2017-07-10-code-splitting#_technical_description
+                        ;; To predict which modules will contain what code
                         :modules          {:cljs-base     {:output-to "target/release/js/out/cljs_base.js"}
-                                           :ui            {:output-to "target/release/js/out/ui.js"
-                                                           :entries   #{storefront.components.ui}}
-                                           :main          {:output-to  "target/release/js/out/main.js"
-                                                           :entries    #{storefront.core}}
+                                           :ui            {:output-to  "target/release/js/out/ui.js"
+                                                           :entries    #{storefront.components.ui}}
+                                           :main          {:output-to "target/release/js/out/main.js"
+                                                           :entries   #{storefront.core}}
                                            :dashboard     {:output-to  "target/release/js/out/dashboard.js"
                                                            :entries    #{stylist.dashboard}
-                                                           :depends-on #{:ui}}
+                                                           :depends-on #{:catalog :ui}}
                                            :redeem        {:output-to  "target/release/js/out/redeem.js"
                                                            :entries    #{voucher.redeem}
-                                                           :depends-on #{:ui}}
+                                                           :depends-on #{:catalog :ui}}
                                            :design-system {:output-to  "target/release/js/out/design-system.js"
                                                            :entries    #{design-system.home}
-                                                           :depends-on #{:ui}}
+                                                           :depends-on #{:ui :dashboard :main :redeem :catalog :checkout}}
                                            :catalog       {:output-to  "target/release/js/out/catalog.js"
                                                            :entries    #{catalog.core}
                                                            :depends-on #{:ui}}

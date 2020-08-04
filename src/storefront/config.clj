@@ -23,6 +23,7 @@
             (keyword (string/replace (name kw) #"-" "_")))]
     (maps/map-keys snake->underscore
                    {:cljs-base     [(assets/path "/js/out/cljs_base.js")]
+                    :ui            [(assets/path "/js/out/ui.js")]
                     :main          [(assets/path "/js/out/main.js")]
                     :dashboard     [(assets/path "/js/out/dashboard.js")]
                     :redeem        [(assets/path "/js/out/redeem.js")]

@@ -2,6 +2,9 @@
  :output-dir       "resources/public/js/out"
  ;; Don't forget to update config.clj > define-frontend-modules
  ;; Don't forget to update project.clj
+ ;; Don't forget to update views.clj > js-modules
+ ;; Read: https://clojurescript.org/news/2017-07-10-code-splitting#_technical_description
+ ;; To predict which modules will contain what code
  :modules          {:cljs-base     {:output-to "resources/public/js/out/cljs_base.js"}
                     :ui            {:output-to "resources/public/js/out/ui.js"
                                     :entries   #{storefront.components.ui}}
@@ -9,19 +12,19 @@
                                     :entries    #{storefront.core}}
                     :dashboard     {:output-to  "resources/public/js/out/dashboard.js"
                                     :entries    #{stylist.dashboard}
-                                    :depends-on #{:ui}}
+                                    :depends-on #{:catalog :ui}}
                     :redeem        {:output-to  "resources/public/js/out/redeem.js"
                                     :entries    #{voucher.redeem}
-                                    :depends-on #{:ui}}
+                                    :depends-on #{:catalog :ui}}
                     :design-system {:output-to  "resources/public/js/out/design-system.js"
                                     :entries    #{design-system.home}
-                                    :depends-on #{:ui}}
+                                    :depends-on #{:ui :dashboard :main :redeem :catalog :checkout}}
                     :catalog       {:output-to  "resources/public/js/out/catalog.js"
                                     :entries    #{catalog.core}
                                     :depends-on #{:ui}}
                     :checkout      {:output-to  "resources/public/js/out/checkout.js"
                                     :entries    #{checkout.core}
-                                    :depends-on #{:catalog}}}
+                                    :depends-on #{:ui :catalog}}}
  :optimizations    :none ;; see https://github.com/bhauman/lein-figwheel/issues/592
  :pretty-print     true
  :infer-externs    false

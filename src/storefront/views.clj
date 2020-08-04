@@ -134,13 +134,17 @@
   #{events/navigate-voucher-redeem events/navigate-voucher-redeemed})
 
 (defn js-modules [nav-event]
-  (concat ["cljs_base.js" "ui.js"]
-          (cond
-            (dashboard-events nav-event) ["dashboard.js"]
-            (checkout-events nav-event) ["catalog.js" "checkout.js"]
-            (catalog-events nav-event) ["catalog.js"]
-            (voucher-redeem nav-event) ["redeem.js"])
-          ["main.js"]))
+  (let [files (mapcat (config/frontend-modules)
+                      (concat [:cljs_base]
+                              (cond
+                                (dashboard-events nav-event) [:ui :dashboard]
+                                (checkout-events nav-event) [:ui :catalog :checkout]
+                                (catalog-events nav-event) [:ui :catalog]
+                                (voucher-redeem nav-event) [:ui :redeem])
+                              [:main]))]
+    (assert (every? (complement nil?) files)
+            (str "Incorrectly wired module to load: " (pr-str files)))
+    files))
 
 (defn layout
   [{:keys [storeback-config environment client-version]} data initial-content]
@@ -204,7 +208,7 @@
 
             (when-not (config/development? environment)
               (for [n js-files]
-                [:link {:rel "preload" :as "script" :href (assets/path (str "/js/out/" n))}]))
+                [:link {:rel "preload" :as "script" :href n}]))
 
             [:link {:rel "preload" :as "font" :href (assets/path "/fonts/Canela-Light-Web.woff2") :crossorigin "anonymous"}]
             [:link {:rel "preload" :as "font" :href (assets/path "/fonts/Proxima-Nova.woff2") :crossorigin "anonymous"}]
@@ -240,7 +244,7 @@
 
             (when-not (config/development? environment)
               (for [n js-files]
-                [:script {:src   (assets/path (str "/js/out/" n))
+                [:script {:src n
                           :defer true}]))
 
           ;;;;;;;;; "Third party" libraries
@@ -283,7 +287,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
               ;; additionally, we want developers to see the server side render, so we don't want
               ;; to put this tag in <head> and be synchronous
               (for [n js-files]
-                [:script {:src (str "/js/out/" n)}]))])))
+                [:script {:src n}]))])))
 
 (defn index [render-ctx data]
   (layout render-ctx data spinner-content))
