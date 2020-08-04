@@ -100,7 +100,7 @@
        {:class (when disabled-background? "bg-cool-gray")}
        [:a.inherit-color.mb2 (merge
                               {:data-test react-key}
-                              non-cta-action )
+                              non-cta-action)
         (ui/screen-aware card-image-molecule data)]
        [:a.inherit-color non-cta-action primary]
        [:a.inherit-color non-cta-action secondary]
