@@ -96,12 +96,12 @@
    :services-section.secondary-cta/target [e/navigate-adventure-match-stylist]})
 
 (def a-la-carte-query
-  {:services-section.title/primary        "À la carte service" ;; note there is a non breaking space here
+  {:services-section.title/primary        "À la carte Services"
    :services-section.title/secondary      "No hair purchase needed! Now you can book à la carte salon services with your favorite Mayvenn Stylists!"
    :services-section.image/ucare-id       "8f14c17b-ffef-4178-8915-640573a8bf3a"
    :services-section/orientation          "image-first"
    :services-section.cta/id               "browse-services-section"
-   :services-section.cta/value            "Browse À la carte services"
+   :services-section.cta/value            "Browse À la carte Services"
    :services-section.cta/target           [e/navigate-category {:page/slug           "salon-services"
                                                                 :catalog/category-id "30"}]
    :services-section.secondary-cta/id     "browse-stylists"

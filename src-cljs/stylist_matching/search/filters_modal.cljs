@@ -49,7 +49,7 @@
             (mapv (juxt :sku/name :catalog/sku-id (constantly 0)))
             (mapv (partial specialty->filter selected-filters)))}
       {:stylist-search-filter-section/id    "other-a-la-carte-services"
-       :stylist-search-filter-section/title "À la carte services"
+       :stylist-search-filter-section/title "À la carte Services"
        :stylist-search-filter-section/filters
        (->> a-la-carte-services
             (mapv (juxt :sku/name :catalog/sku-id :sku/price))

@@ -854,10 +854,10 @@
     :page/icp?                          false
     :page/shop-only?                    true
     :category/new?                      true
-    :flyout-menu/title                  "À la carte services"
+    :flyout-menu/title                  "À la carte Services"
     :footer/order                       1
-    :footer/title                       "À la carte services"
-    :copy/title                         "À la carte services"
+    :footer/title                       "À la carte Services"
+    :copy/title                         "À la carte Services"
     :copy/icp-action-label              "Learn More"
     :page/slug                          "salon-services"
     :page/title                         "Hair Salon Services Menu | Mayvenn"
