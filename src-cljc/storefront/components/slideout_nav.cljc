@@ -66,10 +66,10 @@
   (component/html
    (when (-> signed-in ::auth/at-all)
      [:div.my3.flex.flex-wrap
-      (when false #_(pos? store-credit)
-            [:div.mr4.mb2
-             [:div.title-3.proxima.shout "Credit"]
-             [:div.content-2.proxima (as-money store-credit)]])
+      (when (pos? store-credit)
+        [:div.mr4.mb2
+         [:div.title-3.proxima.shout "Credit"]
+         [:div.content-2.proxima (as-money store-credit)]])
       [:div
        [:div.title-3.proxima.shout "Signed in with"]
        [:a.inherit-color.content-2.proxima
