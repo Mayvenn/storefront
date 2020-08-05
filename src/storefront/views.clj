@@ -140,7 +140,7 @@
                                 (dashboard-events nav-event) [:dashboard]
                                 (checkout-events nav-event) [:catalog :checkout]
                                 (catalog-events nav-event) [:catalog]
-                                (voucher-redeem nav-event) [:redeem])
+                                (voucher-redeem nav-event) [:catalog :redeem])
                               [:main]))]
     (assert (every? (complement nil?) files)
             (str "Incorrectly wired module to load: " (pr-str files)))
