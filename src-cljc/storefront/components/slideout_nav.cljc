@@ -174,7 +174,7 @@
                                      :catalog/category-id "30"})
        :data-test   "menu-shop-a-la-carte-services"
        :new-content "NEW"
-       :content     [[:span.medium "À la carte service"]]}])
+       :content     [[:span.medium "À la carte services"]]}])
 
    (when show-freeinstall-link?
      [{:link-attrs (utils/route-to events/navigate-adventure-match-stylist)
