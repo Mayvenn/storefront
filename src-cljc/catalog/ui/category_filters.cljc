@@ -59,8 +59,9 @@
      (c/html
       (if (empty? elements)
         [:div]
-        [:div.bg-white
-         (merge {:ref (c/use-ref this "filter-tabs")}
+        [:div.bg-white.px3.py2
+         (merge {:ref (c/use-ref this "filter-tabs")
+                 :style {:margin-top "-5px"}}
                 (when (and (not open?) stuck?)
                   {:class "border-black border-bottom top-lit"}))
          [:div
@@ -87,7 +88,7 @@
               id
               target
               label]} options]
-         [:div.py1.mr4.col-3-on-dt
+         [:div.mr4.col-3-on-dt
           {:key       id
            :data-test id
            :disabled  disabled?}
@@ -109,7 +110,7 @@
 
 (c/defcomponent organism
   [{:keys [title open-panel tabs filter-panel-data]} _ _]
-  [:div.px3.bg-white.sticky
+  [:div.bg-white.sticky
    ;; The -5px prevents a sliver of the background from being visible above the filters
    ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
    {:style {:top "-5px"}
@@ -119,7 +120,7 @@
      (if open-panel
        (let [panel (c/build filter-panel filter-panel-data)]
          [:div
-          [:div.hide-on-dt.px2.fixed.overlay.overflow-auto.bg-white
+          [:div.hide-on-dt.fixed.overlay.overflow-auto.bg-white
            tabs panel]
           [:div.hide-on-mb-tb
            tabs panel]])
