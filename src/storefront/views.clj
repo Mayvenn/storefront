@@ -135,12 +135,12 @@
 
 (defn js-modules [nav-event]
   (let [files (mapcat (config/frontend-modules)
-                      (concat [:cljs_base]
+                      (concat [:cljs_base :ui]
                               (cond
-                                (dashboard-events nav-event) [:ui :dashboard]
-                                (checkout-events nav-event) [:ui :catalog :checkout]
-                                (catalog-events nav-event) [:ui :catalog]
-                                (voucher-redeem nav-event) [:ui :redeem])
+                                (dashboard-events nav-event) [:dashboard]
+                                (checkout-events nav-event) [:catalog :checkout]
+                                (catalog-events nav-event) [:catalog]
+                                (voucher-redeem nav-event) [:redeem])
                               [:main]))]
     (assert (every? (complement nil?) files)
             (str "Incorrectly wired module to load: " (pr-str files)))
