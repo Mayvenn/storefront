@@ -270,7 +270,7 @@
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
-(defn layout [app-state _]
+(defn ^:export layout [app-state _]
   (let [nav-event (get-in app-state keypaths/navigation-event)]
     [:div.flex.flex-column.stretch {:style {:margin-bottom "-1px"}}
      #?(:cljs (popup/built-component app-state nil))
