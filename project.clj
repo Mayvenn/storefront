@@ -86,22 +86,23 @@
                                            :ui            {:output-to  "target/release/js/out/ui.js"
                                                            :entries    #{storefront.components.ui}}
                                            :main          {:output-to "target/release/js/out/main.js"
-                                                           :entries   #{storefront.core}}
+                                                           :entries   #{storefront.core}
+                                                           :depends-on #{:ui}}
                                            :dashboard     {:output-to  "target/release/js/out/dashboard.js"
                                                            :entries    #{stylist.dashboard}
-                                                           :depends-on #{:catalog :ui}}
+                                                           :depends-on #{:catalog}}
                                            :redeem        {:output-to  "target/release/js/out/redeem.js"
                                                            :entries    #{voucher.redeem}
-                                                           :depends-on #{:catalog :ui}}
+                                                           :depends-on #{:catalog}}
                                            :design-system {:output-to  "target/release/js/out/design-system.js"
                                                            :entries    #{design-system.home}
-                                                           :depends-on #{:ui :dashboard :main :redeem :catalog :checkout}}
+                                                           :depends-on #{:dashboard :main :redeem :catalog :checkout}}
                                            :catalog       {:output-to  "target/release/js/out/catalog.js"
                                                            :entries    #{catalog.core}
                                                            :depends-on #{:ui}}
                                            :checkout      {:output-to  "target/release/js/out/checkout.js"
                                                            :entries    #{checkout.core}
-                                                           :depends-on #{:ui :catalog}}}
+                                                           :depends-on #{:catalog}}}
                         ;; rename-prefix: for a ~2% gzipped file size tax, prefixes all
                         ;; storefront's minified vars with m_ to avoid naming conflicts
                         ;; with minified code from google tag manager. Any
