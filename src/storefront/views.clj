@@ -137,7 +137,7 @@
   (let [files (mapcat (config/frontend-modules)
                       (concat [:cljs_base :ui]
                               (cond
-                                (dashboard-events nav-event) [:dashboard]
+                                (dashboard-events nav-event) [:catalog :dashboard]
                                 (checkout-events nav-event) [:catalog :checkout]
                                 (catalog-events nav-event) [:catalog]
                                 (voucher-redeem nav-event) [:catalog :redeem])
