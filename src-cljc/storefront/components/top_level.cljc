@@ -5,13 +5,15 @@
                        [storefront.components.friend-referrals :as friend-referrals]
                        [storefront.components.popup :as popup]
                        [storefront.components.reset-password :as reset-password]
-                       [storefront.config :as config]
-                       [storefront.history :as history]
+                       [storefront.components.shop-by-look]
+                       [storefront.components.shop-by-look-details]
+                       [checkout.shop.addon-services-menu]
+
                        ;; popups, must be required to load properly
                        adventure.components.program-details-popup
                        storefront.components.share-your-cart
                        storefront.components.v2-homepage-popup
-                       checkout.shop.addon-services-menu])
+                       storefront.components.service-swap-popup])
             #?@(:clj
                 [[design-system.home :as design-system]])
             adventure.checkout.wait

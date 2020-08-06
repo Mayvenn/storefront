@@ -21,6 +21,7 @@
             [catalog.selector.sku :as sku-selector]
             [catalog.ui.molecules :as catalog.M]
             [catalog.ui.how-it-works :as how-it-works]
+            api.orders
             [spice.selector :as selector]
             [spice.core :as spice]
             [storefront.accessors.contentful :as contentful]
@@ -554,7 +555,7 @@
 
      (when free-mayvenn-service?
        {:price-block/primary-struck            (mf/as-money sku-price)
-        :price-block/secondary                 [:span.teal "FREE"]
+        :price-block/secondary                 ^:ignore-interpret-warning [:span.teal "FREE"]
         :title/secondary                       (:promo.mayvenn-install/requirement-copy product)
         :browse-stylists-banner/title          "Amazing Stylists"
         :browse-stylists-banner/icon           [:svg/heart {:class  "fill-p-color"
@@ -884,6 +885,15 @@
 (defmethod effects/perform-effects events/control-add-sku-to-bag
   [dispatch event {:keys [sku quantity] :as args} _ app-state]
   #?(:cljs
+     (let [cart-contains-free-mayvenn-service? (:mayvenn-install/discountable-services-on-order? (api.orders/current app-state))
+           sku-is-free-mayvenn-service?        (-> sku :promo.mayvenn-install/discountable first)]
+       (if (and cart-contains-free-mayvenn-service? sku-is-free-mayvenn-service?)
+         (messages/handle-message events/popup-show-service-swap {:sku-intended sku})
+         (messages/handle-message events/add-sku-to-bag {:sku sku :quantity quantity})))))
+
+(defmethod effects/perform-effects events/add-sku-to-bag
+  [dispatch event {:keys [sku quantity stay-on-page?] :as args} _ app-state]
+  #?(:cljs
      (let [nav-event (get-in app-state keypaths/navigation-event)]
        (api/add-sku-to-bag
         (get-in app-state keypaths/session-id)
@@ -896,12 +906,12 @@
          :user-token         (get-in app-state keypaths/user-token)
          :heat-feature-flags (get-in app-state keypaths/features)}
         #(do
-           (when (not= events/navigate-cart nav-event)
-             (history/enqueue-navigate events/navigate-cart))
-           (messages/handle-later events/api-success-add-sku-to-bag
-                                  {:order    %
-                                   :quantity quantity
-                                   :sku      sku}))))))
+           (messages/handle-message events/api-success-add-sku-to-bag
+                                    {:order    %
+                                     :quantity quantity
+                                     :sku      sku})
+           (when (not (or (= events/navigate-cart nav-event) stay-on-page?))
+             (history/enqueue-navigate events/navigate-cart)))))))
 
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
   [_ event {:keys [quantity sku]} app-state]

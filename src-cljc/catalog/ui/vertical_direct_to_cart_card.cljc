@@ -8,14 +8,13 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]
             [storefront.accessors.orders :as orders]))
 
 (defn query
   [data product]
-  (let [service-sku       (-> (get-in data keypaths/v2-skus)
-                              (select-keys (:selector/skus product))
-                              vals
-                              first)
+  (let [sku-id            (first (:selector/skus product))
+        service-sku       (get-in data (conj keypaths/v2-skus sku-id))
         image             (->> service-sku
                                (images/for-skuer (get-in data keypaths/v2-images))
                                (filter (comp #{"catalog"} :use-case))
@@ -23,8 +22,9 @@
         product-slug      (:page/slug product)
         servicing-stylist (get-in data adventure.keypaths/adventure-servicing-stylist)
         store-nickname    (:store-nickname servicing-stylist)
-        cta-disabled?     (boolean (some #(= (:catalog/sku-id service-sku) (:sku %))
+        cta-disabled?     (boolean (some #(= sku-id (:sku %))
                                          (orders/service-line-items (get-in data keypaths/order))))
+        any-updates?      (utils/requesting-from-endpoint? data request-keys/add-to-bag)
         card-disabled?    (and (experiments/stylist-mismatch? data)
                                servicing-stylist
                                (not (:stylist-provides-service product)))]
@@ -38,13 +38,15 @@
              :vertical-direct-to-cart-card/primary       (:copy/title product)
              :vertical-direct-to-cart-card/secondary     (mf/as-money (:sku/price service-sku))
              :vertical-direct-to-cart-card/price         (:sku/price service-sku)
+             :vertical-direct-to-cart-card/cta-ready?    (not any-updates?)
              :vertical-direct-to-cart-card/card-target   [events/navigate-product-details
                                                           {:catalog/product-id (:catalog/product-id product)
                                                            :page/slug          product-slug
-                                                           :query-params       {:SKU (:catalog/sku-id service-sku)}}]}
+                                                           :query-params       {:SKU sku-id}}]
+             :vertical-direct-to-cart-card/cta-spinning? (utils/requesting? data (conj request-keys/add-to-bag sku-id))}
       (and (not card-disabled?)
            (not cta-disabled?))
-      (merge {:vertical-direct-to-cart-card/cta-id        (str "add-to-cart-" (:catalog/sku-id service-sku))
+      (merge {:vertical-direct-to-cart-card/cta-id        (str "add-to-cart-" sku-id)
               :vertical-direct-to-cart-card/cta-disabled? false
               :vertical-direct-to-cart-card/cta-max-width "111px"
               :vertical-direct-to-cart-card/cta-label     "Add To Cart"
@@ -53,13 +55,15 @@
 
       (and (not card-disabled?)
            cta-disabled?)
-      (merge {:vertical-direct-to-cart-card/cta-id        (str "add-to-cart-disabled-" (:catalog/sku-id service-sku))
+      (merge {:vertical-direct-to-cart-card/cta-id        (str "add-to-cart-disabled-" sku-id)
               :vertical-direct-to-cart-card/cta-disabled? true
+              :vertical-direct-to-cart-card/cta-ready?    false
               :vertical-direct-to-cart-card/cta-max-width "139px"
               :vertical-direct-to-cart-card/cta-label     "Already In Cart"})
 
       card-disabled?
       (merge {:vertical-direct-to-cart-card/disabled-background? true
+              :vertical-direct-to-cart-card/cta-ready?           false
               :vertical-direct-to-cart-card.disabled/id          (str "disabled-not-available")
               :vertical-direct-to-cart-card.disabled/primary     (str "Not Available with " store-nickname)}))))
 
@@ -90,7 +94,8 @@
   [{:as                                data
     react-key                          :react/key
     :vertical-direct-to-cart-card/keys [primary secondary not-offered-id disabled-background?
-                                        cta-id cta-target card-target cta-disabled? cta-label]
+                                        cta-id cta-target card-target cta-disabled? cta-ready?
+                                        cta-spinning? cta-label]
     disabled-id                        :vertical-direct-to-cart-card.disabled/id
     disabled-primary                   :vertical-direct-to-cart-card.disabled/primary}]
   (c/html
@@ -112,7 +117,10 @@
        (when cta-id
          [:div.my2.mx5
           (ui/button-small-secondary
-           (merge (when cta-target (apply utils/fake-href cta-target))
+           (merge (when (and cta-target cta-ready?)
+                    (apply utils/fake-href cta-target))
                   {:data-test (str "add-to-cart-" react-key)
                    :disabled? cta-disabled?})
-           cta-label)])]])))
+           (if cta-spinning?
+             ui/spinner
+             cta-label))])]])))

@@ -439,8 +439,14 @@
 (defpath popup-show-consolidated-cart-free-install)
 (defpath control-consolidated-cart-free-install-dismiss)
 
+(defpath popup-show-service-swap)
+(defpath control-service-swap-popup-dismiss)
+(defpath control-service-swap-popup-confirm)
+
 (defpath popup-show-wigs-customization)
 (defpath control-wigs-customization-dismiss)
+
+(defpath add-sku-to-bag)
 
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)
