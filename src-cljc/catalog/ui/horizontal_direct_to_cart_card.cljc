@@ -68,7 +68,7 @@
       card-disabled?
       (merge {:horizontal-direct-to-cart-card/disabled-background? true
               :horizontal-direct-to-cart-card/cta-ready?           false
-              :horizontal-direct-to-cart-card.disabled/id          (str "disabled-not-available")
+              :horizontal-direct-to-cart-card.disabled/id          "disabled-not-available"
               :horizontal-direct-to-cart-card.disabled/primary     (str "Not Available with " store-nickname)}))))
 
 (c/defcomponent card-image-molecule
@@ -94,7 +94,7 @@
     react-key                            :react/key
     :horizontal-direct-to-cart-card/keys [primary secondary secondary-struck tertiary
                                           cta-id cta-target card-target cta-disabled? cta-ready? cta-label cta-max-width
-                                          not-offered-id disabled-background? cta-spinning?]
+                                          disabled-background? cta-spinning?]
     disabled-id                          :horizontal-direct-to-cart-card.disabled/id
     disabled-primary                     :horizontal-direct-to-cart-card.disabled/primary}]
   (c/html
@@ -119,7 +119,7 @@
            [:span.ml2.s-color secondary]]]
          (when disabled-id
            [:a.red.content-3
-            (merge {:data-test not-offered-id}
+            (merge {:data-test disabled-id}
                    non-cta-action)
             disabled-primary])
          (when cta-id
@@ -129,9 +129,9 @@
             (ui/button-small-secondary
              (merge (when (and cta-target cta-ready?)
                       (apply utils/fake-href cta-target))
-                    {:key       (str "add-to-cart-" react-key)
+                    {:key       cta-id
                      :class     "px0"
-                     :data-test (str "add-to-cart-" react-key)
+                     :data-test cta-id
                      :disabled? cta-disabled?})
              (if cta-spinning?
                ui/spinner
