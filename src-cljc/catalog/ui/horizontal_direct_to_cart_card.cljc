@@ -37,9 +37,8 @@
              :react/key                                           (str "product-" product-slug)
              :horizontal-direct-to-cart-card-title/id             (some->> product-slug (str "product-card-title-"))
              :horizontal-direct-to-cart-card/primary              (:copy/title product)
-             :horizontal-direct-to-cart-card/secondary            (list
-                                                                   ^:ignore-interpret-warning [:span.strike (mf/as-money (:sku/price service-sku))]
-                                                                   ^:ignore-interpret-warning [:span.ml2.s-color "FREE"])
+             :horizontal-direct-to-cart-card/secondary-struck     (mf/as-money (:sku/price service-sku))
+             :horizontal-direct-to-cart-card/secondary            "FREE"
              :horizontal-direct-to-cart-card/tertiary             (:promo.mayvenn-install/requirement-copy product)
              :horizontal-direct-to-cart-card/card-target          [events/navigate-product-details
                                                                    {:catalog/product-id (:catalog/product-id product)
@@ -89,7 +88,7 @@
 (defn organism
   [{:as                                  data
     react-key                            :react/key
-    :horizontal-direct-to-cart-card/keys [primary secondary tertiary
+    :horizontal-direct-to-cart-card/keys [primary secondary secondary-struck tertiary
                                           cta-id cta-target card-target cta-disabled? cta-label cta-max-width
                                           not-offered-id disabled-background?]
     disabled-id                          :horizontal-direct-to-cart-card.disabled/id
@@ -111,7 +110,9 @@
           non-cta-action
           [:div.content-1 primary]
           [:div.content-3 {:style {:line-height "12px"}} tertiary]
-          [:div.mt1 secondary]]
+          [:div.mt1
+           [:span.strike secondary-struck]
+           [:span.ml2.s-color secondary]]]
          (when disabled-id
            [:a.red.content-3
             (merge {:data-test not-offered-id}
