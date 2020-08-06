@@ -473,5 +473,6 @@
      (case kind
        :svg/close-x      ^:inline (close-x attrs)
        :svg/discount-tag ^:inline (discount-tag attrs)
-       :svg/check-mark   ^:inline (check-mark attrs))
+       :svg/check-mark   ^:inline (check-mark attrs)
+       :svg/heart        ^:inline (heart attrs))
      [:div])))

@@ -557,9 +557,9 @@
         :price-block/secondary                 [:span.teal "FREE"]
         :title/secondary                       (:promo.mayvenn-install/requirement-copy product)
         :browse-stylists-banner/title          "Amazing Stylists"
-        :browse-stylists-banner/icon           (svg/heart {:class  "fill-p-color"
-                                                           :width  "32px"
-                                                           :height "29px"})
+        :browse-stylists-banner/icon           [:svg/heart {:class  "fill-p-color"
+                                                            :width  "32px"
+                                                            :height "29px"}]
         :browse-stylists-banner/subtitle       (str "We’ve rounded up the best stylists in the country so you can be "
                                                     "sure your hair is in really, really good hands.")
         :browse-stylists-banner/button-copy    "browse stylists"
@@ -605,9 +605,9 @@
      (when standalone-service?
        {:price-block/primary                   (mf/as-money sku-price)
         :browse-stylists-banner/title          "Amazing Stylists"
-        :browse-stylists-banner/icon           (svg/heart {:class  "fill-p-color"
-                                                           :width  "32px"
-                                                           :height "29px"})
+        :browse-stylists-banner/icon           [:svg/heart {:class  "fill-p-color"
+                                                            :width  "32px"
+                                                            :height "29px"}]
         :browse-stylists-banner/subtitle       (str "We’ve rounded up the best stylists in the country so you can be "
                                                     "sure your hair is in really, really good hands.")
         :browse-stylists-banner/button-copy    "browse stylists"
