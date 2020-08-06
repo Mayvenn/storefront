@@ -661,6 +661,7 @@
       (do
         (let [sku-ids (->> (:shipments order)
                            (mapcat :storefront/all-line-items)
+                           (remove line-items/shipping-method?)
                            (map :sku))]
           (messages/handle-message events/ensure-sku-ids {:sku-ids sku-ids}))
 
