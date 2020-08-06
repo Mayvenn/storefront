@@ -37,7 +37,8 @@
                                                          {:class "col-5 center"})
                                                   "Cancel")
               (ui/button-medium-primary (merge (apply utils/fake-href confirm-target)
-                                               {:class "col-5"}) "Swap")]]))
+                                               {:class "col-5"
+                                                :data-test "service-swap-popup-confirm"}) "Swap")]]))
 
 (defmethod popup/query :service-swap
   [data]
@@ -62,11 +63,12 @@
       (assoc-in storefront.keypaths/popup :service-swap)))
 
 (defmethod effects/perform-effects events/control-service-swap-popup-confirm
-  [_ _ _ previous-app-state _]
-  (messages/handle-message events/add-sku-to-bag {:sku           (get-in previous-app-state catalog.keypaths/sku-intended-for-swap)
-                                                  :stay-on-page? true
-                                                  :quantity      1})
-  (messages/handle-message events/popup-hide))
+  [_ _ _ previous-app-state app-state]
+  (let [stay-on-page? (= events/navigate-category (get-in app-state storefront.keypaths/navigation-event))]
+    (messages/handle-message events/add-sku-to-bag {:sku           (get-in previous-app-state catalog.keypaths/sku-intended-for-swap)
+                                                    :stay-on-page? stay-on-page?
+                                                    :quantity      1})
+    (messages/handle-message events/popup-hide)))
 
 (defmethod transitions/transition-state events/control-service-swap-popup-confirm
   [_ event _ app-state]
