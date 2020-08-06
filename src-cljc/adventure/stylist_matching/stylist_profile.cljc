@@ -322,7 +322,7 @@
      [:div.flex.px8.items-center
       [:div.flex.items-baseline
        [:div.bold.proxima.title-3 (name star-rating)]
-       [:div.px2 (svg/whole-star {:class  "fill-dark-gray"
+       [:div.px2 (svg/whole-star {:class  "fill-gray"
                                   :height "13px"
                                   :width  "13px"})]]
       [:div.flex-grow-1.flex

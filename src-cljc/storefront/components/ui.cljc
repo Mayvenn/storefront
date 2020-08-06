@@ -514,7 +514,7 @@
    [:div.clearfix
     {:data-scrollable "not-a-modal"}
     [:a.right (merge {:data-test data-test :title "Close"} close-attrs)
-     (svg/x-sharp {:class (or class "block fill-dark-gray")
+     (svg/x-sharp {:class (or class "block fill-gray")
                    :width "15px"
                    :height "15px"})]]))
 

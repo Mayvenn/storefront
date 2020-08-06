@@ -269,7 +269,8 @@
                   :href (routes/path-for events/navigate-adventure-find-your-stylist)
                   :on-click (apply utils/send-event-callback target)})
           (svg/swap-arrows {:width "16px"
-                            :height "20px"})])]
+                            :height "20px"
+                            :class "fill-dark-gray stroke-dark-gray"})])]
       [:div.mt1.border-bottom.border-cool-gray.hide-on-mb]]]))
 
 (component/defcomponent no-stylist-organism

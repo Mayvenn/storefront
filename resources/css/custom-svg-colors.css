@@ -1,28 +1,30 @@
-.stroke-aqua   { stroke: var(--aqua); }
+.stroke-p-color   { stroke: var(--p-color); }
+.fill-p-color     { fill: var(--p-color); }
 
+.stroke-s-color   { stroke: var(--s-color); }
+.fill-s-color     { fill: var(--s-color); }
+
+.stroke-white     { stroke: var(--white); }
+.fill-white       { fill: var(--white); }
+
+.stroke-black     { stroke: var(--black); }
+.fill-black       { fill: var(--black); }
+
+.stroke-gray      { stroke: var(--gray); }
+.fill-gray        { fill: var(--gray); }
+
+.stroke-dark-gray { stroke: var(--dark-gray); }
+.fill-dark-gray   { fill: var(--dark-gray); }
+
+.stroke-aqua      { stroke: var(--aqua); }
+.fill-aqua        { fill: var(--aqua); }
+
+.fill-teal         { fill: var(--teal); }
 .fill-twitter-blue { fill: var(--twitter-blue); }
-.fill-aqua         { fill: var(--aqua); }
 .fill-none         { fill: none; }
 
-.stroke-gray           { stroke: var(--gray); }
-
-.fill-gray             { fill: var(--gray); }
-
-/* NEW COLORS */
-.stroke-p-color { stroke: var(--p-color); }
-.stroke-s-color { stroke: var(--s-color); }
-.stroke-white   { stroke: var(--white); }
-.stroke-black   { stroke: var(--black); }
-
-.fill-p-color   { fill: var(--p-color); }
-.fill-s-color   { fill: var(--s-color); }
-.fill-white     { fill: var(--white); }
-.fill-dark-gray { fill: var(--gray); }
-.fill-black     { fill: var(--black); }
-.fill-teal      { fill: var(--teal); }
-
 :root { /* Compare to app.css :( */
-  --twitter-blue:   #00aced;
+  --twitter-blue: #00aced;
   --aqua:         #49BBF0;
 
   /* THESE ARE OUR NEW COLORS */
@@ -37,5 +39,5 @@
   --dark-gray:    #8B8B8B;
   --cool-gray:    #eeefef;
   --black:        #000000;
-  --teal:         #6BC8AD;
+  --teal:         #6BC8AD; /* TODO GROT (see s-color above)*/
 }
