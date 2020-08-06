@@ -45,7 +45,8 @@
 (c/defcomponent ^:private service-list-subsection-component
   [{:keys [service-cards subsection-key] primary-title :title/primary} _ {:keys [id]}]
   [:div.mb7
-   {:id id :data-test id}
+   {:id        id
+    :data-test id}
    (when primary-title
      [:div.canela.title-2.center.mb2 primary-title])
    [:div.flex.flex-wrap
@@ -64,7 +65,7 @@
        :else             (mapv (fn build [{:as subsection :keys [subsection-key]}]
                                  (c/build service-list-subsection-component
                                           subsection
-                                          (c/component-id (str "subsection-" subsection-key))))
+                                          (c/component-id (str "subsection-" (name subsection-key)))))
                                subsections))]))
 
 (defn query
