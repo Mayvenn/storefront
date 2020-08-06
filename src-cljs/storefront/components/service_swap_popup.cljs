@@ -49,12 +49,6 @@
                                              service-title-to-be-swapped " with " intended-service-title " instead?")
      :service-swap-popup.secondary/id   "service-swap-explanation"}))
 
-(defmethod transitions/transition-state events/popup-show-service-swap
-  [_ event {:keys [sku-intended]} app-state]
-  (-> app-state
-      (assoc-in catalog.keypaths/sku-intended-for-swap sku-intended)
-      (assoc-in storefront.keypaths/popup :service-swap)))
-
 (defmethod transitions/transition-state events/control-service-swap-popup-dismiss
   [_ event args app-state]
   (-> app-state
