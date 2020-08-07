@@ -403,12 +403,10 @@
      :store                  store
      :show-bundle-sets?      (contains? #{:aladdin :shop} site)
      :vouchers?              (experiments/dashboard-with-vouchers? data)
-     :show-freeinstall-link? shop?
-     :show-services-icp?     shop?
      :site                   (sites/determine-site data)
      :desktop-menu/items     (cond-> []
-                               shop?
 
+                               shop?
                                (concat
                                 [(let [services-icp (->> (get-in data keypaths/categories)
                                                          (filter (comp #{"35"} :catalog/category-id))
@@ -444,8 +442,7 @@
 (defn query [data]
   (-> (basic-query data)
       (assoc-in [:user :expanded?] (get-in data keypaths/account-menu-expanded))
-      (assoc-in [:cart :quantity] (orders/displayed-cart-count (get-in data keypaths/order)))
-      (assoc :site (sites/determine-site data))))
+      (assoc-in [:cart :quantity] (orders/displayed-cart-count (get-in data keypaths/order)))))
 
 (defn built-component [data opts]
   (c/html
