@@ -1,5 +1,6 @@
 (ns storefront.components.header
-  (:require [storefront.accessors.auth :as auth]
+  (:require [catalog.categories :as categories]
+            [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
@@ -392,52 +393,137 @@
                                         "shop-bundle-sets-menu-expanded")})
 
 (defn basic-query [data]
-  (let [store (marquee/query data)
-        site  (sites/determine-site data)
-        shop? (= :shop site)]
-    {:signed-in              (auth/signed-in data)
-     :on-taxon?              (get-in data keypaths/current-traverse-nav)
-     :promo-banner           (promo-banner/query data)
-     :user                   {:stylist-portrait (get-in data keypaths/user-stylist-portrait)
-                              :email            (get-in data keypaths/user-email)}
-     :store                  store
-     :show-bundle-sets?      (contains? #{:aladdin :shop} site)
-     :vouchers?              (experiments/dashboard-with-vouchers? data)
-     :site                   (sites/determine-site data)
-     :desktop-menu/items     (cond-> []
+  (let [store            (marquee/query data)
+        site             (sites/determine-site data)
+        shop?            (= :shop site)
+        classic?         (= :classic site)
+        signed-in        (auth/signed-in data)
+        shop-or-aladdin? (contains? #{:aladdin :shop} site)]
+    {:signed-in                   signed-in
+     :on-taxon?                   (get-in data keypaths/current-traverse-nav)
+     :promo-banner                (promo-banner/query data)
+     :user                        {:stylist-portrait (get-in data keypaths/user-stylist-portrait)
+                                   :email            (get-in data keypaths/user-email)}
+     :store                       store
+     :vouchers?                   (experiments/dashboard-with-vouchers? data)
+     :site                        site
+     :slide-out-nav/content-items [{:slide-out-nav-content-item/target  [events/navigate-content-guarantee]
+                                    :slide-out-nav-content-item/id      "content-guarantee"
+                                    :slide-out-nav-content-item/primary "Our Guarantee"}
+                                   {:slide-out-nav-content-item/target  [events/navigate-content-our-hair]
+                                    :slide-out-nav-content-item/id      "content-our-hair"
+                                    :slide-out-nav-content-item/primary "Our Hair"}
+                                   {:slide-out-nav-content-item/target  {:href blog-url}
+                                    :slide-out-nav-content-item/id      "content-blog"
+                                    :slide-out-nav-content-item/primary "Blog"}
+                                   {:slide-out-nav-content-item/target  [events/navigate-content-about-us]
+                                    :slide-out-nav-content-item/id      "content-about-us"
+                                    :slide-out-nav-content-item/primary "About Us"}
+                                   {:slide-out-nav-content-item/target  {:href "https://jobs.mayvenn.com"}
+                                    :slide-out-nav-content-item/id      "content-jobs"
+                                    :slide-out-nav-content-item/primary "Careers"}
+                                   {:slide-out-nav-content-item/target  [events/navigate-content-help]
+                                    :slide-out-nav-content-item/id      "content-help"
+                                    :slide-out-nav-content-item/primary "Contact Us"}]
 
-                               shop?
-                               (concat
-                                [(let [services-icp (->> (get-in data keypaths/categories)
-                                                         (filter (comp #{"35"} :catalog/category-id))
-                                                         first)]
-                                   {:header-menu-item/navigation-target [events/navigate-category services-icp]
-                                    :header-menu-item/id                "desktop-services-icp"
-                                    :header-menu-item/new-label?        (:category/new? services-icp)
-                                    :header-menu-item/content           (:flyout-menu/title services-icp)})])
+     :slide-out-nav/menu-items (cond-> []
+                                 shop?
+                                 (concat
+                                  [{:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug           "services"
+                                                                                                    :catalog/category-id "35"}]
+                                    :slide-out-nav-menu-item/nested?     false
+                                    :slide-out-nav-menu-item/id          "menu-shop-services"
+                                    :slide-out-nav-menu-item/new-primary "NEW"
+                                    :slide-out-nav-menu-item/primary     "Browse Services"}
+                                   {:slide-out-nav-menu-item/target  [events/navigate-adventure-match-stylist]
+                                    :slide-out-nav-menu-item/id      "menu-shop-find-stylist"
+                                    :slide-out-nav-menu-item/primary "Find a Stylist"}])
 
-                               (= :classic site)
-                               (concat [{:header-menu-item/navigation-target [events/navigate-shop-by-look {:album-keyword :look}]
-                                         :header-menu-item/id                "desktop-shop-by-look"
-                                         :header-menu-item/content           "Shop by look"}])
+                                 classic?
+                                 (concat
+                                  [{:slide-out-nav-menu-item/target  [events/navigate-shop-by-look {:album-keyword :look}]
+                                    :slide-out-nav-menu-item/nested? false
+                                    :slide-out-nav-menu-item/id      "menu-shop-by-look"
+                                    :slide-out-nav-menu-item/primary "Shop By Look"}])
 
-                               (contains? #{:aladdin :shop} site)
-                               (concat
-                                [(shop-looks-query data)
-                                 (shop-bundle-sets-query data)])
+                                 shop-or-aladdin?
+                                 (concat
+                                  [{:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :shop-looks}]
+                                    :slide-out-nav-menu-item/nested? true
+                                    :slide-out-nav-menu-item/id      "menu-shop-by-look"
+                                    :slide-out-nav-menu-item/primary "Shop By Look"}
+                                   {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :shop-bundle-sets}]
+                                    :slide-out-nav-menu-item/nested? true
+                                    :slide-out-nav-menu-item/id      "menu-shop-by-bundle-sets"
+                                    :slide-out-nav-menu-item/primary "Shop Bundle Sets"}])
 
-                               :always
-                               (concat
-                                [(shop-a-la-carte-flyout-query data)
-                                 {:header-menu-item/navigation-target [events/navigate-content-guarantee]
-                                  :header-menu-item/id                "desktop-our-guarantee"
-                                  :header-menu-item/content           "Our Guarantee"}
-                                 {:header-menu-item/navigation-target [events/navigate-content-our-hair]
-                                  :header-menu-item/id                "desktop-our-hair"
-                                  :header-menu-item/content           "Our hair"}
-                                 {:header-menu-item/href    blog-url
-                                  :header-menu-item/id      "desktop-blog"
-                                  :header-menu-item/content "Blog"}]))}))
+                                 :always
+                                 (concat
+                                  [{:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
+                                    :slide-out-nav-menu-item/nested? false
+                                    :slide-out-nav-menu-item/id      "menu-shop-human-hair-bundles"
+                                    :slide-out-nav-menu-item/primary "Hair Bundles"}
+                                   {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug "virgin-closures" :catalog/category-id "0"}]
+                                    :slide-out-nav-menu-item/id      "menu-shop-virgin-closures"
+                                    :slide-out-nav-menu-item/nested? false
+                                    :slide-out-nav-menu-item/primary "Closures"}
+                                   {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug "virgin-frontals" :catalog/category-id "1"}]
+                                    :slide-out-nav-menu-item/id      "menu-shop-virgin-frontals"
+                                    :slide-out-nav-menu-item/nested? false
+                                    :slide-out-nav-menu-item/primary "Frontals"}
+                                   {:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
+                                    :slide-out-nav-menu-item/id          "menu-shop-wigs"
+                                    :slide-out-nav-menu-item/new-primary "NEW"
+                                    :slide-out-nav-menu-item/nested?     false
+                                    :slide-out-nav-menu-item/primary     "Wigs"}
+                                   {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug "hair-extensions" :catalog/category-id "28"}]
+                                    :slide-out-nav-menu-item/nested? false
+                                    :slide-out-nav-menu-item/id      "menu-shop-hair-extensions"
+                                    :slide-out-nav-menu-item/primary "Hair Extensions"}])
+
+                                 (-> signed-in ::auth/as (= :stylist))
+                                 (concat
+                                  [{:slide-out-nav-menu-item/target  [events/navigate-product-details
+                                                                      {:page/slug          "rings-kits"
+                                                                       :catalog/product-id "49"
+                                                                       :query-params       {:SKU (:direct-to-details/sku-id categories/the-only-stylist-exclusive)}}]
+                                    :slide-out-nav-menu-item/nested? false
+                                    :slide-out-nav-menu-item/id      "menu-stylist-products"
+                                    :slide-out-nav-menu-item/primary "Stylist Exclusives"}]))
+     :desktop-menu/items (cond-> []
+
+                           shop?
+                           (concat
+                            [(let [services-icp (->> (get-in data keypaths/categories)
+                                                     (filter (comp #{"35"} :catalog/category-id))
+                                                     first)]
+                               {:header-menu-item/navigation-target [events/navigate-category services-icp]
+                                :header-menu-item/id                "desktop-services-icp"
+                                :header-menu-item/new-label?        (:category/new? services-icp)
+                                :header-menu-item/content           (:flyout-menu/title services-icp)})])
+
+                           classic?
+                           (concat [{:header-menu-item/navigation-target [events/navigate-shop-by-look {:album-keyword :look}]
+                                     :header-menu-item/id                "desktop-shop-by-look"
+                                     :header-menu-item/content           "Shop by look"}])
+
+                           shop-or-aladdin?
+                           (concat
+                            [(shop-looks-query data)
+                             (shop-bundle-sets-query data)])
+
+                           :always
+                           (concat
+                            [(shop-a-la-carte-flyout-query data)
+                             {:header-menu-item/navigation-target [events/navigate-content-guarantee]
+                              :header-menu-item/id                "desktop-our-guarantee"
+                              :header-menu-item/content           "Our Guarantee"}
+                             {:header-menu-item/navigation-target [events/navigate-content-our-hair]
+                              :header-menu-item/id                "desktop-our-hair"
+                              :header-menu-item/content           "Our hair"}
+                             {:header-menu-item/href    blog-url
+                              :header-menu-item/id      "desktop-blog"
+                              :header-menu-item/content "Blog"}]))}))
 
 (defn query [data]
   (-> (basic-query data)

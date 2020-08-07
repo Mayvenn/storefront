@@ -1,12 +1,8 @@
 (ns storefront.components.slideout-nav
   (:require [catalog.menu :as menu]
             [storefront.accessors.auth :as auth]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.stylists :as stylists]
-            [storefront.assets :as assets]
             [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.marquee :as marquee]
             [storefront.components.header :as header]
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.components.ui :as ui]
@@ -14,8 +10,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [ui.promo-banner :as promo-banner]
-            [catalog.categories :as categories]))
+            [ui.promo-banner :as promo-banner]))
 
 (defn burger-header [cart]
   (component/html
@@ -132,24 +127,6 @@
     :user    user-actions
     :guest   guest-actions))
 
-(defn ^:private menu-row [{:keys [link-attrs data-test new-content content]}]
-  (component/html
-   [:li {:key data-test}
-    [:div.py3
-     (into [:a.block.inherit-color.flex.items-center.content-1.proxima
-            (assoc link-attrs :data-test data-test)
-            [:span.col-2.title-3.proxima.center (when-let [c new-content] c)]]
-           content)]]))
-
-(defn ^:private content-row [{:keys [link-attrs data-test content]}]
-  (component/html
-   [:li {:key data-test}
-    [:div.py3
-     (into [:a.block.inherit-color.flex.items-center.content-2.proxima
-            (assoc link-attrs :data-test data-test)
-            [:span.col-2]]
-           content)]]))
-
 (defn ^:private caretize-content
   [content]
   (component/html
@@ -158,98 +135,44 @@
     ^:inline (ui/forward-caret {:width  16
                                 :height 16})]))
 
-(defn shopping-rows
-  [{:keys [show-bundle-sets? site] :as data}]
-  (concat
-   (when (= :shop site)
-     [{:link-attrs  (utils/route-to events/navigate-category
-                                    {:page/slug           "services"
-                                     :catalog/category-id "35"})
-       :data-test   "menu-shop-services"
-       :new-content "NEW"
-       :content     [[:span.medium "Browse Services"]]}
-      {:link-attrs (utils/route-to events/navigate-adventure-match-stylist)
-       :data-test  "menu-shop-find-stylist"
-       :content    [[:span.medium "Find a Stylist"]]}])
+(defn ^:private menu-row
+  [{:slide-out-nav-menu-item/keys [target nested? id new-primary primary]}]
+  (component/html
+   [:li {:key id}
+    [:div.py3
+     [:a.block.inherit-color.flex.items-center.content-1.proxima
+      (merge {:data-test id}
+             (if nested?
+               (apply utils/fake-href target)
+               (apply utils/route-to target)))
+      [:span.col-2.title-3.proxima.center (when new-primary
+                                            new-primary)]
+      (if nested?
+        (caretize-content primary)
+        [:span.medium.flex-auto primary])]]]))
 
-   (if (= :classic site)
-     [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-       :data-test  "menu-shop-by-look"
-       :content    [[:span.medium "Shop By Look"]]}]
-     [{:link-attrs (utils/fake-href events/menu-list
-                                    {:menu-type :shop-looks})
-       :data-test  "menu-shop-by-look"
-       :content    [(caretize-content "Shop By Look")]}])
+(defn ^:private content-row
+  [{:slide-out-nav-content-item/keys [id primary target]}]
+  (component/html
+   [:li {:key id}
+    [:div.py3
+     [:a.block.inherit-color.flex.items-center.content-2.proxima
+      (merge
+       {:data-test id}
+       (if (map? target)
+         target
+         (apply utils/route-to target)))
+      [:span.col-2]
+      primary]]]))
 
-   (when show-bundle-sets?
-     [{:link-attrs (utils/fake-href events/menu-list {:menu-type :shop-bundle-sets})
-       :data-test  "menu-shop-by-bundle-sets"
-       :content    [(caretize-content "Shop Bundle Sets")]}])
-
-   [{:link-attrs (utils/route-to events/navigate-category
-                                 {:page/slug           "human-hair-bundles"
-                                  :catalog/category-id "27"})
-     :data-test  "menu-shop-human-hair-bundles"
-     :content    [[:span.medium.flex-auto "Hair Bundles"]]}
-    {:link-attrs (utils/route-to events/navigate-category
-                                 {:page/slug           "virgin-closures"
-                                  :catalog/category-id "0"})
-     :data-test  "menu-shop-virgin-closures"
-     :content    [[:span.medium.flex-auto "Closures"]]}
-    {:link-attrs (utils/route-to events/navigate-category
-                                 {:page/slug           "virgin-frontals"
-                                  :catalog/category-id "1"})
-     :data-test  "menu-shop-virgin-frontals"
-     :content    [[:span.medium.flex-auto "Frontals"]]}
-    {:link-attrs  (utils/route-to events/navigate-category
-                                  {:page/slug           "wigs"
-                                   :catalog/category-id "13"})
-     :data-test   "menu-shop-wigs"
-     :new-content "NEW"
-     :content     [[:span.medium.flex-auto "Wigs"]]}
-    {:link-attrs (utils/route-to events/navigate-category
-                                 {:page/slug           "hair-extensions"
-                                  :catalog/category-id "28"})
-     :data-test  "menu-shop-hair-extensions"
-     :content    [[:span.medium.flex-auto "Hair Extensions"]]}]))
-
-(def stylist-exclusive-row
-  {:link-attrs (utils/route-to events/navigate-product-details
-                               {:page/slug          "rings-kits"
-                                :catalog/product-id "49"
-                                :query-params       {:SKU (:direct-to-details/sku-id categories/the-only-stylist-exclusive)}})
-   :data-test  "menu-stylist-products"
-   :content    [[:span.medium.flex-auto "Stylist Exclusives"]]})
-
-(defn content-rows [_]
-  [{:link-attrs (utils/route-to events/navigate-content-guarantee)
-    :data-test  "content-guarantee"
-    :content    ["Our Guarantee"]}
-   {:link-attrs (utils/route-to events/navigate-content-our-hair)
-    :data-test  "content-our-hair"
-    :content    ["Our Hair"]}
-   {:link-attrs {:href header/blog-url}
-    :data-test  "content-blog"
-    :content    ["Blog"]}
-   {:link-attrs (utils/route-to events/navigate-content-about-us)
-    :data-test  "content-about-us"
-    :content    ["About Us"]}
-   {:link-attrs {:href "https://jobs.mayvenn.com"}
-    :data-test  "content-jobs"
-    :content    ["Careers"]}
-   {:link-attrs (utils/route-to events/navigate-content-help)
-    :data-test  "content-help"
-    :content    ["Contact Us"]}])
-
-(defn ^:private menu-area [{:keys [signed-in] :as data}]
+(defn ^:private menu-area
+  [{:slide-out-nav/keys [content-items menu-items]}]
   (component/html
    [:ul.list-reset.mb3.mt5
-    (for [row (shopping-rows data)]
-      (menu-row row))
-    (when (-> signed-in ::auth/as (= :stylist))
-      (menu-row stylist-exclusive-row))
+    (for [item menu-items]
+      (menu-row item))
     [:div.mt5
-     (for [[i row] (map-indexed vector (content-rows data))]
+     (for [[i row] (map-indexed vector content-items)]
        [:div
         {:key (str i)}
         (when-not (zero? i)
