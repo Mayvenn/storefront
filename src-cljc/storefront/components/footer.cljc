@@ -134,7 +134,7 @@
 
 (defn show-category?
   [shop? category]
-  (or (-> category :catalog/category-id #{"30" "31"} not)
+  (or (-> category :catalog/category-id #{"35" "31"} not)
       shop?))
 
 (defn query

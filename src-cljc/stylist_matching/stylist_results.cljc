@@ -73,7 +73,7 @@
        (api/get-products
         (get-in app-state storefront.keypaths/api-cache)
         (merge-with clojure.set/union
-                    (skuers/essentials (categories/id->category "30" (get-in app-state storefront.keypaths/categories)))
+                    (skuers/essentials (categories/id->category "35" (get-in app-state storefront.keypaths/categories)))
                     (skuers/essentials (categories/id->category "31" (get-in app-state storefront.keypaths/categories))))
         #(messages/handle-message events/api-success-v3-products-for-stylist-filters %))
        (when (some? query-params)
