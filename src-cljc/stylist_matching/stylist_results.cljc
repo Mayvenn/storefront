@@ -671,7 +671,8 @@
 
                       :stylist-results-returned?  (get-in app-state adventure.keypaths/adventure-stylist-results-returned)
                       :list.stylist-counter/title (str (count matching-stylists) " Stylists Found")
-                      :list.stylist-counter/key   (when (seq preferences) "stylist-count-content")
+                      :list.stylist-counter/key   (when (pos? (count matching-stylists))
+                                                    "stylist-count-content")
                       :list.matching/key          (when (seq matching-stylists) "stylist-matching")
                       :list.matching/cards        matching-stylist-cards
                       :list.breaker/id            (when (seq non-matching-stylists) "non-matching-breaker")
