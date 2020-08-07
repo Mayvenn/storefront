@@ -841,7 +841,7 @@
     clip-in-tape-in-templates)])
 
 (def standalone-services
-  [{:catalog/category-id                "30"
+  [{:catalog/category-id                "35"
     :catalog/department                 #{"service"}
     :service/type                       #{"base"}
     :promo.mayvenn-install/discountable #{false}
@@ -923,7 +923,7 @@
            "Then, we’ll send you a prepaid voucher to cover the cost.")}]}])
 
 (def services-icp
-  [{:catalog/category-id  "35"
+  [{:catalog/category-id  "30"
     :page/slug            "services"
     :page/icp?            true
     :catalog/department   #{"service"}
@@ -944,7 +944,7 @@
     :product-list/title   "All Services"
 
     :subsections/category-selector :promo.mayvenn-install/discountable
-    :subcategories/ids             ["31" "30"]
+    :subcategories/ids             ["31" "35"]
     :subsections                   ["FREE Mayvenn Services" "À la carte service"]
     :subcategories/layout          :list
 
