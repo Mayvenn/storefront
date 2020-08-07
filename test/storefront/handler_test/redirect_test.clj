@@ -564,9 +564,9 @@
                                              common/default-storeback-handler)}
     (with-handler handler
       (testing "À la carte services category"
-        (let [resp (handler (mock/request :get "https://classic.mayvenn.com/categories/30-salon-services"))]
+        (let [resp (handler (mock/request :get "https://classic.mayvenn.com/categories/35-salon-services"))]
           (is (= 301 (:status resp)) (pr-str resp))
-          (is (= "https://shop.mayvenn.com/categories/30-salon-services" (get-in resp [:headers "Location"])))))
+          (is (= "https://shop.mayvenn.com/categories/35-salon-services" (get-in resp [:headers "Location"])))))
       (testing "À la carte service PDP"
         (let [resp (handler (mock/request :get "https://jasmine.mayvenn.com/products/132-weave-maintenance-service"))]
           (is (= 301 (:status resp)) (pr-str resp))
