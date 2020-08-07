@@ -404,25 +404,19 @@
      :show-bundle-sets?      (contains? #{:aladdin :shop} site)
      :vouchers?              (experiments/dashboard-with-vouchers? data)
      :show-freeinstall-link? shop?
-     :service-category-page? shop?
+     :show-services-icp?     shop?
      :site                   (sites/determine-site data)
      :desktop-menu/items     (cond-> []
                                shop?
+
                                (concat
-                                [(let [free-services-category
-                                       (->> (get-in data keypaths/categories)
-                                            (filter (comp #{"31"} :catalog/category-id))
-                                            first)]
-                                   {:header-menu-item/navigation-target [events/navigate-category free-services-category]
-                                    :header-menu-item/id                "desktop-get-mayvenn-install"
-                                    :header-menu-item/content           "Get a Free Service"})
-                                 (let [a-la-carte-services (->> (get-in data keypaths/categories)
-                                                                (filter (comp #{"30"} :catalog/category-id))
-                                                                first)]
-                                   {:header-menu-item/navigation-target [events/navigate-category a-la-carte-services]
-                                    :header-menu-item/id                "desktop-a-la-carte-services"
-                                    :header-menu-item/new-label?        (:category/new? a-la-carte-services)
-                                    :header-menu-item/content           (:flyout-menu/title a-la-carte-services)})])
+                                [(let [services-icp (->> (get-in data keypaths/categories)
+                                                         (filter (comp #{"35"} :catalog/category-id))
+                                                         first)]
+                                   {:header-menu-item/navigation-target [events/navigate-category services-icp]
+                                    :header-menu-item/id                "desktop-services-icp"
+                                    :header-menu-item/new-label?        (:category/new? services-icp)
+                                    :header-menu-item/content           (:flyout-menu/title services-icp)})])
 
                                (= :classic site)
                                (concat [{:header-menu-item/navigation-target [events/navigate-shop-by-look {:album-keyword :look}]

@@ -7,8 +7,6 @@
   ;; [<facet-slug> <option-slug>]
   #{[:hair/family "ready-wigs"]})
 
-(def new-category? #{})
-
 (defn copy [& sentences]
   (string/join " " sentences))
 
@@ -598,11 +596,11 @@
     :hair/family                    #{"bundles" "closures" "frontals" "360-frontals"}
     :page/slug                      "mayvenn-install"
     :page/title                     "Free Hair Service - Buy 3 Items for Free Service | Mayvenn"
-    :page.meta/description          (copy "Buy 3 items and Mayvenn will pay for your hair service!" 
+    :page.meta/description          (copy "Buy 3 items and Mayvenn will pay for your hair service!"
     																																						"Shop our selection of natural human hair bundles and"
     																																						"get connected with a stylist near you.")
     :promo.mayvenn-install/eligible #{true}
-    :opengraph/description          (copy "Buy 3 items and Mayvenn will pay for your hair service!" 
+    :opengraph/description          (copy "Buy 3 items and Mayvenn will pay for your hair service!"
     																																						"Shop our selection of natural human hair bundles and"
     																																						"get connected with a stylist near you.")
     :opengraph/title                (copy "Shop Mayvenn Hair - Buy 3 items and we'll pay for your hair service.")
@@ -854,9 +852,6 @@
     :page/icp?                          false
     :page/shop-only?                    true
     :category/new?                      true
-    :flyout-menu/title                  "À la carte Services"
-    :footer/order                       1
-    :footer/title                       "À la carte Services"
     :copy/title                         "À la carte Services"
     :copy/icp-action-label              "Learn More"
     :page/slug                          "salon-services"
@@ -902,11 +897,11 @@
     :page/slug                          "free-mayvenn-services"
     :page/title                         "Hair Free Mayvenn Services Menu | Mayvenn"
     :page.meta/description              (copy "Shop our selection of free Mayvenn Services for the ultimate hair install or wig customization"
-                                               "experience. Check out our menu to learn about these exclusive offers.")
-    :opengraph/title               					"Free Mayvenn Services Menu - Buy 3 items and we'll pay for your hair service."
-    :opengraph/description         					"Buy 3 items and Mayvenn will pay for your hair service! Shop our selection of natural human hair bundles and get connected with a stylist near you."
+                                              "experience. Check out our menu to learn about these exclusive offers.")
+    :opengraph/title               			"Free Mayvenn Services Menu - Buy 3 items and we'll pay for your hair service."
+    :opengraph/description         			"Buy 3 items and Mayvenn will pay for your hair service! Shop our selection of natural human hair bundles and get connected with a stylist near you."
     :copy/description                   "You buy the hair, we cover the service. See which products apply."
-    :subcategory/image-id              "8a99154d-f552-4f8a-aab2-1a4f71cbdb06"
+    :subcategory/image-id               "8a99154d-f552-4f8a-aab2-1a4f71cbdb06"
     :seo/sitemap                        true
     :how-it-works/title-primary         "Your hair deserves a Mayvenn–Certified Stylist."
     :how-it-works/title-secondary       "Here’s how it works."
@@ -936,8 +931,12 @@
     :selector/essentials  [:catalog/department
                            :service/type]
     :selector/electives   []
+    :flyout-menu/title    "Browse Services"
+    :footer/title         "Browse Services"
+    :footer/order         0
     :copy/title           "Services"
     :seo/title            "Services"
+    :category/new?        true
     :category/description (copy "Our Mayvenn Certified Stylists are full-service hair experts, guiding"
                                 "you to live in the full potential of your hair.")
     :copy/description     (copy "Our Mayvenn Certified Stylists are full-service hair experts, guiding"

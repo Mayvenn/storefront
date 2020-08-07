@@ -19,7 +19,7 @@
   (apply str "tel://+" (numbers/digits-only tel-num)))
 
 (defn ^:private category->link
-  [{:keys        [page/slug] :as category
+  [{:keys        [page/slug category/new?] :as category
     product-id   :direct-to-details/id
     product-slug :direct-to-details/slug
     sku-id       :direct-to-details/sku-id}]
@@ -34,7 +34,7 @@
     {:title       (:footer/title category)
      :sort-order  (:footer/order category)
      :id          slug
-     :new-link?   (categories/new-category? slug)
+     :new-link?   new?
      :nav-message nav-message}))
 
 (defn shop-section [{:keys [link-columns]}]
@@ -148,13 +148,7 @@
                                             (filter sort-key)
                                             (filter (partial auth/permitted-category? data)))))
         non-category-links (concat (when shop?
-                                     [{:title       "Free Services"
-                                       :sort-order  0
-                                       :id          "free-services"
-                                       :new-link?   false
-                                       :nav-message [events/navigate-category {:page/slug           "free-mayvenn-services"
-                                                                               :catalog/category-id "31"}]}
-                                      {:title       "Find a Stylist"
+                                     [{:title       "Find a Stylist"
                                        :sort-order  2
                                        :id          "find-a-stylist"
                                        :new-link?   false
