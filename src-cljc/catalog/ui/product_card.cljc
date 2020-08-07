@@ -102,7 +102,6 @@
    640 580
    (ui/defer-ucare-img
     {:class   "block col-12 container-height"
-     :style   {:border-radius "5px 5px 0 0"}
      :alt     alt
      :width   640
      :retina? false
@@ -157,7 +156,7 @@
     (merge (apply utils/route-to target)
            {:key       react-key
             :data-test react-key})
-    [:div.border.border-cool-gray.rounded.container-height.center
+    [:div.border.border-cool-gray.container-height.center
      (ui/screen-aware card-image-molecule data)
      (product-card-title-molecule data)
      (ui/screen-aware product-card-details-molecule data)]]))

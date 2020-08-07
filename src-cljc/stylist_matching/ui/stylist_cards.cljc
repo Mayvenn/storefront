@@ -163,7 +163,7 @@
 
 (defcomponent organism
   [data _ {:keys [id]}]
-  [:div.flex.flex-column.left-align.rounded.border.border-cool-gray.mx3.my1.bg-white
+  [:div.flex.flex-column.left-align.border.border-cool-gray.mx3.my1.bg-white
    {:id        id
     :data-test id}
    (stylist-card-header-molecule data)
