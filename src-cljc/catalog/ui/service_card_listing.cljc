@@ -65,7 +65,7 @@
        :else             (mapv (fn build [{:as subsection :keys [subsection-key]}]
                                  (c/build service-list-subsection-component
                                           subsection
-                                          (c/component-id (str "subsection-" (name subsection-key)))))
+                                          (c/component-id (str "subsection-" subsection-key))))
                                subsections))]))
 
 (defn query
