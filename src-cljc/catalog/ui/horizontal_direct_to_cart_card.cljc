@@ -118,7 +118,7 @@
           non-cta-action
           [:div.content-2.proxima primary]
           [:div.content-3.py1 {:style {:line-height "1.125"}} tertiary]
-          [:div.my1
+          [:div.mb1
            [:span.strike secondary-struck]
            [:span.ml2.s-color secondary]]]
          (when disabled-id
