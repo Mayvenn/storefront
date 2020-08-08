@@ -495,7 +495,7 @@
                            shop?
                            (concat
                             [(let [services-icp (->> (get-in data keypaths/categories)
-                                                     (filter (comp #{"35"} :catalog/category-id))
+                                                     (filter (comp #{"30"} :catalog/category-id))
                                                      first)]
                                {:header-menu-item/navigation-target [events/navigate-category services-icp]
                                 :header-menu-item/id                "desktop-services-icp"
