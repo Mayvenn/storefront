@@ -541,18 +541,21 @@
 
 (defn ucare-img
   [{:as   img-attrs
-    :keys [width retina-quality default-quality picture-classes retina?]
+    :keys [width retina-quality default-quality picture-classes retina? square? size]
     :or   {retina-quality  "lightest"
            default-quality "normal"
-           retina?         true}}
+           retina?         true
+           square?         false}}
    image-id]
   (component/html
    (let [width         (spice/parse-int width)
          image-id      (ucare-img-id image-id)
          default-url   (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" default-quality "/")
-                         width (str "-/resize/" width "x/"))
+                         square? (str "-/scale_crop/" size "x" size "/center/")
+                         width   (str "-/resize/" width "x/"))
          retina-url    (if retina?
                          (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" retina-quality "/")
+                           square? (str "-/scale_crop/" size "x" size "/center/")
                            width (str "-/resize/" (* 2 width) "x/"))
                          default-url)
          picture-attrs (merge {:key image-id}
@@ -562,7 +565,7 @@
        [:picture ^:attrs picture-attrs
         [:source {:src-set (str retina-url " 2x," default-url " 1x")}]
         [:img ^:attrs (-> img-attrs
-                          (dissoc :width :retina-quality :default-quality :picture-classses :retina?)
+                          (dissoc :width :retina-quality :default-quality :picture-classses :retina? :square? :size)
                           (assoc :src default-url))]]
        [:picture ^:attrs picture-attrs]))))
 

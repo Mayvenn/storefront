@@ -79,12 +79,16 @@
     (nil? seen?) [:noscript
                   (ui/ucare-img
                    {:class "block col-12"
-                    :alt   alt}
+                    :alt   alt
+                    :square? true
+                    :size    280}
                    (ui/square-image
                     {:resizable-url src} 280))]
     seen?        (ui/ucare-img
-                  {:class "block col-12"
-                   :alt   alt}
+                  {:class   "block col-12"
+                   :alt     alt
+                   :square? true
+                   :size    280}
                   (ui/square-image
                    {:resizable-url src} 280))
     :else        [:div.col-12 {:style {:height "100%"}}]))
