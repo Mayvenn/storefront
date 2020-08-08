@@ -112,9 +112,9 @@
         [:div.px3.py2.col-7.flex.flex-column
          [:a.inherit-color.flex.flex-column.justify-between
           non-cta-action
-          [:div.content-1 primary]
-          [:div.content-3 {:style {:line-height "12px"}} tertiary]
-          [:div.mt1
+          [:div.content-2.proxima primary]
+          [:div.content-3.py1 {:style {:line-height "1.125"}} tertiary]
+          [:div.my1
            [:span.strike secondary-struck]
            [:span.ml2.s-color secondary]]]
          (when disabled-id
