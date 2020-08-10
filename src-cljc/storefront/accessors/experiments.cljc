@@ -134,6 +134,6 @@
   [data]
   (display-feature? data "stylist-mismatch"))
 
-(defn add-on-service?
+(defn add-on-services?
   [data]
-  (display-feature? data "add-on-service"))
+  (display-feature? data "add-on-services"))

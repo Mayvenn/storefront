@@ -440,7 +440,7 @@
       :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
       :picker-data                        (picker/query data)
       :carousel-images                    carousel-images
-      :add-on-service?                    (and service? (experiments/add-on-service? data))
+      :add-on-services?                   (and service? (experiments/add-on-services? data))
       :sticky-add-to-bag?                 (and (nil? (:offset ugc))
                                                (not (products/stylist-only? product))
                                                (not
