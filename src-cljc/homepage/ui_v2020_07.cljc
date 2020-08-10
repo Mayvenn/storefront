@@ -102,8 +102,8 @@
    :services-section/orientation          "image-first"
    :services-section.cta/id               "browse-services-section"
    :services-section.cta/value            "Browse À la carte Services"
-   :services-section.cta/target           [e/navigate-category {:page/slug           "salon-services"
-                                                                :catalog/category-id "30"}]
+   :services-section.cta/target           [e/navigate-category {:page/slug           "salon-services" ;; TODO: this slug will change
+                                                                :catalog/category-id "35"}]
    :services-section.secondary-cta/id     "browse-stylists"
    :services-section.secondary-cta/value  "Browse Stylists"
    :services-section.secondary-cta/target [e/navigate-adventure-match-stylist]})
