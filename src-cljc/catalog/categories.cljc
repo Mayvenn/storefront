@@ -939,7 +939,9 @@
     :seo/title            "Services"
     :category/new?        true
     :page/title           "Hair Salon Services Menu | Mayvenn"
-    :category/description (copy "Shop our selection of salon services for the ultimate hair install or maintenance experience."
+    :category/description (copy "Our Mayvenn Certified Stylists are full-service hair experts, guiding"
+                                "you to live in the full potential of your hair.")
+    :page.meta/description (copy "Shop our selection of salon services for the ultimate hair install or maintenance experience."
                                 "Check out our menu to learn about these premium offerings.")
     :copy/description     (copy "Our Mayvenn Certified Stylists are full-service hair experts, guiding"
                                 "you to live in the full potential of your hair.")
