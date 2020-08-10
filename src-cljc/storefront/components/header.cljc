@@ -429,7 +429,7 @@
      :slide-out-nav/menu-items (cond-> []
                                  shop?
                                  (concat
-                                  [{:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug           "services"
+                                  [{:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug           "salon-services"
                                                                                                     :catalog/category-id "30"}]
                                     :slide-out-nav-menu-item/nested?     false
                                     :slide-out-nav-menu-item/id          "menu-shop-services"

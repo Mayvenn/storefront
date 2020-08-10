@@ -854,10 +854,10 @@
     :category/new?                      true
     :copy/title                         "À la carte Services"
     :copy/icp-action-label              "Learn More"
-    :page/slug                          "salon-services"
-    :page/title                         "Hair Salon Services Menu | Mayvenn"
-    :page.meta/description              (copy "Shop our selection of salon services for the ultimate hair install or maintenance experience."
-                                              "Check out our menu to learn about these premium offerings.")
+    :page/slug                          "a-la-carte-salon-services"
+    :page/title                         "À la carte Salon Services Menu | Mayvenn"
+    :page.meta/description              (copy "Shop our menu of à la carte salon services for the ultimate hair install or maintenance experience."
+                                              "Check out these separately priced offerings.")
     :copy/description                   "Just looking for a salon appointment? Choose from our list of services and find a Certified Stylist in your area."
     :subcategory/image-id               "ccd19d57-d6e9-42a3-bf11-bfe077f15eab"
     :seo/sitemap                        true
@@ -924,7 +924,7 @@
 
 (def services-icp
   [{:catalog/category-id  "30"
-    :page/slug            "services"
+    :page/slug            "salon-services"
     :page/icp?            true
     :catalog/department   #{"service"}
     :service/type         #{"base"}
@@ -937,8 +937,9 @@
     :copy/title           "Services"
     :seo/title            "Services"
     :category/new?        true
-    :category/description (copy "Our Mayvenn Certified Stylists are full-service hair experts, guiding"
-                                "you to live in the full potential of your hair.")
+    :page/title           "Hair Salon Services Menu | Mayvenn"
+    :category/description (copy "Shop our selection of salon services for the ultimate hair install or maintenance experience."
+                                "Check out our menu to learn about these premium offerings.")
     :copy/description     (copy "Our Mayvenn Certified Stylists are full-service hair experts, guiding"
                                 "you to live in the full potential of your hair.")
     :product-list/title   "All Services"

@@ -392,7 +392,7 @@
         associated-service-category          (cond
                                                free-mayvenn-service? {:page/slug           "free-mayvenn-services"
                                                                       :catalog/category-id "31"}
-                                               standalone-service?   {:page/slug           "salon-services" ;; TODO: this slug will changes
+                                               standalone-service?   {:page/slug           "a-la-carte-salon-services"
                                                                       :catalog/category-id "35"}
                                                :else                 nil)]
     (merge
