@@ -133,3 +133,7 @@
 (defn stylist-mismatch?
   [data]
   (display-feature? data "stylist-mismatch"))
+
+(defn add-on-service?
+  [data]
+  (display-feature? data "add-on-service"))

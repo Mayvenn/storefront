@@ -202,23 +202,40 @@
      (catalog.M/price-block data)]]
    (catalog.M/yotpo-reviews-summary data)])
 
+(defn addon-card [{:keys [id title description price]}]
+  [:div.p3.py4.pr4.flex
+   {:key   id}
+   [:div.mt1.pl1 (ui/check-box {:data-test id})]
+   [:div.flex-grow-1.mr2
+    [:div.proxima.content-2 title]
+    [:div.proxima.content-3 description]]
+   [:div price]])
+
+(def available-addons
+  [{:id "addon-1"
+    :title "Natural Hair Trim"
+    :description "A fresh trim to ensure maximum hair health under your install/wig."
+    :price (mf/as-money 15.0)}])
+
 (defcomponent component
-  [{:keys [adding-to-bag?
-           carousel-images
-           product
-           reviews
-           selected-sku
-           sku-quantity
-           selected-options
-           how-it-works
-           get-a-free-install-section-data
-           options
-           picker-data
-           aladdin?
-           sticky-add-to-bag?
-           ugc] :as data} owner opts]
+  [{:keys                  [adding-to-bag?
+                            carousel-images
+                            product
+                            reviews
+                            selected-sku
+                            sku-quantity
+                            selected-options
+                            how-it-works
+                            get-a-free-install-section-data
+                            options
+                            picker-data
+                            aladdin?
+                            sticky-add-to-bag?
+                            ugc
+                            add-on-services?] :as data} owner opts]
   (let [unavailable? (not (seq selected-sku))
-        sold-out?    (not (:inventory/in-stock? selected-sku))]
+        sold-out?    (not (:inventory/in-stock? selected-sku))
+        addon        (first available-addons)] ;; TODO: this is temporary
     (if-not product
       [:div.flex.h2.p1.m1.items-center.justify-center
        {:style {:height "25em"}}
@@ -251,6 +268,13 @@
             (component/build product-summary-organism data)
             [:div.px2
              (component/build picker/component picker-data opts)]
+            (when add-on-services?
+              [:div.bg-cool-gray
+               [:div.px3.pt3.title-3.proxima.bold.shout "Pair with add-ons"]
+               [:div.mx3.my1.px3.bg-white
+                (addon-card addon)]
+               [:div.pt2.pb3.flex.justify-center
+                (ui/button-small-underline-primary {} "see all add-ons")]])
             [:div
              (cond
                unavailable? unavailable-button
@@ -416,6 +440,7 @@
       :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
       :picker-data                        (picker/query data)
       :carousel-images                    carousel-images
+      :add-on-service?                    (and service? (experiments/add-on-service? data))
       :sticky-add-to-bag?                 (and (nil? (:offset ugc))
                                                (not (products/stylist-only? product))
                                                (not
