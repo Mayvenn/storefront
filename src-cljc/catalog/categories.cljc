@@ -931,6 +931,7 @@
     :selector/essentials  [:catalog/department
                            :service/type]
     :selector/electives   []
+    :seo/sitemap          true
     :flyout-menu/title    "Browse Services"
     :footer/title         "Browse Services"
     :footer/order         0
