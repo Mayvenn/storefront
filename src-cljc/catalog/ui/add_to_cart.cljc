@@ -35,8 +35,7 @@
   [{:add-to-cart.incentive-block/keys
     [id callout message link-id link-label link-target footnote]}]
   (when id
-    [:div.py2.mb2
-     {:class "bg-refresh-gray"}
+    [:div.py2.mb2.bg-refresh-gray.px3
      [:div.proxima.content-2.line-height-1.bold callout]
      [:div.pl4.pr1
       [:div.proxima.content-3.mb1
