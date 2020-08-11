@@ -894,10 +894,10 @@
     :category/new?                      true
     :copy/title                         "FREE Mayvenn Services"
     :copy/icp-action-label              "Learn More"
-    :page/slug                          "free-mayvenn-services"
-    :page/title                         "Hair Free Mayvenn Services Menu | Mayvenn"
-    :page.meta/description              (copy "Shop our selection of free Mayvenn Services for the ultimate hair install or wig customization"
-                                              "experience. Check out our menu to learn about these exclusive offers.")
+    :page/slug                          "free-salon-services"
+    :page/title                         "Free Salon Service Menu | Mayvenn"
+    :page.meta/description              (copy "Shop our menu of free salon services by our Certified Stylists when you"
+                                              "buy certain hair products. You buy the hair, we'll cover the service.")
     :opengraph/title               			"Free Mayvenn Services Menu - Buy 3 items and we'll pay for your hair service."
     :opengraph/description         			"Buy 3 items and Mayvenn will pay for your hair service! Shop our selection of natural human hair bundles and get connected with a stylist near you."
     :copy/description                   "You buy the hair, we cover the service. See which products apply."
