@@ -6,6 +6,7 @@
               [storefront.confetti :as confetti]
               [storefront.hooks.quadpay :as quadpay]
               [storefront.platform.messages :as messages]])
+   adventure.keypaths
    api.orders
    [catalog.facets :as facets]
    [catalog.images :as catalog-images]
@@ -645,14 +646,14 @@
         line-items                                   (map (partial add-product-title-and-color-to-line-item products facets)
                                                           (orders/product-items order))
         cart-services                                (api.orders/services data order)
+        stylist (get-in data adventure.keypaths/adventure-servicing-stylist)
         {:mayvenn-install/keys
          [discountable-services-on-order? applied? locked?
           needs-more-items-for-free-service?
-          stylist quantity-remaining
+          quantity-remaining
           service-type cart-helper-copy
           service-sku]
-         :as               mayvenn-install
-         servicing-stylist :mayvenn-install/stylist} (api.orders/current data)
+         :as               mayvenn-install} (api.orders/current data)
 
 
         any-services?                  (seq (:services/items cart-services))
@@ -744,28 +745,28 @@
       any-services?
       (cond->
 
-          (nil? servicing-stylist)
+          (nil? stylist)
         (merge {:stylist-organism/id "stylist-organism"})
 
-        (and (not stylist-blocked?) (nil? servicing-stylist))
+        (and (not stylist-blocked?) (nil? stylist))
         (merge
          {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
           :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})
 
-        (some? servicing-stylist)
+        (some? stylist)
         (merge
-         {:checkout-caption-copy              (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
-          :servicing-stylist-portrait-url     (-> servicing-stylist :portrait :resizable-url)
+         {:checkout-caption-copy              (str "After your order ships, you'll be connected with " (stylists/->display-name stylist) " over SMS to make an appointment.")
+          :servicing-stylist-portrait-url     (-> stylist :portrait :resizable-url)
           :servicing-stylist-banner/id        "servicing-stylist-banner"
-          :servicing-stylist-banner/title     (stylists/->display-name servicing-stylist)
-          :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)
+          :servicing-stylist-banner/title     (stylists/->display-name stylist)
+          :servicing-stylist-banner/rating    {:rating/value (:rating stylist)
                                                :rating/id    "stylist-rating-id"}
-          :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)
-          :servicing-stylist-banner/target    [events/control-change-stylist {:stylist-id (:stylist-id servicing-stylist)}]
+          :servicing-stylist-banner/image-url (some-> stylist :portrait :resizable-url)
+          :servicing-stylist-banner/target    [events/control-change-stylist {:stylist-id (:stylist-id stylist)}]
           :servicing-stylist-banner/action-id (when shop? "stylist-swap")}
          (when-not shop?
            {:checkout-caption-copy (str "After you place your order, please contact "
-                                        (stylists/->display-name servicing-stylist)
+                                        (stylists/->display-name stylist)
                                         " to make your appointment.")})))
 
       applied?

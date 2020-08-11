@@ -57,27 +57,24 @@
           (keep line-item->service-type)
           first))
 
-(defn ^:private promotion-helper-guide-content-for [singular-addition-hair-family additional-hair-family]
-  (fn [items-needed satisfied?]
-    (if (not satisfied?)
-      (let [bundles-count                 (items-needed "bundles")
-            bundles-required?             (pos? bundles-count)
-            additional-hair-family-count  (items-needed additional-hair-family)
-            needs-additional-hair-family? (and additional-hair-family
-                                               (pos? additional-hair-family-count))]
-        (str "Add "
-             (when bundles-required?
-               (str bundles-count (ui/pluralize bundles-count " bundle" " bundles")))
-             (when (and bundles-required?
-                        needs-additional-hair-family?)
-               " and ")
-             (when needs-additional-hair-family?
-               (str additional-hair-family-count
-                    " "
-                    (ui/pluralize additional-hair-family-count
-                                  singular-addition-hair-family
-                                  additional-hair-family)))))
-      "You’re all set! Shampoo, braiding and basic styling included.")))
+(defn ^:private promotion-helper-guide-content-for [singular-addition-hair-family additional-hair-family items-needed]
+  (let [bundles-count                 (items-needed "bundles")
+        bundles-required?             (pos? bundles-count)
+        additional-hair-family-count  (items-needed additional-hair-family)
+        needs-additional-hair-family? (and additional-hair-family
+                                           (pos? additional-hair-family-count))]
+    (str "Add "
+         (when bundles-required?
+           (str bundles-count (ui/pluralize bundles-count " bundle" " bundles")))
+         (when (and bundles-required?
+                    needs-additional-hair-family?)
+           " and ")
+         (when needs-additional-hair-family?
+           (str additional-hair-family-count
+                " "
+                (ui/pluralize additional-hair-family-count
+                              singular-addition-hair-family
+                              additional-hair-family))))))
 
 (defn- satisfies-all-needs [items-needed]
   (not (some pos? (vals items-needed))))
@@ -86,57 +83,36 @@
   [items-needed]
   (reduce + (filter pos? (vals items-needed))))
 
-(defn ^:private promo-helper-guiding-content
-  [service-type product-quantities]
-  (let [all-requirements {:leave-out         {:satisfies?          satisfies-all-needs
-                                              :requirements        {"bundles" 3}
-                                              :steps-required      3
-                                              :steps-remaining     remaining-count
-                                              :cart-helper-copy-fn (promotion-helper-guide-content-for nil nil)}
-                          :closure           {:satisfies?          satisfies-all-needs
-                                              :requirements        {"bundles"  2
-                                                                    "closures" 1}
-                                              :steps-required      3
-                                              :steps-remaining     remaining-count
-                                              :cart-helper-copy-fn (promotion-helper-guide-content-for "closure" "closures")}
-                          :frontal           {:satisfies?          satisfies-all-needs
-                                              :requirements        {"bundles"  2
-                                                                    "frontals" 1}
-                                              :steps-required      3
-                                              :steps-remaining     remaining-count
-                                              :cart-helper-copy-fn (promotion-helper-guide-content-for "frontal" "frontals")}
-                          :three-sixty       {:requirements        {"bundles"      2
-                                                                    "360-frontals" 1}
-                                              :steps-required      3
-                                              :steps-remaining     remaining-count
-                                              :satisfies?          satisfies-all-needs
-                                              :cart-helper-copy-fn (promotion-helper-guide-content-for "360 frontal" "360-frontals")}
-                          :wig-customization {:requirements        {"360-wigs"        1
-                                                                    "lace-front-wigs" 1}
-                                              :steps-required      1
-                                              :steps-remaining     (fn [items-needed]
-                                                                     (if (or (<= (items-needed "360-wigs") 0)
-                                                                             (<= (items-needed "lace-front-wigs") 0))
-                                                                       0
-                                                                       1))
-                                              :satisfies?          (fn [items-needed]
-                                                                     (or (<= (items-needed "360-wigs") 0)
-                                                                         (<= (items-needed "lace-front-wigs") 0)))
-                                              :cart-helper-copy-fn (fn [items-needed satisfied?]
-                                                                     (if satisfied?
-                                                                       "You're all set! Bleaching knots, tinting & cutting lace and hairline customization included."
-                                                                       "Add a Virgin Lace Front or a Virgin 360 Wig"))}}
-        requirements     (get all-requirements service-type)
-        items-needed     (->> (select-keys product-quantities (keys (:requirements requirements)))
-                              (merge-with (fnil - 0 0) (:requirements requirements)))
-        satisfied?       ((:satisfies? requirements) items-needed)
-        steps-required   (:steps-required requirements)
-        steps-remaining  ((:steps-remaining requirements) items-needed)]
-    {:cart-helper-copy  ((:cart-helper-copy-fn requirements) items-needed satisfied?)
-     :disable-checkout? (not satisfied?)
-     :steps-required    steps-required
-     :current-step      (- steps-required steps-remaining)
-     :steps-remaining   steps-remaining}))
+(def all-requirements {:leave-out         {:satisfies?          satisfies-all-needs
+                                           :requirements        {"bundles" 3}
+                                           :steps-required      3
+                                           :steps-remaining     remaining-count}
+                       :closure           {:satisfies?          satisfies-all-needs
+                                           :requirements        {"bundles"  2
+                                                                 "closures" 1}
+                                           :steps-required      3
+                                           :steps-remaining     remaining-count}
+                       :frontal           {:satisfies?          satisfies-all-needs
+                                           :requirements        {"bundles"  2
+                                                                 "frontals" 1}
+                                           :steps-required      3
+                                           :steps-remaining     remaining-count}
+                       :three-sixty       {:requirements        {"bundles"      2
+                                                                 "360-frontals" 1}
+                                           :steps-required      3
+                                           :steps-remaining     remaining-count
+                                           :satisfies?          satisfies-all-needs}
+                       :wig-customization {:requirements        {"360-wigs"        1
+                                                                 "lace-front-wigs" 1}
+                                           :steps-required      1
+                                           :steps-remaining     (fn [items-needed]
+                                                                  (if (or (<= (items-needed "360-wigs") 0)
+                                                                          (<= (items-needed "lace-front-wigs") 0))
+                                                                    0
+                                                                    1))
+                                           :satisfies?          (fn [items-needed]
+                                                                  (or (<= (items-needed "360-wigs") 0)
+                                                                      (<= (items-needed "lace-front-wigs") 0)))}})
 
 (defn product-line-items->hair-family-counts [line-items]
   (reduce (fn [m line-item]
@@ -156,57 +132,64 @@
   This is deprecated. There isn't a directly equivalent model to replace it.
   It has been conceptually superseded by 'free-mayvenn-service'"
   [order servicing-stylist sku-catalog images-catalog promotion-helper?]
-  (let [shipment                (-> order :shipments first)
-        any-wig?                (->> shipment
-                                     :line-items
-                                     (filter line-items/any-wig?)
-                                     count
-                                     pos?)
+  (let [shipment                        (-> order :shipments first)
         {base-services  :base
-         addon-services :addon} (->> order
-                                     orders/service-line-items
-                                     (group-by (comp keyword :service/type :variant-attrs)))
-
-        product-line-items        (orders/product-items-for-shipment shipment)
-        updated-service-type      (services->service-type base-services)
-        service-type              updated-service-type
-        {:keys [disable-checkout?
-                cart-helper-copy
-                steps-required
-                current-step
-                steps-remaining]} (when service-type
-                                    (->> product-line-items
-                                         product-line-items->hair-family-counts
-                                         (promo-helper-guiding-content service-type)))
-        mayvenn-install-line-item (->> base-services
-                                       (filter #(:promo.mayvenn-install/discountable (:variant-attrs %)))
-                                       first)
-
-        mayvenn-install-sku             (get sku-catalog (:sku mayvenn-install-line-item))
-        addon-services-skus             (->> addon-services
-                                             (map (fn [addon-service] (get sku-catalog (:sku addon-service))))
-                                             (map (fn [addon-sku] {:addon-service/title  (:sku/title addon-sku)
-                                                                   :addon-service/price  (some-> addon-sku :sku/price mf/as-money)
-                                                                   :addon-service/sku-id (:catalog/sku-id addon-sku)})))
-        discountable-services-on-order? (boolean (orders/discountable-services-on-order? order))
-        sku-title                       (:sku/title mayvenn-install-sku)]
-    {:mayvenn-install/discountable-services-on-order?    discountable-services-on-order?
-     :mayvenn-install/locked?                            (if promotion-helper? false disable-checkout?)
-     :mayvenn-install/needs-more-items-for-free-service? (< 0 steps-remaining)
-     :mayvenn-install/cart-helper-copy                   cart-helper-copy
-     :mayvenn-install/action-label                       "add"
-     :mayvenn-install/applied?                           (orders/service-line-item-promotion-applied? order)
-     :mayvenn-install/quantity-required                  steps-required
-     :mayvenn-install/quantity-remaining                 steps-remaining
-     :mayvenn-install/quantity-added                     current-step
-     :mayvenn-install/stylist                            servicing-stylist
-     :mayvenn-install/service-sku                        mayvenn-install-sku
-     :mayvenn-install/service-title                      sku-title
-     :mayvenn-install/service-discount                   (- (line-items/service-line-item-price mayvenn-install-line-item))
-     :mayvenn-install/any-wig?                           any-wig?
-     :mayvenn-install/service-image-url                  (->> mayvenn-install-sku (images/skuer->image images-catalog "cart") :url)
-     :mayvenn-install/addon-services                     addon-services-skus
-     :mayvenn-install/service-type                       service-type}))
+         addon-services :addon}         (->> order
+                                             orders/service-line-items
+                                             (group-by (comp keyword :service/type :variant-attrs)))
+        service-type                    (services->service-type base-services)
+        discountable-services-on-order? (boolean (orders/discountable-services-on-order? order))]
+    (merge
+     {:mayvenn-install/discountable-services-on-order?    discountable-services-on-order?
+      :mayvenn-install/action-label                       "add"
+      :mayvenn-install/applied?                           (orders/service-line-item-promotion-applied? order)
+      :mayvenn-install/stylist                            servicing-stylist
+      :mayvenn-install/any-wig?                           (->> shipment
+                                                               :line-items
+                                                               (filter line-items/any-wig?)
+                                                               count
+                                                               pos?)}
+     (when service-type
+       (let [{:keys [requirements
+                     steps-required
+                     steps-remaining
+                     satisfies?]}            (get all-requirements service-type)
+             hair-family-counts              (->> shipment
+                                                  orders/product-items-for-shipment
+                                                  product-line-items->hair-family-counts)
+             items-needed                    (->> (select-keys hair-family-counts (keys requirements))
+                                                  (merge-with (fnil - 0 0) requirements))
+             satisfied?                      (satisfies? items-needed)
+             steps-remaining                 (steps-remaining items-needed)
+             mayvenn-install-line-item       (->> base-services
+                                                  (filter #(:promo.mayvenn-install/discountable (:variant-attrs %)))
+                                                  first)
+             mayvenn-install-sku             (get sku-catalog (:sku mayvenn-install-line-item))]
+         {:mayvenn-install/locked?                            (if promotion-helper?
+                                                                false
+                                                                (not satisfied?))
+          :mayvenn-install/needs-more-items-for-free-service? (< 0 steps-remaining)
+          :mayvenn-install/cart-helper-copy                   (if satisfied?
+                                                                (str "You're all set! " (:copy/whats-included mayvenn-install-sku))
+                                                                (case service-type
+                                                                  :leave-out         (promotion-helper-guide-content-for nil nil items-needed)
+                                                                  :closure           (promotion-helper-guide-content-for "closure" "closures" items-needed)
+                                                                  :frontal           (promotion-helper-guide-content-for "frontal" "frontals" items-needed)
+                                                                  :three-sixty       (promotion-helper-guide-content-for "360 frontal" "360-frontals" items-needed)
+                                                                  :wig-customization "Add a Virgin Lace Front or a Virgin 360 Wig"))
+          :mayvenn-install/quantity-required                  steps-required
+          :mayvenn-install/quantity-remaining                 steps-remaining
+          :mayvenn-install/quantity-added                     (- steps-required steps-remaining)
+          :mayvenn-install/service-sku                        mayvenn-install-sku
+          :mayvenn-install/service-title                      (:sku/title mayvenn-install-sku)
+          :mayvenn-install/service-discount                   (- (line-items/service-line-item-price mayvenn-install-line-item))
+          :mayvenn-install/service-image-url                  (->> mayvenn-install-sku (images/skuer->image images-catalog "cart") :url)
+          :mayvenn-install/addon-services                     (->> addon-services
+                                                                   (map (fn [addon-service] (get sku-catalog (:sku addon-service))))
+                                                                   (map (fn [addon-sku] {:addon-service/title  (:sku/title addon-sku)
+                                                                                         :addon-service/price  (some-> addon-sku :sku/price mf/as-money)
+                                                                                         :addon-service/sku-id (:catalog/sku-id addon-sku)})))
+          :mayvenn-install/service-type                       service-type})))))
 
 (def rules
   (let [?bundles
@@ -219,10 +202,6 @@
         {:catalog/department #{"hair"} :hair/family #{"360-frontals"}}
         ?wigs
         {:catalog/department #{"hair"} :hair/family #{"lace-front-wigs" "360-wigs"}}
-        wig-success
-        "You're all set! Bleaching knots, tinting & cutting lace and hairline customization included."
-        sew-in-success
-        "Add more bundles for a fuller look"
         install-navigation-message [e/navigate-category {:catalog/category-id "23"
                                                          :page/slug           "mayvenn-install"}]
         wig-navigation-message     [e/navigate-category {:catalog/category-id "13"
@@ -232,28 +211,23 @@
      {:rules                    [["bundle" ?bundles 3]] ;; [word essentials cart-quantity]
       :failure-navigation-event install-navigation-message
 
-      :add-more? true
-      :success   sew-in-success}
+      :add-more? true}
      "SRV-CBI-000"
      {:rules                    [["bundle" ?bundles 2] ["closure" ?closures 1]]
       :failure-navigation-event install-navigation-message
-      :add-more?                true
-      :success                  sew-in-success}
+      :add-more?                true}
      "SRV-FBI-000"
      {:rules                    [["bundle" ?bundles 2] ["frontal" ?frontals 1]]
       :failure-navigation-event install-navigation-message
-      :add-more?                true
-      :success                  sew-in-success}
+      :add-more?                true}
      "SRV-3BI-000"
      {:rules                    [["bundle" ?bundles 2] ["360 frontal" ?360-frontals 1]]
       :failure-navigation-event install-navigation-message
-      :add-more?                true
-      :success                  sew-in-success}
+      :add-more?                true}
      "SRV-WGC-000"
      {:rules                    [["Virgin Lace Front or a Virgin 360 Wig" ?wigs 1]]
       :failure-navigation-event wig-navigation-message
-      :add-more?                false
-      :success                  wig-success}}))
+      :add-more?                false}}))
 
 (defn free-mayvenn-service
   "
@@ -310,7 +284,6 @@
        ;; criterion 1
        :service-item             service-line-item
        ;; criterion 2
-       :hair-success             (:success (get rules (:sku service-line-item)))
        :hair-missing             (seq failed-rules)
        :hair-missing-quantity    (apply + (map :missing-quantity failed-rules))
        :hair-success-quantity    (apply + (map last rules-for-service))

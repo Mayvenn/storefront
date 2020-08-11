@@ -339,11 +339,12 @@
 (defn mayvenn-install-line-items-query
   [app-state {:mayvenn-install/keys
               [service-title addon-services service-image-url service-type
-              stylist service-discount]}]
+              service-discount service-sku]}]
   (let [wig-customization? (= service-type :wig-customization)]
     (if service-title
       [(merge {:react/key                                "freeinstall-line-item-freeinstall"
                :cart-item-title/id                       "line-item-title-upsell-free-service"
+               :cart-item-copy/value                     (str "You're all set! " (:copy/whats-included service-sku))
                :cart-item-floating-box/id                "line-item-freeinstall-price"
                :cart-item-floating-box/value             (some-> service-discount - mf/as-money)
                :cart-item-service-thumbnail/id           "freeinstall"
@@ -351,11 +352,9 @@
               (if wig-customization?
                 {:cart-item-title/id      "line-item-title-applied-wig-customization"
                  :cart-item-title/primary "Wig Customization"
-                 :cart-item-copy/value    "You're all set! Bleaching knots, tinting & cutting lace and hairline customization included."
                  :cart-item-copy/id       "congratulations"}
                 {:cart-item-title/id      "line-item-title-applied-mayvenn-install"
                  :cart-item-title/primary service-title
-                 :cart-item-copy/value    "You’re all set! Shampoo, braiding and basic styling included."
                  :cart-item-copy/id       "congratulations"})
               (when (seq addon-services)
                 {:cart-item-sub-items/id      "addon-services"
@@ -425,7 +424,8 @@
                                 service-type
                                 service-title
                                 addon-services
-                                service-image-url]
+                                service-image-url
+                                service-sku]
          :as                   mayvenn-install} (api.orders/current data)
         user                                    (get-in data keypaths/user)
         wig-customization?                      (= :wig-customization service-type)
@@ -484,8 +484,7 @@
                                                                              (some-> service-discount - mf/as-money)]
           :cart-item-title/id                    "line-item-title-applied-mayvenn-install"
           :cart-item-title/primary               service-title
-          :cart-item-title/secondary             [:div.line-height-3
-                                                  "You’re all set! Shampoo, braiding and basic styling included."]}}})
+          :cart-item-title/secondary             [:div.line-height-3 "You’re all set! " (:copy/whats-included service-sku)]}}})
 
       (and applied? wig-customization?)
       (maps/deep-merge
@@ -493,8 +492,7 @@
         {:cart-item
          {:cart-item-title/id        "line-item-title-applied-wig-customization"
           :cart-item-title/primary   "Wig Customization"
-          :cart-item-title/secondary [:div.content-3
-                                      "You're all set! Bleaching knots, tinting & cutting lace and hairline customization included."]}}})
+          :cart-item-title/secondary [:div.content-3 "You're all set! " (:copy/whats-included service-sku)]}}})
 
       (and applied? stylist)
       (merge

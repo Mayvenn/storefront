@@ -29,10 +29,9 @@
       face contents]]))
 
 (defn promotion-helper-ui<-
-  [{:promotion-helper/keys [opened?]}
+  [{:promotion-helper/keys [opened? hair-success]}
    {:free-mayvenn-service/keys [failed-criteria-count
                                 service-item
-                                hair-success
                                 hair-success-quantity
                                 hair-missing
                                 hair-missing-quantity
@@ -128,15 +127,21 @@
   [app-state free-mayvenn-service]
   (when free-mayvenn-service
     (let [nav-event                        (get-in app-state storefront.keypaths/navigation-event)
+          sku-id                           (-> free-mayvenn-service :free-mayvenn-service/service-item :sku)
+          skus                             (get-in app-state storefront.keypaths/v2-skus)
+          service-sku                      (get skus sku-id)
           on-cart-with-criteria-fulfilled? (and (= e/navigate-cart nav-event)
                                                 (= 0 (:free-mayvenn-service/failed-criteria-count free-mayvenn-service)))]
-      {:promotion-helper/exists? (and (experiments/promotion-helper? app-state)
-                                      (nav/promotion-helper-can-exist-on-page? nav-event)
-                                      (= :shop (sites/determine-site app-state))
-                                      (not on-cart-with-criteria-fulfilled?))
-       :promotion-helper/opened? (->> k/ui-promotion-helper-opened
-                                      (get-in app-state)
-                                      boolean)})))
+      {:promotion-helper/exists?      (and (experiments/promotion-helper? app-state)
+                                             (nav/promotion-helper-can-exist-on-page? nav-event)
+                                             (= :shop (sites/determine-site app-state))
+                                             (not on-cart-with-criteria-fulfilled?))
+       :promotion-helper/hair-success (if (= "SRV-WGC-000" sku-id)
+                                        (str "You're all set! " (:copy/whats-included service-sku))
+                                        "Add more bundles for a fuller look")
+       :promotion-helper/opened?      (->> k/ui-promotion-helper-opened
+                                             (get-in app-state)
+                                             boolean)})))
 
 ;; COREY
 ;; Concepts that exist, but not modeled well:
