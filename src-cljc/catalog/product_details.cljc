@@ -202,40 +202,34 @@
      (catalog.M/price-block data)]]
    (catalog.M/yotpo-reviews-summary data)])
 
-(defn addon-card [{:keys [id title description price]}]
+(defn addon-card [{:addon-line/keys [id primary secondary tertiary]}]
   [:div.p3.py4.pr4.flex
    {:key   id}
    [:div.mt1.pl1 (ui/check-box {:data-test id})]
    [:div.flex-grow-1.mr2
-    [:div.proxima.content-2 title]
-    [:div.proxima.content-3 description]]
-   [:div price]])
-
-(def available-addons
-  [{:id "addon-1"
-    :title "Natural Hair Trim"
-    :description "A fresh trim to ensure maximum hair health under your install/wig."
-    :price (mf/as-money 15.0)}])
+    [:div.proxima.content-2 primary]
+    [:div.proxima.content-3 secondary]]
+   [:div tertiary]])
 
 (defcomponent component
-  [{:keys                  [adding-to-bag?
-                            carousel-images
-                            product
-                            reviews
-                            selected-sku
-                            sku-quantity
-                            selected-options
-                            how-it-works
-                            get-a-free-install-section-data
-                            options
-                            picker-data
-                            aladdin?
-                            sticky-add-to-bag?
-                            ugc
-                            add-on-services?] :as data} owner opts]
+  [{:keys                                   [adding-to-bag?
+                                             carousel-images
+                                             product
+                                             reviews
+                                             selected-sku
+                                             sku-quantity
+                                             selected-options
+                                             how-it-works
+                                             get-a-free-install-section-data
+                                             options
+                                             picker-data
+                                             aladdin?
+                                             sticky-add-to-bag?
+                                             ugc
+                                             add-on-services?
+                                             related-addons] :as data} owner opts]
   (let [unavailable? (not (seq selected-sku))
-        sold-out?    (not (:inventory/in-stock? selected-sku))
-        addon        (first available-addons)] ;; TODO: this is temporary
+        sold-out?    (not (:inventory/in-stock? selected-sku))]
     (if-not product
       [:div.flex.h2.p1.m1.items-center.justify-center
        {:style {:height "25em"}}
@@ -268,13 +262,18 @@
             (component/build product-summary-organism data)
             [:div.px2
              (component/build picker/component picker-data opts)]
-            (when add-on-services?
-              [:div.bg-cool-gray
-               [:div.px3.pt3.title-3.proxima.bold.shout "Pair with add-ons"]
-               [:div.mx3.my1.px3.bg-white
-                (addon-card addon)]
-               [:div.pt2.pb3.flex.justify-center
-                (ui/button-small-underline-primary {} "see all add-ons")]])
+            (when (and add-on-services? (seq related-addons))
+              (let [{:cta-related-addon/keys [label target id]} data]
+                [:div.bg-cool-gray
+                 [:div.px3.pt3.title-3.proxima.bold.shout "Pair with add-ons"]
+                 (mapv (fn [addon]
+                         [:div.mx3.my1.px3.bg-white
+                          (addon-card addon)])
+                       related-addons)
+                 [:div.pt2.pb3.flex.justify-center
+                  (ui/button-small-underline-primary (merge (apply utils/route-to target)
+                                                            {:id id})
+                                                     label)]]))
             [:div
              (cond
                unavailable? unavailable-button
@@ -413,6 +412,9 @@
         stylist-mismatch?                    (experiments/stylist-mismatch? data)
         servicing-stylist                    (get-in data adventure.keypaths/adventure-servicing-stylist)
         stylist-provides-service?            (stylist-filters/stylist-provides-service servicing-stylist product)
+        related-addons                       (get-in data keypaths/v2-related-addons)
+        addon-list-open?                     (get-in data catalog.keypaths/detailed-product-addon-list-open?)
+        add-on-services?                     (experiments/add-on-services? data)
         associated-service-category          (cond
                                                free-mayvenn-service? {:page/slug           "free-mayvenn-services"
                                                                       :catalog/category-id "31"}
@@ -440,7 +442,7 @@
       :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
       :picker-data                        (picker/query data)
       :carousel-images                    carousel-images
-      :add-on-services?                   (and service? (experiments/add-on-services? data))
+      :add-on-services?                   (and service? add-on-services?)
       :sticky-add-to-bag?                 (and (nil? (:offset ugc))
                                                (not (products/stylist-only? product))
                                                (not
@@ -681,7 +683,24 @@
         :cta-disabled-explanation/id         "disabled-explanation"
         :cta-disabled-explanation/primary    (str "Not available with your stylist " (:store-nickname servicing-stylist))
         :cta-disabled-explanation/cta-label  "Browse other services"
-        :cta-disabled-explanation/cta-target [events/navigate-category associated-service-category]}))))
+        :cta-disabled-explanation/cta-target [events/navigate-category associated-service-category]})
+
+     (when (and add-on-services? (seq related-addons))
+       {:cta-related-addon/label  (if addon-list-open? "hide add-ons" "see all add-ons")
+        :cta-related-addon/id     "addon-cta"
+        :cta-related-addon/target [events/control-product-detail-toggle-related-addon-list]
+        :related-addons           (if addon-list-open?
+                                    (mapv (fn [addon]
+                                            {:addon-line/id        (:catalog/sku-id addon)
+                                             :addon-line/primary   (:sku/title addon)
+                                             :addon-line/secondary (:copy/description addon)
+                                             :addon-line/tertiary  (mf/as-money (:sku/price addon))})
+                                          related-addons)
+                                    (let [addon (first related-addons)]
+                                      [{:addon-line/id        (:catalog/sku-id addon)
+                                        :addon-line/primary   (:sku/title addon)
+                                        :addon-line/secondary (:copy/description addon)
+                                        :addon-line/tertiary  (mf/as-money (:sku/price addon))}]))}))))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
@@ -733,6 +752,15 @@
        (if (auth/permitted-product? app-state current-product)
          (review-hooks/insert-reviews)
          (effects/redirect events/navigate-home)))))
+
+#?(:cljs
+   (defn fetch-sku-related-addons [app-state sku]
+     (api/get-skus (get-in app-state keypaths/api-cache)
+                   {:catalog/department "service"
+                    :service/type       "addon"
+                    :hair/family        (:hair/family sku)}
+                    (fn [response]
+                         (messages/handle-message events/api-success-v2-skus-for-related-addons response)))))
 
 (defn first-when-only [coll]
   (when (= 1 (count coll))
@@ -867,7 +895,8 @@
                                              (get-in app-state)
                                              keyword)]
              (effects/fetch-cms-keypath app-state [:ugc-collection album-keyword]))
-           (fetch-product-details app-state product-id))))))
+           (do (fetch-product-details app-state product-id)
+               (fetch-sku-related-addons app-state selected-sku)))))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
@@ -943,3 +972,15 @@
   (-> app-state
       (update-in keypaths/browse-recently-added-skus conj {:quantity quantity :sku sku})
       (assoc-in keypaths/browse-sku-quantity 1)))
+
+(defmethod transitions/transition-state events/navigate-product-details
+  [_ _ _ app-state]
+  (assoc-in app-state catalog.keypaths/detailed-product-addon-list-open? false))
+
+(defmethod transitions/transition-state events/control-product-detail-toggle-related-addon-list
+  [_ _ _ app-state]
+  (update-in app-state catalog.keypaths/detailed-product-addon-list-open? not))
+
+(defmethod transitions/transition-state events/api-success-v2-skus-for-related-addons
+  [_ _ {:keys [skus] :as response} app-state]
+  (assoc-in app-state keypaths/v2-related-addons skus))

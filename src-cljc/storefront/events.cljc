@@ -250,6 +250,8 @@
 (defpath control-product-detail-picker-option-select)
 (defpath control-product-detail-picker-option-quantity-select)
 
+(defpath control-product-detail-toggle-related-addon-list)
+
 (defpath video-played)
 
 (defpath snap)
@@ -456,6 +458,7 @@
 (defpath sign-out)
 
 (defpath viewed-sku)
+(defpath api-success-v2-skus-for-related-addons)
 
 (defpath faq-section-selected)
 (defpath tabbed-information-tab-selected)
