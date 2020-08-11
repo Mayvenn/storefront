@@ -479,6 +479,19 @@
           (is (= 301 (:status resp)) (pr-str resp))
           (is (= "https://shop.mayvenn.com/categories/1-virgin-frontals" (get-in resp [:headers "Location"])))))) ))
 
+(deftest redirects-35-services-categories-to-30-salon-services-categories-but-not-35-a-la-carte-salon-services
+  (testing "When a request comes for the 35 services category, the user is redirected to the 30 salon services page"
+    (with-services {}
+      (with-handler handler
+        (let [resp (handler (mock/request :get "https://shop.mayvenn.com/categories/35-services"))]
+          (is (= 301 (:status resp)) (pr-str resp))
+          (is (= "https://shop.mayvenn.com/categories/30-salon-services" (get-in resp [:headers "Location"])))))))
+  (testing "When a request comes for the 35 a la carte salon services, the user is not redirected"
+    (with-services {}
+      (with-handler handler
+        (let [resp (handler (mock/request :get "https://shop.mayvenn.com/categories/35-a-la-carte-salon-services"))]
+          (is (= 200 (:status resp)) (pr-str resp)))))))
+
 (deftest redirects-discontinued-product-to-category
   (with-services {}
     (with-handler handler

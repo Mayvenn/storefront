@@ -553,6 +553,10 @@
    "18" {:catalog/category-id "1"
          :page/slug           "virgin-frontals"}})
 
+(def salon-services-category
+  {:catalog/category-id "30"
+   :page/slug           "salon-services"})
+
 (defn render-category
   [{:keys [environment] :as render-ctx} data {:keys [subdomains] :as req} {:keys [catalog/category-id page/slug]}]
   (let [virgin-category (get dyed-virgin-category-id->virgin-category category-id)]
@@ -562,6 +566,10 @@
 
       virgin-category
       (util.response/redirect (path-for req events/navigate-category virgin-category) :moved-permanently)
+
+      (and (= "35" category-id)
+           (= "services" slug))
+      (util.response/redirect (path-for req events/navigate-category salon-services-category) :moved-permanently)
 
       :else
       (let [categories (get-in data keypaths/categories)]
