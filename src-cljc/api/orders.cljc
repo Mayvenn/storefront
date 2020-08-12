@@ -141,9 +141,9 @@
   It has been conceptually superseded by 'free-mayvenn-service'"
   [order servicing-stylist sku-catalog images-catalog promotion-helper?]
   (let [shipment                        (-> order :shipments first)
-        {addon-services :addon}         (->> order
+        addon-services                  (->> order
                                              orders/service-line-items
-                                             (group-by (comp keyword :service/type :variant-attrs)))
+                                             (filter (comp boolean #{"addon"} :service/type :variant-attrs)))
         {:free-mayvenn-service/keys
          [hair-missing
           hair-missing-quantity
