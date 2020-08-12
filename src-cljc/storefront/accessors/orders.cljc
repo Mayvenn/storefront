@@ -1,9 +1,6 @@
 (ns storefront.accessors.orders
   (:require [clojure.set :as set]
-            [clojure.string :as string]
-            [spice.core :as spice]
             [storefront.accessors.line-items :as line-items]
-            [storefront.platform.numbers :as numbers]
             [storefront.utils :as utils]))
 
 (defn incomplete? [order]
@@ -140,7 +137,12 @@
       "Leave Out Install"
       "Closure Install"
       "Frontal Install"
-      "360 Frontal Install"} name)))
+      "360 Frontal Install"
+
+      "Custom U Part Wig"
+      "Custom Lace Closure Wig"
+      "Custom Lace Frontal Wig"
+      "Custom 360 Frontal Wig"} name)))
 
 (defn service-line-item-promotion-applied?
   [order]
