@@ -401,6 +401,7 @@
         shop?                                (= "shop" (get-in data keypaths/store-slug))
         sku-family                           (-> selected-sku :hair/family first)
         free-mayvenn-service?                (accessors.products/product-is-mayvenn-install-service? product)
+        wig-construction-service?            (accessors.products/wig-construction-service? product)
         standalone-service?                  (accessors.products/standalone-service? product)
         service?                             (accessors.products/service? product)
         hair?                                (accessors.products/hair? product)
@@ -596,19 +597,41 @@
         :browse-stylists-banner/class          "bg-refresh-gray"
         :browse-stylists-banner/id             "browse-stylists-banner-cta"
         :how-it-works
-        {:how-it-works/title-secondary "Here’s how it works."
-         :how-it-works/step-elements
-         [{:how-it-works.step.title/primary   "01"
-           :how-it-works.step.title/secondary "Pick your service"
-           :how-it-works.step.body/primary    "Choose the service you’d like to book from our full list of complimentary Mayvenn service offerings."}
-          {:how-it-works.step.title/primary   "02"
-           :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
-           :how-it-works.step.body/primary    (str "We've hand-picked thousands of talented stylists around the country. "
-                                                   "Browse the stylists in your area to find your perfect match.") }
-          {:how-it-works.step.title/primary   "03"
-           :how-it-works.step.title/secondary "Schedule your appointment"
-           :how-it-works.step.body/primary    (str "We’ll connect you with your stylist to set up your service. "
-                                                   "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}})
+        (if wig-construction-service?
+          {:how-it-works/title-secondary "Here’s how it works."
+           :how-it-works/step-elements
+           [{:how-it-works.step.title/primary   "01"
+             :how-it-works.step.title/secondary "Purchase Hair + Pick A Stylist"
+             :how-it-works.step.body/primary    (str "Buy the hair you’ll use to create your wig, then select a stylist. "
+                                                     "You’ll receive a payment voucher when your hair ships.")}
+
+            {:how-it-works.step.title/primary   "02"
+             :how-it-works.step.title/secondary "Schedule Your Wig Measuring Appointment"
+             :how-it-works.step.body/primary    (str "Our Concierge Team will assist you with scheduling your first appointment "
+                                                     "to have your head measured for your handmade custom wig.") }
+
+            {:how-it-works.step.title/primary   "03"
+             :how-it-works.step.title/secondary "Drop Off Your Hair"
+             :how-it-works.step.body/primary    (str "Leave the hair with your stylist, and give your stylist a week to work on your wig. "
+                                                     "Customization takes time!")}
+
+            {:how-it-works.step.title/primary   "04"
+             :how-it-works.step.title/secondary "Pick Up Your Wig"
+             :how-it-works.step.body/primary    (str "The last step is to go get your new, handmade Custom Wig from your stylist. "
+                                                     "Don’t forget to bring your voucher with you!")}]}
+          {:how-it-works/title-secondary "Here’s how it works."
+           :how-it-works/step-elements
+           [{:how-it-works.step.title/primary   "01"
+             :how-it-works.step.title/secondary "Pick your service"
+             :how-it-works.step.body/primary    "Choose the service you’d like to book from our full list of complimentary Mayvenn service offerings."}
+            {:how-it-works.step.title/primary   "02"
+             :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
+             :how-it-works.step.body/primary    (str "We've hand-picked thousands of talented stylists around the country. "
+                                                     "Browse the stylists in your area to find your perfect match.") }
+            {:how-it-works.step.title/primary   "03"
+             :how-it-works.step.title/secondary "Schedule your appointment"
+             :how-it-works.step.body/primary    (str "We’ll connect you with your stylist to set up your service. "
+                                                     "Then, we’ll send you a prepaid voucher to cover the cost. ")}]})})
      (when wig-customization?
        {:how-it-works
         {:how-it-works/title-secondary "Here’s how it works."

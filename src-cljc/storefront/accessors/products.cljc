@@ -21,11 +21,14 @@
       first
       wig-families))
 
-
 (defn product-is-mayvenn-install-service?
   [product]
   (contains? (set (:promo.mayvenn-install/discountable product))
              true))
+
+(defn wig-construction-service?
+  [product]
+  (= #{"construction"} (:service/category product)))
 
 (defn service? [product]
   (seq (:service/type product)))
