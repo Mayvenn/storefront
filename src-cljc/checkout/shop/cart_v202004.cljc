@@ -284,17 +284,14 @@
      discountable-services-on-order? locked?
      cart-helper-copy action-label stylist service-discount
      quantity-required quantity-added service-sku]}
-   add-items-action
-   promotion-helper?]
+   add-items-action]
   (cond-> []
     discountable-services-on-order?
     (conj (let [matched? (boolean stylist)]
             (cond-> {:react/key                                "freeinstall-line-item-freeinstall"
                      :cart-item-title/id                       "line-item-title-upsell-free-service"
                      :cart-item-title/primary                  service-title
-                     :cart-item-copy/value                     (if promotion-helper?
-                                                                 (:promo.mayvenn-install/requirement-copy service-sku)
-                                                                 cart-helper-copy)
+                     :cart-item-copy/value                     cart-helper-copy
                      :cart-item-floating-box/id                "line-item-freeinstall-price"
                      :cart-item-floating-box/value             (some-> service-discount - mf/as-money)
                      :cart-item-remove-action/id               "line-item-remove-freeinstall"
@@ -697,8 +694,7 @@
                                            {:page/slug           "wigs"
                                             :catalog/category-id "13"
                                             :query-params        {:family "lace-front-wigs~360-wigs"}}]
-                                          mayvenn-install-shopping-action)
-        promotion-helper?               (experiments/promotion-helper? data)]
+                                          mayvenn-install-shopping-action)]
     (cond-> {:suggestions               (suggestions/consolidated-query data)
              :line-items                line-items
              :skus                      skus
@@ -735,8 +731,7 @@
                                                                         (get products))]
                                            (free-service-line-items-query data
                                                                           mayvenn-install
-                                                                          add-items-action
-                                                                          promotion-helper?))
+                                                                          add-items-action))
                                          (standalone-service-line-items-query data))
              :quadpay/order-total       (when-not locked? (:total order))
              :quadpay/show?             (get-in data keypaths/loaded-quadpay)
