@@ -265,7 +265,7 @@
 
 (defn ^:private cart-summary-query
   [{:as order :keys [adjustments]}
-   {:mayvenn-install/keys [applied? service-discount addon-services service-type service-title]}
+   {:mayvenn-install/keys [applied? service-discount addon-services service-title wig-customization?]}
    available-store-credit]
   (when (seq order)
     (let [total              (-> order :total)
@@ -279,8 +279,7 @@
           timeframe-copy-fn  shipping/timeframe
           shipping-timeframe (some-> shipping :sku timeframe-copy-fn)
           adjustment         (->> order :adjustments (map :price) (reduce + 0))
-          total-savings      (- adjustment)
-          wig-customization? (= :wig-customization service-type)]
+          total-savings      (- adjustment)]
       (cond-> {:cart-summary/id               "cart-summary"
                :cart-summary-total-line/id    "total"
                :cart-summary-total-line/label "Total"
@@ -337,34 +336,32 @@
                 :cart-summary-total-incentive/label "Includes Wig Customization"})))))
 
 (defn mayvenn-install-line-items-query
-  [app-state {:mayvenn-install/keys
-              [service-title addon-services service-image-url service-type
-              service-discount service-sku]}]
-  (let [wig-customization? (= service-type :wig-customization)]
-    (if service-title
-      [(merge {:react/key                                "freeinstall-line-item-freeinstall"
-               :cart-item-title/id                       "line-item-title-upsell-free-service"
-               :cart-item-copy/value                     (str "You're all set! " (:copy/whats-included service-sku))
-               :cart-item-floating-box/id                "line-item-freeinstall-price"
-               :cart-item-floating-box/value             (some-> service-discount - mf/as-money)
-               :cart-item-service-thumbnail/id           "freeinstall"
-               :cart-item-service-thumbnail/image-url    service-image-url}
-              (if wig-customization?
-                {:cart-item-title/id      "line-item-title-applied-wig-customization"
-                 :cart-item-title/primary "Wig Customization"
-                 :cart-item-copy/id       "congratulations"}
-                {:cart-item-title/id      "line-item-title-applied-mayvenn-install"
-                 :cart-item-title/primary service-title
-                 :cart-item-copy/id       "congratulations"})
-              (when (seq addon-services)
-                {:cart-item-sub-items/id      "addon-services"
-                 :cart-item-sub-items/title   "Add-On Services"
-                 :cart-item-sub-items/items   (map (fn [{:addon-service/keys [title price sku-id]}]
-                                                     {:cart-item-sub-item/title  title
-                                                      :cart-item-sub-item/price  price
-                                                      :cart-item-sub-item/sku-id sku-id})
-                                                   addon-services)}))]
-      nil)))
+  [{:mayvenn-install/keys
+    [service-title addon-services service-image-url
+     service-discount service-sku wig-customization?]}]
+  (when service-title
+    [(merge {:react/key                                "freeinstall-line-item-freeinstall"
+             :cart-item-title/id                       "line-item-title-upsell-free-service"
+             :cart-item-copy/value                     (str "You're all set! " (:copy/whats-included service-sku))
+             :cart-item-floating-box/id                "line-item-freeinstall-price"
+             :cart-item-floating-box/value             (some-> service-discount - mf/as-money)
+             :cart-item-service-thumbnail/id           "freeinstall"
+             :cart-item-service-thumbnail/image-url    service-image-url}
+            (if wig-customization?
+              {:cart-item-title/id      "line-item-title-applied-wig-customization"
+               :cart-item-title/primary "Wig Customization"
+               :cart-item-copy/id       "congratulations"}
+              {:cart-item-title/id      "line-item-title-applied-mayvenn-install"
+               :cart-item-title/primary service-title
+               :cart-item-copy/id       "congratulations"})
+            (when (seq addon-services)
+              {:cart-item-sub-items/id      "addon-services"
+               :cart-item-sub-items/title   "Add-On Services"
+               :cart-item-sub-items/items   (map (fn [{:addon-service/keys [title price sku-id]}]
+                                                   {:cart-item-sub-item/title  title
+                                                    :cart-item-sub-item/price  price
+                                                    :cart-item-sub-item/sku-id sku-id})
+                                                 addon-services)}))]))
 
 (defn ^:private standalone-service-line-items-query
   [app-state]
@@ -421,19 +418,18 @@
         {:mayvenn-install/keys [service-discount
                                 applied?
                                 stylist
-                                service-type
                                 service-title
                                 addon-services
                                 service-image-url
+                                wig-customization?
                                 service-sku]
          :as                   mayvenn-install} (api.orders/current data)
         user                                    (get-in data keypaths/user)
-        wig-customization?                      (= :wig-customization service-type)
         skus                                    (get-in data keypaths/v2-skus)
         products                                (get-in data keypaths/v2-products)
         facets                                  (get-in data keypaths/v2-facets)
         physical-line-items                     (map (partial cart/add-product-title-and-color-to-line-item products facets)
-                                 (orders/product-items order))]
+                                                     (orders/product-items order))]
     (cond->
         {:order                        order
          :store-slug                   (get-in data keypaths/store-slug)
@@ -453,7 +449,7 @@
          :servicing-stylist            stylist
          :cart-items                   (cart-items-query data physical-line-items skus)
          :service-line-items           (concat
-                                        (mayvenn-install-line-items-query data mayvenn-install)
+                                        (mayvenn-install-line-items-query mayvenn-install)
                                         (standalone-service-line-items-query data))
          :cart-summary                 (cart-summary-query order
                                                            mayvenn-install

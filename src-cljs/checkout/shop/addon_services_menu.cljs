@@ -61,7 +61,7 @@
 
 (defn ^:private determine-unavailability-reason
   [facets
-   {:mayvenn-install/keys [stylist service-type]}
+   {:mayvenn-install/keys [stylist service-sku]}
    {addon-service-hair-family :hair/family
     addon-sku-id              :catalog/sku-id
     :as                       addon-service}]
@@ -71,7 +71,10 @@
            (or
             (when (not (stylist-can-perform-addon-service? stylist addon-sku-id))
               "Your stylist does not yet offer this service on Mayvenn")
-            (when (not (contains? (set (map api.orders/hair-family->service-type addon-service-hair-family)) service-type))
+            (when-not (contains? (->> addon-service-hair-family
+                                      (map api.orders/hair-family->service-sku-ids)
+                                      (reduce set/union #{}))
+                                 (:catalog/sku-id service-sku))
               (let [facet-name (->> addon-service-hair-family first (get hair-family-facet) :sku/name)]
                 (str "Only available with " facet-name " Install")))))))
 

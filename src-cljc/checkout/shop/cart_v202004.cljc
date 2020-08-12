@@ -488,7 +488,7 @@
 (defn upsold-cart-summary-query
   "The cart has an upsell 'entered' because the customer has requested a service discount"
   [{:as order :keys [adjustments]}
-   {:as install :mayvenn-install/keys [any-wig? service-type locked? needs-more-items-for-free-service? applied? service-discount quantity-remaining service-title]}]
+   {:as install :mayvenn-install/keys [any-wig? wig-customization? locked? applied? service-discount quantity-remaining service-title]}]
   (let [total              (:total order)
         tax                (:tax-total order)
         subtotal           (orders/products-and-services-subtotal order)
@@ -501,8 +501,7 @@
         shipping-timeframe (some-> shipping :sku timeframe-copy-fn)
 
         adjustment         (->> order :adjustments (map :price) (reduce + 0))
-        total-savings      (- adjustment)
-        wig-customization? (= :wig-customization service-type)]
+        total-savings      (- adjustment)]
     (cond->
         {:cart-summary/id                 "cart-summary"
          :cart-summary-total-line/id      "total"
@@ -649,10 +648,13 @@
         cart-services                                (api.orders/services data order)
         stylist (get-in data adventure.keypaths/adventure-servicing-stylist)
         {:mayvenn-install/keys
-         [discountable-services-on-order? applied? locked?
+         [discountable-services-on-order?
+          applied?
+          locked?
           needs-more-items-for-free-service?
           quantity-remaining
-          service-type cart-helper-copy
+          wig-customization?
+          cart-helper-copy
           service-sku]
          :as               mayvenn-install} (api.orders/current data)
 
@@ -693,7 +695,7 @@
         continue-shopping-action        (if any-wig?
                                           [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
                                           mayvenn-install-shopping-action)
-        add-items-action                (if (= service-type :wig-customization)
+        add-items-action                (if wig-customization?
                                           [events/navigate-category
                                            {:page/slug           "wigs"
                                             :catalog/category-id "13"
