@@ -283,7 +283,8 @@
     [service-title addon-services service-image-url
      discountable-services-on-order? locked?
      cart-helper-copy action-label stylist service-discount
-     quantity-required quantity-added service-sku]}
+     quantity-required quantity-added service-sku
+     needs-more-items-for-free-service?]}
    add-items-action
    promotion-helper?]
   (cond-> []
@@ -292,7 +293,7 @@
             (cond-> {:react/key                                "freeinstall-line-item-freeinstall"
                      :cart-item-title/id                       "line-item-title-upsell-free-service"
                      :cart-item-title/primary                  service-title
-                     :cart-item-copy/value                     (if promotion-helper?
+                     :cart-item-copy/value                     (if (and promotion-helper? needs-more-items-for-free-service?)
                                                                  (:promo.mayvenn-install/requirement-copy service-sku)
                                                                  cart-helper-copy)
                      :cart-item-floating-box/id                "line-item-freeinstall-price"
