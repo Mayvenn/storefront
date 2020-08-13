@@ -675,7 +675,8 @@
                (:servicing-stylist-id order))
       (api/get-skus
        (get-in app-state keypaths/api-cache)
-       {:catalog/department "service" :service/type "addon"}
+       ;; NOTE: When the number of services in the catalog grows, rethink this query.
+       {:catalog/department "service"}
        #(messages/handle-message events/api-success-get-skus %)))))
 
 (defmethod effects/perform-effects events/clear-order [_ _ _ _ app-state]

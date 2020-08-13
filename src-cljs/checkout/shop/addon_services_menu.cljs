@@ -60,32 +60,39 @@
      :addon-service-entry/checked?           selected?}))
 
 (defn ^:private determine-unavailability-reason
-  [facets
+  [all-base-skus
    {:mayvenn-install/keys [stylist service-sku]}
    {addon-service-hair-family :hair/family
     addon-sku-id              :catalog/sku-id
     :as                       addon-service}]
-  (let [hair-family-facet (->> facets (maps/index-by :facet/slug) :hair/family :facet/options (maps/index-by :option/slug))]
-    (storefront.utils/?assoc addon-service
-           :addon-unavailable-reason
-           (or
-            (when (not (stylist-can-perform-addon-service? stylist addon-sku-id))
-              "Your stylist does not yet offer this service on Mayvenn")
-            (when-not (contains? (->> addon-service-hair-family
-                                      (map api.orders/hair-family->service-sku-ids)
-                                      (reduce set/union #{}))
-                                 (:catalog/sku-id service-sku))
-              (let [facet-name (->> addon-service-hair-family first (get hair-family-facet) :sku/name)]
-                (str "Only available with " facet-name " Install")))))))
+  (storefront.utils/?assoc addon-service
+                           :addon-unavailable-reason
+                           (or
+                            (when (not (stylist-can-perform-addon-service? stylist addon-sku-id))
+                              "Your stylist does not yet offer this service on Mayvenn")
+                            (when-not (contains? (->> addon-service-hair-family
+                                                      (map api.orders/hair-family->service-sku-ids)
+                                                      (reduce set/union #{}))
+                                                 (:catalog/sku-id service-sku))
+                              (str "Only available with " (->> all-base-skus
+                                                               (filter #(not-empty
+                                                                         (set/intersection (-> % :hair/family set)
+                                                                                           (-> addon-service-hair-family set))))
+                                                               (map :sku/name)
+                                                               (string/join " or ")))))))
 
 
 (defn addon-skus-for-stylist-grouped-by-availability
   [{:keys [facets mayvenn-install skus]}]
-  (let [[available-addon-skus
+  (let [all-base-skus            (->> skus
+                                      vals
+                                      (spice.selector/match-all {} {:catalog/department "service" :service/type "base" :promo.mayvenn-install/discountable true})
+                                      (sort-by :sku/price))
+        [available-addon-skus
          unavailable-addon-skus] (->> skus
                                       vals
                                       (spice.selector/match-all {} {:catalog/department "service" :service/type "addon"})
-                                      (map (partial determine-unavailability-reason facets mayvenn-install))
+                                      (map (partial determine-unavailability-reason all-base-skus mayvenn-install))
                                       (sort-by (comp boolean :addon-unavailable-reason))
                                       (partition-by (comp boolean :addon-unavailable-reason))
                                       (map (partial sort-by :order.view/addon-sort)))]
