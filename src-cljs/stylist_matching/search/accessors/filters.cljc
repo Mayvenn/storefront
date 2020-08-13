@@ -2,15 +2,20 @@
   (:require [spice.maps :as maps]))
 
 (def service-filter-data
-  [{:sku-id "SRV-LBI-000"  :service-menu-key :specialty-sew-in-leave-out}
-   {:sku-id "SRV-CBI-000"  :service-menu-key :specialty-sew-in-closure}
-   {:sku-id "SRV-FBI-000"  :service-menu-key :specialty-sew-in-frontal}
-   {:sku-id "SRV-3BI-000"  :service-menu-key :specialty-sew-in-360-frontal}
-   {:sku-id "SRV-WGC-000"  :service-menu-key :specialty-wig-customization}
+  [{:sku-id "SRV-LBI-000" :service-menu-key :specialty-sew-in-leave-out}
+   {:sku-id "SRV-CBI-000" :service-menu-key :specialty-sew-in-closure}
+   {:sku-id "SRV-FBI-000" :service-menu-key :specialty-sew-in-frontal}
+   {:sku-id "SRV-3BI-000" :service-menu-key :specialty-sew-in-360-frontal}
+   {:sku-id "SRV-WGC-000" :service-menu-key :specialty-wig-customization}
    {:sku-id "SRV-SPBI-000" :service-menu-key :specialty-silk-press}
    {:sku-id "SRV-WMBI-000" :service-menu-key :specialty-weave-maintenance}
    {:sku-id "SRV-WIBI-000" :service-menu-key :specialty-wig-install}
-   {:sku-id "SRV-BDBI-000" :service-menu-key :specialty-braid-down}])
+   {:sku-id "SRV-BDBI-000" :service-menu-key :specialty-braid-down}
+
+   {:sku-id "SRV-UPCW-000" :service-menu-key :specialty-custom-unit-leave-out}
+   {:sku-id "SRV-CLCW-000" :service-menu-key :specialty-custom-unit-closure}
+   {:sku-id "SRV-LFCW-000" :service-menu-key :specialty-custom-unit-frontal}
+   {:sku-id "SRV-3CW-000" :service-menu-key :specialty-custom-unit-360-frontal}])
 
 (def services-by-sku-id
   (maps/index-by :sku-id service-filter-data))
