@@ -141,8 +141,8 @@
 
       "Custom U Part Wig"
       "Custom Lace Closure Wig"
-      "Custom Lace Frontal Wig"
-      "Custom 360 Frontal Wig"} name)))
+      "Custom Lace Front Wig"
+      "Custom 360 Lace Wig"} name)))
 
 (defn service-line-item-promotion-applied?
   [order]
