@@ -136,9 +136,9 @@
                                              (nav/promotion-helper-can-exist-on-page? nav-event)
                                              (= :shop (sites/determine-site app-state))
                                              (not on-cart-with-criteria-fulfilled?))
-       :promotion-helper/hair-success (if (= "SRV-WGC-000" sku-id)
-                                        (str "You're all set! " (:copy/whats-included service-sku))
-                                        "Add more bundles for a fuller look")
+       :promotion-helper/hair-success (if (:free-mayvenn-service/add-more? free-mayvenn-service)
+                                        "Add more bundles for a fuller look"
+                                        (str "You're all set! " (:copy/whats-included service-sku)))
        :promotion-helper/opened?      (->> k/ui-promotion-helper-opened
                                              (get-in app-state)
                                              boolean)})))
