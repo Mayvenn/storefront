@@ -56,6 +56,10 @@
       (assoc-in catalog.keypaths/sku-intended-for-swap nil)
       (assoc-in storefront.keypaths/popup nil)))
 
+(defmethod effects/perform-effects events/control-service-swap-popup-dismiss
+  [_ event args app-state]
+  (messages/handle-message events/popup-hide))
+
 (defmethod transitions/transition-state events/popup-show-service-swap
   [_ event {:keys [sku-intended]} app-state]
   (-> app-state
