@@ -565,7 +565,7 @@
        [:picture ^:attrs picture-attrs
         [:source {:src-set (str retina-url " 2x," default-url " 1x")}]
         [:img ^:attrs (-> img-attrs
-                          (dissoc :width :retina-quality :default-quality :picture-classses :retina? :square? :size)
+                          (dissoc :width :retina-quality :default-quality :picture-classes :retina? :square? :size)
                           (assoc :src default-url))]]
        [:picture ^:attrs picture-attrs]))))
 
