@@ -15,6 +15,7 @@
 (def detailed-product-picker-visible? (conj detailed-product :picker-visible?))
 
 (def detailed-product-addon-list-open? (conj detailed-product :addon-list-open?))
+(def detailed-product-selected-addon-items (conj detailed-product :selected-addon-items))
 
 (def category (conj ui :category))
 (def category-panel (conj ui :panel))

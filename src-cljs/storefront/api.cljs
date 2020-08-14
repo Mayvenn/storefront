@@ -908,7 +908,8 @@
    POST
    "/v2/bulk-add-to-bag"
    (conj request-keys/add-to-bag (set (keys sku-id->quantity)))
-   {:params  (merge {:session-id       session-id
+   {:params  (merge (select-keys params [:stylist-id])
+                    {:session-id       session-id
                      :sku-id->quantity sku-id->quantity}
                     (when heat-feature-flags {:heat-feature-flags heat-feature-flags})
                     (when (and token number) {:token token :number number}))

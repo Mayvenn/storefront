@@ -47,7 +47,8 @@
             [storefront.transitions :as transitions]
             [stylist-matching.search.accessors.filters :as stylist-filters]
             [catalog.ui.add-to-cart :as add-to-cart]
-            [catalog.ui.browse-stylists-banner :as browse-stylists-banner]))
+            [catalog.ui.browse-stylists-banner :as browse-stylists-banner]
+            [catalog.keypaths :as catalog.keypaths]))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
@@ -202,10 +203,12 @@
      (catalog.M/price-block data)]]
    (catalog.M/yotpo-reviews-summary data)])
 
-(defn addon-card [{:addon-line/keys [id primary secondary tertiary]}]
+(defn addon-card [{:addon-line/keys [id target primary secondary tertiary checked?]}]
   [:div.p3.py4.pr4.flex
-   {:key   id}
-   [:div.mt1.pl1 (ui/check-box {:data-test id})]
+   (merge (apply utils/fake-href target)
+          {:key   id})
+   [:div.mt1.pl1 (ui/check-box {:value checked?
+                                :data-test id})]
    [:div.flex-grow-1.mr2
     [:div.proxima.content-2 primary]
     [:div.proxima.content-3 secondary]]
@@ -381,6 +384,16 @@
      {}
      (keys options))))
 
+(defn addon->addon-query
+  [addon selected-addons]
+  (let [sku-id (:catalog/sku-id addon)]
+    {:addon-line/id       sku-id
+    :addon-line/target    [events/control-product-detail-toggle-related-addon-items {:sku-id sku-id}]
+    :addon-line/checked?  (some #{sku-id} selected-addons)
+    :addon-line/primary   (:sku/title addon)
+    :addon-line/secondary (:copy/description addon)
+    :addon-line/tertiary  (mf/as-money (:sku/price addon))}))
+
 (defn query [data]
   (let [selected-sku                         (get-in data catalog.keypaths/detailed-product-selected-sku)
         selections                           (get-in data catalog.keypaths/detailed-product-selections)
@@ -416,6 +429,7 @@
         related-addons                       (get-in data keypaths/v2-related-addons)
         addon-list-open?                     (get-in data catalog.keypaths/detailed-product-addon-list-open?)
         add-on-services?                     (experiments/add-on-services? data)
+        selected-addons                      (get-in data catalog.keypaths/detailed-product-selected-addon-items)
         associated-service-category          (cond
                                                free-mayvenn-service? {:page/slug           "free-mayvenn-services"
                                                                       :catalog/category-id "31"}
@@ -708,22 +722,26 @@
         :cta-disabled-explanation/cta-label  "Browse other services"
         :cta-disabled-explanation/cta-target [events/navigate-category associated-service-category]})
 
-     (when (and add-on-services? (seq related-addons))
-       {:cta-related-addon/label  (if addon-list-open? "hide add-ons" "see all add-ons")
+     (when (and add-on-services? (seq related-addons) service?)
+       {:cta/target               [events/control-bulk-add-to-bag
+                                   {:items (concat
+                                            [{:sku   selected-sku
+                                              :quantity (get-in data keypaths/browse-sku-quantity 1)}]
+                                            (mapv (fn [addon]
+                                                    {:sku     addon
+                                                     :quantity 1})
+                                                  (filter (comp (set selected-addons) :catalog/sku-id) related-addons)))}]
+        :cta/spinning?            (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+        :cta-related-addon/label  (if addon-list-open? "hide add-ons" "see all add-ons")
         :cta-related-addon/id     "addon-cta"
         :cta-related-addon/target [events/control-product-detail-toggle-related-addon-list]
-        :related-addons           (if addon-list-open?
-                                    (mapv (fn [addon]
-                                            {:addon-line/id        (:catalog/sku-id addon)
-                                             :addon-line/primary   (:sku/title addon)
-                                             :addon-line/secondary (:copy/description addon)
-                                             :addon-line/tertiary  (mf/as-money (:sku/price addon))})
-                                          related-addons)
-                                    (let [addon (first related-addons)]
-                                      [{:addon-line/id        (:catalog/sku-id addon)
-                                        :addon-line/primary   (:sku/title addon)
-                                        :addon-line/secondary (:copy/description addon)
-                                        :addon-line/tertiary  (mf/as-money (:sku/price addon))}]))}))))
+        :related-addons           (let []
+                                    (if addon-list-open?
+                                      (mapv (fn [addon]
+                                              (addon->addon-query addon selected-addons))
+                                            related-addons)
+                                      (let [addon (first related-addons)]
+                                        [(addon->addon-query addon selected-addons)])))}))))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
@@ -959,6 +977,12 @@
      ;; being available"
      (seo/set-tags app-state)))
 
+#?(:cljs
+   (defmethod effects/perform-effects events/api-success-bulk-add-to-bag
+     [_ event {:keys [order]} _ app-state]
+     (messages/handle-message events/save-order {:order order})
+     (messages/handle-later events/added-to-bag)))
+
 (defmethod effects/perform-effects events/control-add-sku-to-bag
   [dispatch event {:keys [sku quantity] :as args} _ app-state]
   #?(:cljs
@@ -1007,3 +1031,31 @@
 (defmethod transitions/transition-state events/api-success-v2-skus-for-related-addons
   [_ _ {:keys [skus] :as response} app-state]
   (assoc-in app-state keypaths/v2-related-addons skus))
+
+(defmethod transitions/transition-state events/control-product-detail-toggle-related-addon-items
+  [_ _ {:keys [sku-id] :as response} app-state]
+  (let [checked-addons (get-in app-state catalog.keypaths/detailed-product-selected-addon-items)]
+    (if (some #{sku-id} checked-addons)
+      (update-in app-state catalog.keypaths/detailed-product-selected-addon-items (partial remove #{sku-id}))
+      (update-in app-state catalog.keypaths/detailed-product-selected-addon-items conj sku-id))))
+
+(defmethod transitions/transition-state events/control-bulk-add-to-bag
+  [_ _ _ app-state]
+  (assoc-in app-state catalog.keypaths/detailed-product-selected-addon-items nil))
+
+(defmethod effects/perform-effects events/control-bulk-add-to-bag
+  [_ _ {:keys [items]} _ app-state]
+  #?(:cljs
+     (api/add-skus-to-bag (get-in app-state keypaths/session-id)
+                          {:number           (get-in app-state keypaths/order-number)
+                           :token            (get-in app-state keypaths/order-token)
+                           :stylist-id       (get-in app-state keypaths/store-stylist-id)
+                           :sku-id->quantity (into {}
+                                                   (mapv
+                                                    (fn [item]
+                                                      [(:catalog/sku-id (:sku item)) (:quantity item)])
+                                                    items))}
+                          #(do
+                             (messages/handle-message events/api-success-bulk-add-to-bag
+                                                      (assoc % :initial-sku (first items)))
+                             (history/enqueue-navigate events/navigate-cart)))))

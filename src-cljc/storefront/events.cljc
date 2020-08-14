@@ -193,6 +193,8 @@
 
 (defpath control-browse-variant)
 (defpath control-add-to-bag)
+(defpath control-bulk-add-to-bag)
+(defpath api-success-bulk-add-to-bag)
 
 (defpath control-add-sku-to-bag)
 (defpath control-suggested-add-to-bag)
@@ -251,6 +253,7 @@
 (defpath control-product-detail-picker-option-quantity-select)
 
 (defpath control-product-detail-toggle-related-addon-list)
+(defpath control-product-detail-toggle-related-addon-items)
 
 (defpath video-played)
 
