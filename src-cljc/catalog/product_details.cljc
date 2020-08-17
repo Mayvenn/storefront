@@ -275,7 +275,8 @@
                        related-addons)
                  [:div.pt2.pb3.flex.justify-center
                   (ui/button-small-underline-primary (merge (apply utils/route-to target)
-                                                            {:id id})
+                                                            {:id        id
+                                                             :data-test id})
                                                      label)]]))
             [:div
              (cond
