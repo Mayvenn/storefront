@@ -93,62 +93,6 @@
                                                                       goog.style/getSize
                                                                       .-height))))
 
-(defdynamic-component ^:private sticky-add-component
-  (constructor [c props]
-               (component/create-ref! c "add-button")
-               (set! (.-handle-scroll c) (partial handle-scroll c))
-               (set! (.-set-height c) (partial set-height c))
-               ;; Treat show? as a trinary state:
-               ;; nil = we need to hide the element, but still be available for height calculations
-               ;; true = show the element (set margin-bottom to 0)
-               ;; false = hide the element (set margin-bottom to computed height calculations)
-               {:show? nil})
-  (did-mount [c]
-             #?(:cljs
-                (do
-                  (.set-height c)
-                  (.handle-scroll c nil) ;; manually fire once on load incase the page already scrolled
-                  (goog.events/listen js/window EventType/SCROLL (.-handle-scroll c)))))
-  (will-unmount [c]
-                #?(:cljs
-                   (goog.events/unlisten js/window EventType/SCROLL (.-handle-scroll c))))
-  (render [c]
-          (let [{:keys [show? add-button-height]}                                             (component/get-state c)
-                {:keys [selected-options sold-out? unavailable? adding-to-bag? sku quantity]} (component/get-props c)
-                unpurchasable?                                                                (or sold-out? unavailable?)
-                text-style                                                                    (if unpurchasable? {:class "gray"} {})]
-            (component/html
-             [:div.fixed.z4.bottom-0.left-0.right-0.transition-2
-              (cond
-                (nil? show?) {:style {:visibility "hidden"}}
-                show?        {:style {:margin-bottom "0"}}
-                :else        {:style {:margin-bottom (str "-" add-button-height "px")}})
-              [:div {:ref (component/use-ref c "add-button")}
-               [:div.p3.flex.justify-center.items-center.bg-white.border-top.border-cool-gray
-                [:div.col-8
-                 [:a.inherit-color
-                  #?(:cljs {:on-click #(scroll/scroll-selector-to-top "body")})
-                  [:div.flex.items-center
-                   [:img.border.border-gray.rounded-0
-                    {:height "33px"
-                     :width  "65px"
-                     :src    (:option/rectangle-swatch (:hair/color selected-options))}]
-                   [:span.ml2 "Length: " [:span text-style (:option/name (:hair/length selected-options))]]
-                   [:span.ml2 "Qty: " [:span text-style quantity]]]]]
-                [:div.col-4
-                 (ui/button-large-primary {:on-click
-                                           (utils/send-event-callback events/control-add-sku-to-bag
-                                                                      {:sku      sku
-                                                                       :quantity quantity})
-                                           :data-test      "sticky-add-to-cart"
-                                           :disabled?      unpurchasable?
-                                           :disabled-class "bg-gray"
-                                           :spinning?      adding-to-bag?}
-                                          (cond
-                                            unavailable? "Unavailable"
-                                            sold-out?    "Sold Out"
-                                            :default     "Add"))]]]]))))
-
 (def checkout-button
   (component/html
    [:div
@@ -227,7 +171,6 @@
                                              options
                                              picker-data
                                              aladdin?
-                                             sticky-add-to-bag?
                                              ugc
                                              add-on-services?
                                              related-addons] :as data} owner opts]
@@ -299,24 +242,7 @@
           (component/build v2/get-a-free-install get-a-free-install-section-data)])
        (when (seq reviews)
          [:div.container.col-7-on-tb-dt.px2
-          (component/build review-component/reviews-component reviews opts)])
-       (when sticky-add-to-bag?
-         ;; We use visibility:hidden rather than display:none so that this component has a height.
-         ;; We use the height on mobile view to slide it on/off the bottom of the page.
-         [:div.invisible-on-tb-dt
-          (component/build sticky-add-component
-                           {:image            (->> options
-                                                   :hair/color
-                                                   (filter #(= (first (:hair/color selected-sku))
-                                                               (:option/slug %)))
-                                                   first
-                                                   :option/rectangle-swatch)
-                            :adding-to-bag?   adding-to-bag?
-                            :sku              selected-sku
-                            :sold-out?        sold-out?
-                            :unavailable?     (empty? selected-sku)
-                            :selected-options selected-options
-                            :quantity         sku-quantity} {})])])))
+          (component/build review-component/reviews-component reviews opts)])])))
 
 (defn min-of-maps
   ([k] {})
@@ -459,12 +385,6 @@
       :picker-data                        (picker/query data)
       :carousel-images                    carousel-images
       :add-on-services?                   (and service? add-on-services?)
-      :sticky-add-to-bag?                 (and (nil? (:offset ugc))
-                                               (not (products/stylist-only? product))
-                                               (not
-                                                (accessors.products/product-is-mayvenn-install-service? product))
-                                               (not standalone-service?)
-                                               (not (experiments/promotion-helper? data)))
       :cta/id                             "add-to-cart"
       :cta/label                          "Add to Cart"
       :cta/target                         [events/control-add-sku-to-bag

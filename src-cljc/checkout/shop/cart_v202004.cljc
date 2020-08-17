@@ -3,7 +3,6 @@
    #?@(:cljs [
               [storefront.components.payment-request-button :as payment-request-button]
               [storefront.components.popup :as popup]
-              [storefront.confetti :as confetti]
               [storefront.hooks.quadpay :as quadpay]
               [storefront.platform.messages :as messages]])
    adventure.keypaths
@@ -45,30 +44,6 @@
    [:div.mx2 "or"]
    [:div.flex-grow-1.border-bottom.border-gray]])
 
-(defdynamic-component ^:private confetti-spout
-  (constructor [this props]
-               (component/create-ref! this "confetti-spout")
-               nil)
-  (did-mount [this]
-             #?(:cljs
-                (when-let [node (component/get-ref this "confetti-spout")]
-                  (confetti/burst node))))
-  (did-update [this prev-props prev-state snapshot]
-              #?(:cljs
-                 (let [{:confetti-spout/keys [mode]} (component/get-props this)]
-                   (when (= mode "firing")
-                     (messages/handle-message events/set-confetti-mode {:mode "fired"})
-                     (.then (confetti/burst (component/get-ref this "confetti-spout"))
-                            #(messages/handle-message events/set-confetti-mode {:mode "ready"}))))))
-  (will-unmount [this]
-                #?(:cljs (messages/handle-message events/set-confetti-mode {:mode "ready"})))
-  (render [this]
-          (component/html
-           [:div#confetti-spout.fixed.top-0.mx-auto
-            {:style {:right "50%"}}
-            [:div.mx-auto {:style {:width "100%"}
-                           :ref   (component/use-ref this "confetti-spout")}]])))
-
 (defcomponent full-component
   [{:keys [call-out
            service-line-items
@@ -78,7 +53,6 @@
            checkout-disabled?
            disabled-reasons
            discountable-services-on-order?
-           locked?
            promo-banner
            quantity-remaining
            redirecting-to-paypal?
@@ -91,11 +65,6 @@
     :as   queried-data}
    _ _]
   [:div.container.px2
-   (when (:confetti-spout/id queried-data)
-     ;; Moving this check to the inside of the component breaks lifecycle
-     ;; methods
-     (component/build confetti-spout queried-data nil))
-
    (component/build promo-banner/sticky-organism promo-banner nil)
 
    (component/build call-out/component call-out nil)
@@ -280,20 +249,16 @@
 (defn free-service-line-items-query
   [app-state
    {:mayvenn-install/keys
-    [service-title addon-services service-image-url
-     discountable-services-on-order? locked?
-     cart-helper-copy action-label stylist service-discount
-     quantity-required quantity-added service-sku
-     needs-more-items-for-free-service?]}
-   add-items-action
-   promotion-helper?]
+    [service-title addon-services service-image-url discountable-services-on-order?
+     cart-helper-copy stylist service-discount service-sku needs-more-items-for-free-service?]}
+   add-items-action]
   (cond-> []
     discountable-services-on-order?
     (conj (let [matched? (boolean stylist)]
             (cond-> {:react/key                                "freeinstall-line-item-freeinstall"
                      :cart-item-title/id                       "line-item-title-upsell-free-service"
                      :cart-item-title/primary                  service-title
-                     :cart-item-copy/value                     (if (and promotion-helper? needs-more-items-for-free-service?)
+                     :cart-item-copy/value                     (if (and needs-more-items-for-free-service?)
                                                                  (:promo.mayvenn-install/requirement-copy service-sku)
                                                                  cart-helper-copy)
                      :cart-item-floating-box/id                "line-item-freeinstall-price"
@@ -303,33 +268,18 @@
                      :cart-item-remove-action/target           [events/control-cart-remove (:legacy/variant-id service-sku)]
                      :cart-item-service-thumbnail/id           "freeinstall"
                      :cart-item-service-thumbnail/image-url    service-image-url
-                     :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)
-                     :confetti-mode                            (get-in app-state keypaths/confetti-mode)}
-
-              locked?
-              (merge {:cart-item-title/primary                   (str service-title " (locked)")
-                      :cart-item-title/id                        "line-item-title-locked-mayvenn-install"
-                      :cart-item-steps-to-complete/action-target add-items-action
-                      :cart-item-steps-to-complete/action-label  action-label
-                      :cart-item-steps-to-complete/id            "add-items"
-                      :cart-item-steps-to-complete/steps         (->> quantity-required
-                                                                      range
-                                                                      (map inc))
-                      :cart-item-steps-to-complete/current-step  quantity-added
-                      :cart-item-service-thumbnail/locked?       true})
+                     :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)}
 
               matched?
               (merge {:cart-item-modify-button/id              "browse-addons"
                       :cart-item-modify-button/target          [events/control-show-addon-service-menu]
                       :cart-item-modify-button/tracking-target [events/browse-addon-service-menu-button-enabled]
-                      :cart-item-modify-button/locked?         locked?
                       :cart-item-modify-button/content         "+ Browse Add-Ons"})
 
               (and matched?
                    (seq addon-services))
               (merge {:cart-item-sub-items/id      "addon-services"
                       :cart-item-sub-items/title   "Add-On Services"
-                      :cart-item-sub-items/locked? locked?
                       :cart-item-sub-items/items   (map (fn [{:addon-service/keys [title price sku-id]}]
                                                           {:cart-item-sub-item/title  title
                                                            :cart-item-sub-item/price  price
@@ -488,7 +438,7 @@
 (defn upsold-cart-summary-query
   "The cart has an upsell 'entered' because the customer has requested a service discount"
   [{:as order :keys [adjustments]}
-   {:as install :mayvenn-install/keys [any-wig? wig-customization? locked? applied? service-discount quantity-remaining service-title]}]
+   {:as install :mayvenn-install/keys [any-wig? wig-customization? applied? service-discount quantity-remaining service-title]}]
   (let [total              (:total order)
         tax                (:tax-total order)
         subtotal           (orders/products-and-services-subtotal order)
@@ -520,22 +470,6 @@
                                          :cart-summary-line/sublabel shipping-timeframe
                                          :cart-summary-line/value    (mf/as-money-or-free shipping-cost)}])
 
-                                     (when locked?
-                                       ;; When FREEINSTALL is merely locked (and so not yet an adjustment) we must special case it, so:
-                                       [{:cart-summary-line/id    (if any-wig?
-                                                                    "wig-customization-locked"
-                                                                    "freeinstall-locked")
-                                         :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-gray pr1"
-                                                                                      :height "2em" :width "2em"}]
-                                         :cart-summary-line/label (str "Free " service-title)
-                                         :cart-summary-line/value (if any-wig?
-                                                                    (mf/as-money-or-free -75.0)
-                                                                    (mf/as-money-or-free service-discount))
-                                         :cart-summary-line/class "p-color"
-                                         :cart-summary-line/action-id "cart-remove-promo"
-                                         :cart-summary-line/action-icon   [:svg/close-x {:class "stroke-white fill-gray"}]
-                                         :cart-summary-line/action-target [events/order-remove-freeinstall-line-item]}])
-
                                      (for [{:keys [name price coupon-code] :as adjustment}
                                            (filter adjustments/non-zero-adjustment? adjustments)
                                            :let [install-summary-line? (orders/service-line-item-promotion? adjustment)]]
@@ -564,19 +498,6 @@
                                          :cart-summary-line/label "Tax"
                                          :cart-summary-line/value (mf/as-money tax)}]))}
 
-
-      locked?
-      (merge {:cart-summary-total-line/value (if any-wig?
-                                               ^:ignore-interpret-warning [:div.h7.content-4
-                                                                           "Add a Lace Front or 360 Wig"
-                                                                           [:br] "to calculate total price"]
-                                               ^:ignore-interpret-warning [:div.h7.content-4
-                                                                           "Add " quantity-remaining
-                                                                           " more " (ui/pluralize quantity-remaining "item")
-                                                                           " to "
-                                                                           [:br]
-                                                                           " calculate total price"])})
-
       applied?
       (merge {:cart-summary-total-incentive/id      "mayvenn-install"
               :cart-summary-total-incentive/label   "Includes Mayvenn Install"
@@ -595,8 +516,7 @@
 
 (defn promo-input-query
   [data order discountable-services-on-order?]
-  (when (or (experiments/promotion-helper? data)
-         (and (orders/no-applied-promo? order) (not discountable-services-on-order?)))
+  (when (and (orders/no-applied-promo? order) (not discountable-services-on-order?))
     (let [keypath                 keypaths/cart-coupon-code
           value                   (get-in data keypath)
           promo-link?             (experiments/promo-link? data)
@@ -650,12 +570,9 @@
         {:mayvenn-install/keys
          [discountable-services-on-order?
           applied?
-          locked?
           needs-more-items-for-free-service?
           quantity-remaining
-          wig-customization?
-          cart-helper-copy
-          service-sku]
+          wig-customization?]
          :as               mayvenn-install} (api.orders/current data)
 
 
@@ -665,18 +582,10 @@
         required-stylist-not-selected? (and any-services?
                                             stylist-blocked?
                                             (not stylist))
-        required-line-items-not-added? locked?
         checkout-disabled?             (or required-stylist-not-selected?
-                                           required-line-items-not-added?
                                            update-pending?)
         any-wig?                       (:mayvenn-install/any-wig? mayvenn-install)
-        disabled-reasons               (remove nil? [(if locked?
-                                                       cart-helper-copy
-                                                       (when required-line-items-not-added?
-                                                         [:div.m1 (if any-wig?
-                                                                    (str "Add a Lace Front or 360 Wig to check out")
-                                                                    (str "Add " quantity-remaining (ui/pluralize quantity-remaining " more item")))]))
-                                                     (when required-stylist-not-selected?
+        disabled-reasons               (remove nil? [(when required-stylist-not-selected?
                                                        [:div.m1 "Please pick your stylist"])])
 
         skus                            (get-in data keypaths/v2-skus)
@@ -700,8 +609,7 @@
                                            {:page/slug           "wigs"
                                             :catalog/category-id "13"
                                             :query-params        {:family "lace-front-wigs~360-wigs"}}]
-                                          mayvenn-install-shopping-action)
-        promotion-helper?               (experiments/promotion-helper? data)]
+                                          mayvenn-install-shopping-action)]
     (cond-> {:suggestions               (suggestions/consolidated-query data)
              :line-items                line-items
              :skus                      skus
@@ -723,7 +631,6 @@
              :return-link/copy          "Continue Shopping"
              :return-link/event-message continue-shopping-action
              :quantity-remaining        quantity-remaining
-             :locked?                   locked?
              :needs-more-items-for-free-service? needs-more-items-for-free-service?
              :discountable-services-on-order?                  discountable-services-on-order?
              :applied?                  applied?
@@ -732,18 +639,13 @@
                                          {:promo-field-data (promo-input-query data order discountable-services-on-order?)})
              :cart-items                (cart-items-query data line-items skus)
              :service-line-items        (concat
-                                         (let [service-product (some->> service-sku
-                                                                        :selector/from-products
-                                                                        first
-                                                                        (get products))]
-                                           (free-service-line-items-query data
-                                                                          mayvenn-install
-                                                                          add-items-action
-                                                                          promotion-helper?))
+                                         (free-service-line-items-query data
+                                                                        mayvenn-install
+                                                                        add-items-action)
                                          (standalone-service-line-items-query data))
-             :quadpay/order-total       (when-not locked? (:total order))
+             :quadpay/order-total       (:total order)
              :quadpay/show?             (get-in data keypaths/loaded-quadpay)
-             :quadpay/directive         (if locked? :no-total :just-select)}
+             :quadpay/directive         :just-select}
 
       any-services?
       (cond->
@@ -770,11 +672,7 @@
          (when-not shop?
            {:checkout-caption-copy (str "After you place your order, please contact "
                                         (stylists/->display-name stylist)
-                                        " to make your appointment.")})))
-
-      applied?
-      (merge {:confetti-spout/mode (get-in data keypaths/confetti-mode)
-              :confetti-spout/id   "confetti-spout"}))))
+                                        " to make your appointment.")}))))))
 
 (defcomponent cart-component
   [{:keys [fetching-order?

@@ -132,10 +132,9 @@
           service-sku                      (get skus sku-id)
           on-cart-with-criteria-fulfilled? (and (= e/navigate-cart nav-event)
                                                 (= 0 (:free-mayvenn-service/failed-criteria-count free-mayvenn-service)))]
-      {:promotion-helper/exists?      (and (experiments/promotion-helper? app-state)
-                                             (nav/promotion-helper-can-exist-on-page? nav-event)
-                                             (= :shop (sites/determine-site app-state))
-                                             (not on-cart-with-criteria-fulfilled?))
+      {:promotion-helper/exists?      (and (nav/promotion-helper-can-exist-on-page? nav-event)
+                                           (= :shop (sites/determine-site app-state))
+                                           (not on-cart-with-criteria-fulfilled?))
        :promotion-helper/hair-success (if (:free-mayvenn-service/add-more? free-mayvenn-service)
                                         "Add more bundles for a fuller look"
                                         (str "You're all set! " (:copy/whats-included service-sku)))

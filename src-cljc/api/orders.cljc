@@ -139,7 +139,7 @@
 
   This is deprecated. There isn't a directly equivalent model to replace it.
   It has been conceptually superseded by 'free-mayvenn-service'"
-  [order servicing-stylist sku-catalog images-catalog promotion-helper?]
+  [order servicing-stylist sku-catalog images-catalog]
   (let [shipment                        (-> order :shipments first)
         addon-services                  (->> order
                                              orders/service-line-items
@@ -167,10 +167,7 @@
        (let [satisfied?          (zero? hair-missing-quantity)
              steps-remaining     hair-missing-quantity
              mayvenn-install-sku (get sku-catalog (:sku service-item))]
-         {:mayvenn-install/locked?                            (if promotion-helper?
-                                                                false
-                                                                (not satisfied?))
-          :mayvenn-install/needs-more-items-for-free-service? (< 0 steps-remaining)
+         {:mayvenn-install/needs-more-items-for-free-service? (< 0 steps-remaining)
           :mayvenn-install/cart-helper-copy                   (if satisfied?
                                                                 (str "You're all set! " (:copy/whats-included mayvenn-install-sku))
                                                                 (str "Add " (string/join " and " (->> hair-missing
@@ -200,8 +197,7 @@
                             (get-in app-state adventure.keypaths/adventure-servicing-stylist))
         sku-catalog       (get-in app-state storefront.keypaths/v2-skus)
         store-slug        (get-in app-state storefront.keypaths/store-slug)
-        promotion-helper? (experiments/promotion-helper? app-state)
-        mayvenn-install   (mayvenn-install waiter-order servicing-stylist sku-catalog images-catalog promotion-helper?)]
+        mayvenn-install   (mayvenn-install waiter-order servicing-stylist sku-catalog images-catalog)]
     (merge
      mayvenn-install
      {:waiter/order         waiter-order

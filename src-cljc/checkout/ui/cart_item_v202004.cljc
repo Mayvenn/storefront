@@ -110,38 +110,19 @@
                        :class "block border border-cool-gray"}
                       ucare-id)]])))
 
-(defn confetti-handler
-  [mode]
-  (when (= mode "ready")
-    (messages/handle-message events/set-confetti-mode {:mode "firing"})))
-
 (defn new-cart-item-service-thumbnail-molecule
-  [{confetti-mode :confetti-mode
-    :cart-item-service-thumbnail/keys [id highlighted? image-url locked?]}]
+  [{:cart-item-service-thumbnail/keys [id highlighted? image-url]}]
   (when id
     [:div.flex.justify-center
      (css-transitions/background-fade
       highlighted?
       {:style {:border-radius "50%"
                :width         "60px"
-               :height        "60px"}
-       ;; QUESTION(jeff): is this an appropriate place for click handler inside css-transition?
-       :on-click #(confetti-handler confetti-mode)})
+               :height        "60px"}})
 
      [:div.relative
-      (if locked?
-        [:div
-         [:div.absolute.z1.col-12.flex.items-center.justify-center
-          {:style {:height "100%"}}
-          [:div.absolute.z2.col-12.flex.items-center.justify-center
-           {:style {:height "100%"}}
-           (svg/stylist-lock {:style {:width   "18px"
-                                      :height  "25px"}})]]
-         (ui/ucare-img {:width "56px"
-                        :class "mtp2"
-                        :style {:filter "contrast(0.1) brightness(1.75)"}} image-url)]
-        (ui/ucare-img {:width "56px"
-                       :class "mtp2"} image-url))]]))
+      (ui/ucare-img {:width "56px"
+                     :class "mtp2"} image-url)]]))
 
 (defn cart-item-remove-action-molecule
   [{:cart-item-remove-action/keys [id target spinning?]}]
@@ -196,32 +177,19 @@
 (component/defdynamic-component cart-item-modify-button
   (did-mount
    [this]
-   (let [{:cart-item-modify-button/keys [id locked? tracking-target]}
+   (let [{:cart-item-modify-button/keys [id tracking-target]}
          (component/get-props this)]
-     (when (and id (false? locked?) tracking-target)
+     (when (and id tracking-target)
        (apply messages/handle-message tracking-target))))
-
-  (did-update
-   [this prev-props prev-state snapshot]
-   #?(:cljs
-      (let [{was-locked? :cart-item-modify-button/locked?}       (.-props prev-props)
-            {is-locked?                    :cart-item-modify-button/locked?
-             :cart-item-modify-button/keys [tracking-target id]} (component/get-props this)]
-        (when (and id
-                   was-locked?
-                   (not is-locked?)
-                   tracking-target)
-          (apply messages/handle-message tracking-target)))))
 
   (render
    [this]
    (component/html
-    (let [{:cart-item-modify-button/keys [id target content locked?]}
+    (let [{:cart-item-modify-button/keys [id target content]}
           (component/get-props this)]
       (when id
         [:div.flex
          (ui/button-small-secondary (merge {:class     "p-color bold mt1"
-                                            :disabled? locked?
                                             :data-test id}
                                            (apply utils/route-to target))
                                     content)])))))
@@ -229,17 +197,15 @@
 
 
 (defn cart-item-sub-items-molecule
-  [{:cart-item-sub-items/keys [id title items locked?]}]
+  [{:cart-item-sub-items/keys [id title items]}]
   (when id
-    [:div {:class (when locked? "gray")
-           :key   id}
+    [:div {:key id}
      [:div.shout.proxima.title-3 title]
      (mapv (fn [{:cart-item-sub-item/keys [sku-id title price]}]
              [:div.flex.justify-between
               [:div.content-3.flex.items-center
-               [:div.flex.justify-center.items-center.mr1
-                {:class (if locked? "bg-gray" "bg-s-color")
-                 :style {:height        11
+               [:div.flex.justify-center.items-center.mr1.bg-s-color
+                {:style {:height        11
                          :width         11
                          :border-radius "50%"}}
                 (svg/check-mark {:class "fill-white"

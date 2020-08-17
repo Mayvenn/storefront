@@ -106,10 +106,6 @@
   [data]
   (display-feature? data "stylist-blocked"))
 
-(defn promotion-helper?
-  [data]
-  (display-feature? data "promotion-helper"))
-
 (defn shipping-estimates?
   [data]
   (display-feature? data "shipping-estimates"))
