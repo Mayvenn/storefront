@@ -131,8 +131,12 @@
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-post-purchase
   [_ _ args _ app-state]
   #?(:cljs
-     (let [matched-stylists (get-in app-state adventure.keypaths/adventure-matched-stylists)]
-       (if (orders/service-line-item-promotion-applied? (get-in app-state storefront.keypaths/completed-order))
+     (let [completed-order     (api.orders/completed app-state)
+           services            (api.orders/services app-state completed-order)
+           servicing-stylist   (:stylist services)
+           service-discounted? (:free-mayvenn-service/discounted? (api.orders/free-mayvenn-service servicing-stylist (:waiter/order completed-order)))
+           matched-stylists    (get-in app-state adventure.keypaths/adventure-matched-stylists)]
+       (if service-discounted?
          (if (empty? matched-stylists)
            (messages/handle-message events/api-shipping-address-geo-lookup)
            (messages/handle-message events/adventure-stylist-search-results-post-purchase-displayed))

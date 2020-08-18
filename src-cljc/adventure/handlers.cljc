@@ -50,10 +50,15 @@
 
 (defmethod effects/perform-effects events/navigate-adventure-match-success-post-purchase [_ _ _ _ app-state]
   #?(:cljs
-     (let [{install-applied? :mayvenn-install/applied?
-            completed-order  :waiter/order} (api.orders/completed app-state)
-           servicing-stylist-id             (:servicing-stylist-id completed-order)]
-       (if (and install-applied? servicing-stylist-id)
+     (let [{completed-order :waiter/order} (api.orders/completed app-state)
+           free-mayvenn-service            (-> app-state
+                                               (api.orders/services completed-order)
+                                               :stylist
+                                               (api.orders/free-mayvenn-service completed-order))
+           servicing-stylist               (:stylist free-mayvenn-service)
+           servicing-stylist-id            (:id servicing-stylist)
+           service-discounted?             (:discounted free-mayvenn-service)]
+       (if (and service-discounted? servicing-stylist)
          (do
            (talkable/show-pending-offer app-state)
            (api/fetch-matched-stylist (get-in app-state storefront.keypaths/api-cache)

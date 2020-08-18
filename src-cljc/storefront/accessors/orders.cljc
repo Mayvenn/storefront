@@ -144,12 +144,6 @@
       "Custom Lace Front Wig"
       "Custom 360 Lace Wig"} name)))
 
-(defn service-line-item-promotion-applied?
-  [order]
-  (boolean
-   (some (comp service-line-item-promotion? :promotion)
-         (mapcat :applied-promotions (service-line-items order)))))
-
 (defn discountable-service-bases
   [order]
   (filter (comp :promo.mayvenn-install/discountable :variant-attrs) (service-line-items order)))
@@ -251,3 +245,18 @@
 
 (defn products-and-services-subtotal [order]
   (reduce + 0 (map line-item-subtotal (product-and-service-items order))))
+
+(defn any-wig? [order]
+  (->> order
+       all-line-items
+       (filter line-items/any-wig?)
+       count
+       pos?))
+
+(defn wig-customization? [order]
+  (->> order
+       service-line-items
+       (map (comp (juxt :catalog/department
+                        :service/category)
+                  :variant-attrs))
+       (some #(= ["service" "customization"] %))))

@@ -3,6 +3,7 @@
    api.orders
    [clojure.set :as set]
    [clojure.string :as string]
+   [adventure.keypaths :as adv-keypaths]
    [spice.maps :as maps]
    [storefront.accessors.orders :as orders]
    [storefront.api :as api]
@@ -32,10 +33,9 @@
    "SRV-TRMU-000" :specialty-addon-natural-hair-trim})
 
 (defn stylist-can-perform-addon-service?
-  [stylist addon-service-sku]
+  [stylist-service-menu addon-service-sku]
   (let [service-key (get addon-sku->addon-specialty addon-service-sku)]
-    (-> stylist
-        :service-menu
+    (-> stylist-service-menu
         service-key
         boolean)))
 
@@ -61,19 +61,20 @@
 
 (defn ^:private determine-unavailability-reason
   [all-base-skus
-   {:mayvenn-install/keys [stylist service-sku]}
+   service-menu ;can be moved
+   base-service-line-item
    {addon-service-hair-family :hair/family
     addon-sku-id              :catalog/sku-id
     :as                       addon-service}]
   (storefront.utils/?assoc addon-service
                            :addon-unavailable-reason
                            (or
-                            (when (not (stylist-can-perform-addon-service? stylist addon-sku-id))
+                            (when (not (stylist-can-perform-addon-service? service-menu addon-sku-id))
                               "Your stylist does not yet offer this service on Mayvenn")
                             (when-not (contains? (->> addon-service-hair-family
                                                       (map api.orders/hair-family->service-sku-ids)
                                                       (reduce set/union #{}))
-                                                 (:catalog/sku-id service-sku))
+                                                 (:sku base-service-line-item))
                               (str "Only available with " (->> all-base-skus
                                                                (filter #(not-empty
                                                                          (set/intersection (-> % :hair/family set)
@@ -83,7 +84,7 @@
 
 
 (defn addon-skus-for-stylist-grouped-by-availability
-  [{:keys [facets mayvenn-install skus]}]
+  [{:keys [skus stylist-service-menu base-service-line-item]}]
   (let [all-base-skus            (->> skus
                                       vals
                                       (spice.selector/match-all {} {:catalog/department "service" :service/type "base" :promo.mayvenn-install/discountable true})
@@ -92,7 +93,7 @@
          unavailable-addon-skus] (->> skus
                                       vals
                                       (spice.selector/match-all {} {:catalog/department "service" :service/type "addon"})
-                                      (map (partial determine-unavailability-reason all-base-skus mayvenn-install))
+                                      (map (partial determine-unavailability-reason all-base-skus stylist-service-menu base-service-line-item))
                                       (sort-by (comp boolean :addon-unavailable-reason))
                                       (partition-by (comp boolean :addon-unavailable-reason))
                                       (map (partial sort-by :order.view/addon-sort)))]
@@ -101,12 +102,15 @@
 
 (defmethod popup/query :addon-services-menu
   [data]
-  (let [{:keys [available-addon-skus
+  (let [order                            (api.orders/current data)
+        servicing-stylist                (:services/stylist (api.orders/services data (:waiter/order order)))
+        discountable-service-line-item   (->> order :waiter/order (api.orders/free-mayvenn-service servicing-stylist) :free-mayvenn-service/service-item)
+        {:keys [available-addon-skus
                 unavailable-addon-skus]} (addon-skus-for-stylist-grouped-by-availability
-                                          {:facets          (get-in data keypaths/v2-facets)
-                                           ;; NOTE: current-order contains the mayvenn-install/keys one would expect
-                                           :mayvenn-install (api.orders/current data)
-                                           :skus            (get-in data keypaths/v2-skus)})]
+                                          {:base-service-line-item discountable-service-line-item
+                                           :mayvenn-install        (api.orders/current data)
+                                           :stylist-service-menu   (get-in data adv-keypaths/adventure-servicing-stylist-service-menu)
+                                           :skus                   (get-in data keypaths/v2-skus)})]
     {:addon-services/spinning? (utils/requesting? data request-keys/get-skus)
      :addon-services/services  (map (partial addon-service-sku->addon-service-menu-entry data)
                                     (concat available-addon-skus unavailable-addon-skus))}))
@@ -178,13 +182,14 @@
                                                      :sku      sku})))))
 
 (defmethod trackings/perform-track events/control-show-addon-service-menu [_ event args app-state]
-  (let [{:keys [available-addon-sku-ids
+  (let [order                               (api.orders/current app-state)
+        discountable-service-line-item      (:service (api.orders/free-mayvenn-service app-state order))
+        {:keys [available-addon-sku-ids
                 unavailable-addon-sku-ids]} (set/rename-keys
                                              (->> (addon-skus-for-stylist-grouped-by-availability
-                                                   {:facets          (get-in app-state keypaths/v2-facets)
-                                                    ;; NOTE: current-order contains the mayvenn-install/keys one would expect
-                                                    :mayvenn-install (api.orders/current app-state)
-                                                    :skus            (get-in app-state keypaths/v2-skus)})
+                                                   {:facets                 (get-in app-state keypaths/v2-facets)
+                                                    :base-service-line-item discountable-service-line-item
+                                                    :skus                   (get-in app-state keypaths/v2-skus)})
                                                   (maps/map-values #(string/join "," (mapv :catalog/sku-id %))))
                                              {:available-addon-skus   :available-addon-sku-ids
                                               :unavailable-addon-skus :unavailable-addon-sku-ids})]

@@ -907,7 +907,7 @@
 (defmethod effects/perform-effects events/control-add-sku-to-bag
   [dispatch event {:keys [sku quantity] :as args} _ app-state]
   #?(:cljs
-     (let [cart-contains-free-mayvenn-service? (:mayvenn-install/discountable-services-on-order? (api.orders/current app-state))
+     (let [cart-contains-free-mayvenn-service? (orders/discountable-services-on-order? (get-in app-state keypaths/order))
            sku-is-free-mayvenn-service?        (-> sku :promo.mayvenn-install/discountable first)]
        (if (and cart-contains-free-mayvenn-service? sku-is-free-mayvenn-service?)
          (messages/handle-message events/popup-show-service-swap {:sku-intended sku})

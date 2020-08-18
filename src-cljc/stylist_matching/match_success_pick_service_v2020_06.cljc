@@ -1,5 +1,6 @@
 (ns stylist-matching.match-success-pick-service-v2020-06
-  (:require api.orders
+  (:require adventure.keypaths
+            api.orders
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
             [storefront.component :as c]
@@ -47,8 +48,8 @@
 
 (defn page
   [app-state]
-  (let [{:as               current-order
-         servicing-stylist :mayvenn-install/stylist} (api.orders/current app-state)
+  (let [servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        current-order (api.orders/current app-state)
         browser-history                              (get-in app-state storefront.keypaths/navigation-undo-stack)]
     (c/build
      template {:header   (header-query current-order browser-history)

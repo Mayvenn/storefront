@@ -4,6 +4,7 @@
                        [goog.events.EventType :as EventType]
                        [goog.style]
                        ["react" :as react]])
+            api.orders
             catalog.keypaths
             [catalog.products :as products]
             [storefront.accessors.categories :as accessors.categories]
@@ -122,7 +123,12 @@
   "Determine what type of promotion behavior we are under
    experiment for"
   [data]
-  (let [shop?                (= "shop" (get-in data keypaths/store-slug))
+  (let [order                (api.orders/current data)
+        services             (api.orders/services data order)
+        servicing-stylist    (:stylist services)
+        free-mayvenn-service (api.orders/free-mayvenn-service servicing-stylist (:waiter/order order))
+        discounted-service?  (:free-mayvenn-service/discounted? free-mayvenn-service)
+        shop?                (= "shop" (get-in data keypaths/store-slug))
         aladdin?             (experiments/aladdin-experience? data)
         affiliate?           (= "influencer" (get-in data keypaths/store-experience))
         [navigation-event _] (get-in data keypaths/navigation-message)
@@ -143,7 +149,7 @@
       shop?
       :shop/freeinstall
 
-      (and aladdin? (orders/service-line-item-promotion-applied? (get-in data keypaths/order)))
+      (and aladdin? discounted-service?)
       :v2-freeinstall/applied
 
       aladdin?

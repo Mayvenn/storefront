@@ -42,7 +42,7 @@
 
 (defmethod popup/query :service-swap
   [data]
-  (let [service-title-to-be-swapped (-> data api.orders/current :mayvenn-install/service-title)
+  (let [service-title-to-be-swapped (-> data api.orders/current :free-mayvenn-install/service-item :variant-name)
         intended-service-title      (-> data (get-in catalog.keypaths/sku-intended-for-swap) :sku/title)]
     {:service-swap-popup/confirm-target [events/control-service-swap-popup-confirm]
      :service-swap-popup/dismiss-target [events/control-service-swap-popup-dismiss]

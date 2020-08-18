@@ -1,5 +1,6 @@
 (ns checkout.call-out
-  (:require [storefront.components.ui :as ui]
+  (:require api.orders
+            [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.accessors.experiments :as experiments]
@@ -36,10 +37,14 @@
 
 (defn query
   [data]
-  (let [order (get-in data keypaths/order)]
+  (let [order                (api.orders/current data)
+        servicing-stylist    (:stylist (api.orders/services data order))
+        free-mayvenn-service (api.orders/free-mayvenn-service servicing-stylist (:waiter/order order))
+        waiter-order         (:waiter/order order)
+        service-discounted?  (:free-mayvenn-service/discounted? free-mayvenn-service)]
     {:v2-experience?     (and (experiments/aladdin-experience? data)
-                              (not (contains? (set (:promotion-codes order)) "custom")))
-     :show-green-banner? (orders/service-line-item-promotion-applied? order)}))
+                              (not (contains? (set (:promotion-codes waiter-order)) "custom")))
+     :show-green-banner? service-discounted?}))
 
 (defn built-component
   [data opts]

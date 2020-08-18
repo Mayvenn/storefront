@@ -39,7 +39,7 @@
 
                                                                    ; [word essentials cart-quantity]
         leave-out-service-rules           {:rules                    [["bundle" ?bundles 3]]
-                                           :failure-navigation-event install-navigation-message
+                                           :failure-navigation-event install-navigation-message ;;TODO this is a UI concern, consider relocating
                                            :add-more?                true}
         closure-service-rules             {:rules                    [["bundle" ?bundles 2] ["closure" ?closures 1]]
                                            :failure-navigation-event install-navigation-message
@@ -85,14 +85,14 @@
   Caveats
   - service items should have a stylist associated, but that is broken 2020 June
   "
-  [servicing-stylist order]
+  [servicing-stylist waiter-order]
   (let [service-line-item                                    (first (filter
                                                                      (comp :promo.mayvenn-install/discountable :variant-attrs)
-                                                                     (orders/service-line-items order)))
+                                                                     (orders/service-line-items waiter-order)))
         {rules-for-service        :rules
          add-more?                :add-more?
          failure-navigation-event :failure-navigation-event} (get rules (:sku service-line-item))
-        physical-items                                       (->> order :shipments (mapcat :line-items)
+        physical-items                                       (->> waiter-order :shipments (mapcat :line-items)
                                                                   (filter (fn [item]
                                                                             (= "spree" (:source item))))
                                                                   (map (fn [item]
@@ -130,81 +130,19 @@
        :hair-missing-quantity    (apply + (map :missing-quantity failed-rules))
        :hair-success-quantity    (apply + (map last rules-for-service))
        ;; criterion 3
-       :stylist                  (not-empty servicing-stylist)})))
-
-(defn mayvenn-install
-  "This is the 'Mayvenn Install' model that is used to build queries for views.
-  Service type is inferred from the cart content in order to display appropriate
-  service related copy.
-
-  This is deprecated. There isn't a directly equivalent model to replace it.
-  It has been conceptually superseded by 'free-mayvenn-service'"
-  [order servicing-stylist sku-catalog images-catalog]
-  (let [shipment                        (-> order :shipments first)
-        addon-services                  (->> order
-                                             orders/service-line-items
-                                             (filter (comp boolean #{"addon"} :service/type :variant-attrs)))
-        {:free-mayvenn-service/keys
-         [hair-missing
-          hair-missing-quantity
-          hair-success-quantity
-          service-item]
-         :as free-mayvenn-service-data} (free-mayvenn-service servicing-stylist order)
-
-        discountable-services-on-order? (boolean (orders/discountable-services-on-order? order))]
-    (merge
-     {:mayvenn-install/discountable-services-on-order? discountable-services-on-order?
-      :mayvenn-install/action-label       "add"
-      :mayvenn-install/applied?           (orders/service-line-item-promotion-applied? order)
-      :mayvenn-install/stylist            servicing-stylist
-      :mayvenn-install/wig-customization? (= "SRV-WGC-000" (:sku service-item))
-      :mayvenn-install/any-wig?           (->> shipment
-                                               :line-items
-                                               (filter line-items/any-wig?)
-                                               count
-                                               pos?)}
-     (when (seq free-mayvenn-service-data)
-       (let [satisfied?          (zero? hair-missing-quantity)
-             steps-remaining     hair-missing-quantity
-             mayvenn-install-sku (get sku-catalog (:sku service-item))]
-         {:mayvenn-install/needs-more-items-for-free-service? (< 0 steps-remaining)
-          :mayvenn-install/cart-helper-copy                   (if satisfied?
-                                                                (str "You're all set! " (:copy/whats-included mayvenn-install-sku))
-                                                                (str "Add " (string/join " and " (->> hair-missing
-                                                                                                      (map (fn [{:keys [word missing-quantity]}]
-                                                                                                             (apply str (if (= 1 missing-quantity)
-                                                                                                                          ["a " word]
-                                                                                                                          [missing-quantity " " word "s"]))))))))
-          :mayvenn-install/quantity-required                  hair-success-quantity
-          :mayvenn-install/quantity-remaining                 hair-missing-quantity
-          :mayvenn-install/quantity-added                     (- hair-success-quantity hair-missing-quantity)
-          :mayvenn-install/service-sku                        mayvenn-install-sku
-          :mayvenn-install/service-title                      (:sku/title mayvenn-install-sku)
-          :mayvenn-install/service-discount                   (- (line-items/service-line-item-price service-item))
-          :mayvenn-install/service-image-url                  (->> mayvenn-install-sku (images/skuer->image images-catalog "cart") :url)
-          :mayvenn-install/addon-services                     (->> addon-services
-                                                                   (map (fn [addon-service] (get sku-catalog (:sku addon-service))))
-                                                                   (map (fn [addon-sku] {:addon-service/title  (:sku/title addon-sku)
-                                                                                         :addon-service/price  (some-> addon-sku :sku/price mf/as-money)
-                                                                                         :addon-service/sku-id (:catalog/sku-id addon-sku)})))})))))
+       :stylist                  (not-empty servicing-stylist)
+       ;; result
+       :discounted?              (and service-line-item (not (seq failed-rules)))})))
 
 (defn ->order
   [app-state order]
   (let [waiter-order      order
-        images-catalog    (get-in app-state storefront.keypaths/v2-images)
-        servicing-stylist (if (= "aladdin" (get-in app-state storefront.keypaths/store-experience))
-                            (get-in app-state storefront.keypaths/store)
-                            (get-in app-state adventure.keypaths/adventure-servicing-stylist))
-        sku-catalog       (get-in app-state storefront.keypaths/v2-skus)
-        store-slug        (get-in app-state storefront.keypaths/store-slug)
-        mayvenn-install   (mayvenn-install waiter-order servicing-stylist sku-catalog images-catalog)]
-    (merge
-     mayvenn-install
-     {:waiter/order         waiter-order
-      :order/dtc?           (= "shop" store-slug)
-      :order/submitted?     (= "submitted" (:state order))
-      :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
-      :order.items/quantity (orders/displayed-cart-count waiter-order)})))
+        store-slug        (get-in app-state storefront.keypaths/store-slug)]
+    {:waiter/order         waiter-order
+     :order/dtc?           (= "shop" store-slug)
+     :order/submitted?     (= "submitted" (:state order))
+     :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
+     :order.items/quantity (orders/displayed-cart-count waiter-order)}))
 
 (defn completed
   [app-state]
@@ -221,11 +159,11 @@
   - services in cart
   - servicing stylist for those services
   "
-  [app-state order]
+  [app-state waiter-order]
   (let [experience (get-in app-state storefront.keypaths/store-experience)]
     (when-not (= "classic" experience)
       (let [stylist (if (= "aladdin" experience)
                       (get-in app-state storefront.keypaths/store)
                       (get-in app-state adventure.keypaths/adventure-servicing-stylist))]
         #:services{:stylist stylist
-                   :items   (orders/service-line-items order)}))))
+                   :items   (orders/service-line-items waiter-order)}))))

@@ -18,6 +18,7 @@
    [storefront.accessors.adjustments :as adjustments]
    [storefront.accessors.experiments :as experiments]
    [storefront.accessors.auth :as auth]
+   [storefront.accessors.images :as images]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.line-items :as line-items]
    [storefront.accessors.products :as products]
@@ -246,26 +247,38 @@
 
 (defn free-service-line-items-query
   [app-state
-   {:mayvenn-install/keys
-    [service-title addon-services service-image-url discountable-services-on-order?
-     cart-helper-copy stylist service-discount service-sku needs-more-items-for-free-service?]}
-   add-items-action]
+   {:free-mayvenn-service/keys [hair-missing-quantity service-item hair-missing]}
+   addon-skus]
   (cond-> []
-    discountable-services-on-order?
-    (conj (let [matched? (boolean stylist)]
+    (-> app-state (get-in keypaths/order) orders/discountable-services-on-order?)
+    (conj (let [order                   (api.orders/current app-state)
+                matched?                (boolean (:services/stylist (api.orders/services app-state order)))
+                images-catalog          (get-in app-state storefront.keypaths/v2-images)
+                sku-catalog             (get-in app-state storefront.keypaths/v2-skus)
+                sku                     (get sku-catalog (:sku service-item))
+                service-line-item-price (- (line-items/service-line-item-price service-item))
+                copy                    (if (and (< 0 hair-missing-quantity))
+                              (:promo.mayvenn-install/requirement-copy sku)
+                              (if (zero? hair-missing-quantity)
+                                (str "You're all set! " (:copy/whats-included sku))
+                                (str "Add " (string/join " and " (->> hair-missing
+                                                                      (map (fn [{:keys [word missing-quantity]}]
+                                                                             (apply str (if (= 1 missing-quantity)
+                                                                                          ["a " word]
+                                                                                          [missing-quantity " " word "s"])))))))))]
             (cond-> {:react/key                                "freeinstall-line-item-freeinstall"
                      :cart-item-title/id                       "line-item-title-upsell-free-service"
-                     :cart-item-title/primary                  service-title
-                     :cart-item-copy/value                     (if (and needs-more-items-for-free-service?)
-                                                                 (:promo.mayvenn-install/requirement-copy service-sku)
-                                                                 cart-helper-copy)
+                     :cart-item-title/primary                  (:variant-name service-item)
+                     :cart-item-copy/value                     copy
                      :cart-item-floating-box/id                "line-item-freeinstall-price"
-                     :cart-item-floating-box/value             (some-> service-discount - mf/as-money)
+                     :cart-item-floating-box/value             (some-> service-line-item-price - mf/as-money)
                      :cart-item-remove-action/id               "line-item-remove-freeinstall"
                      :cart-item-remove-action/spinning?        (utils/requesting? app-state request-keys/remove-freeinstall-line-item)
-                     :cart-item-remove-action/target           [events/control-cart-remove (:legacy/variant-id service-sku)]
+                     :cart-item-remove-action/target           [events/control-cart-remove (:legacy/variant-id sku)]
                      :cart-item-service-thumbnail/id           "freeinstall"
-                     :cart-item-service-thumbnail/image-url    service-image-url
+                     :cart-item-service-thumbnail/image-url    (->> sku
+                                                                    (images/skuer->image images-catalog "cart")
+                                                                    :url)
                      :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)}
 
               matched?
@@ -275,14 +288,14 @@
                       :cart-item-modify-button/content         "+ Browse Add-Ons"})
 
               (and matched?
-                   (seq addon-services))
-              (merge {:cart-item-sub-items/id      "addon-services"
-                      :cart-item-sub-items/title   "Add-On Services"
-                      :cart-item-sub-items/items   (map (fn [{:addon-service/keys [title price sku-id]}]
-                                                          {:cart-item-sub-item/title  title
-                                                           :cart-item-sub-item/price  price
-                                                           :cart-item-sub-item/sku-id sku-id})
-                                                        addon-services)}))))))
+                   (seq addon-skus))
+              (merge {:cart-item-sub-items/id    "addon-services"
+                      :cart-item-sub-items/title "Add-On Services"
+                      :cart-item-sub-items/items (map (fn [addon-sku]
+                                                        {:cart-item-sub-item/title  (:sku/title addon-sku)
+                                                         :cart-item-sub-item/price  (some-> addon-sku :sku/price mf/as-money)
+                                                         :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
+                                                      addon-skus)}))))))
 
 (defn ^:private standalone-service-line-items-query
   [app-state]
@@ -362,13 +375,11 @@
    :cart-summary-line/action-icon   [:svg/close-x {:class "stroke-white fill-gray" }]
    :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code coupon-code}]})
 
-;; TODO (corey) any-wig? should be in the order....
-
 (defn regular-cart-summary-query
   "This is for cart's that haven't entered an upsell (free install, wig customization, etc)"
-  [{:as order :keys [adjustments tax-total total]}
-   {:mayvenn-install/keys [any-wig?]}]
-  (let [subtotal           (orders/products-and-services-subtotal order)
+  [{:as order :keys [adjustments tax-total total]}]
+  (let [any-wig?           (orders/any-wig? order)
+        subtotal           (orders/products-and-services-subtotal order)
         shipping           (orders/shipping-item order)
         shipping-cost      (some->> shipping
                                     vector
@@ -436,24 +447,25 @@
 (defn upsold-cart-summary-query
   "The cart has an upsell 'entered' because the customer has requested a service discount"
   [{:as order :keys [adjustments]}
-   {:as install :mayvenn-install/keys [any-wig? wig-customization? applied? service-discount quantity-remaining service-title]}]
-  (let [total              (:total order)
-        tax                (:tax-total order)
-        subtotal           (orders/products-and-services-subtotal order)
-        shipping           (orders/shipping-item order)
-        shipping-cost      (some->> shipping
-                                    vector
-                                    (apply (juxt :quantity :unit-price))
-                                    (reduce *))
-        timeframe-copy-fn  shipping/timeframe
-        shipping-timeframe (some-> shipping :sku timeframe-copy-fn)
-
-        adjustment         (->> order :adjustments (map :price) (reduce + 0))
-        total-savings      (- adjustment)]
+   {:free-mayvenn-service/keys [service-item discounted?] :as free-mayvenn-service}]
+  (let [wig-customization?  (orders/wig-customization? order)
+        service-discounted? discounted?
+        total               (:total order)
+        tax                 (:tax-total order)
+        subtotal            (orders/products-and-services-subtotal order)
+        shipping            (orders/shipping-item order)
+        shipping-cost       (some->> shipping
+                                     vector
+                                     (apply (juxt :quantity :unit-price))
+                                     (reduce *))
+        timeframe-copy-fn   shipping/timeframe
+        shipping-timeframe  (some-> shipping :sku timeframe-copy-fn)
+        adjustment          (->> order :adjustments (map :price) (reduce + 0))
+        total-savings       (- adjustment)]
     (cond->
         {:cart-summary/id                 "cart-summary"
          :cart-summary-total-line/id      "total"
-         :cart-summary-total-line/label   (if (and install
+         :cart-summary-total-line/label   (if (and free-mayvenn-service
                                                    (not wig-customization?))
                                             "Hair + Install Total"
                                             "Total")
@@ -481,8 +493,8 @@
                                          install-summary-line?
                                          (merge
                                           {:cart-summary-line/id    "free-service-adjustment"
-                                           :cart-summary-line/value (mf/as-money-or-free service-discount)
-                                           :cart-summary-line/label (str "Free " service-title)
+                                           :cart-summary-line/value (mf/as-money-or-free (- (line-items/service-line-item-price service-item)))
+                                           :cart-summary-line/label (str "Free " (:variant-name service-item))
 
                                            :cart-summary-line/action-id     "cart-remove-promo"
                                            :cart-summary-line/action-icon   [:svg/close-x {:class "stroke-white fill-gray"}]
@@ -496,21 +508,21 @@
                                          :cart-summary-line/label "Tax"
                                          :cart-summary-line/value (mf/as-money tax)}]))}
 
-      applied?
+      service-discounted?
       (merge {:cart-summary-total-incentive/id      "mayvenn-install"
               :cart-summary-total-incentive/label   "Includes Mayvenn Service"
               :cart-summary-total-incentive/savings (when (pos? total-savings)
                                                       (mf/as-money total-savings))})
 
-      (and applied? wig-customization?)
+      (and service-discounted? wig-customization?)
       (merge {:cart-summary-total-incentive/id    "wig-customization"
               :cart-summary-total-incentive/label "Includes Wig Customization"}))))
 
 (defn cart-summary-query
-  [order install]
-  (if (:mayvenn-install/discountable-services-on-order? install)
-    (upsold-cart-summary-query order install)
-    (regular-cart-summary-query order install)))
+  [order free-mayvenn-service]
+  (if (orders/discountable-services-on-order? order)
+    (upsold-cart-summary-query order free-mayvenn-service)
+    (regular-cart-summary-query order)))
 
 (defn promo-input-query
   [data order discountable-services-on-order?]
@@ -557,22 +569,15 @@
                                  "Add promo code")})))))
 
 (defn full-cart-query [data]
-  (let [shop?                               (#{"shop"} (get-in data keypaths/store-slug))
-        order                               (get-in data keypaths/order)
-        products                            (get-in data keypaths/v2-products)
-        facets                              (get-in data keypaths/v2-facets)
-        line-items                          (map (partial add-product-title-and-color-to-line-item products facets)
-                                                          (orders/product-items order))
-        cart-services                       (api.orders/services data order)
-        stylist                             (get-in data adventure.keypaths/adventure-servicing-stylist)
-        {:mayvenn-install/keys
-         [discountable-services-on-order?
-          applied?
-          needs-more-items-for-free-service?
-          quantity-remaining
-          wig-customization?]
-         :as mayvenn-install} (api.orders/current data)
-
+  (let [shop?                (#{"shop"} (get-in data keypaths/store-slug))
+        order                (get-in data keypaths/order)
+        products             (get-in data keypaths/v2-products)
+        facets               (get-in data keypaths/v2-facets)
+        line-items           (map (partial add-product-title-and-color-to-line-item products facets)
+                                   (orders/product-items order))
+        cart-services        (api.orders/services data order)
+        stylist              (get-in data adventure.keypaths/adventure-servicing-stylist)
+        free-mayvenn-service (api.orders/free-mayvenn-service stylist order)
 
         any-services?                  (seq (:services/items cart-services))
         update-pending?                (update-pending? data)
@@ -582,7 +587,7 @@
                                             (not stylist))
         checkout-disabled?             (or required-stylist-not-selected?
                                            update-pending?)
-        any-wig?                       (:mayvenn-install/any-wig? mayvenn-install)
+        any-wig?                       (orders/any-wig? order)
         disabled-reasons               (remove nil? [(when required-stylist-not-selected?
                                                        [:div.m1 "Please pick your stylist"])])
 
@@ -602,51 +607,49 @@
         continue-shopping-action        (if any-wig?
                                           [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
                                           mayvenn-install-shopping-action)
-        add-items-action                (if wig-customization?
-                                          [events/navigate-category
-                                           {:page/slug           "wigs"
-                                            :catalog/category-id "13"
-                                            :query-params        {:family "lace-front-wigs~360-wigs"}}]
-                                          mayvenn-install-shopping-action)
+        discountable-services-on-order? (orders/discountable-services-on-order? order)
+        addon-service-line-items                (->> order
+                                                     orders/service-line-items
+                                                     (filter (comp boolean #{"addon"} :service/type :variant-attrs)))
+        addon-service-skus (map (fn [addon-service] (get skus (:sku addon-service))) addon-service-line-items)
         {signed-in-as ::auth/as}        (auth/signed-in data)]
-    (cond-> {:suggestions               (suggestions/consolidated-query data)
-             :line-items                line-items
-             :skus                      skus
-             :products                  products
-             :promo-banner              (when (zero? (orders/product-quantity order))
-                                          (promo-banner/query data))
-             :call-out                  (call-out/query data)
-             :checkout-disabled?        checkout-disabled?
-             :disabled-reasons          disabled-reasons
-             :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
-             :share-carts?              (if (experiments/shared-carts? data)
-                                          (= :stylist signed-in-as)
-                                          (stylists/own-store? data))
-             :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
-             :show-browser-pay?         (and (get-in data keypaths/loaded-stripe)
-                                             (experiments/browser-pay? data)
-                                             (seq (get-in data keypaths/shipping-methods))
-                                             (seq (get-in data keypaths/states)))
-             :recently-added-skus       recently-added-sku-ids
-             :return-link/id            "continue-shopping"
-             :return-link/copy          "Continue Shopping"
-             :return-link/event-message continue-shopping-action
-             :quantity-remaining        quantity-remaining
-             :needs-more-items-for-free-service? needs-more-items-for-free-service?
-             :discountable-services-on-order?                  discountable-services-on-order?
-             :applied?                  applied?
-             :cart-summary              (merge
-                                         (cart-summary-query order mayvenn-install)
-                                         {:promo-field-data (promo-input-query data order discountable-services-on-order?)})
-             :cart-items                (cart-items-query data line-items skus)
-             :service-line-items        (concat
-                                         (free-service-line-items-query data
-                                                                        mayvenn-install
-                                                                        add-items-action)
-                                         (standalone-service-line-items-query data))
-             :quadpay/order-total       (:total order)
-             :quadpay/show?             (get-in data keypaths/loaded-quadpay)
-             :quadpay/directive         :just-select}
+    (cond-> {:suggestions                        (suggestions/consolidated-query data)
+             :line-items                         line-items
+             :skus                               skus
+             :products                           products
+             :promo-banner                       (when (zero? (orders/product-quantity order))
+                                                   (promo-banner/query data))
+             :call-out                           (call-out/query data)
+             :checkout-disabled?                 checkout-disabled?
+             :disabled-reasons                   disabled-reasons
+             :redirecting-to-paypal?             (get-in data keypaths/cart-paypal-redirect)
+             :share-carts?                        (if (experiments/shared-carts? data)
+                                                    (= :stylist signed-in-as)
+                                                    (stylists/own-store? data))
+             :requesting-shared-cart?            (utils/requesting? data request-keys/create-shared-cart)
+             :show-browser-pay?                  (and (get-in data keypaths/loaded-stripe)
+                                                      (experiments/browser-pay? data)
+                                                      (seq (get-in data keypaths/shipping-methods))
+                                                      (seq (get-in data keypaths/states)))
+             :recently-added-skus                recently-added-sku-ids
+             :return-link/id                     "continue-shopping"
+             :return-link/copy                   "Continue Shopping"
+             :return-link/event-message          continue-shopping-action
+             :quantity-remaining                 (:quantity-remaining free-mayvenn-service)
+             :discountable-services-on-order?    discountable-services-on-order?
+             :applied?                           (:discounted free-mayvenn-service)
+             :cart-summary                       (merge
+                                                  (cart-summary-query order free-mayvenn-service)
+                                                  {:promo-field-data (promo-input-query data order discountable-services-on-order?)})
+             :cart-items                         (cart-items-query data line-items skus)
+             :service-line-items                 (concat
+                                                  (free-service-line-items-query data
+                                                                                 free-mayvenn-service
+                                                                                 addon-service-skus)
+                                                  (standalone-service-line-items-query data))
+             :quadpay/order-total                (:total order)
+             :quadpay/show?                      (get-in data keypaths/loaded-quadpay)
+             :quadpay/directive                  :just-select}
 
       any-services?
       (cond->
@@ -680,9 +683,8 @@
            item-count
            empty-cart
            full-cart]} owner opts]
-  (let [cart-empty?    (and (zero? item-count)
-                            (not (:discountable-services-on-order? full-cart)))
-        cart-data (if cart-empty? empty-cart full-cart)]
+  (let [cart-empty? (zero? item-count)
+        cart-data   (if cart-empty? empty-cart full-cart)]
     [:div
      [:div.hide-on-tb-dt
       [:div.border-bottom.border-gray.border-width-1.m-auto.col-7-on-dt
@@ -724,7 +726,7 @@
   (component/build template
                    (merge
                     (when (and (zero? (orders/displayed-cart-count (get-in app-state keypaths/order)))
-                               (-> app-state api.orders/current :mayvenn-install/discountable-services-on-order? not))
+                               (-> app-state (get-in keypaths/order) orders/discountable-services-on-order? not))
                       {:promo-banner app-state})
                     {:cart      (query app-state)
                      :header    app-state
