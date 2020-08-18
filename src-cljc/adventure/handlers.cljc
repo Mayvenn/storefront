@@ -34,10 +34,6 @@
                :longitude (:longitude query)
                :radius    (:radius query)})))
 
-(def ^:private slug->video
-  {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}
-   "free-install"   {:youtube-id "oR1keQ-31yc"}})
-
 (defmethod transitions/transition-state events/api-success-remove-servicing-stylist [_ _ {:keys [order]} app-state]
   (-> app-state
       (assoc-in keypaths/adventure-choices-selected-stylist-id nil)
