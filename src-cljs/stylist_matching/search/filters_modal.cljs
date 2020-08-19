@@ -14,7 +14,8 @@
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
    [storefront.transitions :as transitions]
-   [stylist-directory.keypaths]))
+   [stylist-directory.keypaths]
+   [clojure.string :as str]))
 
 (defn specialty->filter [selected-filters [primary specialty price]]
   (let [checked? (some #{specialty} selected-filters)]
@@ -53,6 +54,14 @@
        :stylist-search-filter-section/filters
        (->> a-la-carte-services
             (mapv (juxt :sku/name :catalog/sku-id :sku/price))
+            ;; TODO: Soon to be reverted
+            (remove (comp
+                     #{"SRV-WGM-000"
+                       "SRV-LRI-000"
+                       "SRV-CRI-000"
+                       "SRV-FRI-000"
+                       "SRV-3RI-000"}
+                     second))
             (mapv (partial specialty->filter selected-filters)))}]}))
 
 (component/defcomponent filter-section
