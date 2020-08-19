@@ -569,28 +569,26 @@
                                  "Add promo code")})))))
 
 (defn full-cart-query [data]
-  (let [shop?                (#{"shop"} (get-in data keypaths/store-slug))
-        order                (get-in data keypaths/order)
-        products             (get-in data keypaths/v2-products)
-        facets               (get-in data keypaths/v2-facets)
-        line-items           (map (partial add-product-title-and-color-to-line-item products facets)
-                                   (orders/product-items order))
-        cart-services        (api.orders/services data order)
-        stylist              (get-in data adventure.keypaths/adventure-servicing-stylist)
-        free-mayvenn-service (api.orders/free-mayvenn-service stylist order)
-
-        any-services?                  (seq (:services/items cart-services))
-        update-pending?                (update-pending? data)
-        stylist-blocked?               (experiments/stylist-blocked? data)
-        required-stylist-not-selected? (and any-services?
-                                            stylist-blocked?
-                                            (not stylist))
-        checkout-disabled?             (or required-stylist-not-selected?
-                                           update-pending?)
-        any-wig?                       (orders/any-wig? order)
-        disabled-reasons               (remove nil? [(when required-stylist-not-selected?
-                                                       [:div.m1 "Please pick your stylist"])])
-
+  (let [shop?                           (#{"shop"} (get-in data keypaths/store-slug))
+        order                           (get-in data keypaths/order)
+        products                        (get-in data keypaths/v2-products)
+        facets                          (get-in data keypaths/v2-facets)
+        line-items                      (map (partial add-product-title-and-color-to-line-item products facets)
+                                             (orders/product-items order))
+        cart-services                   (api.orders/services data order)
+        stylist                         (get-in data adventure.keypaths/adventure-servicing-stylist)
+        free-mayvenn-service            (api.orders/free-mayvenn-service stylist order)
+        any-services?                   (seq (:services/items cart-services))
+        update-pending?                 (update-pending? data)
+        stylist-blocked?                (experiments/stylist-blocked? data)
+        required-stylist-not-selected?  (and any-services?
+                                             stylist-blocked?
+                                             (not stylist))
+        checkout-disabled?              (or required-stylist-not-selected?
+                                            update-pending?)
+        any-wig?                        (orders/any-wig? order)
+        disabled-reasons                (remove nil? [(when required-stylist-not-selected?
+                                                        [:div.m1 "Please pick your stylist"])])
         skus                            (get-in data keypaths/v2-skus)
         recently-added-sku-ids          (get-in data keypaths/cart-recently-added-skus)
         last-texture-added              (->> recently-added-sku-ids
@@ -608,10 +606,10 @@
                                           [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
                                           mayvenn-install-shopping-action)
         discountable-services-on-order? (orders/discountable-services-on-order? order)
-        addon-service-line-items                (->> order
-                                                     orders/service-line-items
-                                                     (filter (comp boolean #{"addon"} :service/type :variant-attrs)))
-        addon-service-skus (map (fn [addon-service] (get skus (:sku addon-service))) addon-service-line-items)
+        addon-service-line-items        (->> order
+                                             orders/service-line-items
+                                             (filter (comp boolean #{"addon"} :service/type :variant-attrs)))
+        addon-service-skus              (map (fn [addon-service] (get skus (:sku addon-service))) addon-service-line-items)
         {signed-in-as ::auth/as}        (auth/signed-in data)]
     (cond-> {:suggestions                        (suggestions/consolidated-query data)
              :line-items                         line-items

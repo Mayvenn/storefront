@@ -49,8 +49,8 @@
 (defn page
   [app-state]
   (let [servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
-        current-order (api.orders/current app-state)
-        browser-history                              (get-in app-state storefront.keypaths/navigation-undo-stack)]
+        current-order     (api.orders/current app-state)
+        browser-history   (get-in app-state storefront.keypaths/navigation-undo-stack)]
     (c/build
      template {:header   (header-query current-order browser-history)
                :congrats (congrats-query servicing-stylist)})))
