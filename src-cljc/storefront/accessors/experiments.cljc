@@ -133,3 +133,7 @@
 (defn add-on-services?
   [data]
   (display-feature? data "add-on-services"))
+
+(defn shared-carts?
+  [data]
+  (display-feature? data "shared-carts"))

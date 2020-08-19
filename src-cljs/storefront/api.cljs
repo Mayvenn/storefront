@@ -937,6 +937,17 @@
     :handler #(messages/handle-message events/api-success-shared-cart-create
                                        {:cart %})}))
 
+(defn create-shared-cart-v2 [session-id order-number order-token]
+  (storeback-api-req
+   POST
+   "/v2/create-shared-cart"
+   request-keys/create-shared-cart
+   {:params  {:session-id session-id
+              :order-number order-number
+              :order-token  order-token}
+    :handler #(messages/handle-message events/api-success-shared-cart-create
+                                       {:cart %})}))
+
 (defn fetch-shared-cart [shared-cart-id]
   (storeback-api-req
    GET

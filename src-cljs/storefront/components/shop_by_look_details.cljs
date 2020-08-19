@@ -7,6 +7,7 @@
             [spice.selector :as selector]
             [storefront.accessors.images :as images]
             [storefront.accessors.contentful :as contentful]
+            [storefront.accessors.line-items :as line-items]
             [storefront.accessors.products :as products]
             [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
@@ -123,8 +124,8 @@
 
 (defn ^:private sort-by-depart-and-price
   [items]
-  (sort-by (fn [{:keys [catalog/department sku/price]}]
-             [(first department) price])
+  (sort-by (fn [{:keys [catalog/department promo.mayvenn-install/discountable sku/price]}]
+             [(first department) (not (first discountable)) price])
            items))
 
 (defn ^:private enrich-line-items-with-sku-data
@@ -170,7 +171,15 @@
 
 (defn ^:private service?
   [line-item]
-  (and (-> line-item :catalog/department first #{"service"})))
+  (-> line-item :catalog/department first #{"service"} boolean))
+
+(defn ^:private base-service?
+  [line-item]
+  (-> line-item :service/type first #{"base"} boolean))
+
+(defn ^:private discountable?
+  [line-item]
+  (-> line-item :promo.mayvenn-install/discountable first true?))
 
 (defn ^:private get-model-image
   [images-catalog {:keys [copy/title] :as skuer}]
@@ -272,33 +281,55 @@
                                                                  first)})
         back                           (first (get-in data keypaths/navigation-undo-stack))
         back-event                     (:default-back-event album-copy)
-        item-count                     (->> line-items (map :item/quantity) (reduce + 0))]
-    (merge {:shared-cart           shared-cart
-            :look                  look
-            :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
-            :skus                  skus
-            :sold-out?             (not-every? :inventory/in-stock? line-items)
-            :fetching-shared-cart? (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
-            :base-price            base-price
-            :discounted-price      (:discounted-price discount)
-            :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
-            :discount-text         (:discount-text discount)
-            :cart-items            (->> line-items
-                                        (remove service?)
-                                        cart-items-query
-                                        sort-by-depart-and-price)
-            :service-line-items    (for [line-item (->> line-items
-                                                        (filter service?)
-                                                        sort-by-depart-and-price)
-                                         :let      [service-product (some->> line-item
-                                                                             :selector/from-products
-                                                                             first
-                                                                             ;; TODO: not resilient to skus belonging to multiple products
-                                                                             (get products))]]
-                                     (service-line-item-query line-item service-product))
-            :carousel/images       (imgs (get-in data keypaths/v2-images) look line-items)
-            :items-title/id        "item-quantity-in-look"
-            :items-title/primary   (str item-count " items in this " (:short-name album-copy))
+        item-count                     (->> line-items (map :item/quantity) (reduce + 0))
+        {:keys [free-services
+                standalone-services
+                addon-services]}       (group-by #(cond
+                                                    ((every-pred service?
+                                                                 base-service?
+                                                                 discountable?) %)
+                                                    :free-services
+                                                    (and (service? %)
+                                                         (base-service? %)
+                                                         (not (discountable? %)))
+                                                    :standalone-services
+                                                    (and (service? %)
+                                                         (->> % :service/type first #{"addon"}))
+                                                    :addon-services
+                                                    :else :product-line-items)
+                                                 line-items)]
+    (merge {:shared-cart            shared-cart
+            :look                   look
+            :creating-order?        (utils/requesting? data request-keys/create-order-from-shared-cart)
+            :skus                   skus
+            :sold-out?              (not-every? :inventory/in-stock? line-items)
+            :fetching-shared-cart?  (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
+            :base-price             base-price
+            :discounted-price       (:discounted-price discount)
+            :quadpay-loaded?        (get-in data keypaths/loaded-quadpay)
+            :discount-text          (:discount-text discount)
+            :cart-items             (->> line-items
+                                         (remove service?)
+                                         cart-items-query
+                                         sort-by-depart-and-price)
+            :service-line-items     (for [line-item (->> (concat free-services standalone-services)
+                                                         sort-by-depart-and-price)
+                                          :let      [service-product (some->> line-item
+                                                                              :selector/from-products
+                                                                              first
+                                                                              ;; TODO: not resilient to skus belonging to multiple products
+                                                                              (get products))]]
+                                      (cond-> (service-line-item-query line-item service-product)
+                                        (discountable? line-item)
+                                        (merge {:cart-item-sub-items/id    "add-on-services"
+                                                :cart-item-sub-items/items (map (fn [{:sku/keys [title price] sku-id :catalog/sku-id}]
+                                                                                  {:cart-item-sub-item/title  title
+                                                                                   :cart-item-sub-item/price  (mf/as-money price)
+                                                                                   :cart-item-sub-item/sku-id sku-id})
+                                                                                addon-services)})))
+            :carousel/images        (imgs (get-in data keypaths/v2-images) look line-items)
+            :items-title/id         "item-quantity-in-look"
+            :items-title/primary    (str item-count " items in this " (:short-name album-copy))
 
             :return-link/event-message (if (and (not back) back-event)
                                          [back-event]

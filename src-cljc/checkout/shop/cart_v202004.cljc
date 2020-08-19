@@ -1,10 +1,8 @@
 (ns checkout.shop.cart-v202004
   (:require
-   #?@(:cljs [
-              [storefront.components.payment-request-button :as payment-request-button]
+   #?@(:cljs [[storefront.components.payment-request-button :as payment-request-button]
               [storefront.components.popup :as popup]
-              [storefront.hooks.quadpay :as quadpay]
-              [storefront.platform.messages :as messages]])
+              [storefront.hooks.quadpay :as quadpay]])
    adventure.keypaths
    api.orders
    [catalog.facets :as facets]
@@ -19,13 +17,14 @@
    spice.selector
    [storefront.accessors.adjustments :as adjustments]
    [storefront.accessors.experiments :as experiments]
+   [storefront.accessors.auth :as auth]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.line-items :as line-items]
    [storefront.accessors.products :as products]
    [storefront.accessors.stylists :as stylists]
    [storefront.accessors.shipping :as shipping]
    [storefront.accessors.sites :as sites]
-   [storefront.component :as component :refer [defcomponent defdynamic-component]]
+   [storefront.component :as component :refer [defcomponent]]
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
    [storefront.components.money-formatters :as mf]
@@ -92,8 +91,8 @@
        [:div.title-2.proxima.mb1 "Items"]
        (if (seq cart-items )
          (for [[index cart-item] (map-indexed vector cart-items)
-               :let [react-key (:react/key cart-item)]
-               :when react-key]
+               :let              [react-key (:react/key cart-item)]
+               :when             react-key]
            [:div
             {:key (str index "-cart-item-" react-key)}
             (when-not (zero? index)
@@ -156,10 +155,9 @@
        #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])]]
 
      (when share-carts?
-       [:div.py2
+       [:div.py2.px6
         [:div.h6.center.pt2.black.bold "Is this bag for a customer?"]
         (ui/button-large-secondary {:on-click  (utils/send-event-callback events/control-cart-share-show)
-                                    :class     "border-width-2 border-black"
                                     :spinning? requesting-shared-cart?
                                     :data-test "share-cart"}
                                    [:div.flex.items-center.justify-center.bold
@@ -559,21 +557,21 @@
                                  "Add promo code")})))))
 
 (defn full-cart-query [data]
-  (let [shop?                                        (#{"shop"} (get-in data keypaths/store-slug))
-        order                                        (get-in data keypaths/order)
-        products                                     (get-in data keypaths/v2-products)
-        facets                                       (get-in data keypaths/v2-facets)
-        line-items                                   (map (partial add-product-title-and-color-to-line-item products facets)
+  (let [shop?                               (#{"shop"} (get-in data keypaths/store-slug))
+        order                               (get-in data keypaths/order)
+        products                            (get-in data keypaths/v2-products)
+        facets                              (get-in data keypaths/v2-facets)
+        line-items                          (map (partial add-product-title-and-color-to-line-item products facets)
                                                           (orders/product-items order))
-        cart-services                                (api.orders/services data order)
-        stylist (get-in data adventure.keypaths/adventure-servicing-stylist)
+        cart-services                       (api.orders/services data order)
+        stylist                             (get-in data adventure.keypaths/adventure-servicing-stylist)
         {:mayvenn-install/keys
          [discountable-services-on-order?
           applied?
           needs-more-items-for-free-service?
           quantity-remaining
           wig-customization?]
-         :as               mayvenn-install} (api.orders/current data)
+         :as mayvenn-install} (api.orders/current data)
 
 
         any-services?                  (seq (:services/items cart-services))
@@ -609,7 +607,8 @@
                                            {:page/slug           "wigs"
                                             :catalog/category-id "13"
                                             :query-params        {:family "lace-front-wigs~360-wigs"}}]
-                                          mayvenn-install-shopping-action)]
+                                          mayvenn-install-shopping-action)
+        {signed-in-as ::auth/as}        (auth/signed-in data)]
     (cond-> {:suggestions               (suggestions/consolidated-query data)
              :line-items                line-items
              :skus                      skus
@@ -620,7 +619,9 @@
              :checkout-disabled?        checkout-disabled?
              :disabled-reasons          disabled-reasons
              :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
-             :share-carts?              (stylists/own-store? data)
+             :share-carts?              (if (experiments/shared-carts? data)
+                                          (= :stylist signed-in-as)
+                                          (stylists/own-store? data))
              :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
              :show-browser-pay?         (and (get-in data keypaths/loaded-stripe)
                                              (experiments/browser-pay? data)

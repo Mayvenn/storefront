@@ -11,7 +11,8 @@
    [storefront.effects :as effects]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
-   [storefront.transitions :as transitions]))
+   [storefront.transitions :as transitions]
+   [storefront.accessors.experiments :as experiments]))
 
 (defmethod effects/perform-effects events/control-pick-stylist-button
   [_ _ _ _ _]
@@ -39,9 +40,13 @@
 (defmethod effects/perform-effects events/control-cart-share-show
   [_ _ _ _ app-state]
   #?(:cljs
-     (api/create-shared-cart (get-in app-state keypaths/session-id)
-                             (get-in app-state keypaths/order-number)
-                             (get-in app-state keypaths/order-token))))
+     (if (experiments/shared-carts? app-state)
+       (api/create-shared-cart-v2 (get-in app-state keypaths/session-id)
+                                  (get-in app-state keypaths/order-number)
+                                  (get-in app-state keypaths/order-token))
+       (api/create-shared-cart (get-in app-state keypaths/session-id)
+                               (get-in app-state keypaths/order-number)
+                               (get-in app-state keypaths/order-token)))))
 
 (defmethod effects/perform-effects events/control-cart-remove
   [_ event variant-id _ app-state]
