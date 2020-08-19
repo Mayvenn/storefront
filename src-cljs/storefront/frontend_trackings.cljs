@@ -172,20 +172,32 @@
                                                                (mapv (partial line-item-skuer->stringer-cart-item images-catalog)))}})))
 
 (defmethod perform-track events/api-success-shared-cart-create [_ _ {:keys [cart]} app-state]
-  (let [all-skus                 (vals (get-in app-state keypaths/v2-skus))
-        sku-by-legacy-variant-id (fn [variant-id]
-                                   (->> all-skus
-                                        (filter #(= (:legacy/variant-id %)
-                                                    variant-id))
-                                        first))
-        line-item-skuers         (->> (:line-items cart)
-                                      (map (fn [[k v]]
-                                             (when-let [sku (sku-by-legacy-variant-id (js/parseInt (name k)))]
-                                               (merge sku {:item/quantity v}))))
-                                      (remove nil?))]
+  (let [{:keys
+         [sku-finder-fn
+          quantity-finder-fn
+          collection-processor-fn
+          indexed-sku-db
+          shared-cart-creator-fn]}
+        (if (= "v2" (:version cart))
+          {:indexed-sku-db          (get-in app-state keypaths/v2-skus)
+           :sku-finder-fn           :sku-id
+           :quantity-finder-fn      :quantity
+           :collection-processor-fn flatten
+           :shared-cart-creator-fn  :created-by-stylist-id}
+          {:indexed-sku-db          (->> (get-in app-state keypaths/v2-skus) vals (maps/index-by :legacy/variant-id))
+           :sku-finder-fn           (comp js/parseInt name first)
+           :quantity-finder-fn      second
+           :collection-processor-fn identity
+           :shared-cart-creator-fn  :stylist-id})
+        line-item-skuers (->> (:line-items cart)
+                                collection-processor-fn
+                                (map (fn [line-item]
+                                       (when-let [sku (get indexed-sku-db (sku-finder-fn line-item))]
+                                         (merge sku {:item/quantity (quantity-finder-fn line-item)}))))
+                                (remove nil?))]
     (stringer/track-event "shared_cart_created"
                           {:shared_cart_id (-> cart :number)
-                           :stylist_id     (-> cart :stylist-id)
+                           :stylist_id     (shared-cart-creator-fn cart)
                            :skus           (->> line-item-skuers (map :catalog/sku-id) (string/join ","))
                            :variant_ids    (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
                            :quantities     (->> line-item-skuers (map :item/quantity) (string/join ","))
