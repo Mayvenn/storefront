@@ -148,7 +148,7 @@
    (catalog.M/yotpo-reviews-summary data)])
 
 (defn addon-card [{:addon-line/keys [id target primary secondary tertiary checked?]}]
-  [:div.p3.py4.pr4.flex
+  [:div.p2.flex
    (merge (apply utils/fake-href target)
           {:key   id})
    [:div.mt1.pl1 (ui/check-box {:value checked?
@@ -213,7 +213,7 @@
                 [:div.bg-cool-gray
                  [:div.px3.pt3.title-3.proxima.bold.shout "Pair with add-ons"]
                  (mapv (fn [addon]
-                         [:div.mx3.my1.px3.bg-white
+                         [:div.mx3.my1.bg-white
                           (addon-card addon)])
                        related-addons)
                  [:div.pt2.pb3.flex.justify-center
