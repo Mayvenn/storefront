@@ -500,7 +500,7 @@
 
       applied?
       (merge {:cart-summary-total-incentive/id      "mayvenn-install"
-              :cart-summary-total-incentive/label   "Includes Mayvenn Install"
+              :cart-summary-total-incentive/label   "Includes Mayvenn Service"
               :cart-summary-total-incentive/savings (when (pos? total-savings)
                                                       (mf/as-money total-savings))})
 
