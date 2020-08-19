@@ -1,5 +1,6 @@
 (ns storefront.components.service-swap-popup
   (:require api.orders
+            [storefront.accessors.orders :as orders]
             [storefront.components.popup :as popup]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -42,7 +43,11 @@
 
 (defmethod popup/query :service-swap
   [data]
-  (let [service-title-to-be-swapped (-> data api.orders/current :free-mayvenn-install/service-item :variant-name)
+  (let [service-title-to-be-swapped (->> (get-in data storefront.keypaths/order)
+                                         orders/service-line-items
+                                         (filter (comp :promo.mayvenn-install/discountable :variant-attrs))
+                                         first
+                                         :variant-name)
         intended-service-title      (-> data (get-in catalog.keypaths/sku-intended-for-swap) :sku/title)]
     {:service-swap-popup/confirm-target [events/control-service-swap-popup-confirm]
      :service-swap-popup/dismiss-target [events/control-service-swap-popup-dismiss]
