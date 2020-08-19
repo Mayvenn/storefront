@@ -168,6 +168,7 @@
 
 (def shared-cart (conj ui :shared-cart))
 (def shared-cart-current (conj shared-cart :current))
+(def shared-cart-creator (conj shared-cart :creator))
 (def shared-cart-url (conj shared-cart :url))
 (def shared-cart-id (conj shared-cart :id))
 
