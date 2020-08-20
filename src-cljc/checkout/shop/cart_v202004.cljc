@@ -820,7 +820,7 @@
     [:footer
      (storefront.footer/built-component footer nil)]]])
 
-(defn page
+(defn ^:export page
   [app-state nav-event]
   (component/build template
                    (merge
