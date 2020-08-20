@@ -159,21 +159,21 @@
    [:div tertiary]])
 
 (defcomponent component
-  [{:keys                                   [adding-to-bag?
-                                             carousel-images
-                                             product
-                                             reviews
-                                             selected-sku
-                                             sku-quantity
-                                             selected-options
-                                             how-it-works
-                                             get-a-free-install-section-data
-                                             options
-                                             picker-data
-                                             aladdin?
-                                             ugc
-                                             add-on-services?
-                                             related-addons] :as data} owner opts]
+  [{:keys [adding-to-bag?
+           carousel-images
+           product
+           reviews
+           selected-sku
+           sku-quantity
+           selected-options
+           how-it-works
+           get-a-free-install-section-data
+           options
+           picker-data
+           aladdin?
+           ugc
+           add-on-services?
+           related-addons] :as data} owner opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (if-not product
