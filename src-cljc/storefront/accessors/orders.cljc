@@ -256,5 +256,5 @@
 (defn wig-customization? [order]
   (->> order
        service-line-items
-       (filter #(= (:sku-id %) "SRV-WGC-000"))
+       (filter #(= (:sku %) "SRV-WGC-000"))
        first))
