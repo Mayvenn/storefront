@@ -256,7 +256,5 @@
 (defn wig-customization? [order]
   (->> order
        service-line-items
-       (map (comp (juxt :catalog/department
-                        :service/category)
-                  :variant-attrs))
-       (some #(= ["service" "customization"] %))))
+       (filter #(= (:sku-id %) "SRV-WGC-000"))
+       first))
