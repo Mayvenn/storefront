@@ -48,8 +48,7 @@
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.routes :as routes]
-            [checkout.shop.cart-v202004 :as shop-cart-v202004]))
+            [storefront.routes :as routes]))
 
 ;; HACK until the day there are no more built-components
 (defn ^:private first-arg-only [inner-fn]
@@ -191,7 +190,7 @@
 
        ;; Cart pages for Shop
        (routes/sub-page? [nav-event] [events/navigate-cart])
-       (shop-cart-v202004/page data nav-event)
+       ((ui/lazy-load-component :catalog 'checkout.shop.cart-v202004/page nav-event) data nav-event)
 
        ;; TODO this should be moved into the UI domain of stylist-matching
        ;; Reminder, these are guarded by routing for Aladdin
