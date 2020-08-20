@@ -147,13 +147,18 @@
      (catalog.M/price-block data)]]
    (catalog.M/yotpo-reviews-summary data)])
 
-(defn addon-card [{:addon-line/keys [id target primary secondary tertiary checked?]}]
+(defn addon-card [{:addon-line/keys [id target primary secondary tertiary checked? spinning?]}]
   [:div.mx3.my1.bg-white
    [:div.p2.flex
     (merge (apply utils/fake-href target)
            {:key id})
-    [:div.mt1.pl1 (ui/check-box {:value     checked?
-                                 :data-test id})]
+    (if spinning?
+      [:div.mt1
+       [:div.pr2 {:style {:width "41px"}}
+        ui/spinner]]
+      [:div.mt1.pl1
+       (ui/check-box {:value     checked?
+                      :data-test id})])
     [:div.flex-grow-1.mr2
      [:div.proxima.content-2 primary]
      [:div.proxima.content-3 secondary]]
@@ -310,14 +315,15 @@
      (keys options))))
 
 (defn addon->addon-query
-  [addon selected-addons]
+  [{:keys [addon selected-addons spinning?]}]
   (let [sku-id (:catalog/sku-id addon)]
     {:addon-line/id       sku-id
-    :addon-line/target    [events/control-product-detail-toggle-related-addon-items {:sku-id sku-id}]
-    :addon-line/checked?  (some #{sku-id} selected-addons)
-    :addon-line/primary   (:sku/title addon)
-    :addon-line/secondary (:copy/description addon)
-    :addon-line/tertiary  (mf/as-money (:sku/price addon))}))
+     :addon-line/target    [events/control-product-detail-toggle-related-addon-items {:sku-id sku-id}]
+     :addon-line/checked?  (some #{sku-id} selected-addons)
+     :addon-line/spinning? spinning?
+     :addon-line/primary   (:sku/title addon)
+     :addon-line/secondary (:copy/description addon)
+     :addon-line/tertiary  (mf/as-money (:sku/price addon))}))
 
 (defn query [data]
   (let [selected-sku                         (get-in data catalog.keypaths/detailed-product-selected-sku)
@@ -641,26 +647,31 @@
         :cta-disabled-explanation/cta-label  "Browse other services"
         :cta-disabled-explanation/cta-target [events/navigate-category associated-service-category]})
 
-     (when (and add-on-services? (seq related-addons) service?)
-       {:cta/target               [events/control-bulk-add-to-bag
-                                   {:items (concat
-                                            [{:sku   selected-sku
-                                              :quantity (get-in data keypaths/browse-sku-quantity 1)}]
-                                            (mapv (fn [addon]
-                                                    {:sku     addon
-                                                     :quantity 1})
-                                                  (filter (comp (set selected-addons) :catalog/sku-id) related-addons)))}]
-        :cta/spinning?            (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-        :cta-related-addon/label  (if addon-list-open? "hide add-ons" "see all add-ons")
-        :cta-related-addon/id     "addon-cta"
-        :cta-related-addon/target [events/control-product-detail-toggle-related-addon-list]
-        :related-addons           (let []
-                                    (if addon-list-open?
+     (when (and add-on-services?
+                (seq related-addons)
+                service?)
+       (let [spinning? (utils/requesting-from-endpoint? data request-keys/add-to-bag)]
+         {:cta/target               [events/control-bulk-add-to-bag
+                                     {:items (concat
+                                              [{:sku      selected-sku
+                                                :quantity (get-in data keypaths/browse-sku-quantity 1)}]
+                                              (mapv (fn [addon]
+                                                      {:sku      addon
+                                                       :quantity 1})
+                                                    (filter (comp (set selected-addons) :catalog/sku-id) related-addons)))}]
+          :cta/spinning?            spinning?
+          :cta-related-addon/label  (if addon-list-open? "hide add-ons" "see all add-ons")
+          :cta-related-addon/id     "addon-cta"
+          :cta-related-addon/target [events/control-product-detail-toggle-related-addon-list]
+          :related-addons           (if addon-list-open?
                                       (mapv (fn [addon]
-                                              (addon->addon-query addon selected-addons))
+                                              (addon->addon-query {:addon           addon
+                                                                   :spinning?       spinning?
+                                                                   :selected-addons selected-addons}))
                                             related-addons)
-                                      (let [addon (first related-addons)]
-                                        [(addon->addon-query addon selected-addons)])))}))))
+                                      [(addon->addon-query {:addon           (first related-addons)
+                                                            :spinning?       spinning?
+                                                            :selected-addons selected-addons})])})))))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
