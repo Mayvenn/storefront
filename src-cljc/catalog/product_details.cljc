@@ -350,8 +350,8 @@
         service?                             (accessors.products/service? product)
         hair?                                (accessors.products/hair? product)
         wig?                                 (accessors.products/wig-product? product)
-        wig-customization?                   (seq (spice.selector/match-all {} {:catalog/department "service"
-                                                                                :service/category   "customization"} [product]))
+        wig-customization?                   (= #{"SRV-WGC-000"} (:catalog/sku-id product))
+
         mayvenn-install-incentive-families   #{"bundles" "closures" "frontals" "360-frontals"}
         wig-customization-incentive-families #{"360-wigs" "lace-front-wigs"}
         stylist-mismatch?                    (experiments/stylist-mismatch? data)
