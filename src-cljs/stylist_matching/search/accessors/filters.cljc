@@ -15,7 +15,13 @@
    {:sku-id "SRV-UPCW-000" :service-menu-key :specialty-custom-unit-leave-out}
    {:sku-id "SRV-CLCW-000" :service-menu-key :specialty-custom-unit-closure}
    {:sku-id "SRV-LFCW-000" :service-menu-key :specialty-custom-unit-frontal}
-   {:sku-id "SRV-3CW-000" :service-menu-key :specialty-custom-unit-360-frontal}])
+   {:sku-id "SRV-3CW-000" :service-menu-key :specialty-custom-unit-360-frontal}
+
+   {:sku-id "SRV-LRI-000" :service-menu-key :specialty-reinstall-leave-out}
+   {:sku-id "SRV-CRI-000" :service-menu-key :specialty-reinstall-closure}
+   {:sku-id "SRV-FRI-000" :service-menu-key :specialty-reinstall-frontal}
+   {:sku-id "SRV-3RI-000" :service-menu-key :specialty-reinstall-360-frontal}
+   {:sku-id "SRV-WGM-000" :service-menu-key :specialty-wig-maintenance}])
 
 (def services-by-sku-id
   (maps/index-by :sku-id service-filter-data))

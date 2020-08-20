@@ -4,7 +4,6 @@
    clojure.string
    [storefront.component :as component]
    [storefront.components.header :as components.header]
-   [stylist-matching.search.accessors.filters :as accessors.filters]
    [storefront.components.money-formatters :as mf]
    [storefront.components.ui :as ui]
    [storefront.effects :as effects]
@@ -12,10 +11,8 @@
    [storefront.history :as history]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
-   [storefront.platform.messages :as messages]
    [storefront.transitions :as transitions]
-   [stylist-directory.keypaths]
-   [clojure.string :as str]))
+   [stylist-directory.keypaths]))
 
 (defn specialty->filter [selected-filters [primary specialty price]]
   (let [checked? (some #{specialty} selected-filters)]
