@@ -51,13 +51,10 @@
 (defmethod effects/perform-effects events/navigate-adventure-match-success-post-purchase [_ _ _ _ app-state]
   #?(:cljs
      (let [{completed-order :waiter/order} (api.orders/completed app-state)
-           free-mayvenn-service            (-> app-state
-                                               (api.orders/services completed-order)
-                                               :stylist
-                                               (api.orders/free-mayvenn-service completed-order))
-           servicing-stylist               (:stylist free-mayvenn-service)
-           servicing-stylist-id            (:id servicing-stylist)
-           service-discounted?             (:discounted free-mayvenn-service)]
+           servicing-stylist               (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+           servicing-stylist-id            (:stylist-id servicing-stylist)
+           free-mayvenn-service            (api.orders/free-mayvenn-service servicing-stylist completed-order)
+           service-discounted?             (:free-mayvenn-service/discounted? free-mayvenn-service)]
        (if (and service-discounted? servicing-stylist)
          (do
            (talkable/show-pending-offer app-state)
