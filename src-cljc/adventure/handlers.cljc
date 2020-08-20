@@ -51,13 +51,13 @@
 (defmethod effects/perform-effects events/navigate-adventure-match-success-post-purchase [_ _ _ _ app-state]
   #?(:cljs
      (let [{completed-order :waiter/order} (api.orders/completed app-state)
-           {:services/keys [stylist items]}
-           (api.orders/services app-state completed-order)]
-       (if (and (seq stylist) (seq items))
+           {:services/keys [items]}        (api.orders/services app-state completed-order)
+           servicing-stylist-id            (:servicing-stylist-id completed-order)]
+       (if (and servicing-stylist-id (seq items))
          (do
            (talkable/show-pending-offer app-state)
            (api/fetch-matched-stylist (get-in app-state storefront.keypaths/api-cache)
-                                      (:stylist-id stylist)))
+                                      servicing-stylist-id))
          (history/enqueue-navigate events/navigate-home)))))
 
 (defmethod transitions/transition-state events/api-success-fetch-matched-stylist

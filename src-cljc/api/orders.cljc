@@ -165,5 +165,7 @@
       (let [stylist (if (= "aladdin" experience)
                       (get-in app-state storefront.keypaths/store)
                       (get-in app-state adventure.keypaths/adventure-servicing-stylist))]
+        ;; NOTE: stylist here is not necessarily the stylist that is on the order that was passed in
+        ;;       such as in the case of completed orders on shop
         #:services{:stylist stylist
                    :items   (orders/service-line-items waiter-order)}))))
