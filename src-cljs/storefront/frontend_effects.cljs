@@ -671,8 +671,7 @@
         (add-pending-promo-code app-state order))
       (messages/handle-message events/clear-order))
 
-    (when (and (-> order orders/service-line-items not-empty)
-               (:servicing-stylist-id order))
+    (when (-> order orders/service-line-items not-empty)
       (api/get-skus
        (get-in app-state keypaths/api-cache)
        ;; NOTE: When the number of services in the catalog grows, rethink this query.
