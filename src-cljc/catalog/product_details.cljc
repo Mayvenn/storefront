@@ -148,15 +148,16 @@
    (catalog.M/yotpo-reviews-summary data)])
 
 (defn addon-card [{:addon-line/keys [id target primary secondary tertiary checked?]}]
-  [:div.p2.flex
-   (merge (apply utils/fake-href target)
-          {:key   id})
-   [:div.mt1.pl1 (ui/check-box {:value checked?
-                                :data-test id})]
-   [:div.flex-grow-1.mr2
-    [:div.proxima.content-2 primary]
-    [:div.proxima.content-3 secondary]]
-   [:div tertiary]])
+  [:div.mx3.my1.bg-white
+   [:div.p2.flex
+    (merge (apply utils/fake-href target)
+           {:key id})
+    [:div.mt1.pl1 (ui/check-box {:value     checked?
+                                 :data-test id})]
+    [:div.flex-grow-1.mr2
+     [:div.proxima.content-2 primary]
+     [:div.proxima.content-3 secondary]]
+    [:div tertiary]]])
 
 (defcomponent component
   [{:keys [adding-to-bag?
@@ -212,10 +213,7 @@
               (let [{:cta-related-addon/keys [label target id]} data]
                 [:div.bg-cool-gray
                  [:div.px3.pt3.title-3.proxima.bold.shout "Pair with add-ons"]
-                 (mapv (fn [addon]
-                         [:div.mx3.my1.bg-white
-                          (addon-card addon)])
-                       related-addons)
+                 (mapv addon-card related-addons)
                  [:div.pt2.pb3.flex.justify-center
                   (ui/button-small-underline-primary (merge (apply utils/route-to target)
                                                             {:id        id
