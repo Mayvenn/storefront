@@ -43,26 +43,22 @@
        :stylist-search-filter-section/primary (str
                                                "Get Mayvenn services (valued up to $200) for free when purchasing "
                                                "qualifying hair from Mayvenn. You buy the hair, we cover the service!")
-       :stylist-search-filter-section/filters
-       ;; NOTE: there is a `service-sku-id->preferred-service` mapping in `stylist-matching.find-your-stylist`
-       ;; May be useful when generating this list dynamically from the service categories
-       (->> free-services
-            (mapv (juxt :sku/name :catalog/sku-id (constantly 0)))
-            (mapv (partial specialty->filter selected-filters)))}
-      {:stylist-search-filter-section/id    "other-a-la-carte-services"
-       :stylist-search-filter-section/title "À la carte Services"
-       :stylist-search-filter-section/filters
-       (->> a-la-carte-services
-            (mapv (juxt :sku/name :catalog/sku-id :sku/price))
-            ;; TODO: Soon to be reverted
-            (remove (comp
-                     #{"SRV-WGM-000"
-                       "SRV-LRI-000"
-                       "SRV-CRI-000"
-                       "SRV-FRI-000"
-                       "SRV-3RI-000"}
-                     second))
-            (mapv (partial specialty->filter selected-filters)))}]}))
+       :stylist-search-filter-section/filters (->> free-services
+                                                   (mapv (juxt :sku/name :catalog/sku-id (constantly 0)))
+                                                   (mapv (partial specialty->filter selected-filters)))}
+      {:stylist-search-filter-section/id      "other-a-la-carte-services"
+       :stylist-search-filter-section/title   "À la carte Services"
+       :stylist-search-filter-section/filters (->> a-la-carte-services
+                                                   (mapv (juxt :sku/name :catalog/sku-id :sku/price))
+                                                   ;; TODO: Soon to be reverted
+                                                   (remove (comp
+                                                            #{"SRV-WGM-000"
+                                                              "SRV-LRI-000"
+                                                              "SRV-CRI-000"
+                                                              "SRV-FRI-000"
+                                                              "SRV-3RI-000"}
+                                                            second))
+                                                   (mapv (partial specialty->filter selected-filters)))}]}))
 
 (component/defcomponent filter-section
   [{:stylist-search-filter-section/keys [id filters title primary]} _ _]
