@@ -985,7 +985,9 @@
                                                     (fn [item]
                                                       [(:catalog/sku-id (:sku item)) (:quantity item)])
                                                     items))}
-                          #(do
-                             (messages/handle-message events/api-success-bulk-add-to-bag
-                                                      (assoc % :initial-sku (first items)))
-                             (history/enqueue-navigate events/navigate-cart)))))
+                          (fn handler [{:keys [order]}]
+                            (messages/handle-message events/api-success-bulk-add-to-bag {:order          order
+                                                                                         :items          items
+                                                                                         :related-addons (->> (get-in app-state keypaths/v2-related-addons)
+                                                                                                              (mapv :catalog/sku-id))})
+                            (history/enqueue-navigate events/navigate-cart)))))

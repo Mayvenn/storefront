@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [clojure.set :as set]
             [spice.maps :as maps]
+            [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.videos :as videos]
             [storefront.accessors.stylist-urls :as stylist-urls]
@@ -14,9 +15,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.trackings :refer [perform-track]]
-            [storefront.accessors.images :as images]
-            [storefront.accessors.promos :as promos]
-            [storefront.accessors.sites :as sites]))
+            [storefront.accessors.images :as images]))
 
 (defn ^:private convert-revenue [{:keys [number total] :as order}]
   {:order-number   number
@@ -142,6 +141,28 @@
                                              :store-is-stylist (not (#{"store" "shop" "internal"} store-slug))
                                              :order-quantity   order-quantity
                                              :line-item-skuers [(assoc sku :item/quantity quantity)]}))))
+
+(defmethod perform-track events/api-success-bulk-add-to-bag
+  [_ _ {:keys [items order related-addons]} app-state]
+  (let [line-item-skuers (waiter-line-items->line-item-skuer
+                          (get-in app-state keypaths/v2-skus)
+                          (orders/product-and-service-items order))
+        base-skus        (->> items
+                              (mapv :sku)
+                              (filter (fn [sku] (-> sku :service/type (contains? "base")))))   ]
+    (stringer/track-event "bulk_add_to_cart" {:store_experience (get-in app-state keypaths/store-experience)
+                                              :order_number     (:number order)
+                                              :order_total      (:total order)
+                                              :inherent_skus    (->> base-skus
+                                                                     (map :catalog/sku-id)
+                                                                     (string/join ","))
+                                              :upsell_skus      (string/join "," related-addons)
+                                              :order_quantity   (->> line-item-skuers (map :item/quantity) (reduce + 0))
+                                              :skus             (->> line-item-skuers (map :catalog/sku-id) (string/join ","))
+                                              :variant_ids      (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
+                                              :context          {:cart-items (mapv (partial line-item-skuer->stringer-cart-item
+                                                                                            (get-in app-state keypaths/v2-images))
+                                                                                   line-item-skuers)}})))
 
 (defmethod perform-track events/api-success-remove-from-bag
   [_ _ {order :order} app-state]
