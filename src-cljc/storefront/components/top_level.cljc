@@ -190,7 +190,7 @@
 
        ;; Cart pages for Shop
        (routes/sub-page? [nav-event] [events/navigate-cart])
-       ((ui/lazy-load-component :catalog 'checkout.shop.cart-v202004/page nav-event) data nav-event)
+       ((ui/lazy-load-component :catalog 'checkout.shop.cart-v202004/page nav-event) data nil)
 
        ;; TODO this should be moved into the UI domain of stylist-matching
        ;; Reminder, these are guarded by routing for Aladdin
