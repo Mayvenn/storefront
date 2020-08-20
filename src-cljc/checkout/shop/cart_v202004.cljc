@@ -252,7 +252,7 @@
   (cond-> []
     (-> app-state (get-in keypaths/order) orders/discountable-services-on-order?)
     (conj (let [order                   (api.orders/current app-state)
-                matched?                (boolean (:services/stylist (api.orders/services app-state order)))
+                matched?                (:services/stylist (api.orders/services app-state order))
                 images-catalog          (get-in app-state storefront.keypaths/v2-images)
                 sku-catalog             (get-in app-state storefront.keypaths/v2-skus)
                 sku                     (get sku-catalog (:sku service-item))
@@ -287,8 +287,7 @@
                       :cart-item-modify-button/tracking-target [events/browse-addon-service-menu-button-enabled]
                       :cart-item-modify-button/content         "+ Browse Add-Ons"})
 
-              (and matched?
-                   (seq addon-skus))
+              (seq addon-skus)
               (merge {:cart-item-sub-items/id    "addon-services"
                       :cart-item-sub-items/title "Add-On Services"
                       :cart-item-sub-items/items (map (fn [addon-sku]
