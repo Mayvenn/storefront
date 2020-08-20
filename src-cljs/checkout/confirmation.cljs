@@ -454,9 +454,7 @@
          :checkout-steps               (checkout-steps/query data)
          :products                     (get-in data keypaths/v2-products)
          :payment                      (checkout-credit-card/query data)
-         :delivery                     (if (experiments/shipping-estimates? data)
-                                         (checkout-delivery/shipping-estimates-query data)
-                                         (checkout-delivery/query data))
+         :delivery                     (checkout-delivery/query data)
          :free-install-applied?        service-discounted?
          :checkout-button-data         (checkout-button-query data)
          :selected-quadpay?            selected-quadpay?

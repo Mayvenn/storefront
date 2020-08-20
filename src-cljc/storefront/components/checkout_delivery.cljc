@@ -16,7 +16,7 @@
    (if id
      [:div.pt2
       (ui/note-box {:data-test id
-                    :color      "s-color"}
+                    :color     "s-color"}
                    [:div.proxima.content-3.px4.py2 copy])]
      [:div])))
 
@@ -30,9 +30,9 @@
       [:div.my2 {:key (:react/key option)}
        (ui/radio-section
         (let [{:control/keys [data-test id data-test-id target selected?]} option]
-          (merge {:name data-test
-                  :id id
-                  :data-test data-test
+          (merge {:name         data-test
+                  :id           id
+                  :data-test    data-test
                   :data-test-id data-test-id
                   :on-click     (apply utils/send-event-callback target)}
                  (when selected? {:checked "checked"})))
@@ -41,29 +41,6 @@
          [:div {:data-test (:primary/data-test option)} (:primary/copy option)]
          [:div.content-3 (:secondary/copy option)]
          [:div.content-3 (:tertiary/copy option)]])])]])
-
-(defn shipping-method->shipping-method-option
-  [selected-shipping-method-sku-id
-   {:keys [sku name price] :as shipping-method}]
-  (let [selected? (= selected-shipping-method-sku-id sku)]
-    {:react/key            (str "non-experimental-" sku)
-     :primary/data-test    (when selected? "selected-shipping-method")
-     :primary/copy         name
-     :secondary/copy       (or (shipping/longform-timeframe sku) "")
-     :control/id           (str "shipping-method-" sku)
-     :control/data-test    "shipping-method"
-     :control/data-test-id sku
-     :control/target       [events/control-checkout-shipping-method-select shipping-method]
-     :control/selected?    selected?
-     :detail/value         ^:ignore-interpret-warning [:span {:class (if (pos? price) "black" "p-color")}
-                                                       (mf/as-money-or-free price)]}))
-
-(defn query
-  [data]
-  (let [shipping-methods (get-in data keypaths/shipping-methods)
-        selected-sku     (get-in data keypaths/checkout-selected-shipping-method-sku)]
-    {:delivery/primary "Shipping Method"
-     :delivery/options (map (partial shipping-method->shipping-method-option selected-sku) shipping-methods)}))
 
 (def shipping-method-rules
   {"WAITER-SHIPPING-1" {:min-delivery 4 :max-delivery 6 :saturday-delivery? true}
@@ -119,7 +96,7 @@
 (defn format-delivery-date [date]
   (str (formatters/day->day-abbr date) "(" (formatters/month+day date) ")"))
 
-(defn shipping-estimates-experiment--shipping-method->shipping-method-option
+(defn shipping-method->shipping-method-option
   [selected-shipping-method-sku-id
    current-local-time
    east-coast-weekday
@@ -159,7 +136,7 @@
                                                        (mf/as-money-or-free price)]}))
 
 
-(defn shipping-estimates-query [data]
+(defn query [data]
   (let [shipping-methods       (get-in data keypaths/shipping-methods)
         selected-sku           (get-in data keypaths/checkout-selected-shipping-method-sku)
         now                    (date/now)
@@ -183,12 +160,12 @@
         weekday?               (contains? #{"Mon" "Tue" "Wed" "Thu" "Fri"} east-coast-weekday)
         in-window?             (and parsed-east-coast-hour
                                     (< parsed-east-coast-hour 13))]
-    {:delivery/primary "Shipping Method"
-     :delivery/options (map (partial shipping-estimates-experiment--shipping-method->shipping-method-option
-                                 selected-sku
-                                 now
-                                 east-coast-weekday
-                                 in-window?) shipping-methods)
+    {:delivery/primary   "Shipping Method"
+     :delivery/options   (map (partial shipping-method->shipping-method-option
+                                     selected-sku
+                                     now
+                                     east-coast-weekday
+                                     in-window?) shipping-methods)
      :delivery.note/id   (when (and weekday? in-window?)
                            "delivery-note")
      :delivery.note/copy "Order by 1pm ET today to have the guaranteed delivery dates below"}))

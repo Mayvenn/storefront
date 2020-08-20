@@ -106,10 +106,6 @@
   [data]
   (display-feature? data "stylist-blocked"))
 
-(defn shipping-estimates?
-  [data]
-  (display-feature? data "shipping-estimates"))
-
 (defn stylist-results-test?
   [data]
   (display-feature? data "stylist-results-test"))
