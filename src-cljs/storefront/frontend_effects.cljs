@@ -749,6 +749,10 @@
   (messages/handle-later events/popup-hide {} 2000))
 
 (defmethod effects/perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} _ app-state]
+  (let [{service-items :services/items} (api.orders/services app-state order)]
+    (if (and (seq service-items) (= :shop (sites/determine-site app-state)))
+      (history/enqueue-navigate events/navigate-adventure-checkout-wait)
+      (history/enqueue-navigate events/navigate-order-complete order)))
   (messages/handle-message events/order-completed order)
   (messages/handle-message events/order-placed order))
 
@@ -757,26 +761,15 @@
   (cookie-jar/save-completed-order (get-in app-state keypaths/cookie)
                                    (get-in app-state keypaths/completed-order))
   (messages/handle-message events/clear-order)
-  (let [{service-items        :services/items
-         servicing-stylist-id :services/stylist-id} (api.orders/services app-state order)
-        shop?                                       (= :shop (sites/determine-site app-state))]
-    ;; Shop with services
-    ;; Go to the checkout wait page to either find a stylist to match with or if you already have a stylist
-    ;; the next page will redirect you to the order complete page
-    (when (and shop? (seq service-items))
-      (history/enqueue-navigate events/navigate-adventure-checkout-wait)
-      (when servicing-stylist-id
-        (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id)))
-
-    ;; Shop without services
-    (when (and shop? (empty? service-items))
-      (history/enqueue-navigate events/navigate-order-complete order)
-      (talkable/show-pending-offer app-state))
-
-    ;; else: Any other site (classic and deprecated aladdin)
-    (when-not shop?
-      (history/enqueue-navigate events/navigate-order-complete order)
-      (talkable/show-pending-offer app-state))))
+  (let [site                                         (sites/determine-site app-state)
+        {service-items        :services/items
+         servicing-stylist-id :services/stylist-id} (api.orders/services app-state order)]
+    (if-not (= :shop site)
+      (talkable/show-pending-offer app-state)
+      (if (empty? service-items)
+        (talkable/show-pending-offer app-state)
+        (when servicing-stylist-id
+          (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))))))
 
 (defmethod effects/perform-effects events/api-success-update-order-update-cart-payments [_ event {:keys [order place-order?]} _ app-state]
   (when place-order?
