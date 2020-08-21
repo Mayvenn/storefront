@@ -251,21 +251,21 @@
    addon-skus]
   (cond-> []
     (-> app-state (get-in keypaths/order) orders/discountable-services-on-order?)
-    (conj (let [order                   (api.orders/current app-state)
-                matched?                (:services/stylist (api.orders/services app-state order))
+    (conj (let [current-order           (api.orders/current app-state)
+                matched?                (:services/stylist (api.orders/services app-state (:waiter/order current-order)))
                 images-catalog          (get-in app-state storefront.keypaths/v2-images)
                 sku-catalog             (get-in app-state storefront.keypaths/v2-skus)
                 sku                     (get sku-catalog (:sku service-item))
                 service-line-item-price (- (line-items/service-line-item-price service-item))
                 copy                    (if (and (< 0 hair-missing-quantity))
-                              (:promo.mayvenn-install/requirement-copy sku)
-                              (if (zero? hair-missing-quantity)
-                                (str "You're all set! " (:copy/whats-included sku))
-                                (str "Add " (string/join " and " (->> hair-missing
-                                                                      (map (fn [{:keys [word missing-quantity]}]
-                                                                             (apply str (if (= 1 missing-quantity)
-                                                                                          ["a " word]
-                                                                                          [missing-quantity " " word "s"])))))))))]
+                                          (:promo.mayvenn-install/requirement-copy sku)
+                                          (if (zero? hair-missing-quantity)
+                                            (str "You're all set! " (:copy/whats-included sku))
+                                            (str "Add " (string/join " and " (->> hair-missing
+                                                                                  (map (fn [{:keys [word missing-quantity]}]
+                                                                                         (apply str (if (= 1 missing-quantity)
+                                                                                                      ["a " word]
+                                                                                                      [missing-quantity " " word "s"])))))))))]
             (cond-> {:react/key                                "freeinstall-line-item-freeinstall"
                      :cart-item-title/id                       "line-item-title-upsell-free-service"
                      :cart-item-title/primary                  (:variant-name service-item)
