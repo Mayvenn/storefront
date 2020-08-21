@@ -203,6 +203,7 @@
      [:div.shout.proxima.title-3 title]
      (mapv (fn [{:cart-item-sub-item/keys [sku-id title price]}]
              [:div.flex.justify-between
+              {:key (str id "-" sku-id)}
               [:div.content-3.flex.items-center
                [:div.flex.justify-center.items-center.mr1.bg-s-color
                 {:style {:height        11

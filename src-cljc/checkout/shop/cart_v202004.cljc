@@ -82,7 +82,7 @@
 
           ;; TODO: Separate mayvenn install base into its own service line item key
           (for [service-line-item service-line-items]
-            [:div
+            [:div {:key (:react/key service-line-item)}
              [:div.mt2-on-mb
               (component/build cart-item-v202004/organism {:cart-item service-line-item}
                                (component/component-id (:react/key service-line-item)))]])]
