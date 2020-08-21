@@ -432,7 +432,7 @@
                              (api/fetch-v2-facets storeback-config))]
       (h (-> req
              (update-in-req-state keypaths/v2-products merge (products/index-products (concat order-products pdp-products)))
-             (update-in-req-state keypaths/v2-skus merge order-skus pdp-skus related-addon-skus (products/index-skus service-skus))
+             (update-in-req-state keypaths/v2-skus merge order-skus pdp-skus (products/index-skus related-addon-skus) (products/index-skus service-skus))
              (update-in-req-state keypaths/v2-images merge order-images pdp-images)
              (assoc-in-req-state keypaths/v2-facets (map #(update % :facet/slug keyword) facets))
              (assoc-in-req-state catalog.keypaths/detailed-product-related-addons related-addon-skus)
