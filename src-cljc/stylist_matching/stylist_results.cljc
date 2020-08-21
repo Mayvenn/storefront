@@ -131,8 +131,8 @@
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-post-purchase
   [_ _ args _ app-state]
   #?(:cljs
-     (let [completed-order  (api.orders/completed app-state)
-           service-items    (:services/items (api.orders/services app-state completed-order))
+     (let [{completed-waiter-order :waiter/order} (api.orders/completed app-state)
+           service-items    (:services/items (api.orders/services app-state completed-waiter-order))
            matched-stylists (get-in app-state adventure.keypaths/adventure-matched-stylists)]
        (if (seq service-items)
          (if (empty? matched-stylists)

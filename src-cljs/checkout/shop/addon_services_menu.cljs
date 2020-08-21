@@ -102,15 +102,16 @@
 
 (defmethod popup/query :addon-services-menu
   [data]
-  (let [order                            (api.orders/current data)
-        servicing-stylist                (:services/stylist (api.orders/services data (:waiter/order order)))
-        discountable-service-line-item   (->> order :waiter/order (api.orders/free-mayvenn-service servicing-stylist) :free-mayvenn-service/service-item)
+  (let [{current-waiter-order :waiter/order} (api.orders/current data)
+        servicing-stylist                    (:services/stylist (api.orders/services data current-waiter-order))
+        discountable-service-line-item       (->> current-waiter-order
+                                                  (api.orders/free-mayvenn-service servicing-stylist)
+                                                  :free-mayvenn-service/service-item)
         {:keys [available-addon-skus
-                unavailable-addon-skus]} (addon-skus-for-stylist-grouped-by-availability
-                                          {:base-service-line-item discountable-service-line-item
-                                           :mayvenn-install        (api.orders/current data)
-                                           :stylist-service-menu   (get-in data adv-keypaths/adventure-servicing-stylist-service-menu)
-                                           :skus                   (get-in data keypaths/v2-skus)})]
+                unavailable-addon-skus]}     (addon-skus-for-stylist-grouped-by-availability
+                                              {:base-service-line-item discountable-service-line-item
+                                               :stylist-service-menu   (get-in data adv-keypaths/adventure-servicing-stylist-service-menu)
+                                               :skus                   (get-in data keypaths/v2-skus)})]
     {:addon-services/spinning? (utils/requesting? data request-keys/get-skus)
      :addon-services/services  (map (partial addon-service-sku->addon-service-menu-entry data)
                                     (concat available-addon-skus unavailable-addon-skus))}))
