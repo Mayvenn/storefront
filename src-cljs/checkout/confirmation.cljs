@@ -339,23 +339,24 @@
         (merge {:cart-summary-total-incentive/id    "wig-customization"
                 :cart-summary-total-incentive/label "Includes Wig Customization"})))))
 
-(defn mayvenn-install-line-items-query
+(defn free-service-line-items-query
   [data
    {:free-mayvenn-service/keys [service-item]}
    addon-skus]
-  (let [wig-customization?       (orders/wig-customization? (get-in data keypaths/order))
-        service-line-item-price  (- (line-items/service-line-item-price service-item))
-        images-catalog           (get-in data storefront.keypaths/v2-images)
-        catalog-skus             (get-in data storefront.keypaths/v2-skus)
-        discountable-service-sku (get catalog-skus (:sku service-item))]
+  (let [sku-catalog              (get-in data storefront.keypaths/v2-skus)
+        service-sku              (get sku-catalog (:sku service-item))
+        wig-customization?       (= "SRV-WGC-000" (:sku service-item))
+        images-catalog           (get-in data storefront.keypaths/v2-images)]
     (when (:id service-item)
       [(merge {:react/key                             "freeinstall-line-item-freeinstall"
-               :cart-item-title/id                    "line-item-title-upsell-free-service"
-               :cart-item-copy/value                  (str "You're all set! " (:copy/whats-included service-item))
+               :cart-item-title/id                    "linr-item-title-upsell-free-service"
+               :cart-item-copy/value                  (str "You're all set! " (:copy/whats-included service-sku))
                :cart-item-floating-box/id             "line-item-freeinstall-price"
-               :cart-item-floating-box/value          (some-> service-line-item-price - mf/as-money)
+               :cart-item-floating-box/value          (some-> service-item
+                                                              line-items/service-line-item-price
+                                                              mf/as-money)
                :cart-item-service-thumbnail/id        "freeinstall"
-               :cart-item-service-thumbnail/image-url (->> discountable-service-sku
+               :cart-item-service-thumbnail/image-url (->> service-sku
                                                            (images/skuer->image images-catalog "cart")
                                                            :url)}
               (if wig-customization?
@@ -440,10 +441,10 @@
         products                                        (get-in data keypaths/v2-products)
         facets                                          (get-in data keypaths/v2-facets)
         physical-line-items                             (map (partial cart/add-product-title-and-color-to-line-item products facets)
-                                                   (orders/product-items order))
+                                                             (orders/product-items order))
         addon-service-line-items                        (->> order
-                                                   orders/service-line-items
-                                                   (filter (comp boolean #{"addon"} :service/type :variant-attrs)))
+                                                             orders/service-line-items
+                                                             (filter (comp boolean #{"addon"} :service/type :variant-attrs)))
         addon-service-skus                              (map (fn [addon-service] (get skus (:sku addon-service))) addon-service-line-items)]
     (cond->
         {:order                        order
@@ -461,7 +462,7 @@
          :servicing-stylist            servicing-stylist
          :cart-items                   (cart-items-query data physical-line-items skus)
          :service-line-items           (concat
-                                        (mayvenn-install-line-items-query data free-mayvenn-service addon-service-skus)
+                                        (free-service-line-items-query data free-mayvenn-service addon-service-skus)
                                         (standalone-service-line-items-query data))
          :cart-summary                 (cart-summary-query order
                                                            free-mayvenn-service

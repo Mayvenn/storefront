@@ -247,54 +247,44 @@
 
 (defn free-service-line-items-query
   [app-state
-   {:free-mayvenn-service/keys [hair-missing-quantity service-item hair-missing]}
+   {:free-mayvenn-service/keys [hair-missing-quantity stylist service-item]}
    addon-skus]
-  (cond-> []
-    (-> app-state (get-in keypaths/order) orders/discountable-services-on-order?)
-    (conj (let [current-order           (api.orders/current app-state)
-                matched?                (:services/stylist (api.orders/services app-state (:waiter/order current-order)))
-                images-catalog          (get-in app-state storefront.keypaths/v2-images)
-                sku-catalog             (get-in app-state storefront.keypaths/v2-skus)
-                sku                     (get sku-catalog (:sku service-item))
-                service-line-item-price (- (line-items/service-line-item-price service-item))
-                copy                    (if (and (< 0 hair-missing-quantity))
-                                          (:promo.mayvenn-install/requirement-copy sku)
-                                          (if (zero? hair-missing-quantity)
-                                            (str "You're all set! " (:copy/whats-included sku))
-                                            (str "Add " (string/join " and " (->> hair-missing
-                                                                                  (map (fn [{:keys [word missing-quantity]}]
-                                                                                         (apply str (if (= 1 missing-quantity)
-                                                                                                      ["a " word]
-                                                                                                      [missing-quantity " " word "s"])))))))))]
-            (cond-> {:react/key                                "freeinstall-line-item-freeinstall"
-                     :cart-item-title/id                       "line-item-title-upsell-free-service"
-                     :cart-item-title/primary                  (:variant-name service-item)
-                     :cart-item-copy/value                     copy
-                     :cart-item-floating-box/id                "line-item-freeinstall-price"
-                     :cart-item-floating-box/value             (some-> service-line-item-price - mf/as-money)
-                     :cart-item-remove-action/id               "line-item-remove-freeinstall"
-                     :cart-item-remove-action/spinning?        (utils/requesting? app-state request-keys/remove-freeinstall-line-item)
-                     :cart-item-remove-action/target           [events/control-cart-remove (:legacy/variant-id sku)]
-                     :cart-item-service-thumbnail/id           "freeinstall"
-                     :cart-item-service-thumbnail/image-url    (->> sku
-                                                                    (images/skuer->image images-catalog "cart")
-                                                                    :url)
-                     :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)}
+  (let [images-catalog (get-in app-state storefront.keypaths/v2-images)
+        sku-catalog    (get-in app-state storefront.keypaths/v2-skus)]
+    (cond-> []
+      (some? service-item)
+      (conj (let [sku (get sku-catalog (:sku service-item))]
+              (cond-> {:react/key                                "freeinstall-line-item-freeinstall"
+                       :cart-item-title/id                       "line-item-title-upsell-free-service"
+                       :cart-item-title/primary                  (:variant-name service-item)
+                       :cart-item-copy/value                     (if (pos? hair-missing-quantity)
+                                                                   (:promo.mayvenn-install/requirement-copy sku)
+                                                                   (str "You're all set! " (:copy/whats-included sku)))
+                       :cart-item-floating-box/id                "line-item-freeinstall-price"
+                       :cart-item-floating-box/value             (some-> service-item line-items/service-line-item-price mf/as-money)
+                       :cart-item-remove-action/id               "line-item-remove-freeinstall"
+                       :cart-item-remove-action/spinning?        (utils/requesting? app-state request-keys/remove-freeinstall-line-item)
+                       :cart-item-remove-action/target           [events/control-cart-remove (:legacy/variant-id sku)]
+                       :cart-item-service-thumbnail/id           "freeinstall"
+                       :cart-item-service-thumbnail/image-url    (->> sku
+                                                                      (images/skuer->image images-catalog "cart")
+                                                                      :url)
+                       :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)}
 
-              matched?
-              (merge {:cart-item-modify-button/id              "browse-addons"
-                      :cart-item-modify-button/target          [events/control-show-addon-service-menu]
-                      :cart-item-modify-button/tracking-target [events/browse-addon-service-menu-button-enabled]
-                      :cart-item-modify-button/content         "+ Browse Add-Ons"})
+                (some? stylist)
+                (merge {:cart-item-modify-button/id              "browse-addons"
+                        :cart-item-modify-button/target          [events/control-show-addon-service-menu]
+                        :cart-item-modify-button/tracking-target [events/browse-addon-service-menu-button-enabled]
+                        :cart-item-modify-button/content         "+ Browse Add-Ons"})
 
-              (seq addon-skus)
-              (merge {:cart-item-sub-items/id    "addon-services"
-                      :cart-item-sub-items/title "Add-On Services"
-                      :cart-item-sub-items/items (map (fn [addon-sku]
-                                                        {:cart-item-sub-item/title  (:sku/title addon-sku)
-                                                         :cart-item-sub-item/price  (some-> addon-sku :sku/price mf/as-money)
-                                                         :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
-                                                      addon-skus)}))))))
+                (seq addon-skus)
+                (merge {:cart-item-sub-items/id    "addon-services"
+                        :cart-item-sub-items/title "Add-On Services"
+                        :cart-item-sub-items/items (map (fn [addon-sku]
+                                                          {:cart-item-sub-item/title  (:sku/title addon-sku)
+                                                           :cart-item-sub-item/price  (some-> addon-sku :sku/price mf/as-money)
+                                                           :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
+                                                        addon-skus)})))))))
 
 (defn ^:private standalone-service-line-items-query
   [app-state]
