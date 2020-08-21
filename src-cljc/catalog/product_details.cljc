@@ -1,6 +1,5 @@
 (ns catalog.product-details
   (:require #?@(:cljs [[goog.dom]
-                       [goog.events.EventType :as EventType]
                        [goog.events]
                        [goog.style]
                        [storefront.accessors.auth :as auth]
@@ -13,15 +12,14 @@
                        [storefront.platform.messages :as messages]
                        [storefront.trackings :as trackings]])
             adventure.keypaths
-            [catalog.categories :as categories]
+            api.orders
             [catalog.facets :as facets]
-            [catalog.keypaths]
+            [catalog.keypaths :as catalog.keypaths]
             [catalog.product-details-ugc :as ugc]
             [catalog.products :as products]
             [catalog.selector.sku :as sku-selector]
             [catalog.ui.molecules :as catalog.M]
             [catalog.ui.how-it-works :as how-it-works]
-            api.orders
             [spice.selector :as selector]
             [spice.core :as spice]
             [storefront.accessors.contentful :as contentful]
@@ -33,7 +31,6 @@
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.money-formatters :as mf]
             [storefront.components.picker.picker :as picker]
-            [storefront.components.svg :as svg]
             [storefront.components.tabbed-information :as tabbed-information]
             [storefront.components.ui :as ui]
             [storefront.components.v2 :as v2]
@@ -47,8 +44,7 @@
             [storefront.transitions :as transitions]
             [stylist-matching.search.accessors.filters :as stylist-filters]
             [catalog.ui.add-to-cart :as add-to-cart]
-            [catalog.ui.browse-stylists-banner :as browse-stylists-banner]
-            [catalog.keypaths :as catalog.keypaths]))
+            [catalog.ui.browse-stylists-banner :as browse-stylists-banner]))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
@@ -357,7 +353,7 @@
         stylist-mismatch?                    (experiments/stylist-mismatch? data)
         servicing-stylist                    (get-in data adventure.keypaths/adventure-servicing-stylist)
         stylist-provides-service?            (stylist-filters/stylist-provides-service servicing-stylist product)
-        related-addons                       (get-in data keypaths/v2-related-addons)
+        related-addons                       (get-in data catalog.keypaths/detailed-product-related-addons)
         addon-list-open?                     (get-in data catalog.keypaths/detailed-product-addon-list-open?)
         add-on-services?                     (experiments/add-on-services? data)
         selected-addons                      (get-in data catalog.keypaths/detailed-product-selected-addon-items)
@@ -962,7 +958,7 @@
   [_ _ {:keys [skus]} app-state]
   (-> app-state
       (update-in keypaths/v2-skus #(merge (products/index-skus skus) %))
-      (assoc-in keypaths/v2-related-addons skus)))
+      (assoc-in catalog.keypaths/detailed-product-related-addons skus)))
 
 (defmethod transitions/transition-state events/control-product-detail-toggle-related-addon-items
   [_ _ {:keys [sku-id] :as response} app-state]
@@ -990,5 +986,5 @@
                           (fn handler [{:keys [order]}]
                             (messages/handle-message events/api-success-bulk-add-to-bag {:order          order
                                                                                          :items          items
-                                                                                         :related-addons (get-in app-state keypaths/v2-related-addons)})
+                                                                                         :related-addons (get-in app-state catalog.keypaths/detailed-product-related-addons)})
                             (history/enqueue-navigate events/navigate-cart)))))
