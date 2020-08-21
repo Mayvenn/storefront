@@ -866,8 +866,8 @@
                                              (get-in app-state)
                                              keyword)]
              (effects/fetch-cms-keypath app-state [:ugc-collection album-keyword]))
-           (do (fetch-product-details app-state product-id)
-               (fetch-sku-related-addons app-state selected-sku)))))))
+           (fetch-product-details app-state product-id)
+           (fetch-sku-related-addons app-state selected-sku))))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
@@ -959,8 +959,10 @@
   (update-in app-state catalog.keypaths/detailed-product-addon-list-open? not))
 
 (defmethod transitions/transition-state events/api-success-v2-skus-for-related-addons
-  [_ _ {:keys [skus] :as response} app-state]
-  (assoc-in app-state keypaths/v2-related-addons skus))
+  [_ _ {:keys [skus]} app-state]
+  (-> app-state
+      (update-in keypaths/v2-skus #(merge (products/index-skus skus) %))
+      (assoc-in keypaths/v2-related-addons skus)))
 
 (defmethod transitions/transition-state events/control-product-detail-toggle-related-addon-items
   [_ _ {:keys [sku-id] :as response} app-state]
