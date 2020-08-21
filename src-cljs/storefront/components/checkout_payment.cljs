@@ -1,6 +1,5 @@
 (ns storefront.components.checkout-payment
   (:require api.orders
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.checkout-credit-card :as cc]
@@ -19,15 +18,13 @@
             [storefront.api :as api]
             [storefront.frontend-effects :refer [create-stripe-token]]
             [storefront.request-keys :as request-keys]
-            [clojure.set :as set]
             [storefront.components.svg :as svg]))
 
 (defmethod effects/perform-effects events/control-checkout-choose-payment-method-submit [_ event _ _ app-state]
   (handle-message events/flash-dismiss)
-  (let [order                        (api.orders/current app-state)
-        servicing-stylist            (:stylist (api.orders/services app-state order))
-        discounted-service?          (:free-mayvenn-service/discounted? (api.orders/free-mayvenn-service servicing-stylist (:waiter/order order)))
-        waiter-order                 (:waiter/order order)
+  (let [{waiter-order :waiter/order} (api.orders/current app-state)
+        discounted-service?          (-> (api.orders/free-mayvenn-service nil waiter-order) ;; Stylist is optional and not needed in this context
+                                         :free-mayvenn-service/discounted?)
         user                         (get-in app-state keypaths/user)
         not-covered-by-store-credit? (not (orders/fully-covered-by-store-credit? waiter-order user))
         selected-payment-methods     (get-in app-state keypaths/checkout-selected-payment-methods)

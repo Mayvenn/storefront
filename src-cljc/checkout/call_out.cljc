@@ -1,10 +1,9 @@
+;; TODO: the original 'aladdin' stylists have been migrated: can we delete this and v2 now ?
 (ns checkout.call-out
   (:require api.orders
             [storefront.components.ui :as ui]
-            [storefront.keypaths :as keypaths]
             [storefront.component :as component :refer [defcomponent]]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.orders :as orders]))
+            [storefront.accessors.experiments :as experiments]))
 
 ;; TODO this should be a generalized call-out for the cart
 ;; The template should be made to be presentation focused
@@ -32,16 +31,14 @@
 
 (defcomponent component
   [{:keys [v2-experience? show-green-banner?]} _ _]
-  [:div
-   (when v2-experience? (v2-cart-promo show-green-banner?))])
+  [:div (when v2-experience? (v2-cart-promo show-green-banner?))])
 
 (defn query
   [data]
-  (let [order                (api.orders/current data)
-        servicing-stylist    (:stylist (api.orders/services data order))
-        free-mayvenn-service (api.orders/free-mayvenn-service servicing-stylist (:waiter/order order))
-        waiter-order         (:waiter/order order)
-        service-discounted?  (:free-mayvenn-service/discounted? free-mayvenn-service)]
+  (let [{waiter-order :waiter/order} (api.orders/current data)
+        service-discounted?          (-> ;; Stylist is optional here and unnecessary for the result
+                                      (api.orders/free-mayvenn-service nil waiter-order)
+                                      :free-mayvenn-service/discounted?)]
     {:v2-experience?     (and (experiments/aladdin-experience? data)
                               (not (contains? (set (:promotion-codes waiter-order)) "custom")))
      :show-green-banner? service-discounted?}))

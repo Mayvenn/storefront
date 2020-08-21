@@ -164,22 +164,19 @@
 
 (defn query
   [data]
-
-  (let [completed-order       (api.orders/completed data)
-        {dtc? :order/dtc?}    completed-order
-        services              (api.orders/services data completed-order)
-        servicing-stylist     (:stylist services)
-        free-mayvenn-service  (api.orders/free-mayvenn-service servicing-stylist (:waiter/order completed-order))
-        discounted-service?   (:free-mayvenn-service/discounted? free-mayvenn-service)
-        show-match-component? (and discounted-service? dtc?)
-        need-match?           (and show-match-component?
-                                   (empty? servicing-stylist))
-        customer-phone        (-> data
-                                  completed-order
-                                  :shipping-address
-                                  :phone)
-        matched-stylists      (get-in data adv-keypaths/adventure-matched-stylists)
-        match-via-web?        (seq matched-stylists)]
+  (let [{dtc?                   :order/dtc?
+         completed-waiter-order :waiter/order} (api.orders/completed data)
+        {servicing-stylist-id :services/stylist-id
+         servicing-stylist    :services/stylist
+         service-items        :services/items} (api.orders/services data completed-waiter-order)
+        show-match-component?                  (and (seq service-items) dtc?)
+        need-match?                            (and show-match-component?
+                                                    (nil? servicing-stylist-id))
+        customer-phone                         (-> completed-waiter-order
+                                                   :shipping-address
+                                                   :phone)
+        matched-stylists                       (get-in data adv-keypaths/adventure-matched-stylists)
+        match-via-web?                         (seq matched-stylists)]
     (cond-> {:guest?                (not (get-in data keypaths/user-id))
              :show-match-component? show-match-component?
              :need-match?           need-match?

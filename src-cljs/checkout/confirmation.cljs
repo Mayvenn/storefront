@@ -116,7 +116,6 @@
            checkout-steps
            cart-summary
            delivery
-           free-install-applied?
            cart-items
            site
            order
@@ -203,7 +202,7 @@
          [:div.col-12.mx-auto.mt4
           (checkout-button selected-quadpay? checkout-button-data)]]
 
-        (when free-install-applied?
+        (when (seq service-line-items)
           [:div.my4.content-3.flex.items-center.mx2
            (ui/ucare-img {:width "56px"
                           :class "mtp2"} "9664879b-07e0-432e-9c09-b2cf4c899b10")
@@ -426,25 +425,26 @@
 
 (defn query
   [data]
-  (let [order                                   (get-in data keypaths/order)
-        selected-quadpay?                       (-> (get-in data keypaths/order) :cart-payments :quadpay)
-        services                                (api.orders/services data (:waiter/order order))
-        stylist                                 (:services/stylist services)
-        {:keys [service-item]
-         :as   free-mayvenn-service}            (api.orders/free-mayvenn-service stylist order)
-        service-discounted?                     (:free-mayvenn-service/discounted? free-mayvenn-service)
-        wig-customization?                      (orders/wig-customization? (get-in data keypaths/order))
-        user                                    (get-in data keypaths/user)
-        skus                                    (get-in data keypaths/v2-skus)
-        images-catalog                          (get-in data storefront.keypaths/v2-images)
-        products                                (get-in data keypaths/v2-products)
-        facets                                  (get-in data keypaths/v2-facets)
-        physical-line-items                     (map (partial cart/add-product-title-and-color-to-line-item products facets)
-                                                     (orders/product-items order))
-        addon-service-line-items                (->> order
-                                                     orders/service-line-items
-                                                     (filter (comp boolean #{"addon"} :service/type :variant-attrs)))
-        addon-service-skus                      (map (fn [addon-service] (get skus (:sku addon-service))) addon-service-line-items)]
+  (let [order                                           (get-in data keypaths/order)
+        selected-quadpay?                               (-> order :cart-payments :quadpay)
+        {service-items     :services/items
+         servicing-stylist :services/stylist}           (api.orders/services data order)
+        {:keys                    [service-item]
+         free-service-discounted? :free-mayvenn-service/discounted?
+         :as                      free-mayvenn-service} (api.orders/free-mayvenn-service servicing-stylist order)
+        services-on-order?                              (seq service-items)
+        wig-customization?                              (orders/wig-customization? (get-in data keypaths/order))
+        user                                            (get-in data keypaths/user)
+        skus                                            (get-in data keypaths/v2-skus)
+        images-catalog                                  (get-in data storefront.keypaths/v2-images)
+        products                                        (get-in data keypaths/v2-products)
+        facets                                          (get-in data keypaths/v2-facets)
+        physical-line-items                             (map (partial cart/add-product-title-and-color-to-line-item products facets)
+                                                   (orders/product-items order))
+        addon-service-line-items                        (->> order
+                                                   orders/service-line-items
+                                                   (filter (comp boolean #{"addon"} :service/type :variant-attrs)))
+        addon-service-skus                              (map (fn [addon-service] (get skus (:sku addon-service))) addon-service-line-items)]
     (cond->
         {:order                        order
          :store-slug                   (get-in data keypaths/store-slug)
@@ -455,11 +455,10 @@
          :products                     (get-in data keypaths/v2-products)
          :payment                      (checkout-credit-card/query data)
          :delivery                     (checkout-delivery/query data)
-         :free-install-applied?        service-discounted?
          :checkout-button-data         (checkout-button-query data)
          :selected-quadpay?            selected-quadpay?
          :loaded-quadpay?              (get-in data keypaths/loaded-quadpay)
-         :servicing-stylist            stylist
+         :servicing-stylist            servicing-stylist
          :cart-items                   (cart-items-query data physical-line-items skus)
          :service-line-items           (concat
                                         (mayvenn-install-line-items-query data free-mayvenn-service addon-service-skus)
@@ -480,7 +479,7 @@
                                              :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
                                           addon-service-skus)}}})
 
-      service-discounted?
+      free-service-discounted?
       (maps/deep-merge
        {:freeinstall-cart-item
         {:cart-item
@@ -500,7 +499,7 @@
           :cart-item-title/primary               (:variant-name service-item)
           :cart-item-title/secondary             [:div.line-height-3 "You’re all set! " (:copy/whats-included service-item)]}}})
 
-      (and service-discounted? wig-customization?)
+      (and free-service-discounted? wig-customization?)
       (maps/deep-merge
        {:freeinstall-cart-item
         {:cart-item
@@ -508,15 +507,15 @@
           :cart-item-title/primary   "Wig Customization"
           :cart-item-title/secondary [:div.content-3 "You're all set! " (:copy/whats-included service-item)]}}})
 
-      (and service-discounted? stylist)
+      (and services-on-order? servicing-stylist)
       (merge
        {:servicing-stylist-banner/id        "servicing-stylist-banner"
         :servicing-stylist-banner/heading   "Your Mayvenn Certified Stylist"
-        :servicing-stylist-banner/title     (stylists/->display-name stylist)
-        :servicing-stylist-banner/subtitle  (-> stylist :salon :name)
-        :servicing-stylist-banner/rating    {:rating/value (:rating stylist)
+        :servicing-stylist-banner/title     (stylists/->display-name servicing-stylist)
+        :servicing-stylist-banner/subtitle  (-> servicing-stylist :salon :name)
+        :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)
                                              :rating/id    "stylist-rating-id"}
-        :servicing-stylist-banner/image-url (some-> stylist :portrait :resizable-url)}))))
+        :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)}))))
 
 (defn ^:private built-non-auth-component [data opts]
   (component/build component (query data) opts))

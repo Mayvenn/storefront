@@ -8,11 +8,11 @@
             catalog.keypaths
             [catalog.products :as products]
             [storefront.accessors.categories :as accessors.categories]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as accessors.products]
             [storefront.accessors.promos :as promos]
-            [storefront.component :as component :refer [defcomponent defdynamic-component]]
+            [storefront.accessors.sites :as sites]
+            [storefront.component :as component :refer [defdynamic-component]]
             [storefront.components.svg :as svg]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -123,13 +123,13 @@
   "Determine what type of promotion behavior we are under
    experiment for"
   [data]
-  (let [order                (api.orders/current data)
-        services             (api.orders/services data order)
-        servicing-stylist    (:stylist services)
-        free-mayvenn-service (api.orders/free-mayvenn-service servicing-stylist (:waiter/order order))
-        discounted-service?  (:free-mayvenn-service/discounted? free-mayvenn-service)
-        shop?                (= "shop" (get-in data keypaths/store-slug))
-        aladdin?             (experiments/aladdin-experience? data)
+  (let [discounted-service? (-> (api.orders/free-mayvenn-service
+                                 nil ;; Stylist is optional here and not needed for the result
+                                 (:waiter/order (api.orders/current data)))
+                                :free-mayvenn-service/discounted?)
+        site                 (sites/determine-site data)
+        shop?                (= :shop site)
+        aladdin?             (= :aladdin site)
         affiliate?           (= "influencer" (get-in data keypaths/store-experience))
         [navigation-event _] (get-in data keypaths/navigation-message)
         wigs?                (or (and (= events/navigate-product-details navigation-event)

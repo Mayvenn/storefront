@@ -749,33 +749,34 @@
   (messages/handle-later events/popup-hide {} 2000))
 
 (defmethod effects/perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} _ app-state]
-  ;; TODO: rather than branching behavior within a single event handler, consider
-  ;;       firing seperate events (with and without matching stylists).
-  (let [servicing-stylist    (:stylist (api.orders/services app-state order))
-        service-discounted?  (:free-mayvenn-service/discounted? (api.orders/free-mayvenn-service servicing-stylist order))
-        {dtc? :order/dtc?} (api.orders/->order app-state order)]
-    (if (and service-discounted? dtc?)
-      (history/enqueue-navigate events/navigate-adventure-checkout-wait)
-      (history/enqueue-navigate events/navigate-order-complete order)))
   (messages/handle-message events/order-completed order)
   (messages/handle-message events/order-placed order))
 
 (defmethod effects/perform-effects events/order-completed
   [_ _ order _ app-state]
-  (let [site (sites/determine-site app-state)
-        servicing-stylist    (:stylist (api.orders/services app-state order))
-        service-discounted?  (:free-mayvenn-service/discounted? (api.orders/free-mayvenn-service servicing-stylist order))
-        servicing-stylist-id (-> servicing-stylist :id)]
-    (cookie-jar/save-completed-order (get-in app-state keypaths/cookie)
-                                     (get-in app-state keypaths/completed-order))
-    (messages/handle-message events/clear-order)
+  (cookie-jar/save-completed-order (get-in app-state keypaths/cookie)
+                                   (get-in app-state keypaths/completed-order))
+  (messages/handle-message events/clear-order)
+  (let [{service-items        :services/items
+         servicing-stylist-id :services/stylist-id} (api.orders/services app-state order)
+        shop?                                       (= :shop (sites/determine-site app-state))]
+    ;; Shop with services
+    ;; Go to the checkout wait page to either find a stylist to match with or if you already have a stylist
+    ;; the next page will redirect you to the order complete page
+    (when (and shop? (seq service-items))
+      (history/enqueue-navigate events/navigate-adventure-checkout-wait)
+      (when servicing-stylist-id
+        (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id)))
 
-    (if-not (= :shop site)
-      (talkable/show-pending-offer app-state)
-      (when (or (not service-discounted?)
-                servicing-stylist)
-        (talkable/show-pending-offer app-state)
-        (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id)))))
+    ;; Shop without services
+    (when (and shop? (empty? service-items))
+      (history/enqueue-navigate events/navigate-order-complete order)
+      (talkable/show-pending-offer app-state))
+
+    ;; else: Any other site (classic and deprecated aladdin)
+    (when-not shop?
+      (history/enqueue-navigate events/navigate-order-complete order)
+      (talkable/show-pending-offer app-state))))
 
 (defmethod effects/perform-effects events/api-success-update-order-update-cart-payments [_ event {:keys [order place-order?]} _ app-state]
   (when place-order?

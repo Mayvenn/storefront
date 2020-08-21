@@ -9,7 +9,8 @@
             [storefront.accessors.orders :as orders]
             [storefront.components.money-formatters :as mf]
             [storefront.events :as e]
-            storefront.keypaths))
+            storefront.keypaths
+            [storefront.accessors.sites :as sites]))
 
 (defn hair-family->service-sku-ids [hair-family]
   (get {"bundles"         #{"SRV-LBI-000" "SRV-UPCW-000"}
@@ -153,19 +154,25 @@
   (->order app-state (get-in app-state storefront.keypaths/order)))
 
 (defn services
-  "Model for services in the cart
+  "Model: Services on an order
 
-  Scope:
-  - services in cart
+  In Scope:
+  - services in on the order
   - servicing stylist for those services
+
+  Issues:
+  - We don't have a way to store and retrieve different stylists, so if we don't
+    have the stylist cache loaded. Sorry for now, you only get an id.
+
+  - How do line item groups show up here?
   "
   [app-state waiter-order]
-  (let [experience (get-in app-state storefront.keypaths/store-experience)]
-    (when-not (= "classic" experience)
-      (let [stylist (if (= "aladdin" experience)
-                      (get-in app-state storefront.keypaths/store)
-                      (get-in app-state adventure.keypaths/adventure-servicing-stylist))]
-        ;; NOTE: stylist here is not necessarily the stylist that is on the order that was passed in
-        ;;       such as in the case of completed orders on shop
-        #:services{:stylist stylist
-                   :items   (orders/service-line-items waiter-order)}))))
+  ;; Ideally: [stylist-db waiter-order]
+  (when (= :shop (sites/determine-site app-state))
+    (let [servicing-stylist-id (:servicing-stylist-id waiter-order)
+          cached-stylist       (get-in app-state adventure.keypaths/adventure-servicing-stylist)]
+      (merge
+       #:services{:stylist-id servicing-stylist-id
+                  :items      (orders/service-line-items waiter-order)}
+       (when (= (:stylist-id cached-stylist) servicing-stylist-id)
+         #:services{:stylist cached-stylist})))))
