@@ -147,22 +147,31 @@
   (let [line-item-skuers (waiter-line-items->line-item-skuer
                           (get-in app-state keypaths/v2-skus)
                           (orders/product-and-service-items order))
-        base-skus        (->> items
+        bases            (->> items
                               (mapv :sku)
-                              (filter (fn [sku] (-> sku :service/type (contains? "base")))))   ]
-    (stringer/track-event "bulk_add_to_cart" {:store_experience (get-in app-state keypaths/store-experience)
-                                              :order_number     (:number order)
-                                              :order_total      (:total order)
-                                              :inherent_skus    (->> base-skus
-                                                                     (map :catalog/sku-id)
-                                                                     (string/join ","))
-                                              :upsell_skus      (string/join "," related-addons)
-                                              :order_quantity   (->> line-item-skuers (map :item/quantity) (reduce + 0))
-                                              :skus             (->> line-item-skuers (map :catalog/sku-id) (string/join ","))
-                                              :variant_ids      (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
-                                              :context          {:cart-items (mapv (partial line-item-skuer->stringer-cart-item
-                                                                                            (get-in app-state keypaths/v2-images))
-                                                                                   line-item-skuers)}})))
+                              (filter (fn [sku]
+                                        (-> sku :service/type (contains? "base")))))]
+    (stringer/track-event "bulk_add_to_cart" {:store_experience     (get-in app-state keypaths/store-experience)
+                                              :order_number         (:number order)
+                                              :order_total          (:total order)
+                                              :inherent_skus        (->> bases
+                                                                         (map :catalog/sku-id)
+                                                                         (string/join ","))
+                                              :inherent_variant_ids (->> bases
+                                                                         (map :legacy/variant-id)
+                                                                         (string/join ","))
+                                              :upsell_skus          (->> related-addons
+                                                                         (mapv :catalog/sku-id)
+                                                                         (string/join ","))
+                                              :upsell_variant_ids   (->> related-addons
+                                                                         (mapv :legacy/variant-id)
+                                                                         (string/join ","))
+                                              :order_quantity       (->> line-item-skuers (map :item/quantity) (reduce + 0))
+                                              :skus                 (->> line-item-skuers (map :catalog/sku-id) (string/join ","))
+                                              :variant_ids          (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
+                                              :context              {:cart-items (mapv (partial line-item-skuer->stringer-cart-item
+                                                                                                (get-in app-state keypaths/v2-images))
+                                                                                       line-item-skuers)}})))
 
 (defmethod perform-track events/api-success-remove-from-bag
   [_ _ {order :order} app-state]

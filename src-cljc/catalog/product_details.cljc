@@ -990,6 +990,5 @@
                           (fn handler [{:keys [order]}]
                             (messages/handle-message events/api-success-bulk-add-to-bag {:order          order
                                                                                          :items          items
-                                                                                         :related-addons (->> (get-in app-state keypaths/v2-related-addons)
-                                                                                                              (mapv :catalog/sku-id))})
+                                                                                         :related-addons (get-in app-state keypaths/v2-related-addons)})
                             (history/enqueue-navigate events/navigate-cart)))))
