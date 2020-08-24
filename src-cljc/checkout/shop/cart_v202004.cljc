@@ -610,9 +610,7 @@
              :checkout-disabled?                 checkout-disabled?
              :disabled-reasons                   disabled-reasons
              :redirecting-to-paypal?             (get-in data keypaths/cart-paypal-redirect)
-             :share-carts?                        (if (experiments/shared-carts? data)
-                                                    (= :stylist signed-in-as)
-                                                    (stylists/own-store? data))
+             :share-carts?                        (= :stylist signed-in-as)
              :requesting-shared-cart?            (utils/requesting? data request-keys/create-shared-cart)
              :show-browser-pay?                  (and (get-in data keypaths/loaded-stripe)
                                                       (experiments/browser-pay? data)

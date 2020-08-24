@@ -130,10 +130,6 @@
   [data]
   (display-feature? data "add-on-services"))
 
-(defn shared-carts?
-  [data]
-  (display-feature? data "shared-carts"))
-
 (defn reinstall-services?
   [data]
   (display-feature? data "reinstall-services"))

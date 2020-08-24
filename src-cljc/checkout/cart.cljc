@@ -40,13 +40,9 @@
 (defmethod effects/perform-effects events/control-cart-share-show
   [_ _ _ _ app-state]
   #?(:cljs
-     (if (experiments/shared-carts? app-state)
-       (api/create-shared-cart-v2 (get-in app-state keypaths/session-id)
-                                  (get-in app-state keypaths/order-number)
-                                  (get-in app-state keypaths/order-token))
-       (api/create-shared-cart (get-in app-state keypaths/session-id)
-                               (get-in app-state keypaths/order-number)
-                               (get-in app-state keypaths/order-token)))))
+     (api/create-shared-cart (get-in app-state keypaths/session-id)
+                             (get-in app-state keypaths/order-number)
+                             (get-in app-state keypaths/order-token))))
 
 (defmethod effects/perform-effects events/control-cart-remove
   [_ event variant-id _ app-state]
