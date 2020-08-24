@@ -33,53 +33,6 @@
       primary]
      [:div.dark-gray secondary]]))
 
-(defn completed-progress-circle-atom
-  [i _]
-  [:div.bg-s-color.flex.justify-center.items-center
-   {:key (str "complete-" i)
-    :style {:height 21
-            :width  21
-            :border-radius "50%"}}
-   (svg/check-mark {:class "fill-white"
-                    :style {:width "11px"
-                            :height "11px"}})])
-
-(defn new-incomplete-progress-circle-atom
-  [i content]
-  [:div.bg-cool-gray.flex.justify-center.items-center.proxima.button-font-2
-   {:key (str "incomplete-" i)
-    :style {:height 20
-            :width  20
-            :border-radius "50%"}}
-   (svg/check-mark {:class "fill-gray"
-                    :style {:width "13px"
-                            :height "13px"}})])
-
-(def steps-hyphen-seperator-atom
-  [:div.border-top.border-gray])
-
-(defn new-cart-item-steps-to-complete-molecule
-  [{:cart-item-steps-to-complete/keys
-    [steps current-step action-label action-target id]}]
-  (when id
-    [:div.items-center.mr2.mt2.flex.flex-wrap
-     (when (pos? (count steps))
-       (let [[completed uncompleted] (split-at current-step steps)]
-         [:div.flex.items-center.mr3.mb2 ; margin bottom for 320px screens
-          (interpose (conj steps-hyphen-seperator-atom
-                           {:class "mx1"
-                            :style {:width "11px"}})
-                     (concat
-                      (map-indexed completed-progress-circle-atom
-                                   completed)
-                      (map-indexed new-incomplete-progress-circle-atom
-                                   uncompleted)))]))
-     (when (and action-target action-label)
-       [:div.mb2 ; margin bottom for 320px screens
-        (ui/button-small-primary (assoc (apply utils/route-to action-target)
-                                        :data-test id)
-                                 action-label)])]))
-
 (defn cart-item-square-thumbnail-molecule
   [{:cart-item-square-thumbnail/keys
     [id ucare-id sku-id sticker-label highlighted?]}]
@@ -284,7 +237,6 @@
       (new-cart-item-remove-action-molecule cart-item)
       (cart-item-floating-box-molecule cart-item)]]
 
-    (new-cart-item-steps-to-complete-molecule cart-item)
     (cart-item-sub-items-molecule cart-item)
     (component/build cart-item-modify-button cart-item nil)
 
