@@ -143,32 +143,33 @@
                                              :line-item-skuers [(assoc sku :item/quantity quantity)]}))))
 
 (defmethod perform-track events/api-success-bulk-add-to-bag
-  [_ _ {:keys [items order related-addons]} app-state]
-  (let [line-item-skuers (waiter-line-items->line-item-skuer
-                          (get-in app-state keypaths/v2-skus)
-                          (orders/product-and-service-items order))
-        bases            (->> items
-                              (mapv :sku)
-                              (filter (fn [sku]
-                                        (-> sku :service/type (contains? "base")))))]
+  [_ _ {:keys [items order]} app-state]
+  (let [line-item-skuers     (waiter-line-items->line-item-skuer
+                              (get-in app-state keypaths/v2-skus)
+                              (orders/product-and-service-items order))
+        bases                (->> items
+                                  (mapv :sku)
+                                  (filter (fn [sku]
+                                            (-> sku :service/type first #{"base"}))))
+        addons               (->> items
+                                  (mapv :sku)
+                                  spice.core/spy
+                                  (filter (fn [sku]
+                                            (-> sku :service/type first #{"addon"}))))
+        inherent-sku-ids     (map :catalog/sku-id bases)
+        inherent-variant-ids (map :legacy/variant-id bases)
+        upsell-sku-ids       (mapv :catalog/sku-id addons)
+        upsell-variant-ids   (mapv :legacy/variant-id addons)]
     (stringer/track-event "bulk_add_to_cart" {:store_experience     (get-in app-state keypaths/store-experience)
                                               :order_number         (:number order)
                                               :order_total          (:total order)
-                                              :inherent_skus        (->> bases
-                                                                         (map :catalog/sku-id)
-                                                                         (string/join ","))
-                                              :inherent_variant_ids (->> bases
-                                                                         (map :legacy/variant-id)
-                                                                         (string/join ","))
-                                              :upsell_skus          (->> related-addons
-                                                                         (mapv :catalog/sku-id)
-                                                                         (string/join ","))
-                                              :upsell_variant_ids   (->> related-addons
-                                                                         (mapv :legacy/variant-id)
-                                                                         (string/join ","))
                                               :order_quantity       (->> line-item-skuers (map :item/quantity) (reduce + 0))
-                                              :skus                 (->> line-item-skuers (map :catalog/sku-id) (string/join ","))
-                                              :variant_ids          (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
+                                              :inherent_skus        (string/join "," inherent-sku-ids)
+                                              :inherent_variant_ids (string/join "," inherent-variant-ids)
+                                              :upsell_skus          (string/join "," upsell-sku-ids)
+                                              :upsell_variant_ids   (string/join "," upsell-variant-ids)
+                                              :skus                 (string/join "," (concat inherent-sku-ids upsell-sku-ids))
+                                              :variant_ids          (string/join "," (concat inherent-variant-ids upsell-variant-ids))
                                               :context              {:cart-items (mapv (partial line-item-skuer->stringer-cart-item
                                                                                                 (get-in app-state keypaths/v2-images))
                                                                                        line-item-skuers)}})))
