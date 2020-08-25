@@ -89,10 +89,6 @@
                                        :data-test "account-settings"
                                        :class "mr2 mt2")
                                 "Settings")
-     (ui/button-small-secondary (assoc (utils/route-to events/navigate-stylist-share-your-store)
-                                       :data-test "share-your-store"
-                                       :class "mr2 mt2")
-                                "Share your store")
      (ui/button-small-secondary (assoc (utils/route-to events/navigate-v2-stylist-dashboard-orders)
                                        :data-test "dashboard"
                                        :class "mr2 mt2")

@@ -151,8 +151,6 @@
                      ^:inline (drop-down-row (utils/route-to events/navigate-voucher-redeem) "Redeem Client Voucher")])
 
                   [:div.border-top.border-gray
-                   ^:inline (drop-down-row (utils/route-to events/navigate-stylist-share-your-store) "Share Your store")]
-                  [:div.border-top.border-gray
                    ^:inline (drop-down-row (utils/route-to events/navigate-gallery-edit) "Edit Gallery")]
                   [:div.border-top.border-gray
                    ^:inline (drop-down-row (utils/route-to events/navigate-stylist-account-profile) "Account Settings")]
