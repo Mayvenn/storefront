@@ -36,7 +36,7 @@
 
 ;; fork of molecules/stars-rating-molecule
 (defn stars-rating-molecule
-  [{:star-rating/keys [id value rating-content rating-count]}]
+  [{:star-rating/keys [id value rating-content scroll-anchor]}]
   (when id
     (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars value "13px")]
      [:div.flex.items-center.mtn1
@@ -45,10 +45,10 @@
       partial-star
       empty-stars
       (when rating-content
-        (if (> rating-count 0)
+        (if scroll-anchor
           (ui/button-small-underline-secondary
            (merge {:class "mx1 shout"}
-                  (utils/scroll-href "reviews"))
+                  (utils/scroll-href scroll-anchor))
            rating-content)
           [:div.s-color.proxima.title-3.ml1 rating-content]))])))
 
@@ -166,8 +166,10 @@
                                                   ["Closure Reinstall"     (:specialty-reinstall-closure service-menu)]
                                                   ["Frontal Reinstall"     (:specialty-reinstall-frontal service-menu)]
                                                   ["360 Frontal Reinstall" (:specialty-reinstall-360-frontal service-menu)]])))
-
-        ]
+        mayvenn-rating-publishable? (:mayvenn-rating-publishable stylist)
+        show-star-bar-chart? (and (> rating-count 0)
+                                  mayvenn-rating-publishable?
+                                  (not (experiments/hide-star-distribution? data)))]
     (when stylist
       (cond->
           {:header-data (cond-> {:header.title/id               "adventure-title"
@@ -187,15 +189,14 @@
                          :cta/target  [events/navigate-adventure-find-your-stylist]}
 
            :star-rating/value          stylist-rating
-           :star-rating/rating-count   (when (> rating-count 0)
-                                         rating-count)
+           :star-rating/scroll-anchor  (when show-star-bar-chart?
+                                         "star-distribution-table")
            :star-rating/rating-content (str "(" stylist-rating ")")
 
            :star-rating/id             (when (not show-newly-added-stylist-ui?)
                                          (str "rating-count-" store-slug))
 
-           :ratings-bar-chart/id                 (when (and (> rating-count 0)
-                                                            (not (experiments/hide-star-distribution? data)))
+           :ratings-bar-chart/id                 (when show-star-bar-chart?
                                                    "star-distribution-table")
            :ratings-bar-chart/rating-star-counts (when (> rating-count 0)
                                                    (:rating-star-counts stylist))
@@ -215,7 +216,7 @@
            :transposed-title/primary     stylist-name
            :transposed-title/secondary   (-> stylist :salon :name)
            :phone-link/target            [events/control-adventure-stylist-phone-clicked
-                                          {:stylist-id   (:stylist-id stylist)
+                                          {:stylist-id   stylist-id
                                            :phone-number (some-> stylist :address :phone formatters/phone-number)}]
            :phone-link/phone-number      (some-> stylist :address :phone formatters/phone-number-parens)
            :circle-portrait/portrait-url (-> stylist :portrait :resizable-url)
@@ -225,7 +226,7 @@
                                                            :ucare-img-url  ucare-img-url
                                                            :target-message [events/navigate-adventure-stylist-gallery
                                                                             {:stylist-id   stylist-id
-                                                                             :store-slug   (:store-slug stylist)
+                                                                             :store-slug   store-slug
                                                                              :query-params {:offset j}}]})
                                                         ucare-img-urls))
 
@@ -262,14 +263,14 @@
                          (for [s stylist-performable-offerings]
                            [:div.col-6.col (apply checks-or-x s)])]})]}
 
-        (and (:mayvenn-rating-publishable stylist)
+        (and mayvenn-rating-publishable?
              (seq stylist-reviews))
         (merge {:reviews/id           "stylist-reviews"
                 :reviews/cta-id       "more-stylist-reviews"
                 :reviews/cta-target   [events/control-fetch-stylist-reviews]
                 :reviews/cta-label    "View More"
                 :reviews/spinning?    fetching-reviews?
-                :reviews/rating       (:rating stylist)
+                :reviews/rating       stylist-rating
                 :reviews/review-count (:review-count stylist)
                 :reviews/reviews      (mapv #(assoc % :review-date
                                                     #?(:cljs (-> % :review-date formatters/short-date)
@@ -359,6 +360,7 @@
      (let [max-ratings-count   (apply max (vals rating-star-counts))
            sorted-rating-count (sort-by key > rating-star-counts)]
        [:div.bg-cool-gray.flex-column.center.py5.mt3
+        {:id id}
         [:div.shout.bold.proxima.title-3 "Ratings"]
         [:div.pb2.pt1 (stars-rating-large-molecule data)]
         (for [[star-rating star-count] sorted-rating-count]
