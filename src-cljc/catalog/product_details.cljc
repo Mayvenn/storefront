@@ -984,7 +984,9 @@
 
 (defmethod transitions/transition-state events/navigate-product-details
   [_ _ _ app-state]
-  (assoc-in app-state catalog.keypaths/detailed-product-addon-list-open? false))
+  (-> app-state
+      (assoc-in catalog.keypaths/detailed-product-addon-list-open? false)
+      (assoc-in catalog.keypaths/detailed-product-selected-addon-items nil)))
 
 (defmethod transitions/transition-state events/control-product-detail-toggle-related-addon-list
   [_ _ _ app-state]
