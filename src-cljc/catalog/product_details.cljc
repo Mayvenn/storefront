@@ -408,13 +408,6 @@
        {:cta/disabled? true
         :cta/label     "Already In Cart"})
 
-     #_(when (and base-service-already-in-cart?
-                add-on-services?)
-         {:update-addons/id     "other stuff"
-          :update-addons/label  "Update add-ons"
-          :update-addons/target "stuff"})
-     ;; TODO
-
      (when (and (not service?) sku-price)
        {:price-block/primary   (mf/as-money sku-price)
         :price-block/secondary "each"})
