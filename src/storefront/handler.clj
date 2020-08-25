@@ -24,9 +24,9 @@
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.util.codec :as codec]
             [ring.util.response :as util.response]
-            [spice.core :as spice]
             [spice.maps :as maps]
             [spice.selector :as selector]
+            storefront.ugc
             [storefront.accessors.auth :as auth]
             [storefront.accessors.categories :as accessors.categories]
             [storefront.accessors.experiments :as experiments]
@@ -326,11 +326,11 @@
                                         contentful/derive-all-looks)
 
                                     (= events/navigate-product-details nav-event)
-                                    (-> {}
-                                        (update-data [:ugc-collection (some->> (conj keypaths/v2-products product-id :legacy/named-search-slug)
-                                                                               (get-in-req-state req)
-                                                                               keyword)])
-                                        contentful/derive-all-looks)
+                                    (let [product (get-in-req-state req (conj keypaths/v2-products product-id))]
+                                      (when-let [album-keyword (storefront.ugc/product->album-keyword shop? product)]
+                                        (-> {}
+                                            (update-data [:ugc-collection (keyword album-keyword)])
+                                            contentful/derive-all-looks)))
 
                                     (routes/sub-page? [nav-event] [events/navigate-info])
                                     (-> {}

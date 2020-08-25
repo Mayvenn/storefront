@@ -28,7 +28,8 @@
             [storefront.accessors.products :as accessors.products]
             [storefront.accessors.skus :as skus]
             [storefront.accessors.images :as images]
-            [storefront.component :as component :refer [defcomponent defdynamic-component]]
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.accessors.sites :as sites]
             [storefront.components.money-formatters :as mf]
             [storefront.components.picker.picker :as picker]
             [storefront.components.tabbed-information :as tabbed-information]
@@ -42,6 +43,7 @@
             [storefront.platform.reviews :as review-component]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
+            storefront.ugc
             [stylist-matching.search.accessors.filters :as stylist-filters]
             [catalog.ui.add-to-cart :as add-to-cart]
             [catalog.ui.browse-stylists-banner :as browse-stylists-banner]))
@@ -263,8 +265,8 @@
              (group-by option-kw skus))))
 
 (defn ugc-query [product sku data]
-  (let [ugc                (get-in data keypaths/ugc)
-        album-keyword      (-> product :legacy/named-search-slug keyword)
+  (let [shop?              (= :shop (sites/determine-site data))
+        album-keyword      (storefront.ugc/product->album-keyword shop? product)
         cms-ugc-collection (get-in data (conj keypaths/cms-ugc-collection album-keyword))]
     (when-let [social-cards (when product
                               (->> cms-ugc-collection
@@ -847,7 +849,8 @@
 #?(:cljs
    (defmethod effects/perform-effects events/initialize-product-details
      [_ _ {:keys [catalog/product-id page/slug query-params origin-nav-event]} _ app-state]
-     (let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)]
+     (let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)
+           shop?        (= :shop (sites/determine-site app-state))]
        (if (url-points-to-invalid-sku? selected-sku query-params)
          (effects/redirect origin-nav-event
                            (merge
@@ -855,12 +858,8 @@
                              :page/slug          slug}
                             (when selected-sku
                               {:query-params {:SKU (:catalog/sku-id selected-sku)}})))
-         (do
-           (when-let [album-keyword (some->> (conj keypaths/v2-products
-                                                   product-id
-                                                   :legacy/named-search-slug)
-                                             (get-in app-state)
-                                             keyword)]
+         (let [product (get-in app-state (conj keypaths/v2-products product-id))]
+           (when-let [album-keyword (storefront.ugc/product->album-keyword shop? product)]
              (effects/fetch-cms-keypath app-state [:ugc-collection album-keyword]))
            (fetch-product-details app-state product-id)
            (fetch-sku-related-addons app-state selected-sku))))))

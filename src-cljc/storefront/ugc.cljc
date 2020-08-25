@@ -93,6 +93,20 @@
     :dyed
     :wigs
 
+    ;; shop product detail page
+    :straight-shop
+    :loose-wave-shop
+    :body-wave-shop
+    :deep-wave-shop
+    :curly-shop
+    :closures-shop
+    :frontals-shop
+    :kinky-straight-shop
+    :water-wave-shop
+    :yaki-straight-shop
+    :dyed-shop
+    :wigs-shop
+
     ;; adventure
     :shop-by-look-straight
     :shop-by-look-loose-wave
@@ -124,3 +138,12 @@
 
                        :elsewise target-album-keyword)]
     (get albums actual-album :ugc/unknown-album)))
+
+(defn product->album-keyword
+  [shop? product]
+  (let [album-key-fn (if shop?
+                       :contentful/shop-album
+                       :contentful/classic-album)]
+    (when-let [album (or (album-key-fn product)
+                         (:legacy/named-search-slug product))]
+      (keyword album))))
