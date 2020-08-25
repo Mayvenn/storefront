@@ -656,7 +656,7 @@
 
         (some? stylist)
         (merge
-         {:checkout-caption-copy              (str "After your order ships, you'll be connected with " (stylists/->display-name stylist) " over SMS to make an appointment.")
+         {:checkout-caption-copy              (str "You will be connected to " (stylists/->display-name stylist) " over SMS to make an appointment within 2 business days after the check out")
           :servicing-stylist-portrait-url     (-> stylist :portrait :resizable-url)
           :servicing-stylist-banner/id        "servicing-stylist-banner"
           :servicing-stylist-banner/title     (stylists/->display-name stylist)

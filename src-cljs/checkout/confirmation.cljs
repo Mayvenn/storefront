@@ -203,7 +203,7 @@
           (checkout-button selected-quadpay? checkout-button-data)]]
 
         (when (seq service-line-items)
-          [:div.my4.content-3.flex.items-center.mx2
+          [:div.p3.content-3.flex.items-center
            (ui/ucare-img {:width "56px"
                           :class "mtp2"} "9664879b-07e0-432e-9c09-b2cf4c899b10")
            [:div.px1
@@ -213,10 +213,10 @@
                 (str "After you place your order, please contact "
                      servicing-stylist-name
                      " to make your appointment.")
+
                 servicing-stylist
-                (str "After your order ships, you’ll be connected with "
-                     servicing-stylist-name
-                     " over SMS to make an appointment.")
+                (str "You will be connected to " servicing-stylist-name " over SMS to make an appointment within 2 business days after the check out")
+
                 :else
                 "You’ll be able to select your Certified Mayvenn Stylist after checkout."))]])]]]
      [:div.py6.h2
