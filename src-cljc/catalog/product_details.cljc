@@ -178,7 +178,7 @@
            picker-data
            aladdin?
            ugc
-           add-on-services?
+           show-add-on-services?
            related-addons] :as data} owner opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
@@ -214,10 +214,14 @@
             (component/build product-summary-organism data)
             [:div.px2
              (component/build picker/component picker-data opts)]
-            (when (and add-on-services? (seq related-addons))
+            (when (and show-add-on-services? (seq related-addons))
               (let [{:cta-related-addon/keys [label target id]} data]
                 [:div.bg-cool-gray
-                 [:div.px3.pt3.title-3.proxima.bold.shout "Pair with add-ons"]
+                 [:div.px3.pt2.flex.justify-between.items-baseline
+                  [:div.title-3.proxima.bold.shout "Pair with add-ons"]
+                  (let [{:offshoot-action/keys [label target id]} data]
+                    (when id
+                      (ui/button-small-underline-primary (merge {:key id} (apply utils/fake-href target)) label)))]
                  (mapv addon-card related-addons)
                  [:div.pt2.pb3.flex.justify-center
                   (ui/button-small-underline-primary (merge (apply utils/route-to target)
@@ -363,7 +367,7 @@
         stylist-provides-service?            (stylist-filters/stylist-provides-service servicing-stylist product)
         related-addons                       (get-in data catalog.keypaths/detailed-product-related-addons)
         addon-list-open?                     (get-in data catalog.keypaths/detailed-product-addon-list-open?)
-        add-on-services?                     (experiments/add-on-services? data)
+        exp-add-on-services?                 (experiments/add-on-services? data)
         selected-addons                      (get-in data catalog.keypaths/detailed-product-selected-addon-items)
         associated-service-category          (cond
                                                free-mayvenn-service? {:page/slug           "free-mayvenn-services"
@@ -392,7 +396,7 @@
       :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
       :picker-data                        (picker/query data)
       :carousel-images                    carousel-images
-      :add-on-services?                   (and service? add-on-services?)
+      :show-add-on-services?              (and service? exp-add-on-services?)
       :cta/id                             "add-to-cart"
       :cta/label                          "Add to Cart"
       :cta/target                         [events/control-add-sku-to-bag
@@ -651,7 +655,7 @@
         :cta-disabled-explanation/cta-label  "Browse other services"
         :cta-disabled-explanation/cta-target [events/navigate-category associated-service-category]})
 
-     (when (and add-on-services?
+     (when (and exp-add-on-services?
                 (seq related-addons)
                 service?)
        (let [spinning?          (utils/requesting-from-endpoint? data request-keys/add-to-bag)
@@ -688,7 +692,15 @@
                                                       :addon-line/checked?  (some #{sku-id} cart-addon-sku-ids)}
                                                      {:addon-line/disabled? false
                                                       :addon-line/checked?  (some #{sku-id} selected-addons)})))
-                                (if addon-list-open? related-addons (take 1 related-addons)))})))))
+                                          (if addon-list-open? related-addons (take 1 related-addons)))}))
+
+     (when (and exp-add-on-services?
+                (seq related-addons)
+                service?
+                base-service-already-in-cart?)
+       {:offshoot-action/id     "update-addons-link"
+        :offshoot-action/label  "Update add-ons"
+        :offshoot-action/target [events/control-show-addon-service-menu]}))))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
