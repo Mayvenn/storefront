@@ -306,7 +306,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
           [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
           favicon-links
           (page/include-css (assets/path "/css/app.css"))]
-         [:body.bg-pale-purple.container.proxima.px2
+         [:body.bg-pale-purple.proxima.px2
           [:div.col-9-on-tb-dt.mx-auto.flex.justify-center.items-center.stretch.center.relative
            [:div.absolute.top-0.proxima.title-1.white
             {:style "font-size: 250px; opacity: 50%;"}
@@ -318,7 +318,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
                     :src    (assets/path "/images/mayvenn_m_logo.svg")}]]
             [:div.canela.title-1.my3 "Sorry"]
             [:div.content-1.mt3.mb4 "We could not connect you to the page you are looking for."]
-            (ui/button-large-primary (utils/route-to events/navigate-home) "Back to Home")]]]))
+            [:div.col-8.col-6-on-dt.mx-auto (ui/button-large-primary (utils/route-to events/navigate-home) "Back to Home")]]]]))
 
 (defn error-page [debug? reason]
   (html5 {:lang "en"}
