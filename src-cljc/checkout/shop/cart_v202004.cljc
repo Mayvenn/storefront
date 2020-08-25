@@ -253,20 +253,24 @@
         sku-catalog    (get-in app-state storefront.keypaths/v2-skus)]
     (cond-> []
       (some? service-item)
-      (conj (let [sku (get sku-catalog (:sku service-item))]
-              (cond-> {:react/key                                "freeinstall-line-item-freeinstall"
-                       :cart-item-title/id                       "line-item-title-upsell-free-service"
-                       :cart-item-title/primary                  (:variant-name service-item)
-                       :cart-item-copy/value                     (if (pos? hair-missing-quantity)
-                                                                   (:promo.mayvenn-install/requirement-copy sku)
-                                                                   (str "You're all set! " (:copy/whats-included sku)))
-                       :cart-item-floating-box/id                "line-item-freeinstall-price"
-                       :cart-item-floating-box/value             (some-> service-item line-items/service-line-item-price mf/as-money)
-                       :cart-item-remove-action/id               "line-item-remove-freeinstall"
-                       :cart-item-remove-action/spinning?        (utils/requesting? app-state request-keys/remove-freeinstall-line-item)
-                       :cart-item-remove-action/target           [events/control-cart-remove (:legacy/variant-id sku)]
-                       :cart-item-service-thumbnail/id           "freeinstall"
-                       :cart-item-service-thumbnail/image-url    (->> sku
+      (conj (let [sku-id (:sku service-item)
+                  sku    (get sku-catalog sku-id)]
+              (cond-> {:react/key                             "freeinstall-line-item-freeinstall"
+                       :cart-item-title/id                    "line-item-title-upsell-free-service"
+                       :cart-item-title/primary               (:variant-name service-item)
+                       :cart-item-copy/lines                  [{:id    (str "line-item-whats-included-" sku-id)
+                                                                :value (if (pos? hair-missing-quantity)
+                                                                         (:promo.mayvenn-install/requirement-copy sku)
+                                                                         (str "You're all set! " (:copy/whats-included sku)))}
+                                                               {:id    (str "line-item-quantity-" sku-id)
+                                                                :value (str "qty. " (:quantity service-item))}]
+                       :cart-item-floating-box/id             "line-item-freeinstall-price"
+                       :cart-item-floating-box/value          (some-> service-item line-items/service-line-item-price mf/as-money)
+                       :cart-item-remove-action/id            "line-item-remove-freeinstall"
+                       :cart-item-remove-action/spinning?     (utils/requesting? app-state request-keys/remove-freeinstall-line-item)
+                       :cart-item-remove-action/target        [events/control-cart-remove (:legacy/variant-id sku)]
+                       :cart-item-service-thumbnail/id        "freeinstall"
+                       :cart-item-service-thumbnail/image-url (->> sku
                                                                       (images/skuer->image images-catalog "cart")
                                                                       :url)
                        :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)}
@@ -306,7 +310,10 @@
        :cart-item-title/id                       (str "line-item-" sku-id)
        :cart-item-floating-box/id                (str "line-item-" sku-id "-price")
        :cart-item-floating-box/value             (some-> price mf/as-money)
-       :cart-item-copy/value                     (:copy/whats-included sku)
+       :cart-item-copy/lines                     [{:id    (str "line-item-whats-included-" sku-id)
+                                                   :value (:copy/whats-included sku)}
+                                                  {:id    (str "line-item-quantity-" sku-id)
+                                                   :value (str "qty. " (:quantity service-line-item))}]
        :cart-item-remove-action/id               (str "line-item-remove-" sku-id)
        :cart-item-remove-action/spinning?        removing?
        :cart-item-remove-action/target           [events/control-cart-remove (:id service-line-item)]

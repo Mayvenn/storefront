@@ -343,15 +343,19 @@
   [data
    {:free-mayvenn-service/keys [service-item]}
    addon-skus]
-  (let [sku-catalog              (get-in data storefront.keypaths/v2-skus)
-        service-sku              (get sku-catalog (:sku service-item))
-        wig-customization?       (= "SRV-WGC-000" (:sku service-item))
-        images-catalog           (get-in data storefront.keypaths/v2-images)]
+  (let [sku-catalog        (get-in data storefront.keypaths/v2-skus)
+        sku-id             (:sku service-item)
+        service-sku        (get sku-catalog sku-id)
+        wig-customization? (= "SRV-WGC-000" sku-id)
+        images-catalog     (get-in data storefront.keypaths/v2-images)]
     (when (:id service-item)
       [(merge {:react/key                             "freeinstall-line-item-freeinstall"
                :cart-item-title/id                    "linr-item-title-upsell-free-service"
-               :cart-item-copy/value                  (str "You're all set! " (:copy/whats-included service-sku))
                :cart-item-floating-box/id             "line-item-freeinstall-price"
+               :cart-item-copy/lines                  [{:id    (str "line-item-whats-included-" sku-id)
+                                                        :value (str "You're all set! " (:copy/whats-included service-sku))}
+                                                       {:id    (str "line-item-quantity-" sku-id)
+                                                        :value (str "qty. " (:quantity service-item))}]
                :cart-item-floating-box/value          (some-> service-item
                                                               line-items/service-line-item-price
                                                               mf/as-money)
@@ -361,11 +365,9 @@
                                                            :url)}
               (if wig-customization?
                 {:cart-item-title/id      "line-item-title-applied-wig-customization"
-                 :cart-item-title/primary "Wig Customization"
-                 :cart-item-copy/id       "congratulations"}
+                 :cart-item-title/primary "Wig Customization"}
                 {:cart-item-title/id      "line-item-title-applied-mayvenn-install"
-                 :cart-item-title/primary (:variant-name service-item)
-                 :cart-item-copy/id       "congratulations"})
+                 :cart-item-title/primary (:variant-name service-item)})
               (when (seq addon-skus)
                 {:cart-item-sub-items/id    "addon-services"
                  :cart-item-sub-items/title "Add-On Services"
@@ -391,7 +393,10 @@
        :cart-item-title/primary               (or (:product-title service-line-item)
                                                   (:product-name service-line-item))
        :cart-item-title/id                    (str "line-item-" sku-id)
-       :cart-item-copy/value                  (:copy/whats-included sku)
+       :cart-item-copy/lines                  [{:id    (str "line-item-whats-included-" sku-id)
+                                                :value (:copy/whats-included sku)}
+                                               {:id    (str "line-item-quantity-" sku-id)
+                                                :value (str "qty. " (:quantity service-line-item))}]
        :cart-item-floating-box/id             (str "line-item-" sku-id "-price")
        :cart-item-floating-box/value          (some-> price mf/as-money)
        :cart-item-service-thumbnail/id        sku-id
@@ -401,7 +406,7 @@
   [app-state line-items skus]
   (let [images (get-in app-state keypaths/v2-images)
         cart-items
-        (for [{sku-id :sku variant-id :id :as line-item} line-items
+        (for [{sku-id :sku :as line-item} line-items
               :let
               [sku                  (get skus sku-id)
                price                (or (:sku/price line-item)
@@ -409,9 +414,9 @@
           {:react/key                                (str sku-id "-" (:quantity line-item))
            :cart-item-title/id                       (str "line-item-title-" sku-id)
            :cart-item-title/primary                  (or (:product-title line-item)
-                                                               (:product-name line-item))
-           :cart-item-copy/id                        "line-item-quantity"
-           :cart-item-copy/value                     (str "qty " (:quantity line-item))
+                                                         (:product-name line-item))
+           :cart-item-copy/lines                     [{:id    (str "line-item-quantity-" sku-id)
+                                                       :value (str "qty. " (:quantity line-item))}]
            :cart-item-title/secondary                (:color-name line-item)
            :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku-id)
            :cart-item-floating-box/value             ^:ignore-interpret-warning [:div {:data-test (str "line-item-price-ea-" sku-id)}
@@ -420,7 +425,7 @@
            :cart-item-square-thumbnail/id            sku-id
            :cart-item-square-thumbnail/sku-id        sku-id
            :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> sku :hair/length first)]
-                                                             (str length-circle-value "”"))
+                                                       (str length-circle-value "”"))
            :cart-item-square-thumbnail/ucare-id      (->> sku (catalog-images/image images "cart") :ucare/id)})]
     cart-items))
 

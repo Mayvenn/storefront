@@ -20,9 +20,12 @@
      value]))
 
 (defn cart-item-copy-molecule
-  [{:cart-item-copy/keys [id value]}]
-  (when value
-    [:div.content-3.proxima {:data-test id} value]))
+  [{:cart-item-copy/keys [lines]}]
+  (when (seq lines)
+    [:div
+     (for [{:keys [id value]} lines]
+       [:div.content-3.proxima {:key       id
+                                :data-test id} value])]))
 
 (defn cart-item-title-molecule
   [{:cart-item-title/keys [id primary secondary]}]
@@ -177,14 +180,14 @@
       {:style {:min-width "70px"}}
       (ui/circle-picture {:width 56} (ui/square-image {:resizable-url image-url} 50))]
      [:div.flex-auto
-      [:div.flex.flex-auto.pr3.py2
+      [:div.flex.flex-auto.pr2.py2
        [:div.flex.flex-grow-1.items-center
         [:div
          [:div.content-2.proxima.flex.justify-between title]
          [:div.content-3.proxima "Your Certified Mayvenn Stylist"]
          [:div.mt1 (ui.molecules/stars-rating-molecule rating)]]]
        (when action-id
-         [:a.block.gray.medium.m1
+         [:a.block.gray.medium
           (merge {:data-test action-id
                   :href (routes/path-for events/navigate-adventure-find-your-stylist)
                   :on-click (apply utils/send-event-callback target)})
@@ -232,7 +235,7 @@
        (cart-item-adjustable-quantity-molecule cart-item)]]
 
      ;; price group
-     [:div.right-align.pt1.flex.flex-column.items-end
+     [:div.right-align.flex.flex-column.self-stretch
       {:style {:min-width "67px"}}
       (new-cart-item-remove-action-molecule cart-item)
       (cart-item-floating-box-molecule cart-item)]]

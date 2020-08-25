@@ -212,11 +212,14 @@
      (get-cart-product-image images-catalog (first sorted-line-items)))))
 
 (defn service-line-item-query
-  [service-sku service-product]
+  [{:keys [sku-id] :as service-sku} service-product]
   {:react/key                             "service-line-item"
    :cart-item-title/id                    "line-item-title-upsell-service"
    :cart-item-title/primary               (or (:copy/title service-product) (:legacy/product-name service-sku))
-   :cart-item-copy/value                  (:copy/whats-included service-sku)
+   :cart-item-copy/lines                  [{:id    (str "line-item-whats-included-" sku-id)
+                                            :value (:copy/whats-included service-sku)}
+                                           {:id    (str "line-item-quantity-" sku-id)
+                                            :value (str "qty. " (:item/quantity service-sku))}]
    :cart-item-floating-box/id             "line-item-service-price"
    :cart-item-floating-box/value          (some-> service-sku :sku/price mf/as-money)
    :cart-item-service-thumbnail/id        "service"
@@ -226,9 +229,9 @@
 
 (defn cart-items-query
   [line-items]
-  (for [{sku-id     :catalog/sku-id
-         images     :selector/images
-         :as        line-item} line-items
+  (for [{sku-id :catalog/sku-id
+         images :selector/images
+         :as    line-item} line-items
 
         :let [price (or (:sku/price line-item)
                         (:unit-price line-item))]]
@@ -237,8 +240,8 @@
      :cart-item-title/primary                  (or (:product-title line-item)
                                                    (:product-name line-item))
      :cart-item-title/secondary                (:color-name line-item)
-     :cart-item-copy/id                        "line-item-quantity"
-     :cart-item-copy/value                     (str "qty. " (:item/quantity line-item))
+     :cart-item-copy/lines                     [{:id    (str "line-item-quantity-" sku-id)
+                                                 :value (str "qty. " (:item/quantity line-item))}]
      :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku-id)
      :cart-item-floating-box/value             ^:ignore-interpret-warning [:div {:data-test (str "line-item-price-ea-" sku-id)}
                                                                            (mf/as-money price)
