@@ -153,7 +153,6 @@
                                             (-> sku :service/type first #{"base"}))))
         addons               (->> items
                                   (mapv :sku)
-                                  spice.core/spy
                                   (filter (fn [sku]
                                             (-> sku :service/type first #{"addon"}))))
         inherent-sku-ids     (map :catalog/sku-id bases)
