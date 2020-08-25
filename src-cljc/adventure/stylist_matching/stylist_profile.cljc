@@ -155,8 +155,12 @@
                                                 ["Custom U-Part Wig"         (:specialty-custom-unit-leave-out service-menu)]
                                                 ["Custom Lace Closure Wig"   (:specialty-custom-unit-closure service-menu)]
                                                 ["Custom Lace Front Wig"     (:specialty-custom-unit-frontal service-menu)]
-                                                ["Custom 360 Lace Wig"       (:specialty-custom-unit-360-frontal service-menu)]
-                                                ["Silk Press"                (:specialty-silk-press service-menu)]
+                                                ["Custom 360 Lace Wig"       (:specialty-custom-unit-360-frontal service-menu)]]
+
+                                               (when reinstall-services?
+                                                 [["Wig Install"       (:specialty-wig-install service-menu)]])
+
+                                               [["Silk Press"                (:specialty-silk-press service-menu)]
                                                 ["Weave Maintenance"         (:specialty-weave-maintenance service-menu)]]
 
                                                (when reinstall-services?
