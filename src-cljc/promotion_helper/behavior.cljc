@@ -1,5 +1,6 @@
 (ns promotion-helper.behavior
   (:require #?@(:cljs [[storefront.frontend-trackings :as frontend-trackings]
+                       [storefront.history :as history]
                        [storefront.hooks.stringer :as stringer]])
             [storefront.transitions :refer [transition-state]]
             [storefront.events :as e]
@@ -63,7 +64,7 @@
 
 (defmethod perform-effects followed
   [_ _ {:keys [target]} _ app-state]
-  (apply messages/handle-message target))
+  #?(:cljs (apply history/enqueue-navigate target)))
 
 (defmethod perform-track followed
   [_ _ {:keys [condition]} app-state]

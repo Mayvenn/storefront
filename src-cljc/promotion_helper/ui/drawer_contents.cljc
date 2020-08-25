@@ -2,7 +2,8 @@
   (:require [storefront.component :as c :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.routes :as routes]))
 
 (defn ^:private elements
   "Embed a list of organisms in another organism."
@@ -65,8 +66,9 @@
   [:div
    (when id
      (ui/button-small-primary
-      (assoc (apply utils/route-to target)
-             :data-test id)
+      {:on-click  (apply utils/send-event-callback target)
+       :href      (apply routes/path-for (:target (second target)))
+       :data-test id}
       label))])
 
 (defn drawer-contents-condition-secondary-action-molecule
