@@ -21,7 +21,14 @@
    {:sku-id "SRV-CRI-000" :service-menu-key :specialty-reinstall-closure}
    {:sku-id "SRV-FRI-000" :service-menu-key :specialty-reinstall-frontal}
    {:sku-id "SRV-3RI-000" :service-menu-key :specialty-reinstall-360-frontal}
-   {:sku-id "SRV-WGM-000" :service-menu-key :specialty-wig-maintenance}])
+   {:sku-id "SRV-WGM-000" :service-menu-key :specialty-wig-maintenance}
+
+   {:sku-id "SRV-TRMU-000" :service-menu-key :specialty-addon-natural-hair-trim}
+   {:sku-id "SRV-TKDU-000" :service-menu-key :specialty-addon-weave-take-down}
+   {:sku-id "SRV-DPCU-000" :service-menu-key :specialty-addon-hair-deep-conditioning}
+   {:sku-id "SRV-CCU-000" :service-menu-key :specialty-addon-closure-customization}
+   {:sku-id "SRV-FCU-000" :service-menu-key :specialty-addon-frontal-customization}
+   {:sku-id "SRV-3CU-000" :service-menu-key :specialty-addon-360-frontal-customization}])
 
 (def services-by-sku-id
   (maps/index-by :sku-id service-filter-data))
@@ -35,11 +42,16 @@
 (def allowed-stylist-filters
   (->> service-filter-data (map :sku-id) set))
 
-(defn stylist-provides-service
+(defn stylist-provides-service-by-sku-id?
+  [stylist service-sku-id]
+  (->> service-sku-id
+       service-sku-id->service-menu-key
+       (get (:service-menu stylist))
+       boolean))
+
+(defn stylist-provides-service?
   [stylist service-product]
   (->> service-product
        :selector/sku-ids
        first
-       service-sku-id->service-menu-key
-       (get (:service-menu stylist))
-       boolean))
+       (stylist-provides-service-by-sku-id? stylist)))

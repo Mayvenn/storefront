@@ -145,11 +145,11 @@
      (catalog.M/price-block data)]]
    (catalog.M/yotpo-reviews-summary data)])
 
-(defn addon-card [{:addon-line/keys [id target primary secondary tertiary checked? spinning? disabled?]}]
-  [:div.mx3.my1.bg-white
+(defn addon-card [{:addon-line/keys [id target primary secondary tertiary checked? spinning? disabled? disabled-reason]}]
+  [:div.mx3.my1.bg-white.p2
    (when disabled? {:class "dark-gray"})
-   [:div.p2.flex
-    (merge (apply utils/fake-href target)
+   [:div.flex
+    (merge (when-not disabled? (apply utils/fake-href target))
            {:key id})
     (if spinning?
       [:div.mt1
@@ -161,7 +161,8 @@
                       :disabled  disabled?})])
     [:div.flex-grow-1.mr2
      [:div.proxima.content-2 primary]
-     [:div.proxima.content-3 secondary]]
+     [:div.proxima.content-3 secondary]
+     [:div.content-3.red disabled-reason]]
     [:div tertiary]]])
 
 (defcomponent component
@@ -364,8 +365,7 @@
         wig-customization-incentive-families #{"360-wigs" "lace-front-wigs"}
         stylist-mismatch?                    (experiments/stylist-mismatch? data)
         servicing-stylist                    (get-in data adventure.keypaths/adventure-servicing-stylist)
-        stylist-provides-service?            (stylist-filters/stylist-provides-service servicing-stylist product)
-        related-addons                       (get-in data catalog.keypaths/detailed-product-related-addons)
+        stylist-provides-service?            (stylist-filters/stylist-provides-service? servicing-stylist product)
         addon-list-open?                     (get-in data catalog.keypaths/detailed-product-addon-list-open?)
         exp-add-on-services?                 (experiments/add-on-services? data)
         selected-addons                      (get-in data catalog.keypaths/detailed-product-selected-addon-items)
@@ -374,7 +374,14 @@
                                                                       :catalog/category-id "31"}
                                                standalone-service?   {:page/slug           "a-la-carte-salon-services"
                                                                       :catalog/category-id "35"}
-                                               :else                 nil)]
+                                               :else                 nil)
+        related-addons                       (->> (get-in data catalog.keypaths/detailed-product-related-addons)
+                                               (map #(assoc %
+                                                            :stylist-provides?
+                                                            (stylist-filters/stylist-provides-service-by-sku-id? servicing-stylist (:catalog/sku-id %))))
+                                               (sort-by (juxt (comp not :stylist-provides?) :addon/sort))
+                                               ((if addon-list-open? identity (partial take 1))))
+        show-add-on-services?                (and service? exp-add-on-services? (seq related-addons))]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -396,7 +403,7 @@
       :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
       :picker-data                        (picker/query data)
       :carousel-images                    carousel-images
-      :show-add-on-services?              (and service? exp-add-on-services?)
+      :show-add-on-services?              show-add-on-services?
       :cta/id                             "add-to-cart"
       :cta/label                          "Add to Cart"
       :cta/target                         [events/control-add-sku-to-bag
@@ -655,9 +662,7 @@
         :cta-disabled-explanation/cta-label  "Browse other services"
         :cta-disabled-explanation/cta-target [events/navigate-category associated-service-category]})
 
-     (when (and exp-add-on-services?
-                (seq related-addons)
-                service?)
+     (when show-add-on-services?
        (let [spinning?          (utils/requesting-from-endpoint? data request-keys/add-to-bag)
              cart-addon-sku-ids (->> data
                                      api.orders/current
@@ -678,25 +683,26 @@
           :cta-related-addon/label  (if addon-list-open? "hide add-ons" "see all add-ons")
           :cta-related-addon/id     "addon-cta"
           :cta-related-addon/target [events/control-product-detail-toggle-related-addon-list]
-          :related-addons           (mapv (fn [{:keys [:catalog/sku-id :sku/title :copy/description :sku/price]}]
+          :related-addons           (mapv (fn [{:keys [:catalog/sku-id :sku/title :copy/description :sku/price stylist-provides?]}]
                                             (merge {:addon-line/id        sku-id
                                                     :addon-line/target    [events/control-product-detail-toggle-related-addon-items {:sku-id sku-id}]
                                                     :addon-line/spinning? (utils/requesting-from-endpoint? data request-keys/add-to-bag)
                                                     :addon-line/primary   title
                                                     :addon-line/secondary description
-                                                    :addon-line/tertiary  (mf/as-money price)
-                                                    :addon-line/checked?  (some #{sku-id} selected-addons)}
+                                                    :addon-line/tertiary  (mf/as-money price)}
 
                                                    (if base-service-already-in-cart?
                                                      {:addon-line/disabled? true
                                                       :addon-line/checked?  (some #{sku-id} cart-addon-sku-ids)}
                                                      {:addon-line/disabled? false
-                                                      :addon-line/checked?  (some #{sku-id} selected-addons)})))
-                                          (if addon-list-open? related-addons (take 1 related-addons)))}))
+                                                      :addon-line/checked?  (some #{sku-id} selected-addons)})
 
-     (when (and exp-add-on-services?
-                (seq related-addons)
-                service?
+                                                   (when-not stylist-provides?
+                                                     {:addon-line/disabled?       true
+                                                      :addon-line/disabled-reason (str "Not available with " (:store-nickname servicing-stylist))})))
+                                          related-addons)}))
+
+     (when (and show-add-on-services?
                 base-service-already-in-cart?)
        {:offshoot-action/id     "update-addons-link"
         :offshoot-action/label  "Update add-ons"

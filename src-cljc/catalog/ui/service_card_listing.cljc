@@ -80,7 +80,7 @@
         subsections              (->> matching-services
                                       (map #(assoc %
                                                    :stylist-provides-service
-                                                   (stylist-filters/stylist-provides-service servicing-stylist %)))
+                                                   (stylist-filters/stylist-provides-service? servicing-stylist %)))
                                       (group-by (if category-selector
                                                   (comp first category-selector)
                                                   (constantly :no-subsections)))
