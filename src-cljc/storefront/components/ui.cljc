@@ -431,14 +431,14 @@
                     (when data-test
                       {:data-test (str "label-" data-test)}))
      [:div.border.left.mr3.pp2
-      (when disabled {:class "border-gray"})
+      (when disabled {:class "border-gray bg-cool-gray"})
       (if value
-        (svg/x-sharp {:class  "block fill-p-color"
+        (svg/x-sharp {:class  (str "block " (if disabled "fill-gray" "fill-p-color"))
                       :width  "15px"
                       :height "15px"})
         [:div {:style {:width "15px" :height "15px"}}])]
      [:input.hide
-      ^:attrs (merge (utils/toggle-checkbox keypath value)
+      ^:attrs (merge (when-not disabled (utils/toggle-checkbox keypath value))
                      (dissoc attributes :label :keypath :value :label-classes)
                      {:type "checkbox"})]
      [:span

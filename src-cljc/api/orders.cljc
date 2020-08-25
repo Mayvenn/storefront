@@ -135,15 +135,38 @@
        ;; result
        :discounted?              (and service-line-item (not (seq failed-rules)))})))
 
+(defn ->service
+  [waiter-line-item]
+  {:title  (:variant-name waiter-line-item)
+   :sku-id (:sku waiter-line-item)
+   :price  (:sku/price waiter-line-item)})
+
+(defn ->addon-service
+  [waiter-addon-line-item]
+  (->service waiter-addon-line-item))
+
+(defn ->base-service
+  [waiter-order waiter-base-line-item]
+  (let [addon-services (->> waiter-order
+                            orders/service-line-items
+                            (filter line-items/addon-service?)
+                            (filter #(= (:line-item-group waiter-base-line-item) (:line-item-group %)))
+                            (map ->addon-service))]
+    (assoc (->service waiter-base-line-item)
+     :addons addon-services)))
+
 (defn ->order
-  [app-state order]
-  (let [waiter-order      order
-        store-slug        (get-in app-state storefront.keypaths/store-slug)]
+  [app-state waiter-order]
+  (let [store-slug    (get-in app-state storefront.keypaths/store-slug)
+        base-services (->> waiter-order
+                           orders/service-line-items
+                           (filter line-items/base-service?))]
     {:waiter/order         waiter-order
      :order/dtc?           (= "shop" store-slug)
-     :order/submitted?     (= "submitted" (:state order))
+     :order/submitted?     (= "submitted" (:state waiter-order))
      :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
-     :order.items/quantity (orders/displayed-cart-count waiter-order)}))
+     :order.items/quantity (orders/displayed-cart-count waiter-order)
+     :order.items/services (map (partial ->base-service waiter-order) base-services)}))
 
 (defn completed
   [app-state]

@@ -145,8 +145,9 @@
      (catalog.M/price-block data)]]
    (catalog.M/yotpo-reviews-summary data)])
 
-(defn addon-card [{:addon-line/keys [id target primary secondary tertiary checked? spinning?]}]
+(defn addon-card [{:addon-line/keys [id target primary secondary tertiary checked? spinning? disabled?]}]
   [:div.mx3.my1.bg-white
+   (when disabled? {:class "dark-gray"})
    [:div.p2.flex
     (merge (apply utils/fake-href target)
            {:key id})
@@ -156,7 +157,8 @@
         ui/spinner]]
       [:div.mt1.pl1
        (ui/check-box {:value     checked?
-                      :data-test id})])
+                      :data-test id
+                      :disabled  disabled?})])
     [:div.flex-grow-1.mr2
      [:div.proxima.content-2 primary]
      [:div.proxima.content-3 secondary]]
@@ -312,43 +314,47 @@
      {}
      (keys options))))
 
-(defn addon->addon-query
-  [{:keys [addon selected-addons spinning?]}]
+(defn addon->catalog-addon-query
+  [{:keys [addon selected-addons spinning? disabled?]}]
   (let [sku-id (:catalog/sku-id addon)]
-    {:addon-line/id       sku-id
-     :addon-line/target    [events/control-product-detail-toggle-related-addon-items {:sku-id sku-id}]
-     :addon-line/checked?  (some #{sku-id} selected-addons)
-     :addon-line/spinning? spinning?
-     :addon-line/primary   (:sku/title addon)
-     :addon-line/secondary (:copy/description addon)
-     :addon-line/tertiary  (mf/as-money (:sku/price addon))}))
+    (cond-> {:addon-line/id        sku-id
+             :addon-line/target    [events/control-product-detail-toggle-related-addon-items {:sku-id sku-id}]
+             :addon-line/checked?  (some #{sku-id} selected-addons)
+             :addon-line/spinning? spinning?
+             :addon-line/primary   (:sku/title addon)
+             :addon-line/secondary (:copy/description addon)
+             :addon-line/tertiary  (mf/as-money (:sku/price addon))
+             :addon-line/disabled? disabled?}
+
+      disabled?
+      (merge {:addon-line/checked?  (some #{sku-id} selected-addons)}))))
 
 (defn query [data]
-  (let [selected-sku                         (get-in data catalog.keypaths/detailed-product-selected-sku)
-        selections                           (get-in data catalog.keypaths/detailed-product-selections)
-        product                              (products/current-product data)
-        product-skus                         (products/extract-product-skus data product)
-        images-catalog                       (get-in data keypaths/v2-images)
-        facets                               (facets/by-slug data)
-        carousel-images                      (find-carousel-images product product-skus images-catalog
-                                                                   (select-keys selections [:hair/color])
-                                                                   selected-sku)
-        base-service-already-in-cart?        (boolean (some #(= (:catalog/sku-id selected-sku) (:sku %))
-                                                            (orders/service-line-items (get-in data keypaths/order))))
-        options                              (get-in data catalog.keypaths/detailed-product-options)
-        ugc                                  (ugc-query product selected-sku data)
-        sku-price                            (:sku/price selected-sku)
-        review-data                          (review-component/query data)
-        out-of-stock?                        (not (:inventory/in-stock? selected-sku))
-        shop?                                (= "shop" (get-in data keypaths/store-slug))
-        sku-family                           (-> selected-sku :hair/family first)
-        free-mayvenn-service?                (accessors.products/product-is-mayvenn-install-service? product)
-        wig-construction-service?            (accessors.products/wig-construction-service? product)
-        standalone-service?                  (accessors.products/standalone-service? product)
-        service?                             (accessors.products/service? product)
-        hair?                                (accessors.products/hair? product)
-        wig?                                 (accessors.products/wig-product? product)
-        wig-customization?                   (= #{"SRV-WGC-000"} (:catalog/sku-id product))
+  (let [selected-sku                  (get-in data catalog.keypaths/detailed-product-selected-sku)
+        selections                    (get-in data catalog.keypaths/detailed-product-selections)
+        product                       (products/current-product data)
+        product-skus                  (products/extract-product-skus data product)
+        images-catalog                (get-in data keypaths/v2-images)
+        facets                        (facets/by-slug data)
+        carousel-images               (find-carousel-images product product-skus images-catalog
+                                                            (select-keys selections [:hair/color])
+                                                            selected-sku)
+        base-service-already-in-cart? (boolean (some #(= (:catalog/sku-id selected-sku) (:sku %))
+                                                     (orders/service-line-items (get-in data keypaths/order))))
+        options                       (get-in data catalog.keypaths/detailed-product-options)
+        ugc                           (ugc-query product selected-sku data)
+        sku-price                     (:sku/price selected-sku)
+        review-data                   (review-component/query data)
+        out-of-stock?                 (not (:inventory/in-stock? selected-sku))
+        shop?                         (= "shop" (get-in data keypaths/store-slug))
+        sku-family                    (-> selected-sku :hair/family first)
+        free-mayvenn-service?         (accessors.products/product-is-mayvenn-install-service? product)
+        wig-construction-service?     (accessors.products/wig-construction-service? product)
+        standalone-service?           (accessors.products/standalone-service? product)
+        service?                      (accessors.products/service? product)
+        hair?                         (accessors.products/hair? product)
+        wig?                          (accessors.products/wig-product? product)
+        wig-customization?            (= #{"SRV-WGC-000"} (:catalog/sku-id product))
 
         mayvenn-install-incentive-families   #{"bundles" "closures" "frontals" "360-frontals"}
         wig-customization-incentive-families #{"360-wigs" "lace-front-wigs"}
@@ -401,6 +407,13 @@
      (when base-service-already-in-cart?
        {:cta/disabled? true
         :cta/label     "Already In Cart"})
+
+     #_(when (and base-service-already-in-cart?
+                add-on-services?)
+         {:update-addons/id     "other stuff"
+          :update-addons/label  "Update add-ons"
+          :update-addons/target "stuff"})
+     ;; TODO
 
      (when (and (not service?) sku-price)
        {:price-block/primary   (mf/as-money sku-price)
@@ -648,7 +661,14 @@
      (when (and add-on-services?
                 (seq related-addons)
                 service?)
-       (let [spinning? (utils/requesting-from-endpoint? data request-keys/add-to-bag)]
+       (let [spinning?          (utils/requesting-from-endpoint? data request-keys/add-to-bag)
+             cart-addon-sku-ids (->> data
+                                     api.orders/current
+                                     :order.items/services
+                                     (filter #(= (:catalog/sku-id selected-sku) (:sku-id %)))
+                                     first
+                                     :addons
+                                     (map :sku-id))]
          {:cta/target               [events/control-bulk-add-to-bag
                                      {:items (concat
                                               [{:sku      selected-sku
@@ -661,15 +681,21 @@
           :cta-related-addon/label  (if addon-list-open? "hide add-ons" "see all add-ons")
           :cta-related-addon/id     "addon-cta"
           :cta-related-addon/target [events/control-product-detail-toggle-related-addon-list]
-          :related-addons           (if addon-list-open?
-                                      (mapv (fn [addon]
-                                              (addon->addon-query {:addon           addon
-                                                                   :spinning?       spinning?
-                                                                   :selected-addons selected-addons}))
-                                            related-addons)
-                                      [(addon->addon-query {:addon           (first related-addons)
-                                                            :spinning?       spinning?
-                                                            :selected-addons selected-addons})])})))))
+          :related-addons           (mapv (fn [{:keys [:catalog/sku-id :sku/title :copy/description :sku/price]}]
+                                            (merge {:addon-line/id        sku-id
+                                                    :addon-line/target    [events/control-product-detail-toggle-related-addon-items {:sku-id sku-id}]
+                                                    :addon-line/spinning? (utils/requesting-from-endpoint? data request-keys/add-to-bag)
+                                                    :addon-line/primary   title
+                                                    :addon-line/secondary description
+                                                    :addon-line/tertiary  (mf/as-money price)
+                                                    :addon-line/checked?  (some #{sku-id} selected-addons)}
+
+                                                   (if base-service-already-in-cart?
+                                                     {:addon-line/disabled? true
+                                                      :addon-line/checked?  (some #{sku-id} cart-addon-sku-ids)}
+                                                     {:addon-line/disabled? false
+                                                      :addon-line/checked?  (some #{sku-id} selected-addons)})))
+                                (if addon-list-open? related-addons (take 1 related-addons)))})))))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
