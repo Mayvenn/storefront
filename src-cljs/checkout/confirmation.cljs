@@ -139,7 +139,7 @@
        [:div
         [:div.bg-refresh-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
          (when (seq service-line-items)
-           [:div.mb3
+           [:div
             [:div.title-2.proxima.mb1 "Services"]
             [:div
              [:div.mbn1
@@ -154,14 +154,14 @@
                                   (component/component-id (:react/key service-line-item)))]])]
             [:div.border-bottom.border-gray.hide-on-mb]])
 
-         [:div
-          [:div.title-2.proxima.mb1
-           "Items"]
+         (when (seq cart-items)
+           [:div.mt3
+            [:div.title-2.proxima.mb1
+             "Items"]
 
-          [:div
-           {:data-test "confirmation-line-items"}
+            [:div
+             {:data-test "confirmation-line-items"}
 
-           (if (seq cart-items)
              (for [[index cart-item] (map-indexed vector cart-items)
                    :let [react-key (:react/key cart-item)]
                    :when react-key]
@@ -172,10 +172,7 @@
                    [:div.ml2 {:style {:width "75px"}}]
                    [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
                 (component/build cart-item-v202004/organism {:cart-item  cart-item}
-                                 (component/component-id (str index "-cart-item-" react-key)))])
-             [:div.mt2
-              (component/build cart-item-v202004/no-items {}
-                               (component/component-id "no-items"))])]]]]
+                                 (component/component-id (str index "-cart-item-" react-key)))])]])]]
 
        [:div.col-on-tb-dt.col-6-on-tb-dt
         (component/build checkout-delivery/component delivery nil)
