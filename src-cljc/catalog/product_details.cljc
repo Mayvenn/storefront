@@ -376,11 +376,11 @@
                                                                       :catalog/category-id "35"}
                                                :else                 nil)
         related-addons                       (->> (get-in data catalog.keypaths/detailed-product-related-addons)
-                                               (map #(assoc %
-                                                            :stylist-provides?
-                                                            (stylist-filters/stylist-provides-service-by-sku-id? servicing-stylist (:catalog/sku-id %))))
-                                               (sort-by (juxt (comp not :stylist-provides?) :addon/sort))
-                                               ((if addon-list-open? identity (partial take 1))))
+                                                  (map #(assoc %
+                                                               :stylist-provides?
+                                                               (stylist-filters/stylist-provides-service-by-sku-id? servicing-stylist (:catalog/sku-id %))))
+                                                  (sort-by (juxt (comp not :stylist-provides?) :addon/sort))
+                                                  ((if addon-list-open? identity (partial take 1))))
         show-add-on-services?                (and service? exp-add-on-services? (seq related-addons))]
     (merge
      {:reviews                            review-data
