@@ -697,7 +697,8 @@
                                                      {:addon-line/disabled? false
                                                       :addon-line/checked?  (some #{sku-id} selected-addons)})
 
-                                                   (when-not stylist-provides?
+                                                   (when (and servicing-stylist
+                                                              (not stylist-provides?))
                                                      {:addon-line/disabled?       true
                                                       :addon-line/disabled-reason (str "Not available with " (:store-nickname servicing-stylist))})))
                                           related-addons)}))
