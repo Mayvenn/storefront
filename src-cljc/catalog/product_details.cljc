@@ -1023,7 +1023,6 @@
                                                       [(:catalog/sku-id (:sku item)) (:quantity item)])
                                                     items))}
                           (fn handler [{:keys [order]}]
-                            (messages/handle-message events/api-success-bulk-add-to-bag {:order          order
-                                                                                         :items          items
-                                                                                         :related-addons (get-in app-state catalog.keypaths/detailed-product-related-addons)})
+                            (messages/handle-message events/api-success-bulk-add-to-bag {:order order
+                                                                                         :items items})
                             (history/enqueue-navigate events/navigate-cart)))))
