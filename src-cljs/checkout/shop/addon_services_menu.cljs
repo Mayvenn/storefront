@@ -68,19 +68,24 @@
     :as                       addon-service}]
   (storefront.utils/?assoc addon-service
                            :addon-unavailable-reason
-                           (or
-                            (when (not (stylist-can-perform-addon-service? service-menu addon-sku-id))
-                              "Your stylist does not yet offer this service on Mayvenn")
-                            (when-not (contains? (->> addon-service-hair-family
-                                                      (map api.orders/hair-family->service-sku-ids)
-                                                      (reduce set/union #{}))
-                                                 (:sku base-service-line-item))
-                              (str "Only available with " (->> all-base-skus
-                                                               (filter #(not-empty
-                                                                         (set/intersection (-> % :hair/family set)
-                                                                                           (-> addon-service-hair-family set))))
-                                                               (map :sku/name)
-                                                               (string/join " or ")))))))
+                           (cond
+                             (and service-menu
+                                  (not (stylist-can-perform-addon-service? service-menu addon-sku-id)))
+                             "Your stylist does not yet offer this service on Mayvenn"
+
+                             (contains? (->> addon-service-hair-family
+                                             (map api.orders/hair-family->service-sku-ids)
+                                             (reduce set/union #{}))
+                                        (:sku base-service-line-item))
+                             (str "Only available with " (->> all-base-skus
+                                                              (filter #(not-empty
+                                                                        (set/intersection (-> % :hair/family set)
+                                                                                          (-> addon-service-hair-family set))))
+                                                              (map :sku/name)
+                                                              (string/join " or ")))
+
+                             :else
+                             nil)))
 
 
 (defn addon-skus-for-stylist-grouped-by-availability

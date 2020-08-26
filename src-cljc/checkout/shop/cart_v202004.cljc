@@ -247,7 +247,7 @@
 
 (defn free-service-line-items-query
   [app-state
-   {:free-mayvenn-service/keys [hair-missing-quantity stylist service-item]}
+   {:free-mayvenn-service/keys [hair-missing-quantity service-item]}
    addon-skus]
   (let [images-catalog (get-in app-state storefront.keypaths/v2-images)
         sku-catalog    (get-in app-state storefront.keypaths/v2-skus)]
@@ -273,13 +273,11 @@
                        :cart-item-service-thumbnail/image-url (->> sku
                                                                       (images/skuer->image images-catalog "cart")
                                                                       :url)
-                       :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)}
-
-                (some? stylist)
-                (merge {:cart-item-modify-button/id              "browse-addons"
-                        :cart-item-modify-button/target          [events/control-show-addon-service-menu]
-                        :cart-item-modify-button/tracking-target [events/browse-addon-service-menu-button-enabled]
-                        :cart-item-modify-button/content         "+ Browse Add-Ons"})
+                       :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)
+                       :cart-item-modify-button/id              "browse-addons"
+                       :cart-item-modify-button/target          [events/control-show-addon-service-menu]
+                       :cart-item-modify-button/tracking-target [events/browse-addon-service-menu-button-enabled]
+                       :cart-item-modify-button/content         "+ Browse Add-Ons"}
 
                 (seq addon-skus)
                 (merge {:cart-item-sub-items/id    "addon-services"
