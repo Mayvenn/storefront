@@ -12,6 +12,7 @@
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.transitions :as transitions]
+   [catalog.services :as services]
    [stylist-directory.keypaths]))
 
 (defn specialty->filter [selected-filters [primary specialty price]]
@@ -24,15 +25,17 @@
                                         :stylist-filter-selection specialty}]
      :stylist-search-filter/checked?  checked?}))
 
-(defn query [data]
-  (let [selected-filters               (get-in data stylist-directory.keypaths/stylist-search-selected-filters)
-        {free-services       #{true}
-         a-la-carte-services #{false}} (->> (get-in data storefront.keypaths/v2-skus)
-                                            vals
-                                            (selector/match-all {:selector/strict? true}
-                                                                {:service/type #{"base"}})
-                                            (sort-by :legacy/variant-id)
-                                            (group-by :promo.mayvenn-install/discountable))]
+(defn select-sorted
+  [{:keys [selector/essentials]} sort-fn db]
+  (->> db
+       (selector/match-all {:selector/strict? true}
+                           essentials)
+       (sort-by sort-fn)))
+
+(defn query
+  [data]
+  (let [selected-filters (get-in data stylist-directory.keypaths/stylist-search-selected-filters)
+        all-skus         (vals (get-in data storefront.keypaths/v2-skus))]
     {:stylist-search-filters/show? (get-in data stylist-directory.keypaths/stylist-search-show-filters?)
      :stylist-search-filters/sections
      [{:stylist-search-filter-section/id      "free-mayvenn-services"
@@ -40,12 +43,20 @@
        :stylist-search-filter-section/primary (str
                                                "Get Mayvenn services (valued up to $200) for free when purchasing "
                                                "qualifying hair from Mayvenn. You buy the hair, we cover the service!")
-       :stylist-search-filter-section/filters (->> free-services
+       :stylist-search-filter-section/filters (->> all-skus
+                                                   (select-sorted services/discountable :legacy/variant-id)
                                                    (mapv (juxt :sku/name :catalog/sku-id (constantly 0)))
                                                    (mapv (partial specialty->filter selected-filters)))}
       {:stylist-search-filter-section/id      "other-a-la-carte-services"
        :stylist-search-filter-section/title   "À la carte Services"
-       :stylist-search-filter-section/filters (->> a-la-carte-services
+       :stylist-search-filter-section/filters (->> all-skus
+                                                   (select-sorted services/a-la-carte :legacy/variant-id)
+                                                   (mapv (juxt :sku/name :catalog/sku-id :sku/price))
+                                                   (mapv (partial specialty->filter selected-filters)))}
+      {:stylist-search-filter-section/id      "add-on-services"
+       :stylist-search-filter-section/title   "Add-on Services"
+       :stylist-search-filter-section/filters (->> all-skus
+                                                   (select-sorted  services/a-la-carte :legacy/variant-id)
                                                    (mapv (juxt :sku/name :catalog/sku-id :sku/price))
                                                    (mapv (partial specialty->filter selected-filters)))}]}))
 
