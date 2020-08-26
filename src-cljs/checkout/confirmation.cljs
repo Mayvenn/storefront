@@ -16,7 +16,6 @@
             [storefront.api :as api]
             [storefront.config :as config]
             [storefront.browser.cookie-jar :as cookie-jar]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.line-items :as line-items]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.checkout-credit-card :as checkout-credit-card]
@@ -24,7 +23,6 @@
             [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.trackings :as trackings]
@@ -35,9 +33,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.effects :as effects]
             [storefront.platform.messages :as messages]
-            [spice.date :as date]
-            [ui.promo-banner :as promo-banner]
-            [ui.molecules :as ui-molecules]))
+            [ui.promo-banner :as promo-banner]))
 
 (defn requires-additional-payment?
   [data]
@@ -265,20 +261,13 @@
 
 (defn ^:private cart-summary-query
   [{:as order :keys [adjustments]}
-   {:free-mayvenn-service/keys [service-item discounted] :as free-mayvenn-service }
+   {:free-mayvenn-service/keys [service-item discounted]}
    addon-skus
    available-store-credit]
   (when (seq order)
     (let [total               (-> order :total)
           tax                 (:tax-total order)
           subtotal            (orders/products-and-services-subtotal order)
-          shipping            (orders/shipping-item order)
-          shipping-cost       (some->> shipping
-                                       vector
-                                       (apply (juxt :quantity :unit-price))
-                                       (reduce *))
-          timeframe-copy-fn   shipping/timeframe
-          shipping-timeframe  (some-> shipping :sku timeframe-copy-fn)
           adjustment          (->> order :adjustments (map :price) (reduce + 0))
           total-savings       (- adjustment)
           service-discounted? discounted
@@ -290,11 +279,14 @@
                :cart-summary-total-line/value ^:ignore-interpret-warning [:div (some-> total (- available-store-credit) (max 0) mf/as-money)]
                :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
                                              :cart-summary-line/label "Subtotal"
-                                             :cart-summary-line/value (mf/as-money subtotal)}
-                                            {:cart-summary-line/id       "shipping"
-                                             :cart-summary-line/label    "Shipping"
-                                             :cart-summary-line/sublabel shipping-timeframe
-                                             :cart-summary-line/value    (mf/as-money-or-free shipping-cost)}]
+                                             :cart-summary-line/value (mf/as-money subtotal)}]
+
+                                           (when-let [shipping-method-summary-line
+                                                      (cart/shipping-method-summary-line-query
+                                                       (orders/shipping-item order)
+                                                       (orders/product-and-service-items order))]
+                                             [shipping-method-summary-line])
+
                                            (for [{:keys [name price] :as adjustment}
                                                  (filter adjustments/non-zero-adjustment? adjustments)
                                                  :let [install-summary-line? (orders/service-line-item-promotion? adjustment)]]

@@ -8,7 +8,9 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.accessors.line-items :as line-items]
+            [storefront.accessors.orders :as orders]))
 
 (defn delivery-note-box
   [{:delivery.note/keys [id copy]}]
@@ -21,26 +23,27 @@
      [:div])))
 
 (defcomponent component
-  [{:delivery/keys [primary note-box options] :as data} owner _]
-  [:div.pb2.pt4.mx3
-   [:div.proxima.title-2 primary]
-   (delivery-note-box data)
-   [:div
-    (for [option options]
-      [:div.my2 {:key (:react/key option)}
-       (ui/radio-section
-        (let [{:control/keys [data-test id data-test-id target selected?]} option]
-          (merge {:name         data-test
-                  :id           id
-                  :data-test    data-test
-                  :data-test-id data-test-id
-                  :on-click     (apply utils/send-event-callback target)}
-                 (when selected? {:checked "checked"})))
-        [:div.right.ml1.medium (:detail/value option)]
-        [:div.overflow-hidden
-         [:div {:data-test (:primary/data-test option)} (:primary/copy option)]
-         [:div.content-3 (:secondary/copy option)]
-         [:div.content-3 (:tertiary/copy option)]])])]])
+  [{:delivery/keys [id primary note-box options] :as data} owner _]
+  (when id
+    [:div.pb2.pt4.mx3
+     [:div.proxima.title-2 primary]
+     (delivery-note-box data)
+     [:div
+      (for [option options]
+        [:div.my2 {:key (:react/key option)}
+         (ui/radio-section
+          (let [{:control/keys [data-test id data-test-id target selected?]} option]
+            (merge {:name         data-test
+                    :id           id
+                    :data-test    data-test
+                    :data-test-id data-test-id
+                    :on-click     (apply utils/send-event-callback target)}
+                   (when selected? {:checked "checked"})))
+          [:div.right.ml1.medium (:detail/value option)]
+          [:div.overflow-hidden
+           [:div {:data-test (:primary/data-test option)} (:primary/copy option)]
+           [:div.content-3 (:secondary/copy option)]
+           [:div.content-3 (:tertiary/copy option)]])])]]))
 
 (def shipping-method-rules
   {"WAITER-SHIPPING-1" {:min-delivery 4 :max-delivery 6 :saturday-delivery? true}
@@ -159,13 +162,20 @@
         parsed-east-coast-hour (spice/parse-int east-coast-hour-str)
         weekday?               (contains? #{"Mon" "Tue" "Wed" "Thu" "Fri"} east-coast-weekday)
         in-window?             (and parsed-east-coast-hour
-                                    (< parsed-east-coast-hour 13))]
-    {:delivery/primary   "Shipping Method"
+                                    (< parsed-east-coast-hour 13))
+
+        order          (get-in data keypaths/order)
+        shipping       (orders/shipping-item order)
+        free-shipping? (= "WAITER-SHIPPING-1" (:sku shipping))
+        only-services? (every? line-items/service? (orders/product-and-service-items order))]
+    {:delivery/id        (when-not (and free-shipping? only-services?)
+                           "shipping-method")
+     :delivery/primary   "Shipping Method"
      :delivery/options   (map (partial shipping-method->shipping-method-option
-                                     selected-sku
-                                     now
-                                     east-coast-weekday
-                                     in-window?) shipping-methods)
+                                       selected-sku
+                                       now
+                                       east-coast-weekday
+                                       in-window?) shipping-methods)
      :delivery.note/id   (when (and weekday? in-window?)
                            "delivery-note")
      :delivery.note/copy "Order by 1pm ET today to have the guaranteed delivery dates below"}))

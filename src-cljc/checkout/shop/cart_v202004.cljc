@@ -371,18 +371,25 @@
    :cart-summary-line/action-icon   [:svg/close-x {:class "stroke-white fill-gray" }]
    :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code coupon-code}]})
 
+(defn shipping-method-summary-line-query
+  [shipping-method non-shipping-line-items]
+  (let [free-shipping? (= "WAITER-SHIPPING-1" (:sku shipping-method))
+        only-services? (every? line-items/service? non-shipping-line-items)]
+    (when (and shipping-method (not (and free-shipping? only-services?)))
+      {:cart-summary-line/id       "shipping"
+       :cart-summary-line/label    "Shipping"
+       :cart-summary-line/sublabel (-> shipping-method :sku shipping/timeframe)
+       :cart-summary-line/value    (->> shipping-method
+                                        vector
+                                        (apply (juxt :quantity :unit-price))
+                                        (reduce * 1)
+                                        mf/as-money-or-free)})))
+
 (defn regular-cart-summary-query
   "This is for cart's that haven't entered an upsell (free install, wig customization, etc)"
   [{:as order :keys [adjustments tax-total total]}]
-  (let [any-wig?           (orders/any-wig? order)
-        subtotal           (orders/products-and-services-subtotal order)
-        shipping           (orders/shipping-item order)
-        shipping-cost      (some->> shipping
-                                    vector
-                                    (apply (juxt :quantity :unit-price))
-                                    (reduce *))
-        timeframe-copy-fn  shipping/timeframe
-        shipping-timeframe (some-> shipping :sku timeframe-copy-fn)]
+  (let [any-wig? (orders/any-wig? order)
+        subtotal (orders/products-and-services-subtotal order)]
     (cond->
         {:cart-summary-total-line/id    "total"
          :cart-summary-total-line/label "Total"
@@ -393,11 +400,11 @@
                                        :cart-summary-line/label "Subtotal"
                                        :cart-summary-line/value (mf/as-money subtotal)}]
 
-                                     (when shipping
-                                       [{:cart-summary-line/id       "shipping"
-                                         :cart-summary-line/label    "Shipping"
-                                         :cart-summary-line/sublabel shipping-timeframe
-                                         :cart-summary-line/value    (mf/as-money-or-free shipping-cost)}])
+                                     (when-let [shipping-method-summary-line
+                                                (shipping-method-summary-line-query
+                                                                             (orders/shipping-item order)
+                                                                             (orders/product-and-service-items order))]
+                                       [shipping-method-summary-line])
 
                                      (for [{:keys [name price coupon-code] :as adjustment}
                                            (filter adjustments/non-zero-adjustment? adjustments)]
@@ -449,13 +456,6 @@
         total               (:total order)
         tax                 (:tax-total order)
         subtotal            (orders/products-and-services-subtotal order)
-        shipping            (orders/shipping-item order)
-        shipping-cost       (some->> shipping
-                                     vector
-                                     (apply (juxt :quantity :unit-price))
-                                     (reduce *))
-        timeframe-copy-fn   shipping/timeframe
-        shipping-timeframe  (some-> shipping :sku timeframe-copy-fn)
         adjustment          (->> order :adjustments (map :price) (reduce + 0))
         total-savings       (- adjustment)]
     (cond->
@@ -470,11 +470,12 @@
                                        :cart-summary-line/label "Subtotal"
                                        :cart-summary-line/value (mf/as-money subtotal)}]
 
-                                     (when shipping
-                                       [{:cart-summary-line/id       "shipping"
-                                         :cart-summary-line/label    "Shipping"
-                                         :cart-summary-line/sublabel shipping-timeframe
-                                         :cart-summary-line/value    (mf/as-money-or-free shipping-cost)}])
+
+                                     (when-let [shipping-method-summary-line
+                                                (shipping-method-summary-line-query
+                                                 (orders/shipping-item order)
+                                                 (orders/product-and-service-items order))]
+                                       [shipping-method-summary-line])
 
                                      (for [{:keys [name price coupon-code] :as adjustment}
                                            (filter adjustments/non-zero-adjustment? adjustments)
