@@ -128,8 +128,13 @@
 
 (defn add-on-services?
   [data]
-  (display-feature? data "add-on-services"))
+  (or (display-feature? data "upsell-addons-opened")
+      (display-feature? data "upsell-addons-closed")))
 
 (defn reinstall-services?
   [data]
   (display-feature? data "reinstall-services"))
+
+(defn upsell-addons-opened?
+  [data]
+  (display-feature? data "upsell-addons-opened"))
