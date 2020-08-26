@@ -691,16 +691,24 @@
                                                     :addon-line/secondary description
                                                     :addon-line/tertiary  (mf/as-money price)}
 
-                                                   (if base-service-already-in-cart?
+                                                   (when base-service-already-in-cart?
                                                      {:addon-line/disabled? true
-                                                      :addon-line/checked?  (some #{sku-id} cart-addon-sku-ids)}
+                                                      :addon-line/checked?  (some #{sku-id} cart-addon-sku-ids)})
+
+                                                   (when-not base-service-already-in-cart?
                                                      {:addon-line/disabled? false
                                                       :addon-line/checked?  (some #{sku-id} selected-addons)})
 
                                                    (when (and servicing-stylist
                                                               (not stylist-provides?))
                                                      {:addon-line/disabled?       true
-                                                      :addon-line/disabled-reason (str "Not available with " (:store-nickname servicing-stylist))})))
+                                                      :addon-line/disabled-reason (str "Not available with " (:store-nickname servicing-stylist))})
+
+                                                   (when (and stylist-mismatch?
+                                                              service?
+                                                              servicing-stylist
+                                                              (not stylist-provides-service?))
+                                                     {:addon-line/disabled? true})))
                                           related-addons)}))
 
      (when (and show-add-on-services?
