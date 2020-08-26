@@ -73,10 +73,10 @@
                                   (not (stylist-can-perform-addon-service? service-menu addon-sku-id)))
                              "Your stylist does not yet offer this service on Mayvenn"
 
-                             (contains? (->> addon-service-hair-family
-                                             (map api.orders/hair-family->service-sku-ids)
-                                             (reduce set/union #{}))
-                                        (:sku base-service-line-item))
+                             (not (contains? (->> addon-service-hair-family
+                                                  (map api.orders/hair-family->service-sku-ids)
+                                                  (reduce set/union #{}))
+                                             (:sku base-service-line-item)))
                              (str "Only available with " (->> all-base-skus
                                                               (filter #(not-empty
                                                                         (set/intersection (-> % :hair/family set)
