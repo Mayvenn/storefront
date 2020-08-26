@@ -588,42 +588,6 @@
              :how-it-works.step.title/secondary "Schedule your appointment"
              :how-it-works.step.body/primary    (str "We’ll connect you with your stylist to set up your service. "
                                                      "Then, we’ll send you a prepaid voucher to cover the cost. ")}]})})
-     (when reinstall-service?
-       {:how-it-works
-        {:how-it-works/title-secondary "Here’s how it works."
-         :how-it-works/step-elements
-         [{:how-it-works.step.title/primary   "01"
-           :how-it-works.step.title/secondary "Pick your service"
-           :how-it-works.step.body/primary    "Choose the service you’d like to book from our full list of Reinstall service offerings."}
-          {:how-it-works.step.title/primary   "02"
-           :how-it-works.step.title/secondary "Book your Mayvenn-Certified stylist"
-           :how-it-works.step.body/primary    (str "Next, book a stylist. "
-                                                   "We suggest seeing the Mayvenn Stylist you saw for the initial install, or one of the many talented stylists near you.")}
-          {:how-it-works.step.title/primary   "03"
-           :how-it-works.step.title/secondary "Schedule your appointment"
-           :how-it-works.step.body/primary    (str
-                                               "We’ll connect you with your stylist to set up your service. "
-                                               "Then, we’ll send you a prepaid voucher to cover the cost. "
-                                               "Bring the hair you want reinstalled with you to the appointment. ")}]}})
-
-     (when maintenance-service?
-       {:how-it-works
-        {:how-it-works/title-secondary "Here’s how it works."
-         :how-it-works/step-elements
-         [{:how-it-works.step.title/primary   "01"
-           :how-it-works.step.title/secondary "Choose your service & stylist"
-           :how-it-works.step.body/primary    (str
-                                               "First, select the Wig Maintenance service and choose your stylist."
-                                               "If you don’t have one yet, search for a talented stylist near you or contact our Concierge Team for support.")}
-          {:how-it-works.step.title/primary   "02"
-           :how-it-works.step.title/secondary "Drop off your wig"
-           :how-it-works.step.body/primary    (str
-                                               "Now that you have your stylist, the next step is to drop off your wig with your Mayvenn Stylist.")}
-          {:how-it-works.step.title/primary   "03"
-           :how-it-works.step.title/secondary "Wig pickup"
-           :how-it-works.step.body/primary    (str
-                                               "Once your stylist is finished with the wig maintenance service, they will contact you to pick up your wig. "
-                                               "Have your prepaid voucher ready for quick & easy payment! ")}]}})
 
      (when wig-customization?
        {:how-it-works
@@ -674,6 +638,43 @@
            :how-it-works.step.title/secondary "Schedule your appointment"
            :how-it-works.step.body/primary    (str "We’ll connect you with your stylist to set up your service. "
                                                    "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}})
+
+     (when reinstall-service?
+       {:how-it-works
+        {:how-it-works/title-secondary "Here’s how it works."
+         :how-it-works/step-elements
+         [{:how-it-works.step.title/primary   "01"
+           :how-it-works.step.title/secondary "Pick your service"
+           :how-it-works.step.body/primary    "Choose the service you’d like to book from our full list of Reinstall service offerings."}
+          {:how-it-works.step.title/primary   "02"
+           :how-it-works.step.title/secondary "Book your Mayvenn-Certified stylist"
+           :how-it-works.step.body/primary    (str "Next, book a stylist. "
+                                                   "We suggest seeing the Mayvenn Stylist you saw for the initial install, or one of the many talented stylists near you.")}
+          {:how-it-works.step.title/primary   "03"
+           :how-it-works.step.title/secondary "Schedule your appointment"
+           :how-it-works.step.body/primary    (str
+                                               "We’ll connect you with your stylist to set up your service. "
+                                               "Then, we’ll send you a prepaid voucher to cover the cost. "
+                                               "Bring the hair you want reinstalled with you to the appointment. ")}]}})
+
+     (when maintenance-service?
+       {:how-it-works
+        {:how-it-works/title-secondary "Here’s how it works."
+         :how-it-works/step-elements
+         [{:how-it-works.step.title/primary   "01"
+           :how-it-works.step.title/secondary "Choose your service & stylist"
+           :how-it-works.step.body/primary    (str
+                                               "First, select the Wig Maintenance service and choose your stylist."
+                                               "If you don’t have one yet, search for a talented stylist near you or contact our Concierge Team for support.")}
+          {:how-it-works.step.title/primary   "02"
+           :how-it-works.step.title/secondary "Drop off your wig"
+           :how-it-works.step.body/primary    (str
+                                               "Now that you have your stylist, the next step is to drop off your wig with your Mayvenn Stylist.")}
+          {:how-it-works.step.title/primary   "03"
+           :how-it-works.step.title/secondary "Wig pickup"
+           :how-it-works.step.body/primary    (str
+                                               "Once your stylist is finished with the wig maintenance service, they will contact you to pick up your wig. "
+                                               "Have your prepaid voucher ready for quick & easy payment! ")}]}})
 
      (when wig?
        {:browse-stylists-banner/title "Buy any Lace Front or 360 Wig and we'll pay for your wig customization"})
