@@ -140,38 +140,32 @@
         reinstall-services? (experiments/reinstall-services? data)
 
         stylist-performable-offerings (filter (comp true? second)
-                                              (concat
-                                               [["Leave Out Install"         (:specialty-sew-in-leave-out service-menu)]
-                                                ["Closure Install"           (:specialty-sew-in-closure service-menu)]
-                                                ["360 Frontal Install"       (:specialty-sew-in-360-frontal service-menu)]
-                                                ["Frontal Install"           (:specialty-sew-in-frontal service-menu)]
-                                                ["Wig Customization"         (:specialty-wig-customization service-menu)]
-                                                ["Natural Hair Trim"         (:specialty-addon-natural-hair-trim service-menu)]
-                                                ["Weave Take Down"           (:specialty-addon-weave-take-down service-menu)]
-                                                ["Hair Deep Conditioning"    (:specialty-addon-hair-deep-conditioning service-menu)]
-                                                ["Closure Customization"     (:specialty-addon-closure-customization service-menu)]
-                                                ["Frontal Customization"     (:specialty-addon-frontal-customization service-menu)]
-                                                ["360 Frontal Customization" (:specialty-addon-360-frontal-customization service-menu)]
-                                                ["Custom U-Part Wig"         (:specialty-custom-unit-leave-out service-menu)]
-                                                ["Custom Lace Closure Wig"   (:specialty-custom-unit-closure service-menu)]
-                                                ["Custom Lace Front Wig"     (:specialty-custom-unit-frontal service-menu)]
-                                                ["Custom 360 Lace Wig"       (:specialty-custom-unit-360-frontal service-menu)]]
-
-                                               (when reinstall-services?
-                                                 [["Wig Install"       (:specialty-wig-install service-menu)]])
-
-                                               [["Silk Press"                (:specialty-silk-press service-menu)]
-                                                ["Weave Maintenance"         (:specialty-weave-maintenance service-menu)]]
-
-                                               (when reinstall-services?
-                                                 [["Wig Maintenance"       (:specialty-wig-maintenance service-menu)]
-                                                  ["Braid Down"            (:specialty-braid-down service-menu)]
-                                                  ["Leave Out Reinstall"   (:specialty-reinstall-leave-out service-menu)]
-                                                  ["Closure Reinstall"     (:specialty-reinstall-closure service-menu)]
-                                                  ["Frontal Reinstall"     (:specialty-reinstall-frontal service-menu)]
-                                                  ["360 Frontal Reinstall" (:specialty-reinstall-360-frontal service-menu)]])))
-        mayvenn-rating-publishable? (:mayvenn-rating-publishable stylist)
-        show-star-bar-chart? (and (> rating-count 0)
+                                              [["Leave Out Install"         (:specialty-sew-in-leave-out service-menu)]
+                                               ["Closure Install"           (:specialty-sew-in-closure service-menu)]
+                                               ["360 Frontal Install"       (:specialty-sew-in-360-frontal service-menu)]
+                                               ["Frontal Install"           (:specialty-sew-in-frontal service-menu)]
+                                               ["Wig Customization"         (:specialty-wig-customization service-menu)]
+                                               ["Natural Hair Trim"         (:specialty-addon-natural-hair-trim service-menu)]
+                                               ["Weave Take Down"           (:specialty-addon-weave-take-down service-menu)]
+                                               ["Hair Deep Conditioning"    (:specialty-addon-hair-deep-conditioning service-menu)]
+                                               ["Closure Customization"     (:specialty-addon-closure-customization service-menu)]
+                                               ["Frontal Customization"     (:specialty-addon-frontal-customization service-menu)]
+                                               ["360 Frontal Customization" (:specialty-addon-360-frontal-customization service-menu)]
+                                               ["Custom U-Part Wig"         (:specialty-custom-unit-leave-out service-menu)]
+                                               ["Custom Lace Closure Wig"   (:specialty-custom-unit-closure service-menu)]
+                                               ["Custom Lace Front Wig"     (:specialty-custom-unit-frontal service-menu)]
+                                               ["Custom 360 Lace Wig"       (:specialty-custom-unit-360-frontal service-menu)]
+                                               ["Wig Install"               (:specialty-wig-install service-menu)]
+                                               ["Silk Press"                (:specialty-silk-press service-menu)]
+                                               ["Weave Maintenance"         (:specialty-weave-maintenance service-menu)]
+                                               ["Wig Maintenance"           (:specialty-wig-maintenance service-menu)]
+                                               ["Braid Down"                (:specialty-braid-down service-menu)]
+                                               ["Leave Out Reinstall"       (:specialty-reinstall-leave-out service-menu)]
+                                               ["Closure Reinstall"         (:specialty-reinstall-closure service-menu)]
+                                               ["Frontal Reinstall"         (:specialty-reinstall-frontal service-menu)]
+                                               ["360 Frontal Reinstall"     (:specialty-reinstall-360-frontal service-menu)]])
+        mayvenn-rating-publishable?   (:mayvenn-rating-publishable stylist)
+        show-star-bar-chart?          (and (> rating-count 0)
                                   mayvenn-rating-publishable?
                                   (not (experiments/hide-star-distribution? data)))]
     (when stylist
