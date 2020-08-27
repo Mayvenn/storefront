@@ -148,7 +148,6 @@
           :return-navigation-message      [events/navigate-home {}]
           :errors                         {}
           :browse-variant-quantity        1
-          :browse-recently-added-variants []
           :menu-expanded                  false
           :account-menu-expanded          false
           :store-info-expanded            false

@@ -114,7 +114,6 @@
 (def navigation-redo-stack (conj ui :navigation-redo-stack))
 (def browse-variant-quantity (conj ui :browse-variant-quantity))
 (def browse-sku-quantity (conj ui :browse-sku-quantity))
-(def browse-recently-added-variants (conj ui :browse-recently-added-variants))
 (def browse-recently-added-skus (conj ui :browse-recently-added-skus))
 (def menu-expanded (conj ui :menu-expanded))
 (def account-menu-expanded (conj ui :account-menu-expanded))

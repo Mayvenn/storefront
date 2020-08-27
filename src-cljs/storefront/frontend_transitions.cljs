@@ -427,10 +427,8 @@
 (defmethod transition-state events/api-success-forgot-password [_ event args app-state]
   (clear-fields app-state keypaths/forgot-password-email))
 
-(defmethod transition-state events/api-success-decrease-quantity [_ event {:keys [order quantity variant]} app-state]
-  (-> app-state
-      (update-in keypaths/browse-recently-added-variants conj {:quantity quantity :variant variant})
-      (assoc-in keypaths/browse-variant-quantity 1)))
+(defmethod transition-state events/api-success-decrease-quantity [_ event args app-state]
+  (assoc-in app-state keypaths/browse-variant-quantity 1))
 
 (defmethod transition-state events/api-success-shared-cart-create [_ event {:keys [cart]} app-state]
   (-> app-state
