@@ -57,7 +57,7 @@
       {:stylist-search-filter-section/id      "add-on-services"
        :stylist-search-filter-section/title   "Add-on Services"
        :stylist-search-filter-section/filters (->> all-skus
-                                                   (select-sorted services/a-la-carte :legacy/variant-id)
+                                                   (select-sorted services/addons :legacy/variant-id)
                                                    (mapv (juxt :sku/name :catalog/sku-id :sku/price))
                                                    (mapv (partial specialty->filter selected-filters)))}]}))
 
