@@ -873,7 +873,6 @@
         (assoc-in catalog.keypaths/detailed-product-id product-id)
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
         (assoc-in keypaths/ui-ugc-category-popup-offset ugc-offset)
-        (assoc-in keypaths/browse-recently-added-skus [])
         (assoc-in keypaths/browse-sku-quantity 1)
         (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
         (assoc-in catalog.keypaths/detailed-product-picker-visible? nil)
@@ -1026,9 +1025,7 @@
 
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
   [_ event {:keys [quantity sku]} app-state]
-  (-> app-state
-      (update-in keypaths/browse-recently-added-skus conj {:quantity quantity :sku sku})
-      (assoc-in keypaths/browse-sku-quantity 1)))
+  (assoc-in app-state keypaths/browse-sku-quantity 1))
 
 (defmethod transitions/transition-state events/navigate-product-details
   [_ _ _ app-state]
