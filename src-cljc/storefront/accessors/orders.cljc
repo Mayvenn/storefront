@@ -121,6 +121,13 @@
    (or (empty? (all-applied-promo-codes order))
        (= 0 (product-quantity order)))))
 
+(defn product-and-service-items [order]
+  (->> order
+       :shipments
+       first
+       :storefront/all-line-items
+       (filter line-items/product-or-service?)))
+
 (defn service-line-items [order]
   (->> order
        :shipments
@@ -184,25 +191,29 @@
           (> order-total store-credit-used)) (assoc :stripe {})
       (can-use-store-credit? order user)     (assoc :store-credit {}))))
 
-(defn- line-item-tuples [order]
-  (->> (product-items order)
-       (map (juxt :sku :quantity))))
+(defn skus->qtys<- [order]
+  (->> order
+       product-and-service-items
+       (map (juxt :sku :quantity))
+       (into {})))
 
 (defn recently-added-skus->qtys
   "Compares two orders and returns a {sku-id qty} map of what was added."
   [previous-order new-order]
-  (let [prev-sku-id->quantity (->> previous-order
-                                   line-item-tuples
-                                   set
-                                   (into {}))
-        new-sku-id->quantity (->> new-order
-                                  line-item-tuples
-                                  set
-                                  (into {}))]
-    (->> prev-sku-id->quantity
-         (merge-with - new-sku-id->quantity)
-         (filter (fn [[_ v]] (pos? v)))
-         (into {}))))
+  (let [prev-sku-id->quantity (skus->qtys<- previous-order)
+        new-sku-id->quantity       (->> prev-sku-id->quantity
+                                        ;; Must ensure every key is there
+                                        (map (fn [[k _]] [k 0]))
+                                        (into {})
+                                        (merge (skus->qtys<- new-order)))]
+    ;; If the order number's changed (i.e. order from a shared cart), we treat all skus as new
+    (if (= (:number new-order)
+           (:number previous-order))
+      (->> prev-sku-id->quantity
+           (merge-with - new-sku-id->quantity)
+           (filter (fn [[_ v]] (pos? v)))
+           (into {}))
+      new-sku-id->quantity)))
 
 (defn first-name-plus-last-name-initial [{:as order :keys [billing-address shipping-address]}]
   (when (seq order)
@@ -234,13 +245,6 @@
                                      :line-items (remove line-items/service? line-items)))))))
 
 ;;; Functions that operate over products & services
-
-(defn product-and-service-items [order]
-  (->> order
-       :shipments
-       first
-       :storefront/all-line-items
-       (filter line-items/product-or-service?)))
 
 (defn product-and-service-quantity [order]
   (line-item-quantity (product-and-service-items order)))
