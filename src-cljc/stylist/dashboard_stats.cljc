@@ -110,17 +110,13 @@
       [:div.col-7
        (earnings-count "Lifetime Bonuses" (mf/as-money lifetime-earned))]]]))
 
-(defn ^:private sales-bonus-progress [{:keys [previous-level next-level award-for-next-level total-eligible-sales]} dashboard-with-vouchers?]
+(defn ^:private sales-bonus-progress
+  [{:keys [previous-level next-level award-for-next-level total-eligible-sales]}]
   [:div.p2
    [:div.h6.letter-spacing-1.shout "Sales Bonus Progress"]
    [:div.h8
-    "Sell "
-    (mf/as-money (- next-level total-eligible-sales))
-    " more in"
-    (when dashboard-with-vouchers? " non-FREEINSTALL")
-    " sales to earn your next "
-    [:span.bold (mf/as-money award-for-next-level)]
-    " in credit."]
+    "Sell " (mf/as-money (- next-level total-eligible-sales)) " more in sales to earn your next "
+    [:span.bold (mf/as-money award-for-next-level)] " in credit."]
    [:div.mtp2
     (progress-indicator {:value   (- total-eligible-sales previous-level)
                          :maximum (- next-level previous-level)})]])
@@ -134,7 +130,8 @@
       [:div.p2
        (cash-balance-card payout-method cash-balance-section-expanded? cashing-out? earnings services)
        [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned store-credit-balance-section-expanded?)]
-       (sales-bonus-progress bonuses dashboard-with-vouchers?)])))
+       (when-not dashboard-with-vouchers?
+         (sales-bonus-progress bonuses))])))
 
 (def not-reimbursed-for-services? (complement experiments/dashboard-with-vouchers?))
 
