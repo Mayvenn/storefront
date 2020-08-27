@@ -199,14 +199,13 @@
   (let [[previous-nav-event previous-nav-args] (get-in prev-app-state keypaths/navigation-message)
         [current-nav-event current-nav-args]   (get-in app-state keypaths/navigation-message)
 
-        landing-on-same-category-page? (and (= events/navigate-category current-nav-event previous-nav-event)
-                                            (= (:catalog/category-id current-nav-args)
-                                               (:catalog/category-id previous-nav-args)))
-        new-nav-event?                 (not= previous-nav-event current-nav-event)
-        video-query-param?             (:video query-params)
-        module-load?                   (= caused-by :module-load)]
+        landing-on-same-page? (and (= previous-nav-event current-nav-event)
+                                   (= (dissoc previous-nav-args :query-params)
+                                      (dissoc current-nav-args  :query-params)))
+        module-load?          (= caused-by :module-load)]
     (when (get-in app-state promotion-helper.keypaths/ui-promotion-helper-opened)
       (messages/handle-message promotion-helper/closed {:event/source event}))
+
     (messages/handle-message events/control-menu-collapse-all)
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})
 
@@ -221,8 +220,8 @@
                            (get-in app-state keypaths/pending-promo-code))))
 
     (seo/set-tags app-state)
-    (when (or (and (not video-query-param?) (not landing-on-same-category-page?))
-              new-nav-event?)
+
+    (when-not landing-on-same-page?
       (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
         (if (zero? restore-scroll-top)
           ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)

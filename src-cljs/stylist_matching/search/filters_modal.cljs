@@ -13,6 +13,7 @@
    [storefront.platform.component-utils :as utils]
    [storefront.transitions :as transitions]
    [catalog.services :as services]
+   [storefront.platform.messages :as messages]
    [stylist-directory.keypaths]))
 
 (defn specialty->filter [selected-filters [primary specialty price]]
@@ -81,33 +82,27 @@
                       :data-test id})]])])
 
 (component/defcomponent component
- [{:stylist-search-filters/keys [show? sections]} _ _]
- (when show?
-   (ui/modal
-    {:body-style  {:max-width "625px"}
-     :close-attrs (utils/fake-href events/control-addon-service-menu-dismiss)
-     :col-class   "col-12"}
-    [:div.bg-white {:style {:min-height "100vh"}}
-     (components.header/mobile-nav-header
-      {:class "border-bottom border-gray"}
-      (component/html [:div (ui/button-medium-underline-black
-                             (merge {:data-test "stylist-search-filters-reset"}
-                                    (utils/fake-href events/control-stylist-search-reset-filters))
-                             "RESET")])
-      (component/html [:div.center.proxima.content-1 "Filters"])
-      (component/html [:div (ui/button-medium-underline-primary
-                             (merge {:data-test "stylist-search-filters-dismiss"}
-                                    (utils/fake-href events/control-stylist-search-filters-dismiss))
-                             "DONE")]))
-     (map #(component/build filter-section % {}) sections)])))
+  [{:stylist-search-filters/keys [sections]} _ _]
+  [:div.bg-white {:style {:min-height "100vh"}}
+   (components.header/mobile-nav-header
+    {:class "border-bottom border-gray"}
+    (component/html [:div (ui/button-medium-underline-black
+                           (merge {:data-test "stylist-search-filters-reset"}
+                                  (utils/fake-href events/control-stylist-search-reset-filters))
+                           "RESET")])
+    (component/html [:div.center.proxima.content-1 "Filters"])
+    (component/html [:div (ui/button-medium-underline-primary
+                           (merge {:data-test "stylist-search-filters-dismiss"}
+                                  (utils/fake-href events/control-stylist-search-filters-dismiss))
+                           "DONE")]))
+   (map #(component/build filter-section % {}) sections)])
 
 (defmethod transitions/transition-state events/control-stylist-search-toggle-filter
   [_ event {:keys [previously-checked? stylist-filter-selection]} app-state]
-  (-> (update-in app-state stylist-directory.keypaths/stylist-search-selected-filters
-                #(set (if previously-checked?
-                        (disj % stylist-filter-selection)
-                        (conj % stylist-filter-selection))))
-      (assoc-in stylist-directory.keypaths/user-toggled-preference true)))
+  (update-in app-state stylist-directory.keypaths/stylist-search-selected-filters
+             #(set (if previously-checked?
+                     (disj % stylist-filter-selection)
+                     (conj % stylist-filter-selection)))))
 
 (defmethod effects/perform-effects events/control-stylist-search-toggle-filter
   [_ event _ _ app-state]
@@ -133,15 +128,18 @@
     (history/enqueue-redirect nav-event
                               {:query-params
                                (-> (merge (:query-params nav-args)
-                                         {:lat                (:latitude selected-location)
-                                          :long               (:longitude selected-location)})
+                                          {:lat  (:latitude selected-location)
+                                           :long (:longitude selected-location)})
                                    (dissoc :preferred-services))})))
 
 (defmethod transitions/transition-state events/control-show-stylist-search-filters
   [_ event args app-state]
-  (update-in app-state stylist-directory.keypaths/stylist-search-show-filters? not))
+  (assoc-in app-state stylist-directory.keypaths/stylist-search-show-filters? true))
 
-(defmethod transitions/transition-state events/control-stylist-search-filters-dismiss
+(defmethod effects/transition-state events/control-stylist-search-filters-dismiss
+  [_ event args previous-app-state app-state]
+  (messages/handle-message events/stylist-search-filter-menu-close))
+
+(defmethod transitions/transition-state events/stylist-search-filter-menu-close
   [_ event args app-state]
-  (-> (update-in app-state stylist-directory.keypaths/stylist-search-show-filters? not)
-      (update-in stylist-directory.keypaths/user-toggled-preference not)))
+  (assoc-in app-state stylist-directory.keypaths/stylist-search-show-filters? false))

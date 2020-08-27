@@ -552,6 +552,7 @@
 (defpath control-stylist-search-reset-filters)
 (defpath control-show-stylist-search-filters)
 (defpath control-stylist-search-filters-dismiss)
+(defpath stylist-search-filter-menu-hide)
 
 (defpath api-success-remove-servicing-stylist)
 
@@ -565,7 +566,6 @@
 
 
 ;; Spreedly
-
 
 (defpath loaded-spreedly)
 (defpath spreedly-did-mount)
