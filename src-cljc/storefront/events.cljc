@@ -552,7 +552,8 @@
 (defpath control-stylist-search-reset-filters)
 (defpath control-show-stylist-search-filters)
 (defpath control-stylist-search-filters-dismiss)
-(defpath stylist-search-filter-menu-hide)
+
+(defpath stylist-search-filter-menu-close)
 
 (defpath api-success-remove-servicing-stylist)
 

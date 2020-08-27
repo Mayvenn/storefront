@@ -136,7 +136,7 @@
   [_ event args app-state]
   (assoc-in app-state stylist-directory.keypaths/stylist-search-show-filters? true))
 
-(defmethod effects/transition-state events/control-stylist-search-filters-dismiss
+(defmethod effects/perform-effects events/control-stylist-search-filters-dismiss
   [_ event args previous-app-state app-state]
   (messages/handle-message events/stylist-search-filter-menu-close))
 
