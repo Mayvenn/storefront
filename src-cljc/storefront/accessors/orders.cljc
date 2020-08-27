@@ -1,6 +1,5 @@
 (ns storefront.accessors.orders
-  (:require [clojure.set :as set]
-            [storefront.accessors.line-items :as line-items]
+  (:require [storefront.accessors.line-items :as line-items]
             [storefront.utils :as utils]))
 
 (defn incomplete? [order]
@@ -189,18 +188,21 @@
   (->> (product-items order)
        (map (juxt :sku :quantity))))
 
-(defn newly-added-sku-ids [previous-order new-order]
-  (let [new-line-item-tuples (set (line-item-tuples new-order))
-        prev-line-item-tuples (set (line-item-tuples previous-order))
-        changed-line-item-tuples (set/difference new-line-item-tuples
-                                                 prev-line-item-tuples)
-        prev-sku-id->quantity (into {} prev-line-item-tuples)
-        get-sku first]
-    (into #{}
-          (comp (remove (fn [[sku quantity]]
-                          (< quantity (prev-sku-id->quantity sku 0))))
-                (map get-sku))
-          changed-line-item-tuples)))
+(defn recently-added-skus->qtys
+  "Compares two orders and returns a {sku-id qty} map of what was added."
+  [previous-order new-order]
+  (let [prev-sku-id->quantity (->> previous-order
+                                   line-item-tuples
+                                   set
+                                   (into {}))
+        new-sku-id->quantity (->> new-order
+                                  line-item-tuples
+                                  set
+                                  (into {}))]
+    (->> prev-sku-id->quantity
+         (merge-with - new-sku-id->quantity)
+         (filter (fn [[_ v]] (pos? v)))
+         (into {}))))
 
 (defn first-name-plus-last-name-initial [{:as order :keys [billing-address shipping-address]}]
   (when (seq order)

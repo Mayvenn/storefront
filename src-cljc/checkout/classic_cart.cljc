@@ -243,7 +243,7 @@
                                  (variants-requests data request-keys/update-line-item (map :sku line-items)))
      :cart-summary              (cart-summary/query data)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
-     :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)}))
+     :recently-added-skus       (set (keys (get-in data keypaths/cart-recently-added-skus-qtys)))}))
 
 (defn empty-cart-query
   [data]

@@ -177,7 +177,7 @@
 
 (def cart-paypal-redirect (conj cart :paypal-redirect))
 
-(def cart-recently-added-skus (conj cart :recently-added-skus))
+(def cart-recently-added-skus-qtys (conj cart :recently-added-skus-qtys))
 (def cart-freeinstall-just-added? (conj cart :freeinstall-just-added?))
 
 (def checkout (conj ui :checkout))

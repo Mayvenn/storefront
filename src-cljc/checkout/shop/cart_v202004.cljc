@@ -301,7 +301,7 @@
            price                (or (:sku/price service-line-item)
                                     (:unit-price service-line-item))
            removing?            (get delete-line-item-requests variant-id)
-           just-added-to-order? (some #(= sku-id %) (get-in app-state keypaths/cart-recently-added-skus))]]
+           just-added-to-order? (some #(= sku-id %) (set (keys (get-in app-state keypaths/cart-recently-added-skus-qtys))))]]
       {:react/key                                sku-id
        :cart-item-title/primary                  (or (:product-title service-line-item)
                                                      (:product-name service-line-item))
@@ -336,7 +336,7 @@
                           qty-adjustment-args {:variant (select-keys line-item [:id :sku])}
                           removing?            (get delete-line-item-requests variant-id)
                           updating?            (get update-line-item-requests sku-id)
-                          just-added-to-order? (some #(= sku-id %) (get-in app-state keypaths/cart-recently-added-skus))]]
+                          just-added-to-order? (some #(= sku-id %) (set (keys (get-in app-state keypaths/cart-recently-added-skus-qtys))))]]
                      {:react/key                                      (str sku-id "-" (:quantity line-item))
                       :cart-item-title/id                             (str "line-item-title-" sku-id)
                       :cart-item-title/primary                        (or (:product-title line-item)
@@ -585,7 +585,7 @@
         disabled-reasons                (remove nil? [(when required-stylist-not-selected?
                                                         [:div.m1 "Please pick your stylist"])])
         skus                            (get-in data keypaths/v2-skus)
-        recently-added-sku-ids          (get-in data keypaths/cart-recently-added-skus)
+        recently-added-sku-ids          (set (keys (get-in data keypaths/cart-recently-added-skus-qtys)))
         last-texture-added              (->> recently-added-sku-ids
                                              last
                                              (get skus)
