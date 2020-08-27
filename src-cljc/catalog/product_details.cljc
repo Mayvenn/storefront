@@ -664,17 +664,16 @@
          [{:how-it-works.step.title/primary   "01"
            :how-it-works.step.title/secondary "Choose your service & stylist"
            :how-it-works.step.body/primary    (str
-                                               "First, select the Wig Maintenance service and choose your stylist."
+                                               "First, select the Wig Maintenance service and choose your stylist. "
                                                "If you don’t have one yet, search for a talented stylist near you or contact our Concierge Team for support.")}
           {:how-it-works.step.title/primary   "02"
            :how-it-works.step.title/secondary "Drop off your wig"
-           :how-it-works.step.body/primary    (str
-                                               "Now that you have your stylist, the next step is to drop off your wig with your Mayvenn Stylist.")}
+           :how-it-works.step.body/primary    "Now that you have your stylist, the next step is to drop off your wig with your Mayvenn Stylist."}
           {:how-it-works.step.title/primary   "03"
            :how-it-works.step.title/secondary "Wig pickup"
            :how-it-works.step.body/primary    (str
                                                "Once your stylist is finished with the wig maintenance service, they will contact you to pick up your wig. "
-                                               "Have your prepaid voucher ready for quick & easy payment! ")}]}})
+                                               "Have your prepaid voucher ready for quick & easy payment!")}]}})
 
      (when wig?
        {:browse-stylists-banner/title "Buy any Lace Front or 360 Wig and we'll pay for your wig customization"})
