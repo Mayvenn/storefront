@@ -27,7 +27,7 @@
      :stylist-search-filter/checked?  checked?}))
 
 (defn select-sorted
-  [{:keys [selector/essentials]} sort-fn db]
+  [essentials sort-fn db]
   (->> db
        (selector/match-all {:selector/strict? true}
                            essentials)
@@ -57,7 +57,7 @@
       {:stylist-search-filter-section/id      "add-on-services"
        :stylist-search-filter-section/title   "Add-on Services"
        :stylist-search-filter-section/filters (->> all-skus
-                                                   (select-sorted  services/a-la-carte :legacy/variant-id)
+                                                   (select-sorted services/a-la-carte :legacy/variant-id)
                                                    (mapv (juxt :sku/name :catalog/sku-id :sku/price))
                                                    (mapv (partial specialty->filter selected-filters)))}]}))
 
