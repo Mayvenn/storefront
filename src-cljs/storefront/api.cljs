@@ -961,7 +961,7 @@
                                               :look-id        look-id
                                               :shared-cart-id shared-cart-id
                                               :navigate       (if cart-interstitial?
-                                                                events/added-to-cart
+                                                                events/navigate-added-to-cart
                                                                 events/navigate-cart)})
     :error-handler #(do
                       ;; Order is important here, for correct display of errors
