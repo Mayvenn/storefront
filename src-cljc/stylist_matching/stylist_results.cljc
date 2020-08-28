@@ -68,7 +68,7 @@
      (do
        (when (not= (get-in prev-app-state storefront.keypaths/navigation-event)
                    (get-in app-state storefront.keypaths/navigation-event))
-         (messages/handle-message events/stylist-search-filter-menu-close))
+         (messages/handle-message events/initialize-stylist-search-filters))
        (api/get-products
         (get-in app-state storefront.keypaths/api-cache)
         (merge-with clojure.set/union
@@ -78,13 +78,6 @@
        (when (some? query-params)
          (google-maps/insert)))))
 
-(defmethod transitions/transition-state events/navigate-adventure-stylist-results
-  [_ _ _ app-state]
-  (let [[prev-nav-event] (:navigation-message (first (get-in app-state storefront.keypaths/navigation-undo-stack)))
-        current-nav-message (get-in app-state storefront.keypaths/navigation-event)]
-    (if (not= prev-nav-event current-nav-message)
-      (assoc-in app-state stylist-directory.keypaths/stylist-search-show-filters? nil)
-      app-state)))
 ;;  Navigating to the results page causes the effect of searching for stylists
 ;;
 ;;  This allows:

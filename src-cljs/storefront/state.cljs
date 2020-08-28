@@ -142,16 +142,16 @@
      :experiments {:bucketed #{}
                    :manual   config/manual-experiments}
 
-     :ui {:api-requests                   []
-          :carousel                       {:certified-stylist-index 0}
-          :navigation-message             [events/navigate-home {}]
-          :return-navigation-message      [events/navigate-home {}]
-          :errors                         {}
-          :browse-variant-quantity        1
-          :menu-expanded                  false
-          :account-menu-expanded          false
-          :store-info-expanded            false
-          :popup                          nil
+     :ui {:api-requests              []
+          :carousel                  {:certified-stylist-index 0}
+          :navigation-message        [events/navigate-home {}]
+          :return-navigation-message [events/navigate-home {}]
+          :errors                    {}
+          :browse-variant-quantity   1
+          :menu-expanded             false
+          :account-menu-expanded     false
+          :store-info-expanded       false
+          :popup                     nil
 
           :product-details {:information-tab :hair-info}
 
@@ -160,30 +160,31 @@
           :phone-capture-session  (cookie-jar/get-phone-capture-session cookie)
           :dismissed-free-install (cookie-jar/get-dismissed-free-install cookie)
 
-          :sign-in                                {:email    ""
-                                                   :password ""}
-          :sign-up                                {:email    ""
-                                                   :password ""}
-          :forgot-password                        {:email ""}
-          :reset-password                         {:password ""
-                                                   :token    ""}
-          :manage-account                         {:email    ""
-                                                   :password ""}
-          :cart                                   initial-cart-state
-          :checkout                               initial-checkout-state
-          :flash                                  {:now   {:success {:message nil}
-                                                           :failure {:message nil}}
-                                                   :later {:success {:message nil}
-                                                           :failure {:message nil}}}
-          :review-components-count                0
-          :static                                 nil
-          :loaded                                 {:reviews  false
-                                                   :stripe   false
-                                                   :facebook false
-                                                   :places   false}
-          :confetti-mode                          "ready"
-          :promo-code-entry-open?                 false
-          :stylist-directory                      {:stylist-search {:selected-filters #{}}}}
+          :sign-in                 {:email    ""
+                                    :password ""}
+          :sign-up                 {:email    ""
+                                    :password ""}
+          :forgot-password         {:email ""}
+          :reset-password          {:password ""
+                                    :token    ""}
+          :manage-account          {:email    ""
+                                    :password ""}
+          :cart                    initial-cart-state
+          :checkout                initial-checkout-state
+          :flash                   {:now   {:success {:message nil}
+                                            :failure {:message nil}}
+                                    :later {:success {:message nil}
+                                            :failure {:message nil}}}
+          :review-components-count 0
+          :static                  nil
+          :loaded                  {:reviews  false
+                                    :stripe   false
+                                    :facebook false
+                                    :places   false}
+          :confetti-mode           "ready"
+          :promo-code-entry-open?  false
+          :stylist-directory       {:stylist-search {:expanded-filter-sections #{}
+                                                     :selected-filters         #{}}}}
 
      :v2 {:ui {:dashboard initial-dashboard-state}
           :db {}}}))

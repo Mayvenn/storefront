@@ -4,15 +4,6 @@
             [storefront.components.svg :as svg]
             [storefront.css-transitions :as css-transitions]))
 
-(defn- slide-down [content]
-  (css-transitions/transition-group
-   {:classNames "slide-down"
-    :in         (boolean content)
-    :timeout    300}
-   (if content
-     ^:inline content
-     (component/html [:div]))))
-
 (defn section
   "A data constructor for convenience"
   [title & paragraphs]
@@ -33,7 +24,7 @@
       ^:inline (svg/dropdown-arrow {:class  "fill-black"
                                     :height "16px"
                                     :width  "16px"})]]
-    ^:inline (slide-down
+    ^:inline (css-transitions/slide-down
               (when (or expanded? #?(:clj true)) ;; always show for server-side rendered html
                 (component/html
                  [:div.mr8
