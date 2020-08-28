@@ -44,7 +44,7 @@
      :stylist-search-filters/sections
      [(let [section-id "free-mayvenn-services"
             open?      (contains? expanded-filter-sections section-id)]
-        {:stylist-search-filter-section/id           section-id
+        {:stylist-search-filter-section/id           (str section-id "-" (if open? "open" "closed"))
          :stylist-search-filter-section/title        "Free Mayvenn Services"
          :stylist-search-filter-section/title-action [events/control-toggle-stylist-search-filter-section
                                                       {:previously-opened? open?
@@ -59,7 +59,7 @@
                                                           (mapv (partial specialty->filter selected-filters)))})
       (let [section-id "a-la-carte-services"
             open?      (contains? expanded-filter-sections section-id)]
-        {:stylist-search-filter-section/id           section-id
+        {:stylist-search-filter-section/id           (str section-id "-" (if open? "open" "closed"))
          :stylist-search-filter-section/title        "À la carte Services"
          :stylist-search-filter-section/title-action [events/control-toggle-stylist-search-filter-section
                                                       {:previously-opened? open?
@@ -71,7 +71,7 @@
                                                           (mapv (partial specialty->filter selected-filters)))})
       (let [section-id "add-on-services"
             open?      (contains? expanded-filter-sections section-id)]
-        {:stylist-search-filter-section/id           section-id
+        {:stylist-search-filter-section/id           (str section-id "-" (if open? "open" "closed"))
          :stylist-search-filter-section/title        "Add-on Services"
          :stylist-search-filter-section/title-action [events/control-toggle-stylist-search-filter-section
                                                       {:previously-opened? open?
@@ -87,7 +87,8 @@
   [:div.flex.flex-column.px5.ptj1.left-align
    {:key id}
    [:a.block.flex.justify-between.inherit-color.items-center
-    (apply utils/fake-href title-action)
+    (assoc (apply utils/fake-href title-action)
+           :data-test id)
     [:div.shout.title-2.proxima title]
     [:div.flex.items-center
      (when open? {:class "rotate-180 mrp2"})
