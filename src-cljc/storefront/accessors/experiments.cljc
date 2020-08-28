@@ -138,3 +138,7 @@
 (defn upsell-addons-opened?
   [data]
   (display-feature? data "upsell-addons-opened"))
+
+(defn cart-interstitial?
+  [data]
+  (display-feature? data "cart-interstitial"))

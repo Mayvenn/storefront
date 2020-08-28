@@ -44,6 +44,7 @@
 (defpath navigate-reset-password)
 (defpath navigate-force-set-password)
 (defpath navigate-cart)
+(defpath navigate-added-to-cart)
 (defpath navigate-shared-cart)
 (defpath navigate-store-gallery)
 (defpath navigate-gallery-edit)

@@ -7,6 +7,7 @@
             [spice.selector :as selector]
             [storefront.accessors.images :as images]
             [storefront.accessors.contentful :as contentful]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.line-items :as line-items]
             [storefront.accessors.products :as products]
             [storefront.components.money-formatters :as mf]
@@ -48,7 +49,8 @@
                               (get-in app-state keypaths/user-id)
                               (get-in app-state keypaths/user-token)
                               (get-in app-state keypaths/store-stylist-id)
-                              (get-in app-state keypaths/order-servicing-stylist-id)))
+                              (get-in app-state keypaths/order-servicing-stylist-id)
+                              (experiments/cart-interstitial? app-state)))
 
 (defn carousel [data imgs]
   (component/build carousel/component

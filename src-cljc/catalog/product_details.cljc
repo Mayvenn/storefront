@@ -1004,7 +1004,8 @@
 (defmethod effects/perform-effects events/add-sku-to-bag
   [dispatch event {:keys [sku quantity stay-on-page?] :as args} _ app-state]
   #?(:cljs
-     (let [nav-event (get-in app-state keypaths/navigation-event)]
+     (let [nav-event (get-in app-state keypaths/navigation-event)
+           cart-interstitial? (experiments/cart-interstitial? app-state)]
        (api/add-sku-to-bag
         (get-in app-state keypaths/session-id)
         {:sku                sku
@@ -1021,7 +1022,9 @@
                                      :quantity quantity
                                      :sku      sku})
            (when (not (or (= events/navigate-cart nav-event) stay-on-page?))
-             (history/enqueue-navigate events/navigate-cart)))))))
+             (history/enqueue-navigate (if cart-interstitial?
+                                         events/navigate-added-to-cart
+                                         events/navigate-cart))))))))
 
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
   [_ event {:keys [quantity sku]} app-state]
@@ -1057,16 +1060,19 @@
 (defmethod effects/perform-effects events/control-bulk-add-to-bag
   [_ _ {:keys [items]} _ app-state]
   #?(:cljs
-     (api/add-skus-to-bag (get-in app-state keypaths/session-id)
-                          {:number           (get-in app-state keypaths/order-number)
-                           :token            (get-in app-state keypaths/order-token)
-                           :stylist-id       (get-in app-state keypaths/store-stylist-id)
-                           :sku-id->quantity (into {}
-                                                   (mapv
-                                                    (fn [item]
-                                                      [(:catalog/sku-id (:sku item)) (:quantity item)])
-                                                    items))}
-                          (fn handler [{:keys [order]}]
-                            (messages/handle-message events/api-success-bulk-add-to-bag {:order order
-                                                                                         :items items})
-                            (history/enqueue-navigate events/navigate-cart)))))
+     (let [cart-interstitial? (experiments/cart-interstitial? app-state)]
+       (api/add-skus-to-bag (get-in app-state keypaths/session-id)
+                            {:number           (get-in app-state keypaths/order-number)
+                             :token            (get-in app-state keypaths/order-token)
+                             :stylist-id       (get-in app-state keypaths/store-stylist-id)
+                             :sku-id->quantity (into {}
+                                                     (mapv
+                                                      (fn [item]
+                                                        [(:catalog/sku-id (:sku item)) (:quantity item)])
+                                                      items))}
+                            (fn handler [{:keys [order]}]
+                              (messages/handle-message events/api-success-bulk-add-to-bag {:order order
+                                                                                           :items items})
+                              (history/enqueue-navigate (if cart-interstitial?
+                                                          events/navigate-added-to-cart
+                                                          events/navigate-cart)))))))
