@@ -420,7 +420,7 @@
           pdp-product              (first pdp-products)
           related-addon-skus       (when (some #{"base"} (:service/type pdp-product))
                                      (selector/match-all {:selector/strict? true}
-                                                         (set (:hair/family (get pdp-skus (first (:selector/sku-ids pdp-product)))))
+                                                         {:hair/family (set (:hair/family (get pdp-skus (first (:selector/sku-ids pdp-product)))))}
                                                          addon-skus))
           {:keys [facets]}         (when-not (get-in-req-state req keypaths/v2-facets)
                                      (api/fetch-v2-facets storeback-config))]
