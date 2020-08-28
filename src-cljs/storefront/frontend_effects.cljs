@@ -673,8 +673,9 @@
     (when (-> order orders/service-line-items not-empty)
       (api/get-skus
        (get-in app-state keypaths/api-cache)
-       ;; NOTE: When the number of services in the catalog grows, rethink this query.
-       {:catalog/department "service"}
+       {:catalog/department                 "service"
+        :service/type                       "base"
+        :promo.mayvenn-install/discountable true}
        #(messages/handle-message events/api-success-get-skus %)))))
 
 (defmethod effects/perform-effects events/clear-order [_ _ _ _ app-state]
