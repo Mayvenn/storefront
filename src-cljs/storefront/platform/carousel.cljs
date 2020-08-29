@@ -37,7 +37,7 @@
           (component/html
            (let [{:keys [settings slides]}              (component/get-opts this)
                  {:keys [controls] :or {controls true}} settings]
-             [:div.relative
+             [:div.relative.stacking-context
               (when controls
                 [:div.z2.carousel-prev {:style {:height "50px" :width "50px"}
                                         :ref   (component/use-ref this "prev-button")}])
