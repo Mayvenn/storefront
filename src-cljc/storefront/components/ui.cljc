@@ -157,6 +157,8 @@
         :disabled  (boolean disabled?)}]))))
 
 (def hyphen "‐") ; &hyphen;
+(def nb-hyphen "‑") ; nonbreaking!
+
 (def shy (component/html [:span {:dangerouslySetInnerHTML {:__html "&shy;"}}]))
 (def wbr (component/html [:wbr]))
 

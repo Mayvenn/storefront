@@ -840,6 +840,8 @@
                                       :body  "Our human hair extensions are a must-have for creating the hair you’ve always wanted. Our high-quality extensions are easy to install and available in many textures like Straight, Yaki Straight, Kinky Straight, Body Wave, Loose Wave, Water Wave, Deep Wave, and Curly, plus multiple lengths for all kinds of hairstyles."}]}
     clip-in-tape-in-templates)])
 
+(def nb-hyphen "‑")
+
 (def standalone-services
   [{:catalog/category-id                "35"
     :catalog/department                 #{"service"}
@@ -862,7 +864,7 @@
     :subcategory/image-id               "ccd19d57-d6e9-42a3-bf11-bfe077f15eab"
     :seo/sitemap                        true
 
-    :how-it-works/title-primary   "Your hair deserves a Mayvenn–Certified Stylist."
+    :how-it-works/title-primary   (str "Your hair deserves a Mayvenn" nb-hyphen "Certified Stylist.")
     :how-it-works/title-secondary "Here’s how it works."
     :how-it-works/step-elements
     [{:how-it-works.step.title/primary   "01"
@@ -871,7 +873,7 @@
       (str "Choose the service you’d like to book from our full list of à la carte service offerings. "
            "Next, you’ll see which stylists are nearby and decide who you want to book.")}
      {:how-it-works.step.title/primary   "02"
-      :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
+      :how-it-works.step.title/secondary (str "Select a Mayvenn" nb-hyphen "Certified stylist")
       :how-it-works.step.body/primary
       (str "We've hand-picked thousands of talented stylists around the country. "
            "Browse the stylists in your area to find your perfect match.")}
