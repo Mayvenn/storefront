@@ -30,9 +30,9 @@
 
 (c/defcomponent how-it-works-step-organism
   [step _ {:keys [id]}]
-  [:div.py5
+  [:div.py5.col-10.mx-auto
    {:key id}
-   [:div.col-8.mx-auto
+   [:div
     (how-it-works-step-title-molecule step)]
    [:div.pt1
     (how-it-works-step-body-molecule step)]])
@@ -53,7 +53,7 @@
 (c/defcomponent organism
   [data _ _]
   (when-let [how-it-works (:how-it-works data)]
-    [:div.center
+    [:div.center.mbj3.col-5-on-dt.mx-auto
      (how-it-works-title-molecule how-it-works)
      how-it-works-straight-line-atom
      (elements how-it-works-step-organism
