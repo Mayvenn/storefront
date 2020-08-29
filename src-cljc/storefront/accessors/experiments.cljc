@@ -1,9 +1,5 @@
 (ns storefront.accessors.experiments
-  (:require [storefront.keypaths :as keypaths]
-            [spice.date :as date]
-            [catalog.categories :as categories]
-            [storefront.accessors.orders :as orders]
-            [storefront.accessors.line-items :as line-items]))
+  (:require [storefront.keypaths :as keypaths]))
 
 #_(defn bucketing-example
     [data]
@@ -57,18 +53,9 @@
 (defn ^:private display-feature? [data feature]
   (contains? (set (get-in data keypaths/features)) feature))
 
-(defn ^:private enabled?
-  [feature data]
-  (display-feature? data feature))
-
 (defn aladdin-experience?
   [data]
   (= "aladdin" (get-in data keypaths/store-experience)))
-
-(defn v2-homepage? [data]
-  (->> (get-in data keypaths/store-features)
-       (some #{"aladdin-homepage"})
-       boolean))
 
 (defn dashboard-with-vouchers? [data]
   (= "aladdin" (get-in data keypaths/user-stylist-experience)))
