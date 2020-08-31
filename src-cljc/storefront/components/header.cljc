@@ -18,6 +18,7 @@
             [ui.promo-banner :as promo-banner]))
 
 (def blog-url "https://shop.mayvenn.com/blog/")
+(def wigs-101-url "https://shop.mayvenn.com/info/wigs-101-guide")
 
 (def hamburger
   (c/html
@@ -411,6 +412,9 @@
                                    {:slide-out-nav-content-item/target  [events/navigate-content-our-hair]
                                     :slide-out-nav-content-item/id      "content-our-hair"
                                     :slide-out-nav-content-item/primary "Our Hair"}
+                                   {:slide-out-nav-content-item/target  {:href wigs-101-url}
+                                    :slide-out-nav-content-item/id      "content-wigs-101"
+                                    :slide-out-nav-content-item/primary "Wigs 101"}
                                    {:slide-out-nav-content-item/target  {:href blog-url}
                                     :slide-out-nav-content-item/id      "content-blog"
                                     :slide-out-nav-content-item/primary "Blog"}
@@ -519,6 +523,9 @@
                              {:header-menu-item/navigation-target [events/navigate-content-our-hair]
                               :header-menu-item/id                "desktop-our-hair"
                               :header-menu-item/content           "Our hair"}
+                             {:header-menu-item/href    wigs-101-url
+                              :header-menu-item/id      "desktop-wigs-101"
+                              :header-menu-item/content "Wigs 101"}
                              {:header-menu-item/href    blog-url
                               :header-menu-item/id      "desktop-blog"
                               :header-menu-item/content "Blog"}]))}))
