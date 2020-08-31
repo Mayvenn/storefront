@@ -147,14 +147,9 @@
 
 (defn ^:private standalone-service-line-items-query
   [app-state]
-  (let [skus                          (get-in app-state keypaths/v2-skus)
-        images                        (get-in app-state keypaths/v2-images)
-        recently-added-skus->qtys                       {"BNS24"        2
-                                                         "PNS360FLC14"  1
-                                                         "SRV-3BI-000"  1
-                                                         "SRV-TKDU-000" 1
-                                                         "SRV-WGM-000"  1}
-        #_(get-in data storefront.keypaths/cart-recently-added-skus-qtys)
+  (let [skus                                 (get-in app-state keypaths/v2-skus)
+        images                               (get-in app-state keypaths/v2-images)
+        recently-added-skus->qtys            (get-in app-state storefront.keypaths/cart-recently-added-skus-qtys)
         recent-standalone-service-line-items (->> keypaths/order
                                                   (get-in app-state)
                                                   orders/service-line-items
@@ -209,18 +204,9 @@
   [data]
   (let [order                                           (get-in data keypaths/order)
         {servicing-stylist :services/stylist}           (api.orders/services data order)
-        {:keys                    [service-item]
-         free-service-discounted? :free-mayvenn-service/discounted?
-         :as                      free-mayvenn-service} (api.orders/free-mayvenn-service servicing-stylist order)
-        wig-customization?                              (orders/wig-customization? (get-in data keypaths/order))
+        free-mayvenn-service                            (api.orders/free-mayvenn-service servicing-stylist order)
         skus                                            (get-in data keypaths/v2-skus)
-        recently-added-skus->qtys                       {"BNS24"        2
-                                                         "PNS360FLC14"  1
-                                                         "SRV-3BI-000"  1
-                                                         "SRV-TKDU-000" 1
-                                                         "SRV-WGM-000"  1}
-        #_                                              (get-in data storefront.keypaths/cart-recently-added-skus-qtys)
-        images-catalog                                  (get-in data storefront.keypaths/v2-images)
+        recently-added-skus->qtys                       (get-in data storefront.keypaths/cart-recently-added-skus-qtys)
         products                                        (get-in data keypaths/v2-products)
         facets                                          (get-in data keypaths/v2-facets)
         recent-line-items                               (->> order
@@ -262,7 +248,7 @@
                                         (standalone-service-line-items-query data))
          :return-link/back          (first (get-in data keypaths/navigation-undo-stack))
          :return-link/copy          "Continue Shopping"
-         :return-link/event-message [events/navigate-category {:catalog/category-id "23", 
+         :return-link/event-message [events/navigate-category {:catalog/category-id "23",
                                                                :page/slug "mayvenn-install"}]
          :return-link/id "continue-shopping-link"})))
 
