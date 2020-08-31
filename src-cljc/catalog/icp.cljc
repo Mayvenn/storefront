@@ -262,8 +262,7 @@
        [:div.stroke-s-color.center
         (svg/straight-line {:width  "1px"
                             :height "42px"})]
-       [:span.mb10.mt8
-        (component/build category-filters/organism category-filters {})])
+       (component/build category-filters/organism category-filters {}))
      (component/build service-card-listing/organism service-card-listing {})
      (component/build product-card-listing/organism product-card-listing {})]
     (when content-box
