@@ -191,29 +191,25 @@
           (> order-total store-credit-used)) (assoc :stripe {})
       (can-use-store-credit? order user)     (assoc :store-credit {}))))
 
-(defn skus->qtys<- [order]
+(defn ^:private sku-ids->quantities<- [order]
   (->> order
        product-and-service-items
        (map (juxt :sku :quantity))
        (into {})))
 
-(defn recently-added-skus->qtys
-  "Compares two orders and returns a {sku-id qty} map of what was added."
+(defn recently-added-sku-ids->quantities
+  "Compares two orders and returns a {sku-id quantity} map of what was added."
   [previous-order new-order]
-  (let [prev-sku-id->quantity (skus->qtys<- previous-order)
-        new-sku-id->quantity       (->> prev-sku-id->quantity
-                                        ;; Must ensure every key is there
-                                        (map (fn [[k _]] [k 0]))
-                                        (into {})
-                                        (merge (skus->qtys<- new-order)))]
-    ;; If the order number's changed (i.e. order from a shared cart), we treat all skus as new
-    (if (= (:number new-order)
-           (:number previous-order))
-      (->> prev-sku-id->quantity
-           (merge-with - new-sku-id->quantity)
+  (if (= (:number new-order)
+         (:number previous-order))
+    (let [prev-sku-id->quantity (sku-ids->quantities<- previous-order)
+          new-sku-id->quantity  (merge (sku-ids->quantities<- new-order)
+                                       (zipmap (keys prev-sku-id->quantity) (repeat 0)))]
+      (->> (merge-with - new-sku-id->quantity prev-sku-id->quantity)
            (filter (fn [[_ v]] (pos? v)))
-           (into {}))
-      new-sku-id->quantity)))
+           (into {})))
+    ;; If the order number's changed (i.e. order from a shared cart), we treat all sku-ids as new
+    (sku-ids->quantities<- new-order)))
 
 (defn first-name-plus-last-name-initial [{:as order :keys [billing-address shipping-address]}]
   (when (seq order)

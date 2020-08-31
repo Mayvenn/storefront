@@ -136,7 +136,7 @@
 
 (defn clear-recently-added-skus [app-state nav-event]
   (if (not= nav-event events/navigate-cart)
-    (assoc-in app-state keypaths/cart-recently-added-skus-qtys {})
+    (assoc-in app-state keypaths/cart-recently-added-skus {})
     app-state))
 
 (defn clear-freeinstall-just-added [app-state nav-event]
@@ -396,10 +396,10 @@
 
       (cond-> (-> app-state
                   (assoc-in keypaths/order order)
-                  (assoc-in keypaths/cart-recently-added-skus-qtys
+                  (assoc-in keypaths/cart-recently-added-skus
                             (if (= order previous-order)
-                              (get-in app-state keypaths/cart-recently-added-skus-qtys)
-                              (orders/recently-added-skus->qtys previous-order order)))
+                              (get-in app-state keypaths/cart-recently-added-skus)
+                              (orders/recently-added-sku-ids->quantities previous-order order)))
                   (assoc-in keypaths/cart-freeinstall-just-added? freeinstall-just-added?)
                   (update-in keypaths/checkout-billing-address merge (:billing-address order))
                   (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
@@ -515,7 +515,7 @@
 (defmethod transition-state events/api-success-update-order [_ event {:keys [order]} app-state]
   (let [previous-order (get-in app-state keypaths/order)]
     (-> app-state
-        (assoc-in keypaths/cart-recently-added-skus-qtys (orders/recently-added-skus->qtys previous-order order)))))
+        (assoc-in keypaths/cart-recently-added-skus (orders/recently-added-sku-ids->quantities previous-order order)))))
 
 (defmethod transition-state events/order-completed [_ event order app-state]
   (-> app-state

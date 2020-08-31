@@ -149,12 +149,12 @@
   [app-state]
   (let [skus                                 (get-in app-state keypaths/v2-skus)
         images                               (get-in app-state keypaths/v2-images)
-        recently-added-skus->qtys            (get-in app-state storefront.keypaths/cart-recently-added-skus-qtys)
+        recently-added-sku-ids->quantities            (get-in app-state storefront.keypaths/cart-recently-added-skus)
         recent-standalone-service-line-items (->> keypaths/order
                                                   (get-in app-state)
                                                   orders/service-line-items
                                                   (filter line-items/standalone-service?)
-                                                  (filter (fn [{:keys [sku]}] (contains? recently-added-skus->qtys sku))))]
+                                                  (filter (fn [{:keys [sku]}] (contains? recently-added-sku-ids->quantities sku))))]
     (for [{sku-id :sku :as service-line-item} recent-standalone-service-line-items
           :let
           [sku   (get skus sku-id)
@@ -206,13 +206,13 @@
         {servicing-stylist :services/stylist}           (api.orders/services data order)
         free-mayvenn-service                            (api.orders/free-mayvenn-service servicing-stylist order)
         skus                                            (get-in data keypaths/v2-skus)
-        recently-added-skus->qtys                       (get-in data storefront.keypaths/cart-recently-added-skus-qtys)
+        recently-added-sku-ids->quantities              (get-in data storefront.keypaths/cart-recently-added-skus)
         products                                        (get-in data keypaths/v2-products)
         facets                                          (get-in data keypaths/v2-facets)
         recent-line-items                               (->> order
                                                              orders/product-and-service-items
-                                                             (filter (fn [{:keys [sku]}] (contains? recently-added-skus->qtys sku)))
-                                                             (map (fn [line-item] (assoc line-item :quantity (recently-added-skus->qtys (:sku line-item))))))
+                                                             (filter (fn [{:keys [sku]}] (contains? recently-added-sku-ids->quantities sku)))
+                                                             (map (fn [line-item] (assoc line-item :quantity (recently-added-sku-ids->quantities (:sku line-item))))))
         ;; Start here on Monday
 
         ;; Idea is to put the addons on the base line items and use that to render the base services with addons.
@@ -243,7 +243,7 @@
          :payment                      (checkout-credit-card/query data)
          :cart-items                   (cart-items-query data physical-line-items skus)
          :service-line-items           (concat
-                                        (when (contains? recently-added-skus->qtys (:sku (:free-mayvenn-service/service-item free-mayvenn-service)))
+                                        (when (contains? recently-added-sku-ids->quantities (:sku (:free-mayvenn-service/service-item free-mayvenn-service)))
                                           (free-service-line-items-query data free-mayvenn-service addon-service-skus))
                                         (standalone-service-line-items-query data))
          :return-link/back          (first (get-in data keypaths/navigation-undo-stack))
