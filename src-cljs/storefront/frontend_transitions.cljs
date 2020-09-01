@@ -134,11 +134,6 @@
              #(or (not-empty %1) %2)
              (get-in app-state keypaths/order-user-email)))
 
-(defn clear-recently-added-skus [app-state nav-event]
-  (if (not= nav-event events/navigate-cart)
-    (assoc-in app-state keypaths/cart-recently-added-skus {})
-    app-state))
-
 (def ^:private v2-slug->video
   {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}
    "free-install"   {:youtube-id "cWkSO_2nnD4"}})
@@ -181,7 +176,6 @@
         (add-affiliate-stylist-id args)
         clear-flash
         clear-completed-order
-        (clear-recently-added-skus event)
         (assoc-in keypaths/flyout-stuck-open? false)
         (assoc-in keypaths/flash-now-success (get-in app-state keypaths/flash-later-success))
         (assoc-in keypaths/flash-now-failure (get-in app-state keypaths/flash-later-failure))
