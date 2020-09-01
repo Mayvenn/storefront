@@ -373,23 +373,21 @@
       (assoc-in keypaths/stylist-referrals [state/empty-referral])
       (assoc-in keypaths/popup :refer-stylist-thanks)))
 
-(defmethod transition-state events/save-order [_ event {:keys [order]} app-state]
+(defmethod transition-state events/save-order
+  [_ event {:keys [order]} app-state]
   (if (orders/incomplete? order)
-    (let [previous-order            (get-in app-state keypaths/order)
-          no-servicing-stylist?     (nil? (:servicing-stylist-id order))]
-
+    (let [previous-order        (get-in app-state keypaths/order)
+          no-servicing-stylist? (nil? (:servicing-stylist-id order))]
       (cond-> (-> app-state
                   (assoc-in keypaths/order order)
-                  (assoc-in keypaths/cart-recently-added-skus
-                            (if (= order previous-order)
-                              (get-in app-state keypaths/cart-recently-added-skus)
-                              (orders/recently-added-sku-ids->quantities previous-order order)))
+                  (assoc-in keypaths/cart-recently-added-skus (orders/recently-added-sku-ids->quantities previous-order order))
                   (update-in keypaths/checkout-billing-address merge (:billing-address order))
                   (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
                   (assoc-in keypaths/checkout-selected-shipping-method
                             (merge (first (get-in app-state keypaths/shipping-methods))
                                    (orders/shipping-item order)))
                   prefill-guest-email-address)
+
         no-servicing-stylist?
         (assoc-in adventure.keypaths/adventure-servicing-stylist nil)))
     (assoc-in app-state keypaths/order nil)))

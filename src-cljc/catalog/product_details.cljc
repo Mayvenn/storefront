@@ -1002,10 +1002,11 @@
          (messages/handle-message events/add-sku-to-bag {:sku sku :quantity quantity})))))
 
 (defmethod effects/perform-effects events/add-sku-to-bag
-  [dispatch event {:keys [sku quantity stay-on-page?] :as args} _ app-state]
+  [dispatch event {:keys [sku quantity stay-on-page? service-swap?] :as args} _ app-state]
   #?(:cljs
      (let [nav-event          (get-in app-state keypaths/navigation-event)
            cart-interstitial? (and
+                               (not service-swap?)
                                (= :shop (sites/determine-site app-state))
                                (experiments/cart-interstitial? app-state))]
        (api/add-sku-to-bag
@@ -1020,9 +1021,9 @@
          :heat-feature-flags (get-in app-state keypaths/features)}
         #(do
            (messages/handle-message events/api-success-add-sku-to-bag
-                                    {:order    %
-                                     :quantity quantity
-                                     :sku      sku})
+                                    {:order         %
+                                     :quantity      quantity
+                                     :sku           sku})
            (when (not (or (= events/navigate-cart nav-event) stay-on-page?))
              (history/enqueue-navigate (if cart-interstitial?
                                          events/navigate-added-to-cart

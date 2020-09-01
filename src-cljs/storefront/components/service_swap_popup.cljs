@@ -76,6 +76,7 @@
   (let [stay-on-page? (= events/navigate-category (get-in app-state storefront.keypaths/navigation-event))]
     (messages/handle-message events/add-sku-to-bag {:sku           (get-in previous-app-state catalog.keypaths/sku-intended-for-swap)
                                                     :stay-on-page? stay-on-page?
+                                                    :service-swap? true
                                                     :quantity      1})
     (messages/handle-message events/popup-hide)))
 
