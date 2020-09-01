@@ -30,14 +30,14 @@
 (defcomponent promotion-helper-component
   [{:promotion-helper/keys [id] :as data} _ _]
   (when id
-    [:div
+    [:div.p4.stretch
      [:div.mt2.canela.title-3.center "FREE Mayvenn Service Tracker"]
      (elements drawer-contents/drawer-contents-condition-organism data :promotion-helper.ui.drawer-contents/conditions)]))
 
 (defcomponent cta
   [{:cta/keys [primary id target label]} _ _]
   (when id
-    [:div.px3.center
+    [:div.px3.center.mt3
      (when primary [:div.mb1 primary])
      (ui/button-medium-primary
       (assoc (apply utils/route-to target)
@@ -47,7 +47,7 @@
 (defcomponent stylist-helper
   [{:stylist-helper/keys [id target]} _ _]
   (when id
-    [:div
+    [:div.p4.stretch
      [:div.canela.title-3.center "No Stylist Selected"]
      [:div.content-3
       "Click below to find your licensed" [:br]
@@ -77,7 +77,6 @@
        [:div.mt3
         [:div
          {:data-test "cart-interstitial-line-items"}
-
          (for [[index cart-item] (map-indexed vector cart-items)
                :let              [react-key (:react/key cart-item)]
                :when             react-key]
@@ -90,10 +89,9 @@
             (component/build cart-item-v202004/organism {:cart-item cart-item}
                              (component/component-id (str index "-cart-item-" react-key)))])]])
 
-
      (component/build cta queried-data nil)]
 
-    [:div.p4.bg-white.center.stretch
+    [:div.bg-white.center
      (component/build stylist-helper queried-data nil)
 
      (component/build promotion-helper-component queried-data nil)]]])
