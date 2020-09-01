@@ -126,9 +126,6 @@
 (defn query
   [data]
   (let [order                                 (get-in data keypaths/order)
-        {servicing-stylist :services/stylist} (api.orders/services data order)
-        free-mayvenn-service-line-item        (:free-mayvenn-service/service-item
-                                               (api.orders/free-mayvenn-service servicing-stylist order))
         sku-db                                (get-in data keypaths/v2-skus)
         images-db                             (get-in data keypaths/v2-images)
         recently-added-sku-ids->quantities    (get-in data storefront.keypaths/cart-recently-added-skus)
@@ -144,6 +141,11 @@
         physical-line-items           (->> recent-line-items
                                            (filter line-items/product?)
                                            (map (partial cart/add-product-title-and-color-to-line-item products facets)))
+        free-mayvenn-service-line-item (->> recent-line-items
+                                            (spice.selector/match-all {:selector/strict? true}
+                                                                      catalog.services/discountable)
+                                            first)
+
         a-la-carte-service-line-items (->> recent-line-items
                                            (spice.selector/match-all {:selector/strict? true}
                                                                      catalog.services/a-la-carte))
@@ -157,9 +159,12 @@
                                                                "Item") " Added")
      :cart-items                (cart-items-query sku-db images-db physical-line-items)
      :service-line-items        (concat
-                                 (free-service-line-item-query sku-db images-db
+                                 (free-service-line-item-query sku-db
+                                                               images-db
                                                                free-mayvenn-service-line-item addon-service-skus)
-                                 (a-la-carte-service-line-items-query sku-db images-db a-la-carte-service-line-items))
+                                 (a-la-carte-service-line-items-query sku-db
+                                                                      images-db
+                                                                      a-la-carte-service-line-items))
      :return-link/back          (first (get-in data keypaths/navigation-undo-stack))
      :return-link/copy          "Continue Shopping"
      :return-link/event-message [events/navigate-category {:catalog/category-id "23",
