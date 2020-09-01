@@ -203,8 +203,8 @@
   (if (= (:number new-order)
          (:number previous-order))
     (let [prev-sku-id->quantity (sku-ids->quantities<- previous-order)
-          new-sku-id->quantity  (merge (sku-ids->quantities<- new-order)
-                                       (zipmap (keys prev-sku-id->quantity) (repeat 0)))]
+          new-sku-id->quantity  (merge (zipmap (keys prev-sku-id->quantity) (repeat 0))
+                                       (sku-ids->quantities<- new-order))]
       (->> (merge-with - new-sku-id->quantity prev-sku-id->quantity)
            (filter (fn [[_ v]] (pos? v)))
            (into {})))
