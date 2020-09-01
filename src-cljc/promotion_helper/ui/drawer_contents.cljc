@@ -82,7 +82,7 @@
 
 (defcomponent drawer-contents-condition-organism
   [data _ _]
-  [:div.black.bg-white.my1.p3.flex.items-center
+  [:div.black.bg-white.my1.p3.flex.items-center.border.border-refresh-gray
    [:div.col-10.flex.flex-wrap
     (drawer-contents-condition-progress-molecule data)
     (drawer-contents-condition-title-molecule data)]

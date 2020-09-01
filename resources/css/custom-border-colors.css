@@ -5,6 +5,7 @@
 .border-p-color        { border-color: var(--p-color); }
 .border-s-color        { border-color: var(--s-color); }
 .border-cool-gray      { border-color: var(--cool-gray); }
+.border-refresh-gray   { border-color: var(--refresh-gray); }
 .border-pale-purple    { border-color: var(--pale-purple); }
 .border-warning-yellow { border-color: var(--warning-yellow); }
 
@@ -17,6 +18,7 @@
   --p-color:        #4427C1;
   --s-color:        #6BC8AD;
   --cool-gray:      #EEEFEF;
+  --refresh-gray:   #F5F5F5;
   --pale-purple:    #DEDBE5;
   --warning-yellow: #EDC203;
 }
