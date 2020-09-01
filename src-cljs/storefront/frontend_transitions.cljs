@@ -182,7 +182,6 @@
         clear-flash
         clear-completed-order
         (clear-recently-added-skus event)
-        (clear-freeinstall-just-added event)
         (assoc-in keypaths/flyout-stuck-open? false)
         (assoc-in keypaths/flash-now-success (get-in app-state keypaths/flash-later-success))
         (assoc-in keypaths/flash-now-failure (get-in app-state keypaths/flash-later-failure))
