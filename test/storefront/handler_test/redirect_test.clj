@@ -587,3 +587,10 @@
       (testing "on shop, à la carte PDP"
         (let [resp (handler (mock/request :get "https://shop.mayvenn.com/products/132-weave-maintenance-service"))]
           (is (= 200 (:status resp)) (pr-str resp)))))))
+
+(deftest redirects-cart-interstitial-to-cart
+  (with-services {}
+    (with-handler handler
+      (let [resp (handler (mock/request :get "https://shop.mayvenn.com/added-to-cart"))]
+        (is (= 302 (:status resp)) (pr-str resp))
+        (is (= "https://shop.mayvenn.com/cart" (get-in resp [:headers "Location"])))))))
