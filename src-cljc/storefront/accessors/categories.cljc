@@ -74,25 +74,33 @@
   (id->category (get-in data catalog.keypaths/category-id)
                 (get-in data keypaths/categories)))
 
-(defn canonical-category-id
+(defn canonical-category-data
   "With ICPs, the 'canonical category id' may be different from the ICP category
   id. E.g. 13-wigs with a selected family of 'lace-front-wigs' will have a
   canonical cateogry id of 24, or in other words, lace-front-wigs' category id."
-  [category-id categories nav-url]
-  (let [current-category  (id->category category-id categories)
-        query-selections  (:query nav-url)
-        query-map         #?(:clj (cemerick-url/query->map query-selections)
-                             :cljs query-selections)
-        single-categories (filter #(= 1 (count (:hair/family %))) categories)
-        family-selection  (some-> (get query-map "family")
-                                  (string/split #"~"))]
-
-    ;; NOTE: this cond will be built out to consider texture selections for the bundle category page in the future (and perhaps other ICPs)
+  [categories requested-category current-nav-url]
+  (let [family-selection (some-> current-nav-url
+                                 :query
+                                 #?(:clj cemerick-url/query->map
+                                    :cljs identity)
+                                 (get "family")
+                                 (string/split #"~"))]
     (cond
       (and family-selection (= (count family-selection) 1))
-      (:catalog/category-id (first (filter #(some (:hair/family %) family-selection) single-categories)))
+      (let [canonical-category (->> categories
+                                    (filter #(and (= 1 (count (:hair/family %)))
+                                                  (some (:hair/family %) family-selection)))
+                                    first)
+            canonical-texture  (some-> requested-category
+                                       :hair/texture
+                                       first)]
+        (merge {:category-id   (:catalog/category-id canonical-category)
+                :category-slug (:page/slug canonical-category)}
+               (when canonical-texture
+                 {:selections {:texture canonical-texture}})))
 
-      :else (:catalog/category-id current-category))))
+      :else {:category-id   (:catalog/category-id requested-category)
+             :category-slug (:page/slug requested-category)})))
 
 (defn wig-category? [category]
   (-> category

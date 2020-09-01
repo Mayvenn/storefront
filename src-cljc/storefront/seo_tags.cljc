@@ -114,10 +114,10 @@
 
 (defn category-tags [data]
   (let [categories            (get-in data keypaths/categories)
-        canonical-category-id (accessors.categories/canonical-category-id
-                               (get-in data catalog.keypaths/category-id)
-                               categories
-                               (get-in data keypaths/navigation-uri))
+        canonical-category-id (:category-id (accessors.categories/canonical-category-data
+                                             (get-in data catalog.keypaths/category-id)
+                                             categories
+                                             (get-in data keypaths/navigation-uri)))
         category              (accessors.categories/id->category canonical-category-id categories)
         allowed-query-params  (category->allowed-query-params category)
         facets                (facets/by-slug data)
@@ -155,36 +155,37 @@
      :og-description (:opengraph/description category)
      :no-index?      (not indexable?)}))
 
-(defn ^:private filter-and-sort-seo-query-params-for-category-page
-  [query category]
-  (let [allowed-query-params (category->allowed-query-params category)]
-    #?(:clj (-> query ;; string in clj
-                cemerick-url/query->map
-                (select-keys allowed-query-params)
-                accessors.categories/sort-query-params
-                uri/map->query
-                not-empty)
-       :cljs (-> query ;; map in cljs
-                 (select-keys allowed-query-params)
-                 accessors.categories/sort-query-params
-                 not-empty))))
+(defn ^:private derive-canonical-uri-query-params-category-pages
+  [uri data]
+  (let [categories             (get-in data keypaths/categories)
+        {:keys [category-slug
+                category-id
+                selections]}   (accessors.categories/canonical-category-data
+                                categories
+                                (-> data
+                                    (get-in catalog.keypaths/category-id)
+                                    (accessors.categories/id->category categories))
+                                (get-in data keypaths/navigation-uri))
+        category               (accessors.categories/id->category category-id categories)
+        permitted-query-params (category->allowed-query-params category)
+        query                  (some-> uri
+                                       :query
+                                       #?(:clj cemerick-url/query->map :cljs identity)
+                                       (select-keys permitted-query-params)
+                                       (merge selections)
+                                       accessors.categories/sort-query-params
+                                       #?(:clj uri/map->query :cljs identity)
+                                       not-empty)]
+    (-> uri
+        (assoc :path (str "/categories/" category-id "-" category-slug))
+        (assoc :query query))))
 
 ;; Figure out if this helps us determine if a category page is its own canonical for sitemap
 (defn ^:private derive-canonical-uri-query-params
   [uri data]
-  (let [nav-event             (get-in data keypaths/navigation-event)
-        categories            (get-in data keypaths/categories)
-        canonical-category-id (accessors.categories/canonical-category-id
-                               (get-in data catalog.keypaths/category-id)
-                               categories
-                               (get-in data keypaths/navigation-uri))
-        {:keys [page/slug]
-         :as   category}      (accessors.categories/id->category canonical-category-id categories)]
-    (if (= events/navigate-category nav-event)
-      (-> uri
-          (assoc :path (str "/categories/" canonical-category-id "-" slug))
-          (utils/?update :query filter-and-sort-seo-query-params-for-category-page category))
-      (assoc uri :query nil))))
+  (if (= events/navigate-category  (get-in data keypaths/navigation-event))
+    (derive-canonical-uri-query-params-category-pages uri data)
+    (assoc uri :query nil)))
 
 (defn canonical-uri
   [data]

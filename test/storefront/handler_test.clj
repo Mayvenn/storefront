@@ -551,20 +551,27 @@
           (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave?base-material=lace&origin=peruvian&foo=bar"
                           (mock/request :get)
                           handler)]
-            (is (= 200 (:status resp)))
-            (is (= "origin=peruvian" (response->canonical-uri-query-string resp)))))
+          (is (= 200 (:status resp)))
+          (is (= "origin=peruvian" (response->canonical-uri-query-string resp)))))
         (testing "with one query param"
           (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave?origin=peruvian"
                           (mock/request :get)
                           handler)]
-            (is (= 200 (:status resp)))
-            (is (= "origin=peruvian" (response->canonical-uri-query-string resp)))))
+          (is (= 200 (:status resp)))
+          (is (= "origin=peruvian" (response->canonical-uri-query-string resp)))))
         (testing "without query params"
           (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave"
                           (mock/request :get)
                           handler)]
             (is (= 200 (:status resp)))
-            (is (= nil (response->canonical-uri-query-string resp))))))
+            (is (= nil (response->canonical-uri-query-string resp)))))
+        (testing "with texture and family"
+          (let [resp (->> "https://shop.mayvenn.com/categories/2-virgin-straight?family=bundles"
+                          (mock/request :get)
+                          handler)]
+            (is (= 200 (:status resp)))
+            (is (= "/categories/27-human-hair-bundles" (-> resp :body parse-canonical-uri :path)))
+            (is (= "texture=straight" (response->canonical-uri-query-string resp))))))
       (testing "non category page"
         (testing "without query params"
           (let [resp (->> "https://shop.mayvenn.com"
