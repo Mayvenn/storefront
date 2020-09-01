@@ -139,11 +139,6 @@
     (assoc-in app-state keypaths/cart-recently-added-skus {})
     app-state))
 
-(defn clear-freeinstall-just-added [app-state nav-event]
-  (if (not= nav-event events/navigate-cart)
-    (assoc-in app-state keypaths/cart-freeinstall-just-added? false)
-    app-state))
-
 (def ^:private v2-slug->video
   {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}
    "free-install"   {:youtube-id "cWkSO_2nnD4"}})
@@ -388,10 +383,6 @@
 (defmethod transition-state events/save-order [_ event {:keys [order]} app-state]
   (if (orders/incomplete? order)
     (let [previous-order            (get-in app-state keypaths/order)
-          freeinstall-just-added?   (if (= order previous-order)
-                                      (get-in app-state keypaths/cart-freeinstall-just-added?)
-                                      (and (not (orders/discountable-services-on-order? previous-order))
-                                           (orders/discountable-services-on-order? order)))
           no-servicing-stylist?     (nil? (:servicing-stylist-id order))]
 
       (cond-> (-> app-state
@@ -400,7 +391,6 @@
                             (if (= order previous-order)
                               (get-in app-state keypaths/cart-recently-added-skus)
                               (orders/recently-added-sku-ids->quantities previous-order order)))
-                  (assoc-in keypaths/cart-freeinstall-just-added? freeinstall-just-added?)
                   (update-in keypaths/checkout-billing-address merge (:billing-address order))
                   (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
                   (assoc-in keypaths/checkout-selected-shipping-method

@@ -33,11 +33,6 @@
     }
 }
 
-.background-fade {
-    animation-name: lineItemGlow;
-    animation-duration: 1300ms;
-}
-
 .slide-down-enter {
     opacity: 0;
 }

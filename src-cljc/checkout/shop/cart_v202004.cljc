@@ -273,7 +273,6 @@
                        :cart-item-service-thumbnail/image-url (->> sku
                                                                       (images/skuer->image images-catalog "cart")
                                                                       :url)
-                       :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)
                        :cart-item-modify-button/id              "browse-addons"
                        :cart-item-modify-button/target          [events/control-show-addon-service-menu]
                        :cart-item-modify-button/tracking-target [events/browse-addon-service-menu-button-enabled]
@@ -300,8 +299,7 @@
           [sku                  (get skus sku-id)
            price                (or (:sku/price service-line-item)
                                     (:unit-price service-line-item))
-           removing?            (get delete-line-item-requests variant-id)
-           just-added-to-order? (some #(= sku-id %) (set (keys (get-in app-state keypaths/cart-recently-added-skus))))]]
+           removing?            (get delete-line-item-requests variant-id)]]
       {:react/key                                sku-id
        :cart-item-title/primary                  (or (:product-title service-line-item)
                                                      (:product-name service-line-item))
@@ -316,8 +314,7 @@
        :cart-item-remove-action/spinning?        removing?
        :cart-item-remove-action/target           [events/control-cart-remove (:id service-line-item)]
        :cart-item-service-thumbnail/id           sku-id
-       :cart-item-service-thumbnail/image-url    (->> sku (catalog-images/image images "cart") :ucare/id)
-       :cart-item-service-thumbnail/highlighted? just-added-to-order?})))
+       :cart-item-service-thumbnail/image-url    (->> sku (catalog-images/image images "cart") :ucare/id)})))
 
 (defn cart-items-query
   [app-state line-items skus]
@@ -335,8 +332,7 @@
                                                    (:unit-price line-item))
                           qty-adjustment-args {:variant (select-keys line-item [:id :sku])}
                           removing?            (get delete-line-item-requests variant-id)
-                          updating?            (get update-line-item-requests sku-id)
-                          just-added-to-order? (some #(= sku-id %) (set (keys (get-in app-state keypaths/cart-recently-added-skus))))]]
+                          updating?            (get update-line-item-requests sku-id)]]
                      {:react/key                                      (str sku-id "-" (:quantity line-item))
                       :cart-item-title/id                             (str "line-item-title-" sku-id)
                       :cart-item-title/primary                        (or (:product-title line-item)
@@ -349,7 +345,6 @@
                                                                                                   [:div.proxima.content-4 " each"]]
                       :cart-item-square-thumbnail/id                  sku-id
                       :cart-item-square-thumbnail/sku-id              sku-id
-                      :cart-item-square-thumbnail/highlighted?        just-added-to-order?
                       :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
                                                                         (str length-circle-value "”"))
                       :cart-item-square-thumbnail/ucare-id            (->> sku (catalog-images/image images "cart") :ucare/id)

@@ -22,21 +22,19 @@
    [ui.promo-banner :as promo-banner]
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
-   [storefront.css-transitions :as css-transitions]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.request-keys :as request-keys]))
 
 (defn display-adjustable-line-items
-  [recently-added-skus line-items skus images update-line-item-requests delete-line-item-requests]
+  [line-items skus images update-line-item-requests delete-line-item-requests]
   (for [{sku-id :sku variant-id :id :as line-item} line-items
         :let [sku                  (get skus sku-id)
               price                (or (:sku/price line-item)
                                        (:unit-price line-item))
               removing?            (get delete-line-item-requests variant-id)
               updating?            (get update-line-item-requests sku-id)
-              just-added-to-order? (contains? recently-added-skus sku-id)
               length-circle-value  (-> sku :hair/length first)]]
     [:div.pt1.pb2 {:key (str sku-id "-" (:quantity line-item))}
      [:div.left.pr1
@@ -44,22 +42,18 @@
         {:class "pr3"})
       (when length-circle-value
         [:div.right.z1.circle.stacking-context.border.border-gray.flex.items-center.justify-center.medium.h5.bg-white
-         (css-transitions/background-fade
-          just-added-to-order?
-          {:key       (str "length-circle-" sku-id)
-           :data-test (str "line-item-length-" sku-id)
-           :style     {:margin-left "-21px"
-                       :margin-top  "-10px"
-                       :width       "32px"
-                       :height      "32px"}})
+         {:key       (str "length-circle-" sku-id)
+          :data-test (str "line-item-length-" sku-id)
+          :style     {:margin-left "-21px"
+                      :margin-top  "-10px"
+                      :width       "32px"
+                      :height      "32px"}}
          (str length-circle-value "”")])
 
       [:div.flex.items-center.justify-center.ml1
-       (css-transitions/background-fade
-        just-added-to-order?
-        {:key       (str "thumbnail-" sku-id)
-         :data-test (str "line-item-img-" (:catalog/sku-id sku))
-         :style     {:width "79px" :height "74px"}})
+       {:key       (str "thumbnail-" sku-id)
+        :data-test (str "line-item-img-" (:catalog/sku-id sku))
+        :style     {:width "79px" :height "74px"}}
        (ui/ucare-img
         {:width 75}
         (->> sku (catalog-images/image images "cart") :ucare/id))]]
@@ -107,9 +101,7 @@
                                       line-items
                                       update-line-item-requests
                                       show-browser-pay?
-                                      recently-added-skus
                                       delete-line-item-requests
-                                      freeinstall-just-added?
                                       loaded-quadpay?
                                       cart-summary]} owner _]
   [:div.container.p2
@@ -118,8 +110,7 @@
    [:div.clearfix.mxn3
     [:div.col-on-tb-dt.col-6-on-tb-dt.px3
      {:data-test "cart-line-items"}
-     (display-adjustable-line-items recently-added-skus
-                                    line-items
+     (display-adjustable-line-items line-items
                                     skus
                                     images
                                     update-line-item-requests
@@ -242,8 +233,7 @@
                                  (variants-requests data request-keys/add-to-bag (map :sku line-items))
                                  (variants-requests data request-keys/update-line-item (map :sku line-items)))
      :cart-summary              (cart-summary/query data)
-     :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
-     :recently-added-skus       (set (keys (get-in data keypaths/cart-recently-added-skus)))}))
+     :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
 
 (defn empty-cart-query
   [data]

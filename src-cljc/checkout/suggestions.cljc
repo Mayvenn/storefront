@@ -12,7 +12,6 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
-            [storefront.css-transitions :as css-transitions]
             [catalog.images :as catalog-images]))
 
 (defn suggest-bundles
@@ -108,7 +107,7 @@
     {:suggestions (suggest-bundles data products skus line-items)}))
 
 (defn image-with-sticker
-  [{:cart-icon/keys [ucare-id sku-id sticker-label sticker-id sticker-size highlighted? image-width top-margin left-margin]}]
+  [{:cart-icon/keys [ucare-id sku-id sticker-label sticker-id sticker-size image-width top-margin left-margin]}]
   #?(:clj
      [:div]
      :cljs
@@ -116,7 +115,6 @@
       (when-not sticker-label
         {:class "pr3"})
       (when sticker-label
-        ;; TODO: highlighting does not work as before
         [:div.right.z1.circle.stacking-context.border.border-gray.flex.items-center.justify-center.bg-white.proxima.title-3
          {:key       sticker-id
           :data-test sticker-id
@@ -127,10 +125,8 @@
          sticker-label])
 
       [:div.flex.items-center.justify-center.p1
-       (css-transitions/background-fade
-        highlighted?
-        {:key       (str "thumbnail-" sku-id)
-         :data-test (str "line-item-img-" sku-id)})
+       {:key       (str "thumbnail-" sku-id)
+        :data-test (str "line-item-img-" sku-id)}
        (ui/ucare-img {:width image-width
                       :class "border border-cool-gray"} ucare-id)]]))
 

@@ -36,7 +36,6 @@
 (def initial-cart-state
   {:coupon-code             ""
    :recently-added-skus     #{}
-   :freeinstall-just-added? false
    :source                  nil
    :paypal-redirect         false})
 

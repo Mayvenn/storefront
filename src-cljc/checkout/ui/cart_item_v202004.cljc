@@ -4,7 +4,6 @@
             [storefront.events :as events]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.css-transitions :as css-transitions]
             [storefront.platform.component-utils :as utils]
             ui.molecules
             [storefront.platform.messages :as messages]
@@ -38,7 +37,7 @@
 
 (defn cart-item-square-thumbnail-molecule
   [{:cart-item-square-thumbnail/keys
-    [id ucare-id sku-id sticker-label highlighted?]}]
+    [id ucare-id sku-id sticker-label]}]
   (when id
     (let [sticker-id (str "line-item-length-" sku-id)]
       [:div.relative.pt1
@@ -46,35 +45,29 @@
                 :width  "48px"}}
        (when sticker-label
          [:div.absolute.z1.circle.border.border-gray.bg-white.proxima.title-3.flex.items-center.justify-center
-          (css-transitions/background-fade
-           highlighted?
-           {:key       sticker-id
-            :data-test sticker-id
-            :style     {:height "26px"
-                        :width  "26px"
-                        :right  -10
-                        :top    -5}})
+          {:key       sticker-id
+           :data-test sticker-id
+           :style     {:height "26px"
+                       :width  "26px"
+                       :right  -10
+                       :top    -5}}
           sticker-label])
        [:div.flex.items-center.justify-center
-        (css-transitions/background-fade
-         highlighted?
-         {:style     {:height "45px"
-                      :width  "48px"}
-          :key       (str "cart-item-square-thumbnail-" sku-id)
-          :data-test (str "line-item-img-" sku-id)})
+        {:style     {:height "45px"
+                     :width  "48px"}
+         :key       (str "cart-item-square-thumbnail-" sku-id)
+         :data-test (str "line-item-img-" sku-id)}
         (ui/ucare-img {:width 48
                        :class "block border border-cool-gray"}
                       ucare-id)]])))
 
 (defn new-cart-item-service-thumbnail-molecule
-  [{:cart-item-service-thumbnail/keys [id highlighted? image-url]}]
+  [{:cart-item-service-thumbnail/keys [id image-url]}]
   (when id
     [:div.flex.justify-center
-     (css-transitions/background-fade
-      highlighted?
-      {:style {:border-radius "50%"
-               :width         "60px"
-               :height        "60px"}})
+     {:style {:border-radius "50%"
+              :width         "60px"
+              :height        "60px"}}
 
      [:div.relative
       (ui/ucare-img {:width "56px"
