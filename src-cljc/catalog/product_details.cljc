@@ -1004,8 +1004,10 @@
 (defmethod effects/perform-effects events/add-sku-to-bag
   [dispatch event {:keys [sku quantity stay-on-page?] :as args} _ app-state]
   #?(:cljs
-     (let [nav-event (get-in app-state keypaths/navigation-event)
-           cart-interstitial? (experiments/cart-interstitial? app-state)]
+     (let [nav-event          (get-in app-state keypaths/navigation-event)
+           cart-interstitial? (and
+                               (= :shop (sites/determine-site app-state))
+                               (experiments/cart-interstitial? app-state))]
        (api/add-sku-to-bag
         (get-in app-state keypaths/session-id)
         {:sku                sku
@@ -1060,7 +1062,8 @@
 (defmethod effects/perform-effects events/control-bulk-add-to-bag
   [_ _ {:keys [items]} _ app-state]
   #?(:cljs
-     (let [cart-interstitial? (experiments/cart-interstitial? app-state)]
+     (let [cart-interstitial? (and (= :shop (sites/determine-site app-state))
+                                   (experiments/cart-interstitial? app-state))]
        (api/add-skus-to-bag (get-in app-state keypaths/session-id)
                             {:number           (get-in app-state keypaths/order-number)
                              :token            (get-in app-state keypaths/order-token)

@@ -8,7 +8,7 @@
             [storefront.accessors.images :as images]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.line-items :as line-items]
+            [storefront.accessors.sites :as sites]
             [storefront.accessors.products :as products]
             [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
@@ -50,7 +50,8 @@
                               (get-in app-state keypaths/user-token)
                               (get-in app-state keypaths/store-stylist-id)
                               (get-in app-state keypaths/order-servicing-stylist-id)
-                              (experiments/cart-interstitial? app-state)))
+                              (and (= :shop (sites/determine-site app-state))
+                                   (experiments/cart-interstitial? app-state))))
 
 (defn carousel [data imgs]
   (component/build carousel/component
