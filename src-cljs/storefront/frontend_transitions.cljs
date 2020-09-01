@@ -512,11 +512,6 @@
 (defmethod transition-state events/api-success-sms-number [_ event args app-state]
   (assoc-in app-state keypaths/sms-number (:number args)))
 
-(defmethod transition-state events/api-success-update-order [_ event {:keys [order]} app-state]
-  (let [previous-order (get-in app-state keypaths/order)]
-    (-> app-state
-        (assoc-in keypaths/cart-recently-added-skus (orders/recently-added-sku-ids->quantities previous-order order)))))
-
 (defmethod transition-state events/order-completed [_ event order app-state]
   (-> app-state
       (assoc-in keypaths/sign-up-email (get-in app-state keypaths/checkout-guest-email))
