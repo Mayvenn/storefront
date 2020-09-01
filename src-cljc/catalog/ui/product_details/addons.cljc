@@ -68,5 +68,6 @@
 (defmethod trackings/perform-track e/control-product-detail-toggle-related-addon-list
   [_ event _ app-state]
   #?(:cljs
-     (when (get-in app-state c-k/detailed-product-addon-list-open?)
-       (stringer/track-event "expand_addon_on_services"))))
+     (if (get-in app-state c-k/detailed-product-addon-list-open?)
+       (stringer/track-event "expand_addon_on_services")
+       (stringer/track-event "collapse_add_on_services"))))
