@@ -1,5 +1,6 @@
 (ns catalog.ui.product-details.addons
-  (:require [storefront.component :as c]
+  (:require [catalog.keypaths :as c-k]
+            [storefront.component :as c]
             [storefront.components.ui :as ui]
             [storefront.events :as e]
             [storefront.keypaths :as k]
@@ -63,3 +64,9 @@
        (stringer/track-event "add_on_services_displayed"
                              {:available-add-on-variant-ids   (mapv convert-to-variant-id available-sku-ids)
                               :unavailable-add-on-variant-ids (mapv convert-to-variant-id unavailable-sku-ids)}))))
+
+(defmethod trackings/perform-track e/control-product-detail-toggle-related-addon-list
+  [_ event _ app-state]
+  #?(:cljs
+     (when (get-in app-state c-k/detailed-product-addon-list-open?)
+       (stringer/track-event "expand_addon_on_services"))))
