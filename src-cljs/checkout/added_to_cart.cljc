@@ -1,6 +1,7 @@
-(ns storefront.components.checkout-added-to-cart
+(ns checkout.added-to-cart
   (:require api.orders
             catalog.images
+            catalog.services
             [checkout.shop.cart-v202004 :as cart]
             [checkout.ui.cart-item-v202004 :as cart-item-v202004]
             spice.selector
@@ -21,38 +22,36 @@
            service-line-items
            cart-items]}
    owner _]
-  [:div.container.p2
-   [:div.clearfix.mxn3
-    [:div
-     [:div.p2 (ui-molecules/return-link queried-data)]
-     [:div.bg-refresh-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
-      [:div.canela.title-2.center.my4 title]
-      (for [service-line-item service-line-items]
-        [:div.mt2-on-mb
-         (component/build cart-item-v202004/organism {:cart-item service-line-item}
-                          (component/component-id (:react/key service-line-item)))])
+  [:div.container
+   [:div.p2 (ui-molecules/return-link queried-data)]
+   [:div.bg-refresh-gray {:style {:min-height "100vh"}}
+    [:div.p3.col-on-tb-dt.col-6-on-tb-dt
+     [:div.canela.title-2.center.my4 title]
+     (for [service-line-item service-line-items]
+       [:div.mt2-on-mb
+        (component/build cart-item-v202004/organism {:cart-item service-line-item}
+                         (component/component-id (:react/key service-line-item)))])
 
-      (when (seq cart-items)
-        [:div.mt3
-         [:div
-          {:data-test "confirmation-line-items"}
+     (when (seq cart-items)
+       [:div.mt3
+        [:div
+         {:data-test "confirmation-line-items"}
 
-          (for [[index cart-item] (map-indexed vector cart-items)
-                :let [react-key (:react/key cart-item)]
-                :when react-key]
-            [:div
-             {:key (str index "-cart-item-" react-key)}
-             (when-not (zero? index)
-               [:div.flex.bg-white
-                [:div.ml2 {:style {:width "75px"}}]
-                [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
-             (component/build cart-item-v202004/organism {:cart-item  cart-item}
-                              (component/component-id (str index "-cart-item-" react-key)))])]])]]
+         (for [[index cart-item] (map-indexed vector cart-items)
+               :let [react-key (:react/key cart-item)]
+               :when react-key]
+           [:div
+            {:key (str index "-cart-item-" react-key)}
+            (when-not (zero? index)
+              [:div.flex.bg-white
+               [:div.ml2 {:style {:width "75px"}}]
+               [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
+            (component/build cart-item-v202004/organism {:cart-item  cart-item}
+                             (component/component-id (str index "-cart-item-" react-key)))])]])]
 
     [:div.col-on-tb-dt.col-6-on-tb-dt
-
-     [:div.mx3
-      [:div.col-12.mx-auto.mt4
+     [:div
+      [:div.col-12.mx-auto.mt4.px3
        (ui/button-medium-primary (assoc (utils/route-to events/navigate-cart)
                                         :data-test "navigate-cart")
                                  "Go to Cart")]]]]])

@@ -80,7 +80,7 @@
         events/navigate-account-manage                             #(partial sign-in/requires-sign-in account/built-component)
         events/navigate-account-referrals                          #(partial sign-in/requires-sign-in friend-referrals/built-component)
         events/navigate-friend-referrals                           (constantly friend-referrals/built-component)
-        events/navigate-added-to-cart                              #(ui/lazy-load-component :catalog 'storefront.components.checkout-added-to-cart/built-component events/navigate-added-to-cart)
+        events/navigate-added-to-cart                              #(ui/lazy-load-component :catalog 'checkout.added-to-cart/built-component events/navigate-added-to-cart)
         events/navigate-checkout-returning-or-guest                #(ui/lazy-load-component :checkout 'storefront.components.checkout-returning-or-guest/built-component events/navigate-checkout-returning-or-guest)
         events/navigate-checkout-sign-in                           #(ui/lazy-load-component :checkout 'storefront.components.checkout-sign-in/built-component events/navigate-checkout-sign-in)
         events/navigate-checkout-address                           #(ui/lazy-load-component :checkout 'storefront.components.checkout-address-auth-required/built-component events/navigate-checkout-address)

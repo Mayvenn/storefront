@@ -83,6 +83,9 @@
              checkout-events
              payout-events))
 
+(def interstitial-page-events
+  #{events/navigate-added-to-cart})
+
 (defn promotion-helper-can-exist-on-page? [event]
   (->> event
        (contains? (set/union account-events
@@ -92,8 +95,12 @@
                              payout-events
                              sharing-events
                              stylist-dashboard-events
-                             voucher-events))
+                             voucher-events
+                             interstitial-page-events))
        not))
+
+(defn hide-footer? [event]
+  (contains? interstitial-page-events event))
 
 (defn show-minimal-footer? [event]
   (contains? minimal-footer-events event))
