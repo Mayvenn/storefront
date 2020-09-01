@@ -586,3 +586,8 @@
 (defpath flyout-click-away)
 
 (defpath escape-key-pressed)
+
+;; data team only
+
+(defpath visual-add-on-services-displayed)
+
