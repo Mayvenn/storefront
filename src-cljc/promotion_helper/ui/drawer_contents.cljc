@@ -26,41 +26,6 @@
   (svg/check-mark {:class "fill-gray ml1"
                    :style {:height "14px" :width "18px"}}))
 
-(defn drawer-contents-condition-progress-molecule
-  [{:promotion-helper.ui.drawer-contents.condition.progress/keys [id completed remaining]}]
-  (c/html
-   [:div.flex-auto.pl1 {:key "c" :style {:order 2}}
-    (for [n (range completed)
-          :let [dt (str "drawer-contents.checkmarks.s-color.completed-" id "-" n)]]
-      [:span {:key dt
-              :data-test dt}
-       drawer-contents-step-teal-checkmark-atom])
-    (for [n (range remaining)
-          :let [dt (str "drawer-contents.checkmarks.gray.remaining-" id "-" n)]]
-      [:span {:key dt
-              :data-test dt}
-       drawer-contents-step-gray-checkmark-atom])]))
-
-(defn drawer-contents-condition-title-molecule
-  [{:promotion-helper.ui.drawer-contents.condition.title/keys [id primary primary-struck secondary]}]
-  (c/html
-   (list
-    (when primary
-      [:div.content-2
-       {:key "a"
-        :style {:order 1}
-        :data-test (str "primary-" id)}
-       primary])
-    (when primary-struck
-      [:div.content-2.strike
-       {:key "a" :style {:order 1}
-        :data-test (str "primary-struck-" id)}
-       primary-struck])
-    [:div.content-3.dark-gray.col-12
-     {:key "b" :style {:order 3}
-      :data-test (str "secondary-" id)}
-     secondary])))
-
 (defn drawer-contents-condition-action-molecule
   [{:promotion-helper.ui.drawer-contents.condition.action/keys [id label target]}]
   [:div
@@ -80,11 +45,42 @@
              :data-test id)
       label))])
 
+(defn drawer-contents-condition-progress-molecule
+  [{:promotion-helper.ui.drawer-contents.condition.progress/keys [id completed remaining]}]
+  (c/html
+   [:div.pl1
+    (for [n    (range completed)
+          :let [dt (str "drawer-contents.checkmarks.s-color.completed-" id "-" n)]]
+      [:span {:key       dt
+              :data-test dt}
+       drawer-contents-step-teal-checkmark-atom])
+    (for [n    (range remaining)
+          :let [dt (str "drawer-contents.checkmarks.gray.remaining-" id "-" n)]]
+      [:span {:key       dt
+              :data-test dt}
+       drawer-contents-step-gray-checkmark-atom])]))
+
+(defn drawer-contents-condition-title-molecule
+  [{:promotion-helper.ui.drawer-contents.condition.title/keys [id primary primary-struck secondary]
+    :as data}]
+  (c/html
+   [:div.flex.flex-column.left-align
+    [:div.flex
+     [:div
+      (when primary
+        [:div.content-2 {:data-test (str "primary-" id)}
+         primary])
+      (when primary-struck
+        [:div.content-2.strike {:data-test (str "primary-struck-" id)}
+         primary-struck])]
+     (drawer-contents-condition-progress-molecule data)]
+    [:div.content-3.dark-gray {:data-test (str "secondary-" id)}
+     secondary]]))
+
 (defcomponent drawer-contents-condition-organism
   [data _ _]
   [:div.black.bg-white.my1.p3.flex.items-center.border.border-refresh-gray
-   [:div.col-10.flex.flex-wrap
-    (drawer-contents-condition-progress-molecule data)
+   [:div.col-10
     (drawer-contents-condition-title-molecule data)]
    [:div.col-2
     (drawer-contents-condition-action-molecule data)
