@@ -164,9 +164,13 @@
       [(merge {:react/key                             (str "free-service-" sku-id)
                :cart-item-title/id                    (str "free-service-title-" sku-id)
                :cart-item-floating-box/id             (str "free-service-price-" sku-id)
-               :cart-item-copy/lines                  [{:id    (str "line-item-quantity-" sku-id)
+               :cart-item-copy/lines                  [{:id    (str "line-item-requirements-" sku-id)
+                                                        :value (:promo.mayvenn-install/requirement-copy service-sku)}
+                                                       {:id    (str "line-item-quantity-" sku-id)
                                                         :value (str "qty. " (:quantity free-service-line-item))}]
-               :cart-item-floating-box/value          (some-> free-service-line-item line-items/service-line-item-price $/as-money)
+               :cart-item-floating-box/value          [:span
+                                                       [:div.strike (some-> free-service-line-item line-items/service-line-item-price $/as-money)]
+                                                       [:div.s-color "FREE"]]
                :cart-item-service-thumbnail/id        (str "free-service-thumbnail-" sku-id)
                :cart-item-service-thumbnail/image-url (->> service-sku (images/skuer->image images-db "cart") :url)
                :cart-item-title/primary               (:variant-name free-service-line-item)}
