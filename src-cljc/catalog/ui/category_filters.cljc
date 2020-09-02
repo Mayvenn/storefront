@@ -96,7 +96,7 @@
                          :value     selected?
                          :disabled  disabled?
                          :on-change #(apply messages/handle-message target)})])])]
-   [:div.clearfix.mxn3.mb2.hide-on-dt.flex.justify-around.items-center
+   [:div.clearfix.mb2.hide-on-dt.flex.justify-around.items-center
     [:div.col-6.center.px5
      (ui/button-medium-underline-primary
       (merge (utils/fake-href events/control-category-option-clear)
@@ -120,7 +120,7 @@
      (if open-panel
        (let [panel (c/build filter-panel filter-panel-data)]
          [:div
-          [:div.hide-on-dt.fixed.overlay.bg-white
+          [:div.hide-on-dt.fixed.overlay.overflow-auto.bg-white
            tabs panel]
           [:div.hide-on-mb-tb
            tabs panel]])
