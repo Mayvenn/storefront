@@ -82,7 +82,7 @@
     [:div.px3.center.mt3
      (when primary [:div.mb1 primary])
      (ui/button-medium-primary
-      (assoc (apply utils/route-to target)
+      (assoc (apply utils/fake-href target)
              :data-test id)
       label)]))
 
