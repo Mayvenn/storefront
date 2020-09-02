@@ -39,10 +39,6 @@
    :source                  nil
    :paypal-redirect         false})
 
-(def empty-referral {:fullname ""
-                     :phone ""
-                     :email ""})
-
 (def initial-stylist-state
   {:sales-rep-email nil
    :earnings {:rate nil
@@ -57,13 +53,6 @@
                    :bonuses []
                    :page 0
                    :pages nil}
-   :referral-program {:bonus-amount nil
-                      :earning-amount nil
-                      :lifetime-total nil
-                      :referrals []
-                      :page 0
-                      :pages nil}
-   :referrals [empty-referral]
    :manage-account {:email nil
                     :id nil
                     :birth-date nil

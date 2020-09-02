@@ -136,7 +136,6 @@
                                            "externs/spreedly.js"
                                            "externs/stringer.js"
                                            "externs/stripe.js"
-                                           "externs/talkable.js"
                                            "externs/uploadcare.js"
                                            "externs/wistia.js"
                                            "externs/yotpo.js"]

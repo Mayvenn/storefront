@@ -655,25 +655,6 @@
     :handler #(messages/handle-message events/api-success-cash-out-status
                                        (select-keys % [:status :status-id :balance-transfer-id :amount :payout-method]))}))
 
-(defn get-stylist-referral-program [user-id user-token {:keys [page]}]
-  (storeback-api-req
-   GET
-   "/stylist/referrals"
-   request-keys/get-stylist-referral-program
-   {:params
-    {:user-id    user-id
-     :user-token user-token
-     :page       page}
-    :handler
-    #(messages/handle-message events/api-success-stylist-referral-program
-                              (select-keys % [:sales-rep-email
-                                              :bonus-amount
-                                              :earning-amount
-                                              :lifetime-total
-                                              :referrals
-                                              :current-page
-                                              :pages]))}))
-
 (defn place-order
   ([session-id order utm-params affiliate-stylist-id]
    (place-order session-id order utm-params affiliate-stylist-id nil))

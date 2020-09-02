@@ -45,7 +45,6 @@
 
 (def ^:private account-events
   #{events/navigate-account-manage
-    events/navigate-account-referrals
     events/navigate-stylist-account-payout
     events/navigate-stylist-account-password
     events/navigate-stylist-account-portrait
@@ -53,8 +52,7 @@
     events/navigate-stylist-account-social})
 
 (def ^:private sharing-events
-  #{events/navigate-friend-referrals
-    events/navigate-shared-cart
+  #{events/navigate-shared-cart
     events/navigate-stylist-share-your-store})
 
 (def auth-events

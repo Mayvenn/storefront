@@ -197,7 +197,6 @@
             [:link {:rel "preconnect" :href "https://www.googletagmanager.com"}]
             [:link {:rel "preconnect" :href "https://connect.facebook.net"}]
             [:link {:rel "preconnect" :href "https://cx.atdmt.com"}]
-            [:link {:rel "preconnect" :href "https://d2jjzw81hqbuqv.cloudfront.net"}] ;; talkable
             [:link {:rel "preconnect" :href "https://s.pinimg.com"}]
             [:link {:rel "preconnect" :href "https://googleads.g.doubleclick.net"}]
             [:link {:rel "preconnect" :href "https://d10lpsik1i8c69.cloudfront.net"}] ;; luckyorange
@@ -220,13 +219,6 @@
             #_[:script {:type  "text/javascript"
                         :src   "https://widgets.quadpay.com/mayvenn/quadpay-widget-2.2.1.js"
                         :defer true}]
-
-            ;; Talkable
-            [:script {:type  "text/javascript"
-                      :src   (case environment
-                               "production" "https://d2jjzw81hqbuqv.cloudfront.net/integration/clients/mayvenn.min.js"
-                               "https://d2jjzw81hqbuqv.cloudfront.net/integration/clients/mayvenn-staging.min.js")
-                      :defer true}]
 
             ;; Storefront server-side data
             [:script {:type "text/javascript"}

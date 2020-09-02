@@ -13,7 +13,6 @@
             [storefront.config :as config]
             [storefront.events :as events]
             [storefront.hooks.stripe :as stripe]
-            [storefront.hooks.talkable :as talkable]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.state :as state]
@@ -356,23 +355,6 @@
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
   (assoc-in app-state keypaths/states states))
 
-(defmethod transition-state events/api-partial-success-send-stylist-referrals
-  [_ event {:keys [results]} app-state]
-  (update-in app-state keypaths/stylist-referrals
-             (fn [old-referrals]
-               (->> (map (fn [n o] [n o]) results old-referrals)
-                    (filter (fn [[nr _]]
-                              (seq (:error nr))))
-                    (map last)
-                    vec))))
-
-(defmethod transition-state events/api-success-send-stylist-referrals
-  [_ event _ app-state]
-  (-> app-state
-      clear-field-errors
-      (assoc-in keypaths/stylist-referrals [state/empty-referral])
-      (assoc-in keypaths/popup :refer-stylist-thanks)))
-
 (defmethod transition-state events/save-order
   [_ event {:keys [order]} app-state]
   (if (orders/incomplete? order)
@@ -501,8 +483,7 @@
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/cart state/initial-cart-state)
       (assoc-in keypaths/completed-order order)
-      (assoc-in adventure.keypaths/adventure-servicing-stylist nil)
-      (assoc-in keypaths/pending-talkable-order (talkable/completed-order order))))
+      (assoc-in adventure.keypaths/adventure-servicing-stylist nil)))
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]
   (update-in app-state keypaths/promotions #(-> (concat % promotions) set vec)))
@@ -597,9 +578,6 @@
 
 (defmethod transition-state events/facebook-email-denied [_ event args app-state]
   (assoc-in app-state keypaths/facebook-email-denied true))
-
-(defmethod transition-state events/talkable-offer-shown [_ event args app-state]
-  (assoc-in app-state keypaths/pending-talkable-order nil))
 
 (defmethod transition-state events/sign-out [_ event args app-state]
   (-> app-state

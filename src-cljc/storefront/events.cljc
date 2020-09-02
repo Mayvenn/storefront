@@ -85,7 +85,6 @@
 (defpath navigate-stylist-dashboard)
 (defpath navigate-stylist-dashboard-earnings)
 (defpath navigate-stylist-dashboard-order-details)
-(defpath navigate-stylist-dashboard-referrals)
 (defpath navigate-stylist-dashboard-bonus-credit)
 (defpath navigate-stylist-dashboard-cash-out-begin)
 (defpath navigate-stylist-dashboard-cash-out-pending)
@@ -107,9 +106,6 @@
 
 (defpath navigate-account)
 (defpath navigate-account-manage)
-(defpath navigate-account-referrals)
-
-(defpath navigate-friend-referrals)
 
 (defpath navigate-checkout)
 (defpath navigate-checkout-sign-in)
@@ -304,10 +300,7 @@
 (defpath api-success-cash-out-status)
 (defpath api-success-cash-out-failed)
 (defpath api-success-cash-out-complete)
-(defpath api-success-stylist-referral-program)
 (defpath api-success-user-stylist-service-menu-fetch)
-(defpath api-success-send-stylist-referrals)
-(defpath api-partial-success-send-stylist-referrals)
 
 (defpath api-success-fetch-geocode)
 (defpath api-failure-fetch-geocode)
@@ -381,9 +374,6 @@
 (defpath flash-later-show-success)
 (defpath flash-later-show-failure)
 
-(defpath referral-thank-you-show)
-(defpath referral-thank-you-hide)
-
 (defpath added-to-bag)
 
 (defpath save-order)
@@ -403,9 +393,6 @@
 (defpath reviews)
 (defpath reviews-component-mounted)
 (defpath reviews-component-will-unmount)
-
-(defpath talkable)
-(defpath talkable-offer-shown)
 
 (defpath inserted)
 (defpath inserted-stringer)

@@ -2,7 +2,6 @@
   (:require #?@(:cljs
                 [[storefront.history :as history]
                  [storefront.hooks.stringer :as stringer]
-                 [storefront.hooks.talkable :as talkable]
                  [storefront.browser.cookie-jar :as cookie]
                  [storefront.api :as api]
                  [storefront.platform.messages :as messages]
@@ -43,21 +42,14 @@
   #?(:cljs
      (messages/handle-message events/save-order {:order order})))
 
-(defmethod transitions/transition-state events/navigate-adventure-match-success-post-purchase
-  [_ _ _ {:keys [completed-order] :as app-state}]
-  #?(:cljs
-     (assoc-in app-state storefront.keypaths/pending-talkable-order (talkable/completed-order completed-order))))
-
 (defmethod effects/perform-effects events/navigate-adventure-match-success-post-purchase [_ _ _ _ app-state]
   #?(:cljs
      (let [{completed-order :waiter/order}             (api.orders/completed app-state)
            {service-items        :services/items
             servicing-stylist-id :services/stylist-id} (api.orders/services app-state completed-order)]
        (if (and servicing-stylist-id (seq service-items))
-         (do
-           (talkable/show-pending-offer app-state)
-           (api/fetch-matched-stylist (get-in app-state storefront.keypaths/api-cache)
-                                      servicing-stylist-id))
+         (api/fetch-matched-stylist (get-in app-state storefront.keypaths/api-cache)
+                                    servicing-stylist-id)
          (history/enqueue-navigate events/navigate-home)))))
 
 (defmethod transitions/transition-state events/api-success-fetch-matched-stylist

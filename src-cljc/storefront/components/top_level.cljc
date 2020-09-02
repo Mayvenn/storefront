@@ -2,7 +2,6 @@
   (:require [storefront.component :as component :refer [defcomponent]]
             #?@(:cljs [[storefront.components.account :as account]
                        [storefront.components.force-set-password :as force-set-password]
-                       [storefront.components.friend-referrals :as friend-referrals]
                        [storefront.components.popup :as popup]
                        [storefront.components.reset-password :as reset-password]
                        [storefront.components.shop-by-look]
@@ -78,8 +77,6 @@
         events/navigate-v2-stylist-dashboard-orders                #(ui/lazy-load-component :dashboard 'stylist.dashboard/built-component events/navigate-v2-stylist-dashboard-orders)
         events/navigate-gallery-image-picker                       #(ui/lazy-load-component :dashboard 'storefront.components.stylist.gallery-image-picker/built-component events/navigate-gallery-image-picker)
         events/navigate-account-manage                             #(partial sign-in/requires-sign-in account/built-component)
-        events/navigate-account-referrals                          #(partial sign-in/requires-sign-in friend-referrals/built-component)
-        events/navigate-friend-referrals                           (constantly friend-referrals/built-component)
         events/navigate-added-to-cart                              #(ui/lazy-load-component :catalog 'checkout.added-to-cart/built-component events/navigate-added-to-cart)
         events/navigate-checkout-returning-or-guest                #(ui/lazy-load-component :checkout 'storefront.components.checkout-returning-or-guest/built-component events/navigate-checkout-returning-or-guest)
         events/navigate-checkout-sign-in                           #(ui/lazy-load-component :checkout 'storefront.components.checkout-sign-in/built-component events/navigate-checkout-sign-in)

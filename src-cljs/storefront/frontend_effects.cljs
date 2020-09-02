@@ -32,7 +32,6 @@
             [storefront.hooks.stringer :as stringer]
             [storefront.hooks.stripe :as stripe]
             [storefront.hooks.svg :as svg]
-            [storefront.hooks.talkable :as talkable]
             [storefront.hooks.uploadcare :as uploadcare]
             [storefront.accessors.line-items :as line-items]
             [storefront.hooks.spreedly :as spreedly]
@@ -433,12 +432,6 @@
     (when paypal
       (effects/redirect events/navigate-need-match-order-complete {:number number}))))
 
-(defmethod effects/perform-effects events/navigate-friend-referrals [_ event args _ app-state]
-  (talkable/show-referrals app-state))
-
-(defmethod effects/perform-effects events/navigate-account-referrals [_ event args _ app-state]
-  (talkable/show-referrals app-state))
-
 (defmethod effects/perform-effects events/api-success-get-completed-order [_ event order _ app-state]
   (messages/handle-message events/order-completed order))
 
@@ -745,9 +738,6 @@
                                (get-in app-state keypaths/stylist-portrait-status))]
     (messages/handle-later events/poll-stylist-portrait {} 5000)))
 
-(defmethod effects/perform-effects events/api-success-send-stylist-referrals [_ event args _ app-state]
-  (messages/handle-later events/popup-hide {} 2000))
-
 (defmethod effects/perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} _ app-state]
   (let [{service-items :services/items} (api.orders/services app-state order)]
     (if (and (seq service-items) (= :shop (sites/determine-site app-state)))
@@ -764,12 +754,10 @@
   (let [site                                         (sites/determine-site app-state)
         {service-items        :services/items
          servicing-stylist-id :services/stylist-id} (api.orders/services app-state order)]
-    (if-not (= :shop site)
-      (talkable/show-pending-offer app-state)
-      (if (empty? service-items)
-        (talkable/show-pending-offer app-state)
-        (when servicing-stylist-id
-          (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))))))
+    (when (and (= :shop site)
+               (not (empty? service-items))
+               servicing-stylist-id)
+      (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))))
 
 (defmethod effects/perform-effects events/api-success-update-order-update-cart-payments [_ event {:keys [order place-order?]} _ app-state]
   (when place-order?

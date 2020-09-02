@@ -210,8 +210,6 @@
 (def checkout-selected-shipping-method-sku (conj checkout-selected-shipping-method :sku))
 (def checkout-selected-payment-methods (conj checkout :payment-methods))
 
-(def pending-talkable-order (conj ui :pending-talkable-order))
-
 (def flash (conj ui :flash))
 (def flash-now (conj flash :now))
 (def flash-now-success (conj flash-now :success))
@@ -254,20 +252,10 @@
 (def stylist-cash-out-status-id (conj stylist :cash-out-stylist-id))
 (def stylist-cash-out-balance-transfer-id (conj stylist :cash-out-balance-transfer-id))
 
-(def stylist-referral-program (conj stylist :referral-program))
-(def stylist-referral-program-bonus-amount (conj stylist-referral-program :bonus-amount))
-(def stylist-referral-program-earning-amount (conj stylist-referral-program :earning-amount))
-(def stylist-referral-program-lifetime-total (conj stylist-referral-program :lifetime-total))
-(def stylist-referral-program-referrals (conj stylist-referral-program :referrals))
-(def stylist-referral-program-page (conj stylist-referral-program :page))
-(def stylist-referral-program-pages (conj stylist-referral-program :pages))
-
 (def current-category-id (conj ui :current-category-id))
 (def current-traverse-nav (conj ui :current-traverse-nav))
 (def current-traverse-nav-id (conj current-traverse-nav :id))
 (def current-traverse-nav-menu-type (conj current-traverse-nav :menu-type))
-
-(def stylist-referrals (conj stylist :referrals))
 
 (def editing-gallery? (conj ui :editing-gallery))
 (def hide-header? (conj ui :hide-header?))

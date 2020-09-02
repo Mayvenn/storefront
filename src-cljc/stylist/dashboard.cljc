@@ -151,8 +151,4 @@
   [_ event args _ app-state]
   (effects/redirect events/navigate-v2-stylist-dashboard-orders))
 
-(defmethod effects/perform-effects events/navigate-stylist-dashboard-referrals
-  [_ event args _ app-state]
-  (effects/redirect events/navigate-v2-stylist-dashboard-orders))
-
 #?(:cljs (loader/set-loaded! :dashboard))
