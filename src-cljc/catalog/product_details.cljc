@@ -319,11 +319,11 @@
         standalone-service?           (accessors.products/standalone-service? product)
         free-mayvenn-service?         (accessors.products/product-is-mayvenn-install-service? product)
         related-addons                (->> (get-in app-state catalog.keypaths/detailed-product-related-addons)
-                                         (map #(assoc %
-                                                      :stylist-provides?
-                                                      (stylist-filters/stylist-provides-service-by-sku-id? servicing-stylist (:catalog/sku-id %))))
-                                         (sort-by (juxt (comp not :stylist-provides?) :addon/sort))
-                                         ((if addon-list-open? identity (partial take 1))))
+                                           (map #(assoc %
+                                                        :stylist-provides?
+                                                        (stylist-filters/stylist-provides-service-by-sku-id? servicing-stylist (:catalog/sku-id %))))
+                                           (sort-by (juxt (comp not :stylist-provides?) :addon/sort))
+                                           ((if addon-list-open? identity (partial take 1))))
         selected-addons               (get-in app-state catalog.keypaths/detailed-product-selected-addon-items)
         associated-service-category   (cond
                                         free-mayvenn-service? {:page/slug           "free-mayvenn-services"
@@ -332,13 +332,13 @@
                                                                :catalog/category-id "35"}
                                         :else                 nil)]
     (cond->
-        {:cta/id                             "add-to-cart"
-         :cta/label                          "Add to Cart"
-         :cta/target                         [events/control-add-sku-to-bag
-                                              {:sku      selected-sku
-                                               :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
-         :cta/spinning?                      (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-         :cta/disabled?                      false}
+        {:cta/id        "add-to-cart"
+         :cta/label     "Add to Cart"
+         :cta/target    [events/control-add-sku-to-bag
+                         {:sku      selected-sku
+                          :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
+         :cta/spinning? (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+         :cta/disabled? false}
 
       out-of-stock?
       (merge {:cta/disabled? true})
