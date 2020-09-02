@@ -103,7 +103,6 @@
               ["/m/" :reset-token]                                (edn->bidi events/navigate-reset-password)
               ["/c/" :shared-cart-id]                             (edn->bidi events/navigate-shared-cart)
               "/account/edit"                                     (edn->bidi events/navigate-account-manage)
-              "/account/referrals"                                (edn->bidi events/navigate-account-referrals)
               "/cart"                                             (edn->bidi events/navigate-cart)
               "/added-to-cart"                                    (edn->bidi events/navigate-added-to-cart)
               ["/shop/" [keyword :album-keyword]]                 (edn->bidi events/navigate-shop-by-look)
@@ -116,7 +115,6 @@
               ["/stylist/earnings/" :balance-transfer-id] (edn->bidi events/navigate-stylist-dashboard-balance-transfer-details)
               "/stylist/earnings"                         (edn->bidi events/navigate-stylist-dashboard-earnings)
               "/stylist/store_credits"                    (edn->bidi events/navigate-stylist-dashboard-bonus-credit)
-              "/stylist/referrals"                        (edn->bidi events/navigate-stylist-dashboard-referrals)
 
               "/stylist/share-your-store"                 (edn->bidi events/navigate-stylist-share-your-store)
               "/stylist/account/profile"                  (edn->bidi events/navigate-stylist-account-profile)
@@ -129,7 +127,6 @@
               "/stylist/payments"                         (edn->bidi events/navigate-v2-stylist-dashboard-payments)
               "/stylist/orders"                           (edn->bidi events/navigate-v2-stylist-dashboard-orders)
               ["/stylist/orders/" :order-number]          (edn->bidi events/navigate-stylist-dashboard-order-details)
-              "/share"                                    (edn->bidi events/navigate-friend-referrals)
               "/mayvenn-made"                             (edn->bidi events/navigate-mayvenn-made)
               "/gallery"                                  (edn->bidi events/navigate-store-gallery)
               "/gallery/edit"                             (edn->bidi events/navigate-gallery-edit)

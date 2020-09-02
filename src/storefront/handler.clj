@@ -1006,6 +1006,9 @@
                (GET "/products/" req (redirect-to-home environment req))
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
                (GET "/how-it-works" req (wrap-set-cache-header (partial redirect-to-home environment) "max-age=604800"))
+               (GET "/share" req (redirect-to-home environment req :found))
+               (GET "/account/referrals" req (redirect-to-home environment req :found))
+               (GET "/stylist/referrals" req (redirect-to-home environment req :found))
                (GET "/cms/*" {uri :uri}
                     (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
                       (-> (contentful/read-cache contentful)
