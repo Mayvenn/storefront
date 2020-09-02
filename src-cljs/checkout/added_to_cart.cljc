@@ -60,13 +60,21 @@
                     :promotion-helper.ui.drawer-contents/conditions)]
           [:div])))))
 
-(defmethod storefront.effects/perform-effects events/control-cart-interstitial-browse-stylist-cta
+(defmethod storefront.effects/perform-effects events/control-cart-interstitial-view-cart
   [_ _ _ _ _]
-  #?(:cljs (history/enqueue-navigate events/navigate-adventure-match-stylist)))
+  #?(:cljs (history/enqueue-navigate events/navigate-cart)))
 
-(defmethod storefront.trackings/perform-track events/control-cart-interstitial-browse-stylist-cta
-  [_ _ _ _]
-  #?(:cljs (stringer/track-event "add_success_browse_stylist_button_pressed" {})))
+(defmethod storefront.trackings/perform-track events/control-cart-interstitial-view-cart
+  [_ _ _ app-state]
+  #?(:cljs
+     (let [{waiter-order :waiter/order} (api.orders/current app-state)]
+       (stringer/track-event
+        "add_success_view_cart_button_pressed"
+        {:current_servicing_stylist_id (:servicing-stylist-id waiter-order)
+         :cart_items                   (frontend-trackings/cart-items-model<-
+                                        waiter-order
+                                        (get-in app-state keypaths/v2-images)
+                                        (get-in app-state keypaths/v2-skus))}))))
 
 (defcomponent cta
   [{:cta/keys [primary id target label]} _ _]
@@ -81,6 +89,14 @@
 (defmethod storefront.trackings/perform-track events/cart-interstitial-browse-stylist-mounted
   [_ _ _ _]
   #?(:cljs (stringer/track-event "add_success_browse_stylist_displayed" {})))
+
+(defmethod storefront.effects/perform-effects events/control-cart-interstitial-browse-stylist-cta
+  [_ _ _ _ _]
+  #?(:cljs (history/enqueue-navigate events/navigate-adventure-match-stylist)))
+
+(defmethod storefront.trackings/perform-track events/control-cart-interstitial-browse-stylist-cta
+  [_ _ _ _]
+  #?(:cljs (stringer/track-event "add_success_browse_stylist_button_pressed" {})))
 
 (defdynamic-component stylist-helper
   (did-mount [this]
@@ -251,7 +267,7 @@
      (cond
        free-mayvenn-service (if  (and (:free-mayvenn-service/discounted? free-mayvenn-service)
                                       servicing-stylist)
-                              {:cta/target  [events/navigate-cart]
+                              {:cta/target  [events/control-cart-interstitial-view-cart]
                                :cta/label   "Go to Cart"
                                :cta/id      "navigate-cart"
                                :cta/primary "🎉 Great work! Free service unlocked!"}
@@ -268,7 +284,7 @@
         :stylist-helper/target [events/control-cart-interstitial-browse-stylist-cta]}
 
        :else
-       {:cta/target [events/navigate-cart]
+       {:cta/target [events/control-cart-interstitial-view-cart]
         :cta/label  "Go to Cart"
         :cta/id     "navigate-cart"}))))
 
