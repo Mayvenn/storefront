@@ -96,12 +96,9 @@
 
 (def ^:private user-actions
   (component/html
-   (marquee-row
-    (ui/button-large-secondary (assoc (utils/route-to events/navigate-account-manage)
-                                      :data-test "account-settings")
-                               "Account")
-    (ui/button-large-secondary (utils/route-to events/navigate-account-referrals)
-                               "Refer a friend"))))
+   (ui/button-large-secondary (assoc (utils/route-to events/navigate-account-manage)
+                                     :data-test "account-settings")
+                              "Account")))
 
 (def ^:private guest-actions
   (component/html

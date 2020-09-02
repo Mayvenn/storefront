@@ -131,8 +131,6 @@
                   [:div
                    ^:inline (drop-down-row (utils/route-to events/navigate-account-manage) "Account")]
                   [:div.border-top.border-gray
-                   ^:inline (drop-down-row (utils/route-to events/navigate-account-referrals) "Refer a friend")]
-                  [:div.border-top.border-gray
                    ^:inline (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
       :stylist (ui/drop-down
