@@ -120,7 +120,7 @@
      (if open-panel
        (let [panel (c/build filter-panel filter-panel-data)]
          [:div
-          [:div.hide-on-dt.fixed.overlay.overflow-auto.bg-white
+          [:div.hide-on-dt.fixed.overlay.bg-white
            tabs panel]
           [:div.hide-on-mb-tb
            tabs panel]])
