@@ -6,10 +6,9 @@
             [storefront.events :as e]
             [storefront.effects :refer [perform-effects]]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.messages :as messages]
-            [storefront.accessors.orders :as orders]
             [promotion-helper.keypaths :as k]
-            [storefront.trackings :refer [perform-track]]))
+            [storefront.trackings :refer [perform-track]]
+            [storefront.events :as events]))
 
 ;;; COREY
 ;;; Open and close might happen from user input or something else, should that be in the event data?
@@ -38,6 +37,7 @@
 (defmethod perform-track opened
   [_ _ _ app-state]
   (track "helper_opened"
+         false
          (get-in app-state keypaths/order)
          (get-in app-state keypaths/v2-images)
          (get-in app-state keypaths/v2-skus)))
@@ -54,6 +54,7 @@
 (defmethod perform-track closed
   [_ _ _ app-state]
   (track "helper_closed"
+         false
          (get-in app-state keypaths/order)
          (get-in app-state keypaths/v2-images)
          (get-in app-state keypaths/v2-skus)))
@@ -68,28 +69,36 @@
 
 (defmethod perform-track followed
   [_ _ {:keys [condition]} app-state]
-  (when-let [data-team-event (case condition
-                               "add-hair"    "helper_add_hair_button_pressed"
-                               "add-stylist" "helper_add_stylist_button_pressed"
-                               "view-cart"   "helper_view_cart_button_pressed"
-                               nil)]
-    (track data-team-event
-           (get-in app-state keypaths/order)
-           (get-in app-state keypaths/v2-images)
-           (get-in app-state keypaths/v2-skus))))
+  (let [cart-interstitial? (= e/navigate-added-to-cart (get-in app-state keypaths/navigation-event))]
+    (when-let [data-team-event (case [condition cart-interstitial?]
+                                 ["add-hair"    false] "helper_add_hair_button_pressed"
+                                 ["add-stylist" false] "helper_add_stylist_button_pressed"
+                                 ["view-cart"   false] "helper_view_cart_button_pressed"
+                                 ["add-hair"    true]  "add_success_helper_add_hair_button_pressed"
+                                 ["add-stylist" true]  "add_success_helper_add_stylist_button_pressed"
+                                 ;; view cart button not visible on cart interstitial
+                                 nil)]
+      (track data-team-event
+             cart-interstitial?
+             (get-in app-state keypaths/order)
+             (get-in app-state keypaths/v2-images)
+             (get-in app-state keypaths/v2-skus)))))
 
 ;;;;
 ;;;; utils
 ;;;;
 
 (defn ^:private track
-  [event-name {:keys [servicing-stylist-id] :as waiter-order} images-db skus-db]
+  [event-name
+   cart-interstitial?
+   {:keys [servicing-stylist-id] :as waiter-order} images-db skus-db]
   #?(:cljs
      (stringer/track-event
       event-name
-      (-> {:helper_name "promotion-helper"}
-          (assoc :current_servicing_stylist_id servicing-stylist-id)
-          (assoc :cart_items
-                 (frontend-trackings/cart-items-model<- waiter-order
-                                                        images-db
-                                                        skus-db))))))
+      (cond->
+          {:current_servicing_stylist_id servicing-stylist-id
+           :cart_items (frontend-trackings/cart-items-model<- waiter-order
+                                                              images-db
+                                                              skus-db)}
+        (not cart-interstitial?)
+        (merge {:helper_name "promotion-helper"})))))
