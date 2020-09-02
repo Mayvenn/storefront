@@ -571,7 +571,14 @@
                           handler)]
             (is (= 200 (:status resp)))
             (is (= "/categories/27-human-hair-bundles" (-> resp :body parse-canonical-uri :path)))
-            (is (= "texture=straight" (response->canonical-uri-query-string resp))))))
+            (is (= "texture=straight" (response->canonical-uri-query-string resp)))))
+        (testing "with texture, family and origin"
+          (let [resp (->> "https://shop.mayvenn.com/categories/9-virgin-curly?origin=brazilian&family=bundles"
+                          (mock/request :get)
+                          handler)]
+            (is (= 200 (:status resp)))
+            (is (= "/categories/27-human-hair-bundles" (-> resp :body parse-canonical-uri :path)))
+            (is (= "origin=brazilian&texture=curly" (response->canonical-uri-query-string resp))))))
       (testing "non category page"
         (testing "without query params"
           (let [resp (->> "https://shop.mayvenn.com"

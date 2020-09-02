@@ -173,8 +173,8 @@
         query                  (some-> uri
                                        :query
                                        #?(:clj cemerick-url/query->map :cljs identity)
-                                       (select-keys permitted-query-params)
                                        (merge selections)
+                                       (select-keys permitted-query-params)
                                        accessors.categories/sort-query-params
                                        #?(:clj uri/map->query :cljs identity)
                                        not-empty)]

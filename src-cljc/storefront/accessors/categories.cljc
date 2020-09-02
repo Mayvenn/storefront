@@ -79,14 +79,16 @@
   id. E.g. 13-wigs with a selected family of 'lace-front-wigs' will have a
   canonical cateogry id of 24, or in other words, lace-front-wigs' category id."
   [categories requested-category current-nav-url]
-  (let [family-selection (some-> current-nav-url
+  (let [query-map        (some-> current-nav-url
                                  :query
                                  #?(:clj cemerick-url/query->map
-                                    :cljs identity)
+                                    :cljs identity))
+        family-selection (some-> query-map
                                  (get "family")
                                  (string/split #"~"))]
     (cond
-      (and family-selection (= (count family-selection) 1))
+      (and family-selection
+           (= (count family-selection) 1))
       (let [canonical-category (->> categories
                                     (filter #(and (= 1 (count (:hair/family %)))
                                                   (some (:hair/family %) family-selection)))
@@ -96,8 +98,9 @@
                                        first)]
         (merge {:category-id   (:catalog/category-id canonical-category)
                 :category-slug (:page/slug canonical-category)}
-               (when canonical-texture
-                 {:selections {:texture canonical-texture}})))
+               (if canonical-texture
+                 {:selections (merge query-map {"texture" canonical-texture})}
+                 {:selections query-map})))
 
       :else {:category-id   (:catalog/category-id requested-category)
              :category-slug (:page/slug requested-category)})))
