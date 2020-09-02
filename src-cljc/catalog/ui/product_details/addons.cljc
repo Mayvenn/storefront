@@ -56,6 +56,7 @@
 
 (c/defdynamic-component organism
   (did-mount [this]
+             #_
              (let [{:keys [related-addons] :as data} (c/get-props this)]
                (let [disabled (group-by :addon-line/disabled? related-addons)]
                  (handle-message e/visual-add-on-services-displayed
@@ -72,6 +73,7 @@
               [:div.pt2.pb3.flex.justify-center
                (cta-related-addon-molecule data)]]))))
 
+#_
 (defmethod trackings/perform-track e/visual-add-on-services-displayed
   [_ event {:addons/keys [available-sku-ids unavailable-sku-ids]} app-state]
   #?(:cljs
