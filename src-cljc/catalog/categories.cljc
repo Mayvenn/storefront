@@ -740,8 +740,8 @@
      :selector/electives  [:hair/weight :hair/texture :hair/color]
 
      :subcategory/image-id "d255ccf8-75af-4729-86da-af6e15783fc2"
-     :copy/title            "Clip-In Hair Extensions"
-     :copy/description      (copy "Get the hair of your dreams in an instant with our seamless clip-in extensions."
+     :copy/title           "Clip-In Hair Extensions"
+     :copy/description     (copy "Get the hair of your dreams in an instant with our seamless clip-in extensions."
                                   "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair."
                                   "Ditch the tracks for a clip-in experience that is truly seamless.")
 
@@ -751,6 +751,7 @@
                                   "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair.")
      :seo/title             "Clip-In Hair Extensions"
 
+     :category/image-url    "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
      :opengraph/title       "Mayvenn Clip-In Hair Extensions - Free shipping. Free 30 day returns. Made with 100% human hair extensions."
      :opengraph/description "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in extensions are the best quality products on the market and ships free!"
 
