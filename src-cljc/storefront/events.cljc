@@ -568,6 +568,9 @@
 (defpath stripe-payment-request-button-inserted)
 (defpath stripe-payment-request-button-removed)
 
+(defpath cart-interstitial-browse-stylist-mounted)
+(defpath cart-interstitial-free-mayvenn-service-tracker-mounted)
+
 
 ;; Spreedly
 

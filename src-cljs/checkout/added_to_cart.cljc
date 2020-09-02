@@ -1,5 +1,7 @@
 (ns checkout.added-to-cart
-  (:require api.orders
+  (:require #?@(:cljs [[storefront.frontend-trackings :as frontend-trackings]
+                       [storefront.hooks.stringer :as stringer]])
+            api.orders
             catalog.images
             catalog.services
             [checkout.shop.cart-v202004 :as cart]
@@ -7,16 +9,18 @@
             [promotion-helper.ui.drawer-contents :as drawer-contents]
             promotion-helper.ui
             spice.selector
+            storefront.trackings
             [storefront.accessors.images :as images]
             [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
-            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.money-formatters :as $]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            ui.molecules))
+            ui.molecules
+            [storefront.platform.messages :as messages]))
 
 (defn ^:private elements
   "Embed a list of organisms in another organism."
@@ -27,12 +31,32 @@
      (for [[idx elem] (map-indexed vector elems)]
        (component/build organism elem (component/component-id elem-key breakpoint idx))))))
 
-(defcomponent promotion-helper-component
-  [{:promotion-helper/keys [id] :as data} _ _]
-  (when id
-    [:div.p4.stretch
-     [:div.mt2.canela.title-3.center "FREE Mayvenn Service Tracker"]
-     (elements drawer-contents/drawer-contents-condition-organism data :promotion-helper.ui.drawer-contents/conditions)]))
+(defmethod storefront.trackings/perform-track events/cart-interstitial-free-mayvenn-service-tracker-mounted
+  [_ _ _ app-state]
+  #?(:cljs
+     (let [{waiter-order :waiter/order} (api.orders/current app-state)]
+       (stringer/track-event
+        "add_success_helper_displayed"
+        {:current_servicing_stylist_id (:servicing-stylist-id waiter-order)
+         :cart_items                   (frontend-trackings/cart-items-model<-
+                                        waiter-order
+                                        (get-in app-state keypaths/v2-images)
+                                        (get-in app-state keypaths/v2-skus))}))))
+
+(defdynamic-component promotion-helper-component
+  (did-mount [this]
+    (let [{:promotion-helper/keys [id]} (component/get-props this)]
+      (when id
+        (messages/handle-message events/cart-interstitial-free-mayvenn-service-tracker-mounted))))
+  (render [this]
+    (let [{:promotion-helper/keys [id] :as data} (component/get-props this)]
+      (component/html
+        (if id
+          [:div.p4.stretch
+          [:div.mt2.canela.title-3.center "FREE Mayvenn Service Tracker"]
+          (elements drawer-contents/drawer-contents-condition-organism data
+                    :promotion-helper.ui.drawer-contents/conditions)]
+          [:div])))))
 
 (defcomponent cta
   [{:cta/keys [primary id target label]} _ _]
@@ -44,19 +68,30 @@
              :data-test id)
       label)]))
 
-(defcomponent stylist-helper
-  [{:stylist-helper/keys [id target]} _ _]
-  (when id
-    [:div.p4.stretch
-     [:div.canela.title-3.center "No Stylist Selected"]
-     [:div.content-3
-      "Click below to find your licensed" [:br]
-      " Mayvenn certified stylist!"]
-     [:div.p2.flex.justify-around.mx-auto.mt3
-      (ui/button-small-primary
-       (assoc (apply utils/route-to target)
-              :data-test id)
-       "Browse Stylists")]]))
+(defmethod storefront.trackings/perform-track events/cart-interstitial-browse-stylist-mounted
+  [_ _ _ _]
+  #?(:cljs (stringer/track-event "add_success_browse_stylist_displayed" {})))
+
+(defdynamic-component stylist-helper
+  (did-mount [this]
+    (let [{:stylist-helper/keys [id]} (component/get-props this)]
+      (when id
+        (messages/handle-message events/cart-interstitial-browse-stylist-mounted))))
+  (render [this]
+    (let [{:stylist-helper/keys [id target]} (component/get-props this)]
+      (component/html
+        (if id
+          [:div.p4.stretch
+          [:div.canela.title-3.center "No Stylist Selected"]
+          [:div.content-3
+            "Click below to find your licensed" [:br]
+            " Mayvenn certified stylist!"]
+          [:div.p2.flex.justify-around.mx-auto.mt3
+            (ui/button-small-primary
+            (assoc (apply utils/route-to target)
+                    :data-test id)
+            "Browse Stylists")]]
+          [:div])))))
 
 (defcomponent component
   [{:as   queried-data
