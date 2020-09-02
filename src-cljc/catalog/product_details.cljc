@@ -160,7 +160,8 @@
            picker-data
            aladdin?
            ugc
-           addons] :as data} owner opts]
+           addons
+           add-to-cart] :as data} owner opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (if-not product
@@ -202,7 +203,7 @@
              (cond
                unavailable? unavailable-button
                sold-out?    sold-out-button
-               :else        (component/build add-to-cart/organism data))]
+               :else        (component/build add-to-cart/organism add-to-cart))]
             (when (products/stylist-only? product)
               shipping-and-guarantee)
             (component/build catalog.M/service-description data opts)
@@ -303,6 +304,74 @@
       disabled?
       (merge {:addon-line/checked?  (some #{sku-id} selected-addons)}))))
 
+(defn add-to-cart-query
+  [app-state]
+  (let [selected-sku                  (get-in app-state catalog.keypaths/detailed-product-selected-sku)
+        servicing-stylist             (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        product                       (products/current-product app-state)
+        addon-list-open?              (get-in app-state catalog.keypaths/detailed-product-addon-list-open?)
+        out-of-stock?                 (not (:inventory/in-stock? selected-sku))
+        base-service-already-in-cart? (boolean (some #(= (:catalog/sku-id selected-sku) (:sku %))
+                                                     (orders/service-line-items (get-in app-state keypaths/order))))
+        stylist-provides-service?     (stylist-filters/stylist-provides-service? servicing-stylist product)
+        service?                      (accessors.products/service? product)
+        stylist-mismatch?             (experiments/stylist-mismatch? app-state)
+        standalone-service?           (accessors.products/standalone-service? product)
+        free-mayvenn-service?         (accessors.products/product-is-mayvenn-install-service? product)
+        related-addons                (->> (get-in app-state catalog.keypaths/detailed-product-related-addons)
+                                         (map #(assoc %
+                                                      :stylist-provides?
+                                                      (stylist-filters/stylist-provides-service-by-sku-id? servicing-stylist (:catalog/sku-id %))))
+                                         (sort-by (juxt (comp not :stylist-provides?) :addon/sort))
+                                         ((if addon-list-open? identity (partial take 1))))
+        selected-addons               (get-in app-state catalog.keypaths/detailed-product-selected-addon-items)
+        associated-service-category   (cond
+                                        free-mayvenn-service? {:page/slug           "free-mayvenn-services"
+                                                               :catalog/category-id "31"}
+                                        standalone-service?   {:page/slug           "a-la-carte-salon-services"
+                                                               :catalog/category-id "35"}
+                                        :else                 nil)]
+    (cond->
+        {:cta/id                             "add-to-cart"
+         :cta/label                          "Add to Cart"
+         :cta/target                         [events/control-add-sku-to-bag
+                                              {:sku      selected-sku
+                                               :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
+         :cta/spinning?                      (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+         :cta/disabled?                      false}
+
+      out-of-stock?
+      (merge {:cta/disabled? true})
+
+      base-service-already-in-cart?
+      (merge {:cta/disabled? true
+              :cta/label     "Already In Cart"})
+
+      (and (experiments/add-on-services? app-state)
+           service?
+           (seq related-addons))
+      (merge (spice.core/spy {:cta/target [events/control-bulk-add-to-bag
+                                           {:items (concat
+                                                    [{:sku      selected-sku
+                                                      :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
+                                                    (->> related-addons
+                                                         (filter (comp (set selected-addons) :catalog/sku-id))
+                                                         (mapv (fn [addon]
+                                                                 {:sku      addon
+                                                                  :quantity 1}))))}]
+
+                              :cta/spinning? (utils/requesting-from-endpoint? app-state request-keys/add-to-bag)}))
+
+      (and stylist-mismatch?
+           service?
+           servicing-stylist
+           (not stylist-provides-service?))
+      (merge {:cta/disabled?                       true
+              :cta-disabled-explanation/id         "disabled-explanation"
+              :cta-disabled-explanation/primary    (str "Not available with your stylist " (:store-nickname servicing-stylist))
+              :cta-disabled-explanation/cta-label  "Browse other services"
+              :cta-disabled-explanation/cta-target [events/navigate-category associated-service-category]}))))
+
 (defn addons-query
   [app-state]
   (let [selected-sku                  (get-in app-state catalog.keypaths/detailed-product-selected-sku)
@@ -331,17 +400,7 @@
                                      first
                                      :addons
                                      (map :sku-id))]
-         {:cta/target               [events/control-bulk-add-to-bag
-                                     {:items (concat
-                                              [{:sku      selected-sku
-                                                :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
-                                              (->> related-addons
-                                                   (filter (comp (set selected-addons) :catalog/sku-id))
-                                                   (mapv (fn [addon]
-                                                           {:sku      addon
-                                                            :quantity 1}))))}]
-          :cta/spinning?            (utils/requesting-from-endpoint? app-state request-keys/add-to-bag)
-          :cta-related-addon/label  (if addon-list-open? "hide add-ons" "see all add-ons")
+         {:cta-related-addon/label  (if addon-list-open? "hide add-ons" "see all add-ons")
           :cta-related-addon/id     "addon-cta"
           :cta-related-addon/target [events/control-product-detail-toggle-related-addon-list]
           :related-addons           (mapv (fn [{:keys [:catalog/sku-id :sku/title :copy/description :sku/price stylist-provides?]}]
@@ -386,13 +445,10 @@
         carousel-images               (find-carousel-images product product-skus images-catalog
                                                             (select-keys selections [:hair/color])
                                                             selected-sku)
-        base-service-already-in-cart? (boolean (some #(= (:catalog/sku-id selected-sku) (:sku %))
-                                                     (orders/service-line-items (get-in data keypaths/order))))
         options                       (get-in data catalog.keypaths/detailed-product-options)
         ugc                           (ugc-query product selected-sku data)
         sku-price                     (:sku/price selected-sku)
         review-data                   (review-component/query data)
-        out-of-stock?                 (not (:inventory/in-stock? selected-sku))
         shop?                         (= "shop" (get-in data keypaths/store-slug))
         sku-family                    (-> selected-sku :hair/family first)
         free-mayvenn-service?         (accessors.products/product-is-mayvenn-install-service? product)
@@ -408,14 +464,7 @@
         mayvenn-install-incentive-families   #{"bundles" "closures" "frontals" "360-frontals"}
         wig-customization-incentive-families #{"360-wigs" "lace-front-wigs"}
         stylist-mismatch?                    (experiments/stylist-mismatch? data)
-        servicing-stylist                    (get-in data adventure.keypaths/adventure-servicing-stylist)
-        stylist-provides-service?            (stylist-filters/stylist-provides-service? servicing-stylist product)
-        associated-service-category          (cond
-                                               free-mayvenn-service? {:page/slug           "free-mayvenn-services"
-                                                                      :catalog/category-id "31"}
-                                               standalone-service?   {:page/slug           "a-la-carte-salon-services"
-                                                                      :catalog/category-id "35"}
-                                               :else                 nil)]
+        servicing-stylist                    (get-in data adventure.keypaths/adventure-servicing-stylist)]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -436,21 +485,8 @@
       :facets                             facets
       :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
       :picker-data                        (picker/query data)
-      :carousel-images                    carousel-images
-      :cta/id                             "add-to-cart"
-      :cta/label                          "Add to Cart"
-      :cta/target                         [events/control-add-sku-to-bag
-                                           {:sku      selected-sku
-                                            :quantity (get-in data keypaths/browse-sku-quantity 1)}]
-      :cta/spinning?                      (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-      :cta/disabled?                      false}
+      :carousel-images                    carousel-images}
 
-     (when out-of-stock?
-       {:cta/disabled? true})
-
-     (when base-service-already-in-cart?
-       {:cta/disabled? true
-        :cta/label     "Already In Cart"})
 
      (when (and (not service?) sku-price)
        {:price-block/primary   (mf/as-money sku-price)
@@ -720,21 +756,12 @@
         :stylist-bar.thumbnail/id   "stylist-bar-thumbnail"
         :stylist-bar.thumbnail/url  (-> servicing-stylist :portrait :resizable-url)
         :stylist-bar.action/primary "change"
-        :stylist-bar.action/target  [events/navigate-adventure-find-your-stylist {}]})
-
-     (when (and stylist-mismatch?
-                service?
-                servicing-stylist
-                (not stylist-provides-service?))
-       {:cta/disabled?                       true
-        :cta-disabled-explanation/id         "disabled-explanation"
-        :cta-disabled-explanation/primary    (str "Not available with your stylist " (:store-nickname servicing-stylist))
-        :cta-disabled-explanation/cta-label  "Browse other services"
-        :cta-disabled-explanation/cta-target [events/navigate-category associated-service-category]}))))
+        :stylist-bar.action/target  [events/navigate-adventure-find-your-stylist {}]}))))
 
 (defn ^:export built-component [app-state opts]
   (component/build component (merge (query app-state)
-                                    {:addons (addons-query app-state)}) opts))
+                                    {:addons      (addons-query app-state)
+                                     :add-to-cart (add-to-cart-query app-state)}) opts))
 
 (defn get-valid-product-skus [product all-skus]
   (->> product
