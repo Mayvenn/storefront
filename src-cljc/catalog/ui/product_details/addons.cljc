@@ -10,12 +10,14 @@
             #?@(:cljs
                 [[storefront.hooks.stringer :as stringer]])))
 
-(defn addon-card [{:addon-line/keys [id target primary secondary tertiary checked? spinning? disabled? disabled-reason]}]
+(defn addon-card
+  [{:addon-line/keys [id target primary secondary tertiary checked? spinning? disabled? disabled-reason]}]
   [:div.mx3.my1.bg-white.p2
-   (when disabled? {:class "dark-gray"})
+   (cond-> {:key id}
+     disabled?
+     (assoc :class "dark-gray"))
    [:div.flex
-    (merge (when-not disabled? (apply utils/fake-href target))
-           {:key id})
+    (when-not disabled? (apply utils/fake-href target))
     (if spinning?
       [:div.mt1
        [:div.pr2 {:style {:width "41px"}}
@@ -30,6 +32,28 @@
      [:div.content-3.red disabled-reason]]
     [:div tertiary]]])
 
+(defn pair-with-addons-title-molecule
+  [_]
+  (c/html
+   [:div.title-3.proxima.bold.shout "Pair with add-ons"]))
+
+(defn offshoot-action-molecule
+  [{:offshoot-action/keys [label target id]}]
+  (c/html
+   (when id
+     (ui/button-small-underline-primary (merge {:key id}
+                                               (apply utils/fake-href target))
+                                        label))))
+
+(defn cta-related-addon-molecule
+  [{:cta-related-addon/keys [label target id]}]
+  (c/html
+   (when id
+     (ui/button-small-underline-primary (merge (apply utils/route-to target)
+                                               {:id        id
+                                                :data-test id})
+                                        label))))
+
 (c/defdynamic-component organism
   (did-mount [this]
              (let [{:keys [related-addons] :as data} (c/get-props this)]
@@ -39,22 +63,14 @@
                                   :addons/unavailable-sku-ids (mapv :addon-line/id (get disabled true))}))))
   (render [this]
           (let [{:keys [related-addons] :as data} (c/get-props this)]
-            (let [{:cta-related-addon/keys [label target id]} data]
-              (c/html
-               [:div.bg-cool-gray
-                [:div.px3.pt2.flex.justify-between.items-baseline
-                 [:div.title-3.proxima.bold.shout "Pair with add-ons"]
-                 (let [{:offshoot-action/keys [label target id]} data]
-                   (when id
-                     (ui/button-small-underline-primary (merge {:key id}
-                                                               (apply utils/fake-href target))
-                                                        label)))]
-                (mapv addon-card related-addons)
-                [:div.pt2.pb3.flex.justify-center
-                 (ui/button-small-underline-primary (merge (apply utils/route-to target)
-                                                           {:id        id
-                                                            :data-test id})
-                                                    label)]])))))
+            (c/html
+             [:div.bg-cool-gray
+              [:div.px3.pt2.flex.justify-between.items-baseline
+               (pair-with-addons-title-molecule data)
+               (offshoot-action-molecule data)]
+              (mapv addon-card related-addons)
+              [:div.pt2.pb3.flex.justify-center
+               (cta-related-addon-molecule data)]]))))
 
 (defmethod trackings/perform-track e/visual-add-on-services-displayed
   [_ event {:addons/keys [available-sku-ids unavailable-sku-ids]} app-state]
