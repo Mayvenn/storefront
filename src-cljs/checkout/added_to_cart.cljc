@@ -1,6 +1,7 @@
 (ns checkout.added-to-cart
   (:require #?@(:cljs [[storefront.frontend-trackings :as frontend-trackings]
-                       [storefront.hooks.stringer :as stringer]])
+                       [storefront.hooks.stringer :as stringer]
+                       [storefront.history :as history]])
             api.orders
             catalog.images
             catalog.services
@@ -10,6 +11,7 @@
             promotion-helper.ui
             spice.selector
             storefront.trackings
+            storefront.effects
             [storefront.accessors.images :as images]
             [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
@@ -58,6 +60,14 @@
                     :promotion-helper.ui.drawer-contents/conditions)]
           [:div])))))
 
+(defmethod storefront.effects/perform-effects events/control-cart-interstitial-browse-stylist-cta
+  [_ _ _ _ _]
+  #?(:cljs (history/enqueue-navigate events/navigate-adventure-match-stylist)))
+
+(defmethod storefront.trackings/perform-track events/control-cart-interstitial-browse-stylist-cta
+  [_ _ _ _]
+  #?(:cljs (stringer/track-event "add_success_browse_stylist_button_pressed" {})))
+
 (defcomponent cta
   [{:cta/keys [primary id target label]} _ _]
   (when id
@@ -87,9 +97,9 @@
             "Click below to find your licensed" [:br]
             " Mayvenn certified stylist!"]
           [:div.p2.flex.justify-around.mx-auto.mt3
-            (ui/button-small-primary
-            (assoc (apply utils/route-to target)
-                    :data-test id)
+           (ui/button-small-primary
+            (assoc (apply utils/fake-href target)
+                   :data-test id)
             "Browse Stylists")]]
           [:div])))))
 
@@ -252,10 +262,10 @@
                                 (api.orders/free-mayvenn-service servicing-stylist order))
                                {:promotion-helper/id "free-mayvenn-service-tracker"}))
 
-       (and (seq a-la-carte-service-line-items)  (nil? servicing-stylist))
+       (and (seq a-la-carte-service-line-items) (nil? servicing-stylist))
        {:stylist-helper/id     "browse-stylists"
         :stylist-helper/label  "Browse Stylists"
-        :stylist-helper/target [events/navigate-adventure-match-stylist]}
+        :stylist-helper/target [events/control-cart-interstitial-browse-stylist-cta]}
 
        :else
        {:cta/target [events/navigate-cart]

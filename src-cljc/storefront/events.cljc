@@ -570,6 +570,7 @@
 
 (defpath cart-interstitial-browse-stylist-mounted)
 (defpath cart-interstitial-free-mayvenn-service-tracker-mounted)
+(defpath control-cart-interstitial-browse-stylist-cta)
 
 
 ;; Spreedly
