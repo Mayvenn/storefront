@@ -115,8 +115,10 @@
 (defn category-tags [data]
   (let [categories            (get-in data keypaths/categories)
         canonical-category-id (:category-id (accessors.categories/canonical-category-data
-                                             (get-in data catalog.keypaths/category-id)
                                              categories
+                                             (accessors.categories/id->category
+                                              (get-in data catalog.keypaths/category-id)
+                                              categories)
                                              (get-in data keypaths/navigation-uri)))
         category              (accessors.categories/id->category canonical-category-id categories)
         allowed-query-params  (category->allowed-query-params category)

@@ -757,7 +757,7 @@
          :let                    [query-params (accessors.categories/category-selections->query-params {facet-id [facet-value]})
                                   canonical-category-id (:category-id (accessors.categories/canonical-category-data
                                                                        categories
-                                                                       category-id
+                                                                       (accessors.categories/id->category category-id categories)
                                                                        {:query (codec/form-encode query-params)}))]
          :when (= category-id canonical-category-id)]
      [(str "https://shop.mayvenn.com" (routes/path-for events/navigate-category
