@@ -583,3 +583,5 @@
 
 (defpath visual-add-on-services-displayed)
 
+(defpath service-model-requested)
+(defpath service-model-fetched)
