@@ -306,31 +306,37 @@
 
 (defn add-to-cart-query
   [app-state]
-  (let [selected-sku                  (get-in app-state catalog.keypaths/detailed-product-selected-sku)
-        servicing-stylist             (get-in app-state adventure.keypaths/adventure-servicing-stylist)
-        product                       (products/current-product app-state)
-        addon-list-open?              (get-in app-state catalog.keypaths/detailed-product-addon-list-open?)
-        out-of-stock?                 (not (:inventory/in-stock? selected-sku))
-        base-service-already-in-cart? (boolean (some #(= (:catalog/sku-id selected-sku) (:sku %))
-                                                     (orders/service-line-items (get-in app-state keypaths/order))))
-        stylist-provides-service?     (stylist-filters/stylist-provides-service? servicing-stylist product)
-        service?                      (accessors.products/service? product)
-        stylist-mismatch?             (experiments/stylist-mismatch? app-state)
-        standalone-service?           (accessors.products/standalone-service? product)
-        free-mayvenn-service?         (accessors.products/product-is-mayvenn-install-service? product)
-        related-addons                (->> (get-in app-state catalog.keypaths/detailed-product-related-addons)
-                                           (map #(assoc %
-                                                        :stylist-provides?
-                                                        (stylist-filters/stylist-provides-service-by-sku-id? servicing-stylist (:catalog/sku-id %))))
-                                           (sort-by (juxt (comp not :stylist-provides?) :addon/sort))
-                                           ((if addon-list-open? identity (partial take 1))))
-        selected-addons               (get-in app-state catalog.keypaths/detailed-product-selected-addon-items)
-        associated-service-category   (cond
-                                        free-mayvenn-service? {:page/slug           "free-mayvenn-services"
-                                                               :catalog/category-id "31"}
-                                        standalone-service?   {:page/slug           "a-la-carte-salon-services"
-                                                               :catalog/category-id "35"}
-                                        :else                 nil)]
+  (let [selected-sku                         (get-in app-state catalog.keypaths/detailed-product-selected-sku)
+        servicing-stylist                    (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        product                              (products/current-product app-state)
+        addon-list-open?                     (get-in app-state catalog.keypaths/detailed-product-addon-list-open?)
+        out-of-stock?                        (not (:inventory/in-stock? selected-sku))
+        base-service-already-in-cart?        (boolean (some #(= (:catalog/sku-id selected-sku) (:sku %))
+                                                            (orders/service-line-items (get-in app-state keypaths/order))))
+        stylist-provides-service?            (stylist-filters/stylist-provides-service? servicing-stylist product)
+        shop?                                (= "shop" (get-in app-state keypaths/store-slug))
+        service?                             (accessors.products/service? product)
+        sku-price                            (:sku/price selected-sku)
+        stylist-mismatch?                    (experiments/stylist-mismatch? app-state)
+        standalone-service?                  (accessors.products/standalone-service? product)
+        free-mayvenn-service?                (accessors.products/product-is-mayvenn-install-service? product)
+        quadpay-loaded?                      (get-in app-state keypaths/loaded-quadpay)
+        sku-family                           (-> selected-sku :hair/family first)
+        related-addons                       (->> (get-in app-state catalog.keypaths/detailed-product-related-addons)
+                                                  (map #(assoc %
+                                                               :stylist-provides?
+                                                               (stylist-filters/stylist-provides-service-by-sku-id? servicing-stylist (:catalog/sku-id %))))
+                                                  (sort-by (juxt (comp not :stylist-provides?) :addon/sort))
+                                                  ((if addon-list-open? identity (partial take 1))))
+        mayvenn-install-incentive-families   #{"bundles" "closures" "frontals" "360-frontals"}
+        wig-customization-incentive-families #{"360-wigs" "lace-front-wigs"}
+        selected-addons                      (get-in app-state catalog.keypaths/detailed-product-selected-addon-items)
+        associated-service-category          (cond
+                                               free-mayvenn-service? {:page/slug           "free-mayvenn-services"
+                                                                      :catalog/category-id "31"}
+                                               standalone-service?   {:page/slug           "a-la-carte-salon-services"
+                                                                      :catalog/category-id "35"}
+                                               :else                 nil)]
     (cond->
         {:cta/id        "add-to-cart"
          :cta/label     "Add to Cart"
@@ -347,20 +353,45 @@
       (merge {:cta/disabled? true
               :cta/label     "Already In Cart"})
 
+      (and shop?
+           (not service?)
+           (mayvenn-install-incentive-families sku-family))
+      (merge       {:add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
+                    :add-to-cart.incentive-block/footnote    "*Mayvenn Services cannot be combined with other promotions"
+                    :add-to-cart.incentive-block/link-id     "learn-more-mayvenn-install"
+                    :add-to-cart.incentive-block/link-label  "Learn more"
+                    :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
+                    :add-to-cart.incentive-block/message     (str "Get a free Mayvenn Service by a licensed "
+                                                                  "stylist with qualifying purchases.* ")})
+      (and shop?
+           (not service?)
+           (wig-customization-incentive-families sku-family))
+      (merge
+       {:add-to-cart.incentive-block/id       "add-to-cart-incentive-block"
+        :add-to-cart.incentive-block/callout  "✋Don't miss out on free Wig Customization"
+        :add-to-cart.incentive-block/footnote "*Wig Customization cannot be combined with other promotions"
+        :add-to-cart.incentive-block/message  (str "Get a free Wig Customization by a licensed stylist when "
+                                                   "you purchase a Virgin Lace Front Wig or Virgin 360 Wig.")})
+
       (and (experiments/add-on-services? app-state)
            service?
            (seq related-addons))
-      (merge (spice.core/spy {:cta/target [events/control-bulk-add-to-bag
-                                           {:items (concat
-                                                    [{:sku      selected-sku
-                                                      :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
-                                                    (->> related-addons
-                                                         (filter (comp (set selected-addons) :catalog/sku-id))
-                                                         (mapv (fn [addon]
-                                                                 {:sku      addon
-                                                                  :quantity 1}))))}]
+      (merge {:cta/target [events/control-bulk-add-to-bag
+                           {:items (concat
+                                    [{:sku      selected-sku
+                                      :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
+                                    (->> related-addons
+                                         (filter (comp (set selected-addons) :catalog/sku-id))
+                                         (mapv (fn [addon]
+                                                 {:sku      addon
+                                                  :quantity 1}))))}]
 
-                              :cta/spinning? (utils/requesting-from-endpoint? app-state request-keys/add-to-bag)}))
+              :cta/spinning? (utils/requesting-from-endpoint? app-state request-keys/add-to-bag)})
+
+      (not (accessors.products/product-is-mayvenn-install-service? selected-sku))
+      (merge
+       {:add-to-cart.quadpay/loaded? quadpay-loaded?
+        :add-to-cart.quadpay/price   sku-price})
 
       (and stylist-mismatch?
            service?
@@ -450,7 +481,6 @@
         sku-price                     (:sku/price selected-sku)
         review-data                   (review-component/query data)
         shop?                         (= "shop" (get-in data keypaths/store-slug))
-        sku-family                    (-> selected-sku :hair/family first)
         free-mayvenn-service?         (accessors.products/product-is-mayvenn-install-service? product)
         wig-construction-service?     (accessors.products/wig-construction-service? product)
         standalone-service?           (accessors.products/standalone-service? product)
@@ -461,8 +491,6 @@
         reinstall-service?            (= #{"reinstall"}   (:service/category product))
         wig-customization?            (= #{"SRV-WGC-000"} (:catalog/sku-id product))
 
-        mayvenn-install-incentive-families   #{"bundles" "closures" "frontals" "360-frontals"}
-        wig-customization-incentive-families #{"360-wigs" "lace-front-wigs"}
         stylist-mismatch?                    (experiments/stylist-mismatch? data)
         servicing-stylist                    (get-in data adventure.keypaths/adventure-servicing-stylist)]
     (merge
@@ -487,35 +515,9 @@
       :picker-data                        (picker/query data)
       :carousel-images                    carousel-images}
 
-
      (when (and (not service?) sku-price)
        {:price-block/primary   (mf/as-money sku-price)
         :price-block/secondary "each"})
-
-     (when (not (accessors.products/product-is-mayvenn-install-service? selected-sku))
-       {:add-to-cart.quadpay/loaded? (get-in data keypaths/loaded-quadpay)
-        :add-to-cart.quadpay/price   sku-price})
-
-     (when (and shop?
-                (not service?)
-                (mayvenn-install-incentive-families sku-family))
-       {:add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
-        :add-to-cart.incentive-block/footnote    "*Mayvenn Services cannot be combined with other promotions"
-        :add-to-cart.incentive-block/link-id     "learn-more-mayvenn-install"
-        :add-to-cart.incentive-block/link-label  "Learn more"
-        :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
-        :add-to-cart.incentive-block/message     (str "Get a free Mayvenn Service by a licensed "
-                                                      "stylist with qualifying purchases.* ")})
-
-     (when (and shop?
-                (not service?)
-                (wig-customization-incentive-families sku-family))
-       (merge
-        {:add-to-cart.incentive-block/id       "add-to-cart-incentive-block"
-         :add-to-cart.incentive-block/callout  "✋Don't miss out on free Wig Customization"
-         :add-to-cart.incentive-block/footnote "*Wig Customization cannot be combined with other promotions"
-         :add-to-cart.incentive-block/message  (str "Get a free Wig Customization by a licensed stylist when "
-                                                    "you purchase a Virgin Lace Front Wig or Virgin 360 Wig.")}))
 
      (when hair?
        (let [active-tab-name (get-in data keypaths/product-details-information-tab)]
