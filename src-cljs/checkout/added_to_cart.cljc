@@ -233,6 +233,11 @@
         recently-added-sku-ids->quantities (get-in data storefront.keypaths/cart-recently-added-skus)
         products                           (get-in data keypaths/v2-products)
         facets                             (get-in data keypaths/v2-facets)
+        a-la-carte-service-in-cart?        (->> order
+                                                orders/service-line-items
+                                                (filter line-items/standalone-service?)
+                                                seq
+                                                boolean)
         recent-line-items                  (->> order
                                                 orders/product-and-service-items
                                                 (filter (fn [{:keys [sku]}] (contains? recently-added-sku-ids->quantities sku)))
@@ -282,7 +287,7 @@
                                 (api.orders/free-mayvenn-service servicing-stylist order))
                                {:promotion-helper/id "free-mayvenn-service-tracker"}))
 
-       (and (seq a-la-carte-service-line-items) (nil? servicing-stylist))
+       (and a-la-carte-service-in-cart? (nil? servicing-stylist))
        {:stylist-helper/id     "browse-stylists"
         :stylist-helper/label  "Browse Stylists"
         :stylist-helper/target [events/control-cart-interstitial-browse-stylist-cta]}
