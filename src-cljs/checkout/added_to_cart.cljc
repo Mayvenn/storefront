@@ -278,7 +278,7 @@
                                      servicing-stylist)
                               {:cta/target  [events/control-cart-interstitial-view-cart]
                                :cta/label   "Go to Cart"
-                               :cta/id      "navigate-cart"
+                               :cta/id      "go-to-cart-cta-discounted-service"
                                :cta/primary "🎉 Great work! Free service unlocked!"}
 
                               (merge
@@ -295,7 +295,7 @@
        :else
        {:cta/target [events/control-cart-interstitial-view-cart]
         :cta/label  "Go to Cart"
-        :cta/id     "navigate-cart"}))))
+        :cta/id     "go-to-cart-cta"}))))
 
 (defn ^:export built-component
   [data opts]
