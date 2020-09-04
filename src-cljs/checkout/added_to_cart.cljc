@@ -106,18 +106,18 @@
   (render [this]
     (let [{:stylist-helper/keys [id target]} (component/get-props this)]
       (component/html
-        (if id
-          [:div.p4.stretch
+       (if id
+         [:div.p4.stretch
           [:div.canela.title-3.center "No Stylist Selected"]
           [:div.content-3
-            "Click below to find your licensed" [:br]
-            " Mayvenn certified stylist!"]
+           "Click below to find your licensed" [:br]
+           " Mayvenn certified stylist!"]
           [:div.p2.flex.justify-around.mx-auto.mt3
            (ui/button-small-primary
             (assoc (apply utils/fake-href target)
                    :data-test id)
             "Browse Stylists")]]
-          [:div])))))
+         [:div])))))
 
 (defcomponent component
   [{:as   queried-data
@@ -127,28 +127,27 @@
    owner _]
   [:div.container
    [:div.p2 (ui.molecules/return-link queried-data)]
-   [:div.bg-refresh-gray {:style {:min-height "100vh"}}
+   [:div.bg-refresh-gray.stretch
     [:div.p3
-     [:div.canela.title-2.center.my4 title]
+     [:div.canela.title-2.center.my4 {:data-test "cart-interstitial-title"} title]
      (for [service-line-item service-line-items]
        [:div.mt2-on-mb
         (component/build cart-item-v202004/organism {:cart-item service-line-item}
                          (component/component-id (:react/key service-line-item)))])
      (when (seq cart-items)
        [:div.mt3
-        [:div
-         {:data-test "cart-interstitial-line-items"}
-         (for [[index cart-item] (map-indexed vector cart-items)
-               :let              [react-key (:react/key cart-item)]
-               :when             react-key]
-           [:div
-            {:key (str index "-cart-item-" react-key)}
-            (when-not (zero? index)
-              [:div.flex.bg-white
-               [:div.ml2 {:style {:width "75px"}}]
-               [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
-            (component/build cart-item-v202004/organism {:cart-item cart-item}
-                             (component/component-id (str index "-cart-item-" react-key)))])]])
+        {:data-test "cart-interstitial-line-items"}
+        (for [[index cart-item] (map-indexed vector cart-items)
+              :let              [react-key (:react/key cart-item)]
+              :when             react-key]
+          [:div
+           {:key (str index "-cart-item-" react-key)}
+           (when-not (zero? index)
+             [:div.flex.bg-white
+              [:div.ml2 {:style {:width "75px"}}]
+              [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
+           (component/build cart-item-v202004/organism {:cart-item cart-item}
+                            (component/component-id (str index "-cart-item-" react-key)))])])
 
      (component/build cta queried-data nil)]
 
@@ -161,9 +160,9 @@
   [sku-db images-db free-service-line-item addon-skus]
   (let [sku-id (:sku free-service-line-item)]
     (when-let [service-sku (get sku-db sku-id)]
-      [(merge {:react/key                             (str "free-service-" sku-id)
-               :cart-item-title/id                    (str "free-service-title-" sku-id)
-               :cart-item-floating-box/id             (str "free-service-price-" sku-id)
+      [(merge {:react/key                             (str "line-item-" sku-id)
+               :cart-item-title/id                    (str "line-item-title-" sku-id)
+               :cart-item-floating-box/id             (str "line-item-price-" sku-id)
                :cart-item-copy/lines                  [{:id    (str "line-item-requirements-" sku-id)
                                                         :value (:promo.mayvenn-install/requirement-copy service-sku)}
                                                        {:id    (str "line-item-quantity-" sku-id)
@@ -171,7 +170,7 @@
                :cart-item-floating-box/value          [:span
                                                        [:div.strike (some-> free-service-line-item line-items/service-line-item-price $/as-money)]
                                                        [:div.s-color "FREE"]]
-               :cart-item-service-thumbnail/id        (str "free-service-thumbnail-" sku-id)
+               :cart-item-service-thumbnail/id        (str "line-item-thumbnail-" sku-id)
                :cart-item-service-thumbnail/image-url (->> service-sku (images/skuer->image images-db "cart") :url)
                :cart-item-title/primary               (:variant-name free-service-line-item)}
               (when (seq addon-skus)
@@ -212,7 +211,8 @@
   [sku-db images-db line-items]
   (for [{sku-id :sku :as service-line-item} line-items
         :let
-        [sku   (get sku-db sku-id) price (or (:sku/price service-line-item)
+        [sku   (get sku-db sku-id)
+         price (or (:sku/price service-line-item)
                    (:unit-price service-line-item))]]
     {:react/key                             sku-id
      :cart-item-title/primary               (or (:product-title service-line-item)
@@ -269,8 +269,8 @@
                                                             :page/slug           "mayvenn-install"}]
       :return-link/id            "continue-shopping-link"}
      (cond
-       free-mayvenn-service (if  (and (:free-mayvenn-service/discounted? free-mayvenn-service)
-                                      servicing-stylist)
+       free-mayvenn-service (if (and (:free-mayvenn-service/discounted? free-mayvenn-service)
+                                     servicing-stylist)
                               {:cta/target  [events/control-cart-interstitial-view-cart]
                                :cta/label   "Go to Cart"
                                :cta/id      "navigate-cart"
