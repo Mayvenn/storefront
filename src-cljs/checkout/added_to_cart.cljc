@@ -245,29 +245,34 @@
                                                 ;; NOTE: enables selecting later on
                                                 (map #(merge (:variant-attrs %) %)))
 
-        physical-line-items            (->> recent-line-items
-                                            (filter line-items/product?)
-                                            (map (partial cart/add-product-title-and-color-to-line-item products facets)))
-        free-mayvenn-service-line-item (->> recent-line-items
-                                            (spice.selector/match-all {:selector/strict? true}
-                                                                      catalog.services/discountable)
-                                            first)
+        recent-physical-line-items            (->> recent-line-items
+                                                   (filter line-items/product?)
+                                                   (map (partial cart/add-product-title-and-color-to-line-item products facets)))
+        recent-free-mayvenn-service-line-item (->> recent-line-items
+                                                   (spice.selector/match-all {:selector/strict? true}
+                                                                             catalog.services/discountable)
+                                                   first)
+        recent-a-la-carte-service-line-items (->> recent-line-items
+                                                  (spice.selector/match-all {:selector/strict? true}
+                                                                                    catalog.services/a-la-carte))
+        recent-addon-service-skus            (->> recent-line-items
+                                                  (spice.selector/match-all {:selector/strict? true}
+                                                                                    catalog.services/addons)
+                                                          (map (fn [addon-service] (get sku-db (:sku addon-service)))))
 
-        a-la-carte-service-line-items         (->> recent-line-items
-                                                   (spice.selector/match-all {:selector/strict? true}
-                                                                             catalog.services/a-la-carte))
-        addon-service-skus                    (->> recent-line-items
-                                                   (spice.selector/match-all {:selector/strict? true}
-                                                                             catalog.services/addons)
-                                                   (map (fn [addon-service] (get sku-db (:sku addon-service)))))
         {servicing-stylist :services/stylist} (api.orders/services data order)
         free-mayvenn-service                  (api.orders/free-mayvenn-service servicing-stylist order)]
     (merge
-     {:title                     (str (ui/pluralize-with-amount (->> recent-line-items (mapv :quantity) (reduce + 0)) "Item") " Added")
+     {:title                     (str (ui/pluralize-with-amount (->> recent-physical-line-items
+                                                                     (cons recent-free-mayvenn-service-line-item)
+                                                                     (concat recent-a-la-carte-service-line-items)
+                                                                     (mapv :quantity)
+                                                                     (reduce + 0)) "Item")
+                                      " Added")
       :service-line-items        (concat
-                                  (free-service-line-item-query sku-db images-db free-mayvenn-service-line-item addon-service-skus)
-                                  (a-la-carte-service-line-items-query sku-db images-db a-la-carte-service-line-items))
-      :cart-items                (cart-items-query sku-db images-db physical-line-items)
+                                  (free-service-line-item-query sku-db images-db recent-free-mayvenn-service-line-item recent-addon-service-skus)
+                                  (a-la-carte-service-line-items-query sku-db images-db recent-a-la-carte-service-line-items))
+      :cart-items                (cart-items-query sku-db images-db recent-physical-line-items)
       :return-link/back          (first (get-in data keypaths/navigation-undo-stack))
       :return-link/copy          "Continue Shopping"
       :return-link/event-message [events/navigate-category {:catalog/category-id "23",
@@ -283,7 +288,7 @@
 
                               (merge
                                (promotion-helper.ui/drawer-contents-ui<-
-                                (get sku-db (:sku free-mayvenn-service-line-item))
+                                (->> free-mayvenn-service :free-mayvenn-service/service-item :sku (get sku-db))
                                 (api.orders/free-mayvenn-service servicing-stylist order))
                                {:promotion-helper/id "free-mayvenn-service-tracker"}))
 
