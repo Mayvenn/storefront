@@ -127,7 +127,7 @@
             "Browse Stylists")]]
          [:div])))))
 
-(defcomponent component
+(defcomponent template
   [{:as   queried-data
     :keys [title
            service-line-items
@@ -311,4 +311,4 @@
 
 (defn ^:export built-component
   [data opts]
-  (component/build component (query data) opts))
+  (component/build template (query data) opts))
