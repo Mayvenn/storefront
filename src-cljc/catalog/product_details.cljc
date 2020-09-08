@@ -412,12 +412,13 @@
         service?                      (accessors.products/service? product)
         stylist-provides-service?     (stylist-filters/stylist-provides-service? servicing-stylist product)
         addon-list-open?              (get-in app-state catalog.keypaths/detailed-product-addon-list-open?)
-        related-addons                (->> (get-in app-state catalog.keypaths/detailed-product-related-addons)
-                                           (map #(assoc %
-                                                        :stylist-provides?
-                                                        (stylist-filters/stylist-provides-service-by-sku-id? servicing-stylist (:catalog/sku-id %))))
-                                           (sort-by (juxt (comp not :stylist-provides?) :addon/sort))
-                                           ((if addon-list-open? identity (partial take 1))))
+        related-addons                (when (accessors.products/product-is-mayvenn-install-service? product)
+                                        (->> (get-in app-state catalog.keypaths/detailed-product-related-addons)
+                                             (map #(assoc %
+                                                          :stylist-provides?
+                                                          (stylist-filters/stylist-provides-service-by-sku-id? servicing-stylist (:catalog/sku-id %))))
+                                             (sort-by (juxt (comp not :stylist-provides?) :addon/sort))
+                                             ((if addon-list-open? identity (partial take 1)))))
         selected-addons               (get-in app-state catalog.keypaths/detailed-product-selected-addon-items)
         base-service-already-in-cart? (boolean (some #(= (:catalog/sku-id selected-sku) (:sku %))
                                                      (orders/service-line-items (get-in app-state keypaths/order))))]
