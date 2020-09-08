@@ -132,10 +132,11 @@
     :keys [title
            service-line-items
            cart-items
-           spinning?]}
+           spinning?
+           return-link]}
    owner _]
   [:div.container
-   [:div.p2 (ui.molecules/return-link queried-data)]
+   [:div.p2 (ui.molecules/return-link return-link)]
    (if spinning?
      [:div ui/spinner]
      [:div.bg-refresh-gray.stretch
@@ -258,33 +259,28 @@
                                                    (spice.selector/match-all {:selector/strict? true}
                                                                              catalog.services/discountable)
                                                    first)
-        recent-a-la-carte-service-line-items (->> recent-line-items
-                                                  (spice.selector/match-all {:selector/strict? true}
-                                                                                    catalog.services/a-la-carte))
-        recent-addon-service-skus            (->> recent-line-items
-                                                  (spice.selector/match-all {:selector/strict? true}
-                                                                                    catalog.services/addons)
-                                                          (map (fn [addon-service] (get sku-db (:sku addon-service)))))
+        recent-a-la-carte-service-line-items  (->> recent-line-items
+                                                   (spice.selector/match-all {:selector/strict? true}
+                                                                            catalog.services/a-la-carte))
+        recent-addon-service-skus             (->> recent-line-items
+                                                   (spice.selector/match-all {:selector/strict? true}
+                                                                            catalog.services/addons)
+                                                  (map (fn [addon-service] (get sku-db (:sku addon-service)))))
 
         {servicing-stylist :services/stylist} (api.orders/services data order)
         free-mayvenn-service                  (api.orders/free-mayvenn-service servicing-stylist order)]
     (merge
-     {:title                     (str (ui/pluralize-with-amount (->> recent-physical-line-items
+     {:title              (str (ui/pluralize-with-amount (->> recent-physical-line-items
                                                                      (cons recent-free-mayvenn-service-line-item)
                                                                      (concat recent-a-la-carte-service-line-items)
                                                                      (mapv :quantity)
                                                                      (reduce + 0)) "Item")
                                       " Added")
-      :service-line-items        (concat
+      :service-line-items (concat
                                   (free-service-line-item-query sku-db images-db recent-free-mayvenn-service-line-item recent-addon-service-skus)
                                   (a-la-carte-service-line-items-query sku-db images-db recent-a-la-carte-service-line-items))
-      :cart-items                (cart-items-query sku-db images-db recent-physical-line-items)
-      :spinning?                 (empty? recent-line-items)
-      :return-link/back          (first (get-in data keypaths/navigation-undo-stack))
-      :return-link/copy          "Continue Shopping"
-      :return-link/event-message [events/navigate-category {:catalog/category-id "23",
-                                                            :page/slug           "mayvenn-install"}]
-      :return-link/id            "continue-shopping-link"}
+      :cart-items         (cart-items-query sku-db images-db recent-physical-line-items)
+      :spinning?          (empty? recent-line-items)}
      (cond
        free-mayvenn-service (if (and (:free-mayvenn-service/discounted? free-mayvenn-service)
                                      servicing-stylist)
@@ -309,6 +305,17 @@
         :cta/label  "Go to Cart"
         :cta/id     "go-to-cart-cta"}))))
 
+(defn return-link<-
+  [app-state]
+  #:return-link{:back          (-> app-state (get-in keypaths/navigation-undo-stack) first)
+                :copy          "Continue Shopping"
+                :event-message [events/navigate-category {:catalog/category-id "23"
+                                                          :page/slug           "mayvenn-install"}]
+                :id            "continue-shopping-link"})
+
 (defn ^:export built-component
-  [data opts]
-  (component/build template (query data) opts))
+  [app-state opts]
+  (component/build template
+                   (merge (query app-state)
+                          {:return-link (return-link<- app-state)})
+                   opts))
