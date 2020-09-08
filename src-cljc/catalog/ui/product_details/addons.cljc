@@ -87,5 +87,5 @@
   [_ event _ app-state]
   #?(:cljs
      (if (get-in app-state c-k/detailed-product-addon-list-open?)
-       (stringer/track-event "expand_addon_on_services")
+       (stringer/track-event "expand_add_on_services")
        (stringer/track-event "collapse_add_on_services"))))
