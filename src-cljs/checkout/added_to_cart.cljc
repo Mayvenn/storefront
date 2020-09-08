@@ -60,6 +60,14 @@
                     :promotion-helper.ui.drawer-contents/conditions)]
           [:div])))))
 
+(defmethod storefront.effects/perform-effects events/navigate-added-to-cart
+  [_ _ _ _ app-state]
+  #?(:cljs
+     (let [previous-nav (-> (get-in app-state keypaths/navigation-undo-stack) first :navigation-message)]
+       (when (empty? (get-in app-state keypaths/cart-recently-added-skus))
+         (apply history/enqueue-redirect (or previous-nav [events/navigate-home]))))))
+
+
 (defmethod storefront.effects/perform-effects events/control-cart-interstitial-view-cart
   [_ _ _ _ _]
   #?(:cljs (history/enqueue-navigate events/navigate-cart)))
@@ -123,38 +131,36 @@
   [{:as   queried-data
     :keys [title
            service-line-items
-           cart-items]}
+           cart-items
+           spinning?]}
    owner _]
   [:div.container
    [:div.p2 (ui.molecules/return-link queried-data)]
-   [:div.bg-refresh-gray.stretch
-    [:div.p3
-     [:div.canela.title-2.center.my4 {:data-test "cart-interstitial-title"} title]
-     (for [service-line-item service-line-items]
-       [:div.mt2-on-mb
-        (component/build cart-item-v202004/organism {:cart-item service-line-item}
-                         (component/component-id (:react/key service-line-item)))])
-     (when (seq cart-items)
-       [:div.mt3
-        {:data-test "cart-interstitial-line-items"}
-        (for [[index cart-item] (map-indexed vector cart-items)
-              :let              [react-key (:react/key cart-item)]
-              :when             react-key]
-          [:div
-           {:key (str index "-cart-item-" react-key)}
-           (when-not (zero? index)
-             [:div.flex.bg-white
-              [:div.ml2 {:style {:width "75px"}}]
-              [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
-           (component/build cart-item-v202004/organism {:cart-item cart-item}
-                            (component/component-id (str index "-cart-item-" react-key)))])])
+   (if spinning?
+     [:div ui/spinner]
+     [:div.bg-refresh-gray.stretch
+      [:div.p3
+       [:div.canela.title-2.center.my4 {:data-test "cart-interstitial-title"} title]
+       (for [service-line-item service-line-items]
+         [:div.mt2-on-mb
+          (component/build cart-item-v202004/organism {:cart-item service-line-item}
+                           (component/component-id (:react/key service-line-item)))])
+       (when (seq cart-items)
+         [:div.mt3
+          {:data-test "cart-interstitial-line-items"}
+          (for [[index cart-item] (map-indexed vector cart-items)
+                :let              [react-key (:react/key cart-item)]
+                :when             react-key]
+            [:div
+             {:key (str index "-cart-item-" react-key)}
+             (when-not (zero? index)
+               [:div.flex.bg-white
+                [:div.ml2 {:style {:width "75px"}}]
+                [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
+             (component/build cart-item-v202004/organism {:cart-item cart-item}
+                              (component/component-id (str index "-cart-item-" react-key)))])])
 
-     (component/build cta queried-data nil)]
-
-    [:div.bg-white.center
-     (component/build stylist-helper queried-data nil)
-
-     (component/build promotion-helper-component queried-data nil)]]])
+       (component/build cta queried-data nil)]])])
 
 (defn free-service-line-item-query
   [sku-db images-db free-service-line-item addon-skus]
@@ -273,6 +279,7 @@
                                   (free-service-line-item-query sku-db images-db recent-free-mayvenn-service-line-item recent-addon-service-skus)
                                   (a-la-carte-service-line-items-query sku-db images-db recent-a-la-carte-service-line-items))
       :cart-items                (cart-items-query sku-db images-db recent-physical-line-items)
+      :spinning?                 (empty? recent-line-items)
       :return-link/back          (first (get-in data keypaths/navigation-undo-stack))
       :return-link/copy          "Continue Shopping"
       :return-link/event-message [events/navigate-category {:catalog/category-id "23",

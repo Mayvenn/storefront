@@ -84,13 +84,19 @@
 (defmethod transition-state events/stash-nav-stack-item [_ _ stack-item app-state]
   (assoc-in app-state keypaths/navigation-stashed-stack-item stack-item))
 
+(def unrecordable-nav-events
+  ;; Events that are not allowed to be navigated back (or forward) to
+  #{events/navigate-added-to-cart})
+
 (def max-nav-stack-depth 5)
 
 (defn push-nav-stack [app-state stack-keypath stack-item]
   (let [leaving-nav (get-in app-state keypaths/navigation-message)
         item        (merge {:navigation-message leaving-nav} stack-item)
         nav-stack   (get-in app-state stack-keypath nil)]
-    (->> (conj nav-stack item) (take max-nav-stack-depth))))
+    (if (contains? unrecordable-nav-events (first leaving-nav))
+      nav-stack
+      (take max-nav-stack-depth (conj nav-stack item)))))
 
 (defmethod transition-state events/navigation-save [_ _ stack-item app-state]
   ;; Going to a new page; add an element to the undo stack, and discard the redo stack
@@ -155,6 +161,12 @@
     (-> (assoc-in keypaths/hide-header? false)
         (assoc-in catalog.keypaths/category-panel nil))))
 
+(defn clear-recently-added-skus
+  [app-state [previous-nav-event _]]
+  (cond-> app-state
+    (= previous-nav-event events/navigate-added-to-cart)
+    (assoc-in keypaths/cart-recently-added-skus {})))
+
 (defmethod transition-state events/navigate [_ event args app-state]
   (let [args                 (dissoc args :nav-stack-item)
         uri                  (url/url js/window.location)
@@ -164,6 +176,7 @@
         collapse-menus
         add-return-event
         (clean-up-open-category-panels new-nav-message previous-nav-message)
+        (clear-recently-added-skus previous-nav-message)
         (add-pending-promo-code args)
         (add-affiliate-stylist-id args)
         clear-flash
