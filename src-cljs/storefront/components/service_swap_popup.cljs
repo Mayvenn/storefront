@@ -66,20 +66,19 @@
   (messages/handle-message events/popup-hide))
 
 (defmethod transitions/transition-state events/popup-show-service-swap
-  [_ event {:keys [sku-intended]} app-state]
+  [_ event {:keys [sku-intended confirmation-command]} app-state]
   (-> app-state
       (assoc-in catalog.keypaths/sku-intended-for-swap sku-intended)
+      (assoc-in catalog.keypaths/service-swap-confirmation-command confirmation-command)
       (assoc-in storefront.keypaths/popup :service-swap)))
 
 (defmethod effects/perform-effects events/control-service-swap-popup-confirm
-  [_ _ _ previous-app-state app-state]
-  (let [stay-on-page? (= events/navigate-category (get-in app-state storefront.keypaths/navigation-event))]
-    (messages/handle-message events/add-sku-to-bag {:sku           (get-in previous-app-state catalog.keypaths/sku-intended-for-swap)
-                                                    :stay-on-page? stay-on-page?
-                                                    :service-swap? true
-                                                    :quantity      1})
-    (messages/handle-message events/popup-hide)))
+  [_ _ _ previous-app-state]
+  (apply messages/handle-message (get-in previous-app-state catalog.keypaths/service-swap-confirmation-command))
+  (messages/handle-message events/popup-hide))
 
 (defmethod transitions/transition-state events/control-service-swap-popup-confirm
   [_ event _ app-state]
-  (assoc-in app-state catalog.keypaths/sku-intended-for-swap nil))
+  (-> app-state
+      (assoc-in catalog.keypaths/service-swap-confirmation-command nil)
+      (assoc-in catalog.keypaths/sku-intended-for-swap nil)))

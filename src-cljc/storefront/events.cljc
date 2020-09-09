@@ -440,6 +440,7 @@
 (defpath control-wigs-customization-dismiss)
 
 (defpath add-sku-to-bag)
+(defpath bulk-add-sku-to-bag)
 
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)

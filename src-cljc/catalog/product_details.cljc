@@ -1003,10 +1003,15 @@
   [dispatch event {:keys [sku quantity] :as args} _ app-state]
   #?(:cljs
      (let [cart-contains-free-mayvenn-service? (orders/discountable-services-on-order? (get-in app-state keypaths/order))
-           sku-is-free-mayvenn-service?        (-> sku :promo.mayvenn-install/discountable first)]
-       (if (and cart-contains-free-mayvenn-service? sku-is-free-mayvenn-service?)
-         (messages/handle-message events/popup-show-service-swap {:sku-intended sku})
-         (messages/handle-message events/add-sku-to-bag {:sku sku :quantity quantity})))))
+           sku-is-free-mayvenn-service?        (-> sku :promo.mayvenn-install/discountable first)
+           service-swap?                       (and cart-contains-free-mayvenn-service? sku-is-free-mayvenn-service?)
+           add-sku-to-bag-command              [events/add-sku-to-bag {:sku           sku
+                                                                       :stay-on-page? (= events/navigate-category (get-in app-state storefront.keypaths/navigation-event))
+                                                                       :service-swap? service-swap?
+                                                                       :quantity      quantity}]]
+       (if service-swap?
+         (messages/handle-message events/popup-show-service-swap {:sku-intended sku :confirmation-command add-sku-to-bag-command})
+         (apply messages/handle-message add-sku-to-bag-command)))))
 
 (defmethod effects/perform-effects events/add-sku-to-bag
   [dispatch event {:keys [sku quantity stay-on-page? service-swap?] :as args} _ app-state]
@@ -1067,10 +1072,11 @@
   [_ _ _ app-state]
   (assoc-in app-state catalog.keypaths/detailed-product-selected-addon-items nil))
 
-(defmethod effects/perform-effects events/control-bulk-add-to-bag
-  [_ _ {:keys [items]} _ app-state]
+(defmethod effects/perform-effects events/bulk-add-sku-to-bag
+  [dispatch event {:keys [items service-swap?] :as args} _ app-state]
   #?(:cljs
      (let [cart-interstitial? (and (= :shop (sites/determine-site app-state))
+                                   (not service-swap?)
                                    (experiments/cart-interstitial? app-state))]
        (api/add-skus-to-bag (get-in app-state keypaths/session-id)
                             {:number           (get-in app-state keypaths/order-number)
@@ -1087,3 +1093,16 @@
                               (history/enqueue-navigate (if cart-interstitial?
                                                           events/navigate-added-to-cart
                                                           events/navigate-cart)))))))
+
+(defmethod effects/perform-effects events/control-bulk-add-to-bag
+  [_ _ {:keys [items]} _ app-state]
+  #?(:cljs
+     (let [cart-contains-free-mayvenn-service? (orders/discountable-services-on-order? (get-in app-state keypaths/order))
+           free-service-sku                    (:sku (first (filter (comp true? first :promo.mayvenn-install/discountable :sku) items)))
+           service-swap?                       (and cart-contains-free-mayvenn-service? free-service-sku)
+           bulk-add-command                    [events/bulk-add-sku-to-bag {:items         items
+                                                                            :service-swap? service-swap?}]]
+       (if service-swap?
+         (messages/handle-message events/popup-show-service-swap {:sku-intended         free-service-sku
+                                                                  :confirmation-command bulk-add-command})
+         (apply messages/handle-message bulk-add-command)))))
