@@ -86,8 +86,8 @@
                                                                     (sort-by (juxt (comp not :stylist-provides?) :order.view/addon-sort))
                                                                     (group-by (fn [s] (boolean (:stylist-provides? s)))))]
        (stringer/track-event "add_on_services_displayed"
-                             {:available-add-on-variant-ids   (mapv :legacy/variant-id available-addon-skus)
-                              :unavailable-add-on-variant-ids (mapv :legacy/variant-id unavailable-addon-skus)}))))
+                             {:available_add_on_variant_ids   (mapv :legacy/variant-id available-addon-skus)
+                              :unavailable_add_on_variant_ids (mapv :legacy/variant-id unavailable-addon-skus)}))))
 
 (defmethod trackings/perform-track e/control-product-detail-toggle-related-addon-list
   [_ event _ app-state]
