@@ -45,20 +45,22 @@
                                         (get-in app-state keypaths/v2-images)
                                         (get-in app-state keypaths/v2-skus))}))))
 
-(defdynamic-component promotion-helper-component
-  (did-mount [this]
-    (let [{:promotion-helper/keys [id]} (component/get-props this)]
-      (when id
-        (messages/handle-message events/cart-interstitial-free-mayvenn-service-tracker-mounted))))
-  (render [this]
-    (let [{:promotion-helper/keys [id] :as data} (component/get-props this)]
-      (component/html
-        (if id
-          [:div.p4.stretch
-          [:div.mt2.canela.title-3.center "FREE Mayvenn Service Tracker"]
-          (elements drawer-contents/drawer-contents-condition-organism data
-                    :promotion-helper.ui.drawer-contents/conditions)]
-          [:div])))))
+(defdynamic-component promotion-helper-organism
+  (did-mount
+   [this]
+   (let [{:promotion-helper/keys [id]} (component/get-props this)]
+     (when id
+       (messages/handle-message events/cart-interstitial-free-mayvenn-service-tracker-mounted))))
+  (render
+   [this]
+   (let [{:promotion-helper/keys [id] :as data} (component/get-props this)]
+     (component/html
+      (if id
+        [:div.p4
+         [:div.mt2.canela.title-3.center "FREE Mayvenn Service Tracker"]
+         (elements drawer-contents/drawer-contents-condition-organism data
+                   :promotion-helper.ui.drawer-contents/conditions)]
+        [:div])))))
 
 (defmethod storefront.effects/perform-effects events/navigate-added-to-cart
   [_ _ _ _ app-state]
@@ -84,7 +86,7 @@
                                         (get-in app-state keypaths/v2-images)
                                         (get-in app-state keypaths/v2-skus))}))))
 
-(defcomponent cta
+(defcomponent cta-organism
   [{:cta/keys [primary id target label]} _ _]
   (when id
     [:div.px3.center.mt3
@@ -133,35 +135,44 @@
            service-line-items
            cart-items
            spinning?
+           cta
+           promotion-helper
            return-link]}
    owner _]
   [:div.container
    [:div.p2 (ui.molecules/return-link return-link)]
    (if spinning?
      [:div ui/spinner]
-     [:div.bg-refresh-gray.stretch
-      [:div.p3
-       [:div.canela.title-2.center.my4 {:data-test "cart-interstitial-title"} title]
-       (for [service-line-item service-line-items]
-         [:div.mt2-on-mb
-          (component/build cart-item-v202004/organism {:cart-item service-line-item}
-                           (component/component-id (:react/key service-line-item)))])
-       (when (seq cart-items)
-         [:div.mt3
-          {:data-test "cart-interstitial-line-items"}
-          (for [[index cart-item] (map-indexed vector cart-items)
-                :let              [react-key (:react/key cart-item)]
-                :when             react-key]
-            [:div
-             {:key (str index "-cart-item-" react-key)}
-             (when-not (zero? index)
-               [:div.flex.bg-white
-                [:div.ml2 {:style {:width "75px"}}]
-                [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
-             (component/build cart-item-v202004/organism {:cart-item cart-item}
-                              (component/component-id (str index "-cart-item-" react-key)))])])
+     [:div.flex-column
+      [:div.bg-refresh-gray.flex-grow-0
+       [:div.p3
+        [:div.canela.title-2.center.my4 {:data-test "cart-interstitial-title"} title]
+        (for [service-line-item service-line-items]
+          [:div.mt2-on-mb
+           (component/build cart-item-v202004/organism {:cart-item service-line-item}
+                            (component/component-id (:react/key service-line-item)))])
+        (when (seq cart-items)
+          [:div.mt3
+           {:data-test "cart-interstitial-line-items"}
+           (for [[index cart-item] (map-indexed vector cart-items)
+                 :let              [react-key (:react/key cart-item)]
+                 :when             react-key]
+             [:div
+              {:key (str index "-cart-item-" react-key)}
+              (when-not (zero? index)
+                [:div.flex.bg-white
+                 [:div.ml2 {:style {:width "75px"}}]
+                 [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
+              (component/build cart-item-v202004/organism {:cart-item cart-item}
+                               (component/component-id (str index "-cart-item-" react-key)))])])
 
-       (component/build cta queried-data nil)]])])
+        (when cta
+          (component/build cta-organism cta))]]
+      [:div.bg-white.center.flex-grow
+       (when queried-data
+         (component/build stylist-helper queried-data))
+       (when promotion-helper
+         (component/build promotion-helper-organism promotion-helper))]])])
 
 (defn free-service-line-item-query
   [sku-db images-db free-service-line-item addon-skus]
@@ -233,18 +244,11 @@
      :cart-item-service-thumbnail/image-url (->> sku (catalog.images/image images-db "cart") :ucare/id)}))
 
 (defn query
-  [data]
-  (let [order                              (get-in data keypaths/order)
-        sku-db                             (get-in data keypaths/v2-skus)
-        images-db                          (get-in data keypaths/v2-images)
+  [data order sku-db servicing-stylist]
+  (let [images-db                          (get-in data keypaths/v2-images)
         recently-added-sku-ids->quantities (get-in data storefront.keypaths/cart-recently-added-skus)
         products                           (get-in data keypaths/v2-products)
         facets                             (get-in data keypaths/v2-facets)
-        a-la-carte-service-in-cart?        (->> order
-                                                orders/service-line-items
-                                                (filter line-items/standalone-service?)
-                                                seq
-                                                boolean)
         recent-line-items                  (->> order
                                                 orders/product-and-service-items
                                                 (filter (fn [{:keys [sku]}] (contains? recently-added-sku-ids->quantities sku)))
@@ -261,49 +265,22 @@
                                                    first)
         recent-a-la-carte-service-line-items  (->> recent-line-items
                                                    (spice.selector/match-all {:selector/strict? true}
-                                                                            catalog.services/a-la-carte))
+                                                                             catalog.services/a-la-carte))
         recent-addon-service-skus             (->> recent-line-items
                                                    (spice.selector/match-all {:selector/strict? true}
-                                                                            catalog.services/addons)
-                                                  (map (fn [addon-service] (get sku-db (:sku addon-service)))))
-
-        {servicing-stylist :services/stylist} (api.orders/services data order)
-        free-mayvenn-service                  (api.orders/free-mayvenn-service servicing-stylist order)]
-    (merge
-     {:title              (str (ui/pluralize-with-amount (->> recent-physical-line-items
-                                                                     (cons recent-free-mayvenn-service-line-item)
-                                                                     (concat recent-a-la-carte-service-line-items)
-                                                                     (mapv :quantity)
-                                                                     (reduce + 0)) "Item")
-                                      " Added")
-      :service-line-items (concat
-                                  (free-service-line-item-query sku-db images-db recent-free-mayvenn-service-line-item recent-addon-service-skus)
-                                  (a-la-carte-service-line-items-query sku-db images-db recent-a-la-carte-service-line-items))
-      :cart-items         (cart-items-query sku-db images-db recent-physical-line-items)
-      :spinning?          (empty? recent-line-items)}
-     (cond
-       free-mayvenn-service (if (and (:free-mayvenn-service/discounted? free-mayvenn-service)
-                                     servicing-stylist)
-                              {:cta/target  [events/control-cart-interstitial-view-cart]
-                               :cta/label   "Go to Cart"
-                               :cta/id      "go-to-cart-cta-discounted-service"
-                               :cta/primary "🎉 Great work! Free service unlocked!"}
-
-                              (merge
-                               (promotion-helper.ui/drawer-contents-ui<-
-                                (->> free-mayvenn-service :free-mayvenn-service/service-item :sku (get sku-db))
-                                (api.orders/free-mayvenn-service servicing-stylist order))
-                               {:promotion-helper/id "free-mayvenn-service-tracker"}))
-
-       (and a-la-carte-service-in-cart? (nil? servicing-stylist))
-       {:stylist-helper/id     "browse-stylists"
-        :stylist-helper/label  "Browse Stylists"
-        :stylist-helper/target [events/control-cart-interstitial-browse-stylist-cta]}
-
-       :else
-       {:cta/target [events/control-cart-interstitial-view-cart]
-        :cta/label  "Go to Cart"
-        :cta/id     "go-to-cart-cta"}))))
+                                                                             catalog.services/addons)
+                                                   (map (fn [addon-service] (get sku-db (:sku addon-service)))))]
+    {:title              (str (ui/pluralize-with-amount (->> recent-physical-line-items
+                                                             (cons recent-free-mayvenn-service-line-item)
+                                                             (concat recent-a-la-carte-service-line-items)
+                                                             (mapv :quantity)
+                                                             (reduce + 0)) "Item")
+                              " Added")
+     :service-line-items (concat
+                          (free-service-line-item-query sku-db images-db recent-free-mayvenn-service-line-item recent-addon-service-skus)
+                          (a-la-carte-service-line-items-query sku-db images-db recent-a-la-carte-service-line-items))
+     :cart-items         (cart-items-query sku-db images-db recent-physical-line-items)
+     :spinning?          (empty? recent-line-items)}))
 
 (defn return-link<-
   [app-state]
@@ -313,9 +290,88 @@
                                                           :page/slug           "mayvenn-install"}]
                 :id            "continue-shopping-link"})
 
+(def cta<-
+  #:cta{:target [events/control-cart-interstitial-view-cart]
+        :label  "Go to Cart"
+        :id     "go-to-cart-cta"})
+
+(def celebration-cta<-
+  #:cta{:target  [events/control-cart-interstitial-view-cart]
+        :label   "Go to Cart"
+        :id      "go-to-cart-cta-discounted-service"
+        :primary "🎉 Great work! Free service unlocked!"})
+
+(defn promotion-helper<-
+  [sku-db
+   {:as free-mayvenn-service
+    :free-mayvenn-service/keys [failed-criteria-count service-item]}]
+  (when (pos? failed-criteria-count)
+    (let [service-sku (get sku-db (:sku service-item))]
+      (merge
+       (promotion-helper.ui/drawer-contents-ui<- service-sku
+                                                 free-mayvenn-service)
+       {:promotion-helper/id "free-mayvenn-service-tracker"}))))
+
+(def stylist-helper<-
+  #:stylist-helper{:id     "browse-stylists"
+                   :label  "Browse Stylists"
+                   :target [events/control-cart-interstitial-browse-stylist-cta]})
+
+(defn added-to-cart<-
+  "Model for which bottom panel to present to the user"
+  [waiter-order
+   {:as                        free-mayvenn-service
+    :free-mayvenn-service/keys [failed-criteria-count]}
+   servicing-stylist]
+  (let [a-la-carte-service-in-cart? (->> waiter-order
+                                         orders/service-line-items
+                                         (filter line-items/standalone-service?)
+                                         seq
+                                         boolean)]
+    (cond
+      ;; 1. Discountable service? && needs promotion help
+      (and free-mayvenn-service
+           (pos? failed-criteria-count))
+      :promotion-helper
+
+      ;; 2. Discountable service? && no promotion help needd
+      (and free-mayvenn-service
+           (zero? failed-criteria-count))
+      :celebration-continue
+
+      ;; 3. Non-discountable services && no stylist selected yet
+      (and a-la-carte-service-in-cart?
+           (nil? servicing-stylist))
+      :stylist-helper
+
+      ;; 4. No services? (implies hair was just added)
+      :else
+      :continue)))
+
 (defn ^:export built-component
   [app-state opts]
-  (component/build template
-                   (merge (query app-state)
-                          {:return-link (return-link<- app-state)})
-                   opts))
+  (let [;; data layers
+        waiter-order         (get-in app-state keypaths/order)
+        sku-db               (get-in app-state keypaths/v2-skus)
+        {servicing-stylist
+         :services/stylist}  (api.orders/services app-state
+                                                  waiter-order)
+        free-mayvenn-service (api.orders/free-mayvenn-service servicing-stylist
+                                                              waiter-order)]
+    (component/build template
+                     (merge
+                      (query app-state
+                             waiter-order
+                             sku-db
+                             servicing-stylist)
+                      {:return-link (return-link<- app-state)}
+                      (case (added-to-cart<- waiter-order
+                                             free-mayvenn-service
+                                             servicing-stylist)
+                        :continue             {:cta cta<-}
+                        :celebration-continue {:cta celebration-cta<-}
+                        :promotion-helper     {:promotion-helper
+                                               (promotion-helper<- sku-db
+                                                                   free-mayvenn-service)}
+                        :stylist-helper       {:stylist-helper stylist-helper<-}))
+                     opts)))
