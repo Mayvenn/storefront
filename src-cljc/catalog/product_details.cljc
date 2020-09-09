@@ -1049,7 +1049,7 @@
   [_ _ _ app-state]
   (-> app-state
       (assoc-in catalog.keypaths/detailed-product-addon-list-open? (experiments/upsell-addons-opened? app-state))
-      (assoc-in catalog.keypaths/detailed-product-selected-addon-items nil)))
+      (assoc-in catalog.keypaths/detailed-product-selected-addon-items #{})))
 
 (defmethod transitions/transition-state events/control-product-detail-toggle-related-addon-list
   [_ _ _ app-state]
@@ -1063,14 +1063,13 @@
 
 (defmethod transitions/transition-state events/control-product-detail-toggle-related-addon-items
   [_ _ {:keys [sku-id] :as response} app-state]
-  (let [checked-addons (get-in app-state catalog.keypaths/detailed-product-selected-addon-items)]
-    (if (some #{sku-id} checked-addons)
-      (update-in app-state catalog.keypaths/detailed-product-selected-addon-items (partial remove #{sku-id}))
-      (update-in app-state catalog.keypaths/detailed-product-selected-addon-items conj sku-id))))
+  (if (contains? (get-in app-state catalog.keypaths/detailed-product-selected-addon-items) sku-id)
+    (update-in app-state catalog.keypaths/detailed-product-selected-addon-items disj sku-id)
+    (update-in app-state catalog.keypaths/detailed-product-selected-addon-items conj sku-id)))
 
 (defmethod transitions/transition-state events/control-bulk-add-to-bag
   [_ _ _ app-state]
-  (assoc-in app-state catalog.keypaths/detailed-product-selected-addon-items nil))
+  (assoc-in app-state catalog.keypaths/detailed-product-selected-addon-items #{}))
 
 (defmethod effects/perform-effects events/bulk-add-sku-to-bag
   [dispatch event {:keys [items service-swap?] :as args} _ app-state]
