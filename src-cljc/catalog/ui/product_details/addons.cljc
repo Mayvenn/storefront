@@ -79,17 +79,12 @@
      (let [{services     :order.items/services
             waiter-order :waiter/order}                        (api.orders/current app-state)
            {:services/keys [stylist offered-services-sku-ids]} (api.orders/services app-state waiter-order)
-
-           addons-sku-ids-on-order                             (->> services (mapcat :addons) (mapv :sku-id) set)
            {available-addon-skus   true
             unavailable-addon-skus false}                      (->> (get-in app-state catalog.keypaths/detailed-product-related-addons)
                                                                     (mapv #(assoc % :stylist-provides?
                                                                                   (or (nil? stylist) (contains? offered-services-sku-ids (:catalog/sku-id %)))))
                                                                     (sort-by (juxt (comp not :stylist-provides?) :order.view/addon-sort))
-                                                               (group-by (fn [s]
-                                                                           (boolean
-                                                                            (and (:stylist-provides? s)
-                                                                                 (not (contains? addons-sku-ids-on-order (:catalog/sku-id s))))))))]
+                                                                    (group-by (fn [s] (boolean (:stylist-provides? s)))))]
        (stringer/track-event "add_on_services_displayed"
                              {:available-add-on-variant-ids   (mapv :legacy/variant-id available-addon-skus)
                               :unavailable-add-on-variant-ids (mapv :legacy/variant-id unavailable-addon-skus)}))))
