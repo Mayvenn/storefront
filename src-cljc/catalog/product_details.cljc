@@ -405,8 +405,11 @@
 
 (defn addons-query
   [app-state]
-  (let [selected-sku                  (get-in app-state catalog.keypaths/detailed-product-selected-sku)
-        servicing-stylist             (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+  (let [selected-sku                                                  (get-in app-state catalog.keypaths/detailed-product-selected-sku)
+        {waiter-order :waiter/order}                                  (api.orders/current app-state)
+        {servicing-stylist        :services/stylist
+         offered-services-sku-ids :services/offered-services-sku-ids} (api.orders/services app-state waiter-order)
+
         stylist-mismatch?             (experiments/stylist-mismatch? app-state)
         product                       (products/current-product app-state)
         service?                      (accessors.products/service? product)
@@ -416,8 +419,9 @@
                                         (->> (get-in app-state catalog.keypaths/detailed-product-related-addons)
                                              (map #(assoc %
                                                           :stylist-provides?
-                                                          (stylist-filters/stylist-provides-service-by-sku-id? servicing-stylist (:catalog/sku-id %))))
-                                             (sort-by (juxt (comp not :stylist-provides?) :addon/sort))
+                                                          (or (nil? servicing-stylist)
+                                                              (contains? offered-services-sku-ids (:catalog/sku-id %)))))
+                                             (sort-by (juxt (comp not :stylist-provides?) :order.view/addon-sort))
                                              ((if addon-list-open? identity (partial take 1)))))
         selected-addons               (get-in app-state catalog.keypaths/detailed-product-selected-addon-items)
         base-service-already-in-cart? (boolean (some #(= (:catalog/sku-id selected-sku) (:sku %))

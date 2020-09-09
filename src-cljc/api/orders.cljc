@@ -8,6 +8,7 @@
             [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
             [storefront.components.money-formatters :as mf]
+            [stylist-matching.search.accessors.filters :as stylist-filters]
             [storefront.events :as e]
             storefront.keypaths
             [storefront.accessors.sites :as sites]))
@@ -139,7 +140,7 @@
   [waiter-line-item]
   {:title  (:variant-name waiter-line-item)
    :sku-id (:sku waiter-line-item)
-   :price  (:sku/price waiter-line-item)})
+   :price  (:unit-price waiter-line-item)})
 
 (defn ->addon-service
   [waiter-addon-line-item]
@@ -152,8 +153,7 @@
                             (filter line-items/addon-service?)
                             (filter #(= (:line-item-group waiter-base-line-item) (:line-item-group %)))
                             (map ->addon-service))]
-    (assoc (->service waiter-base-line-item)
-     :addons addon-services)))
+    (assoc (->service waiter-base-line-item) :addons addon-services)))
 
 (defn ->order
   [app-state waiter-order]
@@ -177,6 +177,14 @@
   [app-state]
   (->order app-state (get-in app-state storefront.keypaths/order)))
 
+
+(defn offered-services-sku-ids
+  [stylist]
+  (->> stylist-filters/service-filter-data
+       (map :sku-id)
+       (filter (partial stylist-filters/stylist-provides-service-by-sku-id? stylist))
+       set))
+
 (defn services
   "Model: Services on an order
 
@@ -199,4 +207,5 @@
        #:services{:stylist-id servicing-stylist-id
                   :items      (orders/service-line-items waiter-order)}
        (when (= (:stylist-id cached-stylist) servicing-stylist-id)
-         #:services{:stylist cached-stylist})))))
+         #:services{:stylist                  cached-stylist
+                    :offered-services-sku-ids (offered-services-sku-ids cached-stylist)})))))

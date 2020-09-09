@@ -1,5 +1,6 @@
 (ns catalog.ui.product-details.addons
-  (:require [catalog.keypaths :as c-k]
+  (:require api.orders
+            [catalog.keypaths :as c-k]
             [storefront.component :as c]
             [storefront.components.ui :as ui]
             [storefront.events :as e]
@@ -8,7 +9,12 @@
             [storefront.platform.messages :refer [handle-message]]
             [storefront.trackings :as trackings]
             #?@(:cljs
-                [[storefront.hooks.stringer :as stringer]])))
+                [[storefront.hooks.stringer :as stringer]])
+            [adventure.keypaths :as adventure.keypaths]
+            [stylist-matching.search.accessors.filters :as stylist-filters]
+            [storefront.accessors.line-items :as line-items]
+            [storefront.accessors.orders :as orders]
+            [catalog.services :as services]))
 
 (defn addon-card
   [{:addon-line/keys [id target primary secondary tertiary checked? spinning? disabled? disabled-reason]}]
@@ -55,13 +61,7 @@
                                         label))))
 
 (c/defdynamic-component organism
-  (did-mount [this]
-             #_
-             (let [{:keys [related-addons] :as data} (c/get-props this)]
-               (let [disabled (group-by :addon-line/disabled? related-addons)]
-                 (handle-message e/visual-add-on-services-displayed
-                                 {:addons/available-sku-ids   (mapv :addon-line/id (get disabled false))
-                                  :addons/unavailable-sku-ids (mapv :addon-line/id (get disabled true))}))))
+  (did-mount [this] (handle-message e/visual-add-on-services-displayed))
   (render [this]
           (let [{:keys [related-addons] :as data} (c/get-props this)]
             (c/html
@@ -73,15 +73,26 @@
               [:div.pt2.pb3.flex.justify-center
                (cta-related-addon-molecule data)]]))))
 
-#_
 (defmethod trackings/perform-track e/visual-add-on-services-displayed
-  [_ event {:addons/keys [available-sku-ids unavailable-sku-ids]} app-state]
+  [_ event _ app-state]
   #?(:cljs
-     (let [sku-db                (get-in app-state k/v2-skus)
-           convert-to-variant-id (comp :legacy/variant-id (partial get sku-db))]
+     (let [{services     :order.items/services
+            waiter-order :waiter/order}                        (api.orders/current app-state)
+           {:services/keys [stylist offered-services-sku-ids]} (api.orders/services app-state waiter-order)
+
+           addons-sku-ids-on-order                             (->> services (mapcat :addons) (mapv :sku-id) set)
+           {available-addon-skus   true
+            unavailable-addon-skus false}                      (->> (get-in app-state catalog.keypaths/detailed-product-related-addons)
+                                                                    (mapv #(assoc % :stylist-provides?
+                                                                                  (or (nil? stylist) (contains? offered-services-sku-ids (:catalog/sku-id %)))))
+                                                                    (sort-by (juxt (comp not :stylist-provides?) :order.view/addon-sort))
+                                                               (group-by (fn [s]
+                                                                           (boolean
+                                                                            (and (:stylist-provides? s)
+                                                                                 (not (contains? addons-sku-ids-on-order (:catalog/sku-id s))))))))]
        (stringer/track-event "add_on_services_displayed"
-                             {:available-add-on-variant-ids   (mapv convert-to-variant-id available-sku-ids)
-                              :unavailable-add-on-variant-ids (mapv convert-to-variant-id unavailable-sku-ids)}))))
+                             {:available-add-on-variant-ids   (mapv :legacy/variant-id available-addon-skus)
+                              :unavailable-add-on-variant-ids (mapv :legacy/variant-id unavailable-addon-skus)}))))
 
 (defmethod trackings/perform-track e/control-product-detail-toggle-related-addon-list
   [_ event _ app-state]
