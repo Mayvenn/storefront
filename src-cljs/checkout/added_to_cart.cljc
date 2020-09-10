@@ -129,12 +129,18 @@
             "Browse Stylists")]]
          [:div])))))
 
+(defn added-to-cart-header-molecule
+  [{:added-to-cart.header/keys [primary]}]
+  [:div.canela.title-2.center.my4
+   {:data-test "cart-interstitial-title"}
+   primary])
+
 (defcomponent template
   [{:as   queried-data
-    :keys [title
-           service-line-items
+    :keys [service-line-items
            cart-items
            spinning?
+           header
            cta
            promotion-helper
            return-link]}
@@ -146,7 +152,7 @@
      [:div.flex-column
       [:div.bg-refresh-gray.flex-grow-0
        [:div.p3
-        [:div.canela.title-2.center.my4 {:data-test "cart-interstitial-title"} title]
+        (added-to-cart-header-molecule header)
         (for [service-line-item service-line-items]
           [:div.mt2-on-mb
            (component/build cart-item-v202004/organism {:cart-item service-line-item}
@@ -256,43 +262,28 @@
   {:catalog/department #{"hair"}})
 
 (defn query
-  [data order servicing-stylist items']
-  (let [images-db                          (get-in data keypaths/v2-images)
-        recently-added-sku-ids->quantities (get-in data storefront.keypaths/cart-recently-added-skus)
-        facets                             (get-in data keypaths/v2-facets)
-
-        items
-        (mapv (fn [{:as item :item/keys [sku]}]
-                (merge
-                 item
-                 (when-let [recent-quantity (get recently-added-sku-ids->quantities sku)]
-                   {:item/recent?         #{true}
-                    :item/recent-quantity recent-quantity})))
-              items')
-
-        recent-physical-line-items
-        (select (merge recent physical) items)
-
-        recent-free-mayvenn-service-line-item
-        (first (select (merge recent catalog.services/discountable) items))
-
-        recent-a-la-carte-service-line-items
-        (select (merge recent catalog.services/a-la-carte) items)
-
-        recent-addon-service-skus
-        (select (merge recent catalog.services/addons) items)]
-    {:title              (str (ui/pluralize-with-amount (->> recent-physical-line-items
-                                                             (cons recent-free-mayvenn-service-line-item)
-                                                             (concat recent-a-la-carte-service-line-items)
-                                                             (mapv :item/recent-quantity)
-                                                             (reduce + 0)) "Item")
-                              " Added")
-     :service-line-items (concat
-                          (free-service-line-item-query images-db recent-free-mayvenn-service-line-item recent-addon-service-skus)
-                          (a-la-carte-service-line-items-query images-db recent-a-la-carte-service-line-items))
+  [items images-db]
+  (let [recent-physical-line-items            (select (merge recent physical) items)
+        recent-free-mayvenn-service-line-item (first (select (merge recent catalog.services/discountable) items))
+        recent-a-la-carte-service-line-items  (select (merge recent catalog.services/a-la-carte) items)
+        recent-addon-service-skus             (select (merge recent catalog.services/addons) items)]
+    {:service-line-items (concat
+                          (free-service-line-item-query images-db
+                                                        recent-free-mayvenn-service-line-item recent-addon-service-skus)
+                          (a-la-carte-service-line-items-query images-db
+                                                               recent-a-la-carte-service-line-items))
      :cart-items         (cart-items-query images-db
                                            recent-physical-line-items)
      :spinning?          (empty? (select recent items))}))
+
+(defn header<-
+  [items]
+  {:added-to-cart.header/primary
+   (str (ui/pluralize-with-amount (->> (select recent items)
+                                       (mapv :item/recent-quantity)
+                                       (reduce + 0))
+                                  "Item")
+        " Added")})
 
 (defn return-link<-
   [app-state]
@@ -342,18 +333,15 @@
                                          boolean)]
     (cond
       ;; 1. Discountable service? && needs promotion help
-      (and free-mayvenn-service
-           (pos? failed-criteria-count))
+      (and free-mayvenn-service (pos? failed-criteria-count))
       :promotion-helper
 
       ;; 2. Discountable service? && no promotion help needd
-      (and free-mayvenn-service
-           (zero? failed-criteria-count))
+      (and free-mayvenn-service (zero? failed-criteria-count))
       :celebration-continue
 
       ;; 3. Non-discountable services && no stylist selected yet
-      (and a-la-carte-service-in-cart?
-           (nil? servicing-stylist))
+      (and a-la-carte-service-in-cart? (nil? servicing-stylist))
       :stylist-helper
 
       ;; 4. No services? (implies hair was just added)
@@ -363,22 +351,21 @@
 (defn ^:export built-component
   [app-state opts]
   (let [;; data layers
-        waiter-order          (get-in app-state keypaths/order)
-        sku-db                (get-in app-state keypaths/v2-skus)
+        waiter-order (get-in app-state keypaths/order)
+        sku-db       (get-in app-state keypaths/v2-skus)
+        images-db    (get-in app-state keypaths/v2-images)
+
         ;; business layers
         {:order/keys [items]} (api.orders/->order app-state waiter-order)
         {servicing-stylist
-         :services/stylist}   (api.orders/services app-state
-                                                  waiter-order)
+         :services/stylist}   (api.orders/services app-state waiter-order)
         free-mayvenn-service  (api.orders/free-mayvenn-service servicing-stylist
-                                                              waiter-order)]
+                                                               waiter-order)]
     (component/build template
                      (merge
-                      (query app-state
-                             waiter-order
-                             servicing-stylist
-                             items)
-                      {:return-link (return-link<- app-state)}
+                      (query items images-db)
+                      {:return-link (return-link<- app-state)
+                       :header      (header<- items)}
                       (case (added-to-cart<- waiter-order
                                              free-mayvenn-service
                                              servicing-stylist)

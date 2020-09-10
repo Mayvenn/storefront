@@ -175,15 +175,24 @@
 
   This is *not* waiter's line items!
   "
-  [waiter-order sku-db]
+  [waiter-order recents sku-db]
   (->> waiter-order
        orders/product-and-service-items
        (mapv (partial ns! "item"))
-       (mapv #(merge % (get sku-db (:item/sku %))))))
+       (mapv
+        (fn comp-recents [{:as item :item/keys [sku]}]
+          (merge item
+                 (when-let [recent-quantity (get recents sku)]
+                   {:item/recent?         #{true}
+                    :item/recent-quantity recent-quantity}))))
+       (mapv
+        (fn comp-skus [{:as item :item/keys [sku]}]
+          (merge item (get sku-db sku))))))
 
 (defn ->order
   [app-state waiter-order]
   (let [store-slug    (get-in app-state storefront.keypaths/store-slug)
+        recents       (get-in app-state storefront.keypaths/cart-recently-added-skus)
         base-services (->> waiter-order
                            orders/service-line-items
                            (filter line-items/base-service?))
@@ -195,7 +204,7 @@
      :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
      :order.items/quantity (orders/displayed-cart-count waiter-order)
      :order.items/services (map (partial ->base-service waiter-order) base-services)
-     :order/items          (items<- waiter-order sku-db)}))
+     :order/items          (items<- waiter-order recents sku-db)}))
 
 (defn completed
   [app-state]
