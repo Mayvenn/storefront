@@ -43,7 +43,16 @@
     "//ucarecdn.com/6cfa1b3c-ed89-4e71-b702-b6fdfba72c0a/-/format/auto/collapse"
     "//ucarecdn.com/dbdcce35-e6da-4247-be57-22991d086fc1/-/format/auto/expand"
     "/images/header_logo.svg"
-    "//ucarecdn.com/81bd063f-56ba-4e9c-9aef-19a1207fd422/-/format/auto/stylist-bug-no-pic-fallback"})
+    "//ucarecdn.com/81bd063f-56ba-4e9c-9aef-19a1207fd422/-/format/auto/stylist-bug-no-pic-fallback"
+    "/images/categories/kinky-straight-icon.svg"
+    "/images/categories/straight-icon.svg"
+    "/images/categories/water-wave-icon.svg"
+    "/images/categories/body-wave-icon.svg"
+    "/images/categories/dyed-icon.svg"
+    "/images/categories/deep-wave-icon.svg"
+    "/images/categories/curly-icon.svg"
+    "/images/categories/yaki-straight-icon.svg"
+    "/images/categories/loose-wave-icon.svg"})
 
 (defn development? [environment]
   {:pre [(#{"development" "test" "acceptance" "production"} environment)]}

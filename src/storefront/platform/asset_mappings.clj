@@ -1,6 +1,7 @@
 (ns storefront.platform.asset-mappings
   (:require [clojure.java.io :as io]
             [cheshire.core :refer [parse-string]]
+            clojure.string
             [environ.core :refer [env]]))
 
 (def cdn-host (env :cdn-host))
