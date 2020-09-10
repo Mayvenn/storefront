@@ -3,6 +3,9 @@
 ;; Labels for service attribute sets
 
 ;; Aka Free, Mayvenn Service
+(def service
+  {:catalog/department #{"service"}})
+
 (def discountable
   {:catalog/department                 #{"service"}
    :service/type                       #{"base"}
