@@ -167,6 +167,12 @@
     (= previous-nav-event events/navigate-added-to-cart)
     (assoc-in keypaths/cart-recently-added-skus {})))
 
+(defn clear-detailed-product-related-addons
+  [app-state [previous-nav-event _]]
+  (cond-> app-state
+    (= previous-nav-event events/navigate-product-details)
+    (assoc-in catalog.keypaths/detailed-product-related-addons nil)))
+
 (defmethod transition-state events/navigate [_ event args app-state]
   (let [args                 (dissoc args :nav-stack-item)
         uri                  (url/url js/window.location)
@@ -177,6 +183,7 @@
         add-return-event
         (clean-up-open-category-panels new-nav-message previous-nav-message)
         (clear-recently-added-skus previous-nav-message)
+        (clear-detailed-product-related-addons previous-nav-message)
         (add-pending-promo-code args)
         (add-affiliate-stylist-id args)
         clear-flash
