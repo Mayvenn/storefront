@@ -193,6 +193,7 @@
 (defpath control-add-to-bag)
 (defpath control-bulk-add-to-bag)
 (defpath api-success-bulk-add-to-bag)
+(defpath api-success-bulk-add-to-bag-checkout-add)
 
 (defpath control-add-sku-to-bag)
 (defpath control-suggested-add-to-bag)
@@ -226,6 +227,7 @@
 (defpath control-checkout-remove-promotion)
 (defpath control-checkout-confirmation-submit)
 (defpath control-checkout-quadpay-confirmation-submit)
+(defpath control-checkout-add-checked)
 (defpath control-checkout-add-continued)
 
 (defpath control-stylist-account-profile-submit)
@@ -418,6 +420,7 @@
 (defpath checkout-order-rejected)
 (defpath checkout-order-cleared-for-mayvenn-checkout)
 (defpath checkout-order-cleared-for-paypal-checkout)
+(defpath checkout-add-flow-completed)
 
 (defpath contentful-api-success-fetch-homepage)
 

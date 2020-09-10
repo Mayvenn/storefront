@@ -12,7 +12,8 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.accessors.experiments :as experiments]
+            [storefront.transitions :as transitions]))
 
 (defn ^:private current-order-has-addons
   [app-state]
@@ -24,7 +25,7 @@
 
 ;; == /checkout/add page ==
 
-(defmethod effects/perform-effects events/control-checkout-add-continued
+(defmethod effects/perform-effects events/api-success-bulk-add-to-bag-checkout-add
   [_ event args previous-app-state app-state]
   #?(:cljs
      (if (-> app-state
