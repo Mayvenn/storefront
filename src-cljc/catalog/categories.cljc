@@ -72,7 +72,7 @@
                                     " close off any unit or install."]})
 
 (def frontals-templates
-  {:page/title-template            [[:computed/selected-facet-string " "] :seo/title " | Mayvenn"]
+  {:page/title-template            [:computed/selected-facet-string " " :seo/title " | Mayvenn"]
    :page.meta/description-template ["Mayvenn's "
                                     :computed/selected-facet-string
                                     " "
