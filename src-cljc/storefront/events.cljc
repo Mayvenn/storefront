@@ -114,6 +114,7 @@
 (defpath navigate-checkout-payment)
 (defpath navigate-checkout-confirmation)
 (defpath navigate-checkout-processing)
+(defpath navigate-checkout-add)
 (defpath navigate-adventure-checkout-wait)
 
 (defpath navigate-mayvenn-made)
@@ -225,6 +226,7 @@
 (defpath control-checkout-remove-promotion)
 (defpath control-checkout-confirmation-submit)
 (defpath control-checkout-quadpay-confirmation-submit)
+(defpath control-checkout-add-continued)
 
 (defpath control-stylist-account-profile-submit)
 (defpath control-stylist-account-password-submit)
@@ -411,6 +413,11 @@
 (defpath checkout-address)
 (defpath checkout-address-place-changed)
 (defpath checkout-address-component-mounted)
+(defpath checkout-initiated-mayvenn-checkout)
+(defpath checkout-initiated-paypal-checkout)
+(defpath checkout-order-rejected)
+(defpath checkout-order-cleared-for-mayvenn-checkout)
+(defpath checkout-order-cleared-for-paypal-checkout)
 
 (defpath contentful-api-success-fetch-homepage)
 

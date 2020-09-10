@@ -371,10 +371,12 @@
 
     (when (and have-cart?
                (not (auth/signed-in-or-initiated-guest-checkout? app-state))
-               (not (#{events/navigate-checkout-address
+               (not (#{events/navigate-checkout-add
+                       events/navigate-checkout-address
                        events/navigate-checkout-returning-or-guest
                        events/navigate-checkout-sign-in
                        events/navigate-checkout-processing} event)))
+
       (effects/redirect events/navigate-checkout-address))))
 
 (defmethod effects/perform-effects events/navigate-checkout-sign-in [_ event args _ app-state]

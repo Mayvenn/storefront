@@ -1,18 +1,12 @@
 (ns checkout.cart
   (:require
-   #?@(:cljs [[cemerick.url :refer [url-encode]]
-              [storefront.api :as api]
-              [storefront.accessors.orders :as orders]
-              [storefront.config :as config]
-              [storefront.accessors.stylist-urls :as stylist-urls]
-              [storefront.platform.messages :as messages]
-              [storefront.history :as history]
-              [goog.labs.userAgent.device :as device]])
+   #?@(:cljs [[storefront.api :as api]
+              [storefront.history :as history]])
    [storefront.effects :as effects]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
-   [storefront.transitions :as transitions]
-   [storefront.accessors.experiments :as experiments]))
+   [storefront.platform.messages :as messages]
+   [storefront.transitions :as transitions]))
 
 (defmethod effects/perform-effects events/control-pick-stylist-button
   [_ _ _ _ _]
@@ -76,65 +70,3 @@
                               :variant-id (:id variant)
                               :sku-code   (:sku variant)}
                              #(messages/handle-message events/api-success-decrease-quantity {:order %})))))
-
-#?(:cljs
-   (defn- order-has-inapplicable-freeinstall-promo?
-     "A small hack to prevent classic orders from being placed with the freeinstall
-        promo.  A full solution would be implemented in waiter."
-     [app-state]
-     (let [order            (get-in app-state keypaths/order)
-           store-experience (get-in app-state keypaths/store-experience)]
-       (and (orders/discountable-services-on-order? order)
-            (= "mayvenn-classic" store-experience)))))
-
-#?(:cljs
-   (defn- reject-inapplicable-freeinstall-promo [session-id order]
-     (api/remove-freeinstall-line-item session-id order
-                                       (fn [order]
-                                         (messages/handle-message events/api-success-remove-from-bag {:order order})
-                                         (history/enqueue-redirect events/navigate-cart {:query-params {:error "ineligible-for-free-install"}})))))
-
-(defmethod effects/perform-effects events/control-checkout-cart-submit
-  [dispatch event args _ app-state]
-  #?(:cljs
-     (if (order-has-inapplicable-freeinstall-promo? app-state)
-       (reject-inapplicable-freeinstall-promo (get-in app-state keypaths/session-id)
-                                              (get-in app-state keypaths/order))
-       ;; If logged in, this will send user to checkout-address. If not, this sets
-       ;; things up so that if the user chooses sign-in from the returning-or-guest
-       ;; page, then signs-in, they end up on the address page. Convoluted.
-       (history/enqueue-navigate events/navigate-checkout-address))))
-
-(defmethod effects/perform-effects events/control-checkout-cart-paypal-setup
-  [dispatch event args _ app-state]
-  #?(:cljs
-     (let [order (get-in app-state keypaths/order)]
-       (if (order-has-inapplicable-freeinstall-promo? app-state)
-         (reject-inapplicable-freeinstall-promo (get-in app-state keypaths/session-id)
-                                                (get-in app-state keypaths/order))
-         ;; If logged in, this will send user to checkout-address. If not, this sets
-         ;; things up so that if the user chooses sign-in from the returning-or-guest
-         ;; page, then signs-in, they end up on the address page. Convoluted.
-         (api/update-cart-payments
-          (get-in app-state keypaths/session-id)
-          {:order (-> app-state
-                      (get-in keypaths/order)
-                      (select-keys [:token :number])
-                 ;;; Get ready for some nonsense!
-                      ;;
-                      ;; Paypal requires that urls are *double* url-encoded, such as
-                      ;; the token part of the return url, but that *query
-                      ;; parameters* are only singley encoded.
-                      ;;
-                      ;; Thanks for the /totally sane/ API, PayPal.
-                      (assoc-in [:cart-payments]
-                                {:paypal {:amount (get-in app-state keypaths/order-total)
-                                          :mobile-checkout? (not (device/isDesktop))
-                                          :return-url (str stylist-urls/store-url "/orders/" (:number order) "/paypal/"
-                                                           (url-encode (url-encode (:token order)))
-                                                           "?sid="
-                                                           (url-encode (get-in app-state keypaths/session-id)))
-                                          :callback-url (str config/api-base-url "/v2/paypal-callback?number=" (:number order)
-                                                             "&order-token=" (url-encode (:token order)))
-                                          :cancel-url (str stylist-urls/store-url "/cart?error=paypal-cancel")}}))
-           :event events/external-redirect-paypal-setup})))))

@@ -127,11 +127,12 @@
             (ui/square-image {:resizable-url servicing-stylist-portrait-url} 50))]
           [:div.left-align.pl2 checkout-caption-copy]])
 
-       (ui/button-large-primary {:spinning? false
-                                 :disabled? checkout-disabled?
-                                 :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
-                                 :data-test "start-checkout-button"}
-                                "Check out")
+       (let [{:cta/keys [id content disabled? target]} queried-data]
+         (when id
+           (ui/button-large-primary {:data-test id
+                                     :disabled? disabled?
+                                     :on-click  (apply utils/send-event-callback target)}
+                                    content)))
 
        (if (empty? disabled-reasons)
          [:div
@@ -608,8 +609,6 @@
              :promo-banner                       (when (zero? (orders/product-quantity order))
                                                    (promo-banner/query data))
              :call-out                           (call-out/query data)
-             :checkout-disabled?                 checkout-disabled?
-             :disabled-reasons                   disabled-reasons
              :redirecting-to-paypal?             (get-in data keypaths/cart-paypal-redirect)
              :share-carts?                        (= :stylist signed-in-as)
              :requesting-shared-cart?            (utils/requesting? data request-keys/create-shared-cart)
@@ -635,7 +634,13 @@
                                                   (standalone-service-line-items-query data))
              :quadpay/order-total                (:total order)
              :quadpay/show?                      (get-in data keypaths/loaded-quadpay)
-             :quadpay/directive                  :just-select}
+             :quadpay/directive                  :just-select
+
+             :cta/id                             "start-checkout-button"
+             :cta/disabled?                      checkout-disabled?
+             :cta/disabled-reason                disabled-reasons
+             :cta/target                         [events/control-checkout-cart-submit]
+             :cta/content                        "Check out"}
 
       any-services?
       (cond->

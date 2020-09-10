@@ -18,7 +18,8 @@
     events/navigate-checkout-sign-in})
 
 (def ^:private checkout-flow-events
-  #{events/navigate-checkout-returning-or-guest
+  #{events/navigate-checkout-add
+    events/navigate-checkout-returning-or-guest
     events/navigate-checkout-address
     events/navigate-checkout-payment
     events/navigate-checkout-confirmation

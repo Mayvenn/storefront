@@ -105,6 +105,7 @@
               "/account/edit"                                     (edn->bidi events/navigate-account-manage)
               "/cart"                                             (edn->bidi events/navigate-cart)
               "/added-to-cart"                                    (edn->bidi events/navigate-added-to-cart)
+              "/checkout/add"                                     (edn->bidi events/navigate-checkout-add)
               ["/shop/" [keyword :album-keyword]]                 (edn->bidi events/navigate-shop-by-look)
               ["/shop/" [keyword :album-keyword] "/" :look-id]    (edn->bidi events/navigate-shop-by-look-details)
               "/stylist/cash-out-now"                             (edn->bidi events/navigate-stylist-dashboard-cash-out-begin)
