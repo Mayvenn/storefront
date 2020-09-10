@@ -108,7 +108,7 @@
   [_ _ _ _]
   #?(:cljs (stringer/track-event "add_success_browse_stylist_button_pressed" {})))
 
-(defdynamic-component stylist-helper
+(defdynamic-component stylist-helper-organism
   (did-mount [this]
     (let [{:stylist-helper/keys [id]} (component/get-props this)]
       (when id
@@ -143,6 +143,7 @@
            header
            cta
            promotion-helper
+           stylist-helper
            return-link]}
    owner _]
   [:div.container
@@ -175,8 +176,8 @@
         (when cta
           (component/build cta-organism cta))]]
       [:div.bg-white.center.flex-grow
-       (when queried-data
-         (component/build stylist-helper queried-data))
+       (when stylist-helper
+         (component/build stylist-helper-organism stylist-helper))
        (when promotion-helper
          (component/build promotion-helper-organism promotion-helper))]])])
 
@@ -263,17 +264,17 @@
 
 (defn query
   [items images-db]
-  (let [recent-physical-line-items            (select (merge recent physical) items)
-        recent-free-mayvenn-service-line-item (first (select (merge recent catalog.services/discountable) items))
-        recent-a-la-carte-service-line-items  (select (merge recent catalog.services/a-la-carte) items)
-        recent-addon-service-skus             (select (merge recent catalog.services/addons) items)]
+  (let [recent-free-mayvenn-service (first (select (merge recent catalog.services/discountable) items))
+        recent-a-la-carte-services  (select (merge recent catalog.services/a-la-carte) items)
+        recent-addons-services      (select (merge recent catalog.services/addons) items)]
     {:service-line-items (concat
                           (free-service-line-item-query images-db
-                                                        recent-free-mayvenn-service-line-item recent-addon-service-skus)
+                                                        recent-free-mayvenn-service
+                                                        recent-addons-services)
                           (a-la-carte-service-line-items-query images-db
-                                                               recent-a-la-carte-service-line-items))
+                                                               recent-a-la-carte-services))
      :cart-items         (cart-items-query images-db
-                                           recent-physical-line-items)
+                                           (select (merge recent physical) items))
      :spinning?          (empty? (select recent items))}))
 
 (defn header<-
@@ -321,32 +322,16 @@
                    :target [events/control-cart-interstitial-browse-stylist-cta]})
 
 (defn added-to-cart<-
-  "Model for which bottom panel to present to the user"
-  [waiter-order
+  "Model for which bottom panel to present to the user "
+  [items
    {:as                        free-mayvenn-service
     :free-mayvenn-service/keys [failed-criteria-count]}
-   servicing-stylist]
-  (let [a-la-carte-service-in-cart? (->> waiter-order
-                                         orders/service-line-items
-                                         (filter line-items/standalone-service?)
-                                         seq
-                                         boolean)]
-    (cond
-      ;; 1. Discountable service? && needs promotion help
-      (and free-mayvenn-service (pos? failed-criteria-count))
-      :promotion-helper
-
-      ;; 2. Discountable service? && no promotion help needd
-      (and free-mayvenn-service (zero? failed-criteria-count))
-      :celebration-continue
-
-      ;; 3. Non-discountable services && no stylist selected yet
-      (and a-la-carte-service-in-cart? (nil? servicing-stylist))
-      :stylist-helper
-
-      ;; 4. No services? (implies hair was just added)
-      :else
-      :continue)))
+   stylist]
+  (cond
+    (and free-mayvenn-service (pos? failed-criteria-count))      :promotion-helper
+    (and free-mayvenn-service (zero? failed-criteria-count))     :celebration-continue
+    (and (select catalog.services/service items) (nil? stylist)) :stylist-helper
+    :else                                                        :continue))
 
 (defn ^:export built-component
   [app-state opts]
@@ -366,7 +351,7 @@
                       (query items images-db)
                       {:return-link (return-link<- app-state)
                        :header      (header<- items)}
-                      (case (added-to-cart<- waiter-order
+                      (case (added-to-cart<- items
                                              free-mayvenn-service
                                              servicing-stylist)
                         :continue             {:cta cta<-}
