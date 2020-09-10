@@ -11,7 +11,17 @@
             [stylist-matching.search.accessors.filters :as stylist-filters]
             [storefront.events :as e]
             storefront.keypaths
-            [storefront.accessors.sites :as sites]))
+            [storefront.accessors.sites :as sites]
+            [spice.maps :as maps]))
+
+;;; Utils
+
+(defn- ns!
+  [ns m]
+  (->> m (mapv (fn [[k v]] [(keyword ns (name k)) v])) (into {})))
+
+;;; Not quite sure why this is needed, its just reverse lookups :hair/family
+;;; Why not query?
 
 (defn hair-family->service-sku-ids [hair-family]
   (get {"bundles"         #{"SRV-LBI-000" "SRV-UPCW-000"}
@@ -21,6 +31,8 @@
         "360-wigs"        #{"SRV-WGC-000"}
         "lace-front-wigs" #{"SRV-WGC-000"}}
        hair-family))
+
+;;; Discountable promotions
 
 (def rules
   (let [?bundles
@@ -136,6 +148,8 @@
        ;; result
        :discounted?              (and service-line-item (not (seq failed-rules)))})))
 
+;;; Some ad-hoc transforms?
+
 (defn ->service
   [waiter-line-item]
   {:title  (:variant-name waiter-line-item)
@@ -155,19 +169,33 @@
                             (map ->addon-service))]
     (assoc (->service waiter-base-line-item) :addons addon-services)))
 
+(defn items<-
+  "
+  Model of items as skus + placement attrs (quantity + servicing-stylist)
+
+  This is *not* waiter's line items!
+  "
+  [waiter-order sku-db]
+  (->> waiter-order
+       orders/product-and-service-items
+       (mapv (partial ns! "item"))
+       (mapv #(merge % (get sku-db (:item/sku %))))))
+
 (defn ->order
   [app-state waiter-order]
   (let [store-slug    (get-in app-state storefront.keypaths/store-slug)
         base-services (->> waiter-order
                            orders/service-line-items
-                           (filter line-items/base-service?))]
+                           (filter line-items/base-service?))
+        sku-db        (get-in app-state storefront.keypaths/v2-skus)]
     {:waiter/order         waiter-order
      :order/dtc?           (= "shop" store-slug)
      :order/services-only? (every? line-items/service? (orders/product-and-service-items waiter-order))
      :order/submitted?     (= "submitted" (:state waiter-order))
      :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
      :order.items/quantity (orders/displayed-cart-count waiter-order)
-     :order.items/services (map (partial ->base-service waiter-order) base-services)}))
+     :order.items/services (map (partial ->base-service waiter-order) base-services)
+     :order/items          (items<- waiter-order sku-db)}))
 
 (defn completed
   [app-state]

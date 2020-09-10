@@ -16,3 +16,6 @@
 (def addons
   {:catalog/department #{"service"}
    :service/type       #{"addon"}})
+
+(def physical
+  {:catalog/department #{"hair"}})

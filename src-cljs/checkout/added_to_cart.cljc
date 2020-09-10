@@ -175,112 +175,124 @@
          (component/build promotion-helper-organism promotion-helper))]])])
 
 (defn free-service-line-item-query
-  [sku-db images-db free-service-line-item addon-skus]
-  (let [sku-id (:sku free-service-line-item)]
-    (when-let [service-sku (get sku-db sku-id)]
-      [(merge {:react/key                             (str "line-item-" sku-id)
-               :cart-item-title/id                    (str "line-item-title-" sku-id)
-               :cart-item-floating-box/id             (str "line-item-price-" sku-id)
-               :cart-item-copy/lines                  [{:id    (str "line-item-requirements-" sku-id)
-                                                        :value (:promo.mayvenn-install/requirement-copy service-sku)}
-                                                       {:id    (str "line-item-quantity-" sku-id)
-                                                        :value (str "qty. " (:quantity free-service-line-item))}]
-               :cart-item-floating-box/value          [:span
-                                                       [:div.strike (some-> free-service-line-item line-items/service-line-item-price $/as-money)]
-                                                       [:div.s-color "FREE"]]
-               :cart-item-service-thumbnail/id        (str "line-item-thumbnail-" sku-id)
-               :cart-item-service-thumbnail/image-url (->> service-sku (images/skuer->image images-db "cart") :url)
-               :cart-item-title/primary               (:variant-name free-service-line-item)}
-              (when (seq addon-skus)
-                {:cart-item-sub-items/id    (str "free-service-" sku-id "-addon-services")
-                 :cart-item-sub-items/title "Add-On Services"
-                 ;; think about sharing this function
-                 :cart-item-sub-items/items (map (fn [addon-sku]
-                                                   {:cart-item-sub-item/title  (:sku/title addon-sku)
-                                                    :cart-item-sub-item/price  (some-> addon-sku :sku/price $/as-money)
-                                                    :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
-                                                 addon-skus)}))])))
-
-(defn cart-items-query
-  [sku-db images-db line-items]
-  (for [{sku-id :sku :as line-item} line-items
-        :let
-        [sku   (get sku-db sku-id)
-         price (or (:sku/price line-item)
-                   (:unit-price line-item))]]
-    {:react/key                                (str sku-id "-" (:quantity line-item))
-     :cart-item-title/id                       (str "line-item-title-" sku-id)
-     :cart-item-title/primary                  (or (:product-title line-item)
-                                                   (:product-name line-item))
-     :cart-item-copy/lines                     [{:id    (str "line-item-quantity-" sku-id)
-                                                 :value (str "qty. " (:quantity line-item))}]
-     :cart-item-title/secondary                (:color-name line-item)
-     :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku-id)
-     :cart-item-floating-box/value             ^:ignore-interpret-warning [:div {:data-test (str "line-item-price-ea-" sku-id)}
-                                                                           ($/as-money price)
-                                                                           [:div.proxima.content-4 " each"]]
-     :cart-item-square-thumbnail/id            sku-id
-     :cart-item-square-thumbnail/sku-id        sku-id
-     :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> sku :hair/length first)]
-                                                 (str length-circle-value "”"))
-     :cart-item-square-thumbnail/ucare-id      (->> sku (catalog.images/image images-db "cart") :ucare/id)}))
+  [images-db
+   {:as           free-service-item
+    :catalog/keys [sku-id]
+    :item/keys    [unit-price recent-quantity variant-name]}
+   addon-skus]
+  (when free-service-item
+    [(merge {:react/key                             (str "line-item-" sku-id)
+             :cart-item-copy/lines                  [{:id    (str "line-item-requirements-" sku-id)
+                                                      :value (:promo.mayvenn-install/requirement-copy free-service-item)}
+                                                     {:id    (str "line-item-quantity-" sku-id)
+                                                      :value (str "qty. " recent-quantity)}]
+             :cart-item-floating-box/id             (str "line-item-price-" sku-id)
+             :cart-item-floating-box/value          [:span
+                                                     [:div.strike (some-> unit-price (* recent-quantity) $/as-money)]
+                                                     [:div.s-color "FREE"]]
+             :cart-item-service-thumbnail/id        (str "line-item-thumbnail-" sku-id)
+             :cart-item-service-thumbnail/image-url (->> free-service-item
+                                                         (images/skuer->image images-db "cart")
+                                                         :url)
+             :cart-item-title/id                    (str "line-item-title-" sku-id)
+             :cart-item-title/primary               variant-name}
+            (when (seq addon-skus)
+              {:cart-item-sub-items/id    (str "free-service-" sku-id "-addon-services")
+               :cart-item-sub-items/title "Add-On Services"
+               ;; think about sharing this function
+               :cart-item-sub-items/items (map (fn [addon-sku]
+                                                 {:cart-item-sub-item/title  (:sku/title addon-sku)
+                                                  :cart-item-sub-item/price  (some-> addon-sku :sku/price $/as-money)
+                                                  :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
+                                               addon-skus)}))]))
 
 (defn ^:private a-la-carte-service-line-items-query
-  [sku-db images-db line-items]
-  (for [{sku-id :sku :as service-line-item} line-items
+  [images-db service-items]
+  (for [service-item service-items
         :let
-        [sku   (get sku-db sku-id)
-         price (or (:sku/price service-line-item)
-                   (:unit-price service-line-item))]]
-    {:react/key                             sku-id
-     :cart-item-title/primary               (or (:product-title service-line-item)
-                                                (:product-name service-line-item))
-     :cart-item-title/id                    (str "line-item-" sku-id)
+        [{:catalog/keys [sku-id]
+          :item/keys    [unit-price recent-quantity product-name product-title]}
+         service-item]]
+    {:react/key                             (str "line-item-" sku-id)
      :cart-item-copy/lines                  [{:id    (str "line-item-quantity-" sku-id)
-                                              :value (str "qty. " (:quantity service-line-item))}]
-     :cart-item-floating-box/id             (str "line-item-" sku-id "-price")
-     :cart-item-floating-box/value          (some-> price $/as-money)
-     :cart-item-service-thumbnail/id        sku-id
-     :cart-item-service-thumbnail/image-url (->> sku (catalog.images/image images-db "cart") :ucare/id)}))
+                                              :value (str "qty. " recent-quantity)}]
+     :cart-item-floating-box/id             (str "line-item-price-" sku-id)
+     :cart-item-floating-box/value          (some-> unit-price (* recent-quantity) $/as-money)
+     :cart-item-service-thumbnail/id        (str "line-item-thumbnail-" sku-id)
+     :cart-item-service-thumbnail/image-url (->> service-item (catalog.images/image images-db "cart") :ucare/id)
+     :cart-item-title/id                    (str "line-item-title-" sku-id)
+     :cart-item-title/primary               (or product-title product-name)}))
+
+(defn cart-items-query
+  [images-db items]
+  (for [item items
+        :let
+        [{:catalog/keys [sku-id]
+          :item/keys    [unit-price recent-quantity product-name product-title]}
+         item]]
+    {:react/key                                (str "line-item-" sku-id)
+     :cart-item-copy/lines                     [{:id    (str "line-item-quantity-" sku-id)
+                                                 :value (str "qty. " recent-quantity)}]
+     :cart-item-floating-box/id                (str "line-item-price-" sku-id)
+     :cart-item-floating-box/value             ^:ignore-interpret-warning [:div {:data-test (str "line-item-price-ea-" sku-id)}
+                                                                           (some-> unit-price (* recent-quantity) $/as-money)
+                                                                           [:div.proxima.content-4 " each"]]
+     :cart-item-square-thumbnail/id            (str "line-item-thumbnail-" sku-id)
+     :cart-item-square-thumbnail/sku-id        sku-id
+     :cart-item-square-thumbnail/sticker-label (some-> item :hair/length first (str "”"))
+     :cart-item-square-thumbnail/ucare-id      (->> item (catalog.images/image images-db "cart") :ucare/id)
+
+     :cart-item-title/id                       (str "line-item-title-" sku-id)
+     :cart-item-title/primary                  (or product-title product-name)
+     :cart-item-title/secondary                (some-> item :hair/color first)}))
+
+(def ^:private select
+  (partial spice.selector/match-all {:selector/strict? true}))
+
+(def ^:private recent
+  {:item/recent? #{true}})
+
+(def ^:private physical
+  {:catalog/department #{"hair"}})
 
 (defn query
-  [data order sku-db servicing-stylist]
+  [data order servicing-stylist items']
   (let [images-db                          (get-in data keypaths/v2-images)
         recently-added-sku-ids->quantities (get-in data storefront.keypaths/cart-recently-added-skus)
-        products                           (get-in data keypaths/v2-products)
         facets                             (get-in data keypaths/v2-facets)
-        recent-line-items                  (->> order
-                                                orders/product-and-service-items
-                                                (filter (fn [{:keys [sku]}] (contains? recently-added-sku-ids->quantities sku)))
-                                                (map (fn [line-item] (assoc line-item :quantity (recently-added-sku-ids->quantities (:sku line-item)))))
-                                                ;; NOTE: enables selecting later on
-                                                (map #(merge (:variant-attrs %) %)))
 
-        recent-physical-line-items            (->> recent-line-items
-                                                   (filter line-items/product?)
-                                                   (map (partial cart/add-product-title-and-color-to-line-item products facets)))
-        recent-free-mayvenn-service-line-item (->> recent-line-items
-                                                   (spice.selector/match-all {:selector/strict? true}
-                                                                             catalog.services/discountable)
-                                                   first)
-        recent-a-la-carte-service-line-items  (->> recent-line-items
-                                                   (spice.selector/match-all {:selector/strict? true}
-                                                                             catalog.services/a-la-carte))
-        recent-addon-service-skus             (->> recent-line-items
-                                                   (spice.selector/match-all {:selector/strict? true}
-                                                                             catalog.services/addons)
-                                                   (map (fn [addon-service] (get sku-db (:sku addon-service)))))]
+        items
+        (mapv (fn [{:as item :item/keys [sku]}]
+                (merge
+                 item
+                 (when-let [recent-quantity (get recently-added-sku-ids->quantities sku)]
+                   {:item/recent?         #{true}
+                    :item/recent-quantity recent-quantity})))
+              items')
+
+        recent-physical-line-items
+        (select (merge recent physical) items)
+
+        recent-free-mayvenn-service-line-item
+        (first (select (merge recent catalog.services/discountable) items))
+
+        recent-a-la-carte-service-line-items
+        (select (merge recent catalog.services/a-la-carte) items)
+
+        recent-addon-service-skus
+        (select (merge recent catalog.services/addons) items)]
     {:title              (str (ui/pluralize-with-amount (->> recent-physical-line-items
                                                              (cons recent-free-mayvenn-service-line-item)
                                                              (concat recent-a-la-carte-service-line-items)
-                                                             (mapv :quantity)
+                                                             (mapv :item/recent-quantity)
                                                              (reduce + 0)) "Item")
                               " Added")
      :service-line-items (concat
-                          (free-service-line-item-query sku-db images-db recent-free-mayvenn-service-line-item recent-addon-service-skus)
-                          (a-la-carte-service-line-items-query sku-db images-db recent-a-la-carte-service-line-items))
-     :cart-items         (cart-items-query sku-db images-db recent-physical-line-items)
-     :spinning?          (empty? recent-line-items)}))
+                          (free-service-line-item-query images-db recent-free-mayvenn-service-line-item recent-addon-service-skus)
+                          (a-la-carte-service-line-items-query images-db recent-a-la-carte-service-line-items))
+     :cart-items         (cart-items-query images-db
+                                           recent-physical-line-items)
+     :spinning?          (empty? (select recent items))}))
 
 (defn return-link<-
   [app-state]
@@ -351,19 +363,21 @@
 (defn ^:export built-component
   [app-state opts]
   (let [;; data layers
-        waiter-order         (get-in app-state keypaths/order)
-        sku-db               (get-in app-state keypaths/v2-skus)
+        waiter-order          (get-in app-state keypaths/order)
+        sku-db                (get-in app-state keypaths/v2-skus)
+        ;; business layers
+        {:order/keys [items]} (api.orders/->order app-state waiter-order)
         {servicing-stylist
-         :services/stylist}  (api.orders/services app-state
+         :services/stylist}   (api.orders/services app-state
                                                   waiter-order)
-        free-mayvenn-service (api.orders/free-mayvenn-service servicing-stylist
+        free-mayvenn-service  (api.orders/free-mayvenn-service servicing-stylist
                                                               waiter-order)]
     (component/build template
                      (merge
                       (query app-state
                              waiter-order
-                             sku-db
-                             servicing-stylist)
+                             servicing-stylist
+                             items)
                       {:return-link (return-link<- app-state)}
                       (case (added-to-cart<- waiter-order
                                              free-mayvenn-service
