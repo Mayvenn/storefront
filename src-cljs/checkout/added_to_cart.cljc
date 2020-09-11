@@ -181,9 +181,26 @@
        (when promotion-helper
          (component/build promotion-helper-organism promotion-helper))]])])
 
+(defn ^:private hacky-cart-image
+  [item]
+  (some->> item
+           :selector/images
+           (filter #(= "cart" (:use-case %)))
+           first
+           :url
+           ui/ucare-img-id))
+
+(def ^:private select
+  (partial spice.selector/match-all {:selector/strict? true}))
+
+(def ^:private recent
+  {:item/recent? #{true}})
+
+(def ^:private physical
+  {:catalog/department #{"hair"}})
+
 (defn free-service-line-item-query
-  [images-db
-   {:as           free-service-item
+  [{:as           free-service-item
     :catalog/keys [sku-id]
     :item/keys    [unit-price recent-quantity variant-name]}
    addon-skus]
@@ -198,9 +215,7 @@
                                                      [:div.strike (some-> unit-price (* recent-quantity) $/as-money)]
                                                      [:div.s-color "FREE"]]
              :cart-item-service-thumbnail/id        (str "line-item-thumbnail-" sku-id)
-             :cart-item-service-thumbnail/image-url (->> free-service-item
-                                                         (images/skuer->image images-db "cart")
-                                                         :url)
+             :cart-item-service-thumbnail/image-url (hacky-cart-image free-service-item)
              :cart-item-title/id                    (str "line-item-title-" sku-id)
              :cart-item-title/primary               variant-name}
             (when (seq addon-skus)
@@ -214,7 +229,7 @@
                                                addon-skus)}))]))
 
 (defn ^:private a-la-carte-service-line-items-query
-  [images-db service-items]
+  [service-items]
   (for [service-item service-items
         :let
         [{:catalog/keys [sku-id]
@@ -226,13 +241,13 @@
      :cart-item-floating-box/id             (str "line-item-price-" sku-id)
      :cart-item-floating-box/value          (some-> unit-price (* recent-quantity) $/as-money)
      :cart-item-service-thumbnail/id        (str "line-item-thumbnail-" sku-id)
-     :cart-item-service-thumbnail/image-url (->> service-item (catalog.images/image images-db "cart") :ucare/id)
+     :cart-item-service-thumbnail/image-url (hacky-cart-image service-item)
      :cart-item-title/id                    (str "line-item-title-" sku-id)
      :cart-item-title/primary               (or product-title product-name)}))
 
-(defn cart-items-query
-  [images-db items]
-  (for [item items
+(defn cart-items<-
+  [items]
+  (for [item (select (merge recent physical) items)
         :let
         [{:catalog/keys [sku-id]
           :item/keys    [unit-price recent-quantity product-name product-title]}
@@ -247,35 +262,19 @@
      :cart-item-square-thumbnail/id            (str "line-item-thumbnail-" sku-id)
      :cart-item-square-thumbnail/sku-id        sku-id
      :cart-item-square-thumbnail/sticker-label (some-> item :hair/length first (str "”"))
-     :cart-item-square-thumbnail/ucare-id      (->> item (catalog.images/image images-db "cart") :ucare/id)
-
+     :cart-item-square-thumbnail/ucare-id      (hacky-cart-image item)
      :cart-item-title/id                       (str "line-item-title-" sku-id)
      :cart-item-title/primary                  (or product-title product-name)
      :cart-item-title/secondary                (some-> item :hair/color first)}))
 
-(def ^:private select
-  (partial spice.selector/match-all {:selector/strict? true}))
-
-(def ^:private recent
-  {:item/recent? #{true}})
-
-(def ^:private physical
-  {:catalog/department #{"hair"}})
-
-(defn query
-  [items images-db]
-  (let [recent-free-mayvenn-service (first (select (merge recent catalog.services/discountable) items))
-        recent-a-la-carte-services  (select (merge recent catalog.services/a-la-carte) items)
-        recent-addons-services      (select (merge recent catalog.services/addons) items)]
-    {:service-line-items (concat
-                          (free-service-line-item-query images-db
-                                                        recent-free-mayvenn-service
-                                                        recent-addons-services)
-                          (a-la-carte-service-line-items-query images-db
-                                                               recent-a-la-carte-services))
-     :cart-items         (cart-items-query images-db
-                                           (select (merge recent physical) items))
-     :spinning?          (empty? (select recent items))}))
+(defn service-items<-
+  [items]
+  (let [recent-free-mayvenn (first (select (merge recent catalog.services/discountable) items))
+        recent-addons       (select (merge recent catalog.services/addons) items)
+        recent-a-la-carte   (select (merge recent catalog.services/a-la-carte) items)]
+    (concat (free-service-line-item-query recent-free-mayvenn
+                                          recent-addons)
+            (a-la-carte-service-line-items-query recent-a-la-carte))))
 
 (defn header<-
   [items]
@@ -338,7 +337,6 @@
   (let [;; data layers
         waiter-order (get-in app-state keypaths/order)
         sku-db       (get-in app-state keypaths/v2-skus)
-        images-db    (get-in app-state keypaths/v2-images)
 
         ;; business layers
         {:order/keys [items]} (api.orders/->order app-state waiter-order)
@@ -348,9 +346,11 @@
                                                                waiter-order)]
     (component/build template
                      (merge
-                      (query items images-db)
-                      {:return-link (return-link<- app-state)
-                       :header      (header<- items)}
+                      {:return-link   (return-link<- app-state)
+                       :spinning?     (empty? (select recent items))
+                       :header        (header<- items)
+                       :service-items (service-items<- items)
+                       :cart-items    (cart-items<- items)}
                       (case (added-to-cart<- items
                                              free-mayvenn-service
                                              servicing-stylist)

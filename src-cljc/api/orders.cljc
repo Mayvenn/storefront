@@ -175,9 +175,9 @@
 
   This is *not* waiter's line items!
   "
-  [waiter-order recents sku-db]
+  [waiter-order recents skus-db images-db]
   (->> waiter-order
-       orders/product-and-service-items
+       orders/product-and-service-items ;; TODO reconsider
        (mapv (partial ns! "item"))
        (mapv
         (fn comp-recents [{:as item :item/keys [sku]}]
@@ -186,8 +186,11 @@
                    {:item/recent?         #{true}
                     :item/recent-quantity recent-quantity}))))
        (mapv
-        (fn comp-skus [{:as item :item/keys [sku]}]
-          (merge item (get sku-db sku))))))
+        (fn comp-skus [{:as item sku-id :item/sku}]
+          (merge item
+                 (let [sku    (get skus-db sku-id)
+                       images (images/for-skuer images-db sku)]
+                   (assoc sku :selector/images images)))))))
 
 (defn ->order
   [app-state waiter-order]
@@ -196,7 +199,8 @@
         base-services (->> waiter-order
                            orders/service-line-items
                            (filter line-items/base-service?))
-        sku-db        (get-in app-state storefront.keypaths/v2-skus)]
+        skus-db       (get-in app-state storefront.keypaths/v2-skus)
+        images-db     (get-in app-state storefront.keypaths/v2-images)]
     {:waiter/order         waiter-order
      :order/dtc?           (= "shop" store-slug)
      :order/services-only? (every? line-items/service? (orders/product-and-service-items waiter-order))
@@ -204,7 +208,7 @@
      :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
      :order.items/quantity (orders/displayed-cart-count waiter-order)
      :order.items/services (map (partial ->base-service waiter-order) base-services)
-     :order/items          (items<- waiter-order recents sku-db)}))
+     :order/items          (items<- waiter-order recents skus-db images-db)}))
 
 (defn completed
   [app-state]
