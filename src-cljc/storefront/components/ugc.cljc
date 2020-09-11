@@ -39,6 +39,8 @@
             (when desktop-aware?
               {:class "col-6-on-tb col-4-on-dt"}))
      [:div.relative.bg-white
+      (util/route-to nav-event nav-args {:back-copy  (:back-copy copy)
+                                         :short-name (:short-name copy)})
       (ui/screen-aware ugc-image {:overlay overlay :image-url image-url})
       (when overlay
         [:div.absolute.flex.justify-end.bottom-0.right-0.mb8
