@@ -146,7 +146,7 @@
      :checkout-add-button/cta-target [events/control-checkout-add-continued]
      :checkout-add-button/cta-title  "Continue To Check Out"}))
 
-(defn built-component [data opts]
+(defn ^:export built-component [data opts]
   (component/build component (query data) opts))
 
 (defmethod effects/perform-effects events/control-checkout-add-continued
