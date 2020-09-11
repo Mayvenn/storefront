@@ -12,6 +12,7 @@
             adventure.checkout.wait
             checkout.confirmation
             checkout.returning-or-guest-v2020-05
-            checkout.processing))
+            checkout.processing
+            checkout.add))
 
 (loader/set-loaded! :checkout)
