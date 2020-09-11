@@ -3,26 +3,25 @@
                        [storefront.hooks.stringer :as stringer]
                        [storefront.history :as history]])
             api.orders
-            catalog.images
             catalog.services
-            [checkout.shop.cart-v202004 :as cart]
             [checkout.ui.cart-item-v202004 :as cart-item-v202004]
-            [promotion-helper.ui.drawer-contents :as drawer-contents]
             promotion-helper.ui
+            [promotion-helper.ui.drawer-contents :as drawer-contents]
             spice.selector
-            storefront.trackings
-            storefront.effects
-            [storefront.accessors.images :as images]
-            [storefront.accessors.line-items :as line-items]
-            [storefront.accessors.orders :as orders]
-            [storefront.component :as component :refer [defcomponent defdynamic-component]]
+            [storefront.component
+             :as
+             component
+             :refer
+             [defcomponent defdynamic-component]]
             [storefront.components.money-formatters :as $]
             [storefront.components.ui :as ui]
+            storefront.effects
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            ui.molecules
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            storefront.trackings
+            ui.molecules))
 
 (defn ^:private elements
   "Embed a list of organisms in another organism."
@@ -137,7 +136,7 @@
 
 (defcomponent template
   [{:as   queried-data
-    :keys [service-line-items
+    :keys [service-items
            cart-items
            spinning?
            header
@@ -154,10 +153,10 @@
       [:div.bg-refresh-gray.flex-grow-0
        [:div.p3
         (added-to-cart-header-molecule header)
-        (for [service-line-item service-line-items]
+        (for [service-item service-items]
           [:div.mt2-on-mb
-           (component/build cart-item-v202004/organism {:cart-item service-line-item}
-                            (component/component-id (:react/key service-line-item)))])
+           (component/build cart-item-v202004/organism {:cart-item service-item}
+                            (component/component-id (:react/key service-item)))])
         (when (seq cart-items)
           [:div.mt3
            {:data-test "cart-interstitial-line-items"}
