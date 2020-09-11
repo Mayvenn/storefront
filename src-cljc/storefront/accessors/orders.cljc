@@ -14,7 +14,7 @@
   (when order
     (->> order
          :shipments
-         (mapcat :line-items))))
+         (mapcat :storefront/all-line-items))))
 
 (defn line-items
   "Returns line items from an order hashmap.
