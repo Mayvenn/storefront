@@ -50,7 +50,7 @@
                         :border-left "21px solid transparent"}}]
          [:div.flex.items-center.px3.bold.h6.bg-pale-purple.whisper.white
           overlay]])]
-     [:div.bg-white.p1.px2.pb2
+     [:div.bg-white.p1.px3.pb3
       [:div.h5.medium.mt1.mb2
        [:div.flex.items-center.justify-between.mb2
         [:div.flex.items-center
