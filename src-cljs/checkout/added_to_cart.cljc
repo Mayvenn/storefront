@@ -155,6 +155,7 @@
         (added-to-cart-header-molecule header)
         (for [service-item service-items]
           [:div.mt2-on-mb
+           {:key (:react/key service-item)}
            (component/build cart-item-v202004/organism {:cart-item service-item}
                             (component/component-id (:react/key service-item)))])
         (when (seq cart-items)
@@ -210,9 +211,9 @@
                                                      {:id    (str "line-item-quantity-" sku-id)
                                                       :value (str "qty. " recent-quantity)}]
              :cart-item-floating-box/id             (str "line-item-price-" sku-id)
-             :cart-item-floating-box/value          [:span
-                                                     [:div.strike (some-> unit-price (* recent-quantity) $/as-money)]
-                                                     [:div.s-color "FREE"]]
+             :cart-item-floating-box/value          ^:ignore-interpret-warning [:span
+                                                                                [:div.strike (some-> unit-price (* recent-quantity) $/as-money)]
+                                                                                [:div.s-color "FREE"]]
              :cart-item-service-thumbnail/id        (str "line-item-thumbnail-" sku-id)
              :cart-item-service-thumbnail/image-url (hacky-cart-image free-service-item)
              :cart-item-title/id                    (str "line-item-title-" sku-id)
