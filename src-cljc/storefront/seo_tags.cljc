@@ -301,6 +301,10 @@
         :og-image       "http://ucarecdn.com/401c6886-077a-4445-85ec-f6b7023d5d1e/-/format/auto/canonical_image",
         :og-description "Mayvenn is the recommended and trusted source for quality hair by 100,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"}
 
+       events/navigate-content-our-hair
+       (merge default-tagmap
+              {:title "Our Hair: Virgin and Dyed Virgin Human Hair | Mayvenn"})
+
        ;; else
        default-tagmap)
      tagmap->tags
