@@ -262,9 +262,10 @@
            :icon                "/images/categories/straight-icon.svg"
            :subcategory/title   "Straight"
            :header/title        "Virgin Straight"}
-          (category->seo "Natural Straight Extensions"
-                         (copy "Straight Brazilian weave, straight Indian hair and straight Peruvian hair."
-                               "Our straight bundles are sleek from root to tip.")
+          (category->seo "Straight Hair Bundles: Virgin Straight Sew-In Weaves"
+                         (copy "Find the perfect virgin straight hair bundles from Mayvenn."
+                               "We have everything from blonde to black, Brazilian to Indian."
+                               "Browse our collection today!")
                          "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/")
           texture-templates)
    (merge {:catalog/category-id      "3"
@@ -290,9 +291,10 @@
            :icon                "/images/categories/yaki-straight-icon.svg"
            :subcategory/title   "Yaki Straight"
            :header/title        "Virgin Yaki Straight"}
-          (category->seo "Yaki Straight Extensions"
-                         (copy "Our Yaki Straight hair collection features both Peruvian and Brazilian straight hair bundles."
-                               "With Lace Closure or Lace Frontals in different lengths.")
+          (category->seo "Yaki Straight Hair: Virgin Yaki Straight Bundles"
+                         (copy "Looking for some top quality yaki straight hair?"
+                               "Mayvenn has you covered."
+                               "Browse our collection of yaki straight virgin hair bundles here.")
                          "//ucarecdn.com/98e8b217-73ee-475a-8f5e-2c3aaa56af42/")
           texture-templates)
    (merge {:catalog/category-id      "4"
@@ -315,9 +317,10 @@
            :icon                     "/images/categories/kinky-straight-icon.svg"
            :subcategory/title        "Kinky Straight"
            :header/title             "Virgin Kinky Straight"}
-          (category->seo "Kinky Straight Extensions"
-                         (copy "100% human hair bundles and extensions from Mayvenn."
-                               "Peruvian and Brazilian Kinky Straight Lace Closures and Frontals.")
+          (category->seo "Kinky Straight Hair: Virgin Kinky Straight Bundles"
+                         (copy "Like a fresh blow out, Mayvenn kinky straight bundles move freely"
+                               "and give a naturally flawless look that mimics your own locks."
+                               "Browse our collection here.")
                          "//ucarecdn.com/7fe5f90f-4dad-454a-aa4b-b453fc4da3c4/")
           texture-templates)
    (merge {:catalog/category-id      "5"
@@ -337,9 +340,9 @@
            :icon                     "/images/categories/body-wave-icon.svg"
            :subcategory/title        "Body Wave"
            :header/title             "Virgin Body Wave"}
-          (category->seo "Body Wave Extensions"
-                         (copy "Malaysian and Peruvian body wave silk, lace and 360 frontal bundles."
-                               "Unbelievably soft and goes from straight to wavy and back again.")
+          (category->seo "Body Wave Hair: Virgin Body Wave Bundles"
+                         (copy "Step into the spotlight with our collection of luscious virgin body wave hair."
+                               "Shop Mayvenn's collection of top quality body wave hair bundles here.")
                          "//ucarecdn.com/445c53df-f369-4ca6-a554-c9668c8968f1/")
           texture-templates)
    (merge {:catalog/category-id      "6"
@@ -361,9 +364,10 @@
            :icon                     "/images/categories/loose-wave-icon.svg"
            :subcategory/title        "Loose Wave"
            :header/title             "Virgin Loose Wave"}
-          (category->seo "Loose Wave Extensions"
-                         (copy "Mayvenn’s Brazilian, Peruvian and Indian loose wave bundles."
-                               "Also includes loose wave lace closures. All are 100% virgin Loose Wave hair.")
+          (category->seo "Loose Wave Hair: Virgin Loose Wave Bundles"
+                         (copy "For hair that holds a curl beautifully,"
+                               "Mayvenn's collection of virgin loose wave bundles is the"
+                               "perfect foundation for all your flirty, wavy looks. Shop now.")
                          "//ucarecdn.com/31be9341-a688-4f03-b754-a22a0a1f267e/")
           texture-templates)
    (merge {:catalog/category-id      "7"
@@ -386,10 +390,10 @@
            :icon                     "/images/categories/water-wave-icon.svg"
            :subcategory/title        "Water Wave"
            :header/title             "Virgin Water Wave"}
-          (category->seo "Water Wave Extensions"
-                         (copy "Water Wave Bundles, Closures, and Frontals."
-                               "Peruvian and Brazilian bundles."
-                               "Mayvenn has hair extensions, bundles, closures, and frontals.")
+          (category->seo "Water Wave Hair: Virgin Water Wave Bundles"
+                         (copy "For curls you can rock everywhere from the office to your tropical vacation,"
+                               "make a statement with Mayvenn water wave hair bundles."
+                               "Shop the collection here.")
                          "//ucarecdn.com/5f6c669f-8274-4bef-afa9-3c08813842f6/")
           texture-templates)
    (merge {:catalog/category-id      "8"
@@ -410,9 +414,11 @@
            :icon                     "/images/categories/deep-wave-icon.svg"
            :subcategory/title        "Deep Wave"
            :header/title             "Virgin Deep Wave"}
-          (category->seo "Deep Wave Extensions"
-                         (copy "Deep Wave bundles and closures, including Brazilian, Peruvian and Indian Deep Wave."
-                               "Soft, spiral wave full of body and bounce.")
+          (category->seo "Deep Wave Hair: Virgin Deep Wave Bundles"
+                         (copy "Reigning supreme in versatility,"
+                               "our deep wave hair collection features a soft,"
+                               "spiral wave full of body and bounce."
+                               "Browse Mayvenn deep wave bundles here.")
                          "//ucarecdn.com/49cc5837-8321-4331-9cec-d299d0de1887/")
           texture-templates)
    (merge {:catalog/category-id      "9"
@@ -432,10 +438,10 @@
            :icon                     "/images/categories/curly-icon.svg"
            :subcategory/title        "Curly"
            :header/title             "Virgin Curly"}
-          (category->seo "Curly Extensions"
-                         (copy "Shop our Brazilian curly bundle, Peruvian Curly Bundle,"
-                               "Peruvian Curly Lace closures and Curly Lace frontals."
-                               "Perfect for creating voluminous coily styles.")
+          (category->seo "Curly Hair Bundles: Virgin Curly Hair Weaves"
+                         (copy "Let your bold,"
+                               "beautiful curls take center stage with virgin curly hair bundles from Mayvenn."
+                               "Shop our voluminous curly hair collection here.")
                          "//ucarecdn.com/128b68e2-bf3a-4d72-8e39-0c71662f9c86/")
           texture-templates)])
 
