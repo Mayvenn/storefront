@@ -200,10 +200,10 @@
   {:catalog/department #{"hair"}})
 
 (defn free-service-line-item-query
-  [{:as           free-service-item
-    :catalog/keys [sku-id]
-    :item/keys    [unit-price recent-quantity variant-name]}
-   addon-skus]
+  [{:as                free-service-item
+    :catalog/keys      [sku-id]
+    :item/keys         [unit-price recent-quantity variant-name]
+    :item.service/keys [addons]}]
   (when free-service-item
     [(merge {:react/key                             (str "line-item-" sku-id)
              :cart-item-copy/lines                  [{:id    (str "line-item-requirements-" sku-id)
@@ -218,7 +218,7 @@
              :cart-item-service-thumbnail/image-url (hacky-cart-image free-service-item)
              :cart-item-title/id                    (str "line-item-title-" sku-id)
              :cart-item-title/primary               variant-name}
-            (when (seq addon-skus)
+            (when (seq addons)
               {:cart-item-sub-items/id    (str "free-service-" sku-id "-addon-services")
                :cart-item-sub-items/title "Add-On Services"
                ;; think about sharing this function
@@ -226,7 +226,7 @@
                                                  {:cart-item-sub-item/title  (:sku/title addon-sku)
                                                   :cart-item-sub-item/price  (some-> addon-sku :sku/price $/as-money)
                                                   :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
-                                               addon-skus)}))]))
+                                               addons)}))]))
 
 (defn ^:private a-la-carte-service-line-items-query
   [service-items]
@@ -270,10 +270,8 @@
 (defn service-items<-
   [items]
   (let [recent-free-mayvenn (first (select (merge recent catalog.services/discountable) items))
-        recent-addons       (select (merge recent catalog.services/addons) items)
         recent-a-la-carte   (select (merge recent catalog.services/a-la-carte) items)]
-    (concat (free-service-line-item-query recent-free-mayvenn
-                                          recent-addons)
+    (concat (free-service-line-item-query recent-free-mayvenn)
             (a-la-carte-service-line-items-query recent-a-la-carte))))
 
 (defn header<-
@@ -322,15 +320,19 @@
 
 (defn added-to-cart<-
   "Model for which bottom panel to present to the user "
-  [items
-   {:as                        free-mayvenn-service
-    :free-mayvenn-service/keys [failed-criteria-count]}
-   stylist]
-  (cond
-    (and free-mayvenn-service (pos? failed-criteria-count))      :promotion-helper
-    (and free-mayvenn-service (zero? failed-criteria-count))     :celebration-continue
-    (and (select catalog.services/service items) (nil? stylist)) :stylist-helper
-    :else                                                        :continue))
+  [items]
+  (let [{:as                         free-mayvenn-service
+         :promo.mayvenn-install/keys [failed-criteria-count]}
+        (first (select catalog.services/discountable items))
+
+        services
+        (not-empty (select catalog.services/service items))]
+    (cond
+      (and free-mayvenn-service (pos? failed-criteria-count))  :promotion-helper
+      (and free-mayvenn-service (zero? failed-criteria-count)) :celebration-continue
+      (and services
+           (nil? (:item.service/stylist (first services))))    :stylist-helper
+      :else                                                    :continue)))
 
 (defn ^:export built-component
   [app-state opts]
@@ -351,9 +353,7 @@
                        :header        (header<- items)
                        :service-items (service-items<- items)
                        :cart-items    (cart-items<- items)}
-                      (case (added-to-cart<- items
-                                             free-mayvenn-service
-                                             servicing-stylist)
+                      (case (added-to-cart<- items)
                         :continue             {:cta cta<-}
                         :celebration-continue {:cta celebration-cta<-}
                         :promotion-helper     {:promotion-helper

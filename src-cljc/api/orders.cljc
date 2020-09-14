@@ -1,5 +1,5 @@
 (ns api.orders
-  (:require [adventure.keypaths :as adventure-keypaths]
+  (:require adventure.keypaths
             [clojure.string :as string]
             [spice.selector :refer [match-all]]
             [storefront.accessors.categories :as categories]
@@ -169,38 +169,18 @@
                             (map ->addon-service))]
     (assoc (->service waiter-base-line-item) :addons addon-services)))
 
-(defn items<-
-  "
-  Model of items as skus + placement attrs (quantity + servicing-stylist)
-
-  This is *not* waiter's line items!
-  "
-  [waiter-order recents skus-db images-db]
-  (->> waiter-order
-       orders/product-and-service-items ;; TODO reconsider
-       (mapv (partial ns! "item"))
-       (mapv
-        (fn comp-recents [{:as item :item/keys [sku]}]
-          (merge item
-                 (when-let [recent-quantity (get recents sku)]
-                   {:item/recent?         #{true}
-                    :item/recent-quantity recent-quantity}))))
-       (mapv
-        (fn comp-skus [{:as item sku-id :item/sku}]
-          (merge item
-                 (let [sku    (get skus-db sku-id)
-                       images (images/for-skuer images-db sku)]
-                   (assoc sku :selector/images images)))))))
+(declare items<-)
 
 (defn ->order
   [app-state waiter-order]
-  (let [store-slug    (get-in app-state storefront.keypaths/store-slug)
-        recents       (get-in app-state storefront.keypaths/cart-recently-added-skus)
-        base-services (->> waiter-order
+  (let [store-slug        (get-in app-state storefront.keypaths/store-slug)
+        recents           (get-in app-state storefront.keypaths/cart-recently-added-skus)
+        base-services     (->> waiter-order
                            orders/service-line-items
                            (filter line-items/base-service?))
-        skus-db       (get-in app-state storefront.keypaths/v2-skus)
-        images-db     (get-in app-state storefront.keypaths/v2-images)]
+        skus-db           (get-in app-state storefront.keypaths/v2-skus)
+        images-db         (get-in app-state storefront.keypaths/v2-images)
+        servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)]
     {:waiter/order         waiter-order
      :order/dtc?           (= "shop" store-slug)
      :order/services-only? (every? line-items/service? (orders/product-and-service-items waiter-order))
@@ -208,7 +188,7 @@
      :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
      :order.items/quantity (orders/displayed-cart-count waiter-order)
      :order.items/services (map (partial ->base-service waiter-order) base-services)
-     :order/items          (items<- waiter-order recents skus-db images-db)}))
+     :order/items          (items<- waiter-order recents skus-db images-db servicing-stylist)}))
 
 (defn completed
   [app-state]
@@ -217,7 +197,6 @@
 (defn current
   [app-state]
   (->order app-state (get-in app-state storefront.keypaths/order)))
-
 
 (defn offered-services-sku-ids
   [stylist]
@@ -250,3 +229,129 @@
        (when (= (:stylist-id cached-stylist) servicing-stylist-id)
          #:services{:stylist                  cached-stylist
                     :offered-services-sku-ids (offered-services-sku-ids cached-stylist)})))))
+
+;;; ---- API in progress; Please chat Corey
+
+(def ^:private select
+  (partial match-all {:selector/strict? true}))
+
+(def ^:private recent
+  {:item/recent? #{true}})
+
+(def ^:private physical
+  {:catalog/department #{"hair"}})
+
+(def ^:private addons
+  {:catalog/department #{"service"}
+   :service/type       #{"addon"}})
+
+(def ^:private discountable
+  {:catalog/department                 #{"service"}
+   :service/type                       #{"base"}
+   :promo.mayvenn-install/discountable #{true}})
+
+(defn ^:private as-sku
+  "
+  Items are extensions of skus
+  "
+  [skus-db images-db {sku-id :item/sku :as item}]
+  (merge item
+         (let [sku    (get skus-db sku-id)
+               images (images/for-skuer images-db sku)]
+           (assoc sku :selector/images images))))
+
+(defn ^:private extend-recency
+  "
+  Extend items to have recency information
+  "
+  [recents {sku-id :item/sku :as item}]
+  (merge item
+         (when-let [recent-quantity (get recents sku-id)]
+           {:item/recent?         #{true}
+            :item/recent-quantity recent-quantity})))
+
+(defn ^:private extend-servicing
+  "
+  Services combine into one item
+
+  Addons - three levels:
+  - A. base compatibility
+  - B. in cart?
+  - C. stylist serviceable?
+
+  Rough Schema Plan:
+  :service/addons or :selector/addons ;; A.
+  :item.service/stylist {... :stylist-menu } ;; c.
+  :item.service/stylist-offered?  #{};; C.
+  :item.service/addons  [{... :item.service/stylist-offered? #{}}] ;; B., C.
+  "
+  [servicing-stylist items item]
+  (when-not (= #{"addon"} (:service/type item))
+    (merge item
+           (when servicing-stylist
+             (let [stylist-offered? true] ;; TODO use menu on stylist to check
+               {:item.service/stylist          servicing-stylist
+                :item.service/stylist-offered? #{stylist-offered?}}))
+           (when-let [addons (->> (select addons items)
+                                  (filter #(= (:item/line-item-group item)
+                                              (:item/line-item-group %)))
+                                  not-empty)]
+             {:item.service/addons addons}))))
+
+(defn extend-free-servicing
+  "
+  Discountable services, 'Free Mayvenn Services'
+
+  Criteria:
+  - A service item in cart of a sku that is discountable
+  - Other physical items in the cart associated with the service item
+  - A servicing stylist (that can provide those services)
+  "
+  [items {:catalog/keys [sku-id] :as item}]
+  (merge item
+         (when (not-empty (select discountable [item]))
+           (let [rules-for-service (:rules (get rules sku-id))
+                 physical-items    (select physical items)
+
+                 failed-rules
+                 (keep (fn [[word essentials rule-quantity]]
+                         (let [cart-quantity    (->> (select essentials items)
+                                                     (map :quantity)
+                                                     (apply +))
+                               missing-quantity (- rule-quantity cart-quantity)]
+                           (when (pos? missing-quantity)
+                             {:word             word
+                              :cart-quantity    cart-quantity
+                              :missing-quantity missing-quantity
+                              :essentials       essentials})))
+                       rules-for-service)]
+             #:promo.mayvenn-install
+             {:failed-criteria-count (->> [item ; 1.
+                                           (empty? failed-rules) ; 2.
+                                           (seq (:item.service/stylist item))] ; 3
+                                          (remove boolean)
+                                          count)
+              :hair-missing          (seq failed-rules)
+              :hair-missing-quantity (apply + (map :missing-quantity failed-rules))
+              :hair-success-quantity (apply + (map last rules-for-service))}))))
+
+(defn items<-
+  "
+  Model of items as skus + placement attrs (quantity + servicing-stylist)
+
+  This is *not* waiter's line items!
+  "
+  [waiter-order recents skus-db images-db servicing-stylist]
+  ;; verify selected servicing stylist matches waiter-order
+  ;; (= (:stylist-id cached-stylist) servicing-stylist-id)
+  (let [items (->> waiter-order
+                   :shipments
+                   first
+                   :storefront/all-line-items
+                   (remove (comp neg? :id)) ; shipping
+                   (keep (partial ns! "item"))
+                   (keep (partial as-sku skus-db images-db))
+                   (keep (partial extend-recency recents)))]
+    (->> items
+         (keep (partial extend-servicing servicing-stylist items))
+         (keep (partial extend-free-servicing items)))))
