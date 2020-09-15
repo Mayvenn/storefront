@@ -5,6 +5,7 @@
             [storefront.assets :as assets]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.categories :as accessors.categories]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.images :as images]
             [cemerick.url :as cemerick-url]
             [catalog.keypaths :as k]
@@ -119,7 +120,9 @@
                                              (accessors.categories/id->category
                                               (get-in data catalog.keypaths/category-id)
                                               categories)
-                                             (get-in data keypaths/navigation-uri)))
+                                             (get-in data keypaths/navigation-uri)
+                                             #?(:cljs (experiments/remove-closures? data)
+                                                :clj true)))
         category              (accessors.categories/id->category canonical-category-id categories)
         allowed-query-params  (category->allowed-query-params category)
         facets                (facets/by-slug data)
@@ -167,17 +170,19 @@
                                 (-> data
                                     (get-in catalog.keypaths/category-id)
                                     (accessors.categories/id->category categories))
-                                (get-in data keypaths/navigation-uri))
+                                (get-in data keypaths/navigation-uri)
+                                #?(:cljs (experiments/remove-closures? data)
+                                   :clj true))
         category               (accessors.categories/id->category category-id categories)
         permitted-query-params (category->allowed-query-params category)
-        query                  (some-> uri
-                                       :query
-                                       #?(:clj cemerick-url/query->map :cljs identity)
-                                       (merge selections)
-                                       (select-keys permitted-query-params)
-                                       accessors.categories/sort-query-params
-                                       #?(:clj uri/map->query :cljs identity)
-                                       not-empty)]
+        query                  (-> uri
+                                   :query
+                                   #?(:clj cemerick-url/query->map :cljs identity)
+                                   (merge selections)
+                                   (select-keys permitted-query-params)
+                                   accessors.categories/sort-query-params
+                                   #?(:clj uri/map->query :cljs identity)
+                                   not-empty)]
     (-> uri
         (assoc :path (str "/categories/" category-id "-" category-slug))
         (assoc :query query))))

@@ -133,3 +133,7 @@
 (defn interrupt-checkout?
   [data]
   (display-feature? data "interrupt-checkout"))
+
+(defn remove-closures?
+  [data]
+  (display-feature? data "remove-closures"))

@@ -78,7 +78,7 @@
   "With ICPs, the 'canonical category id' may be different from the ICP category
   id. E.g. 13-wigs with a selected family of 'lace-front-wigs' will have a
   canonical cateogry id of 24, or in other words, lace-front-wigs' category id."
-  [categories requested-category current-nav-url]
+  [categories requested-category current-nav-url remove-closures-experiment?]
   (let [query-map        (some-> current-nav-url
                                  :query
                                  #?(:clj cemerick-url/query->map
@@ -87,6 +87,12 @@
                                  (get "family")
                                  (string/split #"~"))]
     (cond
+      (and remove-closures-experiment?
+           (:seo-canonical-category/id requested-category))
+      {:category-id   (:seo-canonical-category/id requested-category)
+       :category-slug (:seo-canonical-category/slug requested-category)
+       :selections    (:seo-canonical-category/selected-filters requested-category)}
+
       (and family-selection
            (= (count family-selection) 1))
       (let [canonical-category (->> categories

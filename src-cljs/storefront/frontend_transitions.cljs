@@ -1,6 +1,7 @@
 (ns storefront.frontend-transitions
   (:require [adventure.keypaths :as adventure.keypaths]
             [catalog.products :as products]
+            catalog.categories
             [cemerick.url :as url]
             [clojure.string :as string]
             promotion-helper.keypaths
@@ -543,9 +544,12 @@
   (update-in app-state keypaths/experiments-bucketed conj experiment))
 
 (defmethod transition-state events/enable-feature [_ event {:keys [feature]} app-state]
-  (if (some (partial = feature) (get-in app-state keypaths/features))
-    app-state
-    (update-in app-state keypaths/features conj feature)))
+  (cond-> app-state
+    (not (contains? (set (get-in app-state keypaths/features)) feature))
+    (update-in keypaths/features conj feature)
+
+    (= "remove-closures" feature)
+    (assoc-in keypaths/categories catalog.categories/categories-for-remove-closure-experiment)))
 
 (defmethod transition-state events/clear-features [_ event _ app-state]
   (assoc-in app-state keypaths/features []))

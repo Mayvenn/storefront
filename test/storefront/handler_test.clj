@@ -340,7 +340,7 @@
   "- marketing/branded pages
    - product category ICP
    - child product category
-   - product category URLs with only 1 parameter
+   - non-texture product category URLs
    - non-parameter PDP
    - non-parameter /shop/ pages"
   (with-services {}
@@ -354,20 +354,28 @@
                                   (filter (comp #{:loc} :tag))
                                   (map (comp string/trim first :content)))
                                  (:content parsed-body))
-            excluded-urls #{"https://mayvenn.com/"
-                            "https://shop.mayvenn.com/info/wig-styling-guide"
-                            "https://shop.mayvenn.com/info/wig-care-guide"
-                            "https://shop.mayvenn.com/info/wig-installation-guide"
-                            "https://shop.mayvenn.com/info/wig-buying-guide-hub"
-                            "https://shop.mayvenn.com/info/wig-hair-guide"
-                            "https://shop.mayvenn.com/info/wigs-101-guide"
-                            (str "https://" config/welcome-subdomain ".mayvenn.com/")
-                            (str "https://" config/jobs-subdomain ".mayvenn.com/")
-                            (str "https://" config/help-subdomain ".mayvenn.com/")}]
+            excluded-urls  #{"https://mayvenn.com/"
+                             "https://shop.mayvenn.com/info/wig-styling-guide"
+                             "https://shop.mayvenn.com/info/wig-care-guide"
+                             "https://shop.mayvenn.com/info/wig-installation-guide"
+                             "https://shop.mayvenn.com/info/wig-buying-guide-hub"
+                             "https://shop.mayvenn.com/info/wig-hair-guide"
+                             "https://shop.mayvenn.com/info/wigs-101-guide"
+                             (str "https://" config/welcome-subdomain ".mayvenn.com/")
+                             (str "https://" config/jobs-subdomain ".mayvenn.com/")
+                             (str "https://" config/help-subdomain ".mayvenn.com/")
+                             "https://shop.mayvenn.com/categories/2-virgin-straight"
+                             "https://shop.mayvenn.com/categories/3-virgin-yaki-straight"
+                             "https://shop.mayvenn.com/categories/4-virgin-kinky-straight"
+                             "https://shop.mayvenn.com/categories/5-virgin-body-wave"
+                             "https://shop.mayvenn.com/categories/6-virgin-loose-wave"
+                             "https://shop.mayvenn.com/categories/7-Virgin-water-wave"
+                             "https://shop.mayvenn.com/categories/8-virgin-deep-wave"
+                             "https://shop.mayvenn.com/categories/9-virgin-curly"}]
         (is (not-empty urls))
-        (doseq [url urls
+        (doseq [url   urls
                 :when (not (contains? excluded-urls url))]
-          (testing (format "'%s' in is canonical" url)
+          (testing (format "'%s' has self-referencing canonical" url)
             (let [{:keys [body] :as response} (handler (mock/request :get url))]
               (is (= (parse-canonical-url body) url)
                   (pr-str response)))))))))
@@ -557,20 +565,23 @@
           (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave?base-material=lace&origin=peruvian&foo=bar"
                           (mock/request :get)
                           handler)]
-          (is (= 200 (:status resp)))
-          (is (= "origin=peruvian" (response->canonical-uri-query-string resp)))))
+            (is (= 200 (:status resp)))
+            (is (= "/categories/27-human-hair-bundles" (-> resp :body parse-canonical-uri :path)))
+            (is (= "origin=peruvian&texture=water-wave" (response->canonical-uri-query-string resp)))))
         (testing "with one query param"
           (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave?origin=peruvian"
                           (mock/request :get)
                           handler)]
-          (is (= 200 (:status resp)))
-          (is (= "origin=peruvian" (response->canonical-uri-query-string resp)))))
+            (is (= 200 (:status resp)))
+            (is (= "/categories/27-human-hair-bundles" (-> resp :body parse-canonical-uri :path)))
+            (is (= "origin=peruvian&texture=water-wave" (response->canonical-uri-query-string resp)))))
         (testing "without query params"
           (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave"
                           (mock/request :get)
                           handler)]
             (is (= 200 (:status resp)))
-            (is (= nil (response->canonical-uri-query-string resp)))))
+            (is (= "/categories/27-human-hair-bundles" (-> resp :body parse-canonical-uri :path)))
+            (is (= "texture=water-wave" (response->canonical-uri-query-string resp)))))
         (testing "with texture and family"
           (let [resp (->> "https://shop.mayvenn.com/categories/2-virgin-straight?family=bundles"
                           (mock/request :get)
@@ -732,7 +743,7 @@
                                                           "/categories/23-mayvenn-install"
                                                           "origin=indian")))
 
-      (testing "when mayvenn-install category has a category selected, that categories seo is used"
+      (testing "when mayvenn-install category has a category selected, that category's seo is used"
         (-> (mock/request :get "https://shop.mayvenn.com/categories/23-mayvenn-install?family=closures")
             handler
             (validate-title-and-description-and-canonical
