@@ -149,6 +149,7 @@
      [:div.flex.flex-column.bg-refresh-gray.stretch
       [:div.px2.pt3.pb6
        (added-to-cart-header-molecule header)
+       ;; TODO decomplect template positioning from item iteration
        (for [service-item service-items]
          [:div.mt2-on-mb
           {:key (:react/key service-item)}
@@ -269,10 +270,10 @@
 
 (defn service-items<-
   [items]
-  (let [recent-free-mayvenn (first (select (merge ?recent catalog.services/discountable) items))
-        recent-a-la-carte   (select (merge ?recent catalog.services/a-la-carte) items)]
-    (concat (free-service-line-item-query recent-free-mayvenn)
-            (a-la-carte-service-line-items-query recent-a-la-carte))))
+  (let [?recent-free-mayvenn (merge ?recent catalog.services/discountable)
+        ?recent-a-la-carte   (merge ?recent catalog.services/a-la-carte)]
+    (concat (free-service-line-item-query (first (select ?recent-free-mayvenn items)))
+            (a-la-carte-service-line-items-query (select ?recent-a-la-carte items)))))
 
 (defn header<-
   [items]
