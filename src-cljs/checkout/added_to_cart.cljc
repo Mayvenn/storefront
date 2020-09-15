@@ -8,15 +8,11 @@
             promotion-helper.ui
             [promotion-helper.ui.drawer-contents :as drawer-contents]
             spice.selector
-            [storefront.component
-             :as
-             component
-             :refer
-             [defcomponent defdynamic-component]]
+            [storefront.component :as c]
             [storefront.components.money-formatters :as $]
             [storefront.components.ui :as ui]
             storefront.effects
-            [storefront.events :as events]
+            [storefront.events :as e]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
@@ -30,9 +26,9 @@
   ([organism data elem-key breakpoint]
    (let [elems (get data elem-key)]
      (for [[idx elem] (map-indexed vector elems)]
-       (component/build organism elem (component/component-id elem-key breakpoint idx))))))
+       (c/build organism elem (c/component-id elem-key breakpoint idx))))))
 
-(defmethod storefront.trackings/perform-track events/cart-interstitial-free-mayvenn-service-tracker-mounted
+(defmethod storefront.trackings/perform-track e/cart-interstitial-free-mayvenn-service-tracker-mounted
   [_ _ _ app-state]
   #?(:cljs
      (let [{waiter-order :waiter/order} (api.orders/current app-state)]
@@ -44,16 +40,16 @@
                                         (get-in app-state keypaths/v2-images)
                                         (get-in app-state keypaths/v2-skus))}))))
 
-(defdynamic-component promotion-helper-organism
+(c/defdynamic-component promotion-helper-organism
   (did-mount
    [this]
-   (let [{:promotion-helper/keys [id]} (component/get-props this)]
+   (let [{:promotion-helper/keys [id]} (c/get-props this)]
      (when id
-       (messages/handle-message events/cart-interstitial-free-mayvenn-service-tracker-mounted))))
+       (messages/handle-message e/cart-interstitial-free-mayvenn-service-tracker-mounted))))
   (render
    [this]
-   (let [{:promotion-helper/keys [id] :as data} (component/get-props this)]
-     (component/html
+   (let [{:promotion-helper/keys [id] :as data} (c/get-props this)]
+     (c/html
       (if id
         [:div.p4
          [:div.mt2.canela.title-3.center "FREE Mayvenn Service Tracker"]
@@ -61,19 +57,18 @@
                    :promotion-helper.ui.drawer-contents/conditions)]
         [:div])))))
 
-(defmethod storefront.effects/perform-effects events/navigate-added-to-cart
+(defmethod storefront.effects/perform-effects e/navigate-added-to-cart
   [_ _ _ _ app-state]
   #?(:cljs
      (let [previous-nav (-> (get-in app-state keypaths/navigation-undo-stack) first :navigation-message)]
        (when (empty? (get-in app-state keypaths/cart-recently-added-skus))
-         (apply history/enqueue-redirect (or previous-nav [events/navigate-home]))))))
+         (apply history/enqueue-redirect (or previous-nav [e/navigate-home]))))))
 
-
-(defmethod storefront.effects/perform-effects events/control-cart-interstitial-view-cart
+(defmethod storefront.effects/perform-effects e/control-cart-interstitial-view-cart
   [_ _ _ _ _]
-  #?(:cljs (history/enqueue-navigate events/navigate-cart)))
+  #?(:cljs (history/enqueue-navigate e/navigate-cart)))
 
-(defmethod storefront.trackings/perform-track events/control-cart-interstitial-view-cart
+(defmethod storefront.trackings/perform-track e/control-cart-interstitial-view-cart
   [_ _ _ app-state]
   #?(:cljs
      (let [{waiter-order :waiter/order} (api.orders/current app-state)]
@@ -85,7 +80,7 @@
                                         (get-in app-state keypaths/v2-images)
                                         (get-in app-state keypaths/v2-skus))}))))
 
-(defcomponent cta-organism
+(c/defcomponent cta-organism
   [{:cta/keys [primary id target label]} _ _]
   (when id
     [:div.px3.center.mt3
@@ -95,38 +90,40 @@
              :data-test id)
       label)]))
 
-(defmethod storefront.trackings/perform-track events/cart-interstitial-browse-stylist-mounted
+(defmethod storefront.trackings/perform-track e/cart-interstitial-browse-stylist-mounted
   [_ _ _ _]
   #?(:cljs (stringer/track-event "add_success_browse_stylist_displayed" {})))
 
-(defmethod storefront.effects/perform-effects events/control-cart-interstitial-browse-stylist-cta
+(defmethod storefront.effects/perform-effects e/control-cart-interstitial-browse-stylist-cta
   [_ _ _ _ _]
-  #?(:cljs (history/enqueue-navigate events/navigate-adventure-match-stylist)))
+  #?(:cljs (history/enqueue-navigate e/navigate-adventure-match-stylist)))
 
-(defmethod storefront.trackings/perform-track events/control-cart-interstitial-browse-stylist-cta
+(defmethod storefront.trackings/perform-track e/control-cart-interstitial-browse-stylist-cta
   [_ _ _ _]
   #?(:cljs (stringer/track-event "add_success_browse_stylist_button_pressed" {})))
 
-(defdynamic-component stylist-helper-organism
-  (did-mount [this]
-    (let [{:stylist-helper/keys [id]} (component/get-props this)]
-      (when id
-        (messages/handle-message events/cart-interstitial-browse-stylist-mounted))))
-  (render [this]
-    (let [{:stylist-helper/keys [id target]} (component/get-props this)]
-      (component/html
-       (if id
-         [:div.p4.stretch
-          [:div.canela.title-3.center "No Stylist Selected"]
-          [:div.content-3
-           "Click below to find your licensed" [:br]
-           " Mayvenn certified stylist!"]
-          [:div.p2.flex.justify-around.mx-auto.mt3
-           (ui/button-small-primary
-            (assoc (apply utils/fake-href target)
-                   :data-test id)
-            "Browse Stylists")]]
-         [:div])))))
+(c/defdynamic-component stylist-helper-organism
+  (did-mount
+   [this]
+   (let [{:stylist-helper/keys [id]} (c/get-props this)]
+     (when id
+       (messages/handle-message e/cart-interstitial-browse-stylist-mounted))))
+  (render
+   [this]
+   (let [{:stylist-helper/keys [id target]} (c/get-props this)]
+     (c/html
+      (if id
+        [:div.p4.stretch
+         [:div.canela.title-3.center "No Stylist Selected"]
+         [:div.content-3
+          "Click below to find your licensed" [:br]
+          " Mayvenn certified stylist!"]
+         [:div.p2.flex.justify-around.mx-auto.mt3
+          (ui/button-small-primary
+           (assoc (apply utils/fake-href target)
+                  :data-test id)
+           "Browse Stylists")]]
+        [:div])))))
 
 (defn added-to-cart-header-molecule
   [{:added-to-cart.header/keys [primary]}]
@@ -134,7 +131,7 @@
    {:data-test "cart-interstitial-title"}
    primary])
 
-(defcomponent template
+(c/defcomponent template
   [{:as   queried-data
     :keys [service-items
            cart-items
@@ -155,8 +152,9 @@
        (for [service-item service-items]
          [:div.mt2-on-mb
           {:key (:react/key service-item)}
-          (component/build cart-item-v202004/organism {:cart-item service-item}
-                           (component/component-id (:react/key service-item)))])
+          (c/build cart-item-v202004/organism
+                   {:cart-item service-item}
+                   (c/component-id (:react/key service-item)))])
        (when (seq cart-items)
          [:div.mt3
           {:data-test "cart-interstitial-line-items"}
@@ -169,13 +167,14 @@
                [:div.flex.bg-white
                 [:div.ml2 {:style {:width "75px"}}]
                 [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
-             (component/build cart-item-v202004/organism {:cart-item cart-item}
-                              (component/component-id (str index "-cart-item-" react-key)))])])
-       (component/build cta-organism cta)]
+             (c/build cart-item-v202004/organism
+                      {:cart-item cart-item}
+                      (c/component-id (str index "-cart-item-" react-key)))])])
+       (c/build cta-organism cta)]
       (when (or stylist-helper promotion-helper)
         [:div.bg-white.center.flex-grow-1
-         (component/build stylist-helper-organism stylist-helper)
-         (component/build promotion-helper-organism promotion-helper)])])])
+         (c/build stylist-helper-organism stylist-helper)
+         (c/build promotion-helper-organism promotion-helper)])])])
 
 (defn ^:private hacky-cart-image
   [item]
@@ -283,17 +282,17 @@
   [app-state]
   #:return-link{:back          (-> app-state (get-in keypaths/navigation-undo-stack) first)
                 :copy          "Continue Shopping"
-                :event-message [events/navigate-category {:catalog/category-id "23"
-                                                          :page/slug           "mayvenn-install"}]
+                :event-message [e/navigate-category {:catalog/category-id "23"
+                                                     :page/slug           "mayvenn-install"}]
                 :id            "continue-shopping-link"})
 
 (def cta<-
-  #:cta{:target [events/control-cart-interstitial-view-cart]
+  #:cta{:target [e/control-cart-interstitial-view-cart]
         :label  "Go to Cart"
         :id     "go-to-cart-cta"})
 
 (def celebration-cta<-
-  #:cta{:target  [events/control-cart-interstitial-view-cart]
+  #:cta{:target  [e/control-cart-interstitial-view-cart]
         :label   "Go to Cart"
         :id      "go-to-cart-cta-discounted-service"
         :primary "🎉 Great work! Free service unlocked!"})
@@ -312,7 +311,7 @@
 (def stylist-helper<-
   #:stylist-helper{:id     "browse-stylists"
                    :label  "Browse Stylists"
-                   :target [events/control-cart-interstitial-browse-stylist-cta]})
+                   :target [e/control-cart-interstitial-browse-stylist-cta]})
 
 (defn added-to-cart<-
   "Model for which bottom panel to present to the user "
@@ -342,18 +341,18 @@
          :services/stylist}   (api.orders/services app-state waiter-order)
         free-mayvenn-service  (api.orders/free-mayvenn-service servicing-stylist
                                                                waiter-order)]
-    (component/build template
-                     (merge
-                      {:return-link   (return-link<- app-state)
-                       :spinning?     (empty? (select recent items))
-                       :header        (header<- items)
-                       :service-items (service-items<- items)
-                       :cart-items    (cart-items<- items)}
-                      (case (added-to-cart<- items)
-                        :continue             {:cta cta<-}
-                        :celebration-continue {:cta celebration-cta<-}
-                        :promotion-helper     {:promotion-helper
-                                               (promotion-helper<- sku-db
-                                                                   free-mayvenn-service)}
-                        :stylist-helper       {:stylist-helper stylist-helper<-}))
-                     opts)))
+    (c/build template
+             (merge
+              {:return-link   (return-link<- app-state)
+               :spinning?     (empty? (select recent items))
+               :header        (header<- items)
+               :service-items (service-items<- items)
+               :cart-items    (cart-items<- items)}
+              (case (added-to-cart<- items)
+                :continue             {:cta cta<-}
+                :celebration-continue {:cta celebration-cta<-}
+                :promotion-helper     {:promotion-helper
+                                       (promotion-helper<- sku-db
+                                                           free-mayvenn-service)}
+                :stylist-helper       {:stylist-helper stylist-helper<-}))
+             opts)))
