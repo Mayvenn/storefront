@@ -188,10 +188,10 @@
 (def ^:private select
   (partial spice.selector/match-all {:selector/strict? true}))
 
-(def ^:private recent
+(def ^:private ?recent
   {:item/recent? #{true}})
 
-(def ^:private physical
+(def ^:private ?physical
   {:catalog/department #{"hair"}})
 
 (def ^:private ?discountable
@@ -247,7 +247,7 @@
 
 (defn cart-items<-
   [items]
-  (for [item (select (merge recent physical) items)
+  (for [item (select (merge ?recent ?physical) items)
         :let
         [{:catalog/keys [sku-id]
           :item/keys    [unit-price recent-quantity product-name product-title]}
@@ -269,15 +269,15 @@
 
 (defn service-items<-
   [items]
-  (let [recent-free-mayvenn (first (select (merge recent catalog.services/discountable) items))
-        recent-a-la-carte   (select (merge recent catalog.services/a-la-carte) items)]
+  (let [recent-free-mayvenn (first (select (merge ?recent catalog.services/discountable) items))
+        recent-a-la-carte   (select (merge ?recent catalog.services/a-la-carte) items)]
     (concat (free-service-line-item-query recent-free-mayvenn)
             (a-la-carte-service-line-items-query recent-a-la-carte))))
 
 (defn header<-
   [items]
   {:added-to-cart.header/primary
-   (str (ui/pluralize-with-amount (->> (select recent items)
+   (str (ui/pluralize-with-amount (->> (select ?recent items)
                                        (mapv :item/recent-quantity)
                                        (reduce + 0))
                                   "Item")
@@ -338,7 +338,7 @@
     (c/build template
              (merge
               {:return-link   (return-link<- app-state)
-               :spinning?     (empty? (select recent items))
+               :spinning?     (empty? (select ?recent items))
                :header        (header<- items)
                :service-items (service-items<- items)
                :cart-items    (cart-items<- items)}
