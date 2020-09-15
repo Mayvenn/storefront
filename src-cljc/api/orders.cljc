@@ -6,7 +6,8 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.sites :as sites]
             storefront.keypaths
-            [stylist-matching.search.accessors.filters :as stylist-filters]))
+            [stylist-matching.search.accessors.filters :as stylist-filters]
+            [spice.maps :as maps]))
 
 ;;; Utils
 
@@ -149,7 +150,12 @@
                            (filter line-items/base-service?))
         skus-db           (get-in app-state storefront.keypaths/v2-skus)
         images-db         (get-in app-state storefront.keypaths/v2-images)
-        servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)]
+        servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        facets-db         (->> storefront.keypaths/v2-facets
+                               (get-in app-state)
+                               (maps/index-by (comp keyword :facet/slug))
+                               (maps/map-values (fn [facet]
+                                                  (update facet :facet/options (partial maps/index-by :option/slug)))))]
     {:waiter/order         waiter-order
      :order/dtc?           (= "shop" store-slug)
      :order/services-only? (every? line-items/service? (orders/product-and-service-items waiter-order))
@@ -157,7 +163,7 @@
      :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
      :order.items/quantity (orders/displayed-cart-count waiter-order)
      :order.items/services (map (partial ->base-service waiter-order) base-services)
-     :order/items          (items<- waiter-order recents skus-db images-db servicing-stylist)}))
+     :order/items          (items<- waiter-order recents skus-db images-db facets-db servicing-stylist)}))
 
 (defn completed
   [app-state]
@@ -223,11 +229,17 @@
   "
   Items are extensions of skus
   "
-  [skus-db images-db {sku-id :item/sku :as item}]
+  [skus-db images-db facets-db {sku-id :item/sku :as item}]
   (merge item
          (let [sku    (get skus-db sku-id)
                images (images/for-skuer images-db sku)]
-           (assoc sku :selector/images images))))
+           (-> (assoc sku :join/facets (->> sku
+                                            :selector/essentials
+                                            (select-keys facets-db)
+                                            (map (fn [[essential-key facet]]
+                                                   [essential-key (get-in facet [:facet/options (first (get sku essential-key))])]))
+                                            (into {})))
+               (assoc :selector/images images)))))
 
 (defn ^:private extend-recency
   "
@@ -310,7 +322,7 @@
 
   This is *not* waiter's line items!
   "
-  [waiter-order recents skus-db images-db servicing-stylist]
+  [waiter-order recents skus-db images-db facets-db servicing-stylist]
   ;; verify selected servicing stylist matches waiter-order
   ;; (= (:stylist-id cached-stylist) servicing-stylist-id)
   (let [items (->> waiter-order
@@ -319,7 +331,7 @@
                    :storefront/all-line-items
                    (remove (comp neg? :id)) ; shipping
                    (keep (partial ns! "item"))
-                   (keep (partial as-sku skus-db images-db))
+                   (keep (partial as-sku skus-db images-db facets-db))
                    (keep (partial extend-recency recents)))]
     (->> items
          (keep (partial extend-servicing servicing-stylist items))

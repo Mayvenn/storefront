@@ -266,7 +266,7 @@
      :cart-item-square-thumbnail/ucare-id      (hacky-cart-image item)
      :cart-item-title/id                       (str "line-item-title-" sku-id)
      :cart-item-title/primary                  (or product-title product-name)
-     :cart-item-title/secondary                (some-> item :hair/color first)}))
+     :cart-item-title/secondary                (some-> item :join/facets :hair/color :option/name)}))
 
 (defn service-items<-
   [items]
