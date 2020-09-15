@@ -336,7 +336,7 @@
         sku-db       (get-in app-state keypaths/v2-skus)
 
         ;; business layers
-        {:order/keys [items]} (api.orders/->order app-state waiter-order)
+        {:order/keys [items]} (api.orders/current app-state)
         {servicing-stylist
          :services/stylist}   (api.orders/services app-state waiter-order)
         free-mayvenn-service  (api.orders/free-mayvenn-service servicing-stylist
