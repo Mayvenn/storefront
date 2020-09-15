@@ -18,7 +18,7 @@
 
 (def ^:private base-selector
   {:catalog/department "service"
-   :service/type       "addon"})
+   :service/type       "base"})
 
 (def ^:private select
   (partial selector/match-all {:selector/strict? true}))
