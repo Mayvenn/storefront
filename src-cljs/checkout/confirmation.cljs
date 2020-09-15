@@ -487,8 +487,7 @@
           :cart-item-floating-box/id             "line-item-freeinstall-price"
           :cart-item-floating-box/value          ^:ignore-interpret-warning [:div.flex.flex-column.justify-end
                                                                              {:style {:height "100%"}}
-                                                                             (some-> (- (line-items/service-line-item-price service-item))
-                                                                                     -
+                                                                             (some-> (line-items/service-line-item-price service-item)
                                                                                      mf/as-money)]
           :cart-item-title/id                    "line-item-title-applied-mayvenn-install"
           :cart-item-title/primary               (:variant-name service-item)
