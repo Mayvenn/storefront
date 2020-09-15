@@ -1,19 +1,18 @@
 (ns promotion-helper.ui
   (:require api.orders
-            adventure.keypaths
             [clojure.string :as string]
             [promotion-helper.behavior :as behavior]
             [promotion-helper.keypaths :as k]
             [promotion-helper.ui.drawer-contents :as drawer-contents]
             [promotion-helper.ui.drawer-face :as drawer-face]
+            [spice.selector :refer [match-all]]
             [storefront.accessors.categories :as categories]
-            [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.nav :as nav]
+            [storefront.accessors.sites :as sites]
             [storefront.accessors.stylists :as stylists]
             [storefront.component :as c]
             [storefront.components.svg :as svg]
             [storefront.events :as e]
-            [storefront.accessors.nav :as nav]
-            [storefront.accessors.sites :as sites]
             storefront.keypaths))
 
 (c/defcomponent promotion-helper-template
@@ -40,24 +39,23 @@
                                                            "lace-front-wigs")}}])
 
 (defn drawer-contents-ui<-
-  [service-sku
-   {:free-mayvenn-service/keys
-    [failed-criteria-count
-     service-item
-     hair-success-quantity
-     hair-missing
-     hair-missing-quantity
-     stylist]}]
-  (let [[add-more? failure-nav]
-        (if (= "SRV-WGC-000" (:catalog/sku-id service-sku))
-          [false wig-navigation-message]
-          [true install-navigation-message])]
+  [{:promo.mayvenn-install/keys [failed-criteria-count
+                                 hair-success-quantity
+                                 hair-missing
+                                 hair-missing-quantity]
+    :item.service/keys          [stylist]
+    :item/keys                  [product-name]
+    :copy/keys                  [whats-included]
+    :catalog/keys               [sku-id]}]
+  (let [[add-more? failure-nav] (if (= "SRV-WGC-000" sku-id)
+                                  [false wig-navigation-message]
+                                  [true install-navigation-message])]
     (merge
      {:promotion-helper.ui.drawer-contents/id "promotion-helper-contents"
       :promotion-helper.ui.drawer-contents/conditions
       [{:promotion-helper.ui.drawer-contents.condition.title/id             "service"
         :promotion-helper.ui.drawer-contents.condition.title/primary-struck "Add Your Services"
-        :promotion-helper.ui.drawer-contents.condition.title/secondary      (:product-name service-item)
+        :promotion-helper.ui.drawer-contents.condition.title/secondary      product-name
         :promotion-helper.ui.drawer-contents.condition.progress/completed   1
         :promotion-helper.ui.drawer-contents.condition.progress/id          "service"
         :promotion-helper.ui.drawer-contents.condition.progress/remaining   0}
@@ -86,7 +84,7 @@
          (merge {:promotion-helper.ui.drawer-contents.condition.title/primary-struck "Add Your Hair"
                  :promotion-helper.ui.drawer-contents.condition.title/secondary      (if add-more?
                                                                                        "Add more bundles for a fuller look"
-                                                                                       (str "You're all set! " (:copy/whats-included service-sku)))
+                                                                                       (str "You're all set! " whats-included))
                  :promotion-helper.ui.drawer-contents.condition.progress/completed   hair-success-quantity})
 
          (and (not (seq hair-missing))
@@ -124,9 +122,8 @@
 
 (defn promotion-helper-ui<-
   [{:promotion-helper/keys [opened?]}
-   service-sku
-   {:free-mayvenn-service/keys [failed-criteria-count]
-    :as                        free-mayvenn-service}]
+   {:promo.mayvenn-install/keys [failed-criteria-count]
+    :as                         free-mayvenn-service}]
   (merge
    {:drawer-face
     (merge
@@ -142,16 +139,15 @@
         :promotion-helper.ui.drawer-face.circle/value [:svg/check-mark {:class "fill-teal"
                                                                         :style {:height "12px" :width "14px"}}]}))}
    (when opened?
-     {:drawer-contents
-      (drawer-contents-ui<- service-sku free-mayvenn-service)})))
+     {:drawer-contents (drawer-contents-ui<- free-mayvenn-service)})))
 
 (defn promotion-helper-model<-
   "Model depends on existence of a mayvenn service that can be gratis"
   [app-state free-mayvenn-service]
-  (when free-mayvenn-service
+  (when-let [{:promo.mayvenn-install/keys [failed-criteria-count]} free-mayvenn-service]
     (let [nav-event                        (get-in app-state storefront.keypaths/navigation-event)
           on-cart-with-criteria-fulfilled? (and (= e/navigate-cart nav-event)
-                                                (= 0 (:free-mayvenn-service/failed-criteria-count free-mayvenn-service)))]
+                                                (= 0 failed-criteria-count))]
       {:promotion-helper/exists?     (and (nav/promotion-helper-can-exist-on-page? nav-event)
                                           (= :shop (sites/determine-site app-state))
                                           (not on-cart-with-criteria-fulfilled?))
@@ -159,24 +155,23 @@
                                           (get-in app-state)
                                           boolean)})))
 
-;; COREY
-;; Concepts that exist, but not modeled well:
-;;   servicing stylist, sku-catalog, and orders
-;; Additionally page models, ui states, FFs need to be considered completely
+(def ^:private select
+  (partial match-all {:selector/strict? true}))
+
+(def ^:private ?discountable
+  {:catalog/department                 #{"service"}
+   :service/type                       #{"base"}
+   :promo.mayvenn-install/discountable #{true}})
+
 (defn promotion-helper
   [state]
-  (let [servicing-stylist    (get-in state adventure.keypaths/adventure-servicing-stylist)
-        waiter-order         (get-in state storefront.keypaths/order)
-        free-mayvenn-service (api.orders/free-mayvenn-service servicing-stylist waiter-order)
-        sku-id               (-> free-mayvenn-service :free-mayvenn-service/service-item :sku)
-        skus                 (get-in state storefront.keypaths/v2-skus)
-        service-sku          (get skus sku-id)
-
-        promotion-helper-model (promotion-helper-model<- state free-mayvenn-service)]
+  (let [free-mayvenn-service   (->> (api.orders/current state)
+                                    :order/items
+                                    (select ?discountable)
+                                    first)
+        promotion-helper-model (promotion-helper-model<- state
+                                                         free-mayvenn-service)]
     (when (:promotion-helper/exists? promotion-helper-model)
       (c/build promotion-helper-template
-               ;; TODO: Might be nice for free mayvenn service to supply the sku
                (promotion-helper-ui<- promotion-helper-model
-                                      service-sku
-                                      free-mayvenn-service)
-               {}))))
+                                      free-mayvenn-service)))))

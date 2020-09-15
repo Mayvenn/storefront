@@ -194,6 +194,11 @@
 (def ^:private physical
   {:catalog/department #{"hair"}})
 
+(def ^:private ?discountable
+  {:catalog/department                 #{"service"}
+   :service/type                       #{"base"}
+   :promo.mayvenn-install/discountable #{true}})
+
 (defn free-service-line-item-query
   [{:as                free-service-item
     :catalog/keys      [sku-id]
@@ -298,15 +303,12 @@
         :primary "🎉 Great work! Free service unlocked!"})
 
 (defn promotion-helper<-
-  [sku-db
-   {:as free-mayvenn-service
-    :free-mayvenn-service/keys [failed-criteria-count service-item]}]
+  [{:as free-mayvenn-service
+    :promo.mayvenn-install/keys [failed-criteria-count]}]
   (when (pos? failed-criteria-count)
-    (let [service-sku (get sku-db (:sku service-item))]
-      (merge
-       (promotion-helper.ui/drawer-contents-ui<- service-sku
-                                                 free-mayvenn-service)
-       {:promotion-helper/id "free-mayvenn-service-tracker"}))))
+    (merge
+     (promotion-helper.ui/drawer-contents-ui<- free-mayvenn-service)
+     {:promotion-helper/id "free-mayvenn-service-tracker"})))
 
 (def stylist-helper<-
   #:stylist-helper{:id     "browse-stylists"
@@ -331,16 +333,8 @@
 
 (defn ^:export built-component
   [app-state opts]
-  (let [;; data layers
-        waiter-order (get-in app-state keypaths/order)
-        sku-db       (get-in app-state keypaths/v2-skus)
-
-        ;; business layers
-        {:order/keys [items]} (api.orders/current app-state)
-        {servicing-stylist
-         :services/stylist}   (api.orders/services app-state waiter-order)
-        free-mayvenn-service  (api.orders/free-mayvenn-service servicing-stylist
-                                                               waiter-order)]
+  (let [{:order/keys [items]} (api.orders/current app-state)
+        free-mayvenn-service  (first (select ?discountable items))]
     (c/build template
              (merge
               {:return-link   (return-link<- app-state)
@@ -351,8 +345,6 @@
               (case (added-to-cart<- items)
                 :continue             {:cta cta<-}
                 :celebration-continue {:cta celebration-cta<-}
-                :promotion-helper     {:promotion-helper
-                                       (promotion-helper<- sku-db
-                                                           free-mayvenn-service)}
+                :promotion-helper     {:promotion-helper (promotion-helper<- free-mayvenn-service)}
                 :stylist-helper       {:stylist-helper stylist-helper<-}))
              opts)))
