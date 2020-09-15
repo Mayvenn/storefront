@@ -149,37 +149,33 @@
    [:div.p2 (ui.molecules/return-link return-link)]
    (if spinning?
      [:div ui/spinner]
-     [:div.flex-column
-      [:div.bg-refresh-gray.flex-grow-0
-       [:div.p3
-        (added-to-cart-header-molecule header)
-        (for [service-item service-items]
-          [:div.mt2-on-mb
-           {:key (:react/key service-item)}
-           (component/build cart-item-v202004/organism {:cart-item service-item}
-                            (component/component-id (:react/key service-item)))])
-        (when (seq cart-items)
-          [:div.mt3
-           {:data-test "cart-interstitial-line-items"}
-           (for [[index cart-item] (map-indexed vector cart-items)
-                 :let              [react-key (:react/key cart-item)]
-                 :when             react-key]
-             [:div
-              {:key (str index "-cart-item-" react-key)}
-              (when-not (zero? index)
-                [:div.flex.bg-white
-                 [:div.ml2 {:style {:width "75px"}}]
-                 [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
-              (component/build cart-item-v202004/organism {:cart-item cart-item}
-                               (component/component-id (str index "-cart-item-" react-key)))])])
-
-        (when cta
-          (component/build cta-organism cta))]]
-      [:div.bg-white.center.flex-grow
-       (when stylist-helper
-         (component/build stylist-helper-organism stylist-helper))
-       (when promotion-helper
-         (component/build promotion-helper-organism promotion-helper))]])])
+     [:div.flex.flex-column.bg-refresh-gray.stretch
+      [:div.px2.pt3.pb6
+       (added-to-cart-header-molecule header)
+       (for [service-item service-items]
+         [:div.mt2-on-mb
+          {:key (:react/key service-item)}
+          (component/build cart-item-v202004/organism {:cart-item service-item}
+                           (component/component-id (:react/key service-item)))])
+       (when (seq cart-items)
+         [:div.mt3
+          {:data-test "cart-interstitial-line-items"}
+          (for [[index cart-item] (map-indexed vector cart-items)
+                :let              [react-key (:react/key cart-item)]
+                :when             react-key]
+            [:div
+             {:key (str index "-cart-item-" react-key)}
+             (when-not (zero? index)
+               [:div.flex.bg-white
+                [:div.ml2 {:style {:width "75px"}}]
+                [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
+             (component/build cart-item-v202004/organism {:cart-item cart-item}
+                              (component/component-id (str index "-cart-item-" react-key)))])])
+       (component/build cta-organism cta)]
+      (when (or stylist-helper promotion-helper)
+        [:div.bg-white.center.flex-grow-1
+         (component/build stylist-helper-organism stylist-helper)
+         (component/build promotion-helper-organism promotion-helper)])])])
 
 (defn ^:private hacky-cart-image
   [item]
