@@ -702,7 +702,6 @@
                      "Disallow: /account"
                      "Disallow: /checkout"
                      "Disallow: /orders"
-                     "Disallow: /stylist"
                      "Disallow: /cart"
                      "Disallow: /m/"
                      "Disallow: /c/"
@@ -730,7 +729,8 @@
    events/navigate-store-gallery             generic-server-render
    events/navigate-checkout-processing       generic-server-render
    events/navigate-mayvenn-made              generic-server-render
-   events/navigate-adventure-stylist-profile generic-server-render})
+   events/navigate-adventure-stylist-profile generic-server-render
+   events/navigate-adventure-stylist-gallery generic-server-render})
 
 (defn robots [_]
   (string/join "\n" robots-content))
