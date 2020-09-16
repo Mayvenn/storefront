@@ -866,7 +866,7 @@
 
 (defn ^:private star [type size index]
   (component/html
-   [:span.mrp1
+   [:span.mrp1.flex.items-center
     {:key (str (name type) "-" index)}
     (case type
       :whole         (svg/whole-star {:height size :width size})

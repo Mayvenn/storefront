@@ -1,20 +1,20 @@
-(ns storefront.platform.maps
-  (:require [adventure.keypaths]
+(ns adventure.stylist-matching.maps
+  (:require #?@(:cljs [[storefront.hooks.google-maps :as maps]])
+            adventure.keypaths
             [clojure.string :as string]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.svg :as svg]
-            [storefront.hooks.google-maps :as maps]
             [storefront.keypaths]
             [storefront.components.ui :as ui]
             [stylist-directory.stylists :as stylists]))
 
 (defn map-query [data]
   (let [loaded-google-maps? (get-in data storefront.keypaths/loaded-google-maps)
-        salon          (->> (get-in data adventure.keypaths/stylist-profile-id)
-                            (stylists/by-id data)
-                            :salon)
-        latitude       (:latitude salon)
-        longitude      (:longitude salon)]
+        salon               (->> (get-in data adventure.keypaths/stylist-profile-id)
+                                 (stylists/by-id data)
+                                 :salon)
+        latitude            (:latitude salon)
+        longitude           (:longitude salon)]
     {:salon     salon
      :latitude  latitude
      :longitude longitude
@@ -25,7 +25,7 @@
 (defdynamic-component inner-component
   (did-mount [this]
              (let [{:keys [latitude longitude]} (component/get-props this)]
-               (maps/attach-map latitude longitude "stylist-profile-map")))
+               #?(:cljs (maps/attach-map latitude longitude "stylist-profile-map"))))
   (render [_]
           (component/html
            [:div {:id    "stylist-profile-map"
@@ -36,7 +36,7 @@
   [:div.mb3
    (if loaded?
      (component/build inner-component data)
-     [:div.flex.items-center {:style {:height "250px"}} ui/spinner])
+     [:div.flex.items-center.bg-cool-gray {:style {:min-height "250px"}} ui/spinner])
    (let [{:keys [address-1 address-2 city state zipcode latitude longitude]} salon]
      [:div.bg-cool-gray.p2.flex.justify-between
       [:div.flex.justfy-start.mr2

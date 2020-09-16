@@ -27,6 +27,7 @@
             [spice.maps :as maps]
             [spice.selector :as selector]
             storefront.ugc
+            stylist-directory.keypaths
             [storefront.accessors.auth :as auth]
             [storefront.accessors.categories :as accessors.categories]
             [storefront.accessors.experiments :as experiments]
@@ -728,7 +729,8 @@
    events/navigate-content-program-terms     generic-server-render
    events/navigate-store-gallery             generic-server-render
    events/navigate-checkout-processing       generic-server-render
-   events/navigate-mayvenn-made              generic-server-render})
+   events/navigate-mayvenn-made              generic-server-render
+   events/navigate-adventure-stylist-profile generic-server-render})
 
 (defn robots [_]
   (string/join "\n" robots-content))
@@ -917,10 +919,14 @@
              events/navigate-adventure-stylist-profile-post-purchase} event)
         (if-let [stylist (api/get-servicing-stylist (:storeback-config ctx) stylist-id)]
           (if (not= (:store-slug stylist) store-slug)
-            (util.response/redirect ; Correct stylist slug
-             (path-for req event {:stylist-id   (:stylist-id stylist)
-                                  :store-slug   (:store-slug stylist)}))
-            (h req)) ; No correction needed
+            ;; Correct stylist slug
+            (util.response/redirect
+             (path-for req event {:stylist-id (:stylist-id stylist)
+                                  :store-slug (:store-slug stylist)}))
+            ;; No correction needed
+            (h (-> req
+                   (assoc-in-req-state adventure.keypaths/stylist-profile-id (:stylist-id stylist))
+                   (assoc-in-req-state (conj stylist-directory.keypaths/stylists (:stylist-id stylist)) stylist))))
           (-> req ; redirect to find your stylist
               (path-for events/navigate-adventure-find-your-stylist {:query-params {:error "stylist-not-found"}})
               util.response/redirect))
