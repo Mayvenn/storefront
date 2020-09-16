@@ -194,8 +194,8 @@
          (str "(" rating-count ")")]]))))
 
 (defn rating-bar-molecule [star-rating star-count max-ratings-count]
-  (component/html
-   (let [green-bar-percentage (/ star-count max-ratings-count)]
+  (component/html             ;; NOTE: cast to double to handle server side render
+   (let [green-bar-percentage (double (/ star-count max-ratings-count))]
      [:div.flex.px8.items-center
       [:div.flex.items-baseline
        [:div.bold.proxima.title-3 (name star-rating)]
@@ -213,7 +213,9 @@
   (component/html
    (when id
      (let [max-ratings-count   (apply max (vals rating-star-counts))
-           sorted-rating-count (sort-by key > rating-star-counts)]
+           sorted-rating-count (->> rating-star-counts
+                                    (sort-by first)
+                                    reverse)]
        [:div.bg-cool-gray.flex-column.center.py5.mt3
         {:id id}
         [:div.shout.bold.proxima.title-3 "Ratings"]
