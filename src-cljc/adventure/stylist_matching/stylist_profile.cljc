@@ -313,7 +313,7 @@
      (for [section-detail section-details]
        (section-details-molecule section-detail))]
     [:div.clearfix]
-    (ratings-bar-chart-molecule ratings-bar-chart-molecule)
+    (ratings-bar-chart-molecule ratings-bar-chart)
 
     (reviews-molecule reviews)]
 
@@ -409,8 +409,7 @@
                                     (not hide-star-distribution?))]
     {:ratings-bar-chart/id                 (when show-rating-bar-chart?
                                              "star-distribution-table")
-     :ratings-bar-chart/rating-star-counts (when (> rating-count 0)
-                                             rating-star-counts)}))
+     :ratings-bar-chart/rating-star-counts rating-star-counts}))
 
 (defn details<-
   [hide-bookings?
