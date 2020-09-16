@@ -51,8 +51,8 @@
    (let [{:promotion-helper/keys [id] :as data} (c/get-props this)]
      (c/html
       (if id
-        [:div.p4
-         [:div.mt2.canela.title-3.center "FREE Mayvenn Service Tracker"]
+        [:div.px4.mtj1
+         [:div.canela.title-3.center "FREE Mayvenn Service Tracker"]
          (elements drawer-contents/drawer-contents-condition-organism data
                    :promotion-helper.ui.drawer-contents/conditions)]
         [:div])))))
@@ -113,12 +113,12 @@
    (let [{:stylist-helper/keys [id target]} (c/get-props this)]
      (c/html
       (if id
-        [:div.p4.stretch
+        [:div.stretch.mtj1
          [:div.canela.title-3.center "No Stylist Selected"]
          [:div.content-3
           "Click below to find your licensed" [:br]
           " Mayvenn certified stylist!"]
-         [:div.p2.flex.justify-around.mx-auto.mt3
+         [:div.flex.justify-around.mx-auto.mt2
           (ui/button-small-primary
            (assoc (apply utils/fake-href target)
                   :data-test id)
@@ -171,7 +171,9 @@
              (c/build cart-item-v202004/organism
                       {:cart-item cart-item}
                       (c/component-id (str index "-cart-item-" react-key)))])])
-       (c/build cta-organism cta)]
+       (when cta
+         [:div.pt2
+          (c/build cta-organism cta)])]
       (when (or stylist-helper promotion-helper)
         [:div.bg-white.center.flex-grow-1
          (c/build stylist-helper-organism stylist-helper)

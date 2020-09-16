@@ -79,7 +79,7 @@
 
 (defcomponent drawer-contents-condition-organism
   [data _ _]
-  [:div.black.bg-white.my1.p3.flex.items-center.border.border-refresh-gray
+  [:div.black.bg-white.my2.p3.flex.items-center.border.border-refresh-gray
    [:div.col-10
     (drawer-contents-condition-title-molecule data)]
    [:div.col-2
