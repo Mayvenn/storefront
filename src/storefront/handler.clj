@@ -474,11 +474,28 @@
       wrap-affiliate-initial-login-landing-navigation-message
       (wrap-set-initial-state environment)))
 
+(defn wrap-redirect-aladdin
+  [h environment]
+  (fn [{[nav-event] :nav-message :as req}]
+    (let [{:keys [experience
+                  stylist-id
+                  store-slug]} (get-in-req-state req keypaths/store)]
+      (if (= "aladdin" experience)
+        (util.response/redirect
+         (store-url "shop" environment
+                    (cond-> req
+                      (= events/navigate-home nav-event)
+                      (assoc :uri (path-for req events/navigate-adventure-stylist-profile
+                                            {:stylist-id stylist-id
+                                             :store-slug store-slug})))) 301)
+        (h req)))))
+
 (defn wrap-site-routes
   [routes {:keys [storeback-config environment]}]
   (-> routes
       (wrap-set-preferred-store environment)
       (wrap-redirect-affiliates environment)
+      (wrap-redirect-aladdin environment)
       (wrap-stylist-not-found-redirect environment)
       (wrap-defaults (dissoc (storefront-site-defaults environment) :cookies))
       (wrap-remove-superfluous-www-redirect environment)

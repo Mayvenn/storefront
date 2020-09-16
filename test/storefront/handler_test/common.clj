@@ -26,10 +26,21 @@
                          :request-method :get})
 
 (def storeback-stylist-response
-  (-> (generate-string {:store_slug "bob"
-                        :store_name "Bob's Hair Emporium"
+  (-> (generate-string {:store_slug        "bob"
+                        :store_name        "Bob's Hair Emporium"
                         :instagram_account nil
-                        :stylist_id 3})
+                        :experience        "mayvenn-classic"
+                        :stylist_id        3})
+      (response)
+      (status 200)
+      (content-type "application/json")))
+
+(def storeback-aladdin-stylist-response
+  (-> (generate-string {:store_slug        "jasmine"
+                        :store_name        "Jasmine's Store"
+                        :instagram_account nil
+                        :experience        "aladdin"
+                        :stylist_id        10})
       (response)
       (status 200)
       (content-type "application/json")))
@@ -861,15 +872,11 @@
 
 (def default-storeback-handler
   (routes
-   (GET "/store" req storeback-stylist-response)
-   (GET "/promotions" req {:status 200
-                           :body   "{}"})
-   (GET "/v3/products" req {:status 200
-                            :body   "{}"})
-   (GET "/v2/skus" req {:status   200
-                        :body "{}"})
-   (GET "/v2/facets" req {:status 200
-                          :body   (generate-string facets-body)})))
+   (GET "/store"       req storeback-stylist-response)
+   (GET "/promotions"  req {:status 200 :body "{}"})
+   (GET "/v3/products" req {:status 200 :body "{}"})
+   (GET "/v2/skus"     req {:status 200 :body "{}"})
+   (GET "/v2/facets"   req {:status 200 :body (generate-string facets-body)})))
 
 (def default-contentful-handler
   (routes

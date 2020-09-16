@@ -594,3 +594,31 @@
       (let [resp (handler (mock/request :get "https://shop.mayvenn.com/added-to-cart"))]
         (is (= 302 (:status resp)) (pr-str resp))
         (is (= "https://shop.mayvenn.com/cart" (get-in resp [:headers "Location"])))))))
+
+(deftest aladdin-subpaths-redirect-back-to-shop-with-same-path
+  (with-services {:storeback-handler
+                  (routes
+                   (GET "/store"       req common/storeback-aladdin-stylist-response)
+                   (GET "/promotions"  req {:status 200 :body "{}"})
+                   (GET "/v3/products" req {:status 200 :body "{}"})
+                   (GET "/v2/skus"     req {:status 200 :body "{}"})
+                   (GET "/v2/facets"   req {:status 200 :body (generate-string common/facets-body)}))}
+    (with-handler handler
+      (let [resp (handler (mock/request :get "https://jasmine.mayvenn.com/categories/27-human-hair-bundles"))]
+        (is (= 301 (:status resp)) (pr-str resp))
+        (is (= "https://shop.mayvenn.com/categories/27-human-hair-bundles"
+               (get-in resp [:headers "Location"])))))))
+
+(deftest aladdin-subpaths-redirect-to-stylist-profile-on-shop
+  (with-services {:storeback-handler
+                  (routes
+                   (GET "/store"       req common/storeback-aladdin-stylist-response)
+                   (GET "/promotions"  req {:status 200 :body "{}"})
+                   (GET "/v3/products" req {:status 200 :body "{}"})
+                   (GET "/v2/skus"     req {:status 200 :body "{}"})
+                   (GET "/v2/facets"   req {:status 200 :body (generate-string common/facets-body)}))}
+    (with-handler handler
+      (let [resp (handler (mock/request :get "https://jasmine.mayvenn.com"))]
+        (is (= 301 (:status resp)) (pr-str resp))
+        (is (= "https://shop.mayvenn.com/stylist/10-jasmine"
+               (get-in resp [:headers "Location"])))))))
