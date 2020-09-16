@@ -242,14 +242,12 @@
           frontals-templates)])
 
 (def virgin-hair
-  [(merge {:catalog/category-id                     "2"
-           :copy/title                              "Virgin Straight"
-           :seo/title                               "Virgin Straight Hair Extensions"
-           :seo-canonical-category/id               27
-           :seo-canonical-category/slug             "human-hair-bundles"
-           :seo-canonical-category/selected-filters {"texture" "straight"}
-           :page/slug                               "virgin-straight"
-           :legacy/named-search-slug                "straight"
+  [(merge {:catalog/category-id           "2"
+           :copy/title                    "Virgin Straight"
+           :seo/title                     "Virgin Straight Hair Extensions"
+           :seo/self-referencing-texture? true
+           :page/slug                     "virgin-straight"
+           :legacy/named-search-slug      "straight"
 
            :catalog/department  #{"hair"}
            :hair/texture        #{"straight"}
@@ -271,14 +269,12 @@
                                "Browse our collection today!")
                          "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/")
           texture-templates)
-   (merge {:catalog/category-id                     "3"
-           :copy/title                              "Virgin Yaki Straight"
-           :seo/title                               "Virgin Yaki Straight Hair Extensions"
-           :seo-canonical-category/id               27
-           :seo-canonical-category/slug             "human-hair-bundles"
-           :seo-canonical-category/selected-filters {"texture" "yaki-straight"}
-           :page/slug                               "virgin-yaki-straight"
-           :legacy/named-search-slug                "yaki-straight"
+   (merge {:catalog/category-id           "3"
+           :copy/title                    "Virgin Yaki Straight"
+           :seo/title                     "Virgin Yaki Straight Hair Extensions"
+           :seo/self-referencing-texture? true
+           :page/slug                     "virgin-yaki-straight"
+           :legacy/named-search-slug      "yaki-straight"
 
            :catalog/department  #{"hair"}
            :hair/texture        #{"yaki-straight"}
@@ -303,138 +299,128 @@
                                "Browse our collection of yaki straight virgin hair bundles here.")
                          "//ucarecdn.com/98e8b217-73ee-475a-8f5e-2c3aaa56af42/")
           texture-templates)
-   (merge {:catalog/category-id                     "4"
-           :copy/title                              "Virgin Kinky Straight"
-           :seo/title                               "Virgin Kinky Straight Hair Extensions"
-           :seo-canonical-category/id               27
-           :seo-canonical-category/slug             "human-hair-bundles"
-           :seo-canonical-category/selected-filters {"texture" "kinky-straight"}
-           :page/slug                               "virgin-kinky-straight"
-           :legacy/named-search-slug                "kinky-straight"
-           :catalog/department                      #{"hair"}
-           :hair/texture                            #{"kinky-straight"}
-           :hair/color.process                      #{"natural" "dyed"}
-           :hair/source                             #{"virgin"}
-           :hair/family                             #{"bundles" "closures" "frontals" "360-frontals"}
-           :selector/essentials                     [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives                      [:hair/family :hair/origin :hair/color :hair/base-material]
-           :copy/description                        (copy "Blending is a breeze with our Kinky Straight"
-                                                          "hair collection! Like a fresh blow out, the"
-                                                          "Kinky Straight hair texture moves freely and gives"
-                                                          "a naturally flawless look that mimics your own"
-                                                          "locks.")
-           :icon                                    "/images/categories/kinky-straight-icon.svg"
-           :subcategory/title                       "Kinky Straight"
-           :header/title                            "Virgin Kinky Straight"}
+   (merge {:catalog/category-id           "4"
+           :copy/title                    "Virgin Kinky Straight"
+           :seo/title                     "Virgin Kinky Straight Hair Extensions"
+           :seo/self-referencing-texture? true
+           :page/slug                     "virgin-kinky-straight"
+           :legacy/named-search-slug      "kinky-straight"
+           :catalog/department            #{"hair"}
+           :hair/texture                  #{"kinky-straight"}
+           :hair/color.process            #{"natural" "dyed"}
+           :hair/source                   #{"virgin"}
+           :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
+           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
+           :selector/electives            [:hair/family :hair/origin :hair/color :hair/base-material]
+           :copy/description              (copy "Blending is a breeze with our Kinky Straight"
+                                                "hair collection! Like a fresh blow out, the"
+                                                "Kinky Straight hair texture moves freely and gives"
+                                                "a naturally flawless look that mimics your own"
+                                                "locks.")
+           :icon                          "/images/categories/kinky-straight-icon.svg"
+           :subcategory/title             "Kinky Straight"
+           :header/title                  "Virgin Kinky Straight"}
           (category->seo "Kinky Straight Hair: Virgin Kinky Straight Bundles"
                          (copy "Like a fresh blow out, Mayvenn kinky straight bundles move freely"
                                "and give a naturally flawless look that mimics your own locks."
                                "Browse our collection here.")
                          "//ucarecdn.com/7fe5f90f-4dad-454a-aa4b-b453fc4da3c4/")
           texture-templates)
-   (merge {:catalog/category-id                     "5"
-           :copy/title                              "Virgin Body Wave"
-           :seo/title                               "Virgin Body Wave Hair Extensions"
-           :seo-canonical-category/id               27
-           :seo-canonical-category/slug             "human-hair-bundles"
-           :seo-canonical-category/selected-filters {"texture" "body-wave"}
-           :page/slug                               "virgin-body-wave"
-           :legacy/named-search-slug                "body-wave"
-           :catalog/department                      #{"hair"}
-           :hair/texture                            #{"body-wave"}
-           :hair/color.process                      #{"natural" "dyed"}
-           :hair/source                             #{"virgin"}
-           :hair/family                             #{"bundles" "closures" "frontals" "360-frontals"}
-           :selector/essentials                     [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives                      [:hair/family :hair/origin :hair/color :hair/base-material]
-           :copy/description                        (copy "Step into the spotlight with our collection of luscious Body Wave hair."
-                                                          "Body Wave is unbelievably soft and goes from straight to wavy and back again with ease.")
-           :icon                                    "/images/categories/body-wave-icon.svg"
-           :subcategory/title                       "Body Wave"
-           :header/title                            "Virgin Body Wave"}
+   (merge {:catalog/category-id           "5"
+           :copy/title                    "Virgin Body Wave"
+           :seo/title                     "Virgin Body Wave Hair Extensions"
+           :seo/self-referencing-texture? true
+           :page/slug                     "virgin-body-wave"
+           :legacy/named-search-slug      "body-wave"
+           :catalog/department            #{"hair"}
+           :hair/texture                  #{"body-wave"}
+           :hair/color.process            #{"natural" "dyed"}
+           :hair/source                   #{"virgin"}
+           :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
+           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
+           :selector/electives            [:hair/family :hair/origin :hair/color :hair/base-material]
+           :copy/description              (copy "Step into the spotlight with our collection of luscious Body Wave hair."
+                                                "Body Wave is unbelievably soft and goes from straight to wavy and back again with ease.")
+           :icon                          "/images/categories/body-wave-icon.svg"
+           :subcategory/title             "Body Wave"
+           :header/title                  "Virgin Body Wave"}
           (category->seo "Body Wave Hair: Virgin Body Wave Bundles"
                          (copy "Step into the spotlight with our collection of luscious virgin body wave hair."
                                "Shop Mayvenn's collection of top quality body wave hair bundles here.")
                          "//ucarecdn.com/445c53df-f369-4ca6-a554-c9668c8968f1/")
           texture-templates)
-   (merge {:catalog/category-id                     "6"
-           :copy/title                              "Virgin Loose Wave"
-           :seo/title                               "Virgin Loose Wave Hair Extensions"
-           :seo-canonical-category/id               27
-           :seo-canonical-category/slug             "human-hair-bundles"
-           :seo-canonical-category/selected-filters {"texture" "loose-wave"}
-           :page/slug                               "virgin-loose-wave"
-           :legacy/named-search-slug                "loose-wave"
-           :catalog/department                      #{"hair"}
-           :hair/texture                            #{"loose-wave"}
-           :hair/color.process                      #{"natural" "dyed"}
-           :hair/source                             #{"virgin"}
-           :hair/family                             #{"bundles" "closures" "frontals" "360-frontals"}
-           :selector/essentials                     [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives                      [:hair/family :hair/origin :hair/color :hair/base-material]
-           :copy/description                        (copy "For hair that holds a curl beautifully,"
-                                                          "our collection of 100% virgin Loose Wave hair"
-                                                          "is the perfect foundation for all your carefree,"
-                                                          "flirty, wavy looks.")
-           :icon                                    "/images/categories/loose-wave-icon.svg"
-           :subcategory/title                       "Loose Wave"
-           :header/title                            "Virgin Loose Wave"}
+   (merge {:catalog/category-id           "6"
+           :copy/title                    "Virgin Loose Wave"
+           :seo/title                     "Virgin Loose Wave Hair Extensions"
+           :seo/self-referencing-texture? true
+           :page/slug                     "virgin-loose-wave"
+           :legacy/named-search-slug      "loose-wave"
+           :catalog/department            #{"hair"}
+           :hair/texture                  #{"loose-wave"}
+           :hair/color.process            #{"natural" "dyed"}
+           :hair/source                   #{"virgin"}
+           :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
+           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
+           :selector/electives            [:hair/family :hair/origin :hair/color :hair/base-material]
+           :copy/description              (copy "For hair that holds a curl beautifully,"
+                                                "our collection of 100% virgin Loose Wave hair"
+                                                "is the perfect foundation for all your carefree,"
+                                                "flirty, wavy looks.")
+           :icon                          "/images/categories/loose-wave-icon.svg"
+           :subcategory/title             "Loose Wave"
+           :header/title                  "Virgin Loose Wave"}
           (category->seo "Loose Wave Hair: Virgin Loose Wave Bundles"
                          (copy "For hair that holds a curl beautifully,"
                                "Mayvenn's collection of virgin loose wave bundles is the"
                                "perfect foundation for all your flirty, wavy looks. Shop now.")
                          "//ucarecdn.com/31be9341-a688-4f03-b754-a22a0a1f267e/")
           texture-templates)
-   (merge {:catalog/category-id                     "7"
-           :copy/title                              "Virgin Water Wave"
-           :seo/title                               "Virgin Water Wave Hair Extensions"
-           :seo-canonical-category/id               27
-           :seo-canonical-category/slug             "human-hair-bundles"
-           :seo-canonical-category/selected-filters {"texture" "water-wave"}
-           :page/slug                               "Virgin-water-wave"
-           :legacy/named-search-slug                "water-wave"
-           :catalog/department                      #{"hair"}
-           :hair/texture                            #{"water-wave"}
-           :hair/color.process                      #{"natural" "dyed"}
-           :hair/source                             #{"virgin"}
-           :hair/family                             #{"bundles" "closures" "frontals" "360-frontals"}
-           :selector/essentials                     [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives                      [:hair/family :hair/origin]
-           :copy/description                        (copy "Ride the lush, carefree waves of the bundles,"
-                                                          "closures, and frontals in our Water Wave hair"
-                                                          "collection. For curls you can rock everywhere from"
-                                                          "the office to your tropical vacation, make a"
-                                                          "statement with Water Wave hair.")
-           :icon                                    "/images/categories/water-wave-icon.svg"
-           :subcategory/title                       "Water Wave"
-           :header/title                            "Virgin Water Wave"}
+   (merge {:catalog/category-id           "7"
+           :copy/title                    "Virgin Water Wave"
+           :seo/title                     "Virgin Water Wave Hair Extensions"
+           :seo/self-referencing-texture? true
+           :page/slug                     "Virgin-water-wave"
+           :legacy/named-search-slug      "water-wave"
+           :catalog/department            #{"hair"}
+           :hair/texture                  #{"water-wave"}
+           :hair/color.process            #{"natural" "dyed"}
+           :hair/source                   #{"virgin"}
+           :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
+           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
+           :selector/electives            [:hair/family :hair/origin]
+           :copy/description              (copy "Ride the lush, carefree waves of the bundles,"
+                                                "closures, and frontals in our Water Wave hair"
+                                                "collection. For curls you can rock everywhere from"
+                                                "the office to your tropical vacation, make a"
+                                                "statement with Water Wave hair.")
+           :icon                          "/images/categories/water-wave-icon.svg"
+           :subcategory/title             "Water Wave"
+           :header/title                  "Virgin Water Wave"}
           (category->seo "Water Wave Hair: Virgin Water Wave Bundles"
                          (copy "For curls you can rock everywhere from the office to your tropical vacation,"
                                "make a statement with Mayvenn water wave hair bundles."
                                "Shop the collection here.")
                          "//ucarecdn.com/5f6c669f-8274-4bef-afa9-3c08813842f6/")
           texture-templates)
-   (merge {:catalog/category-id                     "8"
-           :copy/title                              "Virgin Deep Wave"
-           :seo/title                               "Virgin Deep Wave Hair Extensions"
-           :seo-canonical-category/id               27
-           :seo-canonical-category/slug             "human-hair-bundles"
-           :seo-canonical-category/selected-filters {"texture" "deep-wave"}
-           :page/slug                               "virgin-deep-wave"
-           :legacy/named-search-slug                "deep-wave"
-           :catalog/department                      #{"hair"}
-           :hair/texture                            #{"deep-wave"}
-           :hair/color.process                      #{"natural" "dyed"}
-           :hair/source                             #{"virgin"}
-           :hair/family                             #{"bundles" "closures" "frontals" "360-frontals"}
-           :selector/essentials                     [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives                      [:hair/family :hair/origin :hair/color :hair/base-material]
-           :copy/description                        (copy "Reigning supreme in versatility, the Deep Wave hair collection features"
-                                                          "a soft, spiral wave full of body and bounce. Our deep wave hair is perfect"
-                                                          "for those who want big waves that make an even bigger splash.")
-           :icon                                    "/images/categories/deep-wave-icon.svg"
-           :subcategory/title                       "Deep Wave"
-           :header/title                            "Virgin Deep Wave"}
+   (merge {:catalog/category-id           "8"
+           :copy/title                    "Virgin Deep Wave"
+           :seo/title                     "Virgin Deep Wave Hair Extensions"
+           :seo/self-referencing-texture? true
+           :page/slug                     "virgin-deep-wave"
+           :legacy/named-search-slug      "deep-wave"
+           :catalog/department            #{"hair"}
+           :hair/texture                  #{"deep-wave"}
+           :hair/color.process            #{"natural" "dyed"}
+           :hair/source                   #{"virgin"}
+           :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
+           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
+           :selector/electives            [:hair/family :hair/origin :hair/color :hair/base-material]
+           :copy/description              (copy "Reigning supreme in versatility, the Deep Wave hair collection features"
+                                                "a soft, spiral wave full of body and bounce. Our deep wave hair is perfect"
+                                                "for those who want big waves that make an even bigger splash.")
+           :icon                          "/images/categories/deep-wave-icon.svg"
+           :subcategory/title             "Deep Wave"
+           :header/title                  "Virgin Deep Wave"}
           (category->seo "Deep Wave Hair: Virgin Deep Wave Bundles"
                          (copy "Reigning supreme in versatility,"
                                "our deep wave hair collection features a soft,"
@@ -442,26 +428,24 @@
                                "Browse Mayvenn deep wave bundles here.")
                          "//ucarecdn.com/49cc5837-8321-4331-9cec-d299d0de1887/")
           texture-templates)
-   (merge {:catalog/category-id                     "9"
-           :copy/title                              "Virgin Curly"
-           :seo/title                               "Virgin Curly Hair Extensions"
-           :seo-canonical-category/id               27
-           :seo-canonical-category/slug             "human-hair-bundles"
-           :seo-canonical-category/selected-filters {"texture" "curly"}
-           :page/slug                               "virgin-curly"
-           :legacy/named-search-slug                "curly"
-           :catalog/department                      #{"hair"}
-           :hair/texture                            #{"curly"}
-           :hair/color.process                      #{"natural" "dyed"}
-           :hair/source                             #{"virgin"}
-           :hair/family                             #{"bundles" "closures" "frontals" "360-frontals"}
-           :selector/essentials                     [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives                      [:hair/family :hair/origin :hair/base-material]
-           :copy/description                        (copy "Let your bold, beautiful curls take center stage! Our curly hair collection is a tight,"
-                                                          "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")
-           :icon                                    "/images/categories/curly-icon.svg"
-           :subcategory/title                       "Curly"
-           :header/title                            "Virgin Curly"}
+   (merge {:catalog/category-id           "9"
+           :copy/title                    "Virgin Curly"
+           :seo/title                     "Virgin Curly Hair Extensions"
+           :seo/self-referencing-texture? true
+           :page/slug                     "virgin-curly"
+           :legacy/named-search-slug      "curly"
+           :catalog/department            #{"hair"}
+           :hair/texture                  #{"curly"}
+           :hair/color.process            #{"natural" "dyed"}
+           :hair/source                   #{"virgin"}
+           :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
+           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
+           :selector/electives            [:hair/family :hair/origin :hair/base-material]
+           :copy/description              (copy "Let your bold, beautiful curls take center stage! Our curly hair collection is a tight,"
+                                           "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")
+           :icon                          "/images/categories/curly-icon.svg"
+           :subcategory/title             "Curly"
+           :header/title                  "Virgin Curly"}
           (category->seo "Curly Hair Bundles: Virgin Curly Hair Weaves"
                          (copy "Let your bold,"
                                "beautiful curls take center stage with virgin curly hair bundles from Mayvenn."
