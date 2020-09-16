@@ -389,7 +389,6 @@
           "Disallow: /account"
           "Disallow: /checkout"
           "Disallow: /orders"
-          "Disallow: /stylist"
           "Disallow: /cart"
           "Disallow: /m/"
           "Disallow: /c/"
