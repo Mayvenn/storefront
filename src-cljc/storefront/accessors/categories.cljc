@@ -79,10 +79,7 @@
   id. E.g. 13-wigs with a selected family of 'lace-front-wigs' will have a
   canonical cateogry id of 24, or in other words, lace-front-wigs' category id."
   [categories requested-category current-nav-url remove-closures-experiment?]
-  (let [query-map        (some-> current-nav-url
-                                 :query
-                                 #?(:clj cemerick-url/query->map
-                                    :cljs identity))
+  (let [query-map        (:query current-nav-url)
         family-selection (some-> query-map
                                  (get "family")
                                  (string/split #"~"))]

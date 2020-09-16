@@ -126,11 +126,11 @@
         category              (accessors.categories/id->category canonical-category-id categories)
         allowed-query-params  (category->allowed-query-params category)
         facets                (facets/by-slug data)
-        uri-query             (-> data (get-in keypaths/navigation-uri) :query)
-        selected-options      (cond-> uri-query
-                                (string? uri-query) cemerick-url/query->map
-                                :always             (select-keys allowed-query-params)
-                                :always             accessors.categories/sort-query-params)
+        selected-options      (->  data
+                                   (get-in keypaths/navigation-uri)
+                                   :query
+                                   (select-keys allowed-query-params)
+                                   accessors.categories/sort-query-params)
         indexable?            (and
                                (not-any? #(string/includes? % accessors.categories/query-param-separator)
                                          (vals selected-options))
@@ -177,15 +177,13 @@
         permitted-query-params (category->allowed-query-params category)
         query                  (-> uri
                                    :query
-                                   #?(:clj cemerick-url/query->map :cljs identity)
                                    (merge selections)
                                    (select-keys permitted-query-params)
                                    accessors.categories/sort-query-params
-                                   #?(:clj uri/map->query :cljs identity)
                                    not-empty)]
     (-> uri
         (assoc :path (str "/categories/" category-id "-" category-slug))
-        (assoc :query query))))
+        (assoc :query (storefront.uri/map->query query)))))
 
 ;; Figure out if this helps us determine if a category page is its own canonical for sitemap
 (defn ^:private derive-canonical-uri-query-params
@@ -197,6 +195,7 @@
 (defn canonical-uri
   [data]
   (some-> (get-in data keypaths/navigation-uri)
+          cemerick-url/map->URL
           (derive-canonical-uri-query-params data)
           (update :host string/replace #"^[^.]+" "shop")
           (assoc :scheme (get-in data keypaths/scheme))

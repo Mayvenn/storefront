@@ -43,8 +43,7 @@
             [storefront.routes :as routes]
             [storefront.system.contentful :as contentful]
             [storefront.transitions :as transitions]
-            [storefront.views :as views]
-            [catalog.category :as category]))
+            [storefront.views :as views]))
 
 (def root-domain-pages-to-preserve-paths-in-redirects
   #{"/mayvenn-made"})
@@ -270,11 +269,14 @@
 (defn wrap-set-initial-state [h environment]
   (fn [req]
     (let [nav-message        (:nav-message req)
-          [nav-event params] nav-message]
+          [nav-event params] nav-message
+          nav-uri            (-> (into {} (:nav-uri req))
+                                 (assoc :protocol (-> req :scheme name))
+                                 (assoc :query (-> req :query-params)))]
       (h (-> req
              (assoc-in-req-state keypaths/scheme (name (:scheme req)))
              (assoc-in-req-state keypaths/navigation-message nav-message)
-             (assoc-in-req-state keypaths/navigation-uri (:nav-uri req))
+             (assoc-in-req-state keypaths/navigation-uri nav-uri)
              (assoc-in-req-state keypaths/static (static-page nav-event))
              (assoc-in-req-state keypaths/environment environment)
              (update-in-req-state [] experiments/determine-features))))))
