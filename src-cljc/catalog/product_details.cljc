@@ -1010,7 +1010,7 @@
            sku-is-free-mayvenn-service?        (-> sku :promo.mayvenn-install/discountable first)
            service-swap?                       (and cart-contains-free-mayvenn-service? sku-is-free-mayvenn-service?)
            add-sku-to-bag-command              [events/add-sku-to-bag
-                                                (if (experiments/cart-interstitial? data)
+                                                (if (experiments/cart-interstitial? app-state)
                                                   {:sku           sku
                                                    :stay-on-page? (and service-swap? (= events/navigate-category (get-in app-state storefront.keypaths/navigation-event)))
                                                    :service-swap? service-swap?
