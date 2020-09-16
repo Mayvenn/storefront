@@ -14,7 +14,7 @@
 
 #?(:cljs
    (defmethod effects/perform-effects events/api-success-fetch-stylist-details
-     [_ _ _ app-state]
+     [_ _ _ _ app-state]
      ;; HACK: the seo for the stylist profile page is dependent on this data. We
      ;; need to reconceptualize how we handle seo tags wrt asynchronous data
      (seo/set-tags app-state)))
