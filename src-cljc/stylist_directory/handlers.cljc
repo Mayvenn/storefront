@@ -1,5 +1,7 @@
 (ns stylist-directory.handlers
-  (:require [stylist-directory.keypaths :as keypaths]
+  (:require
+   #?@(:cljs [[storefront.hooks.seo :as seo]])
+   [stylist-directory.keypaths :as keypaths]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
@@ -9,6 +11,13 @@
   [_ _ {:keys [stylist]} app-state]
   (-> app-state
       (assoc-in (conj keypaths/stylists (:stylist-id stylist)) stylist)))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/api-success-fetch-stylist-details
+     [_ _ _ app-state]
+     ;; HACK: the seo for the stylist profile page is dependent on this data. We
+     ;; need to reconceptualize how we handle seo tags wrt asynchronous data
+     (seo/set-tags app-state)))
 
 (defmethod effects/perform-effects events/api-failure-fetch-stylist-details [_ event args _ app-state]
   (messages/handle-message events/flash-later-show-failure
