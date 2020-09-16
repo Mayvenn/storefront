@@ -1009,10 +1009,16 @@
      (let [cart-contains-free-mayvenn-service? (orders/discountable-services-on-order? (get-in app-state keypaths/order))
            sku-is-free-mayvenn-service?        (-> sku :promo.mayvenn-install/discountable first)
            service-swap?                       (and cart-contains-free-mayvenn-service? sku-is-free-mayvenn-service?)
-           add-sku-to-bag-command              [events/add-sku-to-bag {:sku           sku
-                                                                       :stay-on-page? (= events/navigate-category (get-in app-state storefront.keypaths/navigation-event))
-                                                                       :service-swap? service-swap?
-                                                                       :quantity      quantity}]]
+           add-sku-to-bag-command              [events/add-sku-to-bag
+                                                (if (experiments/cart-interstitial? data)
+                                                  {:sku           sku
+                                                   :stay-on-page? (and service-swap? (= events/navigate-category (get-in app-state storefront.keypaths/navigation-event)))
+                                                   :service-swap? service-swap?
+                                                   :quantity      quantity}
+                                                  {:sku           sku
+                                                   :stay-on-page? (= events/navigate-category (get-in app-state storefront.keypaths/navigation-event))
+                                                   :service-swap? service-swap?
+                                                   :quantity      quantity})]]
        (if service-swap?
          (messages/handle-message events/popup-show-service-swap {:sku-intended sku :confirmation-command add-sku-to-bag-command})
          (apply messages/handle-message add-sku-to-bag-command)))))
