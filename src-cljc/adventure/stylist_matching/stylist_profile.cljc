@@ -219,7 +219,6 @@
        [:div.bg-cool-gray.flex-column.center.py5.mt3
         {:id id}
         [:div.shout.bold.proxima.title-3 "Ratings"]
-        [:div.pb2.pt1 (stars-rating-large-molecule data)]
         (for [[star-rating star-count] sorted-rating-count]
           (rating-bar-molecule star-rating star-count max-ratings-count))]))))
 
