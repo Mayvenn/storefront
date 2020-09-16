@@ -19,7 +19,9 @@
             [storefront.utils :as utils]
             [clojure.string :as string]
             [clojure.set :as set]
-            [spice.maps :as maps]))
+            [spice.maps :as maps]
+            adventure.keypaths
+            [stylist-directory.stylists :as stylists]))
 
 (defn- use-case-then-order-key [img]
   [(condp = (:use-case img)
@@ -239,12 +241,12 @@
         :og-description "Wear it, dye it, even flat iron it. If you do not love your Mayvenn hair we will exchange it within 30 days of purchase."}
 
        events/navigate-content-about-us
-       {:title          "About Us - 100% virgin human hair company | Mayvenn "
-        :og-title       "The Mayvenn Story - About Us"
-        :description    "Mayvenn is a hair company providing top-quality 100% virgin human hair for consumers and stylists. Learn more about us!"
-        :og-type        "website"
-        :og-image       og-image-url
-        :og-description "Mayvenn's story starts with a Toyota Corolla filled with bundles of hair to now having over 50,000 stylists selling Mayvenn hair and increasing their incomes. Learn more about us!"
+       {:title           "About Us - 100% virgin human hair company | Mayvenn "
+        :og-title        "The Mayvenn Story - About Us"
+        :description     "Mayvenn is a hair company providing top-quality 100% virgin human hair for consumers and stylists. Learn more about us!"
+        :og-type         "website"
+        :og-image        og-image-url
+        :og-description  "Mayvenn's story starts with a Toyota Corolla filled with bundles of hair to now having over 50,000 stylists selling Mayvenn hair and increasing their incomes. Learn more about us!"
         :structured-data {:url     "https://shop.mayvenn.com/about-us"
                           "@type"  "Corporation"
                           :name    "Mayvenn Hair"
@@ -273,12 +275,12 @@
        (product-details-tags data)
 
        events/navigate-home
-       {:title          "Sew-In Weave Bundles, Human Hair Wigs, and Free Install Salon Services | Mayvenn",
-        :description    "Quality virgin human hair & extensions trusted & recommended by 100,000 stylists, and backed by the only 30-day return policy in the industry. Try Mayvenn hair today!",
-        :og-title       "100% Virgin Hair Extensions With a 30 Day Money Back Guarantee and Free Shipping!",
-        :og-type        "website",
-        :og-image       "http://ucarecdn.com/401c6886-077a-4445-85ec-f6b7023d5d1e/-/format/auto/canonical_image",
-        :og-description "Mayvenn is the recommended and trusted source for quality hair by 100,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"
+       {:title           "Sew-In Weave Bundles, Human Hair Wigs, and Free Install Salon Services | Mayvenn",
+        :description     "Quality virgin human hair & extensions trusted & recommended by 100,000 stylists, and backed by the only 30-day return policy in the industry. Try Mayvenn hair today!",
+        :og-title        "100% Virgin Hair Extensions With a 30 Day Money Back Guarantee and Free Shipping!",
+        :og-type         "website",
+        :og-image        "http://ucarecdn.com/401c6886-077a-4445-85ec-f6b7023d5d1e/-/format/auto/canonical_image",
+        :og-description  "Mayvenn is the recommended and trusted source for quality hair by 100,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"
         :structured-data (when (= "shop" (get-in data keypaths/store-slug))
                            {"@type"     "FAQPage"
                             :mainEntity (mapv (fn
@@ -308,6 +310,13 @@
        events/navigate-content-our-hair
        (merge default-tagmap
               {:title "Our Hair: Virgin and Dyed Virgin Human Hair | Mayvenn"})
+
+       events/navigate-adventure-stylist-profile
+       (let [{{salon-name :name
+               :keys      [city state]} :salon} (stylists/by-id data (get-in data adventure.keypaths/stylist-profile-id))]
+         (merge default-tagmap
+                {:title (str salon-name " " city ", " state " | Mayvenn")
+                 :description (str salon-name " in " city ", " state " offers sew-in installs, leave outs & more. Check out their full salon menu & book today.")}))
 
        ;; else
        default-tagmap)
