@@ -296,7 +296,7 @@
 
                  failed-rules
                  (keep (fn [[word essentials rule-quantity]]
-                         (let [cart-quantity    (->> (select essentials items)
+                         (let [cart-quantity    (->> (select essentials physical-items)
                                                      (map :item/quantity)
                                                      (apply +))
                                missing-quantity (- rule-quantity cart-quantity)]
