@@ -19,6 +19,8 @@
    [storefront.accessors.orders :as orders]
    [storefront.assets :as assets]
    [storefront.component :as c]
+   [storefront.components.ui :as ui]
+   [storefront.config :as config]
    [storefront.effects :as effects]
    [storefront.events :as e]
    [storefront.keypaths :as k]
@@ -28,9 +30,39 @@
    spice.core
    [storefront.accessors.experiments :as experiments]))
 
+(def ^:private green-divider-atom
+  (c/html
+   [:div
+    {:style {:background-image  "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"
+             :background-position "center center"
+             :background-repeat   "repeat-x"
+             :height              "24px"}}]))
+
+(c/defcomponent content-box-organism
+  [{:keys [title header summary sections]} _ _]
+  [:div.py8.px4.bg-cool-gray
+   [:div.max-960.mx-auto
+    [:div.pb2
+     [:div.proxima.title-2.bold.caps ^:inline (str title)]
+     [:div.canela.title-1.pb2 ^:inline (str header)]
+     [:div.canela.content-1 ^:inline (str summary)]]
+
+    (for [{:keys [title body]} sections]
+      [:div.py2 {:key title}
+       [:div.proxima.title-2.bold.caps.pb1 ^:inline (str title)]
+       [:div.canela.content-2 ^:inline (str body)]])
+
+    [:div.py2
+     [:div.proxima.title-2.bold.caps.pb1 "Still Have Questions?"]
+     [:div.canela.content-2
+      [:div "Customer Service can help!"]
+      [:div "Call " [:a.inherit-color {:href (ui/phone-url config/support-phone-number)} config/support-phone-number " "]]
+      [:div "Monday through Friday from 8am-5pm PST."]]]]])
+
 (c/defcomponent ^:private template
   [{:keys [category-hero
            how-it-works
+           content-box
            category-filters
            service-card-listing
            product-card-listing
@@ -46,8 +78,12 @@
     (c/build category-filters/organism category-filters {})
     (c/build service-card-listing/organism service-card-listing {})
     (c/build product-card-listing/organism product-card-listing {})]
-   [:div.col-10.mx-auto.mt6
-    (c/build how-it-works/organism queried-data)]])
+   (when content-box
+     [:div green-divider-atom
+      (c/build content-box-organism content-box)])
+   (when (:how-it-works queried-data)
+     [:div.col-10.mx-auto.mt6
+      (c/build how-it-works/organism queried-data)])])
 
 (defn category-hero-query
   [{:copy/keys [title description learn-more-target]
@@ -79,6 +115,7 @@
                                               (skuers/electives current)
                                               (skuers/essentials current))
                                              (vals (get-in app-state k/v2-products)))
+        shop?                               (= "shop" (get-in app-state k/store-slug))
         category-products-matching-criteria (selector/match-all {:selector/strict? true}
                                                                 (merge
                                                                  (skuers/essentials current)
@@ -93,7 +130,12 @@
                                                                      loaded-category-products
                                                                      category-products-matching-criteria
                                                                      selections)
-                     :how-it-works           current
+                     :how-it-works           (when (:how-it-works/title-primary current) current)
+                     :content-box            (when (and shop? (:content-block/type current))
+                                               {:title    (:content-block/title current)
+                                                :header   (:content-block/header current)
+                                                :summary  (:content-block/summary current)
+                                                :sections (:content-block/sections current)})
                      :service-card-listing   (when service-category-page?
                                                (service-card-listing/query app-state current category-products-matching-criteria))
                      :product-card-listing   (when-not service-category-page?

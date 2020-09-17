@@ -299,6 +299,7 @@
                                                                  (skuers/essentials interstitial-category)
                                                                  selections)
                                                                 loaded-category-products)
+        shop?                               (= "shop" (get-in app-state keypaths/store-slug))
         stylist-mismatch?                   (experiments/stylist-mismatch? app-state)
         servicing-stylist                   (get-in app-state adventure.keypaths/adventure-servicing-stylist)
         service-category-page?              (contains? (:catalog/department interstitial-category) "service")]
@@ -306,7 +307,7 @@
         {:header                 {}
          :footer                 {}
          :category-hero          (category-hero-query interstitial-category)
-         :content-box            (when (:content-block/type interstitial-category)
+         :content-box            (when (and shop? (:content-block/type interstitial-category))
                                    {:title    (:content-block/title interstitial-category)
                                     :header   (:content-block/header interstitial-category)
                                     :summary  (:content-block/summary interstitial-category)

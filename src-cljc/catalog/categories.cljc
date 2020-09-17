@@ -248,21 +248,32 @@
            :seo/self-referencing-texture? true
            :page/slug                     "virgin-straight"
            :legacy/named-search-slug      "straight"
-
-           :catalog/department  #{"hair"}
-           :hair/texture        #{"straight"}
-           :hair/color.process  #{"natural" "dyed"}
-           :hair/source         #{"virgin"}
-           :hair/family         #{"bundles" "closures" "frontals" "360-frontals"}
-           :selector/essentials [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives  [:hair/family :hair/origin :hair/color :hair/base-material]
-           :copy/description    (copy "For those who want it given to them"
-                                      "straight, our collection of 100% virgin straight hair"
-                                      "is your go-to for a sleek look with"
-                                      "minimal effort.")
-           :icon                "/images/categories/straight-icon.svg"
-           :subcategory/title   "Straight"
-           :header/title        "Virgin Straight"}
+           :content-block/type            :about-attributes ;; incase we have different templates in the future
+           :content-block/title           "Hair Bundles 101:"
+           :content-block/header          "How to Style"
+           :content-block/summary         "With high quality bundles, the amount of hairstyles you can create are endless. Browse our selection of hair weaves here at Mayvenn. We feature virgin hair bundles that come in a variety of textures, such as curly, yaki straight, deep wave, and more."
+           :content-block/sections        [{:title "Our Hair"
+                                            :body  "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}
+                                           {:title "How to Choose Bundles"
+                                            :body  "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}
+                                           {:title "What to Know About Your Install"
+                                            :body  "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}
+                                           {:title "Free Install"
+                                            :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]
+           :catalog/department            #{"hair"}
+           :hair/texture                  #{"straight"}
+           :hair/color.process            #{"natural" "dyed"}
+           :hair/source                   #{"virgin"}
+           :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
+           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
+           :selector/electives            [:hair/family :hair/origin :hair/color :hair/base-material]
+           :copy/description              (copy "For those who want it given to them"
+                                                "straight, our collection of 100% virgin straight hair"
+                                                "is your go-to for a sleek look with"
+                                                "minimal effort.")
+           :icon                          "/images/categories/straight-icon.svg"
+           :subcategory/title             "Straight"
+           :header/title                  "Virgin Straight"}
           (category->seo "Straight Hair Bundles: Virgin Straight Sew-In Weaves"
                          (copy "Find the perfect virgin straight hair bundles from Mayvenn."
                                "We have everything from blonde to black, Brazilian to Indian."
@@ -275,24 +286,35 @@
            :seo/self-referencing-texture? true
            :page/slug                     "virgin-yaki-straight"
            :legacy/named-search-slug      "yaki-straight"
-
-           :catalog/department  #{"hair"}
-           :hair/texture        #{"yaki-straight"}
-           :hair/color.process  #{"natural" "dyed"}
-           :hair/source         #{"virgin"}
-           :hair/family         #{"bundles" "closures" "frontals" "360-frontals"}
-           :selector/essentials [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives  [:hair/family :hair/origin]
-           :copy/description    (copy "Tired of having to break out the hot"
-                                      "tools for a textured straight look? Our Yaki"
-                                      "Straight hair collection is here to save your"
-                                      "strands! Yaki Straight hair matches the rhythm of"
-                                      "your natural hair that's been pressed straight or"
-                                      "freshly relaxed. Your flat iron has been officially"
-                                      "cancelled.")
-           :icon                "/images/categories/yaki-straight-icon.svg"
-           :subcategory/title   "Yaki Straight"
-           :header/title        "Virgin Yaki Straight"}
+           :content-block/type            :about-attributes ;; incase we have different templates in the future
+           :content-block/title           "Hair Bundles 101:"
+           :content-block/header          "How to Style"
+           :content-block/summary         "With high quality bundles, the amount of hairstyles you can create are endless. Browse our selection of hair weaves here at Mayvenn. We feature virgin hair bundles that come in a variety of textures, such as curly, yaki straight, deep wave, and more."
+           :content-block/sections        [{:title "Our Hair"
+                                            :body  "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}
+                                           {:title "How to Choose Bundles"
+                                            :body  "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}
+                                           {:title "What to Know About Your Install"
+                                            :body  "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}
+                                           {:title "Free Install"
+                                            :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]
+           :catalog/department            #{"hair"}
+           :hair/texture                  #{"yaki-straight"}
+           :hair/color.process            #{"natural" "dyed"}
+           :hair/source                   #{"virgin"}
+           :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
+           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
+           :selector/electives            [:hair/family :hair/origin]
+           :copy/description              (copy "Tired of having to break out the hot"
+                                                "tools for a textured straight look? Our Yaki"
+                                                "Straight hair collection is here to save your"
+                                                "strands! Yaki Straight hair matches the rhythm of"
+                                                "your natural hair that's been pressed straight or"
+                                                "freshly relaxed. Your flat iron has been officially"
+                                                "cancelled.")
+           :icon                          "/images/categories/yaki-straight-icon.svg"
+           :subcategory/title             "Yaki Straight"
+           :header/title                  "Virgin Yaki Straight"}
           (category->seo "Yaki Straight Hair: Virgin Yaki Straight Bundles"
                          (copy "Looking for some top quality yaki straight hair?"
                                "Mayvenn has you covered."
@@ -312,6 +334,18 @@
            :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives            [:hair/family :hair/origin :hair/color :hair/base-material]
+           :content-block/type            :about-attributes ;; incase we have different templates in the future
+           :content-block/title           "Hair Bundles 101:"
+           :content-block/header          "How to Style"
+           :content-block/summary         "With high quality bundles, the amount of hairstyles you can create are endless. Browse our selection of hair weaves here at Mayvenn. We feature virgin hair bundles that come in a variety of textures, such as curly, yaki straight, deep wave, and more."
+           :content-block/sections        [{:title "Our Hair"
+                                            :body  "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}
+                                           {:title "How to Choose Bundles"
+                                            :body  "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}
+                                           {:title "What to Know About Your Install"
+                                            :body  "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}
+                                           {:title "Free Install"
+                                            :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]
            :copy/description              (copy "Blending is a breeze with our Kinky Straight"
                                                 "hair collection! Like a fresh blow out, the"
                                                 "Kinky Straight hair texture moves freely and gives"
@@ -339,6 +373,18 @@
            :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives            [:hair/family :hair/origin :hair/color :hair/base-material]
+           :content-block/type            :about-attributes ;; incase we have different templates in the future
+           :content-block/title           "Hair Bundles 101:"
+           :content-block/header          "How to Style"
+           :content-block/summary         "With high quality bundles, the amount of hairstyles you can create are endless. Browse our selection of hair weaves here at Mayvenn. We feature virgin hair bundles that come in a variety of textures, such as curly, yaki straight, deep wave, and more."
+           :content-block/sections        [{:title "Our Hair"
+                                            :body  "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}
+                                           {:title "How to Choose Bundles"
+                                            :body  "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}
+                                           {:title "What to Know About Your Install"
+                                            :body  "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}
+                                           {:title "Free Install"
+                                            :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]
            :copy/description              (copy "Step into the spotlight with our collection of luscious Body Wave hair."
                                                 "Body Wave is unbelievably soft and goes from straight to wavy and back again with ease.")
            :icon                          "/images/categories/body-wave-icon.svg"
@@ -362,6 +408,18 @@
            :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives            [:hair/family :hair/origin :hair/color :hair/base-material]
+           :content-block/type            :about-attributes ;; incase we have different templates in the future
+           :content-block/title           "Hair Bundles 101:"
+           :content-block/header          "How to Style"
+           :content-block/summary         "With high quality bundles, the amount of hairstyles you can create are endless. Browse our selection of hair weaves here at Mayvenn. We feature virgin hair bundles that come in a variety of textures, such as curly, yaki straight, deep wave, and more."
+           :content-block/sections        [{:title "Our Hair"
+                                            :body  "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}
+                                           {:title "How to Choose Bundles"
+                                            :body  "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}
+                                           {:title "What to Know About Your Install"
+                                            :body  "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}
+                                           {:title "Free Install"
+                                            :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]
            :copy/description              (copy "For hair that holds a curl beautifully,"
                                                 "our collection of 100% virgin Loose Wave hair"
                                                 "is the perfect foundation for all your carefree,"
@@ -393,6 +451,18 @@
                                                 "collection. For curls you can rock everywhere from"
                                                 "the office to your tropical vacation, make a"
                                                 "statement with Water Wave hair.")
+           :content-block/type            :about-attributes ;; incase we have different templates in the future
+           :content-block/title           "Hair Bundles 101:"
+           :content-block/header          "How to Style"
+           :content-block/summary         "With high quality bundles, the amount of hairstyles you can create are endless. Browse our selection of hair weaves here at Mayvenn. We feature virgin hair bundles that come in a variety of textures, such as curly, yaki straight, deep wave, and more."
+           :content-block/sections        [{:title "Our Hair"
+                                            :body  "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}
+                                           {:title "How to Choose Bundles"
+                                            :body  "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}
+                                           {:title "What to Know About Your Install"
+                                            :body  "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}
+                                           {:title "Free Install"
+                                            :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]
            :icon                          "/images/categories/water-wave-icon.svg"
            :subcategory/title             "Water Wave"
            :header/title                  "Virgin Water Wave"}
@@ -418,6 +488,18 @@
            :copy/description              (copy "Reigning supreme in versatility, the Deep Wave hair collection features"
                                                 "a soft, spiral wave full of body and bounce. Our deep wave hair is perfect"
                                                 "for those who want big waves that make an even bigger splash.")
+           :content-block/type            :about-attributes ;; incase we have different templates in the future
+           :content-block/title           "Hair Bundles 101:"
+           :content-block/header          "How to Style"
+           :content-block/summary         "With high quality bundles, the amount of hairstyles you can create are endless. Browse our selection of hair weaves here at Mayvenn. We feature virgin hair bundles that come in a variety of textures, such as curly, yaki straight, deep wave, and more."
+           :content-block/sections        [{:title "Our Hair"
+                                            :body  "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}
+                                           {:title "How to Choose Bundles"
+                                            :body  "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}
+                                           {:title "What to Know About Your Install"
+                                            :body  "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}
+                                           {:title "Free Install"
+                                            :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]
            :icon                          "/images/categories/deep-wave-icon.svg"
            :subcategory/title             "Deep Wave"
            :header/title                  "Virgin Deep Wave"}
@@ -442,7 +524,19 @@
            :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives            [:hair/family :hair/origin :hair/base-material]
            :copy/description              (copy "Let your bold, beautiful curls take center stage! Our curly hair collection is a tight,"
-                                           "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")
+                                                "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")
+           :content-block/type            :about-attributes ;; incase we have different templates in the future
+           :content-block/title           "Hair Bundles 101:"
+           :content-block/header          "How to Style"
+           :content-block/summary         "With high quality bundles, the amount of hairstyles you can create are endless. Browse our selection of hair weaves here at Mayvenn. We feature virgin hair bundles that come in a variety of textures, such as curly, yaki straight, deep wave, and more."
+           :content-block/sections        [{:title "Our Hair"
+                                            :body  "We feature premium quality untreated Virgin Brazilian, Virgin Malaysian, and Virgin Peruvian hair weaves in many lengths and textures, from Straight to Yaki Straight to Wet & Wavy, in lengths including 16”, 18”, 20”, 22” and 24”."}
+                                           {:title "How to Choose Bundles"
+                                            :body  "It helps to have a hairstyle in mind when you choose your hair bundles. Whether you choose Virgin Hair Bundles and Dyed Virgin Hair Bundles, all our bundle styles are made with 100% virgin human hair, so your hair will have a natural look and feel. Whatever way you choose to wear it, we want you to wear your hair high with total confidence."}
+                                           {:title "What to Know About Your Install"
+                                            :body  "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}
+                                           {:title "Free Install"
+                                            :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]
            :icon                          "/images/categories/curly-icon.svg"
            :subcategory/title             "Curly"
            :header/title                  "Virgin Curly"}
