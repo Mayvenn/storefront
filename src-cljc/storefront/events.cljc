@@ -147,9 +147,6 @@
 
 (defpath ensure-sku-ids)
 
-(defpath control-stylist-gallery-open)
-(defpath control-stylist-gallery-close)
-
 (defpath control)
 (defpath control-change-state)
 (defpath control-focus)
@@ -434,11 +431,6 @@
 
 (defpath popup-hide)
 (defpath popup-show)
-(defpath popup-show-free-install)
-(defpath popup-show-v2-homepage)
-(defpath control-v2-homepage-popup-dismiss)
-(defpath popup-show-adventure-free-install)
-(defpath control-adventure-free-install-dismiss)
 (defpath popup-show-consolidated-cart-free-install)
 (defpath control-consolidated-cart-free-install-dismiss)
 

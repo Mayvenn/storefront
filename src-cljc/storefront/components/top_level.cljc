@@ -11,7 +11,6 @@
                        ;; popups, must be required to load properly
                        adventure.components.program-details-popup
                        storefront.components.share-your-cart
-                       storefront.components.v2-homepage-popup
                        storefront.components.service-swap-popup])
             #?@(:clj
                 [[design-system.home :as design-system]])
@@ -192,7 +191,6 @@
        ((ui/lazy-load-component :catalog 'checkout.shop.cart-v202004/page nav-event) data nav-event)
 
        ;; TODO this should be moved into the UI domain of stylist-matching
-       ;; Reminder, these are guarded by routing for Aladdin
        (routes/sub-page? [nav-event] [events/navigate-adventure])
        [:div {:data-test (keypaths/->component-str nav-event)}
         [:div {:key "popup"}
@@ -207,7 +205,6 @@
 
 (defcomponent top-level-component
   [data owner opts]
-  (if (or (= "shop" (get-in data keypaths/store-slug))
-          (= "aladdin" (get-in data keypaths/store-experience)))
+  (if (= "shop" (get-in data keypaths/store-slug))
     (shop-site data owner opts)
     (classic-site data owner opts)))

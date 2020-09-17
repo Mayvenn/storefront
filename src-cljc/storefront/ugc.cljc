@@ -66,7 +66,8 @@
                      :og-title          (str "Shop Wavy and Curly Bundle Sets - "
                                              "Find and Buy your favorite Mayvenn bundles!")}})
 
-;; TODO audit this, looks out of date - April 2020
+;; TODO audit this, looks out of date - April 2020, ditto Sept 2020
+;; These 'aladdin' albums might be shop or around services
 (def albums
   #{:sleek-and-straight    ;; Aladdin Home - Straight
     :waves-and-curly       ;; Aladdin Home - Wavy
@@ -132,8 +133,7 @@
                        (not= target-album-keyword :look)
                        target-album-keyword
 
-                       (or (and (= (get-in data keypaths/store-slug) "shop"))
-                           (experiments/aladdin-experience? data))
+                       (= "shop" (get-in data keypaths/store-slug))
                        :aladdin-free-install
 
                        :elsewise target-album-keyword)]

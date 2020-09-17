@@ -34,7 +34,6 @@
             [storefront.components.picker.picker :as picker]
             [storefront.components.tabbed-information :as tabbed-information]
             [storefront.components.ui :as ui]
-            [storefront.components.v2 :as v2]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -155,10 +154,8 @@
            sku-quantity
            selected-options
            how-it-works
-           get-a-free-install-section-data
            options
            picker-data
-           aladdin?
            ugc
            addons
            add-to-cart] :as data} owner opts]
@@ -215,9 +212,6 @@
                 (component/build how-it-works/organism {:how-it-works how-it-works})])
              [:div.m3 (component/build browse-stylists-banner/organism data opts)]
              [:div.mxn2.mb3 (component/build ugc/component ugc opts)]]]))]]
-       (when aladdin?
-         [:div.py10.bg-pale-purple.col-on-tb-dt.mt4
-          (component/build v2/get-a-free-install get-a-free-install-section-data)])
        (when (seq reviews)
          [:div.container.col-7-on-tb-dt.px2
           (component/build review-component/reviews-component reviews opts)])])))
@@ -505,7 +499,6 @@
       :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
       :title/primary                      (:copy/title product)
       :ugc                                ugc
-      :aladdin?                           (experiments/aladdin-experience? data)
       :fetching-product?                  (utils/requesting? data (conj request-keys/get-products
                                                                         (:catalog/product-id product)))
       :adding-to-bag?                     (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))

@@ -232,11 +232,6 @@
    [:svg opts
     ^:inline (svg-xlink "share-arrow")]))
 
-(defn celebration-horn [opts]
-  (component/html
-   [:svg opts
-    ^:inline (svg-xlink "celebration-horn")]))
-
 (defn coin-in-slot [opts]
   (component/html
    [:svg opts

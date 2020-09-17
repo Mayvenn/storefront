@@ -74,9 +74,7 @@
     (handle-message events/escape-key-pressed)))
 
 (def popup-dismiss-events
-  {:adventure-free-install         events/control-adventure-free-install-dismiss
-   :consolidated-cart-free-install events/control-consolidated-cart-free-install-dismiss
-   :v2-homepage                    events/control-v2-homepage-popup-dismiss
+  {:consolidated-cart-free-install events/control-consolidated-cart-free-install-dismiss
    :share-cart                     events/control-popup-hide
    :design-system                  events/control-design-system-popup-dismiss
    :addon-services-menu            events/control-addon-service-menu-dismiss

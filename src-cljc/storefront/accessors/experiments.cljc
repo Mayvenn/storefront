@@ -53,10 +53,6 @@
 (defn ^:private display-feature? [data feature]
   (contains? (set (get-in data keypaths/features)) feature))
 
-(defn aladdin-experience?
-  [data]
-  (= "aladdin" (get-in data keypaths/store-experience)))
-
 (defn dashboard-with-vouchers? [data]
   (= "aladdin" (get-in data keypaths/user-stylist-experience)))
 

@@ -3,7 +3,6 @@
 
 (defn determine-site
   [app-state]
-  (cond
-    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
-    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
-    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
+  (if (= "shop" (get-in app-state keypaths/store-slug))
+    :shop
+    :classic))

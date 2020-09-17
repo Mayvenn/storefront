@@ -4,20 +4,14 @@
                        [goog.events.EventType :as EventType]
                        [goog.style]
                        ["react" :as react]])
-            api.orders
             catalog.keypaths
-            [catalog.products :as products]
-            [storefront.accessors.categories :as accessors.categories]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.products :as accessors.products]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defdynamic-component]]
             [storefront.components.svg :as svg]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
-            [storefront.components.ui :as ui]))
+            [storefront.keypaths :as keypaths]))
 
 (defmulti component
   "Display a different component based on type of promotion"
@@ -28,24 +22,6 @@
   [_ _ _]
   [:div])
 
-(defmethod component :v2-freeinstall/eligible v2-freeinstall-eligible
-  [_ _ {hide-dt? :hide-dt?}]
-  [:a {:on-click  (utils/send-event-callback events/popup-show-v2-homepage)
-       :data-test (when-not hide-dt? "v2-free-install-promo-banner")}
-   [:div.inherit-color.center.pp5.bg-warm-gray.h5.bold.pointer
-    "Mayvenn will pay for your install! " [:span.underline "Learn more"]]])
-
-(defmethod component :v2-freeinstall/applied v2-freeinstall-applied
-  [_ _ {hide-dt? :hide-dt?}]
-  [:a.inherit-color.center.p2.bg-warm-gray.mbnp5.h6.bold.flex.items-center.justify-center
-   {:on-click  (utils/send-event-callback events/popup-show-v2-homepage)
-    :data-test (when-not hide-dt? "v2-free-install-promo-banner")}
-   (svg/celebration-horn {:height "1.6em"
-                          :width  "1.6em"
-                          :class  "mr1 fill-white stroke-white"})
-   [:div.pointer "CONGRATS — Your next install is FREE! "
-    [:span.underline "More info"]]])
-
 (defmethod component :shop/covid19 covid19
   [_ _ {hide-dt? :hide-dt?}]
   [:div.block.inherit-color.p2.bg-warm-gray.flex.items-top.justify-center
@@ -53,30 +29,6 @@
    [:div.mtp2.mr1 (svg/info-filled {:height "16px"
                                     :width  "16px"})]
    [:div.h6 "Mayvenn appointments are now available. Our stylists are committed to your health & safety."]])
-
-(defmethod component :shop/freeinstall shop-freeinstall
-  [_ _ {hide-dt? :hide-dt?}]
-  [:a.block.inherit-color.p2.bg-warm-gray.flex.justify-center.items-center
-   {:on-click  (utils/send-event-callback events/popup-show-consolidated-cart-free-install)
-    :data-test (when-not hide-dt? "shop-freeinstall-promo-banner")}
-   (svg/info {:height "14px"
-              :width  "14px"
-              :class  "mr1"})
-   [:div.pointer.h6 "Buy 3 items and receive your free "
-    [:span.underline
-     "Mayvenn" ui/nbsp "Install"]]])
-
-(defmethod component :shop/wigs shop-wigs
-  [_ _ {hide-dt? :hide-dt?}]
-  [:a.block.inherit-color.p2.bg-warm-gray.flex.justify-center.items-center
-   {:on-click  (utils/send-event-callback events/popup-show-wigs-customization)
-    :data-test (when-not hide-dt? "wig-customization-promo-banner")}
-   (svg/info {:height "14px"
-              :width  "14px"
-              :class  "mr1"})
-   [:div.pointer.h6 "Buy a wig & get it customized for free. "
-    [:span.underline
-     "Learn" ui/nbsp "more"]]])
 
 (defmethod component :basic basic
   [{:keys [promo]} _ {hide-dt? :hide-dt?}]
@@ -113,56 +65,16 @@
             events/navigate-shop-by-look-details
             events/navigate-category
             events/navigate-product-details}
-
-    ;; TODO SPEC classic or aladdin. Needs product verification
     (and (not no-applied-promos?)
          (not on-shop?))
     (disj events/navigate-cart)))
 
-(defn ^:private promo-type*
-  "Determine what type of promotion behavior we are under
-   experiment for"
-  [data]
-  (let [discounted-service? (-> (api.orders/free-mayvenn-service
-                                 nil ;; Stylist is optional here and not needed for the result
-                                 (:waiter/order (api.orders/current data)))
-                                :free-mayvenn-service/discounted?)
-        site                 (sites/determine-site data)
-        shop?                (= :shop site)
-        aladdin?             (= :aladdin site)
-        affiliate?           (= "influencer" (get-in data keypaths/store-experience))
-        [navigation-event _] (get-in data keypaths/navigation-message)
-        wigs?                (or (and (= events/navigate-product-details navigation-event)
-                                      (accessors.products/wig-product? (products/current-product data)))
-                                 (and (= events/navigate-category navigation-event)
-                                      (accessors.categories/wig-category? (accessors.categories/current-category data))))]
-    (cond
-      shop?
-      :shop/covid19
-
-      ;; Covid-19: Wigs never triggers on shop (top condition overrides)
-      (and (or shop? aladdin? affiliate?)
-           wigs?)
-      :shop/wigs
-
-      ;; Covid-19: Freeinstall never triggers (top condition overrides)
-      shop?
-      :shop/freeinstall
-
-      (and aladdin? discounted-service?)
-      :v2-freeinstall/applied
-
-      aladdin?
-      :v2-freeinstall/eligible
-
-      :else :basic)))
-
 (defn query
   [data]
   (let [no-applied-promo? (orders/no-applied-promo? (get-in data keypaths/order))
-        on-shop?          (= "shop" (get-in data keypaths/store-slug))
+        on-shop?          (= :shop (sites/determine-site data))
         nav-event         (get-in data keypaths/navigation-event)
-        promo-type        (promo-type* data)
+        promo-type        (if on-shop? :shop/covid19 :basic)
         show?             (contains? (nav-whitelist-for no-applied-promo? on-shop?) nav-event)
         hide-on-mb-tb?    (boolean (get-in data catalog.keypaths/category-panel))]
     (cond-> {:promo (promotion-to-advertise data)}

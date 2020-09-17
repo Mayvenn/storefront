@@ -191,27 +191,3 @@
                                                        :width  56})
      :contact-us.contact-method/title "Email Us"
      :contact-us.contact-method/copy  "help@mayvenn.com"}]})
-
-;;;; TODO -> model.stylists
-
-(def wig-customizations
-  [:specialty-wig-customization])
-(def mayvenn-installs
-  [:specialty-sew-in-360-frontal
-   :specialty-sew-in-closure
-   :specialty-sew-in-frontal
-   :specialty-sew-in-leave-out])
-(def a-la-carte-services
-  [:specialty-silk-press
-   :specialty-weave-maintenance
-   :specialty-wig-install
-   :specialty-braid-down])
-
-(def services
-  (into mayvenn-installs (concat a-la-carte-services wig-customizations)))
-
-(defn offers?
-  [menu services]
-  (->> ((apply juxt services) menu) ; i.e. select-vals
-       (some identity)
-       boolean))

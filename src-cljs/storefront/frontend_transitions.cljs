@@ -133,23 +133,15 @@
              #(or (not-empty %1) %2)
              (get-in app-state keypaths/order-user-email)))
 
-(def ^:private v2-slug->video
-  {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}
-   "free-install"   {:youtube-id "cWkSO_2nnD4"}})
-
+;; TODO ask product about this
 (def ^:private adventure-slug->video
   {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}
    "free-install"   {:youtube-id "oR1keQ-31yc"}})
 
-(defmethod transition-state events/navigate-home
-  [_ event {:keys [query-params]} app-state]
-  (if (= "shop" (get-in app-state keypaths/store-slug))
-    (assoc-in app-state adventure.keypaths/adventure-home-video (adventure-slug->video (:video query-params)))
-    (assoc-in app-state keypaths/v2-ui-home-video (v2-slug->video (:video query-params)))))
-
 (defmethod transition-state events/navigate-about-mayvenn-install
   [_ event {:keys [query-params]} app-state]
-  (assoc-in app-state adventure.keypaths/adventure-home-video (adventure-slug->video (:video query-params))))
+  (assoc-in app-state adventure.keypaths/adventure-home-video
+            (adventure-slug->video (:video query-params))))
 
 (defn clean-up-open-category-panels
   [app-state

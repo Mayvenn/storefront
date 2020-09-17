@@ -265,9 +265,9 @@
 (defmethod effects/perform-effects events/navigate-home
   [_ _ _ _ app-state]
   (let [homepage-version (if (= :shop (sites/determine-site app-state)) :shop :unified)]
-  (doseq [keypath [[:advertisedPromo]
+    (doseq [keypath [[:advertisedPromo]
                      [:homepage homepage-version]
-                   [:ugc-collection :free-install-mayvenn]]]
+                     [:ugc-collection :free-install-mayvenn]]]
       (effects/fetch-cms-keypath app-state keypath))))
 
 (defmethod effects/perform-effects events/navigate-about-mayvenn-install
@@ -294,8 +294,7 @@
   (let [actual-album-kw (ugc/determine-look-album app-state album-keyword)]
     (cond
       (and (#{:wavy-curly-looks :straight-looks} album-keyword)
-           (not= (get-in app-state keypaths/store-slug) "shop")
-           (not= "aladdin" (get-in app-state keypaths/store-experience)))
+           (= :classic (sites/determine-site app-state)))
       (effects/redirect events/navigate-shop-by-look {:album-keyword :look})
 
       (= :ugc/unknown-album actual-album-kw)
@@ -743,7 +742,8 @@
 
 (defmethod effects/perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} _ app-state]
   (let [{service-items :services/items} (api.orders/services app-state order)]
-    (if (and (seq service-items) (= :shop (sites/determine-site app-state)))
+    (if (and (seq service-items)
+             (= :shop (sites/determine-site app-state)))
       (history/enqueue-navigate events/navigate-adventure-checkout-wait)
       (history/enqueue-navigate events/navigate-order-complete order)))
   (messages/handle-message events/order-completed order)
@@ -754,10 +754,9 @@
   (cookie-jar/save-completed-order (get-in app-state keypaths/cookie)
                                    (get-in app-state keypaths/completed-order))
   (messages/handle-message events/clear-order)
-  (let [site                                         (sites/determine-site app-state)
-        {service-items        :services/items
+  (let [{service-items        :services/items
          servicing-stylist-id :services/stylist-id} (api.orders/services app-state order)]
-    (when (and (= :shop site)
+    (when (and (= :shop (sites/determine-site app-state))
                (not (empty? service-items))
                servicing-stylist-id)
       (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))))

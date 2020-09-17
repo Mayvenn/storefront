@@ -279,19 +279,11 @@
 
 (def facebook-email-denied (conj ui :facebook-email-denied))
 
-(def dismissed-free-install (conj ui :dismissed-free-install))
-
 (def experiments [:experiments])
 (def experiments-manual (conj experiments :manual))
 (def experiments-bucketed (conj experiments :bucketed))
 
 (def environment [:environment])
-
-(def carousel (conj ui :carousel))
-(def carousel-stylist-gallery (conj carousel :stylist-gallery))
-(def carousel-stylist-gallery-index (conj carousel-stylist-gallery :index))
-(def carousel-stylist-gallery-image-index (conj carousel-stylist-gallery :image-index))
-(def carousel-stylist-gallery-open? (conj carousel-stylist-gallery :open?))
 
 (def fvlanding (conj ui :fvlanding))
 
@@ -300,8 +292,6 @@
 (def v2-ui (conj v2-root :ui))
 (def v2-db (conj v2-root :db))
 
-(def v2-ui-home (conj v2-ui :home))
-(def v2-ui-home-video (conj v2-ui-home :video))
 (def v2-ui-dashboard (conj v2-ui :dashboard))
 (def v2-ui-dashboard-cash-balance-section-expanded? (conj v2-ui-dashboard :cash-balance-section-expanded?))
 (def v2-ui-dashboard-store-credit-section-expanded? (conj v2-ui-dashboard :store-credit-section-expanded?))

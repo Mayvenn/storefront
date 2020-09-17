@@ -11,8 +11,6 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.images :as images]
             [storefront.accessors.stylists :as stylists]
-            [storefront.accessors.shipping :as shipping]
-            [storefront.accessors.sites :as sites]
             [storefront.api :as api]
             [storefront.config :as config]
             [storefront.browser.cookie-jar :as cookie-jar]
@@ -113,7 +111,6 @@
            cart-summary
            delivery
            cart-items
-           site
            order
            loaded-quadpay?
            payment
@@ -200,18 +197,11 @@
            (ui/ucare-img {:width "56px"
                           :class "mtp2"} "9664879b-07e0-432e-9c09-b2cf4c899b10")
            [:div.px1
-            (let [servicing-stylist-name (stylists/->display-name servicing-stylist)]
-              (cond
-                (= :aladdin site)
-                (str "After you place your order, please contact "
-                     servicing-stylist-name
-                     " to make your appointment.")
-
-                servicing-stylist
-                (str "You will be connected to " servicing-stylist-name " over SMS to make an appointment within 2 business days after the check out")
-
-                :else
-                "You’ll be able to select your Certified Mayvenn Stylist after checkout."))]])]]]
+            (if servicing-stylist
+              (str "You will be connected to "
+                   (stylists/->display-name servicing-stylist)
+                   " over SMS to make an appointment within 2 business days after the check out")
+              "You’ll be able to select your Certified Mayvenn Stylist after checkout.")]])]]]
      [:div.py6.h2
       [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
       [:h2.center "Processing your order..."]])])
@@ -443,7 +433,6 @@
     (cond->
         {:order                        order
          :store-slug                   (get-in data keypaths/store-slug)
-         :site                         (sites/determine-site data)
          :requires-additional-payment? (requires-additional-payment? data)
          :promo-banner                 (promo-banner/query data)
          :checkout-steps               (checkout-steps/query data)

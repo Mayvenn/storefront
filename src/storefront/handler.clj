@@ -302,7 +302,6 @@
   [h contentful]
   (fn [req]
     (let [shop?                                 (= "shop" (get-in-req-state req keypaths/store-slug))
-          aladdin?                              (= "aladdin" (get-in-req-state req keypaths/store-experience))
           [nav-event
            {album-keyword :album-keyword
             product-id    :catalog/product-id}] (:nav-message req)
@@ -322,8 +321,7 @@
 
                                     (contains? #{events/navigate-shop-by-look events/navigate-shop-by-look-details} nav-event)
                                     (-> {}
-                                        (update-data (let [override-keyword (when (and (or shop? aladdin?)
-                                                                                       (= :look album-keyword))
+                                        (update-data (let [override-keyword (when (and shop? (= :look album-keyword))
                                                                               :aladdin-free-install)]
                                                        [:ugc-collection (or override-keyword album-keyword)]))
                                         contentful/derive-all-looks)

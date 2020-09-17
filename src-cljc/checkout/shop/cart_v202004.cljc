@@ -7,14 +7,12 @@
    api.orders
    [catalog.facets :as facets]
    [catalog.images :as catalog-images]
-   [checkout.call-out :as call-out]
    [checkout.header :as header]
    [checkout.suggestions :as suggestions]
    [checkout.ui.cart-item-v202004 :as cart-item-v202004]
    [checkout.ui.cart-summary-v202004 :as cart-summary-v202004]
    [clojure.string :as string]
    [spice.core :as spice]
-   spice.selector
    [storefront.accessors.adjustments :as adjustments]
    [storefront.accessors.experiments :as experiments]
    [storefront.accessors.auth :as auth]
@@ -24,7 +22,6 @@
    [storefront.accessors.products :as products]
    [storefront.accessors.stylists :as stylists]
    [storefront.accessors.shipping :as shipping]
-   [storefront.accessors.sites :as sites]
    [storefront.component :as component :refer [defcomponent]]
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
@@ -45,8 +42,7 @@
    [:div.flex-grow-1.border-bottom.border-gray]])
 
 (defcomponent full-component
-  [{:keys [call-out
-           service-line-items
+  [{:keys [service-line-items
            cart-items
            cart-summary
            checkout-caption-copy
@@ -66,9 +62,6 @@
    _ _]
   [:div.container.px2
    (component/build promo-banner/sticky-organism promo-banner nil)
-
-   (component/build call-out/component call-out nil)
-
    [:div.clearfix.mxn3
     [:div
      [:div.bg-refresh-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
@@ -190,30 +183,22 @@
      [:div.col-9.mx-auto
       (empty-cta-molecule queried-data)]]]))
 
-(defn empty-cart-query
-  [data]
+(def empty-cart-query
   (let [nav-to-mayvenn-install [events/navigate-category
                                 {:catalog/category-id "23"
                                  :page/slug           "mayvenn-install"}]]
-    (cond->
-        {:return-link/id            "start-shopping"
-         :return-link/copy          "Start Shopping"
-         :return-link/event-message nav-to-mayvenn-install
+    {:return-link/id            "start-shopping"
+     :return-link/copy          "Start Shopping"
+     :return-link/event-message nav-to-mayvenn-install
 
-         :empty-cart-body/id        "empty-cart-body"
-         :empty-cart-body/primary   "Your Cart is Empty"
-         :empty-cart-body/secondary (str "Did you know that free Mayvenn Services"
-                                         " are included with qualifying purchases?")
-         :empty-cart-body/image-id  "6146f2fe-27ed-4278-87b0-7dc46f344c8c"
-         :cta/id                    "browse-stylists"
-         :cta/label                 "Browse Stylists"
-         :cta/target                [events/navigate-adventure-match-stylist]}
-
-      (= :aladdin (sites/determine-site data))
-      (merge
-       {:cta/id     "start-shopping"
-        :cta/label  "Start Shopping"
-        :cta/target nav-to-mayvenn-install}))))
+     :empty-cart-body/id        "empty-cart-body"
+     :empty-cart-body/primary   "Your Cart is Empty"
+     :empty-cart-body/secondary (str "Did you know that free Mayvenn Services"
+                                     " are included with qualifying purchases?")
+     :empty-cart-body/image-id  "6146f2fe-27ed-4278-87b0-7dc46f344c8c"
+     :cta/id                    "browse-stylists"
+     :cta/label                 "Browse Stylists"
+     :cta/target                [events/navigate-adventure-match-stylist]}))
 
 (defn ^:private variants-requests [data request-key variant-ids]
   (->> variant-ids
@@ -560,8 +545,7 @@
                                  "Add promo code")})))))
 
 (defn full-cart-query [data]
-  (let [shop?                           (#{"shop"} (get-in data keypaths/store-slug))
-        order                           (get-in data keypaths/order)
+  (let [order                           (get-in data keypaths/order)
         products                        (get-in data keypaths/v2-products)
         facets                          (get-in data keypaths/v2-facets)
         line-items                      (map (partial add-product-title-and-color-to-line-item products facets)
@@ -608,7 +592,6 @@
              :products                           products
              :promo-banner                       (when (zero? (orders/product-quantity order))
                                                    (promo-banner/query data))
-             :call-out                           (call-out/query data)
              :redirecting-to-paypal?             (get-in data keypaths/cart-paypal-redirect)
              :share-carts?                        (= :stylist signed-in-as)
              :requesting-shared-cart?            (utils/requesting? data request-keys/create-shared-cart)
@@ -663,11 +646,7 @@
                                                :rating/id    "stylist-rating-id"}
           :servicing-stylist-banner/image-url (some-> stylist :portrait :resizable-url)
           :servicing-stylist-banner/target    [events/control-change-stylist {:stylist-id (:stylist-id stylist)}]
-          :servicing-stylist-banner/action-id (when shop? "stylist-swap")}
-         (when-not shop?
-           {:checkout-caption-copy (str "After you place your order, please contact "
-                                        (stylists/->display-name stylist)
-                                        " to make your appointment.")}))))))
+          :servicing-stylist-banner/action-id "stylist-swap"})))))
 
 (defcomponent cart-component
   [{:keys [fetching-order?
@@ -691,7 +670,7 @@
 (defn query [data]
   {:fetching-order? (utils/requesting? data request-keys/get-order)
    :item-count      (orders/displayed-cart-count (get-in data keypaths/order))
-   :empty-cart      (empty-cart-query data)
+   :empty-cart      empty-cart-query
    :full-cart       (full-cart-query data)})
 
 (defcomponent template

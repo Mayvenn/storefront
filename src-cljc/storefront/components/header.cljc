@@ -390,12 +390,11 @@
                                         "shop-bundle-sets-menu-expanded")})
 
 (defn basic-query [data]
-  (let [store            (marquee/query data)
-        site             (sites/determine-site data)
-        shop?            (= :shop site)
-        classic?         (= :classic site)
-        signed-in        (auth/signed-in data)
-        shop-or-aladdin? (contains? #{:aladdin :shop} site)]
+  (let [store     (marquee/query data)
+        site      (sites/determine-site data)
+        shop?     (= :shop site)
+        classic?  (= :classic site)
+        signed-in (auth/signed-in data)]
     {:signed-in                   signed-in
      :on-taxon?                   (get-in data keypaths/current-traverse-nav)
      :promo-banner                (promo-banner/query data)
@@ -437,18 +436,8 @@
                                     :slide-out-nav-menu-item/primary     "Browse Services"}
                                    {:slide-out-nav-menu-item/target  [events/navigate-adventure-match-stylist]
                                     :slide-out-nav-menu-item/id      "menu-shop-find-stylist"
-                                    :slide-out-nav-menu-item/primary "Find a Stylist"}])
-
-                                 classic?
-                                 (concat
-                                  [{:slide-out-nav-menu-item/target  [events/navigate-shop-by-look {:album-keyword :look}]
-                                    :slide-out-nav-menu-item/nested? false
-                                    :slide-out-nav-menu-item/id      "menu-shop-by-look"
-                                    :slide-out-nav-menu-item/primary "Shop By Look"}])
-
-                                 shop-or-aladdin?
-                                 (concat
-                                  [{:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :shop-looks}]
+                                    :slide-out-nav-menu-item/primary "Find a Stylist"}
+                                   {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :shop-looks}]
                                     :slide-out-nav-menu-item/nested? true
                                     :slide-out-nav-menu-item/id      "menu-shop-by-look"
                                     :slide-out-nav-menu-item/primary "Shop By Look"}
@@ -456,6 +445,13 @@
                                     :slide-out-nav-menu-item/nested? true
                                     :slide-out-nav-menu-item/id      "menu-shop-by-bundle-sets"
                                     :slide-out-nav-menu-item/primary "Shop Bundle Sets"}])
+
+                                 classic?
+                                 (concat
+                                  [{:slide-out-nav-menu-item/target  [events/navigate-shop-by-look {:album-keyword :look}]
+                                    :slide-out-nav-menu-item/nested? false
+                                    :slide-out-nav-menu-item/id      "menu-shop-by-look"
+                                    :slide-out-nav-menu-item/primary "Shop By Look"}])
 
                                  :always
                                  (concat
@@ -500,17 +496,14 @@
                                {:header-menu-item/navigation-target [events/navigate-category services-icp]
                                 :header-menu-item/id                "desktop-services-icp"
                                 :header-menu-item/new-label?        (:category/new? services-icp)
-                                :header-menu-item/content           (:flyout-menu/title services-icp)})])
+                                :header-menu-item/content           (:flyout-menu/title services-icp)})
+                             (shop-looks-query data)
+                             (shop-bundle-sets-query data)])
 
                            classic?
                            (concat [{:header-menu-item/navigation-target [events/navigate-shop-by-look {:album-keyword :look}]
                                      :header-menu-item/id                "desktop-shop-by-look"
                                      :header-menu-item/content           "Shop by look"}])
-
-                           shop-or-aladdin?
-                           (concat
-                            [(shop-looks-query data)
-                             (shop-bundle-sets-query data)])
 
                            :always
                            (concat

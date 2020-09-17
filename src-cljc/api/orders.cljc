@@ -143,8 +143,7 @@
 
 (defn ->order
   [app-state waiter-order]
-  (let [store-slug        (get-in app-state storefront.keypaths/store-slug)
-        recents           (get-in app-state storefront.keypaths/cart-recently-added-skus)
+  (let [recents           (get-in app-state storefront.keypaths/cart-recently-added-skus)
         base-services     (->> waiter-order
                            orders/service-line-items
                            (filter line-items/base-service?))
@@ -157,7 +156,6 @@
                                (maps/map-values (fn [facet]
                                                   (update facet :facet/options (partial maps/index-by :option/slug)))))]
     {:waiter/order         waiter-order
-     :order/dtc?           (= "shop" store-slug)
      :order/services-only? (every? line-items/service? (orders/product-and-service-items waiter-order))
      :order/submitted?     (= "submitted" (:state waiter-order))
      :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
