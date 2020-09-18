@@ -160,7 +160,6 @@
 
 (defmethod transitions/transition-state events/control-show-addon-service-menu [_ event args app-state]
   (-> app-state
-      (assoc-in keypaths/confetti-mode "fired")
       (assoc-in keypaths/popup :addon-services-menu)))
 
 (defmethod transitions/transition-state events/control-addon-service-menu-dismiss [_ event args app-state]

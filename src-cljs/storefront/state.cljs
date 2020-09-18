@@ -169,7 +169,6 @@
                                     :stripe   false
                                     :facebook false
                                     :places   false}
-          :confetti-mode           "ready"
           :promo-code-entry-open?  false
           :stylist-directory       {:stylist-search {:expanded-filter-sections #{}
                                                      :selected-filters         #{}}}}

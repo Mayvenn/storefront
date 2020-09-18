@@ -129,8 +129,6 @@
 (defpath menu-home)
 (defpath menu-list)
 
-(defpath set-confetti-mode)
-
 (defpath navigation-save)
 (defpath navigation-undo)
 (defpath navigation-redo)

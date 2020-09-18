@@ -623,10 +623,6 @@
   (when module-name
     (update app-state :modules (fnil conj #{}) module-name)))
 
-(defmethod transition-state events/set-confetti-mode
-  [_ _ {mode :mode} app-state]
-  (assoc-in app-state keypaths/confetti-mode mode))
-
 (defmethod transition-state events/api-success-get-skus
   [_ event args app-state]
   (update-in app-state keypaths/v2-skus #(merge (-> args :skus products/index-skus) %)))
