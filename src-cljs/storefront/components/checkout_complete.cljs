@@ -73,16 +73,17 @@
      [:div.content-2.center.my2 body]]))
 
 (defn matched-with-servicing-stylist-component [{:matched-component.message/keys [id] :as queried-data}]
-  [:div.bg-white.pt8.pb4.px3.bg-refresh-gray
-   {:data-test id}
-   (matched-component-message-molecule queried-data)
-   [:div.my2 (servicing-stylist-card-molecule queried-data)]
-   (let [{:matched-component.cta/keys [id label target]} queried-data]
-     (when id
-       [:div.col-10.my2.mx-auto
-        (ui/button-large-primary
-         (merge (apply utils/route-to target)
-                {:data-test id}) label)]))])
+  (when id
+    [:div.bg-white.pt8.pb4.px3.bg-refresh-gray
+     {:data-test id}
+     (matched-component-message-molecule queried-data)
+     [:div.my2 (servicing-stylist-card-molecule queried-data)]
+     (let [{:matched-component.cta/keys [id label target]} queried-data]
+       (when id
+         [:div.col-10.my2.mx-auto
+          (ui/button-large-primary
+           (merge (apply utils/route-to target)
+                  {:data-test id}) label)]))]))
 
 (defcomponent facebook-cta [{:facebook-cta/keys [id]} _ _]
   (when id
