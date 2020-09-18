@@ -182,7 +182,8 @@
                   (map (partial clojure.string/join "-")))
                  (methods storefront.effects/perform-effects))
        sort
-       vec))
+       vec
+       clj->js))
 
 (loader/set-loaded! :main)
 (dom-ready #(main app-state))
