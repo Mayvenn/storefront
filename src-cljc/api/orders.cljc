@@ -141,6 +141,13 @@
 
 (declare items<-)
 
+(defn offered-services-sku-ids
+  [stylist]
+  (->> stylist-filters/service-filter-data
+       (map :sku-id)
+       (filter (partial stylist-filters/stylist-provides-service-by-sku-id? stylist))
+       set))
+
 (defn ->order
   [app-state waiter-order]
   (let [recents           (get-in app-state storefront.keypaths/cart-recently-added-skus)
@@ -149,10 +156,8 @@
                                (filter line-items/base-service?))
         skus-db           (get-in app-state storefront.keypaths/v2-skus)
         images-db         (get-in app-state storefront.keypaths/v2-images)
-        servicing-stylist (let [stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)]
-                            (assoc stylist
-                                   :offered-skus
-                                   (stylist-filters/offered-services-sku-ids stylist)))
+        servicing-stylist (when-let [stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)]
+                            (assoc stylist :offered-skus (offered-services-sku-ids stylist)))
         facets-db         (->> storefront.keypaths/v2-facets
                                (get-in app-state)
                                (maps/index-by (comp keyword :facet/slug))
@@ -173,13 +178,6 @@
 (defn current
   [app-state]
   (->order app-state (get-in app-state storefront.keypaths/order)))
-
-(defn offered-services-sku-ids
-  [stylist]
-  (->> stylist-filters/service-filter-data
-       (map :sku-id)
-       (filter (partial stylist-filters/stylist-provides-service-by-sku-id? stylist))
-       set))
 
 (defn services
   "Model: Services on an order
