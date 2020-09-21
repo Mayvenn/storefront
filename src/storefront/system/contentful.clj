@@ -203,7 +203,8 @@
                              (mapv extract-fields)
                              walk/keywordize-keys
                              (mapv (juxt :faq-section :questions-answers))
-                             (mapv item-tx-fn)
+                             (map item-tx-fn)
+                             (into {})
                              (assoc {} content-type))
 
                     :else
