@@ -68,6 +68,106 @@
       (status 200)
       (content-type "application/json")))
 
+(def contentful-faq-response
+  {:body {:sys {:type "Array"},
+  :total 2,
+  :skip 0,
+  :limit 100,
+  :items
+  [{:sys
+    {:space {:sys {:type "Link", :linkType "Space", :id "76m8os65degn"}},
+     :updatedAt "2020-09-18T17:22:45.945Z",
+     :revision 1,
+     :locale "en-US",
+     :createdAt "2020-09-18T17:22:45.945Z",
+     :type "Entry",
+     :id "6BwCxVbel7leAiaCKD3ZyX",
+     :environment {:sys {:id "master", :type "Link", :linkType "Environment"}},
+     :contentType {:sys {:type "Link", :linkType "ContentType", :id "faq"}}},
+    :fields
+    {:faqSection "categories/24-virgin-lace-front-wigs",
+     :title "Frequently Asked Questions"}}
+   {:sys
+    {:space {:sys {:type "Link", :linkType "Space", :id "76m8os65degn"}},
+     :updatedAt "2020-09-17T18:08:21.618Z",
+     :revision 2,
+     :locale "en-US",
+     :createdAt "2020-09-17T17:27:24.988Z",
+     :type "Entry",
+     :id "1dWVnkYhoMZbQSyfxFRmRE",
+     :environment {:sys {:id "master", :type "Link", :linkType "Environment"}},
+     :contentType {:sys {:type "Link", :linkType "ContentType", :id "faq"}}},
+    :fields
+    {:faqSection "categories/13-wigs",
+     :title "Frequently Asked Questions",
+     :questionsAnswers
+     [{:sys {:type "Link", :linkType "Entry", :id "2iT7IXYUpUaUNBXzxSpot4"}}
+      {:sys {:type "Link", :linkType "Entry", :id "2JSLtMWIstOhSx0edefwKr"}}]}}],
+  :includes
+  {:Entry
+   [{:sys
+     {:space {:sys {:type "Link", :linkType "Space", :id "76m8os65degn"}},
+      :updatedAt "2020-09-17T18:02:47.319Z",
+      :revision 2,
+      :locale "en-US",
+      :createdAt "2020-09-17T18:01:33.830Z",
+      :type "Entry",
+      :id "2JSLtMWIstOhSx0edefwKr",
+      :environment
+      {:sys {:id "master", :type "Link", :linkType "Environment"}},
+      :contentType
+      {:sys {:type "Link", :linkType "ContentType", :id "questionsAnswers"}}},
+     :fields
+     {:question "How do you measure your head for a wig?",
+      :answer
+      {:nodeType "document",
+       :data {},
+       :content
+       [{:nodeType "paragraph",
+         :content
+         [{:nodeType "text", :value "Don’t worry, ", :marks [], :data {}}
+          {:nodeType "hyperlink",
+           :content
+           [{:nodeType "text",
+             :value "measuring your head for a wig",
+             :marks [{:type "underline"}],
+             :data {}}],
+           :data
+           {:uri
+            "https://shop.mayvenn.com/blog/hair/how-to-measure-head-for-wig-size/"}}
+          {:nodeType "text",
+           :value
+           " isn’t as complicated as it seems. Check out our easy to follow instructions here.",
+           :marks [],
+           :data {}}],
+         :data {}}]}}}
+    {:sys
+     {:space {:sys {:type "Link", :linkType "Space", :id "76m8os65degn"}},
+      :updatedAt "2020-09-17T18:02:44.540Z",
+      :revision 3,
+      :locale "en-US",
+      :createdAt "2020-09-17T17:22:33.566Z",
+      :type "Entry",
+      :id "2iT7IXYUpUaUNBXzxSpot4",
+      :environment
+      {:sys {:id "master", :type "Link", :linkType "Environment"}},
+      :contentType
+      {:sys {:type "Link", :linkType "ContentType", :id "questionsAnswers"}}},
+     :fields
+     {:question "Can I wear a wig even if I have long hair?",
+      :answer
+      {:nodeType "document",
+       :data {},
+       :content
+       [{:nodeType "paragraph",
+         :content
+         [{:nodeType "text",
+           :value
+           "Of course! Yes, wigs are for everyone, for all hair lengths. As a protective style, a wig is actually a great way to give your natural hair a break. Wigs are a low-commitment way to try out a new look without a drastic cut or color switch-up.",
+           :marks [],
+           :data {}}],
+         :data {}}]}}}]}}})
+
 (def contentful-ugc-collection-response
   {:body {:sys {:type "Array"},
           :total 5,

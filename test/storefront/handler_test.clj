@@ -407,8 +407,8 @@
   (testing "transforming content"
     (testing "transforming 'homepage' content"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                           {:status 200
-                                                                            :body   (generate-string (:body common/contentful-response))}))]
+                                                                              {:status 200
+                                                                               :body   (generate-string (:body common/contentful-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (let [responses                         (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
@@ -431,8 +431,8 @@
 
     (testing "transforming ugc-collections"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                           {:status 200
-                                                                            :body   (generate-string (:body common/contentful-ugc-collection-response))}))]
+                                                                              {:status 200
+                                                                               :body   (generate-string (:body common/contentful-ugc-collection-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
@@ -498,13 +498,36 @@
                          handler
                          :body
                          (parse-string true)
-                         :ugc-collection)))))))))
+                         :ugc-collection))))))))
 
-  (let [number-of-contentful-entities-to-fetch 4]
+    (testing "transforming faqs"
+      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+                                                                              {:status 200
+                                                                               :body   (generate-string (:body common/contentful-faq-response))}))]
+
+        (with-services {:contentful-handler contentful-handler}
+          (with-handler handler
+            (let [#_#_responses (repeatedly 3 (partial handler (mock/request :get "https://shop.mayvenn.com/categories/13-wigs")))
+                  requests      (txfm-requests contentful-requests identity)]
+              (is (= [#:categories{:24-virgin-lace-front-wigs []}
+                      #:categories{:13-wigs [{:question {:text "Can I wear a wig even if I have long hair?"}
+                                              :answer   [{:text "Of course! Yes, wigs are for everyone, for all hair lengths. As a protective style, a wig is actually a great way to give your natural hair a break. Wigs are a low-commitment way to try out a new look without a drastic cut or color switch-up."}]}
+                                             {:question {:text "How do you measure your head for a wig?"}
+                                              :answer   [{:text "Don’t worry, "}
+                                                         {:text "measuring your head for a wig"
+                                                          :url  "https://shop.mayvenn.com/blog/hair/how-to-measure-head-for-wig-size/"}
+                                                         {:text " isn’t as complicated as it seems. Check out our easy to follow instructions here."}]}]}]
+                     (-> (mock/request :get "https://shop.mayvenn.com/cms/faq")
+                         handler
+                         :body
+                         (parse-string true)
+                         :faq)))))))))
+
+  (let [number-of-contentful-entities-to-fetch 5]
     (testing "caching content"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                           {:status 200
-                                                                            :body   (generate-string (:body common/contentful-response))}))]
+                                                                              {:status 200
+                                                                               :body   (generate-string (:body common/contentful-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
@@ -514,16 +537,16 @@
 
     (testing "fetches data on system start"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                           {:status 200
-                                                                            :body   (generate-string (:body common/contentful-response))}))]
+                                                                              {:status 200
+                                                                               :body   (generate-string (:body common/contentful-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (is (= number-of-contentful-entities-to-fetch (count (txfm-requests contentful-requests identity))))))))
 
     (testing "attempts-to-retry-fetch-from-contentful"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                           {:status 500
-                                                                            :body   "{}"}))]
+                                                                              {:status 500
+                                                                               :body   "{}"}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))

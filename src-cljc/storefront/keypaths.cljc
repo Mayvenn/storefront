@@ -14,6 +14,7 @@
 (def cms-mayvenn-made-hero (conj cms-mayvenn-made :hero))
 (def cms-advertised-promo (conj cms :advertisedPromo))
 (def cms-advertised-promo-text (conj cms-advertised-promo :advertised-text))
+(def cms-faq (conj cms :faq))
 
 (def features [:features])
 (def welcome-url [:welcome-url])

@@ -319,6 +319,11 @@
                                         (update-data [:ugc-collection :free-install-mayvenn])
                                         contentful/derive-all-looks)
 
+                                    (= events/navigate-category nav-event)
+                                    (-> {}
+                                        (update-data [:faq])
+                                        contentful/derive-all-faqs)
+
                                     (contains? #{events/navigate-shop-by-look events/navigate-shop-by-look-details} nav-event)
                                     (-> {}
                                         (update-data (let [override-keyword (when (and shop? (= :look album-keyword))
