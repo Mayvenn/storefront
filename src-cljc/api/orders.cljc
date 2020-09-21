@@ -145,11 +145,14 @@
   [app-state waiter-order]
   (let [recents           (get-in app-state storefront.keypaths/cart-recently-added-skus)
         base-services     (->> waiter-order
-                           orders/service-line-items
-                           (filter line-items/base-service?))
+                               orders/service-line-items
+                               (filter line-items/base-service?))
         skus-db           (get-in app-state storefront.keypaths/v2-skus)
         images-db         (get-in app-state storefront.keypaths/v2-images)
-        servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        servicing-stylist (let [stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)]
+                            (assoc stylist
+                                   :offered-skus
+                                   (stylist-filters/offered-services-sku-ids stylist)))
         facets-db         (->> storefront.keypaths/v2-facets
                                (get-in app-state)
                                (maps/index-by (comp keyword :facet/slug))
@@ -264,13 +267,14 @@
   :item.service/stylist-offered?  #{};; C.
   :item.service/addons  [{... :item.service/stylist-offered? #{}}] ;; B., C.
   "
-  [servicing-stylist items item]
+  [stylist items item]
   (when-not (= #{"addon"} (:service/type item))
     (merge item
-           (when servicing-stylist
-             (let [stylist-offered? true] ;; TODO use menu on stylist to check
-               {:item.service/stylist          servicing-stylist
-                :item.service/stylist-offered? #{stylist-offered?}}))
+           (when stylist
+             (let [offered? (contains? (:offered-skus stylist)
+                                       (:catalog/sku-id item))]
+               {:item.service/stylist          stylist
+                :item.service/stylist-offered? #{offered?}}))
            (when-let [addons (->> (select addons items)
                                   (filter #(= (:item/line-item-group item)
                                               (:item/line-item-group %)))
