@@ -1040,6 +1040,44 @@
         :how-it-works.step.body/primary    (str "The last step is to go get your new, handmade Custom Wig from your stylist. "
                                                 "Don’t forget to bring your voucher with you!")}]}]))
 
+(def free-weave-installation-services
+  (let [description (copy "Find a sew-in weave installation stylist at a salon near you."
+                          "Learn more about this premium service and book an appointment today!")]
+    [{:catalog/category-id                "37"
+      :catalog/department                 #{"service"}
+      :service/type                       #{"base"}
+      :service/category                   #{"install"}
+      :promo.mayvenn-install/discountable #{true}
+      :selector/essentials                [:catalog/department
+                                           :service/type
+                                           :promo.mayvenn-install/discountable
+                                           :service/category]
+      :selector/electives                 []
+      :page/icp?                          false
+      :page/shop-only?                    true
+      :category/new?                      true
+      :copy/title                         "FREE Weave Install Services"
+      :page/slug                          "free-weave-installation"
+      :page/title                         "Weave Installation: Sew-In Weave Install | Mayvenn"
+      :page.meta/description              description
+      :copy/description                   description
+      ;; :subcategory/image-id               "" ;; TODO
+      :seo/sitemap                        true
+      ;; TODO: centralize how-it-works
+      :how-it-works/title-primary         (str "Your hair deserves a Mayvenn" nb-hyphen "Certified Stylist.")
+      :how-it-works/title-secondary       "Here’s how it works."
+      :how-it-works/step-elements
+      [{:how-it-works.step.title/primary   "01"
+        :how-it-works.step.title/secondary "Pick your service"
+        :how-it-works.step.body/primary    "Choose the service you’d like to book from our full list of complimentary Mayvenn service offerings."}
+       {:how-it-works.step.title/primary   "02"
+        :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
+        :how-it-works.step.body/primary    (str "We've hand-picked thousands of talented stylists around the country. "
+                                                "Browse the stylists in your area to find your perfect match.") }
+       {:how-it-works.step.title/primary   "03"
+        :how-it-works.step.title/secondary "Schedule your appointment"
+        :how-it-works.step.body/primary    (str "We’ll connect you with your stylist to set up your service. "
+                                                "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}]))
 (def mayvenn-install-services
   [{:catalog/category-id                "31"
     :catalog/department                 #{"service"}
@@ -1142,7 +1180,8 @@
           human-hair-bundles
           standalone-services
           mayvenn-install-services
-          custom-wig-services))
+          custom-wig-services
+          free-weave-installation-services))
 
 (def categories-for-remove-closure-experiment
   (let [texture-category-ids #{"2" "3" "4" "5" "6" "7" "8" "9"}]
