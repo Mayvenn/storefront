@@ -992,6 +992,54 @@
       (str "We’ll connect you with your stylist to set up your service. "
            "Then, we’ll send you a prepaid voucher to cover the cost.")}]}])
 
+(def custom-wig-services
+  (let [description (copy "Customize your own human hair wig exactly how you want,"
+                          "with the hair bundles of your choice."
+                          "100% handmade by a Mayvenn Certified Stylist.")]
+    [{:catalog/category-id                "36"
+      :catalog/department                 #{"service"}
+      :service/type                       #{"base"}
+      :service/category                   #{"construction"}
+      :promo.mayvenn-install/discountable #{true}
+      :selector/essentials                [:catalog/department
+                                           :service/type
+                                           :promo.mayvenn-install/discountable
+                                           :service/category]
+      :selector/electives                 []
+      :page/icp?                          false
+      :page/shop-only?                    true
+      :category/new?                      true
+      :copy/title                         "FREE Custom Wig Services"
+      :page/slug                          "free-custom-wigs"
+      :page/title                         "Custom Wig: Design Your Own Handmade Wig Unit | Mayvenn"
+      :page.meta/description              description
+      :copy/description                   description
+      ;; a:subcategory/image-id               "" ;; TODO
+      :seo/sitemap                        true
+      ;; TODO: centralize how-it-works
+      :how-it-works/title-primary         (str "Your hair deserves a Mayvenn" nb-hyphen "Certified Stylist.")
+      :how-it-works/title-secondary       "Here’s how it works."
+      :how-it-works/step-elements
+      [{:how-it-works.step.title/primary   "01"
+        :how-it-works.step.title/secondary "Purchase Hair + Pick A Stylist"
+        :how-it-works.step.body/primary    (str "Buy the hair you’ll use to create your wig, then select a stylist. "
+                                                "You’ll receive a payment voucher when your hair ships.")}
+
+       {:how-it-works.step.title/primary   "02"
+        :how-it-works.step.title/secondary "Schedule Your Wig Measuring Appointment"
+        :how-it-works.step.body/primary    (str "Our Concierge Team will assist you with scheduling your first appointment "
+                                                "to have your head measured for your handmade custom wig.") }
+
+       {:how-it-works.step.title/primary   "03"
+        :how-it-works.step.title/secondary "Drop Off Your Hair"
+        :how-it-works.step.body/primary    (str "Leave the hair with your stylist, and give your stylist a week to work on your wig. "
+                                                "Customization takes time!")}
+
+       {:how-it-works.step.title/primary   "04"
+        :how-it-works.step.title/secondary "Pick Up Your Wig"
+        :how-it-works.step.body/primary    (str "The last step is to go get your new, handmade Custom Wig from your stylist. "
+                                                "Don’t forget to bring your voucher with you!")}]}]))
+
 (def mayvenn-install-services
   [{:catalog/category-id                "31"
     :catalog/department                 #{"service"}
@@ -1093,7 +1141,8 @@
           tape-ins-category
           human-hair-bundles
           standalone-services
-          mayvenn-install-services))
+          mayvenn-install-services
+          custom-wig-services))
 
 (def categories-for-remove-closure-experiment
   (let [texture-category-ids #{"2" "3" "4" "5" "6" "7" "8" "9"}]
