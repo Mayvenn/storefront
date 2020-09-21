@@ -169,7 +169,9 @@
   [category]
   {:drill-category/id           (:page/slug category)
    :drill-category/title        (:copy/title category)
-   :drill-category/description  (:copy/description category)
+   :drill-category/description  (or
+                                 (:subcategory/description category)
+                                 (:copy/description category))
    :drill-category/image-id     (:subcategory/image-id category)
    :drill-category/target       (if-let [product-id (:direct-to-details/id category)]
                                   [events/navigate-product-details (merge

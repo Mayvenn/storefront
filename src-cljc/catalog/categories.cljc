@@ -996,7 +996,7 @@
   (let [description (copy "Customize your own human hair wig exactly how you want,"
                           "with the hair bundles of your choice."
                           "100% handmade by a Mayvenn Certified Stylist.")]
-    [{:catalog/category-id                "36"
+    [{:catalog/category-id                "37"
       :catalog/department                 #{"service"}
       :service/type                       #{"base"}
       :service/category                   #{"construction"}
@@ -1010,11 +1010,12 @@
       :page/shop-only?                    true
       :category/new?                      true
       :copy/title                         "FREE Custom Wig Services"
+      :copy/icp-action-label              "Learn More"
       :page/slug                          "free-custom-wigs"
       :page/title                         "Custom Wig: Design Your Own Handmade Wig Unit | Mayvenn"
       :page.meta/description              description
       :copy/description                   description
-      ;; a:subcategory/image-id               "" ;; TODO
+      :subcategory/image-id               "b57fef8e-0cdc-4f2a-b5cd-3e25e9a998b1"
       :seo/sitemap                        true
       ;; TODO: centralize how-it-works
       :how-it-works/title-primary         (str "Your hair deserves a Mayvenn" nb-hyphen "Certified Stylist.")
@@ -1043,7 +1044,7 @@
 (def free-weave-installation-services
   (let [description (copy "Find a sew-in weave installation stylist at a salon near you."
                           "Learn more about this premium service and book an appointment today!")]
-    [{:catalog/category-id                "37"
+    [{:catalog/category-id                "36"
       :catalog/department                 #{"service"}
       :service/type                       #{"base"}
       :service/category                   #{"install"}
@@ -1057,11 +1058,13 @@
       :page/shop-only?                    true
       :category/new?                      true
       :copy/title                         "FREE Weave Install Services"
+      :copy/icp-action-label              "Learn More"
       :page/slug                          "free-weave-installation"
       :page/title                         "Weave Installation: Sew-In Weave Install | Mayvenn"
       :page.meta/description              description
       :copy/description                   description
-      ;; :subcategory/image-id               "" ;; TODO
+      :subcategory/image-id               "63bfaa08-e010-46ab-b76c-5830b1507363"
+      :subcategory/description            "Find a sew-in weave installation stylist at a salon near you."
       :seo/sitemap                        true
       ;; TODO: centralize how-it-works
       :how-it-works/title-primary         (str "Your hair deserves a Mayvenn" nb-hyphen "Certified Stylist.")
@@ -1087,7 +1090,7 @@
                                          :service/type
                                          :promo.mayvenn-install/discountable]
     :selector/electives                 []
-    :page/icp?                          false
+    :page/icp?                          true
     :category/new?                      true
     :copy/title                         "FREE Mayvenn Services"
     :copy/icp-action-label              "Learn More"
@@ -1097,11 +1100,14 @@
                                               "buy certain hair products. You buy the hair, we'll cover the service.")
     :opengraph/title               			"Free Mayvenn Services Menu - Buy 3 items and we'll pay for your hair service."
     :opengraph/description         			"Buy 3 items and Mayvenn will pay for your hair service! Shop our selection of natural human hair bundles and get connected with a stylist near you."
-    :copy/description                   "You buy the hair, we cover the service. See which products apply."
+    :category/description               "You buy the hair, we cover the service. See which products apply."
     :subcategory/image-id               "8a99154d-f552-4f8a-aab2-1a4f71cbdb06"
     :seo/sitemap                        true
-    :how-it-works/title-primary         "Your hair deserves a Mayvenn–Certified Stylist."
-    :how-it-works/title-secondary       "Here’s how it works."
+    :subcategories/ids                  ["36" "37"]
+    :subcategories/layout               :list
+
+    :how-it-works/title-primary   "Your hair deserves a Mayvenn–Certified Stylist."
+    :how-it-works/title-secondary "Here’s how it works."
     :how-it-works/step-elements
     [{:how-it-works.step.title/primary   "01"
       :how-it-works.step.title/secondary "Pick your service"
