@@ -53,14 +53,6 @@
      {:style {:top top}}
      ^:inline (svg/vertical-squiggle {:style {:height "72px"}})]]))
 
-(defcomponent ^:private header-organism
-  [_ _ _]
-  [:div])
-
-(defcomponent ^:private footer-organism
-  [_ _ _]
-  [:div])
-
 (defn ^:private category-hero-query
   [category]
   ;; TODO(corey) icp heroes use #:category not #:copy for :description
@@ -241,40 +233,33 @@
            expanding-content-box
            drill-category-grid
            drill-category-list
-           footer
-           header
            product-card-listing
-           service-card-listing
-           service-category-page?
-           stylist-mismatch?] :as queried-data} _ _]
+           service-card-listing] :as queried-data} _ _]
   [:div
-   (component/build header-organism header)
-   [:div
-    (component/build category-hero/organism category-hero)
-    (vertical-squiggle-atom "-36px")
-    [:div.max-960.mx-auto
-     (component/build drill-category-list-organism drill-category-list)
-     (component/build drill-category-grid-organism drill-category-grid)]
-    [:div.mb10 purple-divider-atom
-     (component/build molecules/stylist-bar queried-data {})]
-    [:div.max-960.mx-auto
-     (when-let [title (:title category-filters)]
-       [:div.canela.title-1.center.mb2 title])
-     (if (-> category-filters :tabs :tabs/elements empty?)
-       [:div.stroke-s-color.center
-        (svg/straight-line {:width  "1px"
-                            :height "42px"})]
-       (component/build category-filters/organism category-filters {}))
-     (component/build service-card-listing/organism service-card-listing {})
-     (component/build product-card-listing/organism product-card-listing {})]
-    (when content-box
-      [:div green-divider-atom
-       (component/build content-box-organism content-box)])
-    (when expanding-content-box
-      [:div green-divider-atom
-       (component/build faq/organism expanding-content-box)])
-    (component/build layered/shop-contact contact-query)]
-   (component/build footer-organism footer)])
+   (component/build category-hero/organism category-hero)
+   (vertical-squiggle-atom "-36px")
+   [:div.max-960.mx-auto
+    (component/build drill-category-list-organism drill-category-list)
+    (component/build drill-category-grid-organism drill-category-grid)]
+   [:div.mb10 purple-divider-atom
+    (component/build molecules/stylist-bar queried-data {})]
+   [:div.max-960.mx-auto
+    (when-let [title (:title category-filters)]
+      [:div.canela.title-1.center.mb2 title])
+    (if (-> category-filters :tabs :tabs/elements empty?)
+      [:div.stroke-s-color.center
+       (svg/straight-line {:width  "1px"
+                           :height "42px"})]
+      (component/build category-filters/organism category-filters {}))
+    (component/build service-card-listing/organism service-card-listing {})
+    (component/build product-card-listing/organism product-card-listing {})]
+   (when content-box
+     [:div green-divider-atom
+      (component/build content-box-organism content-box)])
+   (when expanding-content-box
+     [:div green-divider-atom
+      (component/build faq/organism expanding-content-box)])
+   (component/build layered/shop-contact contact-query)])
 
 (defn category->subcategories
   "Returns a hydrated sequence of subcategories for the given category"
@@ -306,9 +291,7 @@
         servicing-stylist                   (get-in app-state adventure.keypaths/adventure-servicing-stylist)
         service-category-page?              (contains? (:catalog/department interstitial-category) "service")]
     (cond->
-        {:header                 {}
-         :footer                 {}
-         :category-hero          (category-hero-query interstitial-category)
+        {:category-hero          (category-hero-query interstitial-category)
          :content-box            (when (and shop? (:content-block/type interstitial-category))
                                    {:title    (:content-block/title interstitial-category)
                                     :header   (:content-block/header interstitial-category)
@@ -329,9 +312,7 @@
          :service-card-listing   (when service-category-page?
                                    (service-card-listing/query app-state
                                                                interstitial-category
-                                                               category-products-matching-criteria))
-         :service-category-page? service-category-page?
-         :stylist-mismatch?      stylist-mismatch?}
+                                                               category-products-matching-criteria))}
 
       (= :grid (:subcategories/layout interstitial-category))
       (merge {:drill-category-grid {:drill-category-grid/values (mapv category->drill-category-grid-entry subcategories)
