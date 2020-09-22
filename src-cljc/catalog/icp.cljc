@@ -274,6 +274,16 @@
          vals
          (sort-by (comp category-order :catalog/category-id)))) )
 
+(defn answer->content [answer]
+  (->> answer
+       (map-indexed (fn [i {blocks :paragraph}]
+                      [:p.h6 {:key (str "paragraph-" i)}
+                       (map-indexed (fn [j {:keys [text url]}]
+                                      (if url
+                                        [:a.p-color {:href url :key (str "text-" j)} text]
+                                        [:span {:key (str "text-" j)} text]))
+                                    blocks)]))))
+
 (defn query
   [app-state]
   (let [interstitial-category               (accessors.categories/current-category app-state)
@@ -293,7 +303,11 @@
         shop?                               (= "shop" (get-in app-state keypaths/store-slug))
         stylist-mismatch?                   (experiments/stylist-mismatch? app-state)
         servicing-stylist                   (get-in app-state adventure.keypaths/adventure-servicing-stylist)
-        service-category-page?              (contains? (:catalog/department interstitial-category) "service")]
+        service-category-page?              (contains? (:catalog/department interstitial-category) "service")
+        path                                (:path (get-in app-state keypaths/navigation-uri))
+        faq                                 (->> (get-in app-state keypaths/cms-faq)
+                                                 (filter (comp #{path} :path))
+                                                 first)]
     (cond->
         {:category-hero          (category-hero-query interstitial-category)
          :content-box            (when (and shop? (:content-block/type interstitial-category))
@@ -301,9 +315,11 @@
                                     :header   (:content-block/header interstitial-category)
                                     :summary  (:content-block/summary interstitial-category)
                                     :sections (:content-block/sections interstitial-category)})
-         :expanding-content-box  (when (:expanding-content-block/sections interstitial-category)
+         :expanding-content-box  (when-let [{:keys [question-answers]} faq]
                                    {:faq/expanded-index (get-in app-state keypaths/faq-expanded-section)
-                                    :list/sections (:expanding-content-block/sections interstitial-category)})
+                                    :list/sections (for [{:keys [question answer]} question-answers]
+                                                     {:faq/title (:text question)
+                                                      :faq/content (answer->content answer)})})
          :category-filters       (category-filters/query app-state
                                                          interstitial-category
                                                          loaded-category-products
@@ -311,13 +327,18 @@
                                                          selections)
          :how-it-works           (when (:how-it-works/title-primary interstitial-category) interstitial-category)
          :product-card-listing   (when-not service-category-page?
-                                    (product-card-listing/query app-state
-                                                                interstitial-category
-                                                                category-products-matching-criteria))
+                                   (product-card-listing/query app-state
+                                                               interstitial-category
+                                                               category-products-matching-criteria))
          :service-card-listing   (when service-category-page?
                                    (service-card-listing/query app-state
                                                                interstitial-category
                                                                category-products-matching-criteria))}
+
+      ;; GROT once category 30 gets added to Contentful
+      (:expanding-content-block/sections interstitial-category)
+      (merge {:expanding-content-box {:faq/expanded-index (get-in app-state keypaths/faq-expanded-section)
+                                      :list/sections      (:expanding-content-block/sections interstitial-category)}})
 
       (= :grid (:subcategories/layout interstitial-category))
       (merge {:drill-category-grid {:drill-category-grid/values (mapv category->drill-category-grid-entry subcategories)
