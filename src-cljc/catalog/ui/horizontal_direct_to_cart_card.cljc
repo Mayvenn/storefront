@@ -31,7 +31,10 @@
     (cond-> {:card-image/src                                      (str (:url image) "-/format/auto/" (:filename image))
              :card/type                                           :horizontal-direct-to-cart-card
              :sort/value                                          [card-disabled?
-                                                                   (if (contains? (:service/category service-sku) "install") 1 2)
+                                                                   (case (first (:service/category service-sku))
+                                                                     "install" 1
+                                                                     "construction" 2
+                                                                     3)
                                                                    (:sku/price service-sku)]
              :card-image/alt                                      (:alt image)
              :react/key                                           (str "product-" product-slug)
