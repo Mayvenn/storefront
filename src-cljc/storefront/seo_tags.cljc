@@ -116,7 +116,12 @@
        set))
 
 (defn category-tags [data]
-  (let [categories            (get-in data keypaths/categories)
+  (let [path                  (:path (get-in data keypaths/navigation-uri))
+        faq                   (->> (get-in data keypaths/cms-faq)
+                                   (filter (comp #{path} :path))
+                                   first)
+        shop?                 (= "shop" (get-in data keypaths/store-slug))
+        categories            (get-in data keypaths/categories)
         canonical-category-id (:category-id (accessors.categories/canonical-category-data
                                              categories
                                              (accessors.categories/id->category
@@ -154,13 +159,24 @@
         page-meta-description (if (and can-use-seo-template? selected-facet-string)
                                 (categories/render-template description-template (assoc category :computed/selected-facet-string selected-facet-string))
                                 (:page.meta/description category))]
-    {:title          page-title
-     :description    page-meta-description
-     :og-title       (:opengraph/title category)
-     :og-type        "product"
-     :og-image       (str "http:" (:category/image-url category))
-     :og-description (:opengraph/description category)
-     :no-index?      (not indexable?)}))
+    {:title           page-title
+     :description     page-meta-description
+     :og-title        (:opengraph/title category)
+     :og-type         "product"
+     :og-image        (str "http:" (:category/image-url category))
+     :og-description  (:opengraph/description category)
+     :no-index?       (not indexable?)
+     :structured-data (when (and shop? faq)
+                        (let [{:keys [question-answers]} faq]
+                          {"@type"     "FAQPage"
+                           :mainEntity (for [{:keys [question answer]} question-answers]
+                                         {"@type"         "Question"
+                                          :name           (:text question)
+                                          :acceptedAnswer {"@type" "Answer"
+                                                           :text   (->> answer
+                                                                        (mapcat :paragraph)
+                                                                        (map :text)
+                                                                        (string/join " "))}})}))}))
 
 (defn ^:private derive-canonical-uri-query-params-category-pages
   [uri data]

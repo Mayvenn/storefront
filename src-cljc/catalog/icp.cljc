@@ -315,11 +315,12 @@
                                     :header   (:content-block/header interstitial-category)
                                     :summary  (:content-block/summary interstitial-category)
                                     :sections (:content-block/sections interstitial-category)})
-         :expanding-content-box  (when-let [{:keys [question-answers]} faq]
-                                   {:faq/expanded-index (get-in app-state keypaths/faq-expanded-section)
-                                    :list/sections (for [{:keys [question answer]} question-answers]
-                                                     {:faq/title (:text question)
-                                                      :faq/content (answer->content answer)})})
+         :expanding-content-box  (when (and shop? faq)
+                                   (let [{:keys [question-answers]} faq]
+                                     {:faq/expanded-index (get-in app-state keypaths/faq-expanded-section)
+                                      :list/sections (for [{:keys [question answer]} question-answers]
+                                                       {:faq/title (:text question)
+                                                        :faq/content (answer->content answer)})}))
          :category-filters       (category-filters/query app-state
                                                          interstitial-category
                                                          loaded-category-products
