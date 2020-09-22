@@ -43,16 +43,6 @@
              str
              tmpl))
 
-(def texture-subsections
-  ["straight"
-   "yaki-straight"
-   "kinky-straight"
-   "body-wave"
-   "loose-wave"
-   "water-wave"
-   "deep-wave"
-   "curly"])
-
 (def texture-subsection-selectors
   [#:subsection{:title "Straight"       :selector #:hair{:texture #{"straight"}}}
    #:subsection{:title "Yaki Straight"  :selector #:hair{:texture #{"yaki-straight"}}}
