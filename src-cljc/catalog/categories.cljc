@@ -1007,7 +1007,7 @@
       :page/icp?                          false
       :page/shop-only?                    true
       :category/new?                      true
-      :copy/title                         "FREE Custom Wig Services"
+      :copy/title                         "Free Custom Wig Services"
       :copy/icp-action-label              "Learn More"
       :page/slug                          "free-custom-wigs"
       :page/title                         "Custom Wig: Design Your Own Handmade Wig Unit | Mayvenn"
@@ -1055,7 +1055,7 @@
       :page/icp?                          false
       :page/shop-only?                    true
       :category/new?                      true
-      :copy/title                         "FREE Weave Install Services"
+      :copy/title                         "Free Weave Install Services"
       :copy/icp-action-label              "Learn More"
       :page/slug                          "free-weave-installation"
       :page/title                         "Weave Installation: Sew-In Weave Install | Mayvenn"
@@ -1105,7 +1105,7 @@
     :selector/electives                 []
     :page/icp?                          true
     :category/new?                      true
-    :copy/title                         "FREE Mayvenn Services"
+    :copy/title                         "Free Mayvenn Services"
     :copy/icp-action-label              "Learn More"
     :page/slug                          "free-salon-services"
     :page/title                         "Free Salon Service Menu | Mayvenn"
@@ -1120,8 +1120,8 @@
     :subcategories/layout               :list
 
     :product-list/title               "All Free Services"
-    :subsections/subsection-selectors [#:subsection{:title "FREE Weave Install Services" :selector #:service{:category #{"install"}}}
-                                       #:subsection{:title "FREE Custom Wig Services" :selector #:service{:category #{"construction" "customization"}}}]
+    :subsections/subsection-selectors [#:subsection{:title "Free Weave Install Services" :selector #:service{:category #{"install"}}}
+                                       #:subsection{:title "Free Custom Wig Services" :selector #:service{:category #{"construction" "customization"}}}]
 
     :how-it-works/title-primary       "Your hair deserves a Mayvenn–Certified Stylist."
     :how-it-works/title-secondary     "Here’s how it works."
@@ -1168,7 +1168,7 @@
 
     :subcategories/ids                ["31" "35"]
     :subcategories/layout             :list
-    :subsections/subsection-selectors [{:subsection/title    "FREE Mayvenn Services"
+    :subsections/subsection-selectors [{:subsection/title    "Free Mayvenn Services"
                                         :subsection/selector {:promo.mayvenn-install/discountable #{true}}}
                                        {:subsection/title    "À la carte service"
                                         :subsection/selector {:promo.mayvenn-install/discountable #{false}}}]
