@@ -6,12 +6,12 @@
 
 (defn section
   "A data constructor for convenience"
-  [title & paragraphs]
+  [title & content]
   {:title      title
-   :paragraphs paragraphs})
+   :content content})
 
 (defn- section-element
-  [expanded? index title paragraphs section-click-event]
+  [expanded? index title content section-click-event]
   (component/html
    [:div.h5.py1 {:key (str "accordion-" index)}
     [:div.pointer.col-12.h5.py2.flex.items-center.justify-center
@@ -28,9 +28,9 @@
               (when (or expanded? #?(:clj true)) ;; always show for server-side rendered html
                 (component/html
                  [:div.mr8
-                  [:p.py2.h6 paragraphs]])))]))
+                  [:p.py2.h6 content]])))]))
 
 (defcomponent component [{:keys [expanded-indices sections]} owner {:keys [section-click-event]}]
   [:div
-   (for [[idx {:keys [title paragraphs]}] (map-indexed vector sections)]
-     ^:inline (section-element (contains? (set expanded-indices) idx) idx title paragraphs section-click-event))])
+   (for [[idx {:keys [title content]}] (map-indexed vector sections)]
+     ^:inline (section-element (contains? (set expanded-indices) idx) idx title content section-click-event))])

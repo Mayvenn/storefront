@@ -13,8 +13,8 @@
       (c/build accordion/component
                {:expanded-indices #{expanded-index}
                 :sections         (mapv
-                                   (fn [{:faq/keys [title paragraphs]}]
+                                   (fn [{:faq/keys [title content]}]
                                      {:title      [:content-1 title]
-                                      :paragraphs paragraphs})
+                                      :content content})
                                    sections)}
                {:opts {:section-click-event e/faq-section-selected}})]]))

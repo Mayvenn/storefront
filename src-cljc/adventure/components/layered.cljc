@@ -152,9 +152,9 @@
     accordion/component
     {:expanded-indices #{expanded-index}
      :sections         (mapv
-                        (fn [{:keys [title paragraphs]}]
+                        (fn [{:keys [title content]}]
                           {:title      [:content-1 title]
-                           :paragraphs paragraphs})
+                           :content content})
                         sections)}
     {:opts {:section-click-event events/faq-section-selected}})])
 

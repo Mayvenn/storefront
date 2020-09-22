@@ -284,11 +284,11 @@
         :structured-data (when (= "shop" (get-in data keypaths/store-slug))
                            {"@type"     "FAQPage"
                             :mainEntity (mapv (fn
-                                                [{:faq/keys [title paragraphs]}]
+                                                [{:faq/keys [title content]}]
                                                 {"@type"         "Question"
                                                  :name           title
                                                  :acceptedAnswer {"@type" "Answer"
-                                                                  :text   (string/join " " paragraphs)}})
+                                                                  :text   content}})
                                               homepage.ui/faq-sections-data)})}
 
        events/navigate-info-certified-stylists
