@@ -28,8 +28,7 @@
               (when (or expanded? #?(:clj true)) ;; always show for server-side rendered html
                 (component/html
                  [:div.mr8
-                  (for [[i paragraph] (map-indexed vector paragraphs)]
-                    [:p.py2.h6 {:key (str i)} paragraph])])))]))
+                  [:p.py2.h6 paragraphs]])))]))
 
 (defcomponent component [{:keys [expanded-indices sections]} owner {:keys [section-click-event]}]
   [:div
