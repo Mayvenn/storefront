@@ -8,6 +8,7 @@
             [catalog.ui.molecules :as molecules]
             [catalog.ui.product-card-listing :as product-card-listing]
             [catalog.ui.service-card-listing :as service-card-listing]
+            [catalog.ui.how-it-works :as how-it-works]
             [homepage.ui.faq :as faq]
             spice.core
             [spice.maps :as maps]
@@ -253,6 +254,9 @@
       (component/build category-filters/organism category-filters {}))
     (component/build service-card-listing/organism service-card-listing {})
     (component/build product-card-listing/organism product-card-listing {})]
+   (when (:how-it-works queried-data)
+     [:div.col-10.mx-auto.mt6
+      (component/build how-it-works/organism queried-data)])
    (when content-box
      [:div green-divider-atom
       (component/build content-box-organism content-box)])
@@ -305,6 +309,7 @@
                                                          loaded-category-products
                                                          category-products-matching-criteria
                                                          selections)
+         :how-it-works           (when (:how-it-works/title-primary interstitial-category) interstitial-category)
          :product-card-listing   (when-not service-category-page?
                                     (product-card-listing/query app-state
                                                                 interstitial-category

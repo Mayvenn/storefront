@@ -4,6 +4,7 @@
             [catalog.ui.vertical-direct-to-cart-card :as vertical-direct-to-cart-card]
             [catalog.ui.horizontal-direct-to-cart-card :as horizontal-direct-to-cart-card]
             clojure.set
+            clojure.string
             [spice.maps :as maps]
             [storefront.accessors.orders :as orders]
             [storefront.component :as c]
@@ -13,7 +14,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
             [stylist-matching.search.accessors.filters :as stylist-filters]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.accessors.experiments :as experiments]
+            [spice.selector :as selector]))
 
 (defn service->card
   [data
@@ -54,7 +56,7 @@
       ^:inline (card->component card))]])
 
 (c/defcomponent organism
-  [{:keys [id subsections title no-cards? loading-products?]} _ _]
+  [{:keys [id subsections no-cards? loading-products?]} _ _]
   (when id
     [:div.px2.pb4
      (cond
@@ -68,30 +70,36 @@
                                           (c/component-id (str "subsection-" subsection-key))))
                                subsections))]))
 
+(def ^:private select
+  (partial selector/match-all {:selector/strict? true}))
+
+(defn ^:private subsections-query
+  [data {:subsections/keys [subsection-selectors]} services]
+  (if (seq subsection-selectors)
+    (keep
+     (fn [{:subsection/keys [title selector]}]
+       (when-let [service-cards (->> (select selector services)
+                                     (mapv (partial service->card data))
+                                     (sort-by :sort/value)
+                                     not-empty)]
+         {:service-cards  service-cards
+          :subsection-key (clojure.string/replace title #" " "-")
+          :title/primary  title}))
+     subsection-selectors)
+    [{:service-cards  (->> services
+                           (mapv (partial service->card data))
+                           (sort-by :sort/value))
+      :subsection-key :no-subsections}]))
+
 (defn query
   [app-state category matching-services]
-  (let [category-selector        (:subsections/category-selector category)
-        subsection-facet-options (->> (get-in app-state keypaths/v2-facets)
-                                      (filter (comp #{category-selector} :facet/slug))
-                                      first
-                                      :facet/options
-                                      (maps/index-by :option/slug))
-        servicing-stylist        (get-in app-state adventure.keypaths/adventure-servicing-stylist)
-        subsections              (->> matching-services
-                                      (map #(assoc %
-                                                   :stylist-provides-service
-                                                   (stylist-filters/stylist-provides-service? servicing-stylist %)))
-                                      (group-by (if category-selector
-                                                  (comp first category-selector)
-                                                  (constantly :no-subsections)))
-                                      (map (fn [[subsection-key services]]
-                                             (let [facet (get subsection-facet-options subsection-key)]
-                                               {:title/primary  (:option/name facet)
-                                                :subsection-key subsection-key
-                                                :service-cards  (->> services
-                                                                     (map #(service->card app-state %))
-                                                                     (sort-by :sort/value))}))))
-        no-cards?                (empty? subsections)]
+  (let [servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        subsections       (->> matching-services
+                               (map #(assoc %
+                                            :stylist-provides-service
+                                            (stylist-filters/stylist-provides-service? servicing-stylist %)))
+                               (subsections-query app-state category))
+        no-cards?         (empty? subsections)]
     {:id                "service-card-listing"
      :subsections       subsections
      :no-cards?         no-cards?

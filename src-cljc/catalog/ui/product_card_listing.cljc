@@ -1,46 +1,35 @@
 (ns catalog.ui.product-card-listing
   (:require [catalog.skuers :as skuers]
             [catalog.ui.product-card :as product-card]
-            [catalog.ui.vertical-direct-to-cart-card :as vertical-direct-to-cart-card]
-            [catalog.ui.horizontal-direct-to-cart-card :as horizontal-direct-to-cart-card]
             clojure.set
-            [spice.maps :as maps]
+            clojure.string
+            [spice.selector :as selector]
             [storefront.component :as c]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]))
 
-(defn ^:private subsections-query
-  [facets
-   {:keys [subsections/category-selector subsections]}
-   products-matching-criteria
-   data]
-  (let [subsection-facet-options (when category-selector
-                                   (->> facets
-                                        (filter (comp #{category-selector} :facet/slug))
-                                        first
-                                        :facet/options
-                                        (maps/index-by :option/slug)))
-        subsection-order         (->> (map-indexed vector subsections)
-                                      (into {})
-                                      clojure.set/map-invert)]
-    (->> products-matching-criteria
-         (group-by (if category-selector
-                     (comp first category-selector)
-                     (constantly :no-subsections)))
+(def ^:private select
+  (partial selector/match-all {:selector/strict? true}))
 
-         (into []
-               (comp
-                (map (fn [[subsection-key products]]
-                       {:title/primary (:option/name (get subsection-facet-options subsection-key))
-                        :products       products
-                        :subsection-key subsection-key}))
-                (map #(update % :products (partial map (partial product-card/query data))))
-                (map #(clojure.set/rename-keys % {:products :product-cards}))
-                (map #(update % :product-cards (partial sort-by :sort/value)))))
-         (sort-by (comp subsection-order :subsection-key)))))
+(defn ^:private subsections-query
+  [data
+   {:subsections/keys [subsection-selectors]}
+   products-matching-criteria]
+  (if (seq subsection-selectors)
+    (keep
+     (fn [{:subsection/keys [title selector]}]
+       (when-let [product-cards (->> products-matching-criteria
+                                     (select selector)
+                                     (mapv (partial product-card/query data))
+                                     not-empty)]
+         {:product-cards  product-cards
+          :subsection-key (clojure.string/replace title #" " "-")
+          :title/primary  title}))
+     subsection-selectors)
+    [{:product-cards  (->> products-matching-criteria (mapv (partial product-card/query data)))
+      :subsection-key :no-subsections}]))
 
 (c/defcomponent ^:private product-cards-empty-state
   [_ _ _]
@@ -52,7 +41,7 @@
     " to see more hair."]])
 
 (c/defcomponent ^:private product-list-subsection-component
-  [{:keys [product-cards subsection-key] primary-title :title/primary} _ {:keys [id]}]
+  [{:keys [product-cards] primary-title :title/primary} _ {:keys [id]}]
   [:div.mb6
    {:id id :data-test id :key id}
    (when primary-title
@@ -62,7 +51,7 @@
       ^:inline (product-card/organism card))]])
 
 (c/defcomponent organism
-  [{:keys [id subsections title no-product-cards? loading-products?]} _ _]
+  [{:keys [id subsections no-product-cards? loading-products?]} _ _]
   (when id
     [:div.px2.pb4.pt6
      (cond
@@ -78,12 +67,10 @@
 
 (defn query
   [app-state category products-matching-filter-selections]
-  (let [facets            (maps/index-by :facet/slug (get-in app-state keypaths/v2-facets))
-        subsections       (subsections-query
-                                    (vals facets)
-                                    category
-                                    products-matching-filter-selections
-                                    app-state)
+  (let [subsections       (subsections-query
+                           app-state
+                           category
+                           products-matching-filter-selections)
         no-product-cards? (empty? (mapcat :product-cards subsections))]
     {:id                "product-card-listing"
      :subsections       subsections
