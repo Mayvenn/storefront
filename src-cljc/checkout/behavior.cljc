@@ -4,16 +4,14 @@
                        [storefront.accessors.stylist-urls :as stylist-urls]
                        [storefront.api :as api]
                        [storefront.config :as config]
-                       [storefront.history :as history]])
+                       [storefront.history :as history]
+                       [storefront.accessors.experiments :as experiments]])
             [api.orders :as api.orders]
-            [storefront.accessors.auth :as auth]
             [storefront.accessors.orders :as orders]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.messages :as messages]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.transitions :as transitions]))
+            [storefront.platform.messages :as messages]))
 
 (defn ^:private current-order-has-addons
   [app-state]
@@ -24,15 +22,6 @@
            not-empty))
 
 ;; == /checkout/add page ==
-
-(defmethod effects/perform-effects events/api-success-bulk-add-to-bag-checkout-add
-  [_ event args previous-app-state app-state]
-  #?(:cljs
-     (if (-> app-state
-             auth/signed-in
-             ::auth/at-all)
-       (history/enqueue-navigate events/navigate-checkout-address {})
-       (history/enqueue-navigate events/navigate-checkout-returning-or-guest {}))))
 
 (defmethod effects/perform-effects events/navigate-checkout-add
   [_ event {:keys [navigate/caused-by]} previous-app-state app-state]

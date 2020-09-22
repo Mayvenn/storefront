@@ -188,7 +188,6 @@
 (defpath control-add-to-bag)
 (defpath control-bulk-add-to-bag)
 (defpath api-success-bulk-add-to-bag)
-(defpath api-success-bulk-add-to-bag-checkout-add)
 
 (defpath control-add-sku-to-bag)
 (defpath control-suggested-add-to-bag)
