@@ -61,13 +61,10 @@
 
 (c/defcomponent ^:private template
   [{:keys [category-hero
-           how-it-works
            content-box
            category-filters
            service-card-listing
-           product-card-listing
-           service-category-page?
-           stylist-mismatch?] :as queried-data} _ _]
+           product-card-listing] :as queried-data} _ _]
   [:div
    (c/build category-hero/organism category-hero)
    (c/build molecules/stylist-bar queried-data {})
@@ -86,9 +83,9 @@
       (c/build how-it-works/organism queried-data)])])
 
 (defn category-hero-query
-  [{:copy/keys [title description learn-more-target]
-    icon-uri   :icon
-    new?       :category/new?}]
+  [{:copy/keys     [title learn-more-target]
+    :category/keys [description new?]
+    icon-uri       :icon}]
   (cond-> {:category-hero.title/primary title
            :category-hero.body/primary  description}
 

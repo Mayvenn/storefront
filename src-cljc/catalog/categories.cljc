@@ -44,14 +44,14 @@
              tmpl))
 
 (def texture-subsection-selectors
-  [#:subsection{:title "Straight"       :selector #:hair{:texture #{"straight"}}}
-   #:subsection{:title "Yaki Straight"  :selector #:hair{:texture #{"yaki-straight"}}}
+  [#:subsection{:title "Straight" :selector #:hair{:texture #{"straight"}}}
+   #:subsection{:title "Yaki Straight" :selector #:hair{:texture #{"yaki-straight"}}}
    #:subsection{:title "Kinky Straight" :selector #:hair{:texture #{"kinky-straight"}}}
-   #:subsection{:title "Body Wave"      :selector #:hair{:texture #{"body-wave"}}}
-   #:subsection{:title "Loose Wave"     :selector #:hair{:texture #{"loose-wave"}}}
-   #:subsection{:title "Water Wave"     :selector #:hair{:texture #{"water-wave"}}}
-   #:subsection{:title "Deep Wave"      :selector #:hair{:texture #{"deep-wave"}}}
-   #:subsection{:title "Curly"          :selector #:hair{:texture #{"curly"}}}])
+   #:subsection{:title "Body Wave" :selector #:hair{:texture #{"body-wave"}}}
+   #:subsection{:title "Loose Wave" :selector #:hair{:texture #{"loose-wave"}}}
+   #:subsection{:title "Water Wave" :selector #:hair{:texture #{"water-wave"}}}
+   #:subsection{:title "Deep Wave" :selector #:hair{:texture #{"deep-wave"}}}
+   #:subsection{:title "Curly" :selector #:hair{:texture #{"curly"}}}])
 
 (def clip-in-tape-in-templates
   {:page/title-template            [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]
@@ -128,7 +128,7 @@
            :homepage.ui-v2020-07/image-id    "27e942b0-136c-4f7d-8b7b-ca98869fa272"
            :footer/order                     5
            :footer/title                     "Closures"
-           :copy/description                 (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+           :category/description             (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                                    "Our collection of closures blend seamlessly with our bundles"
                                                    "and can be customized to fit your unique look.")}
           (category->seo "Closures"
@@ -155,8 +155,8 @@
            :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives  [:hair/origin :hair/texture]
 
-           :copy/description "Spanning your entire hairline, 360 lace frontals are the most versatile option to get your desired look, including up-dos."
-           :header/title     "Virgin 360 Frontals"}
+           :category/description "Spanning your entire hairline, 360 lace frontals are the most versatile option to get your desired look, including up-dos."
+           :header/title         "Virgin 360 Frontals"}
           (category->seo "360 Frontals"
                          (copy "Mayvenn’s virgin hair 360 frontals got you covered and come in"
                                "different variations such as Brazilian, Malaysian, straight, "
@@ -188,29 +188,25 @@
            :category/tags                 #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :selector/essentials           [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives            [:hair/origin :hair/texture :hair/color]
-           :copy/description              (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                                "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")
            :product-list/title            "Shop All Frontals"
            :subcategories/ids             ["10" "29"]
            :subcategories/layout          :list
 
-           :subsections/subsection-selectors [#:subsection{:title "360 frontals"  :selector #:hair{:family #{"360-frontals"}}}
-                                              #:subsection{:title "Frontals"      :selector #:hair{:family #{"frontals"}}}]
+           :subsections/subsection-selectors [#:subsection{:title "360 frontals" :selector #:hair{:family #{"360-frontals"}}}
+                                              #:subsection{:title "Frontals" :selector #:hair{:family #{"frontals"}}}]
 
-
-
-           :content-block/type            :about-attributes
-           :content-block/title           "Frontals 101:"
-           :content-block/header          "How to Choose Your Hair Frontal"
-           :content-block/summary         "Frontals are a great solution if you want to conceal hair loss or achieve an up-do, but how do you choose the right unit? Check out different factors to look for when picking the perfect lace frontal:"
-           :content-block/sections        [{:title "Origin"
-                                            :body  "The origin of your lace frontal will determine the thickness and density of your hair. From thick and smooth, to light and bouncy, Mayvenn offers hair frontals for every style: Brazilian, Malaysian, Peruvian, and Indian."}
-                                           {:title "Texture"
-                                            :body  "You want texture? We’ve got options. From straight to curly, deep to loose waves, our lace frontals are designed to beautifully blend with your hair bundles to create a versatile style for any occasion."}
-                                           {:title "Get Your Frontals Installed–For Free!"
-                                            :body  "Yes, that’s right–when you select your lace frontal, click the Free Install option at checkout, and we'll help you find a Mayvenn Certified Stylist near you! Your install includes a shampoo and condition, braid down, sew-in, and basic style."}
-                                           {:title "Need Help Choosing a Frontal?"
-                                            :body  "Choosing between different lace frontals, textures, and colors can be overwhelming. Whether you’re investing in a frontal for the first time or are a pro, Mayvenn’s team is ready to answer your questions. Connect with us today to learn more!"}]}
+           :content-block/type     :about-attributes
+           :content-block/title    "Frontals 101:"
+           :content-block/header   "How to Choose Your Hair Frontal"
+           :content-block/summary  "Frontals are a great solution if you want to conceal hair loss or achieve an up-do, but how do you choose the right unit? Check out different factors to look for when picking the perfect lace frontal:"
+           :content-block/sections [{:title "Origin"
+                                     :body  "The origin of your lace frontal will determine the thickness and density of your hair. From thick and smooth, to light and bouncy, Mayvenn offers hair frontals for every style: Brazilian, Malaysian, Peruvian, and Indian."}
+                                    {:title "Texture"
+                                     :body  "You want texture? We’ve got options. From straight to curly, deep to loose waves, our lace frontals are designed to beautifully blend with your hair bundles to create a versatile style for any occasion."}
+                                    {:title "Get Your Frontals Installed–For Free!"
+                                     :body  "Yes, that’s right–when you select your lace frontal, click the Free Install option at checkout, and we'll help you find a Mayvenn Certified Stylist near you! Your install includes a shampoo and condition, braid down, sew-in, and basic style."}
+                                    {:title "Need Help Choosing a Frontal?"
+                                     :body  "Choosing between different lace frontals, textures, and colors can be overwhelming. Whether you’re investing in a frontal for the first time or are a pro, Mayvenn’s team is ready to answer your questions. Connect with us today to learn more!"}]}
           (category->seo "Frontals"
                          "Get your dream hair with Mayvenn’s 100% human hair frontals that blend seamlessly with our bundles for a unique look that’s all your own."
                          "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")
@@ -231,7 +227,8 @@
            :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives       [:hair/origin :hair/texture :hair/color]
            :subcategory/image-id     "47e29e97-821e-4c20-aeac-35eadc1a653d"
-           :copy/description         "Our 13x4 inch virgin lace frontals stretch from ear-to-ear for a look that can be parted in any direction."}
+           :subcategory/description  "Our 13x4 inch virgin lace frontals stretch from ear-to-ear for a look that can be parted in any direction."
+           :category/description     "Our 13x4 inch virgin lace frontals stretch from ear-to-ear for a look that can be parted in any direction."}
           (category->seo "Lace Frontals"
                          (copy "Mayvenn’s human hair lace frontals blend in seamlessly"
                                "with our bundles and come in a variety of different"
@@ -270,10 +267,10 @@
            :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives            [:hair/family :hair/origin :hair/color :hair/base-material]
-           :copy/description              (copy "For those who want it given to them"
-                                                "straight, our collection of 100% virgin straight hair"
-                                                "is your go-to for a sleek look with"
-                                                "minimal effort.")
+           :category/description          (copy "For those who want it given to them"
+                                                    "straight, our collection of 100% virgin straight hair"
+                                                    "is your go-to for a sleek look with"
+                                                    "minimal effort.")
            :icon                          "/images/categories/straight-icon.svg"
            :subcategory/title             "Straight"
            :header/title                  "Virgin Straight"}
@@ -308,13 +305,13 @@
            :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives            [:hair/family :hair/origin]
-           :copy/description              (copy "Tired of having to break out the hot"
-                                                "tools for a textured straight look? Our Yaki"
-                                                "Straight hair collection is here to save your"
-                                                "strands! Yaki Straight hair matches the rhythm of"
-                                                "your natural hair that's been pressed straight or"
-                                                "freshly relaxed. Your flat iron has been officially"
-                                                "cancelled.")
+           :category/description          (copy "Tired of having to break out the hot"
+                                                    "tools for a textured straight look? Our Yaki"
+                                                    "Straight hair collection is here to save your"
+                                                    "strands! Yaki Straight hair matches the rhythm of"
+                                                    "your natural hair that's been pressed straight or"
+                                                    "freshly relaxed. Your flat iron has been officially"
+                                                    "cancelled.")
            :icon                          "/images/categories/yaki-straight-icon.svg"
            :subcategory/title             "Yaki Straight"
            :header/title                  "Virgin Yaki Straight"}
@@ -349,11 +346,11 @@
                                             :body  "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}
                                            {:title "Free Install"
                                             :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]
-           :copy/description              (copy "Blending is a breeze with our Kinky Straight"
-                                                "hair collection! Like a fresh blow out, the"
-                                                "Kinky Straight hair texture moves freely and gives"
-                                                "a naturally flawless look that mimics your own"
-                                                "locks.")
+           :category/description          (copy "Blending is a breeze with our Kinky Straight"
+                                                    "hair collection! Like a fresh blow out, the"
+                                                    "Kinky Straight hair texture moves freely and gives"
+                                                    "a naturally flawless look that mimics your own"
+                                                    "locks.")
            :icon                          "/images/categories/kinky-straight-icon.svg"
            :subcategory/title             "Kinky Straight"
            :header/title                  "Virgin Kinky Straight"}
@@ -388,8 +385,8 @@
                                             :body  "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}
                                            {:title "Free Install"
                                             :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]
-           :copy/description              (copy "Step into the spotlight with our collection of luscious Body Wave hair."
-                                                "Body Wave is unbelievably soft and goes from straight to wavy and back again with ease.")
+           :category/description          (copy "Step into the spotlight with our collection of luscious Body Wave hair."
+                                                    "Body Wave is unbelievably soft and goes from straight to wavy and back again with ease.")
            :icon                          "/images/categories/body-wave-icon.svg"
            :subcategory/title             "Body Wave"
            :header/title                  "Virgin Body Wave"}
@@ -423,10 +420,10 @@
                                             :body  "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}
                                            {:title "Free Install"
                                             :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]
-           :copy/description              (copy "For hair that holds a curl beautifully,"
-                                                "our collection of 100% virgin Loose Wave hair"
-                                                "is the perfect foundation for all your carefree,"
-                                                "flirty, wavy looks.")
+           :category/description          (copy "For hair that holds a curl beautifully,"
+                                                    "our collection of 100% virgin Loose Wave hair"
+                                                    "is the perfect foundation for all your carefree,"
+                                                    "flirty, wavy looks.")
            :icon                          "/images/categories/loose-wave-icon.svg"
            :subcategory/title             "Loose Wave"
            :header/title                  "Virgin Loose Wave"}
@@ -449,11 +446,11 @@
            :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives            [:hair/family :hair/origin]
-           :copy/description              (copy "Ride the lush, carefree waves of the bundles,"
-                                                "closures, and frontals in our Water Wave hair"
-                                                "collection. For curls you can rock everywhere from"
-                                                "the office to your tropical vacation, make a"
-                                                "statement with Water Wave hair.")
+           :category/description          (copy "Ride the lush, carefree waves of the bundles,"
+                                                    "closures, and frontals in our Water Wave hair"
+                                                    "collection. For curls you can rock everywhere from"
+                                                    "the office to your tropical vacation, make a"
+                                                    "statement with Water Wave hair.")
            :content-block/type            :about-attributes ;; incase we have different templates in the future
            :content-block/title           "Hair Bundles 101:"
            :content-block/header          "How to Style"
@@ -488,9 +485,9 @@
            :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives            [:hair/family :hair/origin :hair/color :hair/base-material]
-           :copy/description              (copy "Reigning supreme in versatility, the Deep Wave hair collection features"
-                                                "a soft, spiral wave full of body and bounce. Our deep wave hair is perfect"
-                                                "for those who want big waves that make an even bigger splash.")
+           :category/description          (copy "Reigning supreme in versatility, the Deep Wave hair collection features"
+                                                    "a soft, spiral wave full of body and bounce. Our deep wave hair is perfect"
+                                                    "for those who want big waves that make an even bigger splash.")
            :content-block/type            :about-attributes ;; incase we have different templates in the future
            :content-block/title           "Hair Bundles 101:"
            :content-block/header          "How to Style"
@@ -526,8 +523,8 @@
            :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
            :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives            [:hair/family :hair/origin :hair/base-material]
-           :copy/description              (copy "Let your bold, beautiful curls take center stage! Our curly hair collection is a tight,"
-                                                "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")
+           :category/description          (copy "Let your bold, beautiful curls take center stage! Our curly hair collection is a tight,"
+                                                    "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")
            :content-block/type            :about-attributes ;; incase we have different templates in the future
            :content-block/title           "Hair Bundles 101:"
            :content-block/header          "How to Style"
@@ -570,11 +567,6 @@
            :seo/title            "Wigs"
            :seo/sitemap          true
 
-           ;; TODO: GROT once old category page is retired
-           :copy/description                 (copy "These units will be your go-to protective style"
-                                                   "for achieving a brand new look."
-                                                   "With options ranging from 360 to Ready to Wear,"
-                                                   "there’s a wig available for each of your alter egos.")
            :catalog/department               #{"hair"}
            :hair/family                      #{"360-wigs" "lace-front-wigs" "ready-wigs"}
            :selector/essentials              [:hair/family :catalog/department]
@@ -597,7 +589,6 @@
                                                :subsection/selector {:hair/family #{"360-wigs"}}}
                                               {:subsection/title    "Ready-to-Wear Wigs"
                                                :subsection/selector {:hair/family #{"ready-wigs"}}}]
-
 
            :content-block/type     :about-attributes ;; incase we have different templates in the future
            :content-block/title    "Wigs 101:"
@@ -627,9 +618,9 @@
            :page/slug  "virgin-lace-front-wigs"
            :seo/title  "Virgin Lace Front Wigs"
 
-           :copy/description     (copy "With the lace base in front only,"
-                                       "these are ideal for exploring new ways to part your hair."
-                                       "Ours are made with virgin lace & real human hair.")
+           :category/description (copy "With the lace base in front only,"
+                                           "these are ideal for exploring new ways to part your hair."
+                                           "Ours are made with virgin lace & real human hair.")
            :subcategory/image-id "71dcdd17-f9cc-456f-b763-2c1c047c30b4"
 
            :catalog/department  #{"hair"}
@@ -653,9 +644,9 @@
            :page/slug  "ready-wear-wigs"
            :seo/title  "Ready-to-Wear Wigs"
 
-           :copy/description     (copy "Made of authentic and high-quality human hair,"
-                                       "ready to wear wigs are a quick,"
-                                       "convenient way to change up your look instantly.")
+           :category/description (copy "Made of authentic and high-quality human hair,"
+                                           "ready to wear wigs are a quick,"
+                                           "convenient way to change up your look instantly.")
            :subcategory/image-id "a4f7ad94-3c2c-41aa-be4d-94d9d83b1602"
 
            :catalog/department             #{"hair"}
@@ -683,8 +674,8 @@
            :page/slug  "virgin-360-wigs"
            :seo/title  "Virgin 360 Lace Wigs"
 
-           :copy/description     (copy "Ideal for ponytails, these wigs are denser & fuller."
-                                       "360 wigs have lace around the entire crown of your head with a cap in the middle.")
+           :category/description (copy "Ideal for ponytails, these wigs are denser & fuller."
+                                           "360 wigs have lace around the entire crown of your head with a cap in the middle.")
            :subcategory/image-id "fe34e6e9-8927-4b62-94ac-91b37f0a137f"
 
            :catalog/department    #{"hair"}
@@ -707,24 +698,23 @@
     :catalog/department               #{"hair"}
     :category/show-title?             true
     :category/new?                    true
-    :copy/description                 "Get a free Mayvenn Service by a licensed stylist with qualifying purchases. "
+    :category/description             "Get a free Mayvenn Service by a licensed stylist with qualifying purchases. "
     :copy/learn-more-target           [events/popup-show-consolidated-cart-free-install]
     :copy/title                       "Free Service Eligible Products"
     :hair/family                      #{"bundles" "closures" "frontals" "360-frontals"}
     :page/slug                        "mayvenn-install"
     :page/title                       "Free Hair Service - Buy 3 Items for Free Service | Mayvenn"
     :page.meta/description            (copy "Buy 3 items and Mayvenn will pay for your hair service!"
-    																			  "Shop our selection of natural human hair bundles and"
-    																			  "get connected with a stylist near you.")
+                                            "Shop our selection of natural human hair bundles and"
+                                            "get connected with a stylist near you.")
     :promo.mayvenn-install/eligible   #{true}
     :opengraph/description            (copy "Buy 3 items and Mayvenn will pay for your hair service!"
-    																			  "Shop our selection of natural human hair bundles and"
-    																			  "get connected with a stylist near you.")
+                                            "Shop our selection of natural human hair bundles and"
+                                            "get connected with a stylist near you.")
     :opengraph/title                  (copy "Shop Mayvenn Hair - Buy 3 items and we'll pay for your hair service.")
     :selector/electives               [:hair/texture :hair/family :hair/origin :hair/color]
     :selector/essentials              [:catalog/department :promo.mayvenn-install/eligible]
-    :subsections/subsection-selectors texture-subsection-selectors
-    }])
+    :subsections/subsection-selectors texture-subsection-selectors}])
 
 (def human-hair-bundles
   [(merge {:catalog/category-id              "27"
@@ -740,7 +730,6 @@
            :category/description             (copy "Have a hairstyle in mind and want more volume, length, and texture? Add our 100% Virgin hair bundles."
                                                    "Purchase three high-quality human hair bundles and the install is free.")
            :category/image-url               "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"
-           :copy/description                 "For those whom want it given to them straight, our collection of 100% virgin straight hair is your go-to for a sleek look with minimal effort."
            :copy/title                       "Hair Bundles"
            :hair/family                      #{"bundles"}
            :page/icp?                        true
@@ -827,24 +816,24 @@
            :opengraph/description (copy "")
            :page/redirect?        true
            :seo/sitemap           false})
-   (merge {:catalog/category-id "12"
-           :copy/title          "Closures & Frontals"
-           :page/slug           "closures-and-frontals"
-           :catalog/department  #{"hair"}
-           :hair/family         #{"closures" "frontals" "360-frontals"}
-           :hair/color.process  #{"dyed" "natural"}
-           :hair/source         #{"virgin"}
-           :category/tags       #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
-           :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source :category/tags]
-           :hamburger/order     1
-           :selector/electives  []
-           :copy/description    (copy "Save your precious strands and top your look"
-                                      "off with the ultimate tool in protective weave"
-                                      "styling. Our collection of closures and frontals blend"
-                                      "seamlessly with our bundles and can be customized"
-                                      "to fit your unique look.")
-           :page/redirect?      true
-           :seo/sitemap         false})])
+   (merge {:catalog/category-id  "12"
+           :copy/title           "Closures & Frontals"
+           :page/slug            "closures-and-frontals"
+           :catalog/department   #{"hair"}
+           :hair/family          #{"closures" "frontals" "360-frontals"}
+           :hair/color.process   #{"dyed" "natural"}
+           :hair/source          #{"virgin"}
+           :category/tags        #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
+           :selector/essentials  [:catalog/department :hair/family :hair/color.process :hair/source :category/tags]
+           :hamburger/order      1
+           :selector/electives   []
+           :category/description (copy "Save your precious strands and top your look"
+                                          "off with the ultimate tool in protective weave"
+                                          "styling. Our collection of closures and frontals blend"
+                                          "seamlessly with our bundles and can be customized"
+                                          "to fit your unique look.")
+           :page/redirect?       true
+           :seo/sitemap          false})])
 
 (def seamless-clip-ins-category
   [(merge
@@ -858,9 +847,9 @@
 
      :subcategory/image-id "d255ccf8-75af-4729-86da-af6e15783fc2"
      :copy/title           "Clip-In Hair Extensions"
-     :copy/description     (copy "Get the hair of your dreams in an instant with our seamless clip-in extensions."
-                                  "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair."
-                                  "Ditch the tracks for a clip-in experience that is truly seamless.")
+     :category/description (copy "Get the hair of your dreams in an instant with our seamless clip-in extensions."
+                                     "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair."
+                                     "Ditch the tracks for a clip-in experience that is truly seamless.")
 
      :page/title            "Clip-In Hair Extensions: Human Hair Clip-In Extensions | Mayvenn"
      :page/slug             "seamless-clip-ins"
@@ -885,8 +874,8 @@
           :selector/essentials [:catalog/department :hair/family]
           :selector/electives  [:hair/color :hair/weight :hair/length]
 
-          :copy/title       "Tape-In Hair Extensions"
-          :copy/description "Our straight tape-in extensions lie completely flat against the head and blend seamlessly with your own hair."
+          :copy/title           "Tape-In Hair Extensions"
+          :category/description "Our straight tape-in extensions lie completely flat against the head and blend seamlessly with your own hair."
 
           :page/slug "tape-ins"
 
@@ -928,7 +917,6 @@
      :product-list/title "Shop All Hair Extensions"
 
      :page/slug                        "hair-extensions"
-     :copy/description                 ""
      :category/description             (str "Ditch the tracks and opt for hair that blends in seamlessly. "
                                             "Mayvenn human hair extensions are made with a thin polyurethane "
                                             "weft that blends with your hair for a natural look.")
@@ -979,7 +967,7 @@
     :page/title                         "À la carte Salon Services Menu | Mayvenn"
     :page.meta/description              (copy "Shop our menu of à la carte salon services for the ultimate hair install or maintenance experience."
                                               "Check out these separately priced offerings.")
-    :copy/description                   "Just looking for a salon appointment? Choose from our list of services and find a Certified Stylist in your area."
+    :category/description               "Just looking for a salon appointment? Choose from our list of services and find a Certified Stylist in your area."
     :subcategory/image-id               "ccd19d57-d6e9-42a3-bf11-bfe077f15eab"
     :seo/sitemap                        true
 
@@ -1024,7 +1012,7 @@
       :page/slug                          "free-custom-wigs"
       :page/title                         "Custom Wig: Design Your Own Handmade Wig Unit | Mayvenn"
       :page.meta/description              description
-      :copy/description                   description
+      :category/description               description
       :subcategory/image-id               "b57fef8e-0cdc-4f2a-b5cd-3e25e9a998b1"
       :seo/sitemap                        true
       ;; TODO: centralize how-it-works
@@ -1039,7 +1027,7 @@
        {:how-it-works.step.title/primary   "02"
         :how-it-works.step.title/secondary "Schedule Your Wig Measuring Appointment"
         :how-it-works.step.body/primary    (str "Our Concierge Team will assist you with scheduling your first appointment "
-                                                "to have your head measured for your handmade custom wig.") }
+                                                "to have your head measured for your handmade custom wig.")}
 
        {:how-it-works.step.title/primary   "03"
         :how-it-works.step.title/secondary "Drop Off Your Hair"
@@ -1072,7 +1060,7 @@
       :page/slug                          "free-weave-installation"
       :page/title                         "Weave Installation: Sew-In Weave Install | Mayvenn"
       :page.meta/description              description
-      :copy/description                   description
+      :category/description               description
       :subcategory/image-id               "63bfaa08-e010-46ab-b76c-5830b1507363"
       :subcategory/description            "Find a sew-in weave installation stylist at a salon near you."
       :seo/sitemap                        true
@@ -1086,25 +1074,25 @@
        {:how-it-works.step.title/primary   "02"
         :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
         :how-it-works.step.body/primary    (str "We've hand-picked thousands of talented stylists around the country. "
-                                                "Browse the stylists in your area to find your perfect match.") }
+                                                "Browse the stylists in your area to find your perfect match.")}
        {:how-it-works.step.title/primary   "03"
         :how-it-works.step.title/secondary "Schedule your appointment"
         :how-it-works.step.body/primary    (str "We’ll connect you with your stylist to set up your service. "
                                                 "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}]))
 
 (def services-faq
-    [{:faq/title      "Who is going to do my hair?",
-      :faq/paragraphs ["Mayvenn Certified Stylists have been chosen because of their professionalism, skillset, and client ratings. We’ve got a network of licensed stylists across the country who are all committed to providing you with amazing service and quality hair extensions."]}
-     {:faq/title      "What kind of hair do you offer?"
-      :faq/paragraphs ["We’ve got top of the line virgin hair in 8 different textures. In the event that you’d like to switch it up, we have pre-colored options available as well. The best part? All of our hair is quality-guaranteed."]}
-     {:faq/title      "What happens after I choose my hair?"
-      :faq/paragraphs ["After you choose your hair, you’ll be matched with a Certified Stylist of your choice. You can see the stylist’s work and their salon’s location. We’ll help you book an appointment and answer any questions you may have."]}
-     {:faq/title      "Is Mayvenn Install really a better deal?"
-      :faq/paragraphs ["Yes! It’s basically hair and service for the price of one. You can buy any 3 bundles, closures and frontals from Mayvenn, and we’ll pay for you to get your hair installed by a local stylist. That means that you’re paying $0 for your next sew-in, with no catch!"]}
-     {:faq/title      "How does this process actually work?"
-      :faq/paragraphs ["It’s super simple — after you purchase your hair, we’ll send you a pre-paid voucher that you’ll use during your appointment. When your stylist scans it, they get paid instantly by Mayvenn."]}
-     {:faq/title      "What if I want to get my hair done by another stylist? Can I still get the Mayvenn Install?"
-      :faq/paragraphs ["You must get your hair done from a Certified Stylist in order to get your hair installed for free."]}])
+  [{:faq/title      "Who is going to do my hair?",
+    :faq/paragraphs ["Mayvenn Certified Stylists have been chosen because of their professionalism, skillset, and client ratings. We’ve got a network of licensed stylists across the country who are all committed to providing you with amazing service and quality hair extensions."]}
+   {:faq/title      "What kind of hair do you offer?"
+    :faq/paragraphs ["We’ve got top of the line virgin hair in 8 different textures. In the event that you’d like to switch it up, we have pre-colored options available as well. The best part? All of our hair is quality-guaranteed."]}
+   {:faq/title      "What happens after I choose my hair?"
+    :faq/paragraphs ["After you choose your hair, you’ll be matched with a Certified Stylist of your choice. You can see the stylist’s work and their salon’s location. We’ll help you book an appointment and answer any questions you may have."]}
+   {:faq/title      "Is Mayvenn Install really a better deal?"
+    :faq/paragraphs ["Yes! It’s basically hair and service for the price of one. You can buy any 3 bundles, closures and frontals from Mayvenn, and we’ll pay for you to get your hair installed by a local stylist. That means that you’re paying $0 for your next sew-in, with no catch!"]}
+   {:faq/title      "How does this process actually work?"
+    :faq/paragraphs ["It’s super simple — after you purchase your hair, we’ll send you a pre-paid voucher that you’ll use during your appointment. When your stylist scans it, they get paid instantly by Mayvenn."]}
+   {:faq/title      "What if I want to get my hair done by another stylist? Can I still get the Mayvenn Install?"
+    :faq/paragraphs ["You must get your hair done from a Certified Stylist in order to get your hair installed for free."]}])
 
 (def mayvenn-install-services
   [{:catalog/category-id                "31"
@@ -1133,11 +1121,10 @@
 
     :product-list/title               "All Free Services"
     :subsections/subsection-selectors [#:subsection{:title "FREE Weave Install Services" :selector #:service{:category #{"install"}}}
-                                       #:subsection{:title "FREE Custom Wig Services"    :selector #:service{:category #{"construction" "customization"}}}]
+                                       #:subsection{:title "FREE Custom Wig Services" :selector #:service{:category #{"construction" "customization"}}}]
 
-
-    :how-it-works/title-primary   "Your hair deserves a Mayvenn–Certified Stylist."
-    :how-it-works/title-secondary "Here’s how it works."
+    :how-it-works/title-primary       "Your hair deserves a Mayvenn–Certified Stylist."
+    :how-it-works/title-secondary     "Here’s how it works."
     :how-it-works/step-elements
     [{:how-it-works.step.title/primary   "01"
       :how-it-works.step.title/secondary "Pick your service"
@@ -1177,8 +1164,6 @@
                                  "you to live in the full potential of your hair.")
     :page.meta/description (copy "Shop our selection of salon services for the ultimate hair install or maintenance experience."
                                  "Check out our menu to learn about these premium offerings.")
-    :copy/description      (copy "Our Mayvenn Certified Stylists are full-service hair experts, guiding"
-                                 "you to live in the full potential of your hair.")
     :product-list/title    "All Services"
 
     :subcategories/ids                ["31" "35"]
@@ -1187,7 +1172,6 @@
                                         :subsection/selector {:promo.mayvenn-install/discountable #{true}}}
                                        {:subsection/title    "À la carte service"
                                         :subsection/selector {:promo.mayvenn-install/discountable #{false}}}]
-
 
     :expanding-content-block/sections services-faq}])
 
