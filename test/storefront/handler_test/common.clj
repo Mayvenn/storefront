@@ -85,7 +85,7 @@
      :environment {:sys {:id "master", :type "Link", :linkType "Environment"}},
      :contentType {:sys {:type "Link", :linkType "ContentType", :id "faq"}}},
     :fields
-    {:faqSection "categories/24-virgin-lace-front-wigs",
+    {:faqSection "/categories/24-virgin-lace-front-wigs",
      :title "Frequently Asked Questions"}}
    {:sys
     {:space {:sys {:type "Link", :linkType "Space", :id "76m8os65degn"}},
@@ -98,7 +98,7 @@
      :environment {:sys {:id "master", :type "Link", :linkType "Environment"}},
      :contentType {:sys {:type "Link", :linkType "ContentType", :id "faq"}}},
     :fields
-    {:faqSection "categories/13-wigs",
+    {:faqSection "/categories/13-wigs",
      :title "Frequently Asked Questions",
      :questionsAnswers
      [{:sys {:type "Link", :linkType "Entry", :id "2iT7IXYUpUaUNBXzxSpot4"}}
@@ -140,6 +140,10 @@
            " isn’t as complicated as it seems. Check out our easy to follow instructions here.",
            :marks [],
            :data {}}],
+         :data {}}
+        {:nodeType "paragraph",
+         :content
+         [{:nodeType "text", :value "Paragraph 2", :marks [], :data {}}],
          :data {}}]}}}
     {:sys
      {:space {:sys {:type "Link", :linkType "Space", :id "76m8os65degn"}},

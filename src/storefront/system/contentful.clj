@@ -128,19 +128,20 @@
          (walk/postwalk (replace-data assets))
          (mapv (comp maps/kebabify :fields)))))
 
-(defn format-answer [answer]
-  (->> answer
-       :content
-       first
-       :content
-       (reduce
-        (fn [result {:keys [node-type content data value] :as node}]
-          (cond (= node-type "text")
-                (conj result {:text value})
-                (= node-type "hyperlink")
-                (conj result {:text (-> content first :value)
-                              :url  (-> data :uri)})))
-        [])))
+(defn format-answer [{:as answer :keys [content]}]
+  (mapv (fn [paragraph]
+          {:paragraph
+           (->> paragraph
+                :content
+                (map
+                 (fn [{:keys [node-type content data value] :as node}]
+                   (cond (= node-type "text")
+                         {:text value}
+
+                         (= node-type "hyperlink")
+                         {:text (-> content first :value)
+                          :url  (-> data :uri)}))))})
+       content))
 
 (defn do-fetch-entries
   ([contentful content-params]
@@ -199,12 +200,18 @@
 
                     (= :faq content-type)
                     (some->> body
-                            resolve-all-collection
+                             resolve-all-collection
                              (mapv extract-fields)
                              walk/keywordize-keys
                              (mapv (juxt :faq-section :questions-answers))
-                             (map item-tx-fn)
-                             (into {})
+                             (map (fn [[faq-section questions-answers]]
+                                    {:path             faq-section
+                                     :question-answers (reduce
+                                                        (fn [result {:keys [question answer] :as qa}]
+                                                          (conj result {:question {:text question}
+                                                                        :answer   (format-answer answer)}))
+                                                        []
+                                                        questions-answers)}))
                              (assoc {} content-type))
 
                     :else
@@ -241,19 +248,11 @@
                                :primary-key-fn   (comp keyword :experience)
                                :item-tx-fn       identity
                                :collection-tx-fn identity}
-                              {:content-type     :faq
-                               :latest?          false
-                               :exists           ["fields.faqSection"]
-                               :select           ["fields.faqSection"
-                                                  "fields.questionsAnswers"]
-                               :item-tx-fn (fn [f]
-                                             (let [[faq-section questions-answers] f]
-                                               {(keyword faq-section) (reduce
-                                                                       (fn [result {:keys [question answer] :as qa}]
-                                                                         (conj result {:question {:text question}
-                                                                                       :answer   (format-answer answer)}))
-                                                                       []
-                                                                       questions-answers)}))}
+                              {:content-type :faq
+                               :latest?      false
+                               :exists       ["fields.faqSection"]
+                               :select       ["fields.faqSection"
+                                              "fields.questionsAnswers"]}
                               {:content-type :mayvennMadePage
                                :latest?      true}
                               {:content-type :advertisedPromo
