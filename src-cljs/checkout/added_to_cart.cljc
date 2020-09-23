@@ -1,5 +1,6 @@
 (ns checkout.added-to-cart
-  (:require #?@(:cljs [[storefront.frontend-trackings :as frontend-trackings]
+  (:require #?@(:cljs [[storefront.browser.tags :as tags]
+                       [storefront.frontend-trackings :as frontend-trackings]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.history :as history]])
             api.orders
@@ -60,9 +61,11 @@
 (defmethod storefront.effects/perform-effects e/navigate-added-to-cart
   [_ _ _ _ app-state]
   #?(:cljs
-     (let [previous-nav (-> (get-in app-state keypaths/navigation-undo-stack) first :navigation-message)]
-       (when (empty? (get-in app-state keypaths/cart-recently-added-skus))
-         (apply history/enqueue-redirect (or previous-nav [e/navigate-home]))))))
+     (do
+       (tags/add-classname ".kustomer-app-icon" "hide")
+       (let [previous-nav (-> (get-in app-state keypaths/navigation-undo-stack) first :navigation-message)]
+         (when (empty? (get-in app-state keypaths/cart-recently-added-skus))
+           (apply history/enqueue-redirect (or previous-nav [e/navigate-home])))))))
 
 (defmethod storefront.effects/perform-effects e/control-cart-interstitial-view-cart
   [_ _ _ _ _]
