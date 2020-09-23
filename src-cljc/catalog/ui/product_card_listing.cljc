@@ -23,12 +23,15 @@
        (when-let [product-cards (->> products-matching-criteria
                                      (select selector)
                                      (mapv (partial product-card/query data))
+                                     (sort-by :sort/value)
                                      not-empty)]
          {:product-cards  product-cards
           :subsection-key (clojure.string/replace title #" " "-")
           :title/primary  title}))
      subsection-selectors)
-    [{:product-cards  (->> products-matching-criteria (mapv (partial product-card/query data)))
+    [{:product-cards  (->> products-matching-criteria
+                           (mapv (partial product-card/query data))
+                           (sort-by :sort/value))
       :subsection-key :no-subsections}]))
 
 (c/defcomponent ^:private product-cards-empty-state
