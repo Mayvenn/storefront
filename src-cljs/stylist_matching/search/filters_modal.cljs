@@ -207,8 +207,7 @@
 
 (defmethod effects/perform-effects events/control-stylist-search-filters-dismiss
   [_ event args previous-app-state app-state]
-  (when (tags/contains-classname ".kustomer-app-icon" "hide")
-    (tags/remove-classname ".kustomer-app-icon" "hide"))
+  (tags/remove-classname ".kustomer-app-icon" "hide")
   (messages/handle-message events/stylist-search-filter-menu-close))
 
 (defmethod transitions/transition-state events/stylist-search-filter-menu-close

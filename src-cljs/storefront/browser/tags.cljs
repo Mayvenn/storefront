@@ -78,9 +78,5 @@
 (defn remove-classname
   [selector classname]
   (when-let [element (.querySelector js/document selector)]
-    (classlist/remove element classname)))
-
-(defn contains-classname
-  [selector classname]
-  (when-let [element (.querySelector js/document selector)]
-    (classlist/contains element classname)))
+    (when (classlist/contains element classname)
+      (classlist/remove element classname))))

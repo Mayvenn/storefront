@@ -204,8 +204,7 @@
                                    (= (dissoc previous-nav-args :query-params)
                                       (dissoc current-nav-args  :query-params)))
         module-load?          (= caused-by :module-load)]
-    (when (tags/contains-classname ".kustomer-app-icon" "hide")
-      (tags/remove-classname ".kustomer-app-icon" "hide"))
+    (tags/remove-classname ".kustomer-app-icon" "hide")
     (when (get-in app-state promotion-helper.keypaths/ui-promotion-helper-opened)
       (messages/handle-message promotion-helper/closed {:event/source event}))
 
