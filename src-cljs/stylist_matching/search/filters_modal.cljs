@@ -163,9 +163,42 @@
                                            :long (:longitude selected-location)})
                                    (dissoc :preferred-services))})))
 
+(def select (partial selector/match-all {:selector/strict? true}))
+
+(defn select-first
+  [criteria coll]
+  (first (sequence
+          (comp
+           (selector/match-all {:selector/strict? true} criteria)
+           (take 1))
+          coll)))
+
 (defmethod transitions/transition-state events/control-show-stylist-search-filters
   [_ event args app-state]
-  (assoc-in app-state stylist-directory.keypaths/stylist-search-show-filters? true))
+  (let [service-skus                  (->> (get-in app-state storefront.keypaths/v2-skus)
+                                           vals
+                                           (select catalog.services/service))
+        selected-filters              (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)
+        free-mayvenn-services-filters (when (select-first (assoc services/discountable :catalog/sku-id selected-filters)
+                                                          service-skus)
+                                        "free-mayvenn-services")
+        a-la-cart-services-filters    (when (select-first (assoc services/a-la-carte :catalog/sku-id selected-filters)
+                                                          service-skus)
+                                        "a-la-carte-services")
+        add-on-services-filters       (when (select-first (assoc services/addons :catalog/sku-id selected-filters)
+                                                          service-skus)
+                                        "add-on-services")]
+    (-> app-state
+        (assoc-in stylist-directory.keypaths/stylist-search-show-filters? true)
+        (assoc-in stylist-directory.keypaths/stylist-search-expanded-filter-sections
+                  (if-let [filter-groups-with-selections
+                           (->> (keep identity [free-mayvenn-services-filters
+                                                a-la-cart-services-filters
+                                                add-on-services-filters])
+                                set
+                                not-empty)]
+                    filter-groups-with-selections
+                    #{"free-mayvenn-services"})))))
 
 (defmethod effects/perform-effects events/control-stylist-search-filters-dismiss
   [_ event args previous-app-state app-state]
@@ -177,9 +210,7 @@
 
 (defmethod transitions/transition-state events/initialize-stylist-search-filters
   [_ event args app-state]
-  (-> app-state
-      (assoc-in stylist-directory.keypaths/stylist-search-show-filters? false)
-      (assoc-in stylist-directory.keypaths/stylist-search-expanded-filter-sections #{})))
+  (assoc-in app-state stylist-directory.keypaths/stylist-search-show-filters? false))
 
 (defmethod transitions/transition-state events/control-toggle-stylist-search-filter-section
   [_ event {:keys [previously-opened? section-id]} app-state]
