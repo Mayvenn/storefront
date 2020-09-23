@@ -1,5 +1,6 @@
 (ns catalog.menu
-  (:require [catalog.categories :as categories]
+  (:require #?@(:cljs [[storefront.browser.tags :as tags]])
+            [catalog.categories :as categories]
             [spice.selector :as selector]
             [storefront.accessors.categories :as accessors.categories]
             [storefront.component :as component :refer [defcomponent]]
@@ -104,4 +105,5 @@
 
 (defmethod effects/perform-effects events/control-menu-expand-hamburger
   [_ _ _ _ _]
+  #?(:cljs (tags/add-classname ".kustomer-app-icon" "hide"))
   (messages/handle-message events/menu-home))

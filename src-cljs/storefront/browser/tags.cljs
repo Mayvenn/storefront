@@ -69,3 +69,18 @@
     (set! (.-height img-tag) "1")
     (set! (.-border img-tag) "0")
     (insert-body-bottom img-tag)))
+
+(defn add-classname
+  [selector classname]
+  (when-let [element (.querySelector js/document selector)]
+    (classlist/add element classname)))
+
+(defn remove-classname
+  [selector classname]
+  (when-let [element (.querySelector js/document selector)]
+    (classlist/remove element classname)))
+
+(defn contains-classname
+  [selector classname]
+  (when-let [element (.querySelector js/document selector)]
+    (classlist/contains element classname)))
