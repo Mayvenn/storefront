@@ -21,12 +21,20 @@
            (mapcat :addons)
            not-empty))
 
+(defn ^:private current-order-does-not-have-services
+  [app-state]
+  (some->> app-state
+           api.orders/current
+           :order.items/services
+           empty?))
+
 ;; == /checkout/add page ==
 
 (defmethod effects/perform-effects events/navigate-checkout-add
   [_ event {:keys [navigate/caused-by]} previous-app-state app-state]
   (when (and (#{:module-load :first-nav} caused-by)
-             (current-order-has-addons app-state))
+             (or (current-order-does-not-have-services app-state)
+                 (current-order-has-addons app-state)))
     (effects/redirect events/navigate-cart)))
 
 ;; == Cart controls ==
@@ -81,7 +89,8 @@
   [_ _ _ _ app-state]
   #?(:cljs
      (if (and (experiments/interrupt-checkout? app-state)
-              (not (current-order-has-addons app-state)))
+              (not (current-order-has-addons app-state))
+              (not (current-order-does-not-have-services app-state)))
        (history/enqueue-navigate events/navigate-checkout-add)
        (history/enqueue-navigate events/navigate-checkout-address))))
 
