@@ -16,7 +16,6 @@
    [catalog.ui.product-card-listing :as product-card-listing]
    [catalog.ui.service-card-listing :as service-card-listing]
    [storefront.accessors.categories :as accessors.categories]
-   [storefront.accessors.orders :as orders]
    [storefront.assets :as assets]
    [storefront.component :as c]
    [storefront.components.ui :as ui]
@@ -182,6 +181,8 @@
        ;; Some pages may disable scrolling on the body, e.g.: product detail page
        ;; and it must be re-enabled for this page
        (scroll/enable-body-scrolling)
+       (when-let [contentful-faq-id (:contentful/faq-id category)]
+         (effects/fetch-cms-keypath app-state [:faq contentful-faq-id]))
        (let [store-experience (get-in app-state k/store-experience)]
          (when (and (= "mayvenn-classic"
                        store-experience)

@@ -301,11 +301,12 @@
 (defn wrap-set-cms-cache
   [h contentful]
   (fn [req]
-    (let [shop?                                 (= "shop" (get-in-req-state req keypaths/store-slug))
+    (let [shop?            (= "shop" (get-in-req-state req keypaths/store-slug))
           [nav-event
            {album-keyword :album-keyword
-            product-id    :catalog/product-id}] (:nav-message req)
-          update-data                           (partial copy-cms-to-data @(:cache contentful))]
+            product-id    :catalog/product-id
+            :as           nav-args}] (:nav-message req)
+          update-data      (partial copy-cms-to-data @(:cache contentful))]
       (h (update-in-req-state req keypaths/cms
                               merge
                               (update-data {} [:advertisedPromo])
@@ -320,9 +321,10 @@
                                         contentful/derive-all-looks)
 
                                     (= events/navigate-category nav-event)
-                                    (-> {}
-                                        (update-data [:faq])
-                                        contentful/derive-all-faqs)
+                                    (when-let [category-faq (->> (accessors.categories/id->category (:catalog/category-id nav-args)
+                                                                                                    categories/initial-categories)
+                                                                 :contentful/faq-id)]
+                                      (update-data {} [:faq category-faq]))
 
                                     (contains? #{events/navigate-shop-by-look events/navigate-shop-by-look-details} nav-event)
                                     (-> {}

@@ -304,10 +304,7 @@
         stylist-mismatch?                   (experiments/stylist-mismatch? app-state)
         servicing-stylist                   (get-in app-state adventure.keypaths/adventure-servicing-stylist)
         service-category-page?              (contains? (:catalog/department interstitial-category) "service")
-        path                                (:path (get-in app-state keypaths/navigation-uri))
-        faq                                 (->> (get-in app-state keypaths/cms-faq)
-                                                 (filter (comp #{path} :path))
-                                                 first)]
+        faq                                 (get-in app-state (conj keypaths/cms-faq (:contentful/faq-id interstitial-category)))]
     (cond->
         {:category-hero          (category-hero-query interstitial-category)
          :content-box            (when (and shop? (:content-block/type interstitial-category))

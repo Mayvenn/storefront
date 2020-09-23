@@ -206,12 +206,12 @@
                              (mapv (juxt :faq-section :questions-answers))
                              (map (fn [[faq-section questions-answers]]
                                     {:path             faq-section
-                                     :question-answers (reduce
-                                                        (fn [result {:keys [question answer] :as qa}]
-                                                          (conj result {:question {:text question}
-                                                                        :answer   (format-answer answer)}))
-                                                        []
+                                     :question-answers (map
+                                                        (fn [{:keys [question answer]}]
+                                                          {:question {:text question}
+                                                           :answer   (format-answer answer)})
                                                         questions-answers)}))
+                             (maps/index-by primary-key-fn)
                              (assoc {} content-type))
 
                     :else
@@ -248,11 +248,15 @@
                                :primary-key-fn   (comp keyword :experience)
                                :item-tx-fn       identity
                                :collection-tx-fn identity}
-                              {:content-type :faq
-                               :latest?      false
-                               :exists       ["fields.faqSection"]
-                               :select       ["fields.faqSection"
-                                              "fields.questionsAnswers"]}
+                              {:content-type   :faq
+                               :latest?        false
+                               :primary-key-fn (comp keyword
+                                                     #(string/replace % #"/" "-")
+                                                     #(subs % 1)
+                                                     :path)
+                               :exists         ["fields.faqSection"]
+                               :select         ["fields.faqSection"
+                                                "fields.questionsAnswers"]}
                               {:content-type :mayvennMadePage
                                :latest?      true}
                               {:content-type :advertisedPromo
@@ -308,6 +312,3 @@
                  vals
                  (mapcat :looks)
                  (maps/index-by (comp keyword :content/id)))))
-
-(defn derive-all-faqs [cms-data]
-  (assoc-in cms-data [:faq] (:faq cms-data)))

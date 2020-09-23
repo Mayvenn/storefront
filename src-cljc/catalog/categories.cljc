@@ -589,27 +589,27 @@
                                                :subsection/selector {:hair/family #{"360-wigs"}}}
                                               {:subsection/title    "Ready-to-Wear Wigs"
                                                :subsection/selector {:hair/family #{"ready-wigs"}}}]
-
-           :content-block/type     :about-attributes ;; incase we have different templates in the future
-           :content-block/title    "Wigs 101:"
-           :content-block/header   "How to Choose"
-           :content-block/summary  (str "There are a few main factors to consider "
-                                        "when you’re choosing a wig. When you have a "
-                                        "good sense of the look you want to achieve, your "
-                                        "lifestyle and your budget, the rest will fall "
-                                        "into place. Ask yourself the density, lace color, "
-                                        "length of hair you want, and if you prefer virgin "
-                                        "hair or dyed hair.")
-           :content-block/sections [{:title "Cap Size"
-                                     :body  "Cap size ranges between 20-21 inches. If for any reason your wig doesn’t fit, reach out to Customer Service for details to return or exchange your product."}
-                                    {:title "Density"
-                                     :body  "The fullest density clocks in at 200% - other measures are 180, 150 and 130. If the style you’re planning needs a lot of thickness, you should choose a higher density like 180 or 200. If you only need a little, consider 130 or 150."}
-                                    {:title "Lace Color"
-                                     :body  "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}
-                                    {:title "Length"
-                                     :body  "Short and sassy or drama down to your ankles? The choice is yours! Available in lengths ranging from 10” to 24”."}
-                                    {:title "Virgin & Dyed"
-                                     :body  "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]}
+           :contentful/faq-id                :categories-13-wigs
+           :content-block/type               :about-attributes ;; incase we have different templates in the future
+           :content-block/title              "Wigs 101:"
+           :content-block/header             "How to Choose"
+           :content-block/summary            (str "There are a few main factors to consider "
+                                                  "when you’re choosing a wig. When you have a "
+                                                  "good sense of the look you want to achieve, your "
+                                                  "lifestyle and your budget, the rest will fall "
+                                                  "into place. Ask yourself the density, lace color, "
+                                                  "length of hair you want, and if you prefer virgin "
+                                                  "hair or dyed hair.")
+           :content-block/sections           [{:title "Cap Size"
+                                               :body  "Cap size ranges between 20-21 inches. If for any reason your wig doesn’t fit, reach out to Customer Service for details to return or exchange your product."}
+                                              {:title "Density"
+                                               :body  "The fullest density clocks in at 200% - other measures are 180, 150 and 130. If the style you’re planning needs a lot of thickness, you should choose a higher density like 180 or 200. If you only need a little, consider 130 or 150."}
+                                              {:title "Lace Color"
+                                               :body  "For a wig that blends in and looks as natural as possible, you’ll want to choose a lace backing shade that most closely matches your skin tone."}
+                                              {:title "Length"
+                                               :body  "Short and sassy or drama down to your ankles? The choice is yours! Available in lengths ranging from 10” to 24”."}
+                                              {:title "Virgin & Dyed"
+                                               :body  "If you want to play with color, it helps to choose a wig that can be dyed—in other words, you’ll need a virgin wig. Or, you could choose a blonde or platinum wig and have it dyed the color you want."}]}
           wig-templates)
    (merge {:catalog/category-id "24"
            :category/new?       true
@@ -619,8 +619,8 @@
            :seo/title  "Virgin Lace Front Wigs"
 
            :category/description (copy "With the lace base in front only,"
-                                           "these are ideal for exploring new ways to part your hair."
-                                           "Ours are made with virgin lace & real human hair.")
+                                       "these are ideal for exploring new ways to part your hair."
+                                       "Ours are made with virgin lace & real human hair.")
            :subcategory/image-id "71dcdd17-f9cc-456f-b763-2c1c047c30b4"
 
            :catalog/department  #{"hair"}
@@ -645,8 +645,8 @@
            :seo/title  "Ready-to-Wear Wigs"
 
            :category/description (copy "Made of authentic and high-quality human hair,"
-                                           "ready to wear wigs are a quick,"
-                                           "convenient way to change up your look instantly.")
+                                       "ready to wear wigs are a quick,"
+                                       "convenient way to change up your look instantly.")
            :subcategory/image-id "a4f7ad94-3c2c-41aa-be4d-94d9d83b1602"
 
            :catalog/department             #{"hair"}
@@ -675,7 +675,7 @@
            :seo/title  "Virgin 360 Lace Wigs"
 
            :category/description (copy "Ideal for ponytails, these wigs are denser & fuller."
-                                           "360 wigs have lace around the entire crown of your head with a cap in the middle.")
+                                       "360 wigs have lace around the entire crown of your head with a cap in the middle.")
            :subcategory/image-id "fe34e6e9-8927-4b62-94ac-91b37f0a137f"
 
            :catalog/department    #{"hair"}
