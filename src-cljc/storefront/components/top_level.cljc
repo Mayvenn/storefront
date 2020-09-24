@@ -5,7 +5,6 @@
                        [storefront.components.popup :as popup]
                        [storefront.components.reset-password :as reset-password]
                        [storefront.components.shop-by-look]
-                       [storefront.components.shop-by-look-details]
                        [checkout.shop.addon-services-menu]
 
                        ;; popups, must be required to load properly
@@ -29,7 +28,6 @@
             [stylist-matching.match-success-pick-service-v2020-06 :as pick-service-v2020-06]
 
             mayvenn-install.about
-
             [storefront.components.ui :as ui]
             [mayvenn-made.home :as mayvenn-made.home]
             [storefront.components.content :as content]
@@ -59,8 +57,6 @@
         events/navigate-force-set-password                         (constantly force-set-password/built-component)
         events/navigate-shop-by-look                               #(ui/lazy-load-component :catalog 'storefront.components.shop-by-look/built-component
                                                                                             events/navigate-shop-by-look)
-        events/navigate-shop-by-look-details                       #(ui/lazy-load-component :catalog 'storefront.components.shop-by-look-details/built-component
-                                                                                            events/navigate-shop-by-look-details)
         events/navigate-stylist-dashboard-balance-transfer-details #(ui/lazy-load-component :dashboard 'storefront.components.stylist.balance-transfer-details/built-component
                                                                                             events/navigate-stylist-dashboard-balance-transfer-details)
         events/navigate-stylist-dashboard-order-details            #(ui/lazy-load-component :dashboard 'storefront.components.stylist.order-details/built-component events/navigate-stylist-dashboard-order-details)
@@ -86,6 +82,9 @@
         events/navigate-order-complete                             #(ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-order-complete)
         events/navigate-need-match-order-complete                  #(ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-need-match-order-complete)])
 
+
+   events/navigate-shop-by-look-details    #(ui/lazy-load-component :catalog 'storefront.components.shop-by-look-details/built-component
+                                                                    events/navigate-shop-by-look-details)
    events/navigate-home                    (constantly (first-arg-only homepage.core/page))
    events/navigate-about-mayvenn-install   (constantly mayvenn-install.about/built-component)
    events/navigate-category                #(ui/lazy-load-component :catalog  'catalog.category/built-component events/navigate-category)
