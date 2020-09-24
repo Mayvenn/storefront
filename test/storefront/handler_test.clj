@@ -509,10 +509,10 @@
           (with-handler handler
             (let [responses (repeatedly 3 (partial handler (mock/request :get "https://shop.mayvenn.com/categories/13-wigs")))
                   requests  (txfm-requests contentful-requests identity)]
-              (is (=  {:categories-24-virgin-lace-front-wigs
-                       {:path "/categories/24-virgin-lace-front-wigs", :question-answers []},
-                       :categories-13-wigs
-                       {:path "/categories/13-wigs",
+              (is (=  {:icp-virgin-lace-front-wigs
+                       {:slug "icp-virgin-lace-front-wigs", :question-answers []},
+                       :icp-wigs
+                       {:slug "icp-wigs",
                         :question-answers
                         [{:question {:text "Can I wear a wig even if I have long hair?"},
                           :answer

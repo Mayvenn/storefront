@@ -85,7 +85,7 @@
      :environment {:sys {:id "master", :type "Link", :linkType "Environment"}},
      :contentType {:sys {:type "Link", :linkType "ContentType", :id "faq"}}},
     :fields
-    {:faqSection "/categories/24-virgin-lace-front-wigs",
+    {:faqSection "icp-virgin-lace-front-wigs",
      :title "Frequently Asked Questions"}}
    {:sys
     {:space {:sys {:type "Link", :linkType "Space", :id "76m8os65degn"}},
@@ -98,7 +98,7 @@
      :environment {:sys {:id "master", :type "Link", :linkType "Environment"}},
      :contentType {:sys {:type "Link", :linkType "ContentType", :id "faq"}}},
     :fields
-    {:faqSection "/categories/13-wigs",
+    {:faqSection "icp-wigs",
      :title "Frequently Asked Questions",
      :questionsAnswers
      [{:sys {:type "Link", :linkType "Entry", :id "2iT7IXYUpUaUNBXzxSpot4"}}
