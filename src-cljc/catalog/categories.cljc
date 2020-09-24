@@ -589,7 +589,7 @@
                                                :subsection/selector {:hair/family #{"360-wigs"}}}
                                               {:subsection/title    "Ready-to-Wear Wigs"
                                                :subsection/selector {:hair/family #{"ready-wigs"}}}]
-           :contentful/faq-id                :categories-13-wigs
+           :contentful/faq-id                :icp-wigs
            :content-block/type               :about-attributes ;; incase we have different templates in the future
            :content-block/title              "Wigs 101:"
            :content-block/header             "How to Choose"

@@ -205,7 +205,7 @@
                              walk/keywordize-keys
                              (mapv (juxt :faq-section :questions-answers))
                              (map (fn [[faq-section questions-answers]]
-                                    {:path             faq-section
+                                    {:slug             faq-section
                                      :question-answers (map
                                                         (fn [{:keys [question answer]}]
                                                           {:question {:text question}
@@ -250,10 +250,7 @@
                                :collection-tx-fn identity}
                               {:content-type   :faq
                                :latest?        false
-                               :primary-key-fn (comp keyword
-                                                     #(string/replace % #"/" "-")
-                                                     #(subs % 1)
-                                                     :path)
+                               :primary-key-fn (comp keyword :slug)
                                :exists         ["fields.faqSection"]
                                :select         ["fields.faqSection"
                                                 "fields.questionsAnswers"]}
