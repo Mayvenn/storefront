@@ -1,8 +1,5 @@
 (ns storefront.components.shop-by-look-details
-  (:require #?@(:cljs [[storefront.api :as api]
-                       [storefront.platform.reviews :as reviews]
-                       [storefront.hooks.quadpay :as quadpay]])
-            [catalog.images :as catalog-images]
+  (:require [catalog.images :as catalog-images]
             [catalog.facets :as facets]
             [clojure.string :as str]
             [checkout.ui.cart-item-v202004 :as cart-item]
@@ -18,11 +15,14 @@
             [storefront.components.svg :as svg]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.effects :as effects]
-            [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
+            [storefront.api :as api]
             [storefront.ugc :as ugc]
+            [storefront.events :as events]
+            [storefront.hooks.quadpay :as quadpay]
+            [storefront.keypaths :as keypaths]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
+            [storefront.platform.reviews :as reviews]
             [storefront.request-keys :as request-keys]
             [spice.maps :as maps]))
 
@@ -43,16 +43,15 @@
 
 (defmethod effects/perform-effects events/control-create-order-from-shared-cart
   [_ event {:keys [look-id shared-cart-id] :as args} _ app-state]
-  #?(:cljs (api/create-order-from-cart (get-in app-state keypaths/session-id)
-                               shared-cart-id
-                               look-id
-                               (get-in app-state keypaths/user-id)
-                               (get-in app-state keypaths/user-token)
-                               (get-in app-state keypaths/store-stylist-id)
-                               (get-in app-state keypaths/order-servicing-stylist-id)
-                               (and (= :shop (sites/determine-site app-state))
-                                    (experiments/cart-interstitial? app-state)))
-     :clj nil))
+  (api/create-order-from-cart (get-in app-state keypaths/session-id)
+                              shared-cart-id
+                              look-id
+                              (get-in app-state keypaths/user-id)
+                              (get-in app-state keypaths/user-token)
+                              (get-in app-state keypaths/store-stylist-id)
+                              (get-in app-state keypaths/order-servicing-stylist-id)
+                              (and (= :shop (sites/determine-site app-state))
+                                   (experiments/cart-interstitial? app-state))))
 
 (defn carousel [data imgs]
   (component/build carousel/component
@@ -64,9 +63,9 @@
                    {:opts {:slides imgs}}))
 
 (defn look-details-body
-  [{:keys                                                       [creating-order? sold-out? look shared-cart skus fetching-shared-cart?
-                                                                 base-price discounted-price quadpay-loaded? discount-text
-                                                                 yotpo-data-attributes cart-items service-line-items] :as queried-data}]
+  [{:keys [creating-order? sold-out? look shared-cart skus fetching-shared-cart?
+           base-price discounted-price quadpay-loaded? discount-text
+           yotpo-data-attributes cart-items service-line-items] :as queried-data}]
   [:div.clearfix
    (when look
      [:div.bg-cool-gray.slides-middle.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
@@ -82,8 +81,8 @@
         [:div.ml1.line-height-1 {:style {:width  "21px"
                                          :height "21px"}}
          ^:inline (svg/instagram)]]
-       #?(:cljs (when yotpo-data-attributes
-                  (component/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil)))
+       (when yotpo-data-attributes
+         (component/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil))
        (when-not (str/blank? (:description look))
          [:p.mt1.content-4.proxima.dark-gray (:description look)])]])
    (if fetching-shared-cart?
@@ -122,12 +121,12 @@
          [:div.title-1.proxima.bold (mf/as-money discounted-price)]]
         [:div.col-11.mx-auto
          (add-to-cart-button sold-out? creating-order? look shared-cart)]
-        #?(:cljs (do (component/build quadpay/component
-                                      {:quadpay/show?       quadpay-loaded?
-                                       :quadpay/order-total discounted-price
-                                       :quadpay/directive   :just-select}
-                                      nil)
-                     (component/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)))]))])
+        (component/build quadpay/component
+                         {:quadpay/show?       quadpay-loaded?
+                          :quadpay/order-total discounted-price
+                          :quadpay/directive   :just-select}
+                         nil)
+        (component/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)]))])
 
 (defn ^:private sort-by-depart-and-price
   [items]
@@ -345,7 +344,7 @@
                                          [back-event]
                                          [events/navigate-shop-by-look {:album-keyword album-keyword}])
             :return-link/back          back}
-           #?(:cljs (reviews/query-look-detail shared-cart data)))))
+           (reviews/query-look-detail shared-cart data))))
 
 (defcomponent component
   [queried-data owner opts]
