@@ -72,7 +72,7 @@
 
       [:div.relative
        {:style {:height "445px"}}
-       #_(when shared-cart
+       (when shared-cart
          (carousel {:look look :shared-cart shared-cart} (:carousel/images queried-data)))]
       [:div.px3.pb3.pt1
        [:div.flex.items-center
