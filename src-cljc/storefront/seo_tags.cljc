@@ -156,27 +156,28 @@
         page-meta-description (if (and can-use-seo-template? selected-facet-string)
                                 (categories/render-template description-template (assoc category :computed/selected-facet-string selected-facet-string))
                                 (:page.meta/description category))]
-    {:title           page-title
-     :description     page-meta-description
-     :og-title        (:opengraph/title category)
-     :og-type         "product"
-     :og-image        (str "http:" (:category/image-url category))
-     :og-description  (:opengraph/description category)
-     :no-index?       (not indexable?)
-     :structured-data (when (and shop? faq)
-                        (let [{:keys [question-answers]} faq]
-                          {"@type"     "FAQPage"
-                           :mainEntity (for [{:keys [question answer]} question-answers]
-                                         {"@type"         "Question"
-                                          :name           (:text question)
-                                          :acceptedAnswer {"@type" "Answer"
-                                                           :text   (->> answer
-                                                                        (mapcat :paragraph)
-                                                                        (map (fn [{:keys [text url]}]
-                                                                               (if url
-                                                                                 (str "<a href=\"" url "\">" text "</a>")
-                                                                                 text)))
-                                                                        (string/join " "))}})}))}))
+    (merge {:title           page-title
+            :description     page-meta-description
+            :og-title        (:opengraph/title category)
+            :og-type         "product"
+            :og-image        (str "http:" (:category/image-url category))
+            :og-description  (:opengraph/description category)
+            :no-index?       (not indexable?)}
+           (when (and shop? faq)
+             (let [{:keys [question-answers]} faq]
+               {:structured-data
+                {"@type"     "FAQPage"
+                 :mainEntity (for [{:keys [question answer]} question-answers]
+                               {"@type"         "Question"
+                                :name           (:text question)
+                                :acceptedAnswer {"@type" "Answer"
+                                                 :text   (->> answer
+                                                              (mapcat :paragraph)
+                                                              (map (fn [{:keys [text url]}]
+                                                                     (if url
+                                                                       (str "<a href=\"" url "\">" text "</a>")
+                                                                       text)))
+                                                              (apply str))}})}})))))
 
 (defn ^:private derive-canonical-uri-query-params-category-pages
   [uri data]
