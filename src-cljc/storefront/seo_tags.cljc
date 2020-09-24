@@ -116,11 +116,7 @@
        set))
 
 (defn category-tags [data]
-  (let [path                  (:path (get-in data keypaths/navigation-uri))
-        faq                   (->> (get-in data keypaths/cms-faq)
-                                   (filter (comp #{path} :path))
-                                   first)
-        shop?                 (= "shop" (get-in data keypaths/store-slug))
+  (let [shop?                 (= "shop" (get-in data keypaths/store-slug))
         categories            (get-in data keypaths/categories)
         canonical-category-id (:category-id (accessors.categories/canonical-category-data
                                              categories
@@ -131,6 +127,7 @@
                                              #?(:cljs (experiments/remove-closures? data)
                                                 :clj true)))
         category              (accessors.categories/id->category canonical-category-id categories)
+        faq                   (get-in data (conj keypaths/cms-faq (:contentful/faq-id category)))
         allowed-query-params  (category->allowed-query-params category)
         facets                (facets/by-slug data)
         selected-options      (->  data
@@ -175,7 +172,10 @@
                                           :acceptedAnswer {"@type" "Answer"
                                                            :text   (->> answer
                                                                         (mapcat :paragraph)
-                                                                        (map :text)
+                                                                        (map (fn [{:keys [text url]}]
+                                                                               (if url
+                                                                                 (str "<a href=\"" url "\">" text "</a>")
+                                                                                 text)))
                                                                         (string/join " "))}})}))}))
 
 (defn ^:private derive-canonical-uri-query-params-category-pages
