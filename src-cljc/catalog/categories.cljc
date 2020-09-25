@@ -122,15 +122,17 @@
            :selector/electives               [:hair/origin :hair/texture :hair/color :hair/base-material]
            :subsections/subsection-selectors texture-subsection-selectors
            :header/title                     "Virgin Hair Closures"
-           :flyout-menu/title                "Closures"
-           :flyout-menu/order                1
-           :homepage.ui-v2020-07/order       2
-           :homepage.ui-v2020-07/image-id    "27e942b0-136c-4f7d-8b7b-ca98869fa272"
-           :footer/order                     5
-           :footer/title                     "Closures"
-           :category/description             (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                                   "Our collection of closures blend seamlessly with our bundles"
-                                                   "and can be customized to fit your unique look.")}
+
+           :contentful/faq-id             :category-virgin-closures
+           :flyout-menu/title             "Closures"
+           :flyout-menu/order             1
+           :homepage.ui-v2020-07/order    2
+           :homepage.ui-v2020-07/image-id "27e942b0-136c-4f7d-8b7b-ca98869fa272"
+           :footer/order                  5
+           :footer/title                  "Closures"
+           :category/description          (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                                "Our collection of closures blend seamlessly with our bundles"
+                                                "and can be customized to fit your unique look.")}
           (category->seo "Closures"
                          (copy "Mayvenn’s hair closures allow you to close off"
                                "any unit or install and come in a variety of different"
@@ -152,6 +154,7 @@
            :category/tags                    #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :subsections/subsection-selectors texture-subsection-selectors
 
+           :contentful/faq-id   :category-360-frontals
            :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives  [:hair/origin :hair/texture]
 
@@ -223,6 +226,7 @@
            :header/title             "Virgin Frontals"
            :hair/source              #{"virgin"}
            :menu/title               "Virgin Frontals"
+           :contentful/faq-id        :category-lace-frontals
            :category/tags            #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
            :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives       [:hair/origin :hair/texture :hair/color]
@@ -649,6 +653,7 @@
                                        "convenient way to change up your look instantly.")
            :subcategory/image-id "a4f7ad94-3c2c-41aa-be4d-94d9d83b1602"
 
+           :contentful/faq-id              :category-ready-wear-wigs
            :catalog/department             #{"hair"}
            :hair/family                    #{"ready-wigs"}
            :selector/essentials            [:hair/family :catalog/department]
@@ -678,6 +683,7 @@
                                        "360 wigs have lace around the entire crown of your head with a cap in the middle.")
            :subcategory/image-id "fe34e6e9-8927-4b62-94ac-91b37f0a137f"
 
+           :contentful/faq-id     :category-virgin-360-wigs
            :catalog/department    #{"hair"}
            :hair/family           #{"360-wigs"}
            :selector/essentials   [:hair/family :catalog/department]
@@ -750,6 +756,7 @@
 
            :seo/sitemap            true
            :seo/title              "Virgin Hair Bundles"
+           :contentful/faq-id      :icp-bundles
            :content-block/type     :about-attributes ;; incase we have different templates in the future
            :content-block/title    "Hair Bundles 101:"
            :content-block/header   "How to Style"
@@ -848,9 +855,10 @@
      :subcategory/image-id "d255ccf8-75af-4729-86da-af6e15783fc2"
      :copy/title           "Clip-In Hair Extensions"
      :category/description (copy "Get the hair of your dreams in an instant with our seamless clip-in extensions."
-                                     "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair."
-                                     "Ditch the tracks for a clip-in experience that is truly seamless.")
+                                 "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair."
+                                 "Ditch the tracks for a clip-in experience that is truly seamless.")
 
+     :contentful/faq-id     :category-seamless-clip-ins
      :page/title            "Clip-In Hair Extensions: Human Hair Clip-In Extensions | Mayvenn"
      :page/slug             "seamless-clip-ins"
      :page.meta/description (copy "Get the hair of your dreams with our seamless clip-in hair extensions."
@@ -916,6 +924,7 @@
      :copy/title         "Hair Extensions"
      :product-list/title "Shop All Hair Extensions"
 
+     :contentful/faq-id                :icp-hair-extensions
      :page/slug                        "hair-extensions"
      :category/description             (str "Ditch the tracks and opt for hair that blends in seamlessly. "
                                             "Mayvenn human hair extensions are made with a thin polyurethane "
