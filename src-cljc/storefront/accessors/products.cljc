@@ -52,7 +52,7 @@
     #{"ready-wigs"}        :pdp-ready-wear-wigs
     #{"lace-front-wigs"}   :pdp-virgin-lace-front-wigs
     #{"360-wigs"}          :pdp-virgin-360-lace-wigs
-    #{"360-frontal"}       :pdp-360-frontals
+    #{"360-frontals"}      :pdp-360-frontals
     #{"bundles"}           :pdp-bundles
     #{"closures"}          :pdp-closures
     #{"frontals"}          :pdp-lace-frontals
