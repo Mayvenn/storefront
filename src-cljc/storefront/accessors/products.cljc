@@ -49,5 +49,13 @@
 
 (defn product->faq-id [product]
   (case (:hair/family product)
-    #{"ready-wigs"} :pdp-ready-wear-wigs
+    #{"ready-wigs"}        :pdp-ready-wear-wigs
+    #{"lace-front-wigs"}   :pdp-virgin-lace-front-wigs
+    #{"360-wigs"}          :pdp-virgin-360-lace-wigs
+    #{"360-frontal"}       :pdp-360-frontals
+    #{"bundles"}           :pdp-bundles
+    #{"closures"}          :pdp-closures
+    #{"frontals"}          :pdp-lace-frontals
+    #{"seamless-clip-ins"} :pdp-seamless-clip-ins
+    #{"tape-ins"}          :pdp-straight-tape-ins
     nil))
