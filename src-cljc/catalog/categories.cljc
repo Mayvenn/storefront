@@ -623,11 +623,11 @@
                                        "Ours are made with virgin lace & real human hair.")
            :subcategory/image-id "71dcdd17-f9cc-456f-b763-2c1c047c30b4"
 
-           :catalog/department  #{"hair"}
-           :hair/family         #{"lace-front-wigs"}
-           :selector/essentials [:hair/family :catalog/department]
-           :selector/electives  [:hair/texture :hair/origin]
-
+           :catalog/department    #{"hair"}
+           :hair/family           #{"lace-front-wigs"}
+           :selector/essentials   [:hair/family :catalog/department]
+           :selector/electives    [:hair/texture :hair/origin]
+           :contentful/faq-id     :category-virgin-lace-front-wigs
            :opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our"
                                         "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                         "your unique look using the built-in combs and adjustable strap.")}

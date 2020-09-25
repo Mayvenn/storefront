@@ -15,6 +15,7 @@
    [catalog.ui.how-it-works :as how-it-works]
    [catalog.ui.product-card-listing :as product-card-listing]
    [catalog.ui.service-card-listing :as service-card-listing]
+   [homepage.ui.faq :as faq]
    [storefront.accessors.categories :as accessors.categories]
    [storefront.assets :as assets]
    [storefront.component :as c]
@@ -63,7 +64,8 @@
            content-box
            category-filters
            service-card-listing
-           product-card-listing] :as queried-data} _ _]
+           product-card-listing
+           faq-section] :as queried-data} _ _]
   [:div
    (c/build category-hero/organism category-hero)
    (c/build molecules/stylist-bar queried-data {})
@@ -79,7 +81,9 @@
       (c/build content-box-organism content-box)])
    (when (:how-it-works queried-data)
      [:div.col-10.mx-auto.mt6
-      (c/build how-it-works/organism queried-data)])])
+      (c/build how-it-works/organism queried-data)])
+   (when faq-section
+     (c/build faq/organism faq-section))])
 
 (defn category-hero-query
   [{:copy/keys     [title learn-more-target]
@@ -100,6 +104,17 @@
     new?
     (merge {:category-hero.tag/primary "New"})))
 
+;; TODO: redo to only send data and have the component work it out
+(defn answer->content [answer]
+  (->> answer
+       (map-indexed (fn [i {blocks :paragraph}]
+                      [:p.h6 {:key (str "paragraph-" i)}
+                       (map-indexed (fn [j {:keys [text url]}]
+                                      (if url
+                                        [:a.p-color {:href url :key (str "text-" j)} text]
+                                        [:span {:key (str "text-" j)} text]))
+                                    blocks)]))))
+
 (defn page
   [app-state opts]
   (let [stylist-mismatch?                   (experiments/stylist-mismatch? app-state)
@@ -118,7 +133,8 @@
                                                                  selections)
                                                                 loaded-category-products)
         service-category-page?              (contains? (:catalog/department current) "service")
-        servicing-stylist                   (get-in app-state adventure.keypaths/adventure-servicing-stylist)]
+        servicing-stylist                   (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        faq                                 (get-in app-state (conj storefront.keypaths/cms-faq (:contentful/faq-id current)))]
     (c/build template
              (merge {:category-hero          (category-hero-query current)
                      :category-filters       (category-filters/query app-state
@@ -137,7 +153,13 @@
                      :product-card-listing   (when-not service-category-page?
                                                (product-card-listing/query app-state current category-products-matching-criteria))
                      :service-category-page? service-category-page?
-                     :stylist-mismatch?      stylist-mismatch?}
+                     :stylist-mismatch?      stylist-mismatch?
+                     :faq-section            (when (and shop? faq)
+                                               (let [{:keys [question-answers]} faq]
+                                                 {:faq/expanded-index (get-in app-state storefront.keypaths/faq-expanded-section)
+                                                  :list/sections      (for [{:keys [question answer]} question-answers]
+                                                                        {:faq/title   (:text question)
+                                                                         :faq/content (answer->content answer)})}))}
 
                     (when (and service-category-page? servicing-stylist stylist-mismatch?)
                       {:stylist-bar/id             "category-page-stylist-bar"
