@@ -1,11 +1,12 @@
 (ns storefront.seo-tags
-  (:require #?@(:clj [[cheshire.core :as json]
+  (:require #?@(:cljs [[storefront.accessors.experiments :as experiments]]
+                :clj [[cheshire.core :as json]
                       [storefront.uri :as uri]
                       [storefront.safe-hiccup :as safe-hiccup]])
             [storefront.assets :as assets]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.categories :as accessors.categories]
-            [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.products :as accessors.products]
             [storefront.accessors.images :as images]
             [cemerick.url :as cemerick-url]
             [catalog.keypaths :as k]
@@ -16,12 +17,12 @@
             [catalog.products :as products]
             [spice.selector :as selector]
             [storefront.ugc :as ugc]
-            [storefront.utils :as utils]
             [clojure.string :as string]
             [clojure.set :as set]
             [spice.maps :as maps]
             adventure.keypaths
-            [stylist-directory.stylists :as stylists]))
+            [stylist-directory.stylists :as stylists]
+            [storefront.accessors.sites :as sites]))
 
 (defn- use-case-then-order-key [img]
   [(condp = (:use-case img)
@@ -52,10 +53,11 @@
   ;; in the fully rendered page as the information is scraped from the server side render.  Additionally,
   ;; the second render was being detected and flagged as duplicate by the Google structured data tool.
   #?(:clj
-     [[:script {:type "application/ld+json"}
-       (-> (merge {"@context" "https://schema.org"} data)
-           json/generate-string
-           safe-hiccup/raw)]]
+     (for [datum data]
+       [:script {:type "application/ld+json"}
+        (-> (merge {"@context" "https://schema.org"} datum)
+            json/generate-string
+            safe-hiccup/raw)])
      :cljs []))
 
 (defn ^:private tagmap->tags
@@ -72,6 +74,22 @@
 (def ^:private constant-tags
   [[:meta {:property "og:site_name" :content "Mayvenn"}]])
 
+(defn ^:private faq->structured-data [faq]
+  (when faq
+    (let [{:keys [question-answers]} faq]
+      {"@type"     "FAQPage"
+       :mainEntity (for [{:keys [question answer]} question-answers]
+                     {"@type"         "Question"
+                      :name           (:text question)
+                      :acceptedAnswer {"@type" "Answer"
+                                       :text   (->> answer
+                                                    (mapcat :paragraph)
+                                                    (map (fn [{:keys [text url]}]
+                                                           (if url
+                                                             (str "<a href=\"" url "\">" text "</a>")
+                                                             text)))
+                                                    (apply str))}})})))
+
 (defn product-details-tags [data]
   (let [product        (products/current-product data)
         images-catalog (get-in data keypaths/v2-images)
@@ -80,25 +98,29 @@
                                 (seo-image images-catalog)
                                 first
                                 :url
-                                (str "http:"))]
-
+                                (str "http:"))
+        shop?          (= :shop (sites/determine-site data))
+        faq            (get-in data (conj keypaths/cms-faq (accessors.products/product->faq-id product)))]
     {:title           (:page/title product)
      :description     (:page.meta/description product)
      :og-title        (:opengraph/title product)
      :og-type         "product"
      :og-image        image-url
      :og-description  (:opengraph/description product)
-     :structured-data {"@type"      "Product"
-                       :name        (:sku/title sku)
-                       :image       image-url
-                       :sku         (:catalog/sku-id sku)
-                       :description (:opengraph/description product)
-                       :offers      {"@type"        "Offer"
-                                     :price         (str (:sku/price sku))
-                                     :priceCurrency "USD"
-                                     :availability  (if (:inventory/in-stock? sku)
-                                                      "http://schema.org/InStock"
-                                                      "http://schema.org/OutOfStock")}}}))
+     :structured-data (cond->
+                       [{"@type"      "Product"
+                         :name        (:sku/title sku)
+                         :image       image-url
+                         :sku         (:catalog/sku-id sku)
+                         :description (:opengraph/description product)
+                         :offers      {"@type"        "Offer"
+                                       :price         (str (:sku/price sku))
+                                       :priceCurrency "USD"
+                                       :availability  (if (:inventory/in-stock? sku)
+                                                        "http://schema.org/InStock"
+                                                        "http://schema.org/OutOfStock")}}]
+                        (and shop? faq)
+                        (conj (faq->structured-data faq)))}))
 
 (defn ^:private facet-option->option-name
   ;; For origin and color, the sku/name is more appropriate than the option name
@@ -114,6 +136,8 @@
        vals
        (map name)
        set))
+
+
 
 (defn category-tags [data]
   (let [shop?                 (= "shop" (get-in data keypaths/store-slug))
@@ -163,21 +187,7 @@
             :og-image        (str "http:" (:category/image-url category))
             :og-description  (:opengraph/description category)
             :no-index?       (not indexable?)}
-           (when (and shop? faq)
-             (let [{:keys [question-answers]} faq]
-               {:structured-data
-                {"@type"     "FAQPage"
-                 :mainEntity (for [{:keys [question answer]} question-answers]
-                               {"@type"         "Question"
-                                :name           (:text question)
-                                :acceptedAnswer {"@type" "Answer"
-                                                 :text   (->> answer
-                                                              (mapcat :paragraph)
-                                                              (map (fn [{:keys [text url]}]
-                                                                     (if url
-                                                                       (str "<a href=\"" url "\">" text "</a>")
-                                                                       text)))
-                                                              (apply str))}})}})))))
+           (when shop? {:structured-data [(faq->structured-data faq)]}))))
 
 (defn ^:private derive-canonical-uri-query-params-category-pages
   [uri data]
@@ -264,17 +274,17 @@
         :og-type         "website"
         :og-image        og-image-url
         :og-description  "Mayvenn's story starts with a Toyota Corolla filled with bundles of hair to now having over 50,000 stylists selling Mayvenn hair and increasing their incomes. Learn more about us!"
-        :structured-data {:url     "https://shop.mayvenn.com/about-us"
-                          "@type"  "Corporation"
-                          :name    "Mayvenn Hair"
-                          :logo    "https://d6w7wdcyyr51t.cloudfront.net/cdn/images/header_logo.e8e0ffc6.svg"
-                          :sameAs  ["https://www.facebook.com/MayvennHair"
-                                    "http://instagram.com/mayvennhair"
-                                    "https://twitter.com/MayvennHair"
-                                    "http://www.pinterest.com/mayvennhair/"]
-                          :founder {"@context" "http://schema.org"
-                                    "@type"    "Person"
-                                    :name      "Diishan Imira"}}}
+        :structured-data [{:url     "https://shop.mayvenn.com/about-us"
+                           "@type"  "Corporation"
+                           :name    "Mayvenn Hair"
+                           :logo    "https://d6w7wdcyyr51t.cloudfront.net/cdn/images/header_logo.e8e0ffc6.svg"
+                           :sameAs  ["https://www.facebook.com/MayvennHair"
+                                     "http://instagram.com/mayvennhair"
+                                     "https://twitter.com/MayvennHair"
+                                     "http://www.pinterest.com/mayvennhair/"]
+                           :founder {"@context" "http://schema.org"
+                                     "@type"    "Person"
+                                     :name      "Diishan Imira"}}]}
 
        events/navigate-shop-by-look
        (let [album-keyword (get-in data keypaths/selected-album-keyword)]
@@ -299,14 +309,14 @@
         :og-image        "http://ucarecdn.com/401c6886-077a-4445-85ec-f6b7023d5d1e/-/format/auto/canonical_image",
         :og-description  "Mayvenn is the recommended and trusted source for quality hair by 100,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"
         :structured-data (when (= "shop" (get-in data keypaths/store-slug))
-                           {"@type"     "FAQPage"
-                            :mainEntity (mapv (fn
-                                                [{:faq/keys [title content]}]
-                                                {"@type"         "Question"
-                                                 :name           title
-                                                 :acceptedAnswer {"@type" "Answer"
-                                                                  :text   content}})
-                                              homepage.ui/faq-sections-data)})}
+                           [{"@type"     "FAQPage"
+                             :mainEntity (mapv (fn
+                                                 [{:faq/keys [title content]}]
+                                                 {"@type"         "Question"
+                                                  :name           title
+                                                  :acceptedAnswer {"@type" "Answer"
+                                                                   :text   content}})
+                                               homepage.ui/faq-sections-data)}])}
 
        events/navigate-info-certified-stylists
        {:title          "Certified Stylists: Top-Rated Hair Weave Stylists | Mayvenn",

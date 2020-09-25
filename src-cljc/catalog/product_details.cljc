@@ -13,6 +13,7 @@
                        [storefront.trackings :as trackings]])
             adventure.keypaths
             api.orders
+            [homepage.ui.faq :as faq]
             [catalog.facets :as facets]
             [catalog.keypaths :as catalog.keypaths]
             [catalog.product-details-ugc :as ugc]
@@ -146,18 +147,15 @@
    (catalog.M/yotpo-reviews-summary data)])
 
 (defcomponent component
-  [{:keys [adding-to-bag?
-           carousel-images
+  [{:keys [carousel-images
            product
            reviews
            selected-sku
-           sku-quantity
-           selected-options
            how-it-works
-           options
            picker-data
            ugc
            addons
+           faq-section
            add-to-cart] :as data} owner opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
@@ -214,7 +212,10 @@
              [:div.mxn2.mb3 (component/build ugc/component ugc opts)]]]))]]
        (when (seq reviews)
          [:div.container.col-7-on-tb-dt.px2
-          (component/build review-component/reviews-component reviews opts)])])))
+          (component/build review-component/reviews-component reviews opts)])
+       (when faq-section
+         [:div.container
+          (component/build faq/organism faq-section opts)])])))
 
 (defn min-of-maps
   ([k] {})
@@ -465,33 +466,46 @@
           :offshoot-action/label  "Update add-ons"
           :offshoot-action/target [events/control-show-addon-service-menu]})))))
 
-(defn query [data]
-  (let [selected-sku                  (get-in data catalog.keypaths/detailed-product-selected-sku)
-        selections                    (get-in data catalog.keypaths/detailed-product-selections)
-        product                       (products/current-product data)
-        product-skus                  (products/extract-product-skus data product)
-        images-catalog                (get-in data keypaths/v2-images)
-        facets                        (facets/by-slug data)
-        carousel-images               (find-carousel-images product product-skus images-catalog
-                                                            (select-keys selections [:hair/color])
-                                                            selected-sku)
-        options                       (get-in data catalog.keypaths/detailed-product-options)
-        ugc                           (ugc-query product selected-sku data)
-        sku-price                     (:sku/price selected-sku)
-        review-data                   (review-component/query data)
-        shop?                         (= "shop" (get-in data keypaths/store-slug))
-        free-mayvenn-service?         (accessors.products/product-is-mayvenn-install-service? product)
-        wig-construction-service?     (accessors.products/wig-construction-service? product)
-        standalone-service?           (accessors.products/standalone-service? product)
-        service?                      (accessors.products/service? product)
-        hair?                         (accessors.products/hair? product)
-        wig?                          (accessors.products/wig-product? product)
-        maintenance-service?          (= #{"maintenance"} (:service/category product))
-        reinstall-service?            (= #{"reinstall"}   (:service/category product))
-        wig-customization?            (= #{"SRV-WGC-000"} (:catalog/sku-id product))
+;; TODO: redo to only send data and have the component work it out
+(defn answer->content [answer]
+  (->> answer
+       (map-indexed (fn [i {blocks :paragraph}]
+                      [:p.h6 {:key (str "paragraph-" i)}
+                       (map-indexed (fn [j {:keys [text url]}]
+                                      (if url
+                                        [:a.p-color {:href url :key (str "text-" j)} text]
+                                        [:span {:key (str "text-" j)} text]))
+                                    blocks)]))))
 
-        stylist-mismatch?                    (experiments/stylist-mismatch? data)
-        servicing-stylist                    (get-in data adventure.keypaths/adventure-servicing-stylist)]
+(defn query [data]
+  (let [selected-sku              (get-in data catalog.keypaths/detailed-product-selected-sku)
+        selections                (get-in data catalog.keypaths/detailed-product-selections)
+        product                   (products/current-product data)
+        product-skus              (products/extract-product-skus data product)
+        images-catalog            (get-in data keypaths/v2-images)
+        facets                    (facets/by-slug data)
+        carousel-images           (find-carousel-images product product-skus images-catalog
+                                                        (select-keys selections [:hair/color])
+                                                        selected-sku)
+        options                   (get-in data catalog.keypaths/detailed-product-options)
+        ugc                       (ugc-query product selected-sku data)
+        sku-price                 (:sku/price selected-sku)
+        review-data               (review-component/query data)
+        shop?                     (= "shop" (get-in data keypaths/store-slug))
+        free-mayvenn-service?     (accessors.products/product-is-mayvenn-install-service? product)
+        wig-construction-service? (accessors.products/wig-construction-service? product)
+        standalone-service?       (accessors.products/standalone-service? product)
+        service?                  (accessors.products/service? product)
+        hair?                     (accessors.products/hair? product)
+        wig?                      (accessors.products/wig-product? product)
+        maintenance-service?      (= #{"maintenance"} (:service/category product))
+        reinstall-service?        (= #{"reinstall"}   (:service/category product))
+        wig-customization?        (= #{"SRV-WGC-000"} (:catalog/sku-id product))
+
+        stylist-mismatch? (experiments/stylist-mismatch? data)
+        servicing-stylist (get-in data adventure.keypaths/adventure-servicing-stylist)
+        faq               (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
+                            (get-in data (conj keypaths/cms-faq pdp-faq-id)))]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -511,6 +525,12 @@
       :facets                             facets
       :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
       :picker-data                        (picker/query data)
+      :faq-section                        (when (and shop? faq)
+                                            (let [{:keys [question-answers]} faq]
+                                              {:faq/expanded-index (get-in data keypaths/faq-expanded-section)
+                                               :list/sections      (for [{:keys [question answer]} question-answers]
+                                                                     {:faq/title   (:text question)
+                                                                      :faq/content (answer->content answer)})}))
       :carousel-images                    carousel-images}
 
      (when (and (not service?) sku-price)
@@ -949,6 +969,8 @@
          (let [product (get-in app-state (conj keypaths/v2-products product-id))]
            (when-let [album-keyword (storefront.ugc/product->album-keyword shop? product)]
              (effects/fetch-cms-keypath app-state [:ugc-collection album-keyword]))
+           (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
+             (effects/fetch-cms-keypath app-state [:faq pdp-faq-id]))
            (fetch-product-details app-state product-id)
            (fetch-sku-related-addons app-state selected-sku))))))
 

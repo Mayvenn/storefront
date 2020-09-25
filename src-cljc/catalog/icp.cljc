@@ -274,6 +274,7 @@
          vals
          (sort-by (comp category-order :catalog/category-id)))) )
 
+;; TODO: redo to only send data and have the component work it out
 (defn answer->content [answer]
   (->> answer
        (map-indexed (fn [i {blocks :paragraph}]

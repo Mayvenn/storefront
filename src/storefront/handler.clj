@@ -33,6 +33,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.skus :as skus]
+            [storefront.accessors.products :as accessors.products]
             [storefront.assets :as assets]
             [storefront.backend-api :as api]
             [storefront.config :as config]
@@ -301,12 +302,12 @@
 (defn wrap-set-cms-cache
   [h contentful]
   (fn [req]
-    (let [shop?            (= "shop" (get-in-req-state req keypaths/store-slug))
+    (let [shop? (= "shop" (get-in-req-state req keypaths/store-slug))
           [nav-event
            {album-keyword :album-keyword
             product-id    :catalog/product-id
             :as           nav-args}] (:nav-message req)
-          update-data      (partial copy-cms-to-data @(:cache contentful))]
+          update-data                (partial copy-cms-to-data @(:cache contentful))]
       (h (update-in-req-state req keypaths/cms
                               merge
                               (update-data {} [:advertisedPromo])
@@ -334,10 +335,15 @@
                                         contentful/derive-all-looks)
 
                                     (= events/navigate-product-details nav-event)
-                                    (let [product (get-in-req-state req (conj keypaths/v2-products product-id))]
-                                      (when-let [album-keyword (storefront.ugc/product->album-keyword shop? product)]
-                                        (-> {}
-                                            (update-data [:ugc-collection (keyword album-keyword)])
+                                    (let [product       (get-in-req-state req (conj keypaths/v2-products product-id))
+                                          pdp-faq-id    (accessors.products/product->faq-id product)
+                                          album-keyword (storefront.ugc/product->album-keyword shop? product)]
+                                      (cond-> {}
+                                        pdp-faq-id
+                                        (update-data [:faq pdp-faq-id])
+
+                                        album-keyword
+                                        (-> (update-data [:ugc-collection (keyword album-keyword)])
                                             contentful/derive-all-looks)))
 
                                     (routes/sub-page? [nav-event] [events/navigate-info])

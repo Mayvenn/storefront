@@ -46,3 +46,8 @@
   [product]
   (and (base-service? product)
        (not (product-is-mayvenn-install-service? product))))
+
+(defn product->faq-id [product]
+  (case (:hair/family product)
+    #{"ready-wigs"} :pdp-ready-wear-wigs
+    nil))
