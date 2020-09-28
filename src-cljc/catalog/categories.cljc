@@ -1114,7 +1114,7 @@
     :subcategories/ids                  ["36" "37"]
     :subcategories/layout               :list
     :product-list/title                 "All Free Services"
-    :contentful/faq-id                  :icp-services
+    :contentful/faq-id                  :free-mayvenn-services
 
     :subsections/subsection-selectors [#:subsection{:title "Free Weave Install Services" :selector #:service{:category #{"install"}}}
                                        #:subsection{:title "Free Custom Wig Services" :selector #:service{:category #{"construction" "customization"}}}]
@@ -1160,7 +1160,7 @@
     :page.meta/description (copy "Shop our selection of salon services for the ultimate hair install or maintenance experience."
                                  "Check out our menu to learn about these premium offerings.")
     :product-list/title    "All Services"
-    :contentful/faq-id                :icp-services
+    :contentful/faq-id                :free-mayvenn-services
 
     :subcategories/ids                ["31" "35"]
     :subcategories/layout             :list
