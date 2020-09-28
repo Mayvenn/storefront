@@ -5,6 +5,7 @@
             [storefront.component :as component]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.effects :as effects]
             [storefront.events :as events]
             storefront.keypaths))
 
@@ -71,3 +72,8 @@
 (defn built-component
   [data opts]
   (component/build layered/component (query data) opts))
+
+(defmethod effects/perform-effects events/navigate-info-about-our-hair
+  [_ event _ _ app-state]
+  #?(:cljs
+     (effects/fetch-cms-keypath app-state [:faq :free-mayvenn-services])))

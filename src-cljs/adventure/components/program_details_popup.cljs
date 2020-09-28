@@ -139,6 +139,10 @@
               [:div.bg-warm-gray
                (faq/component (assoc faq-data :modal? true))]]]))
 
+(defmethod effects/perform-effects events/popup-show-consolidated-cart-free-install
+  [_ event args previous-app-state app-state]
+  (effects/fetch-cms-keypath app-state [:faq :free-mayvenn-services]))
+
 (defmethod transitions/transition-state events/popup-show-consolidated-cart-free-install
   [_ event args app-state]
   (assoc-in app-state keypaths/popup :consolidated-cart-free-install))

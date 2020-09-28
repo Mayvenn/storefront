@@ -5,9 +5,9 @@
             adventure.keypaths
             [storefront.accessors.contentful :as contentful]
             [storefront.component :as component]
-            [storefront.components.homepage-hero :as homepage-hero]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as storefront.keypaths]))
 
@@ -114,7 +114,8 @@
        :cta/id       "see-more-looks"
        :cta/value    "see more looks"
        :cta/target   [events/navigate-shop-by-look {:album-keyword :look}]}
-      (merge {:layer/type :faq} (faq/free-install-query data) {:background-color "bg-pale-purple"})
+      (merge {:layer/type :faq}
+             (faq/free-install-query data))
       {:layer/type     :shop-iconed-list
        :layer/id       "more-than-a-hair-company"
        :title/value    [[:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "29px"}}]]
@@ -155,3 +156,8 @@
 (defn built-component
   [data opts]
   (component/build layered/component (query data) opts))
+
+(defmethod effects/perform-effects events/navigate-about-mayvenn-install
+  [_ event _ _ app-state]
+  #?(:cljs
+     (effects/fetch-cms-keypath app-state [:faq :free-mayvenn-services])))

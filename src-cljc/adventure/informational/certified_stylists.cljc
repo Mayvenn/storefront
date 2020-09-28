@@ -6,6 +6,7 @@
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
+            [storefront.effects :as effects]
             [storefront.events :as events]
             storefront.keypaths))
 
@@ -48,7 +49,8 @@
                                (get-in data storefront.keypaths/cms-ugc-collection)
                                (get-in data storefront.keypaths/navigation-event)
                                :free-install-mayvenn)}
-            (merge {:layer/type :faq} (faq/free-install-query data))
+            (merge {:layer/type :faq}
+                   (faq/free-install-query data))
             {:layer/type         :shop-contact
              :title/value        "Contact Us"
              :sub-subtitle/value "We're here to help"
@@ -79,3 +81,7 @@
   [data opts]
   (component/build layered/component (query data) opts))
 
+(defmethod effects/perform-effects events/navigate-info-certified-stylists
+  [_ event _ _ app-state]
+  #?(:cljs
+     (effects/fetch-cms-keypath app-state [:faq :free-mayvenn-services])))

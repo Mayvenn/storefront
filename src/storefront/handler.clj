@@ -319,6 +319,7 @@
                                     (-> {}
                                         (update-data [:homepage (if shop? :shop :unified)])
                                         (update-data [:ugc-collection :free-install-mayvenn])
+                                        (update-data [:faq :free-mayvenn-services])
                                         contentful/derive-all-looks)
 
                                     (= events/navigate-category nav-event)
@@ -354,7 +355,13 @@
                                     (= events/navigate-about-mayvenn-install nav-event)
                                     (-> {}
                                         (update-data [:ugc-collection :free-install-mayvenn])
+                                        (update-data [:faq :free-mayvenn-services])
                                         contentful/derive-all-looks)
+
+                                    (#{events/navigate-info-about-our-hair
+                                       events/navigate-info-certified-stylists} nav-event)
+                                    (-> {}
+                                        (update-data [:faq :free-mayvenn-services]))
 
                                     :else nil))))))
 

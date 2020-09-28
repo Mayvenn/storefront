@@ -20,4 +20,4 @@
       :shopping-categories  (ui/shopping-categories-query categories)
       :mayvenn-install      ui/mayvenn-install-query
       :a-la-carte-services  ui/a-la-carte-query
-      :faq                  (ui/faq-query expanded-index)})))
+      :faq                  (ui/faq-query (-> cms :faq :free-mayvenn-services) expanded-index)})))
