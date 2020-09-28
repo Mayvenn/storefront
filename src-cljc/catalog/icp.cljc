@@ -334,11 +334,6 @@
                                                                interstitial-category
                                                                category-products-matching-criteria))}
 
-      ;; GROT once category 30 gets added to Contentful
-      (:expanding-content-block/sections interstitial-category)
-      (merge {:expanding-content-box {:faq/expanded-index (get-in app-state keypaths/faq-expanded-section)
-                                      :list/sections      (:expanding-content-block/sections interstitial-category)}})
-
       (= :grid (:subcategories/layout interstitial-category))
       (merge {:drill-category-grid {:drill-category-grid/values (mapv category->drill-category-grid-entry subcategories)
                                     :drill-category-grid/title  (:subcategories/title interstitial-category)}})
