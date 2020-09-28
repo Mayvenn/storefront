@@ -516,8 +516,11 @@
    stylist-count-content])
 
 (defcomponent non-matching-breaker
-  [{:keys [breaker-content]} _ _]
+  [{:keys [breaker-results breaker-content]} _ _]
   [:div.my5.content-2
+   (when breaker-results
+    [:div
+     breaker-results])
    breaker-content])
 
 (defdynamic-component template
@@ -562,7 +565,8 @@
             [:div
              {:key       "non-matching-breaker"
               :data-test (:list.breaker/id data)}
-             (component/build non-matching-breaker {:breaker-content (:list.breaker/content data)})])
+             (component/build non-matching-breaker {:breaker-results (:list.breaker/results-content data)
+                                                    :breaker-content (:list.breaker/content data)})])
           (when (:list.non-matching/key data)
             [:div
              (for [card (:list.non-matching/cards data)]
@@ -672,16 +676,17 @@
                                                                 post-purchase?)
                         :stylist-results-present? (seq (concat matching-stylists non-matching-stylists))
 
-                        :stylist-results-returned?  (get-in app-state adventure.keypaths/adventure-stylist-results-returned)
-                        :list.stylist-counter/title (str (count matching-stylists) " Stylists Found")
-                        :list.stylist-counter/key   (when (pos? (count matching-stylists))
-                                                      "stylist-count-content")
-                        :list.matching/key          (when (seq matching-stylists) "stylist-matching")
-                        :list.matching/cards        matching-stylist-cards
-                        :list.breaker/id            (when (seq non-matching-stylists) "non-matching-breaker")
-                        :list.breaker/content       "Other stylists in your area"
-                        :list.non-matching/key      (when (seq non-matching-stylists) "non-matching-stylists")
-                        :list.non-matching/cards    non-matching-stylist-cards
-                        :stylist.analytics/cards    (into matching-stylist-cards non-matching-stylist-cards)
-                        :shopping-method-choice     (shopping-method-choice-query)}
+                        :stylist-results-returned?    (get-in app-state adventure.keypaths/adventure-stylist-results-returned)
+                        :list.stylist-counter/title   (str (count matching-stylists) " Stylists Found")
+                        :list.stylist-counter/key     (when (pos? (count matching-stylists))
+                                                        "stylist-count-content")
+                        :list.matching/key            (when (seq matching-stylists) "stylist-matching")
+                        :list.matching/cards          matching-stylist-cards
+                        :list.breaker/id              (when (seq non-matching-stylists) "non-matching-breaker")
+                        :list.breaker/results-content (when (seq non-matching-stylists) "0 results found")
+                        :list.breaker/content         "Other stylists in your area"
+                        :list.non-matching/key        (when (seq non-matching-stylists) "non-matching-stylists")
+                        :list.non-matching/cards      non-matching-stylist-cards
+                        :stylist.analytics/cards      (into matching-stylist-cards non-matching-stylist-cards)
+                        :shopping-method-choice       (shopping-method-choice-query)}
                        {:key (str "stylist-results-" (hash stylist-search-results) "-" (hash stylist-data))}))))
