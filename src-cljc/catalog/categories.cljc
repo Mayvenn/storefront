@@ -1089,20 +1089,6 @@
         :how-it-works.step.body/primary    (str "We’ll connect you with your stylist to set up your service. "
                                                 "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}]))
 
-(def services-faq
-  [{:faq/title   "Who is going to do my hair?",
-    :faq/content "Mayvenn Certified Stylists have been chosen because of their professionalism, skillset, and client ratings. We’ve got a network of licensed stylists across the country who are all committed to providing you with amazing service and quality hair extensions."}
-   {:faq/title   "What kind of hair do you offer?"
-    :faq/content "We’ve got top of the line virgin hair in 8 different textures. In the event that you’d like to switch it up, we have pre-colored options available as well. The best part? All of our hair is quality-guaranteed."}
-   {:faq/title   "What happens after I choose my hair?"
-    :faq/content "After you choose your hair, you’ll be matched with a Certified Stylist of your choice. You can see the stylist’s work and their salon’s location. We’ll help you book an appointment and answer any questions you may have."}
-   {:faq/title   "Is Mayvenn Install really a better deal?"
-    :faq/content "Yes! It’s basically hair and service for the price of one. You can buy any 3 bundles, closures and frontals from Mayvenn, and we’ll pay for you to get your hair installed by a local stylist. That means that you’re paying $0 for your next sew-in, with no catch!"}
-   {:faq/title   "How does this process actually work?"
-    :faq/content "It’s super simple — after you purchase your hair, we’ll send you a pre-paid voucher that you’ll use during your appointment. When your stylist scans it, they get paid instantly by Mayvenn."}
-   {:faq/title   "What if I want to get my hair done by another stylist? Can I still get the Mayvenn Install?"
-    :faq/content "You must get your hair done from a Certified Stylist in order to get your hair installed for free."}])
-
 (def mayvenn-install-services
   [{:catalog/category-id                "31"
     :catalog/department                 #{"service"}
@@ -1127,13 +1113,14 @@
     :seo/sitemap                        true
     :subcategories/ids                  ["36" "37"]
     :subcategories/layout               :list
+    :product-list/title                 "All Free Services"
+    :contentful/faq-id                  :icp-services
 
-    :product-list/title               "All Free Services"
     :subsections/subsection-selectors [#:subsection{:title "Free Weave Install Services" :selector #:service{:category #{"install"}}}
                                        #:subsection{:title "Free Custom Wig Services" :selector #:service{:category #{"construction" "customization"}}}]
 
-    :how-it-works/title-primary       "Your hair deserves a Mayvenn–Certified Stylist."
-    :how-it-works/title-secondary     "Here’s how it works."
+    :how-it-works/title-primary   "Your hair deserves a Mayvenn–Certified Stylist."
+    :how-it-works/title-secondary "Here’s how it works."
     :how-it-works/step-elements
     [{:how-it-works.step.title/primary   "01"
       :how-it-works.step.title/secondary "Pick your service"
@@ -1149,8 +1136,7 @@
       :how-it-works.step.title/secondary "Schedule your appointment"
       :how-it-works.step.body/primary
       (str "We’ll connect you with your stylist to set up your service. "
-           "Then, we’ll send you a prepaid voucher to cover the cost.")}]
-    :expanding-content-block/sections services-faq}])
+           "Then, we’ll send you a prepaid voucher to cover the cost.")}]}])
 
 (def services-icp
   [{:catalog/category-id   "30"
@@ -1174,14 +1160,14 @@
     :page.meta/description (copy "Shop our selection of salon services for the ultimate hair install or maintenance experience."
                                  "Check out our menu to learn about these premium offerings.")
     :product-list/title    "All Services"
+    :contentful/faq-id                :icp-services
 
     :subcategories/ids                ["31" "35"]
     :subcategories/layout             :list
     :subsections/subsection-selectors [{:subsection/title    "Free Mayvenn Services"
                                         :subsection/selector {:promo.mayvenn-install/discountable #{true}}}
                                        {:subsection/title    "À la carte service"
-                                        :subsection/selector {:promo.mayvenn-install/discountable #{false}}}]
-    :expanding-content-block/sections services-faq}])
+                                        :subsection/selector {:promo.mayvenn-install/discountable #{false}}}]}])
 
 (def menu-categories
   (concat virgin-hair
