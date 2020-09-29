@@ -133,3 +133,7 @@
 (defn remove-closures?
   [data]
   (display-feature? data "remove-closures"))
+
+(defn instapay?
+  [data]
+  (display-feature? data "instapay"))

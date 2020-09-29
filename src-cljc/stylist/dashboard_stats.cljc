@@ -37,6 +37,7 @@
   [payout-method
    expanded?
    cashing-out?
+   disabled?
    {:as earnings :keys [cash-balance lifetime-earnings monthly-earnings]}
    {:as services :keys [lifetime-services monthly-services]}]
   (let [toggle-expand (utils/fake-href events/control-v2-stylist-dashboard-section-toggle
@@ -55,13 +56,13 @@
       [:a.col-5 toggle-expand
        [:div.h1.black.medium.flex (mf/as-money cash-balance)]]
       [:div.col-5
-       (if (payouts/cash-out-eligible? payout-method)
+       (if true #_(payouts/cash-out-eligible? payout-method)
          (ui/button-medium-primary
           {:data-test      "cash-out-begin-button"
            :on-click       (utils/send-event-callback events/control-stylist-dashboard-cash-out-begin
                                                       {:amount             cash-balance
                                                        :payout-method-name payout-method})
-           :disabled?      (not (pos? cash-balance))
+           :disabled?      disabled?
            :spinning?      cashing-out?}
           [:div.flex.items-center.justify-center.regular.h5
            (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "3d651ddf-b37d-441b-a162-b83728f2a2eb")
@@ -122,13 +123,13 @@
                          :maximum (- next-level previous-level)})]])
 
 (defcomponent component
-  [{:keys [cash-balance-section-expanded? store-credit-balance-section-expanded? stats total-available-store-credit payout-method cashing-out? fetching-stats? dashboard-with-vouchers?]} owner opts]
+  [{:keys [cash-balance-section-expanded? store-credit-balance-section-expanded? stats total-available-store-credit payout-method cashing-out? fetching-stats? dashboard-with-vouchers? disabled?]} owner opts]
   (let [{:keys [bonuses earnings services]} stats
         {:keys [lifetime-earned]}           bonuses]
     (if (and (not lifetime-earned) fetching-stats?)
       [:div.my2.h2 ui/spinner]
       [:div.p2
-       (cash-balance-card payout-method cash-balance-section-expanded? cashing-out? earnings services)
+       (cash-balance-card payout-method cash-balance-section-expanded? cashing-out? disabled? earnings services)
        [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned store-credit-balance-section-expanded?)]
        (when-not dashboard-with-vouchers?
          (sales-bonus-progress bonuses))])))
@@ -136,13 +137,22 @@
 (def not-reimbursed-for-services? (complement experiments/dashboard-with-vouchers?))
 
 (defn query [data]
-  (let [stats (get-in data keypaths/v2-dashboard-stats)]
-    {:stats                                  (cond-> stats
-                                               (not-reimbursed-for-services? data)
-                                               (dissoc :services))
+  (let [stats         (cond-> (get-in data keypaths/v2-dashboard-stats)
+                        (not-reimbursed-for-services? data)
+                        (dissoc :services))
+        payout-method (get-in data keypaths/stylist-manage-account-chosen-payout-method)
+        cash-balance  (-> stats :earnings :cash-balance)]
+    {:stats                                  stats
      :dashboard-with-vouchers?               (experiments/dashboard-with-vouchers? data)
      :cashing-out?                           (utils/requesting? data request-keys/cash-out-commit)
-     :payout-method                          (get-in data keypaths/stylist-manage-account-chosen-payout-method)
+     :payout-method                          payout-method
+     :disabled?                              (or (not (pos? cash-balance))
+                                                 (and (experiments/instapay? data)
+                                                      (<= cash-balance 1)
+                                                      (boolean (#{"Mayvenn::GreenDotPayoutMethod"
+                                                                  "green_dot"}
+                                                                (or (:type payout-method)
+                                                                    payout-method)))))
      :cash-balance-section-expanded?         (get-in data keypaths/v2-ui-dashboard-cash-balance-section-expanded?)
      :store-credit-balance-section-expanded? (get-in data keypaths/v2-ui-dashboard-store-credit-section-expanded?)
      :total-available-store-credit           (get-in data keypaths/user-total-available-store-credit)
