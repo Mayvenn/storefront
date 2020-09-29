@@ -56,7 +56,7 @@
       [:a.col-5 toggle-expand
        [:div.h1.black.medium.flex (mf/as-money cash-balance)]]
       [:div.col-5
-       (if true #_(payouts/cash-out-eligible? payout-method)
+       (if (payouts/cash-out-eligible? payout-method)
          (ui/button-medium-primary
           {:data-test      "cash-out-begin-button"
            :on-click       (utils/send-event-callback events/control-stylist-dashboard-cash-out-begin
