@@ -1,8 +1,8 @@
 (ns catalog.core
   (:require catalog.category
             catalog.product-details
-            storefront.components.shop-by-look
-            storefront.components.shop-by-look-details
+            catalog.looks
+            catalog.look-details
             storefront.components.shared-cart
             checkout.processing
             checkout.cart

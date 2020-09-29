@@ -1,30 +1,31 @@
-(ns storefront.components.shop-by-look-details
-  (:require [catalog.images :as catalog-images]
+(ns catalog.look-details
+  "Shopping by Looks: Detail page for an individual 'look'"
+  (:require #?@(:cljs [[storefront.api :as api]
+                       [storefront.hooks.quadpay :as quadpay]])
             [catalog.facets :as facets]
-            [clojure.string :as str]
+            [catalog.images :as catalog-images]
             [checkout.ui.cart-item-v202004 :as cart-item]
+            [clojure.string :as str]
             [spice.core :as spice]
+            [spice.maps :as maps]
             [spice.selector :as selector]
-            [storefront.accessors.images :as images]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.sites :as sites]
+            [storefront.accessors.images :as images]
             [storefront.accessors.products :as products]
-            [storefront.components.money-formatters :as mf]
-            [storefront.components.ui :as ui]
-            [storefront.components.svg :as svg]
+            [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.money-formatters :as mf]
+            [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
             [storefront.effects :as effects]
-            [storefront.api :as api]
-            [storefront.ugc :as ugc]
             [storefront.events :as events]
-            [storefront.hooks.quadpay :as quadpay]
             [storefront.keypaths :as keypaths]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.reviews :as reviews]
             [storefront.request-keys :as request-keys]
-            [spice.maps :as maps]))
+            [storefront.ugc :as ugc]))
 
 (defn add-to-cart-button
   [sold-out? creating-order? look {:keys [number]}]
@@ -43,15 +44,16 @@
 
 (defmethod effects/perform-effects events/control-create-order-from-shared-cart
   [_ event {:keys [look-id shared-cart-id] :as args} _ app-state]
-  (api/create-order-from-cart (get-in app-state keypaths/session-id)
-                              shared-cart-id
-                              look-id
-                              (get-in app-state keypaths/user-id)
-                              (get-in app-state keypaths/user-token)
-                              (get-in app-state keypaths/store-stylist-id)
-                              (get-in app-state keypaths/order-servicing-stylist-id)
-                              (and (= :shop (sites/determine-site app-state))
-                                   (experiments/cart-interstitial? app-state))))
+  #?(:cljs
+     (api/create-order-from-cart (get-in app-state keypaths/session-id)
+                                 shared-cart-id
+                                 look-id
+                                 (get-in app-state keypaths/user-id)
+                                 (get-in app-state keypaths/user-token)
+                                 (get-in app-state keypaths/store-stylist-id)
+                                 (get-in app-state keypaths/order-servicing-stylist-id)
+                                 (and (= :shop (sites/determine-site app-state))
+                                      (experiments/cart-interstitial? app-state)))))
 
 (defn carousel [data imgs]
   (component/build carousel/component
@@ -121,11 +123,12 @@
          [:div.title-1.proxima.bold (mf/as-money discounted-price)]]
         [:div.col-11.mx-auto
          (add-to-cart-button sold-out? creating-order? look shared-cart)]
-        (component/build quadpay/component
-                         {:quadpay/show?       quadpay-loaded?
-                          :quadpay/order-total discounted-price
-                          :quadpay/directive   :just-select}
-                         nil)
+        #?(:cljs
+           (component/build quadpay/component
+                            {:quadpay/show?       quadpay-loaded?
+                             :quadpay/order-total discounted-price
+                             :quadpay/directive   :just-select}
+                            nil))
         (component/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)]))])
 
 (defn ^:private sort-by-depart-and-price
@@ -344,7 +347,8 @@
                                          [back-event]
                                          [events/navigate-shop-by-look {:album-keyword album-keyword}])
             :return-link/back          back}
-           (reviews/query-look-detail shared-cart data))))
+           #?(:cljs
+              (reviews/query-look-detail shared-cart data)))))
 
 (defcomponent component
   [queried-data owner opts]

@@ -1,10 +1,11 @@
-(ns storefront.components.shop-by-look
-  (:require [storefront.component :as component :refer [defcomponent]]
+(ns catalog.looks
+  "Shopping by Looks: index page of 'looks' for an 'album'"
+  (:require [spice.maps :as maps]
             [storefront.accessors.contentful :as contentful]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ugc :as component-ugc]
-            [storefront.keypaths :as keypaths]
             [storefront.components.ui :as ui]
-            [spice.maps :as maps]
+            [storefront.keypaths :as keypaths]
             [storefront.ugc :as ugc]))
 
 (defcomponent component [{:keys [looks copy spinning?]} owner opts]

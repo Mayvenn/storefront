@@ -4,8 +4,6 @@
                        [storefront.components.force-set-password :as force-set-password]
                        [storefront.components.popup :as popup]
                        [storefront.components.reset-password :as reset-password]
-                       [storefront.components.shop-by-look]
-                       [storefront.components.shop-by-look-details]
                        [checkout.shop.addon-services-menu]
 
                        ;; popups, must be required to load properly
@@ -57,10 +55,6 @@
   {#?@(:cljs
        [events/navigate-reset-password                             (constantly reset-password/built-component)
         events/navigate-force-set-password                         (constantly force-set-password/built-component)
-        events/navigate-shop-by-look                               #(ui/lazy-load-component :catalog 'storefront.components.shop-by-look/built-component
-                                                                                            events/navigate-shop-by-look)
-        events/navigate-shop-by-look-details                       #(ui/lazy-load-component :catalog 'storefront.components.shop-by-look-details/built-component
-                                                                                            events/navigate-shop-by-look-details)
         events/navigate-stylist-dashboard-balance-transfer-details #(ui/lazy-load-component :dashboard 'storefront.components.stylist.balance-transfer-details/built-component
                                                                                             events/navigate-stylist-dashboard-balance-transfer-details)
         events/navigate-stylist-dashboard-order-details            #(ui/lazy-load-component :dashboard 'storefront.components.stylist.order-details/built-component events/navigate-stylist-dashboard-order-details)
@@ -88,6 +82,10 @@
 
    events/navigate-home                    (constantly (first-arg-only homepage.core/page))
    events/navigate-about-mayvenn-install   (constantly mayvenn-install.about/built-component)
+   events/navigate-shop-by-look            #(ui/lazy-load-component :catalog 'catalog.looks/built-component
+                                                                    events/navigate-shop-by-look)
+   events/navigate-shop-by-look-details    #(ui/lazy-load-component :catalog 'catalog.look-details/built-component
+                                                                    events/navigate-shop-by-look-details)
    events/navigate-category                #(ui/lazy-load-component :catalog  'catalog.category/built-component events/navigate-category)
    events/navigate-product-details         #(ui/lazy-load-component :catalog  'catalog.product-details/built-component events/navigate-product-details)
    events/navigate-shared-cart             #(ui/lazy-load-component :catalog  'storefront.components.shared-cart/built-component events/navigate-shared-cart)
