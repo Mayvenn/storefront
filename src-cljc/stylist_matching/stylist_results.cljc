@@ -683,7 +683,9 @@
                         :list.matching/key            (when (seq matching-stylists) "stylist-matching")
                         :list.matching/cards          matching-stylist-cards
                         :list.breaker/id              (when (seq non-matching-stylists) "non-matching-breaker")
-                        :list.breaker/results-content (when (seq non-matching-stylists) "0 results found")
+                        :list.breaker/results-content (when (and (seq non-matching-stylists)
+                                                                 (empty? matching-stylists))
+                                                        "0 results found")
                         :list.breaker/content         "Other stylists in your area"
                         :list.non-matching/key        (when (seq non-matching-stylists) "non-matching-stylists")
                         :list.non-matching/cards      non-matching-stylist-cards
