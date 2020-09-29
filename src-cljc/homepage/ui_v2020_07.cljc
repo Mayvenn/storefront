@@ -1,6 +1,5 @@
 (ns homepage.ui-v2020-07
-  (:require [adventure.faq]
-            [homepage.ui.atoms :as A]
+  (:require [homepage.ui.atoms :as A]
             [homepage.ui.contact-us :as contact-us]
             [homepage.ui.diishan :as diishan]
             [homepage.ui.faq :as faq]
@@ -125,7 +124,7 @@
   {:faq/expanded-index expanded-index
    :list/sections      (for [{:keys [question answer]} (:question-answers faq)]
                          {:faq/title   (:text question)
-                          :faq/content (adventure.faq/answer->content answer)})})
+                          :faq/content answer})})
 
 ;; TODO svg ns returns components full of undiffable data
 (def guarantees-query

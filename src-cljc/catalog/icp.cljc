@@ -1,6 +1,5 @@
 (ns catalog.icp
   (:require [adventure.components.layered :as layered]
-            adventure.faq
             adventure.keypaths
             catalog.keypaths
             [catalog.skuers :as skuers]
@@ -308,7 +307,7 @@
                                      {:faq/expanded-index (get-in app-state keypaths/faq-expanded-section)
                                       :list/sections (for [{:keys [question answer]} question-answers]
                                                        {:faq/title (:text question)
-                                                        :faq/content (adventure.faq/answer->content answer)})}))
+                                                        :faq/content answer})}))
          :category-filters       (category-filters/query app-state
                                                          interstitial-category
                                                          loaded-category-products
