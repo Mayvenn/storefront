@@ -5,6 +5,7 @@
               [storefront.platform.messages :as messages]
               [storefront.browser.scroll :as scroll]
               [storefront.hooks.facebook-analytics :as facebook-analytics]])
+   adventure.faq
    adventure.keypaths
    [catalog.icp :as icp]
    [catalog.skuers :as skuers]
@@ -104,17 +105,6 @@
     new?
     (merge {:category-hero.tag/primary "New"})))
 
-;; TODO: redo to only send data and have the component work it out
-(defn answer->content [answer]
-  (->> answer
-       (map-indexed (fn [i {blocks :paragraph}]
-                      [:p.h6 {:key (str "paragraph-" i)}
-                       (map-indexed (fn [j {:keys [text url]}]
-                                      (if url
-                                        [:a.p-color {:href url :key (str "text-" j)} text]
-                                        [:span {:key (str "text-" j)} text]))
-                                    blocks)]))))
-
 (defn page
   [app-state opts]
   (let [stylist-mismatch?                   (experiments/stylist-mismatch? app-state)
@@ -159,7 +149,7 @@
                                                  {:faq/expanded-index (get-in app-state storefront.keypaths/faq-expanded-section)
                                                   :list/sections      (for [{:keys [question answer]} question-answers]
                                                                         {:faq/title   (:text question)
-                                                                         :faq/content (answer->content answer)})}))}
+                                                                         :faq/content (adventure.faq/answer->content answer)})}))}
 
                     (when (and service-category-page? servicing-stylist stylist-mismatch?)
                       {:stylist-bar/id             "category-page-stylist-bar"

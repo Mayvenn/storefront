@@ -1,5 +1,6 @@
 (ns catalog.icp
   (:require [adventure.components.layered :as layered]
+            adventure.faq
             adventure.keypaths
             catalog.keypaths
             [catalog.skuers :as skuers]
@@ -274,17 +275,6 @@
          vals
          (sort-by (comp category-order :catalog/category-id)))) )
 
-;; TODO: redo to only send data and have the component work it out
-(defn answer->content [answer]
-  (->> answer
-       (map-indexed (fn [i {blocks :paragraph}]
-                      [:p.h6 {:key (str "paragraph-" i)}
-                       (map-indexed (fn [j {:keys [text url]}]
-                                      (if url
-                                        [:a.p-color {:href url :key (str "text-" j)} text]
-                                        [:span {:key (str "text-" j)} text]))
-                                    blocks)]))))
-
 (defn query
   [app-state]
   (let [interstitial-category               (accessors.categories/current-category app-state)
@@ -318,7 +308,7 @@
                                      {:faq/expanded-index (get-in app-state keypaths/faq-expanded-section)
                                       :list/sections (for [{:keys [question answer]} question-answers]
                                                        {:faq/title (:text question)
-                                                        :faq/content (answer->content answer)})}))
+                                                        :faq/content (adventure.faq/answer->content answer)})}))
          :category-filters       (category-filters/query app-state
                                                          interstitial-category
                                                          loaded-category-products

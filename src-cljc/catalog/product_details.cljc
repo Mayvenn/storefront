@@ -11,6 +11,7 @@
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.platform.messages :as messages]
                        [storefront.trackings :as trackings]])
+            adventure.faq
             adventure.keypaths
             api.orders
             [homepage.ui.faq :as faq]
@@ -466,17 +467,6 @@
           :offshoot-action/label  "Update add-ons"
           :offshoot-action/target [events/control-show-addon-service-menu]})))))
 
-;; TODO: redo to only send data and have the component work it out
-(defn answer->content [answer]
-  (->> answer
-       (map-indexed (fn [i {blocks :paragraph}]
-                      [:p.h6 {:key (str "paragraph-" i)}
-                       (map-indexed (fn [j {:keys [text url]}]
-                                      (if url
-                                        [:a.p-color {:href url :key (str "text-" j)} text]
-                                        [:span {:key (str "text-" j)} text]))
-                                    blocks)]))))
-
 (defn query [data]
   (let [selected-sku              (get-in data catalog.keypaths/detailed-product-selected-sku)
         selections                (get-in data catalog.keypaths/detailed-product-selections)
@@ -530,7 +520,7 @@
                                               {:faq/expanded-index (get-in data keypaths/faq-expanded-section)
                                                :list/sections      (for [{:keys [question answer]} question-answers]
                                                                      {:faq/title   (:text question)
-                                                                      :faq/content (answer->content answer)})}))
+                                                                      :faq/content (adventure.faq/answer->content answer)})}))
       :carousel-images                    carousel-images}
 
      (when (and (not service?) sku-price)
