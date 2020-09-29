@@ -794,7 +794,9 @@
     ;; otherwise return nil to indicate an unavailable combination of items
     (or (valid-sku-ids selected-sku-id)
         (when (or direct-load?
-                  direct-to-details?)
+                  direct-to-details?
+                  ;; HACK: Handle the case with services that the product and sku are 1-1
+                  (:SKU (:query-params (get-in app-state storefront.keypaths/navigation-args))))
           (:catalog/sku-id
            (skus/determine-epitome
             (facets/color-order-map (get-in app-state storefront.keypaths/v2-facets))
