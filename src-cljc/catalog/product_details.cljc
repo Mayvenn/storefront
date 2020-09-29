@@ -11,7 +11,6 @@
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.platform.messages :as messages]
                        [storefront.trackings :as trackings]])
-            adventure.faq
             adventure.keypaths
             api.orders
             [homepage.ui.faq :as faq]
@@ -520,7 +519,7 @@
                                               {:faq/expanded-index (get-in data keypaths/faq-expanded-section)
                                                :list/sections      (for [{:keys [question answer]} question-answers]
                                                                      {:faq/title   (:text question)
-                                                                      :faq/content (adventure.faq/answer->content answer)})}))
+                                                                      :faq/content answer})}))
       :carousel-images                    carousel-images}
 
      (when (and (not service?) sku-price)
