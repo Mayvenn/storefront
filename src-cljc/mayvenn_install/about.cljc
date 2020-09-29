@@ -156,8 +156,3 @@
 (defn built-component
   [data opts]
   (component/build layered/component (query data) opts))
-
-(defmethod effects/perform-effects events/navigate-about-mayvenn-install
-  [_ event _ _ app-state]
-  #?(:cljs
-     (effects/fetch-cms-keypath app-state [:faq :free-mayvenn-services])))
