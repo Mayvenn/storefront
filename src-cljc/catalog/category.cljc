@@ -5,6 +5,7 @@
               [storefront.platform.messages :as messages]
               [storefront.browser.scroll :as scroll]
               [storefront.hooks.facebook-analytics :as facebook-analytics]])
+   adventure.faq
    adventure.keypaths
    [catalog.icp :as icp]
    [catalog.skuers :as skuers]
@@ -148,7 +149,7 @@
                                                  {:faq/expanded-index (get-in app-state storefront.keypaths/faq-expanded-section)
                                                   :list/sections      (for [{:keys [question answer]} question-answers]
                                                                         {:faq/title   (:text question)
-                                                                         :faq/content answer})}))}
+                                                                         :faq/content (adventure.faq/answer->content answer)})}))}
 
                     (when (and service-category-page? servicing-stylist stylist-mismatch?)
                       {:stylist-bar/id             "category-page-stylist-bar"

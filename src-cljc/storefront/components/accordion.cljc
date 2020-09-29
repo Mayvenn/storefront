@@ -10,16 +10,6 @@
   {:title      title
    :content content})
 
-(defn content-block [content]
-  (map-indexed (fn [i {blocks :paragraph}]
-                 [:p.py2.h6 {:key (str "paragraph-" i)}
-                  (map-indexed (fn [j {:keys [text url]}]
-                                 (if url
-                                   [:a.p-color {:href url :key (str "text-" j)} text]
-                                   [:span {:key (str "text-" j)} text]))
-                               blocks)])
-               content))
-
 (defn- section-element
   [expanded? index title content section-click-event]
   (component/html
@@ -38,9 +28,9 @@
               (when (or expanded? #?(:clj true)) ;; always show for server-side rendered html
                 (component/html
                  [:div.mr8
-                  (content-block content)])))]))
+                  [:p.py2.h6 content]])))]))
 
 (defcomponent component [{:keys [expanded-indices sections]} owner {:keys [section-click-event]}]
   [:div
-   (for [[idx {:keys [title content]}] (map-indexed vector (spice.core/spy sections))]
+   (for [[idx {:keys [title content]}] (map-indexed vector sections)]
      ^:inline (section-element (contains? (set expanded-indices) idx) idx title content section-click-event))])

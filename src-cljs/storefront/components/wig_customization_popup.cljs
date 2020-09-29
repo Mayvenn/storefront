@@ -199,4 +199,4 @@
      :faq/expanded-index (get-in data keypaths/faq-expanded-section)
      :faq/sections       (for [{:keys [question answer]} (:question-answers faq)]
                            {:title   (:text question)
-                            :content answer})}))
+                            :content (faq/answer->content answer)})}))
