@@ -275,8 +275,7 @@
 (defmethod effects/perform-effects events/navigate-about-mayvenn-install
   [_ _ _ _ app-state]
   (doseq [keypath [[:advertisedPromo]
-                   [:ugc-collection :free-install-mayvenn]
-                   [:faq :free-mayvenn-services]]]
+                   [:ugc-collection :free-install-mayvenn]]]
     (effects/fetch-cms-keypath app-state keypath)))
 
 (defmethod effects/perform-effects events/navigate-info
