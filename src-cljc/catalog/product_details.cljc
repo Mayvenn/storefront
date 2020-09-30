@@ -243,9 +243,7 @@
     (when-let [social-cards (when product
                               (->> cms-ugc-collection
                                    :looks
-                                   (mapv (partial contentful/look->pdp-social-card
-                                                  (get-in data keypaths/navigation-event)
-                                                  album-keyword))
+                                   (mapv (partial contentful/look->pdp-social-card album-keyword))
                                    not-empty))]
       {:carousel-data {:product-id   (:catalog/product-id product)
                        :product-name (:copy/title product)

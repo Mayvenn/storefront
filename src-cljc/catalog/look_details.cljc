@@ -71,8 +71,11 @@
   [:div.clearfix
    (when look
      [:div.bg-cool-gray.slides-middle.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
-      (when shared-cart
-        (carousel {:look look :shared-cart shared-cart} (:carousel/images queried-data)))
+
+      [:div.relative
+       {:style {:height "445px"}}
+       (when shared-cart
+         (carousel {:look look :shared-cart shared-cart} (:carousel/images queried-data)))]
       [:div.px3.pb3.pt1
        [:div.flex.items-center
         [:div.flex-auto.content-1.proxima {:style {:word-break "break-all"}}
@@ -271,9 +274,8 @@
                                                 :line-items
                                                 (enrich-line-items-with-sku-data skus)
                                                 (map (partial add-product-title-and-color-to-line-item products facets)))
-        navigation-event               (get-in data keypaths/navigation-event)
         album-keyword                  (get-in data keypaths/selected-album-keyword)
-        look                           (contentful/look->look-detail-social-card navigation-event album-keyword
+        look                           (contentful/look->look-detail-social-card album-keyword
                                                                                  (contentful/selected-look data))
         album-copy                     (get ugc/album-copy album-keyword)
         base-price                     (->> line-items

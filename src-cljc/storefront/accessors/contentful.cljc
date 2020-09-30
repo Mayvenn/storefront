@@ -34,10 +34,9 @@
       :shared-cart-id))
 
 (defn look->social-card
-  ([current-nav-event album-keyword look]
-   (look->social-card current-nav-event album-keyword {} look))
-  ([current-nav-event
-    album-keyword
+  ([album-keyword look]
+   (look->social-card album-keyword {} look))
+  ([album-keyword
     color-details
     {:keys [photo-url
             color
@@ -59,15 +58,14 @@
                                 :look-id       id}]})))
 
 (defn look->look-detail-social-card
-  ([nav-event album-keyword look]
-   (look->look-detail-social-card nav-event album-keyword {} look))
-  ([nav-event
-    album-keyword
+  ([album-keyword look]
+   (look->look-detail-social-card album-keyword {} look))
+  ([album-keyword
     color-details
     {:keys [social-media-handle
             social-media-post]
      :as   look}]
-   (let [base (look->social-card nav-event album-keyword color-details look)]
+   (let [base (look->social-card album-keyword color-details look)]
      (merge
       base
       {:title                  social-media-handle
@@ -76,14 +74,13 @@
        :cta/navigation-message (-> base :cta/navigation-message)}))))
 
 (defn look->pdp-social-card
-  ([nav-event album-keyword look]
-   (look->pdp-social-card nav-event album-keyword {} look))
-  ([nav-event
-    album-keyword
+  ([album-keyword look]
+   (look->pdp-social-card album-keyword {} look))
+  ([album-keyword
     color-details
     {:keys [social-media-handle]
      :as   look}]
-   (let [base (look->social-card nav-event album-keyword color-details look)]
+   (let [base (look->social-card album-keyword color-details look)]
      (merge
       base
       {:title                  social-media-handle
@@ -91,14 +88,13 @@
        :cta/navigation-message (-> base :cta/navigation-message)}))))
 
 (defn look->homepage-social-card
-  ([nav-event album-keyword look]
-   (look->homepage-social-card nav-event album-keyword {} look))
-  ([nav-event
-    album-keyword
+  ([album-keyword look]
+   (look->homepage-social-card album-keyword {} look))
+  ([album-keyword
     color-details
     {:keys [description]
      :as   look}]
-   (let [base (look->social-card nav-event album-keyword color-details look)]
+   (let [base (look->social-card album-keyword color-details look)]
      (merge
       base
       {:description            description
@@ -106,6 +102,6 @@
        :cta/navigation-message (-> base :cta/navigation-message)}))))
 
 (defn album-kw->homepage-social-cards
-  [ugc-collections nav-event album-kw]
-  (mapv (partial look->homepage-social-card nav-event album-kw)
+  [ugc-collections album-kw]
+  (mapv (partial look->homepage-social-card album-kw)
         (->> ugc-collections album-kw :looks)))

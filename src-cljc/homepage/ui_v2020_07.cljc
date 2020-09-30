@@ -112,7 +112,6 @@
   [ugc]
   (let [images (->> ugc :free-install-mayvenn :looks
                     (mapv (partial contentful/look->homepage-social-card
-                                   e/navigate-home
                                    :free-install-mayvenn)))]
     {:hashtag-mayvenn-hair.looks/images images
      :hashtag-mayvenn-hair.cta/id       "see-more-looks"

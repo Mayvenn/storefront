@@ -35,8 +35,7 @@
 
 (defn query
   [data]
-  (let [cms-ugc-collection (get-in data storefront.keypaths/cms-ugc-collection)
-        current-nav-event  (get-in data storefront.keypaths/navigation-event)]
+  (let [cms-ugc-collection (get-in data storefront.keypaths/cms-ugc-collection)]
     {:layers
      [{:layer/type :hero
        :opts       {:href      "/adv/match-stylist"
@@ -108,9 +107,7 @@
        :images       (->> cms-ugc-collection
                           :free-install-mayvenn
                           :looks
-                          (mapv (partial contentful/look->homepage-social-card
-                                         current-nav-event
-                                         :free-install-mayvenn)))
+                          (mapv (partial contentful/look->homepage-social-card :free-install-mayvenn)))
        :cta/id       "see-more-looks"
        :cta/value    "see more looks"
        :cta/target   [events/navigate-shop-by-look {:album-keyword :look}]}

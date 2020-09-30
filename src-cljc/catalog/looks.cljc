@@ -21,8 +21,7 @@
                                                                          :key  (str (:id look))}))]]))
 
 (defn query [data]
-  (let [navigation-event  (get-in data keypaths/navigation-event)
-        selected-album-kw (get-in data keypaths/selected-album-keyword)
+  (let [selected-album-kw (get-in data keypaths/selected-album-keyword)
         actual-album-kw   (ugc/determine-look-album data selected-album-kw)
         looks             (-> data (get-in keypaths/cms-ugc-collection) actual-album-kw :looks)
         color-details     (->> (get-in data keypaths/v2-facets)
@@ -31,7 +30,6 @@
                                :facet/options
                                (maps/index-by :option/slug))]
     {:looks     (mapv (partial contentful/look->social-card
-                               navigation-event
                                selected-album-kw
                                color-details)
                       looks)
