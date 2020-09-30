@@ -1040,6 +1040,9 @@
                (GET "/robots.txt" req (-> (robots req) util.response/response (util.response/content-type "text/plain")))
                (GET "/sitemap.xml" req (sitemap-index req))
                (GET "/sitemap-pages.xml" req (sitemap-pages ctx req))
+               (GET "/googlee2783b8646cb0bdd.html" req
+                    (-> "google-site-verification: googlee2783b8646cb0bdd.html"
+                        (util.response/response) (util.response/content-type "text/html")))
                (GET "/blog" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/blog/"))))
                (GET "/blog/" req (util.response/redirect (store-url "shop" environment req)))
                (GET "/info" req (util.response/redirect (store-url "shop" environment req)))
