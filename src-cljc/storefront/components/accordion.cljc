@@ -42,5 +42,5 @@
 
 (defcomponent component [{:keys [expanded-indices sections]} owner {:keys [section-click-event]}]
   [:div
-   (for [[idx {:keys [title content]}] (map-indexed vector (spice.core/spy sections))]
+   (for [[idx {:keys [title content]}] (map-indexed vector sections)]
      ^:inline (section-element (contains? (set expanded-indices) idx) idx title content section-click-event))])
