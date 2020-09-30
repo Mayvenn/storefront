@@ -57,14 +57,32 @@
                 :copy          "back"
                 :event-message [events/navigate-v2-stylist-dashboard-payments]})
 
+(defn friday-et?
+  "Is a given date Friday (on the East Coast?)"
+  [date]
+  (->> date
+       (.formatToParts (js/Intl.DateTimeFormat
+                        "en-US" #js
+                        {:timeZone "America/New_York"
+                         :weekday  "short"
+                         :hour     "numeric"
+                         :hour12   false}))
+       js->clj
+       (mapv js->clj)
+       (mapv (fn [{:strs [type value]}]
+               {(keyword type) value}))
+       (reduce merge {})
+       :weekday
+       (contains? #{"Fri"})))
+
+
 (defn query [data]
   (let [{:keys [amount payout-method]}                    (get-in data keypaths/stylist-payout-stats-next-payout)
         {:keys [name type last-4 email payout-timeframe]} payout-method
         greendot?                                         (= type "Mayvenn::GreenDotPayoutMethod")
-        friday?                                           (= (spice.date/weekday-index (spice.date/now)) 5) ; 5 is friday
         fee-due?                                          (and (experiments/instapay? data)
                                                                greendot?
-                                                               (not friday?))
+                                                               (not (friday-et? (spice.date/now))))
         fee-amount                                        1
         total-amount                                      (if fee-due?
                                                             (- amount fee-amount)
@@ -99,14 +117,14 @@
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
 
-#_(defn ^:private should-redirect? [next-payout]
+(defn ^:private should-redirect? [next-payout]
   (cond
     (some-> next-payout :payout-method payouts/cash-out-eligible? not) true
     (some-> next-payout :amount pos? not)                              true
     :else                                                              false))
 
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-cash-out-begin [_ _ _ _ app-state]
-  #_(if true #_(should-redirect? (get-in app-state keypaths/stylist-payout-stats-next-payout))
+  (if (should-redirect? (get-in app-state keypaths/stylist-payout-stats-next-payout))
     (effects/redirect events/navigate-v2-stylist-dashboard-payments)
     (api/get-stylist-payout-stats events/api-success-stylist-payout-stats-cash-out
                                   (get-in app-state keypaths/user-store-id)
