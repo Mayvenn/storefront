@@ -1,5 +1,6 @@
 (ns storefront.accessors.contentful
-  (:require [lambdaisland.uri :as uri]
+  (:require [clojure.string :as string]
+            [lambdaisland.uri :as uri]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]))
@@ -40,18 +41,23 @@
     color-details
     {:keys [photo-url
             color
+            origin
+            texture
             :content/id
             description
             social-media-platform]}]
-   (let [color-detail (get color-details (color-name->color-slug color))]
+   (let [color-detail (get color-details (color-name->color-slug color))
+         title (or (->> [origin texture]
+                        (remove nil?)
+                        (string/join " "))
+                   "Check this out!")]
      {:id                     id
       :image-url              photo-url
       :description            description
       :desktop-aware?         true
       :social-service         social-media-platform
       :icon-url               (:option/rectangle-swatch color-detail)
-      :title                  (or (:option/name color-detail)
-                                  "Check this out!")
+      :title                  title
       :cta/button-type        :underline-button
       :cta/navigation-message [events/navigate-shop-by-look-details
                                {:album-keyword album-keyword
