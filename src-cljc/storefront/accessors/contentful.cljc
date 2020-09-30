@@ -49,7 +49,8 @@
    (let [color-detail (get color-details (color-name->color-slug color))
          title (or (->> [origin texture]
                         (remove nil?)
-                        (string/join " "))
+                        (string/join " ")
+                        not-empty)
                    "Check this out!")]
      {:id                     id
       :image-url              photo-url
