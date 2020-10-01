@@ -114,8 +114,7 @@
                    disabled?                                                 (assoc :data-test-disabled "yes")
                    spinning?                                                 (assoc :data-test-spinning "yes")
                    :always                                                   (update :class str " " additional-classes)
-                   disabled?                                                 (update :class str (str " btn-gray btn-disabled " (or disabled-class "is-disabled")))
-                   disabled?                                                 (update :style merge {:cursor "not-allowed"}))
+                   disabled?                                                 (update :class str (str " btn-gray btn-disabled cursor-not-allowed " (or disabled-class "is-disabled"))))
          content (if spinning? [spinner] content)]
      [:a (merge {:href "#"} attrs)
       ;; FIXME: the button helper functions with & content force us to do this for consistency

@@ -1,4 +1,5 @@
 .pointer { cursor: pointer; }
+.cursor-not-allowed { cursor: not-allowed; }
 
 .transition-ease        { transition-timing-function: ease; }
 .transition-ease-in     { transition-timing-function: ease-in; }
