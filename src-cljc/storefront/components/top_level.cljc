@@ -187,7 +187,7 @@
 
        ;; Cart pages for Shop
        (routes/sub-page? [nav-event] [events/navigate-cart])
-       ((ui/lazy-load-component :catalog 'checkout.shop.cart-v202004/page nav-event) data nav-event)
+       ((ui/lazy-load-component :checkout 'checkout.shop.cart-v2020-09/page nav-event) data nav-event)
 
        ;; TODO this should be moved into the UI domain of stylist-matching
        (routes/sub-page? [nav-event] [events/navigate-adventure])

@@ -8,7 +8,7 @@
             checkout.cart
             checkout.added-to-cart
             checkout.classic-cart
-            checkout.shop.cart-v202004
+            checkout.shop.cart-v2020-09
             checkout.behavior
             adventure.handlers ;; TODO, wherever these go, maybe they shouldn't be here
             [storefront.loader :as loader]))
