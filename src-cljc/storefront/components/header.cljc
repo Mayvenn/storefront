@@ -434,7 +434,7 @@
                                     :slide-out-nav-menu-item/id          "menu-shop-services"
                                     :slide-out-nav-menu-item/new-primary "NEW"
                                     :slide-out-nav-menu-item/primary     "Browse Services"}
-                                   {:slide-out-nav-menu-item/target  [events/flow--stylist-matching--began]
+                                   {:slide-out-nav-menu-item/target  [events/navigate-adventure-match-stylist]
                                     :slide-out-nav-menu-item/id      "menu-shop-find-stylist"
                                     :slide-out-nav-menu-item/primary "Find a Stylist"}
                                    {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :shop-looks}]

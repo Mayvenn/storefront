@@ -20,7 +20,7 @@
             adventure.stylist-matching.stylist-profile
             adventure.stylist-matching.stylist-gallery
 
-            stylist-matching.core ;; Evaluated for handlers
+            stylist-matching.match-stylist
             stylist-matching.find-your-stylist
             stylist-matching.stylist-results
             stylist-matching.match-success
@@ -113,6 +113,7 @@
    events/navigate-info-certified-stylists (constantly adventure.informational.certified-stylists/built-component)
    events/navigate-info-about-our-hair     (constantly adventure.informational.about-our-hair/built-component)
 
+   events/navigate-adventure-match-stylist                           (constantly stylist-matching.match-stylist/page)
    events/navigate-adventure-find-your-stylist                       (constantly stylist-matching.find-your-stylist/page)
    events/navigate-adventure-stylist-results-pre-purchase            (constantly stylist-matching.stylist-results/page)
    events/navigate-adventure-stylist-results-post-purchase           (constantly stylist-matching.stylist-results/page)

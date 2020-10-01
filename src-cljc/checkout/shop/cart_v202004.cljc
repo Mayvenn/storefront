@@ -198,7 +198,7 @@
      :empty-cart-body/image-id  "6146f2fe-27ed-4278-87b0-7dc46f344c8c"
      :cta/id                    "browse-stylists"
      :cta/label                 "Browse Stylists"
-     :cta/target                [events/flow--stylist-matching--began]}))
+     :cta/target                [events/navigate-adventure-match-stylist]}))
 
 (defn ^:private variants-requests [data request-key variant-ids]
   (->> variant-ids

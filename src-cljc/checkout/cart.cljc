@@ -10,7 +10,7 @@
 
 (defmethod effects/perform-effects events/control-pick-stylist-button
   [_ _ _ _ _]
-  #?(:cljs (history/enqueue-navigate events/flow--stylist-matching--began)))
+  #?(:cljs (history/enqueue-navigate events/navigate-adventure-match-stylist)))
 
 (defmethod effects/perform-effects events/control-change-stylist
   [_ _ _ _ _]
