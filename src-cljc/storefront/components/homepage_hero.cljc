@@ -2,10 +2,15 @@
   (:require [storefront.routes :as routes]
             [storefront.events :as events]))
 
+(defn info-path? [path]
+  (when path (re-find #"/info/..*" path)))
+
 (defn query
   [cms-hero-data]
   (let [path                    (or (:path cms-hero-data) "/shop/look")
-        [event :as routed-path] (routes/navigation-message-for path)
+        [event :as routed-path] (if (info-path? path)
+                                  [events/external-redirect-info-page {:info-path path}]
+                                  (routes/navigation-message-for path))
         link-options            (assoc (if-not (= events/navigate-not-found event)
                                          {:navigation-message routed-path}
                                          {:href path}) :data-test "home-banner")]

@@ -92,8 +92,9 @@
            off-screen?]
     :or   {file-name "hero-image"}} _ _]
   [:a (cond-> opts
-        (:navigation-message opts) (merge (apply utils/route-to (:navigation-message opts)))
-        (:navigation-message opts) (dissoc :navigation-message))
+        (:navigation-message opts)
+        (-> (merge (apply utils/route-to (:navigation-message opts)))
+            (dissoc :navigation-message)))
    (cond
      off-screen? [:div.col-12]
      ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)

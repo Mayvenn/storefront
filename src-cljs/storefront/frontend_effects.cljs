@@ -141,6 +141,10 @@
                         {:selector/sku-ids missing-ids}
                         handler))))
 
+(defmethod effects/perform-effects events/external-redirect-info-page
+  [_ event {:keys [info-path]} _ app-state]
+  (set! (.-location js/window) (str "https://shop.mayvenn.com" info-path)))
+
 (defmethod effects/perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
 
