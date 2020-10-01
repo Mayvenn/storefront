@@ -430,15 +430,16 @@
 
 (defn upsold-cart-summary-query
   "The cart has an upsell 'entered' because the customer has requested a service discount"
-  [{:as order :keys [adjustments]}
-   {:free-mayvenn-service/keys [service-item discounted?] :as free-mayvenn-service}]
+  [{:as order :keys [adjustments]} free-mayvenn-service]
   (let [wig-customization?  (orders/wig-customization? order)
-        service-discounted? discounted?
+        service-item-price  (* (:item/quantity free-mayvenn-service)
+                               (:item/unit-price free-mayvenn-service))
         total               (:total order)
         tax                 (:tax-total order)
         subtotal            (orders/products-and-services-subtotal order)
         adjustment          (->> order :adjustments (map :price) (reduce + 0))
-        total-savings       (- adjustment)]
+        total-savings       (- adjustment)
+        service-discounted? (= adjustment service-item-price)]
     (cond->
         {:cart-summary/id                 "cart-summary"
          :cart-summary-total-line/id      "total"
@@ -471,8 +472,8 @@
                                          install-summary-line?
                                          (merge
                                           {:cart-summary-line/id    "free-service-adjustment"
-                                           :cart-summary-line/value (mf/as-money-or-free (- (line-items/service-line-item-price service-item)))
-                                           :cart-summary-line/label (str "Free " (:variant-name service-item))
+                                           :cart-summary-line/value (mf/as-money-or-free service-item-price)
+                                           :cart-summary-line/label (str "Free " (:item/variant-name free-mayvenn-service))
 
                                            :cart-summary-line/action-id     "cart-remove-promo"
                                            :cart-summary-line/action-icon   [:svg/close-x {:class "stroke-white fill-gray"}]
