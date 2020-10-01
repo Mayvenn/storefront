@@ -841,7 +841,6 @@
                                                 ["https://shop.mayvenn.com/info/wigs-101-guide"            "0.60"]
                                                 ["https://shop.mayvenn.com/login"                          "0.60"]
                                                 ["https://shop.mayvenn.com/signup"                         "0.60"]
-                                                ["https://shop.mayvenn.com/adv/match-stylist"              "0.60"]
                                                 ["https://shop.mayvenn.com/shop/look"                      "0.80"]
                                                 ["https://shop.mayvenn.com/shop/straight-looks"            "0.80"]
                                                 ["https://shop.mayvenn.com/shop/wavy-curly-looks"          "0.80"]
@@ -981,12 +980,11 @@
       (wrap-fetch-completed-order (:storeback-config ctx))
       (wrap-cookies (storefront-site-defaults (:environment ctx)))))
 
-(defn wrap-redirect-legacy-routes
+(defn wrap-redirect-legacy-freeinstall-domain-routes
   [h {:keys [environment]}]
   (fn [{:keys [subdomains] :as req}]
     (letfn [(freeinstall-redirects [uri]
               (condp (fn [substr s] (string/starts-with? s substr)) (str uri)
-                "/adv/match-stylist"     "/adv/match-stylist"
                 "/adv/find-your-stylist" "/adv/find-your-stylist"
                 "/stylist/"              uri
                 "/adv/stylist-results"   "/adv/stylist-results"
@@ -1064,6 +1062,7 @@
                (GET "/share" req (redirect-to-home environment req :found))
                (GET "/account/referrals" req (redirect-to-home environment req :found))
                (GET "/stylist/referrals" req (redirect-to-home environment req :found))
+               (GET "/adv/match-stylist" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/adv/find-your-stylist")) :moved-permanently))
                (GET "/cms/*" {uri :uri}
                     (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
                       (-> (contentful/read-cache contentful)
@@ -1079,7 +1078,7 @@
                            (route/not-found views/not-found))
                    (wrap-resource "public")
                    (wrap-content-type {:mime-types extra-mimetypes})))
-       (wrap-redirect-legacy-routes ctx)
+       (wrap-redirect-legacy-freeinstall-domain-routes ctx)
        (wrap-add-nav-message)
        (wrap-add-domains)
        (wrap-logging logger)

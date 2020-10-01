@@ -111,7 +111,7 @@
           :promotion-helper.ui.drawer-contents.condition.action/id          "condition-add-stylist-button"
           :promotion-helper.ui.drawer-contents.condition.action/label       "add"
           :promotion-helper.ui.drawer-contents.condition.action/target
-          [behavior/followed {:target    [e/navigate-adventure-match-stylist]
+          [behavior/followed {:target    [e/flow--stylist-matching--began]
                               :condition "add-stylist"}]})]}
      (when (zero? failed-criteria-count)
        {:promotion-helper.ui.drawer-contents.footer/id         "promotion-helper-conditions-fulfilled-footer"

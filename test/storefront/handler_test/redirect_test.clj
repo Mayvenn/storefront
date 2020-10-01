@@ -436,7 +436,6 @@
 
 (deftest legacy-freeinstall-redirects
   (is-redirected-from-freeinstall-to-shop "/" "/")
-  (is-redirected-from-freeinstall-to-shop "/adv/match-stylist" "/adv/match-stylist")
   (is-redirected-from-freeinstall-to-shop "/adv/find-your-stylist" "/adv/find-your-stylist")
   (is-redirected-from-freeinstall-to-shop "/adv/stylist-results" "/adv/stylist-results")
   (is-redirected-from-freeinstall-to-shop "/adv/match-success" "/")
@@ -622,3 +621,10 @@
         (is (= 301 (:status resp)) (pr-str resp))
         (is (= "https://shop.mayvenn.com/stylist/10-jasmine"
                (get-in resp [:headers "Location"])))))))
+
+(deftest redirects-match-stylist-to-find-your-stylist
+  (with-services {}
+    (with-handler handler
+      (let [resp (handler (mock/request :get "https://shop.mayvenn.com/adv/match-stylist"))]
+        (is (= 301 (:status resp)) (pr-str resp))
+        (is (= "https://shop.mayvenn.com/adv/find-your-stylist" (get-in resp [:headers "Location"])))))))

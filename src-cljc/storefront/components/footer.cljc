@@ -152,7 +152,7 @@
                                        :sort-order  2
                                        :id          "find-a-stylist"
                                        :new-link?   false
-                                       :nav-message [events/navigate-adventure-match-stylist]}])
+                                       :nav-message [events/flow--stylist-matching--began]}])
                                    (when (not classic?)
                                      [{:title       "Shop By Look"
                                        :sort-order  3

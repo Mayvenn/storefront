@@ -99,7 +99,7 @@
 
 (defmethod storefront.effects/perform-effects e/control-cart-interstitial-browse-stylist-cta
   [_ _ _ _ _]
-  #?(:cljs (history/enqueue-navigate e/navigate-adventure-match-stylist)))
+  #?(:cljs (history/enqueue-navigate e/flow--stylist-matching--began)))
 
 (defmethod storefront.trackings/perform-track e/control-cart-interstitial-browse-stylist-cta
   [_ _ _ _]

@@ -607,7 +607,7 @@
        #:browse-stylists-banner {:title       "Buy 3 items and we'll pay for your hair install"
                                  :subtitle    "Choose any Mayvenn stylist in your area"
                                  :button-copy "browse stylists"
-                                 :nav-event   [events/navigate-adventure-match-stylist]
+                                 :nav-event   [events/flow--stylist-matching--began]
                                  :class       "bg-pale-purple"
                                  :id          "browse-stylists-banner-cta"})
 
@@ -622,7 +622,7 @@
         :browse-stylists-banner/subtitle       (str "We’ve rounded up the best stylists in the country so you can be "
                                                     "sure your hair is in really, really good hands.")
         :browse-stylists-banner/button-copy    "browse stylists"
-        :browse-stylists-banner/nav-event      [events/navigate-adventure-match-stylist]
+        :browse-stylists-banner/nav-event      [events/flow--stylist-matching--began]
         :browse-stylists-banner/image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
         :browse-stylists-banner/class          "bg-refresh-gray"
         :browse-stylists-banner/id             "browse-stylists-banner-cta"
@@ -693,7 +693,7 @@
         :browse-stylists-banner/subtitle       (str "We’ve rounded up the best stylists in the country so you can be "
                                                     "sure your hair is in really, really good hands.")
         :browse-stylists-banner/button-copy    "browse stylists"
-        :browse-stylists-banner/nav-event      [events/navigate-adventure-match-stylist]
+        :browse-stylists-banner/nav-event      [events/flow--stylist-matching--began]
         :browse-stylists-banner/image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
         :browse-stylists-banner/class          "bg-refresh-gray"
         :browse-stylists-banner/id             "browse-stylists-banner-cta"

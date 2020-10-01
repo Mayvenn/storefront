@@ -63,7 +63,7 @@
    :header.title/id               "adventure-title"
    :header.title/primary          "Meet Your Stylist"
    :header.back-navigation/id     "adventure-back"
-   :header.back-navigation/target [events/navigate-adventure-match-stylist]})
+   :header.back-navigation/target [events/flow--stylist-matching--began]})
 
 (defcomponent template
   [{:keys [flash header stylist-search spinner cart]} _ _]

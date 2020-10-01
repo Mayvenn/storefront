@@ -494,7 +494,6 @@
 
 ;; ADVENTURE
 (defpath navigate-adventure)
-(defpath navigate-adventure-match-stylist)
 (defpath navigate-adventure-find-your-stylist)
 (defpath navigate-adventure-shop-hair)
 (defpath navigate-adventure-how-shop-hair)
@@ -511,6 +510,8 @@
 (defpath navigate-adventure-match-success-post-purchase)
 (defpath navigate-adventure-stylist-profile)
 (defpath navigate-adventure-stylist-profile-post-purchase)
+
+(defpath flow--stylist-matching--began)
 
 (defpath control-adventure-select-stylist)
 (defpath control-adventure-select-stylist-pre-purchase)

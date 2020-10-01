@@ -137,3 +137,7 @@
 (defn instapay?
   [data]
   (display-feature? data "instapay"))
+
+(defn search-by-name?
+  [data]
+  (display-feature? data "search-by-name"))

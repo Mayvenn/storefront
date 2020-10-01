@@ -22,7 +22,7 @@
              :body/value             (str "Our Certified Stylists are the best in your area. "
                                           "They’re chosen because of their top-rated reviews, professionalism, and amazing work.")
              :cta/value              "Get started"
-             :cta/navigation-message [events/navigate-adventure-match-stylist nil]}
+             :cta/navigation-message [events/flow--stylist-matching--began nil]}
 
             {:layer/type      :shop-bulleted-explainer
              :header/value    "About Our Certified Stylists"
@@ -74,7 +74,7 @@
              :layer/id               "sticky-footer-certified-stylists"
              :sticky/content         "It’s true, we are paying for your install! "
              :cta/label              "Get started"
-             :cta/navigation-message [events/navigate-adventure-match-stylist]}]})
+             :cta/navigation-message [events/flow--stylist-matching--began]}]})
 
 (defn built-component
   [data opts]
