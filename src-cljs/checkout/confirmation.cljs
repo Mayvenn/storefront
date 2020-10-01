@@ -1,7 +1,7 @@
 (ns checkout.confirmation
   (:require api.orders
+            [catalog.facets :as facets]
             [catalog.images :as catalog-images]
-            [checkout.shop.cart-v202004 :as cart]
             [checkout.ui.cart-item-v202004 :as cart-item-v202004]
             [checkout.ui.cart-summary-v202004 :as cart-summary]
             [clojure.string :as string]
@@ -10,6 +10,8 @@
             [storefront.accessors.adjustments :as adjustments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.images :as images]
+            [storefront.accessors.products :as products]
+            [storefront.accessors.shipping :as shipping]
             [storefront.accessors.stylists :as stylists]
             [storefront.api :as api]
             [storefront.config :as config]
@@ -246,6 +248,20 @@
       string/lower-case
       (string/replace #"[^a-z]+" "-")))
 
+(defn shipping-method-summary-line-query
+  [shipping-method non-shipping-line-items]
+  (let [free-shipping? (= "WAITER-SHIPPING-1" (:sku shipping-method))
+        only-services? (every? line-items/service? non-shipping-line-items)]
+    (when (and shipping-method (not (and free-shipping? only-services?)))
+      {:cart-summary-line/id       "shipping"
+       :cart-summary-line/label    "Shipping"
+       :cart-summary-line/sublabel (-> shipping-method :sku shipping/timeframe)
+       :cart-summary-line/value    (->> shipping-method
+                                        vector
+                                        (apply (juxt :quantity :unit-price))
+                                        (reduce * 1)
+                                        mf/as-money-or-free)})))
+
 (defn ^:private cart-summary-query
   [{:as order :keys [adjustments]}
    {:free-mayvenn-service/keys [service-item discounted]}
@@ -269,7 +285,7 @@
                                              :cart-summary-line/value (mf/as-money subtotal)}]
 
                                            (when-let [shipping-method-summary-line
-                                                      (cart/shipping-method-summary-line-query
+                                                      (shipping-method-summary-line-query
                                                        (orders/shipping-item order)
                                                        (orders/product-and-service-items order))]
                                              [shipping-method-summary-line])
@@ -408,6 +424,17 @@
            :cart-item-square-thumbnail/ucare-id      (->> sku (catalog-images/image images "cart") :ucare/id)})]
     cart-items))
 
+(defn add-product-title-and-color-to-line-item [products facets line-item]
+  (merge line-item {:product-title (->> line-item
+                                        :sku
+                                        (products/find-product-by-sku-id products)
+                                        :copy/title)
+                    :color-name    (-> line-item
+                                       :variant-attrs
+                                       :color
+                                       (facets/get-color facets)
+                                       :option/name)}))
+
 (defn query
   [data]
   (let [order                                           (get-in data keypaths/order)
@@ -424,7 +451,7 @@
         images-catalog                                  (get-in data storefront.keypaths/v2-images)
         products                                        (get-in data keypaths/v2-products)
         facets                                          (get-in data keypaths/v2-facets)
-        physical-line-items                             (map (partial cart/add-product-title-and-color-to-line-item products facets)
+        physical-line-items                             (map (partial add-product-title-and-color-to-line-item products facets)
                                                              (orders/product-items order))
         addon-service-line-items                        (->> order
                                                              orders/service-line-items
