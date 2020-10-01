@@ -14,6 +14,20 @@
             [storefront.request-keys :as request-keys]
             [catalog.images :as catalog-images]))
 
+(defn- adjacent-skus
+  [products skus sku]
+  (->> sku
+       :selector/from-products
+       first
+       (get products)
+       :selector/sku-ids
+       (map (partial get skus))
+       (selector/match-all {} {:hair/color (:hair/color sku)})
+       (sort-by (comp first :hair/length))
+       (partition-by #(= (:catalog/sku-id sku) (:catalog/sku-id %)))))
+
+;; --------------
+
 (defn suggest-bundles
   [data products skus items]
   (when (= 1 (orders/line-item-quantity items))
@@ -22,17 +36,9 @@
         (let [sku               (get skus sku-id)
               images-catalog    (get-in data keypaths/v2-images)
               image             (images/cart-image images-catalog sku)
-              adjacent-skus     (->> sku
-                                     :selector/from-products
-                                     first
-                                     (get products)
-                                     :selector/sku-ids
-                                     (map (partial get skus))
-                                     (selector/match-all {} {:hair/color (:hair/color sku)})
-                                     (sort-by (comp first :hair/length))
-                                     (partition-by #(= (:catalog/sku-id sku) (:catalog/sku-id %))))
-              shorter-skus      (first adjacent-skus)
-              longer-skus       (last adjacent-skus)
+              adjacent-skus'    (adjacent-skus products skus sku)
+              shorter-skus      (first adjacent-skus')
+              longer-skus       (last adjacent-skus')
               short-suggestions (if (< (count shorter-skus) 2)
                                   (repeat 2 sku)
                                   (take-last 2 shorter-skus))
