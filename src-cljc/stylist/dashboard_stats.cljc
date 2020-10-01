@@ -38,6 +38,7 @@
    expanded?
    cashing-out?
    disabled?
+   instapay-balance-too-low?
    {:as earnings :keys [cash-balance lifetime-earnings monthly-earnings]}
    {:as services :keys [lifetime-services monthly-services]}]
   (let [toggle-expand (utils/fake-href events/control-v2-stylist-dashboard-section-toggle
@@ -54,7 +55,9 @@
 
      [:div.flex.mt1.items-center.justify-between
       [:a.col-5 toggle-expand
-       [:div.h1.black.medium.flex (mf/as-money cash-balance)]]
+       [:div.h1.black.medium.flex (mf/as-money cash-balance)]
+       (when instapay-balance-too-low?
+         [:div.dark-gray.proxima.content-4 "$1.01 or more is required to cash out."])]
       [:div.col-5
        (if (payouts/cash-out-eligible? payout-method)
          (ui/button-medium-primary
@@ -123,13 +126,15 @@
                          :maximum (- next-level previous-level)})]])
 
 (defcomponent component
-  [{:keys [cash-balance-section-expanded? store-credit-balance-section-expanded? stats total-available-store-credit payout-method cashing-out? fetching-stats? dashboard-with-vouchers? disabled?]} owner opts]
+  [{:keys [cash-balance-section-expanded? store-credit-balance-section-expanded? stats
+           total-available-store-credit payout-method cashing-out? fetching-stats?
+           dashboard-with-vouchers? disabled? instapay-balance-too-low?]} owner opts]
   (let [{:keys [bonuses earnings services]} stats
         {:keys [lifetime-earned]}           bonuses]
     (if (and (not lifetime-earned) fetching-stats?)
       [:div.my2.h2 ui/spinner]
       [:div.p2
-       (cash-balance-card payout-method cash-balance-section-expanded? cashing-out? disabled? earnings services)
+       (cash-balance-card payout-method cash-balance-section-expanded? cashing-out? disabled? instapay-balance-too-low? earnings services)
        [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned store-credit-balance-section-expanded?)]
        (when-not dashboard-with-vouchers?
          (sales-bonus-progress bonuses))])))
@@ -137,22 +142,24 @@
 (def not-reimbursed-for-services? (complement experiments/dashboard-with-vouchers?))
 
 (defn query [data]
-  (let [stats         (cond-> (get-in data keypaths/v2-dashboard-stats)
-                        (not-reimbursed-for-services? data)
-                        (dissoc :services))
-        payout-method (get-in data keypaths/stylist-manage-account-chosen-payout-method)
-        cash-balance  (-> stats :earnings :cash-balance)]
+  (let [stats                     (cond-> (get-in data keypaths/v2-dashboard-stats)
+                                    (not-reimbursed-for-services? data)
+                                    (dissoc :services))
+        payout-method             (get-in data keypaths/stylist-manage-account-chosen-payout-method)
+        cash-balance              (-> stats :earnings :cash-balance)
+        instapay-balance-too-low? (and (experiments/instapay? data)
+                                       (<= cash-balance 1)
+                                       (boolean (#{"Mayvenn::GreenDotPayoutMethod"
+                                                   "green_dot"}
+                                                 (or (:type payout-method)
+                                                     payout-method))))]
     {:stats                                  stats
      :dashboard-with-vouchers?               (experiments/dashboard-with-vouchers? data)
      :cashing-out?                           (utils/requesting? data request-keys/cash-out-commit)
      :payout-method                          payout-method
+     :instapay-balance-too-low?              instapay-balance-too-low?
      :disabled?                              (or (not (pos? cash-balance))
-                                                 (and (experiments/instapay? data)
-                                                      (<= cash-balance 1)
-                                                      (boolean (#{"Mayvenn::GreenDotPayoutMethod"
-                                                                  "green_dot"}
-                                                                (or (:type payout-method)
-                                                                    payout-method)))))
+                                                 instapay-balance-too-low?)
      :cash-balance-section-expanded?         (get-in data keypaths/v2-ui-dashboard-cash-balance-section-expanded?)
      :store-credit-balance-section-expanded? (get-in data keypaths/v2-ui-dashboard-store-credit-section-expanded?)
      :total-available-store-credit           (get-in data keypaths/user-total-available-store-credit)
