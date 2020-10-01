@@ -157,7 +157,8 @@
         skus-db           (get-in app-state storefront.keypaths/v2-skus)
         images-db         (get-in app-state storefront.keypaths/v2-images)
         servicing-stylist (when-let [stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)]
-                            (assoc stylist :offered-skus (offered-services-sku-ids stylist)))
+                            (when (= (:stylist-id stylist) (:servicing-stylist-id waiter-order))
+                              (assoc stylist :offered-skus (offered-services-sku-ids stylist))))
         facets-db         (->> storefront.keypaths/v2-facets
                                (get-in app-state)
                                (maps/index-by (comp keyword :facet/slug))
