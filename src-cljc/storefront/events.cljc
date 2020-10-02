@@ -294,6 +294,8 @@
 (defpath api-success-stylist-next-payout)
 (defpath api-success-stylist-payout-stats)
 (defpath api-success-stylist-payout-stats-cash-out)
+
+(defpath stylist-dashboard-cash-out-commit)
 (defpath api-success-cash-out-commit)
 (defpath api-success-cash-out-status)
 (defpath api-success-cash-out-failed)

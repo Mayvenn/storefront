@@ -9,6 +9,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             [ui.molecules :as molecules]))
@@ -80,9 +81,10 @@
   (let [{:keys [amount payout-method]}                    (get-in data keypaths/stylist-payout-stats-next-payout)
         {:keys [name type last-4 email payout-timeframe]} payout-method
         greendot?                                         (= type "Mayvenn::GreenDotPayoutMethod")
+        friday?                                           (friday-et? (spice.date/now))
         fee-due?                                          (and (experiments/instapay? data)
                                                                greendot?
-                                                               (not (friday-et? (spice.date/now))))
+                                                               (not friday?))
         fee-amount                                        1
         total-amount                                      (if fee-due?
                                                             (- amount fee-amount)
@@ -108,7 +110,8 @@
                          select other cashout methods. "))
      :cashout.cta/id           "cash-out-commit-button"
      :cashout.cta/ref          "cash-out-button"
-     :cashout.cta/target       [events/control-stylist-dashboard-cash-out-commit {:amount             amount
+     :cashout.cta/target       [events/control-stylist-dashboard-cash-out-commit {:friday?            friday?
+                                                                                  :amount             amount ; TODO: MAKE SURE WE ARE SENDING THE CORRECT AMOUNT
                                                                                   :payout-method-name name}]
      :cashout.cta/disabled?    (not (payouts/cash-out-eligible? payout-method))
      :cashout.cta/spinning?    (utils/requesting? data request-keys/cash-out-commit)
@@ -131,7 +134,12 @@
                                   (get-in app-state keypaths/user-id)
                                   (get-in app-state keypaths/user-token))))
 
-(defmethod effects/perform-effects events/control-stylist-dashboard-cash-out-commit [_ _ _ _ app-state]
+(defmethod effects/perform-effects events/control-stylist-dashboard-cash-out-commit [_ _ {:keys [friday?] :as params} _ app-state]
+  (if (= friday? (friday-et? (spice.date/now)))
+    (messages/handle-message events/stylist-dashboard-cash-out-commit params)
+    (messages/handle-message events/flash-show-failure {:message "The fee situation has changed. Please reload the page."})))
+
+(defmethod effects/perform-effects events/stylist-dashboard-cash-out-commit [_ _ _ _ app-state]
   (let [stylist-id (get-in app-state keypaths/user-store-id)
         user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]
