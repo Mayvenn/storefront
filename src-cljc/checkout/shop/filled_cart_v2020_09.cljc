@@ -498,9 +498,8 @@
               :cart-summary-total-incentive/label "Includes Wig Customization"}))))
 
 (defn promo-input<-
-  [data order discountable-services-on-order? pending-requests?]
-  (when (and (orders/no-applied-promo? order)
-             (not discountable-services-on-order?))
+  [data order pending-requests?]
+  (when (orders/no-applied-promo? order)
     (let [keypath                 keypaths/cart-coupon-code
           value                   (get-in data keypath)
           promo-link?             (experiments/promo-link? data)
@@ -659,7 +658,6 @@
                                                            (freeinstall-informational<- order)
                                                            (promo-input<- app-state
                                                                           order
-                                                                          (select ?discountable items)
                                                                           pending-requests?))
                                   :shared-cart      (shared-cart<- app-state)
                                   :quadpay          (quadpay<- app-state order)
