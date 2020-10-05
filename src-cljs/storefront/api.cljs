@@ -866,9 +866,10 @@
                                               :allow-dormant? allow-dormant?})
     :error-handler #(if allow-dormant?
                       (messages/handle-message events/api-failure-pending-promo-code %)
-                      (let [response-body (get-in % [:response :body])]
+                      (let [{:keys [error-code] :as response-body} (get-in % [:response :body])]
                         (when (and (waiter-style? response-body)
-                                 (= (:error-code response-body) "promotion-not-found"))
+                                   (#{"ineligible-with-free-install-promotion"
+                                      "promotion-not-found"} error-code))
                           (messages/handle-message events/api-failure-errors-invalid-promo-code
                                                    (assoc (waiter-style->std-error response-body) :promo-code promo-code)))))}))
 
