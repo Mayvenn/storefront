@@ -262,50 +262,50 @@
                                                     :ucare/id)}))
 
 (defn query [data]
-  (let [shared-cart-discount-parser-fn shared-cart->discount
-        skus                           (get-in data keypaths/v2-skus)
-        shared-cart                    (get-in data keypaths/shared-cart-current)
-        products                       (get-in data keypaths/v2-products)
-        facets                         (get-in data keypaths/v2-facets)
-        line-items                     (some->> shared-cart
-                                                :line-items
-                                                (enrich-line-items-with-sku-data skus)
-                                                (map (partial add-product-title-and-color-to-line-item products facets)))
-        album-keyword                  (get-in data keypaths/selected-album-keyword)
-        look                           (contentful/look->look-detail-social-card album-keyword
-                                                                                 (contentful/selected-look data))
-        album-copy                     (get ugc/album-copy album-keyword)
-        base-price                     (->> line-items
-                                            (map (fn [line-item]
-                                                   (* (:item/quantity line-item)
-                                                      (:sku/price line-item))))
-                                            (apply + 0))
-        discount                       (shared-cart-discount-parser-fn
-                                        {:promotions        (get-in data keypaths/promotions)
-                                         :shared-cart-promo (some-> shared-cart :promotion-codes first str/lower-case)
-                                         :base-price        base-price
-                                         :base-service      (->> line-items
-                                                                 (filter (comp #(contains? % "base") :service/type))
-                                                                 first)})
-        back                           (first (get-in data keypaths/navigation-undo-stack))
-        back-event                     (:default-back-event album-copy)
-        item-count                     (->> line-items (map :item/quantity) (reduce + 0))
-        {:keys [free-services
-                standalone-services
-                addon-services]}       (group-by #(cond
-                                                    ((every-pred service?
-                                                                 base-service?
-                                                                 discountable?) %)
-                                                    :free-services
-                                                    (and (service? %)
-                                                         (base-service? %)
-                                                         (not (discountable? %)))
-                                                    :standalone-services
-                                                    (and (service? %)
-                                                         (->> % :service/type first #{"addon"}))
-                                                    :addon-services
-                                                    :else :product-line-items)
-                                                 line-items)]
+  (let [skus               (get-in data keypaths/v2-skus)
+        shared-cart        (get-in data keypaths/shared-cart-current)
+        products           (get-in data keypaths/v2-products)
+        facets             (get-in data keypaths/v2-facets)
+        line-items         (some->> shared-cart
+                                    :line-items
+                                    (enrich-line-items-with-sku-data skus)
+                                    (map (partial add-product-title-and-color-to-line-item products facets)))
+        album-keyword      (get-in data keypaths/selected-album-keyword)
+        look               (contentful/look->look-detail-social-card album-keyword
+                                                                     (contentful/selected-look data))
+        album-copy         (get ugc/album-copy album-keyword)
+        base-price         (->> line-items
+                                (map (fn [line-item]
+                                       (* (:item/quantity line-item)
+                                          (:sku/price line-item))))
+                                (apply + 0))
+        discount           (shared-cart->discount
+                            {:promotions        (get-in data keypaths/promotions)
+                             :shared-cart-promo (some-> shared-cart :promotion-codes first str/lower-case)
+                             :base-price        base-price
+                             :base-service      (->> line-items
+                                                     (filter (comp #(contains? % "base") :service/type))
+                                                     first)})
+        back               (first (get-in data keypaths/navigation-undo-stack))
+        back-event         (:default-back-event album-copy)
+        item-count         (->> line-items (map :item/quantity) (reduce + 0))
+        {:keys
+         [free-services
+          standalone-services
+          addon-services]} (group-by #(cond
+                                        ((every-pred service?
+                                                     base-service?
+                                                     discountable?) %)
+                                        :free-services
+                                        (and (service? %)
+                                             (base-service? %)
+                                             (not (discountable? %)))
+                                        :standalone-services
+                                        (and (service? %)
+                                             (->> % :service/type first #{"addon"}))
+                                        :addon-services
+                                        :else :product-line-items)
+                                     line-items)]
     (merge {:shared-cart           shared-cart
             :look                  look
             :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
@@ -317,9 +317,9 @@
             :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
             :discount-text         (:discount-text discount)
             :cart-items            (->> line-items
-                                         (remove service?)
-                                         cart-items-query
-                                         sort-by-depart-and-price)
+                                        (remove service?)
+                                        cart-items-query
+                                        sort-by-depart-and-price)
             :service-line-items    (for [line-item (->> (concat free-services standalone-services)
                                                         sort-by-depart-and-price)
                                          :let      [service-product (some->> line-item
@@ -345,8 +345,7 @@
                                          [back-event]
                                          [events/navigate-shop-by-look {:album-keyword album-keyword}])
             :return-link/back          back}
-           #?(:cljs
-              (reviews/query-look-detail shared-cart data)))))
+           #?(:cljs (reviews/query-look-detail shared-cart data)))))
 
 (defcomponent component
   [queried-data owner opts]
