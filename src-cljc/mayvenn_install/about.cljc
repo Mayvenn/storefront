@@ -50,7 +50,7 @@
        :cta/value    "Browse Stylists"
        :cta/button?  true
        :cta/id       "browse-stylist"
-       :cta/target   [events/navigate-adventure-match-stylist]}
+       :cta/target   [events/navigate-adventure-find-your-stylist]}
       {:layer/type   :shop-framed-checklist
        :header/value "What's included?"
        :bullets      ["Shampoo"
@@ -148,7 +148,7 @@
        :layer/id               "sticky-footer-get-started"
        :sticky/content         "It’s true, we are paying for your install! "
        :cta/label              "Get started"
-       :cta/navigation-message [events/navigate-adventure-match-stylist]}]}))
+       :cta/navigation-message [events/navigate-adventure-find-your-stylist]}]}))
 
 (defn built-component
   [data opts]

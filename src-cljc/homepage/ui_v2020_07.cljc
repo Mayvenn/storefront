@@ -93,7 +93,7 @@
                                                                 :catalog/category-id "31"}]
    :services-section.secondary-cta/id     "browse-stylists"
    :services-section.secondary-cta/value  "Browse Stylists"
-   :services-section.secondary-cta/target [e/navigate-adventure-match-stylist]})
+   :services-section.secondary-cta/target [e/navigate-adventure-find-your-stylist]})
 
 (def a-la-carte-query
   {:services-section.title/primary        "À la carte Services"
@@ -106,7 +106,7 @@
                                                                 :catalog/category-id "35"}]
    :services-section.secondary-cta/id     "browse-stylists"
    :services-section.secondary-cta/value  "Browse Stylists"
-   :services-section.secondary-cta/target [e/navigate-adventure-match-stylist]})
+   :services-section.secondary-cta/target [e/navigate-adventure-find-your-stylist]})
 
 (defn hashtag-mayvenn-hair-query
   [ugc]
