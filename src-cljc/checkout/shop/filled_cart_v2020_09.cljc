@@ -284,12 +284,13 @@
              :cart-item-modify-button/content         "+ Browse Add-Ons"}
 
       (seq addons)
-      (merge {:cart-item-sub-items/id    "addon-services"
-              :cart-item-sub-items/title "Add-On Services"
-              :cart-item-sub-items/items (map (fn [addon-sku]
-                                                {:cart-item-sub-item/title  (:sku/title addon-sku)
-                                                 :cart-item-sub-item/price  (some-> addon-sku :sku/price mf/as-money)
-                                                 :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
+      (merge {:cart-item-modify-button/content "Edit Add-Ons"
+              :cart-item-sub-items/id          "addon-services"
+              :cart-item-sub-items/title       "Add-On Services"
+              :cart-item-sub-items/items       (map (fn [addon-sku]
+                                                      {:cart-item-sub-item/title  (:sku/title addon-sku)
+                                                       :cart-item-sub-item/price  (some-> addon-sku :sku/price mf/as-money)
+                                                       :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
                                               addons)}))))
 
 (defn ^:private a-la-carte-services<-
