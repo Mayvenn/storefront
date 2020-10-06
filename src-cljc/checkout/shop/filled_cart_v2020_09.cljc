@@ -297,13 +297,14 @@
   [items delete-line-item-requests]
   (for [{:as           item
          :catalog/keys [sku-id]
+         :hacky/keys   [cart-title]
          :sku/keys     [price]
          :copy/keys    [whats-included]
-         :item/keys    [id quantity unit-price product-title product-name]}
+         :item/keys    [id quantity unit-price product-name]}
 
         (select ?a-la-carte items)]
     {:react/key                             sku-id
-     :cart-item-title/primary               (or product-title product-name)
+     :cart-item-title/primary               (or cart-title product-name)
      :cart-item-title/id                    (str "line-item-" sku-id)
      :cart-item-floating-box/id             (str "line-item-" sku-id "-price")
      :cart-item-floating-box/value          (some-> (or price unit-price) mf/as-money)
@@ -342,7 +343,8 @@
   (for [{:as           item
          :catalog/keys [sku-id]
          :sku/keys     [price]
-         :item/keys    [id quantity unit-price product-title product-name]
+         :item/keys    [id quantity unit-price product-name]
+         :hacky/keys   [cart-title]
          :join/keys    [facets]}
 
         (select ?physical items)
@@ -352,7 +354,7 @@
          updating?            (get update-line-item-requests sku-id)]]
     {:react/key                                      (str sku-id "-" quantity)
      :cart-item-title/id                             (str "line-item-title-" sku-id)
-     :cart-item-title/primary                        (or product-title product-name)
+     :cart-item-title/primary                        (or cart-title product-name)
      :cart-item-title/secondary                      (some-> facets :hair/color :option/name)
      :cart-item-floating-box/id                      (str "line-item-price-ea-with-label-" sku-id)
      :cart-item-floating-box/value                   ^:ignore-interpret-warning [:div {:data-test (str "line-item-price-ea-" sku-id)}

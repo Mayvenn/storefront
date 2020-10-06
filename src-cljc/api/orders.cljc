@@ -5,6 +5,7 @@
             [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.sites :as sites]
+            [storefront.accessors.products :as products]
             storefront.keypaths
             [stylist-matching.search.accessors.filters :as stylist-filters]
             [spice.maps :as maps]))
@@ -154,6 +155,7 @@
         base-services     (->> waiter-order
                                orders/service-line-items
                                (filter line-items/base-service?))
+        products-db       (get-in app-state storefront.keypaths/v2-products)
         skus-db           (get-in app-state storefront.keypaths/v2-skus)
         images-db         (get-in app-state storefront.keypaths/v2-images)
         servicing-stylist (when-let [stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)]
@@ -170,7 +172,7 @@
      :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
      :order.items/quantity (orders/displayed-cart-count waiter-order)
      :order.items/services (map (partial ->base-service waiter-order) base-services)
-     :order/items          (items<- waiter-order recents skus-db images-db facets-db servicing-stylist)}))
+     :order/items          (items<- waiter-order recents products-db skus-db images-db facets-db servicing-stylist)}))
 
 (defn completed
   [app-state]
@@ -317,13 +319,23 @@
               :hair-missing-quantity (apply + (map :missing-quantity failed-rules))
               :hair-success-quantity (apply + (map last rules-for-service))}))))
 
+(defn extend-hacky [products-db sku]
+  ;; NOTE: HACK: The cart uses :copy/title from the product that the sku belongs
+  ;; to This seems to be the long term name. We should canonicalize this name
+  ;; (perhaps under :sku/cart-title) into cellar to prevent the need to enrich from the product
+  (assoc sku :hacky/cart-title
+         (->> sku
+              :catalog/sku-id
+              (products/find-product-by-sku-id products-db)
+              :copy/title)))
+
 (defn items<-
   "
   Model of items as skus + placement attrs (quantity + servicing-stylist)
 
   This is *not* waiter's line items!
   "
-  [waiter-order recents skus-db images-db facets-db servicing-stylist]
+  [waiter-order recents products-db skus-db images-db facets-db servicing-stylist]
   ;; verify selected servicing stylist matches waiter-order
   ;; (= (:stylist-id cached-stylist) servicing-stylist-id)
   (let [items (->> waiter-order
@@ -333,6 +345,7 @@
                    (remove (comp neg? :id)) ; shipping
                    (keep (partial ns! "item"))
                    (keep (partial as-sku skus-db images-db facets-db))
+                   (keep (partial extend-hacky products-db))
                    (keep (partial extend-recency recents)))]
     (->> items
          (keep (partial extend-servicing servicing-stylist items))
