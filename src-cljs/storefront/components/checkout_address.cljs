@@ -1,5 +1,6 @@
 (ns storefront.components.checkout-address
   (:require [storefront.accessors.auth :as auth]
+            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.ui :as ui]
@@ -262,8 +263,24 @@
                          :required    true
                          :value       (:state billing-address)})]])])
 
+(defcomponent marketing-opt-in
+  [{:marketing-opt-in/keys [id label copy value keypath]} owner _]
+  (when id
+    [:div.flex.flex-column.items-center.col-12.mtj1
+     [:span.content-3 copy]
+     [:div.col-12.my1
+      [:label.h6.py1
+       [:div.mr1.
+        (ui/check-box
+         {:type      "checkbox"
+          :label     label
+          :id        id
+          :data-test id
+          :value     value
+          :keypath   keypath})]]]]))
+
 (defcomponent component
-  [{:keys [saving? step-bar billing-address-data shipping-address-data promo-banner]} owner _]
+  [{:keys [saving? step-bar billing-address-data shipping-address-data promo-banner] :as data} owner _]
   [:div.container
    (component/build promo-banner/sticky-organism promo-banner nil)
    (component/build checkout-steps/component step-bar)
@@ -277,6 +294,7 @@
 
       (component/build shipping-address-component shipping-address-data)
       (component/build billing-address-component billing-address-data)
+      (component/build marketing-opt-in data)
 
       [:div.my2.col-12.col-8-on-tb-dt.mx-auto
        (ui/submit-button "Continue to Payment" {:spinning? saving?
@@ -286,24 +304,33 @@
   (let [google-maps-loaded? (get-in data keypaths/loaded-google-maps)
         states              (map (juxt :name :abbr) (get-in data keypaths/states))
         field-errors        (get-in data keypaths/field-errors)]
-    {:saving?               (utils/requesting? data request-keys/update-addresses)
-     :step-bar              (cond-> (checkout-steps/query data)
-                              (= :guest (::auth/as (auth/signed-in data)))
-                              (assoc :checkout-title "Guest Checkout"))
-     :promo-banner          (promo-banner/query data)
-     :billing-address-data  {:billing-address           (get-in data keypaths/checkout-billing-address)
-                             :states                    states
-                             :bill-to-shipping-address? (get-in data keypaths/checkout-bill-to-shipping-address)
-                             :google-maps-loaded?       google-maps-loaded?
-                             :field-errors              field-errors
-                             :focused                   (get-in data keypaths/ui-focus)}
-     :shipping-address-data {:shipping-address    (get-in data keypaths/checkout-shipping-address)
-                             :states              states
-                             :email               (get-in data keypaths/checkout-guest-email)
-                             :become-guest?       false
-                             :google-maps-loaded? google-maps-loaded?
-                             :field-errors        field-errors
-                             :focused             (get-in data keypaths/ui-focus)}}))
+    {:saving?                  (utils/requesting? data request-keys/update-addresses)
+     :step-bar                 (cond-> (checkout-steps/query data)
+                                 (= :guest (::auth/as (auth/signed-in data)))
+                                 (assoc :checkout-title "Guest Checkout"))
+     :promo-banner             (promo-banner/query data)
+     :marketing-opt-in/id      (when (experiments/phone-opt-in? data)
+                                 "opt-in")
+     :marketing-opt-in/label   "I agree."
+     :marketing-opt-in/value   (get-in data keypaths/checkout-phone-marketing-opt-in)
+     :marketing-opt-in/keypath keypaths/checkout-phone-marketing-opt-in
+     :marketing-opt-in/copy    "By checking box below, I agree to receive recurring autodialed marketing
+     text messages and phone calls from or on behalf of Mayvenn at the phone
+     number provided above. I understand that consent is not a condition of any
+     purchase and that my wireless carrier’s message and data rates may apply."
+     :billing-address-data     {:billing-address           (get-in data keypaths/checkout-billing-address)
+                                :states                    states
+                                :bill-to-shipping-address? (get-in data keypaths/checkout-bill-to-shipping-address)
+                                :google-maps-loaded?       google-maps-loaded?
+                                :field-errors              field-errors
+                                :focused                   (get-in data keypaths/ui-focus)}
+     :shipping-address-data    {:shipping-address    (get-in data keypaths/checkout-shipping-address)
+                                :states              states
+                                :email               (get-in data keypaths/checkout-guest-email)
+                                :become-guest?       false
+                                :google-maps-loaded? google-maps-loaded?
+                                :field-errors        field-errors
+                                :focused             (get-in data keypaths/ui-focus)}}))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data)))
