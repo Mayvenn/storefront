@@ -433,14 +433,15 @@
   "The cart has an upsell 'entered' because the customer has requested a service discount"
   [{:as order :keys [adjustments]} free-mayvenn-service]
   (let [wig-customization?  (orders/wig-customization? order)
-        service-item-price  (* (:item/quantity free-mayvenn-service)
-                               (:item/unit-price free-mayvenn-service))
+        service-item-price  (- (* (:item/quantity free-mayvenn-service)
+                                  (:item/unit-price free-mayvenn-service)))
         total               (:total order)
         tax                 (:tax-total order)
         subtotal            (orders/products-and-services-subtotal order)
-        adjustment          (->> order :adjustments (map :price) (reduce + 0))
-        total-savings       (- adjustment)
-        service-discounted? (= adjustment service-item-price)]
+        order-adjustment    (->> order :adjustments (map :price) (reduce + 0))
+        total-savings       (- order-adjustment)
+        service-discounted? (= (->> free-mayvenn-service :item/applied-promotions (map :amount) (reduce + 0))
+                               service-item-price)]
     (cond->
         {:cart-summary/id                 "cart-summary"
          :cart-summary-total-line/id      "total"
@@ -489,8 +490,9 @@
                                          :cart-summary-line/value (mf/as-money tax)}]))}
 
       service-discounted?
-      (merge {:cart-summary-total-incentive/id      "mayvenn-install"
-              :cart-summary-total-incentive/label   "Includes Mayvenn Service"
+      (merge {:cart-summary-total-incentive/id    "mayvenn-install"
+              :cart-summary-total-incentive/label "Includes Mayvenn Service"
+
               :cart-summary-total-incentive/savings (when (pos? total-savings)
                                                       (mf/as-money total-savings))})
 
