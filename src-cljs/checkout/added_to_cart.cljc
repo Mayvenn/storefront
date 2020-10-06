@@ -256,6 +256,7 @@
   (for [item (select (merge ?recent ?physical) items)
         :let
         [{:catalog/keys [sku-id]
+          :hacky/keys   [cart-title]
           :item/keys    [unit-price recent-quantity product-name product-title]}
          item]]
     {:react/key                                (str "line-item-" sku-id)
@@ -270,7 +271,7 @@
      :cart-item-square-thumbnail/sticker-label (some-> item :hair/length first (str "”"))
      :cart-item-square-thumbnail/ucare-id      (hacky-cart-image item)
      :cart-item-title/id                       (str "line-item-title-" sku-id)
-     :cart-item-title/primary                  (or product-title product-name)
+     :cart-item-title/primary                  (or cart-title product-name)
      :cart-item-title/secondary                (some-> item :join/facets :hair/color :option/name)}))
 
 (defn service-items<-
