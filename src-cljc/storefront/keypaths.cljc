@@ -209,6 +209,7 @@
 (def checkout-selected-shipping-method-name (conj checkout-selected-shipping-method :name))
 (def checkout-selected-shipping-method-sku (conj checkout-selected-shipping-method :sku))
 (def checkout-selected-payment-methods (conj checkout :payment-methods))
+(def checkout-phone-marketing-opt-in (conj checkout :phone-marketing-opt-in))
 
 (def flash (conj ui :flash))
 (def flash-now (conj flash :now))

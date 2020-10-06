@@ -137,3 +137,7 @@
 (defn instapay?
   [data]
   (display-feature? data "instapay"))
+
+(defn phone-opt-in?
+  [data]
+  (display-feature? data "phone-opt-in"))
