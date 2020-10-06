@@ -474,7 +474,7 @@
                                          install-summary-line?
                                          (merge
                                           {:cart-summary-line/id    "free-service-adjustment"
-                                           :cart-summary-line/value (mf/as-money-or-free (- service-item-price))
+                                           :cart-summary-line/value (mf/as-money-or-free service-item-price)
                                            :cart-summary-line/label (str "Free " (:item/variant-name free-mayvenn-service))
 
                                            :cart-summary-line/action-id     "cart-remove-promo"
