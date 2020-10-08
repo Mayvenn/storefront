@@ -14,7 +14,8 @@
             [storefront.transitions :as transitions]
             [ui.molecules :as molecules]))
 
-(defcomponent component [{:cashout/keys [amount total-amount fee-due? fee-amount title #_sub-title name account payout-timeframe footnote] :as data} owner opts]
+(defcomponent component [{:cashout/keys [amount total-amount fee-due? fee-amount title name
+                                         account payout-timeframe footnote earnings-dt fee-dt total-dt] :as data} owner opts]
   (let [return-link [:div.px2.my2 (molecules/return-link (:back/target data))]]
     [:div.container
      [:div.hide-on-tb-dt
@@ -30,12 +31,15 @@
       [:div.proxima.content-4.py1 payout-timeframe]
       [:div.mt5.mx2
        [:div.flex.justify-between.bg-cool-gray.p2
+        {:data-test earnings-dt}
         [:div "Your Earnings"] [:div amount]]
        (when fee-due?
          [:div.flex.justify-between.p2
+          {:data-test fee-dt}
          [:div "Instapay Fee*"] [:div fee-amount]])
        [:hr.border-top.col-12.m0]
        [:div.flex.justify-between.p2
+        {:data-test total-dt}
         [:div.shout.proxima.title-3 "TOTAL"] [:div.canela.title-2 total-amount]]]
       [:h2.p-color ]
       [:div
@@ -94,6 +98,9 @@
      :cashout/amount           (mf/as-money amount)
      :cashout/fee-amount       (mf/as-money (- fee-amount))
      :cashout/total-amount     (mf/as-money total-amount)
+     :cashout/earnings-dt      "earnings-row"
+     :cashout/fee-dt           "fee-row"
+     :cashout/total-dt         "total-row"
      :cashout/name             name
      :cashout/account          (if greendot?
                                  (str "Linked Card xxxx-xxxx-xxxx-" (or last-4 "????"))
