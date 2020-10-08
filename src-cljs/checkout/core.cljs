@@ -8,7 +8,6 @@
             storefront.components.checkout-complete
             storefront.components.places
             adventure.handlers
-            adventure.checkout.wait
             checkout.confirmation
             checkout.returning-or-guest-v2020-05
             checkout.processing

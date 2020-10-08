@@ -104,19 +104,16 @@
                            :height 12}}))
    specialty])
 
-(def post-purchase? #{events/navigate-adventure-stylist-profile-post-purchase})
-
 (defn header<-
-  [current-order undo-history nav-event]
-  (cond-> {:header.title/id               "adventure-title"
-           :header.title/primary          "Meet Your Stylist"
-           :header.back-navigation/id     "adventure-back"
-           :header.back-navigation/back   (first undo-history)
-           :header.back-navigation/target [events/navigate-adventure-find-your-stylist]}
-    (not (post-purchase? nav-event))
-    (merge {:header.cart/id    "mobile-cart"
-            :header.cart/value (:order.items/quantity current-order)
-            :header.cart/color "white"})))
+  [{:order.items/keys [quantity]} undo-history]
+  {:header.title/id               "adventure-title"
+   :header.title/primary          "Meet Your Stylist"
+   :header.back-navigation/id     "adventure-back"
+   :header.back-navigation/back   (not-empty (first undo-history))
+   :header.back-navigation/target [events/navigate-adventure-find-your-stylist]
+   :header.cart/id                "mobile-cart"
+   :header.cart/value             quantity
+   :header.cart/color             "white"})
 
 (def footer<-
   {:footer/copy "Meet more stylists in your area"
@@ -126,11 +123,9 @@
    :cta/target  [events/navigate-adventure-find-your-stylist]})
 
 (defn cta<-
-  [stylist nav-event]
+  [stylist]
   {:cta/id     "select-stylist"
-   :cta/target [(if (post-purchase? nav-event)
-                  events/control-adventure-select-stylist-post-purchase
-                  events/control-adventure-select-stylist-pre-purchase)
+   :cta/target [events/control-adventure-select-stylist
                 {:servicing-stylist stylist
                  :card-index        0}]
    :cta/label  (str "Select " (stylists/->display-name stylist))})
@@ -470,7 +465,6 @@
   (let [;; data layer - session
         {host-name :host}                  (get-in data storefront.keypaths/navigation-uri)
         undo-history                       (get-in data storefront.keypaths/navigation-undo-stack)
-        nav-event                          (get-in data storefront.keypaths/navigation-event)
         stylist-id                         (get-in data keypaths/stylist-profile-id)
         fetching-reviews?                  (utils/requesting? data request-keys/fetch-stylist-reviews)
         hide-bookings?                     (experiments/hide-bookings? data)
@@ -483,10 +477,10 @@
         current-order     (api.orders/current data)
         stylist           (stylists/by-id data stylist-id)
         paginated-reviews (get-in data stylist-directory.keypaths/paginated-reviews)]
-    (component/build component (merge {:header (header<- current-order undo-history nav-event)
+    (component/build component (merge {:header (header<- current-order undo-history)
                                        :footer footer<-}
                                       (when stylist
-                                        {:cta                  (cta<- stylist nav-event)
+                                        {:cta                  (cta<- stylist)
                                          :carousel             (carousel<- stylist)
                                          :reviews              (reviews<- fetching-reviews? stylist paginated-reviews)
                                          :stylist-profile-card (stylist-profile-card<-
@@ -498,15 +492,6 @@
                                                                                     stylist)
                                          :section-details      (details<- hide-bookings? stylist)
                                          :google-maps          (maps/map-query data)})))))
-
-(defmethod effects/perform-effects events/navigate-adventure-stylist-profile
-  [dispatch event {:keys [stylist-id]} prev-app-state app-state]
-  #?(:cljs
-     (let [stylist-id (spice/parse-int stylist-id)]
-       (google-maps/insert)
-       (api/fetch-stylist-details (get-in app-state storefront.keypaths/api-cache) stylist-id)
-       (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache) {:stylist-id stylist-id
-                                                                                    :page       1}))))
 
 (defmethod effects/perform-effects events/share-stylist
   [_ _ {:keys [url text title stylist-id]} _]
@@ -526,13 +511,7 @@
       (assoc-in keypaths/stylist-profile-id (spice/parse-int stylist-id))
       (assoc-in stylist-directory.keypaths/paginated-reviews nil)))
 
-(defmethod trackings/perform-track events/navigate-adventure-stylist-profile
-  [_ event {:keys [stylist-id]} app-state]
-  #?(:cljs
-     (facebook-analytics/track-event "ViewContent" {:content_type "stylist"
-                                                    :content_ids [(spice/parse-int stylist-id)]})))
-
-(defmethod effects/perform-effects events/navigate-adventure-stylist-profile-post-purchase
+(defmethod effects/perform-effects events/navigate-adventure-stylist-profile
   [dispatch event {:keys [stylist-id]} prev-app-state app-state]
   #?(:cljs
      (let [stylist-id (spice/parse-int stylist-id)]
@@ -540,7 +519,8 @@
        (api/fetch-stylist-details (get-in app-state storefront.keypaths/api-cache) stylist-id)
        (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache) {:stylist-id stylist-id
                                                                                     :page       1}))))
-
-(defmethod transitions/transition-state events/navigate-adventure-stylist-profile-post-purchase
-  [_ _ {:keys [stylist-id]} app-state]
-  (assoc-in app-state keypaths/stylist-profile-id (spice/parse-int stylist-id)))
+(defmethod trackings/perform-track events/navigate-adventure-stylist-profile
+  [_ event {:keys [stylist-id]} app-state]
+  #?(:cljs
+     (facebook-analytics/track-event "ViewContent" {:content_type "stylist"
+                                                    :content_ids [(spice/parse-int stylist-id)]})))

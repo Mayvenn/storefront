@@ -1,28 +1,23 @@
 (ns stylist-matching.stylist-results
-  (:require #?@(:cljs [[storefront.api :as api]
-                       [storefront.browser.cookie-jar :as cookie-jar]
-                       [catalog.skuers :as skuers]
-                       [storefront.history :as history]
-                       [storefront.hooks.facebook-analytics :as facebook-analytics]
-                       [storefront.hooks.google-maps :as google-maps]
+  (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
                        [storefront.hooks.stringer :as stringer]
                        [stylist-matching.search.filters-modal :as filter-menu]])
             adventure.keypaths
+            [stylist-matching.core :refer [stylist-matching<- service-delimiter]]
+            [stylist-matching.keypaths :as k]
             api.orders
-            clojure.set
-            [clojure.string :as string]
+            [clojure.string :refer [split join blank?]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.categories :as categories]
             [storefront.component :as component :refer [defdynamic-component defcomponent]]
             [storefront.components.header :as components.header]
             [storefront.components.svg :as svg]
-            [storefront.events :as events]
+            [storefront.events :as e]
             [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]
             [stylist-matching.ui.stylist-cards :as stylist-cards]
             [stylist-matching.ui.gallery-modal :as gallery-modal]
             [stylist-matching.search.accessors.filters :as accessors.filters]
-            stylist-directory.keypaths
             storefront.keypaths
             [storefront.components.ui :as ui]
             [spice.core :as spice]
@@ -34,224 +29,107 @@
             [storefront.request-keys :as request-keys]
             [spice.date :as date]))
 
-(def query-param-separator "~")
-
-(defmethod transitions/transition-state events/navigate-adventure-stylist-results-pre-purchase
-  [_ _ {:keys [query-params]} app-state]
-  (let [{:keys [lat long preferred-services]} query-params]
-    (cond-> app-state
-      (seq preferred-services)
-      (assoc-in stylist-directory.keypaths/stylist-search-selected-filters
-                (->> (string/split preferred-services query-param-separator)
-                     (filter accessors.filters/allowed-stylist-filters)
-                     set))
-
-      (and lat long)
-      (-> (assoc-in adventure.keypaths/adventure-stylist-match-location ;; GROT
-                    {:latitude  (spice/parse-double lat)
-                     :longitude (spice/parse-double long)})
-          (assoc-in stylist-directory.keypaths/stylist-search-selected-location
-                    {:latitude  (spice/parse-double lat)
-                     :longitude (spice/parse-double long)
-                     :radius    "100mi"}))
-
-      (nil? (get-in app-state stylist-directory.keypaths/stylist-search-address-input))
-      (assoc-in stylist-directory.keypaths/stylist-search-address-input
-                (get-in app-state adventure.keypaths/adventure-stylist-match-address))
-
-      true
-      (assoc-in adventure.keypaths/adventure-stylist-results-returned false))))
-
-(defmethod effects/perform-effects events/navigate-adventure-stylist-results
-  [_ _ {:keys [query-params]} prev-app-state app-state]
-  #?(:cljs
-     (do
-       (when (not= (get-in prev-app-state storefront.keypaths/navigation-event)
-                   (get-in app-state storefront.keypaths/navigation-event))
-         (messages/handle-message events/initialize-stylist-search-filters))
-       (api/get-products
-        (get-in app-state storefront.keypaths/api-cache)
-        (merge-with clojure.set/union
-                    (skuers/essentials (categories/id->category "35" (get-in app-state storefront.keypaths/categories)))
-                    (skuers/essentials (categories/id->category "31" (get-in app-state storefront.keypaths/categories))))
-        #(messages/handle-message events/api-success-v3-products-for-stylist-filters %))
-       (when (some? query-params)
-         (google-maps/insert)))))
-
 ;;  Navigating to the results page causes the effect of searching for stylists
 ;;
 ;;  This allows:
 ;;  - Cold loads of the page, both with lat+long and stylist ids
 ;;  - Refining of search results
 ;;
-(defmethod effects/perform-effects events/navigate-adventure-stylist-results-pre-purchase
-  [_ _ {:keys [query-params]} prev-app-state app-state]
+(defmethod transitions/transition-state e/navigate-adventure-stylist-results
+  [_ _ _ state]
+  ;; Prefill address input with previously collected address
+  (let [previous-address (not-empty (:param/address (stylist-matching<- state)))]
+    (cond-> state
+      previous-address
+      (assoc-in k/google-input previous-address))))
+
+(defmethod effects/perform-effects e/navigate-adventure-stylist-results
+  [_ _ {{:keys [preferred-services lat long s]} :query-params} prev-state state]
+  ;; Init the model if there isn't one, e.g. Direct load
+  (when-not (stylist-matching<- state)
+    (messages/handle-message e/flow|stylist-matching|initialized))
+  ;; Pull stylist-ids (s) from URI; predetermined search results
+  (when (seq s)
+    (messages/handle-message e/flow|stylist-matching|param-ids-constrained {:ids s}))
+  ;; Pull preferred services from URI; filters for service types
+  (when-let [services (some-> preferred-services not-empty (split service-delimiter) set)]
+    (messages/handle-message e/flow|stylist-matching|param-services-constrained
+                             {:services services}))
+  ;; Pull lat/long from URI; search by proximity
+  (when (and (not-empty lat)
+             (not-empty long))
+    (messages/handle-message e/flow|stylist-matching|param-location-constrained
+                             {:latitude  (spice/parse-double lat)
+                              :longitude (spice/parse-double long)}))
+  ;; FIXME(matching)
+  (when-not (= (get-in prev-state storefront.keypaths/navigation-event)
+               (get-in state storefront.keypaths/navigation-event))
+    (messages/handle-message e/initialize-stylist-search-filters))
+
+  (messages/handle-message e/flow|stylist-matching|searched))
+
+;; --------------- gallery modal
+
+(defmethod transitions/transition-state e/control-adventure-stylist-gallery-open
+  [_ _ {:keys [ucare-img-urls initially-selected-image-index]} state]
+  (-> state
+      (assoc-in adventure.keypaths/adventure-stylist-gallery-image-urls
+                ucare-img-urls)
+      (assoc-in adventure.keypaths/adventure-stylist-gallery-image-index
+                initially-selected-image-index)))
+
+(defmethod transitions/transition-state e/control-adventure-stylist-gallery-close
+  [_ _ _ state]
+  (assoc-in state
+            adventure.keypaths/adventure-stylist-gallery-image-urls
+            []))
+
+;; --------------------- Address Input behavior
+
+(defmethod effects/perform-effects e/stylist-results-address-component-mounted
+  [_ _ _ _ _]
   #?(:cljs
-     ;; TODO consider merging with post-purchase
-     (let [{stylist-ids :s}                          query-params
-           {:keys [latitude longitude] :as location} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
-           matched-stylists                          (get-in app-state adventure.keypaths/adventure-matched-stylists)
-           preferred-services                        (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)]
-       (cond
-         ;; Predetermined search results
-         (seq stylist-ids)
-         (api/fetch-matched-stylists (get-in app-state storefront.keypaths/api-cache)
-                                     stylist-ids
-                                     #(messages/handle-message events/api-success-fetch-matched-stylists
-                                                               %))
-         ;; Querying based upon geo location
-         location
-         (let [query {:latitude           latitude
-                      :longitude          longitude
-                      :radius             "100mi"
-                      :choices            (get-in app-state adventure.keypaths/adventure-choices) ; For trackings purposes only
-                      :preferred-services preferred-services}]
-           (api/fetch-stylists-matching-filters query
-                                                #(messages/handle-message
-                                                  events/api-success-fetch-stylists-matching-filters
-                                                  (merge {:query query}
-                                                         %))))
-         ;; Previously performed search results
-         ;; TODO consider removal (uri holds state and effects)
-         (seq matched-stylists)
-         nil
-
-         ;; TODO consider removal since the result page has a search bar
-         :else
-         (history/enqueue-redirect events/navigate-adventure-find-your-stylist)))))
-
-(defmethod transitions/transition-state events/navigate-adventure-stylist-results-post-purchase
-  [_ _ args app-state]
-  (let [{:keys [address1 address2 city state zipcode]} (get-in app-state storefront.keypaths/completed-order-shipping-address)]
-    (when (nil? (get-in app-state stylist-directory.keypaths/stylist-search-address-input))
-      (assoc-in app-state stylist-directory.keypaths/stylist-search-address-input
-                (string/join " " [address1 address2 (str city ",") state zipcode])))))
-
-(defmethod effects/perform-effects events/navigate-adventure-stylist-results-post-purchase
-  [_ _ args _ app-state]
-  #?(:cljs
-     (let [{completed-waiter-order :waiter/order} (api.orders/completed app-state)
-           service-items    (:services/items (api.orders/services app-state completed-waiter-order))
-           matched-stylists (get-in app-state adventure.keypaths/adventure-matched-stylists)]
-       (if (seq service-items)
-         (if (empty? matched-stylists)
-           (messages/handle-message events/api-shipping-address-geo-lookup)
-           (messages/handle-message events/adventure-stylist-search-results-post-purchase-displayed))
-         (history/enqueue-redirect events/navigate-home)))))
-
-(defmethod transitions/transition-state events/control-adventure-stylist-gallery-open
-  [_ _event {:keys [ucare-img-urls initially-selected-image-index]} app-state]
-  (-> app-state
-      (assoc-in adventure.keypaths/adventure-stylist-gallery-image-urls ucare-img-urls)
-      (assoc-in adventure.keypaths/adventure-stylist-gallery-image-index initially-selected-image-index)))
-
-(defmethod transitions/transition-state events/control-adventure-stylist-gallery-close [_ _event _args app-state]
-  (-> app-state
-      (assoc-in adventure.keypaths/adventure-stylist-gallery-image-urls [])))
-
-(defmethod transitions/transition-state events/control-adventure-select-stylist
-  [_ _ {:keys [stylist-id]} app-state]
-  (assoc-in app-state adventure.keypaths/adventure-choices-selected-stylist-id stylist-id))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/stylist-results-address-component-mounted
-     [_ event args _ app-state]
      (google-maps/attach "geocode"
                          "stylist-search-input"
-                         stylist-directory.keypaths/stylist-search-selected-location
-                         #(messages/handle-message events/stylist-results-address-selected))))
+                         k/google-location
+                         #(messages/handle-message e/stylist-results-address-selected))))
 
-#?(:cljs
-   (defmethod transitions/transition-state events/stylist-results-address-selected
-     [_ _ _ app-state]
-     (-> app-state
-         (assoc-in stylist-directory.keypaths/stylist-search-address-input
-                   (.-value (.getElementById js/document "stylist-search-input"))))))
+(defn ^:private address-input
+  [elemID]
+  #?(:cljs (-> js/document
+               (.getElementById elemID)
+               .-value)))
 
-#?(:cljs
-   (defmethod trackings/perform-track events/stylist-results-address-selected
-     [_ event _ app-state]
-     (let [{:keys [latitude longitude]} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)]
+(defmethod trackings/perform-track e/stylist-results-address-selected
+  [_ _ _ state]
+  (let [{:param/keys [location address]}        (stylist-matching<- state)
+        {:keys [latitude longitude city state]} location]
+    #?(:cljs
        (stringer/track-event "adventure_location_submitted"
-                             {:location_submitted (get-in app-state stylist-directory.keypaths/stylist-search-address-input)
+                             {:location_submitted address
+                              :city               city
+                              :state              state
                               :latitude           latitude
-                              :longitude          longitude})) ))
+                              :longitude          longitude}))))
 
-#?(:cljs
-   (defmethod effects/perform-effects events/stylist-results-address-selected
-     [_ event args _ app-state]
-     (let [[nav-event nav-args]                      (get-in app-state storefront.keypaths/navigation-message) ; pre- or post- purchase
-           {:keys [latitude longitude] :as location} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
-           service-filters                           (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)]
-       (history/enqueue-redirect nav-event
-                                 {:query-params
-                                  (merge (:query-params nav-args)
-                                         {:lat                latitude
-                                          :long               longitude
-                                          :preferred-services (clojure.string/join query-param-separator service-filters)})}))))
+(defmethod effects/perform-effects e/stylist-results-address-selected
+  [_ _ _ _ state]
+  ;; Unconstrains stylist-id search
+  (messages/handle-message e/flow|stylist-matching|param-ids-constrained)
+  ;; Address/Location search
+  (messages/handle-message e/flow|stylist-matching|param-address-constrained
+                           {:address (address-input "stylist-search-input")})
+  (messages/handle-message e/flow|stylist-matching|param-location-constrained
+                           (get-in state k/google-location))
+  (messages/handle-message e/flow|stylist-matching|prepared))
 
+;; -------------------------- Matching behavior
 
-(defmethod transitions/transition-state events/api-success-fetch-stylists-matching-filters
-  [_ event {:keys [stylists query]} app-state]
-  #?(:cljs
-     (cond-> (assoc-in app-state adventure.keypaths/adventure-matched-stylists stylists)
-       true
-       (assoc-in adventure.keypaths/adventure-stylist-results-returned true)
-
-         (seq query)
-         (assoc-in stylist-directory.keypaths/stylist-search-selected-location
-                   {:latitude  (:latitude query)
-                    :longitude (:longitude query)
-                    :radius    (:radius query)}))))
-
-(defmethod effects/perform-effects events/control-adventure-select-stylist-pre-purchase
-  [_ _ {:keys [card-index servicing-stylist]} _ app-state]
-  #?(:cljs
-     (let [{:keys [number token]} (get-in app-state storefront.keypaths/order)]
-       (cookie-jar/save-adventure (get-in app-state storefront.keypaths/cookie)
-                                  (get-in app-state adventure.keypaths/adventure))
-       (api/assign-servicing-stylist (:stylist-id servicing-stylist)
-                                     (get-in app-state storefront.keypaths/store-stylist-id)
-                                     number
-                                     token
-                                     (get-in app-state storefront.keypaths/features)
-                                     (fn [order]
-                                       (messages/handle-message events/api-success-assign-servicing-stylist-pre-purchase
-                                                                {:order             order
-                                                                 :servicing-stylist servicing-stylist
-                                                                 :card-index        card-index}))))))
-
-(defmethod effects/perform-effects events/control-adventure-select-stylist-post-purchase
-  [_ _ {:keys [card-index servicing-stylist]} _ app-state]
-  #?(:cljs
-     (let [{:keys [number token]} (get-in app-state storefront.keypaths/completed-order)]
-       (cookie-jar/save-adventure (get-in app-state storefront.keypaths/cookie)
-                                  (get-in app-state adventure.keypaths/adventure))
-       (api/assign-servicing-stylist (:stylist-id servicing-stylist)
-                                     (get-in app-state storefront.keypaths/store-stylist-id)
-                                     number
-                                     token
-                                     (get-in app-state storefront.keypaths/features)
-                                     (fn [order]
-                                       (messages/handle-message events/api-success-assign-servicing-stylist-post-purchase
-                                                                {:order             order
-                                                                 :servicing-stylist servicing-stylist
-                                                                 :card-index        card-index}))))))
-
-(defmethod trackings/perform-track events/api-success-assign-servicing-stylist
-  [_ event {:keys [servicing-stylist order card-index]} app-state]
-  #?@(:cljs
-      [(facebook-analytics/track-event "AddToCart" {:content_type "stylist"
-                                                    :content_ids  [(:stylist-id servicing-stylist)]
-                                                    :num_items    1})
-       (stringer/track-event "stylist_selected"
-                             {:stylist_id     (:stylist-id servicing-stylist)
-                              :card_index     card-index
-                              :current_step   (if (= event events/api-success-assign-servicing-stylist-post-purchase)
-                                                3
-                                                2)
-                              :order_number   (:number order)
-                              :stylist_rating (:rating servicing-stylist)})]))
+(defmethod effects/perform-effects e/control-adventure-select-stylist
+  [_ _ {:keys [card-index servicing-stylist]} _ _]
+  (messages/handle-message e/flow|stylist-matching|matched
+                           {:stylist      servicing-stylist
+                            :result-index card-index}))
 
 (defn stylist-results->stringer-event
   [stylist]
@@ -271,50 +149,35 @@
      :just_added                 just-added?
      :displayed_years_experience years-of-experience}))
 
-(defmethod trackings/perform-track events/adventure-stylist-search-results-displayed
-  [_ event {:keys [stylist-results]} app-state]
-  #?(:cljs
-     (let [{:keys [latitude longitude radius]} (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)
-           location-submitted                  (get-in app-state stylist-directory.keypaths/stylist-search-address-input)
-           preferences                         (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)
-           results                             (map stylist-results->stringer-event stylist-results)]
-       (stringer/track-event "stylist_search_results_displayed"
-                             {:results            results
-                              :filters_on         preferences
-                              :latitude           latitude
-                              :longitude          longitude
-                              :location_submitted location-submitted
-                              :radius             radius
-                              :current_step       2}))))
+(defmethod trackings/perform-track e/adventure-stylist-search-results-displayed
+  [_ _ {:keys [stylist-results]} state]
+  (prn "TRACK")
+  (let [{:results/keys [stylists]
+         :param/keys   [location address services]} (stylist-matching<- state)
+        {:keys [latitude longitude]}                location]
+        #?(:cljs
+           (stringer/track-event "stylist_search_results_displayed"
+                                 {:results            (map stylist-results->stringer-event stylists)
+                                  :filters_on         services
+                                  :latitude           latitude
+                                  :longitude          longitude
+                                  :location_submitted address
+                                  :radius             "100mi"
+                                  :current_step       2}))))
 
+(defn header<-
+  [{:order.items/keys [quantity]} back]
+  {:header.title/id               "adventure-title"
+   :header.title/primary          "Meet Your Stylist"
+   :header.back-navigation/id     "adventure-back"
+   :header.back-navigation/back   back
+   :header.back-navigation/target [e/navigate-adventure-find-your-stylist]
+   :header.cart/id                "mobile-cart"
+   :header.cart/value             quantity
+   :header.cart/color             "white"})
 
-(defmethod trackings/perform-track events/adventure-stylist-search-results-post-purchase-displayed
-  [_ event args app-state]
-  #?(:cljs
-     (let [{:keys [latitude longitude radius]} (get-in app-state adventure.keypaths/adventure-stylist-match-location)
-           results                             (map :stylist-id (get-in app-state adventure.keypaths/adventure-matched-stylists))]
-       (stringer/track-event "stylist_search_results_displayed"
-                             {:results            results
-                              :latitude           latitude
-                              :longitude          longitude
-                              :radius             radius
-                              :current_step       3}))))
-
-(defn header-query
-  [{:order.items/keys [quantity]}
-   back post-purchase?]
-  (cond-> {:header.title/id               "adventure-title"
-           :header.title/primary          "Meet Your Stylist"
-           :header.back-navigation/id     "adventure-back"
-           :header.back-navigation/back   back
-           :header.back-navigation/target [events/navigate-adventure-find-your-stylist]}
-    (not post-purchase?)
-    (merge {:header.cart/id    "mobile-cart"
-            :header.cart/value quantity
-            :header.cart/color "white"})))
-
-(defn stylist-card-query
-  [post-purchase? hide-stylist-specialty? hide-bookings? just-added-only? just-added-experience? stylist-results-test? idx stylist]
+(defn stylist-card<-
+  [hide-stylist-specialty? hide-bookings? just-added-only? just-added-experience? stylist-results-test? idx stylist]
   (let [{:keys [rating-star-counts
                 salon
                 service-menu
@@ -342,17 +205,11 @@
                 specialty-sew-in-closure
                 specialty-sew-in-360-frontal
                 specialty-sew-in-frontal
-                specialty-wig-customization]} service-menu
-        cta-event                             (if post-purchase?
-                                                events/control-adventure-select-stylist-post-purchase
-                                                events/control-adventure-select-stylist-pre-purchase)]
+                specialty-wig-customization]} service-menu]
     {:react/key                                   (str "stylist-card-" store-slug)
      :stylist-card.header/hide-stylist-specialty? hide-stylist-specialty?
-     :stylist-card.header/target                  (if post-purchase?
-                                                    [events/navigate-adventure-stylist-profile-post-purchase {:stylist-id stylist-id
-                                                                                                              :store-slug store-slug}]
-                                                    [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
-                                                                                                :store-slug store-slug}])
+     :stylist-card.header/target                  [e/navigate-adventure-stylist-profile {:stylist-id stylist-id
+                                                                                         :store-slug store-slug}]
      :stylist-card.header/id                      (str "stylist-card-header-" store-slug)
      :stylist-card.thumbnail/id                   (str "stylist-card-thumbnail-" store-slug)
      :stylist-card.thumbnail/ucare-id             (-> stylist :portrait :resizable-url)
@@ -416,7 +273,7 @@
                                          :preference :wig-customization}]
      :stylist-card.cta/id              (str "select-stylist-" store-slug)
      :stylist-card.cta/label           (str "Select " store-nickname)
-     :stylist-card.cta/target          [cta-event
+     :stylist-card.cta/target          [e/control-adventure-select-stylist
                                         {:servicing-stylist stylist
                                          :card-index        idx}]
 
@@ -426,7 +283,7 @@
                                           (map-indexed
                                            (fn [j ucare-img-url]
                                              {:stylist-card.gallery-item/id       (str "gallery-img-" stylist-id "-" j)
-                                              :stylist-card.gallery-item/target   [events/navigate-adventure-stylist-gallery
+                                              :stylist-card.gallery-item/target   [e/navigate-adventure-stylist-gallery
                                                                                    {:store-slug   store-slug
                                                                                     :stylist-id   stylist-id
                                                                                     :query-params {:offset j}}]
@@ -435,17 +292,15 @@
      :stylist-card.salon-name/id        salon-name
      :stylist-card.salon-name/value     salon-name
      :stylist-card.address-marker/id    (str "stylist-card-address-" store-slug)
-     :stylist-card.address-marker/value (string/join " "
-                                                     [(string/join ", "
-                                                                   (remove string/blank? [address-1 address-2 city state]))
-                                                      zipcode])}))
+     :stylist-card.address-marker/value (join " " [(join ", " (->> [address-1 address-2 city state]
+                                                                   (remove blank?)))
+                                                   zipcode])}))
 
 (defn stylist-cards-query
-  [{:keys [post-purchase? hide-stylist-specialty? hide-bookings?
+  [{:keys [hide-stylist-specialty? hide-bookings?
            just-added-only? just-added-experience? stylist-results-test?]} stylists]
   (map-indexed
-   (partial stylist-card-query
-            post-purchase?
+   (partial stylist-card<-
             hide-stylist-specialty?
             hide-bookings?
             just-added-only?
@@ -457,7 +312,7 @@
   [app-state]
   (let [gallery-images (get-in app-state adventure.keypaths/adventure-stylist-gallery-image-urls)
         index          (get-in app-state adventure.keypaths/adventure-stylist-gallery-image-index)]
-    {:gallery-modal/target           [events/control-adventure-stylist-gallery-close]
+    {:gallery-modal/target           [e/control-adventure-stylist-gallery-close]
      :gallery-modal/ucare-image-urls gallery-images
      :gallery-modal/initial-index    index}))
 
@@ -465,7 +320,7 @@
 ;; TODO this name and query and such
 (defdynamic-component location-input-and-filters-molecule
   (did-mount [_]
-             (messages/handle-message events/stylist-results-address-component-mounted))
+             (messages/handle-message e/stylist-results-address-component-mounted))
   (render [this]
           (let [{:stylist.results.location-search-box/keys
                  [id value errors keypath preferences]} (component/get-props this)
@@ -490,7 +345,7 @@
                 (ui/button-pill {:class     "p1 mr1"
                                  :key       "filters-key"
                                  :data-test "button-show-stylist-search-filters"
-                                 :on-click  (utils/send-event-callback events/control-show-stylist-search-filters)}
+                                 :on-click  (utils/send-event-callback e/control-show-stylist-search-filters)}
                                 [:div.flex.items-center.px1
                                  (svg/funnel {:class  "mrp3"
                                               :height "9px"
@@ -528,7 +383,7 @@
    [this]
    (let [{:keys [stylist.analytics/cards stylist-results-returned?]} (component/get-props this)]
      (when stylist-results-returned?
-       (messages/handle-message events/adventure-stylist-search-results-displayed
+       (messages/handle-message e/adventure-stylist-search-results-displayed
                                 {:stylist-results cards}))))
   (render
    [this]
@@ -584,23 +439,23 @@
                                                   "to help select a Certified Mayvenn Stylist. In the meantime…")
    :list/buttons                                 [{:shopping-method-choice.button/id       "button-looks"
                                                    :shopping-method-choice.button/label    "Shop by look"
-                                                   :shopping-method-choice.button/target   [events/navigate-shop-by-look
+                                                   :shopping-method-choice.button/target   [e/navigate-shop-by-look
                                                                                             {:album-keyword :look}]
                                                    :shopping-method-choice.button/ucare-id "a9009728-efd3-4917-9541-b4514b8e4776"}
                                                   {:shopping-method-choice.button/id       "button-bundle-sets"
                                                    :shopping-method-choice.button/label    "Pre-made bundle sets"
-                                                   :shopping-method-choice.button/target   [events/navigate-shop-by-look
+                                                   :shopping-method-choice.button/target   [e/navigate-shop-by-look
                                                                                             {:album-keyword :all-bundle-sets}]
                                                    :shopping-method-choice.button/ucare-id "87b46db7-4c70-4d3a-8fd0-6e99e78d3c96"}
                                                   {:shopping-method-choice.button/id       "button-a-la-carte"
                                                    :shopping-method-choice.button/label    "Choose individual bundles"
-                                                   :shopping-method-choice.button/target   [events/navigate-category
+                                                   :shopping-method-choice.button/target   [e/navigate-category
                                                                                             {:page/slug           "mayvenn-install"
                                                                                              :catalog/category-id "23"}]
                                                    :shopping-method-choice.button/ucare-id "6c39cd72-6fde-4ec2-823c-5e39412a6d54"}
                                                   {:shopping-method-choice.button/id       "button-shop-wigs"
                                                    :shopping-method-choice.button/label    "Shop Virgin Wigs"
-                                                   :shopping-method-choice.button/target   [events/navigate-category
+                                                   :shopping-method-choice.button/target   [e/navigate-category
                                                                                             {:page/slug           "wigs"
                                                                                              :catalog/category-id "13"
                                                                                              :query-params
@@ -617,11 +472,11 @@
 
 (defn page
   [app-state]
-  (let [current-order                 (api.orders/current app-state)
-        stylist-search-results        (get-in app-state adventure.keypaths/adventure-matched-stylists)
-        nav-event                     (get-in app-state storefront.keypaths/navigation-event)
-        post-purchase?                (#{events/navigate-adventure-stylist-results-post-purchase} nav-event)
-        preferences                   (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)
+  (let [current-order (api.orders/current app-state)
+        matching      (stylist-matching.core/stylist-matching<- app-state)
+
+        stylist-search-results        (:results/stylists matching)
+        preferences                   (:param/services matching)
         matches-preferences?          (fn matches-preferences?
                                         [{:keys [service-menu]}]
                                         (every? #(service-menu (accessors.filters/service-sku-id->service-menu-key %)) preferences))
@@ -635,7 +490,6 @@
         just-added-control?           (experiments/just-added-control? app-state)
         stylist-results-test?         (experiments/stylist-results-test? app-state)
         stylist-data                  {:filter-prefences        preferences
-                                       :post-purchase?          post-purchase?
                                        :hide-stylist-specialty? hide-stylist-specialty?
                                        :hide-bookings?          hide-bookings?
                                        :just-added-only?        just-added-only?
@@ -650,7 +504,6 @@
       (component/build template
                        {:gallery-modal            (gallery-modal-query app-state)
                         :spinning?                (or (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
-                                                      (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-within-radius)
                                                       (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters)
                                                       (utils/requesting-from-endpoint? app-state request-keys/get-products)
                                                       (and (not (get-in app-state storefront.keypaths/loaded-convert))
@@ -658,25 +511,23 @@
                                                            (or (not just-added-control?)
                                                                (not just-added-only?)
                                                                (not just-added-experience?))))
-                        :location-search-box      (when (and (get-in app-state storefront.keypaths/loaded-google-maps)
-                                                             (not post-purchase?))
+                        :location-search-box      (when (get-in app-state storefront.keypaths/loaded-google-maps)
                                                     {:stylist.results.location-search-box/id          "stylist-search-input"
-                                                     :stylist.results.location-search-box/value       (get-in app-state stylist-directory.keypaths/stylist-search-address-input)
-                                                     :stylist.results.location-search-box/keypath     stylist-directory.keypaths/stylist-search-address-input
+                                                     :stylist.results.location-search-box/value       (get-in app-state k/google-input)
+                                                     :stylist.results.location-search-box/keypath     k/google-input
                                                      :stylist.results.location-search-box/errors      []
                                                      :stylist.results.location-search-box/preferences (mapv
                                                                                                        (fn [preference]
-                                                                                                         {:preference-pill/target  [events/control-stylist-search-toggle-filter
+                                                                                                         {:preference-pill/target  [e/control-stylist-search-toggle-filter
                                                                                                                                     {:previously-checked? true :stylist-filter-selection preference}]
                                                                                                           :preference-pill/id      (str "remove-preference-button-" (name preference))
                                                                                                           :preference-pill/primary (get-in skus [preference :sku/name])})
                                                                                                        (vec preferences))})
-                        :header                   (header-query current-order
-                                                                (first (get-in app-state storefront.keypaths/navigation-undo-stack))
-                                                                post-purchase?)
+                        :header                   (header<- current-order
+                                                            (first (get-in app-state storefront.keypaths/navigation-undo-stack)))
                         :stylist-results-present? (seq (concat matching-stylists non-matching-stylists))
 
-                        :stylist-results-returned?    (get-in app-state adventure.keypaths/adventure-stylist-results-returned)
+                        :stylist-results-returned?    (not (contains? (:status matching) :results/stylists))
                         :list.stylist-counter/title   (str (count matching-stylists) " Stylists Found")
                         :list.stylist-counter/key     (when (pos? (count matching-stylists))
                                                         "stylist-count-content")

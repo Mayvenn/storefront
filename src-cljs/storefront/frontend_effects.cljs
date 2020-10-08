@@ -429,18 +429,6 @@
     (when (and servicing-stylist-id (not servicing-stylist))
       (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))))
 
-(defmethod effects/perform-effects events/navigate-need-match-order-complete
-  [_ event {{:keys [paypal]} :query-params} _ app-state]
-  (let [{:keys [number token] :as order} (get-in app-state keypaths/completed-order)]
-    (when (not (get-in app-state keypaths/user-id))
-      (facebook/insert))
-    (when (and number token)
-      (api/get-completed-order number token))
-    (when (not (get-in app-state adventure.keypaths/adventure-matched-stylists))
-      (messages/handle-message events/api-fetch-stylists-within-radius-post-purchase))
-    (when paypal
-      (effects/redirect events/navigate-need-match-order-complete {:number number}))))
-
 (defmethod effects/perform-effects events/api-success-get-completed-order [_ event order _ app-state]
   (messages/handle-message events/order-completed order))
 
@@ -752,12 +740,9 @@
                                (get-in app-state keypaths/stylist-portrait-status))]
     (messages/handle-later events/poll-stylist-portrait {} 5000)))
 
-(defmethod effects/perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} _ app-state]
-  (let [{service-items :services/items} (api.orders/services app-state order)]
-    (if (and (seq service-items)
-             (= :shop (sites/determine-site app-state)))
-      (history/enqueue-navigate events/navigate-adventure-checkout-wait)
-      (history/enqueue-navigate events/navigate-order-complete order)))
+(defmethod effects/perform-effects events/api-success-update-order-place-order
+  [_ _ {:keys [order]} _ _]
+  (history/enqueue-navigate events/navigate-order-complete order)
   (messages/handle-message events/order-completed order)
   (messages/handle-message events/order-placed order))
 

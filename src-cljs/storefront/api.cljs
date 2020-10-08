@@ -1017,14 +1017,6 @@
               :user-token user-token}
     :handler #(messages/handle-message events/api-success-user-stylist-service-menu-fetch %)}))
 
-(defn fetch-stylists-within-radius [params handler]
-  (storeback-api-req
-   GET
-   "/v2/stylist/within-radius"
-   request-keys/fetch-stylists-within-radius
-   {:params  params
-    :handler handler}))
-
 (defn fetch-stylists-matching-filters [params handler]
   (storeback-api-req
    GET

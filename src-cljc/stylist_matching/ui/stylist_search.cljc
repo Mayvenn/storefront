@@ -1,73 +1,75 @@
 (ns stylist-matching.ui.stylist-search
   (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
-                       [storefront.history :as history]
-                       [storefront.hooks.stringer :as stringer]
-                       [storefront.browser.cookie-jar :as cookie]])
-            [adventure.keypaths]
-            [storefront.component :as component :refer [defcomponent defdynamic-component]]
+                       storefront.keypaths
+                       adventure.keypaths
+                       [storefront.hooks.stringer :as stringer]])
+            [stylist-matching.core :refer [stylist-matching<-]]
+            [stylist-matching.keypaths :as k]
+            [storefront.component :as c]
             [storefront.components.ui :as ui]
-            [storefront.effects :as effects]
-            [storefront.events :as events]
-            [storefront.keypaths]
+            [storefront.effects :as fx]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [storefront.transitions :as transitions]
             [storefront.trackings :as trackings]
-            [stylist-directory.keypaths]))
+            [storefront.events :as e]))
 
-(defmethod effects/perform-effects events/adventure-address-component-mounted
-  [_ event {:keys [address-elem address-keypath]} _ app-state]
+;; --------------------- Address Input behavior
+
+(defmethod fx/perform-effects e/adventure-address-component-mounted
+  [_ _ {:keys [address-elem result-keypath]} _ _]
   #?(:cljs
-     (google-maps/attach "geocode" address-elem address-keypath)))
+     (google-maps/attach "geocode"
+                         address-elem
+                         result-keypath)))
 
-(defmethod transitions/transition-state events/clear-selected-location
-  [_ event _ app-state]
-  (-> app-state
-      (assoc-in adventure.keypaths/adventure-stylist-match-location nil)))
+(defn ^:private address-input
+  [elemID]
+  #?(:cljs (-> js/document
+               (.getElementById elemID)
+               .-value)))
 
-(defmethod transitions/transition-state events/control-adventure-location-submit
-  [_ event _ app-state]
-  #?(:cljs
-     (-> app-state
-         (assoc-in adventure.keypaths/adventure-matched-stylists nil)
-         (assoc-in stylist-directory.keypaths/stylist-search-selected-location nil)
-         (assoc-in stylist-directory.keypaths/stylist-search-selected-filters nil)
-         (assoc-in stylist-directory.keypaths/stylist-search-address-input nil)
-         (assoc-in adventure.keypaths/adventure-stylist-match-address
-                   (.-value (.getElementById js/document "stylist-match-address"))))))
-
-(defmethod trackings/perform-track events/control-adventure-location-submit
-  [_ event _ app-state]
-  #?(:cljs
-     (let [{:keys [latitude longitude city state]} (get-in app-state adventure.keypaths/adventure-stylist-match-location)]
+(defmethod trackings/perform-track e/control-adventure-location-submit
+  [_ _ _ state]
+  (let [{:param/keys [location address]}        (stylist-matching<- state)
+        {:keys [latitude longitude city state]} location]
+    #?(:cljs
        (stringer/track-event "adventure_location_submitted"
-                             {:location_submitted (get-in app-state adventure.keypaths/adventure-stylist-match-address)
+                             {:location_submitted address
                               :city               city
                               :state              state
                               :latitude           latitude
                               :longitude          longitude}))))
 
-(defmethod effects/perform-effects events/control-adventure-location-submit
-  [_ event args _ app-state]
-  #?(:cljs
-     (let [cookie    (get-in app-state storefront.keypaths/cookie)
-           adventure (get-in app-state adventure.keypaths/adventure)]
-       (cookie/save-adventure cookie adventure)
-       (history/enqueue-navigate events/navigate-adventure-stylist-results-pre-purchase args))))
+(defmethod fx/perform-effects e/control-adventure-location-submit
+  [_ _ _ _ state]
+  ;; Address/Location search
+  (messages/handle-message e/flow|stylist-matching|param-address-constrained
+                           {:address (address-input "stylist-match-address")})
+  (messages/handle-message e/flow|stylist-matching|param-location-constrained
+                           (get-in state k/google-location))
+  (messages/handle-message e/flow|stylist-matching|prepared))
+
+;; ---------------------------------------------
+
+;; FIXME(matching) Want to use init event, but it does more than the location
+;; FIXME(matching) Not sure this ever fires
+(defmethod fx/perform-effects e/clear-selected-location
+  [_ _ _ _ _]
+  (messages/handle-message e/flow|stylist-matching|param-location-constrained))
 
 (defn ^:private change-state
-  [selected-location #?(:cljs ^js/Event e :clj e)]
-  (when selected-location
-    (messages/handle-message events/clear-selected-location))
-  (->> {:keypath adventure.keypaths/adventure-stylist-match-address
-        :value (.. e -target -value)}
-       (messages/handle-message events/control-change-state)))
+  [clear? #?(:cljs ^js/Event e :clj e)]
+  (when clear?
+    (messages/handle-message e/clear-selected-location))
+  (->> {:keypath k/google-input
+        :value   (.. e -target -value)}
+       (messages/handle-message e/control-change-state)))
 
 (defn stylist-search-location-search-box
   [{:stylist-search.location-search-box/keys
     [id placeholder value clear?]}]
   (when id
-    (component/html
+    (c/html
      (let [handler (partial change-state clear?)]
        [:div.bg-white
         (ui/text-field-large
@@ -83,7 +85,7 @@
 (defn stylist-search-button
   [{:stylist-search.button/keys [id disabled? target label]}]
   (when id
-    (component/html
+    (c/html
      (ui/button-large-primary (merge {:disabled? disabled?
                                       :data-test "stylist-match-address-submit"}
                                      (apply utils/fake-href target))
@@ -92,23 +94,25 @@
 (defn stylist-search-title-molecule
   [{:stylist-search.title/keys [id primary secondary]}]
   (when id
-    (component/html
+    (c/html
      [:div.left-align
       [:div.title-2.canela.my2.light primary]
       [:div.h5.my2.light secondary]])))
 
-(defdynamic-component organism
-  (did-mount [_]
-             (messages/handle-message events/adventure-address-component-mounted
-                                      {:address-elem    "stylist-match-address"
-                                       :address-keypath adventure.keypaths/adventure-stylist-match-location}))
-  (render [this]
-          (let [data (component/get-props this)]
-            (component/html
-             [:div.m5
-              [:div.mb4
-               (stylist-search-title-molecule data)]
-              [:div.mb4
-               (stylist-search-location-search-box data)]
-              [:div
-               (stylist-search-button data)]]))))
+(c/defdynamic-component organism
+  (did-mount
+   [_]
+   (messages/handle-message e/adventure-address-component-mounted
+                            {:address-elem   "stylist-match-address"
+                             :result-keypath k/google-location}))
+  (render
+   [this]
+   (let [data (c/get-props this)]
+     (c/html
+      [:div.m5
+       [:div.mb4
+        (stylist-search-title-molecule data)]
+       [:div.mb4
+        (stylist-search-location-search-box data)]
+       [:div
+        (stylist-search-button data)]]))))

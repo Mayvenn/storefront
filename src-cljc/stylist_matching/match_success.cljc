@@ -4,79 +4,39 @@
             api.orders
             [clojure.string :as string]
             [storefront.accessors.categories :as accessors.categories]
-            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.formatters :as formatters]
             [storefront.components.header :as header]
             [storefront.effects :as effects]
             [storefront.events :as events]
             storefront.keypaths
-            [storefront.transitions :as transitions]
             [stylist-directory.stylists :as stylists]
             [stylist-matching.ui.atoms :as stylist-matching.A]
             [stylist-matching.ui.matched-stylist :as matched-stylist]
-            [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]
-            [stylist-matching.ui.stylist-cards :as stylist-cards]
-            [storefront.accessors.orders :as orders]))
+            [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]))
 
-(defmethod transitions/transition-state events/api-success-assign-servicing-stylist-pre-purchase
-  [_ _ {:keys [order]} app-state]
-  (assoc-in app-state storefront.keypaths/order order))
-
-(defmethod transitions/transition-state events/api-success-assign-servicing-stylist-post-purchase
-  [_ _ {:keys [order]} app-state]
-  (assoc-in app-state storefront.keypaths/completed-order order))
-
-(defmethod transitions/transition-state events/api-success-assign-servicing-stylist
-  [_ _ {:keys [servicing-stylist]} app-state]
-  (assoc-in app-state adventure.keypaths/adventure-servicing-stylist servicing-stylist))
-
-(defmethod effects/perform-effects events/api-success-assign-servicing-stylist-pre-purchase [_ _ _ _ app-state]
-  #?(:cljs
-     (let [current-order            (api.orders/current app-state)
-           {services       "service"
-            physical-items "spree"} (group-by :source (orders/product-and-service-items (:waiter/order current-order)))]
-       (history/enqueue-navigate
-        (cond (and (seq services) (seq physical-items))
-              events/navigate-cart
-
-              (seq services)
-              events/navigate-adventure-match-success-pre-purchase
-
-              :else
-              events/navigate-adventure-match-success-pre-purchase-pick-service)))))
-
-(defmethod effects/perform-effects events/navigate-adventure-match-success-pre-purchase
+(defmethod effects/perform-effects events/navigate-adventure-match-success
   [_ _ _ _ app-state]
   #?(:cljs
      (when (nil? (get-in app-state adventure.keypaths/adventure-servicing-stylist))
        (history/enqueue-redirect events/navigate-adventure-find-your-stylist))))
 
-(defmethod effects/perform-effects events/api-success-assign-servicing-stylist-post-purchase [_ _ _ _ app-state]
-  #?(:cljs (history/enqueue-navigate events/navigate-adventure-match-success-post-purchase)))
-
 (defn header-query
-  [{:order.items/keys [quantity]
-    :order/keys       [submitted?]}
+  [{:order.items/keys [quantity]}
    browser-history]
-  (cond-> {:header.title/id           "adventure-title"
-           :header.title/primary      "Meet Your Stylist"
-           :header.back-navigation/id "adventure-back"}
+  (cond-> {:header.title/id               "adventure-title"
+           :header.title/primary          "Meet Your Stylist"
+           :header.back-navigation/id     "adventure-back"
+           :header.back-navigation/target [events/navigate-adventure-find-your-stylist]
+           :header.cart/id                "mobile-cart"
+           :header.cart/value             quantity
+           :header.cart/color             "white"}
 
     (seq browser-history)
-    (merge {:header.back-navigation/back (first browser-history)})
-
-    submitted?
-    (merge {:header.back-navigation/target [events/navigate-adventure-stylist-results-post-purchase]})
-
-    (not submitted?)
-    (merge {:header.back-navigation/target [events/navigate-adventure-find-your-stylist]
-            :header.cart/id                "mobile-cart"
-            :header.cart/value             quantity
-            :header.cart/color             "white"})))
+    (merge {:header.back-navigation/back (first browser-history)})))
 
 (defn stylist-card-query
-  [{:keys [salon service-menu store-slug stylist-id rating] :as stylist} post-purchase?]
+  [{:keys [salon service-menu store-slug stylist-id rating] :as stylist}]
   (let [{salon-name :name
          :keys      [address-1 address-2 city state zipcode]} salon
         {:keys [specialty-sew-in-leave-out
@@ -84,11 +44,8 @@
                 specialty-sew-in-360-frontal
                 specialty-sew-in-frontal]}                    service-menu]
     {:react/key                         (str "stylist-card-" store-slug)
-     :stylist-card.header/target        (if post-purchase?
-                                          [events/navigate-adventure-stylist-profile-post-purchase {:stylist-id stylist-id
-                                                                                                    :store-slug store-slug}]
-                                          [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
-                                                                                      :store-slug store-slug}])
+     :stylist-card.header/target        [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
+                                                                                    :store-slug store-slug}]
      :stylist-card.header/id            (str "stylist-card-header" store-slug)
      :stylist-card.thumbnail/id         (str "stylist-card-thumbnail-" store-slug)
      :stylist-card.thumbnail/ucare-id   (-> stylist :portrait :resizable-url)
@@ -116,7 +73,7 @@
                                                       zipcode])}))
 
 (defn matched-stylist-query
-  [servicing-stylist {:order/keys [submitted?] :order.shipping/keys [phone]} post-purchase?]
+  [servicing-stylist {:order/keys [submitted?] :order.shipping/keys [phone]}]
   (when submitted?
     (merge {:matched-stylist.title/id            "matched-with-stylist"
             :matched-stylist.title/primary       "Chat with your Stylist"
@@ -134,7 +91,7 @@
             :matched-stylist.cta-title/primary   "In the meantime…"
             :matched-stylist.cta-title/secondary "Get inspired for your appointment"
             :matched-stylist.cta-title/target    ["https://www.instagram.com/explore/tags/mayvennfreeinstall/"]}
-           (stylist-card-query servicing-stylist post-purchase?))))
+           (stylist-card-query servicing-stylist))))
 
 (defn shopping-method-choice-query
   [servicing-stylist {:order/keys [submitted?]}]
@@ -175,10 +132,6 @@
                                                            :query-params        {:family (str "lace-front-wigs" accessors.categories/query-param-separator "360-wigs")}}]
                  :shopping-method-choice.button/ucare-id "71dcdd17-f9cc-456f-b763-2c1c047c30b4"}]))}))
 
-(def pre-purchase? #{events/navigate-adventure-match-success-pre-purchase})
-
-(def post-purchase? #{events/navigate-adventure-match-success-post-purchase})
-
 (defcomponent template
   [{:keys [header shopping-method-choice matched-stylist]} _ _]
   [:div.center.flex.flex-auto.flex-column
@@ -190,16 +143,11 @@
 (defn page
   [app-state]
   (let [servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
-        nav-event         (get-in app-state storefront.keypaths/navigation-event)
-        post-purchase?    (post-purchase? nav-event)
-        order             (if (pre-purchase? nav-event)
-                            (api.orders/current app-state)
-                            (api.orders/completed app-state))
+        order             (api.orders/current app-state)
         browser-history   (get-in app-state storefront.keypaths/navigation-undo-stack)]
     (component/build template
                      {:header                 (header-query order browser-history)
                       :shopping-method-choice (shopping-method-choice-query servicing-stylist
                                                                             order)
                       :matched-stylist        (matched-stylist-query servicing-stylist
-                                                                     order
-                                                                     post-purchase?)})))
+                                                                     order)})))

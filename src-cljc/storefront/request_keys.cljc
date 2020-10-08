@@ -63,7 +63,6 @@
 (def fetch-cms-keypath [:fetch-cms-keypath])
 (def voucher-redemption [:voucher-redemption])
 (def fetch-user-stylist-service-menu [:fetch-user-stylist-service-menu])
-(def fetch-stylists-within-radius [:fetch-stylists-within-radius])
 (def fetch-stylists-matching-filters [:fetch-stylists-matching-filters])
 
 (def fetch-matched-stylist [:fetch-matched-stylist])

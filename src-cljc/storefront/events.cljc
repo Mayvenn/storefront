@@ -77,7 +77,7 @@
 (defpath navigate-design-system-ui)
 
 (defpath navigate-order-complete)
-(defpath navigate-need-match-order-complete)
+
 (defpath navigate-not-found)
 (defpath navigate-shop-by-look)
 (defpath navigate-shop-by-look-details)
@@ -116,7 +116,6 @@
 (defpath navigate-checkout-confirmation)
 (defpath navigate-checkout-processing)
 (defpath navigate-checkout-add)
-(defpath navigate-adventure-checkout-wait)
 
 (defpath navigate-mayvenn-made)
 
@@ -303,12 +302,6 @@
 (defpath api-success-cash-out-complete)
 (defpath api-success-user-stylist-service-menu-fetch)
 
-(defpath api-success-fetch-geocode)
-(defpath api-failure-fetch-geocode)
-(defpath api-fetch-stylists-within-radius-post-purchase)
-(defpath api-success-fetch-stylists-within-radius)
-(defpath api-success-fetch-stylists-within-radius-pre-purchase)
-(defpath api-success-fetch-stylists-within-radius-post-purchase)
 (defpath api-success-fetch-stylists-matching-filters)
 
 (defpath api-success-fetch-cms-keypath)
@@ -326,8 +319,6 @@
 (defpath api-success-shared-cart-fetch)
 
 (defpath api-success-assign-servicing-stylist)
-(defpath api-success-assign-servicing-stylist-pre-purchase)
-(defpath api-success-assign-servicing-stylist-post-purchase)
 
 (defpath api-success-update-order)
 (defpath api-success-update-order-from-shared-cart)
@@ -497,19 +488,12 @@
 (defpath navigate-adventure)
 (defpath navigate-adventure-find-your-stylist)
 (defpath navigate-adventure-stylist-results)
-(defpath navigate-adventure-stylist-results-pre-purchase)
-(defpath navigate-adventure-stylist-results-post-purchase)
 (defpath navigate-adventure-stylist-gallery)
 (defpath navigate-adventure-match-success)
-(defpath navigate-adventure-match-success-pre-purchase)
-(defpath navigate-adventure-match-success-pre-purchase-pick-service)
-(defpath navigate-adventure-match-success-post-purchase)
+(defpath navigate-adventure-match-success-pick-service)
 (defpath navigate-adventure-stylist-profile)
-(defpath navigate-adventure-stylist-profile-post-purchase)
 
 (defpath control-adventure-select-stylist)
-(defpath control-adventure-select-stylist-pre-purchase)
-(defpath control-adventure-select-stylist-post-purchase)
 
 (defpath adventure-address-component-mounted)
 (defpath control-adventure-stylist-salon-address-clicked)
@@ -529,7 +513,6 @@
 (defpath api-failure-fetch-stylist-reviews)
 (defpath control-fetch-stylist-reviews)
 (defpath adventure-stylist-search-results-displayed)
-(defpath adventure-stylist-search-results-post-purchase-displayed)
 (defpath stylist-results-address-component-mounted)
 (defpath stylist-results-address-selected)
 
@@ -582,3 +565,16 @@
 
 (defpath service-model-requested)
 (defpath service-model-fetched)
+
+;; Flows
+
+(defpath flow|stylist-matching|initialized)
+(defpath flow|stylist-matching|param-ids-constrained)
+(defpath flow|stylist-matching|param-address-constrained)
+(defpath flow|stylist-matching|param-location-constrained)
+(defpath flow|stylist-matching|param-name-constrained)
+(defpath flow|stylist-matching|param-services-constrained)
+(defpath flow|stylist-matching|prepared)
+(defpath flow|stylist-matching|searched)
+(defpath flow|stylist-matching|resulted)
+(defpath flow|stylist-matching|matched)

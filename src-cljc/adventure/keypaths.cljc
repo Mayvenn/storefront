@@ -7,13 +7,9 @@
 
 (def adventure-home-video (conj adventure :home-video))
 
-;; GROT
-(def adventure-choices-flow (conj adventure :flow))
-
 (def adventure-choices (conj adventure :choices))
 (def adventure-choices-selected-stylist-id (conj adventure-choices :selected-stylist-id))
 
-(def adventure-matched-stylists (conj adventure :matched-stylists))
 (def adventure-stylist-match-address (conj adventure :stylist-match-address))
 (def adventure-stylist-match-location (conj adventure-choices :location))
 
