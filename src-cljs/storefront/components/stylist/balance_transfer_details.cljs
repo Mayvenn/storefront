@@ -2,6 +2,7 @@
   (:require checkout.classic-cart
             [ui.molecules :as ui-molecules]
             [storefront.accessors.adjustments :as adjustments]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.line-items :as accessors.line-items]
             [storefront.component :as component :refer [defcomponent]]
@@ -166,7 +167,7 @@
       "Check"            (check-payout-details date-string payout-method)
       "Venmo"            (venmo-payout-details date-string payout-method))))
 
-(defn ^:private payout-component
+(defn ^:private payout-component-old
   [{:keys [balance-transfer] :as queried-data}]
   (let [{:keys [id
                 number
@@ -177,7 +178,7 @@
                 payout-method-name
                 by-self]} data]
     [:div.container.mb4.px3
-     [:div.py3 (ui-molecules/return-link queried-data)]
+     [:div.py3 (ui-molecules/return-link (:payout/return-link queried-data))]
      [:div
       [:div.col.col-1 (svg/stack-o-cash {:height 14
                                          :width  20})]
@@ -190,6 +191,52 @@
        (payout-method-details
         (f/long-date (or created-at (:transfered_at data)))
         (or payout-method (:payout_method data)))]]]))
+
+(defn ^:private info-on-payout-molecule
+  [{:keys [id title copy]}]
+  (when id
+    [:div.p2.col-6
+     [:div.content-3 title]
+     [:div copy]]))
+
+(defn ^:private transfer-confirmation-molecule
+  [{:keys [id title earnings-copy earnings-amount
+           fee-copy fee-amount fee-dt earnings-dt
+           total-cashout-copy total-cashout]}]
+  (when id
+    [:div.p4
+     [:div.col-12.content-3.pb2 title]
+     [:div.flex.items-center.justify-between.pb1
+      {:data-test earnings-dt}
+      [:div earnings-copy]
+      [:div earnings-amount]]
+     (when fee-dt
+       [:div.flex.items-center.justify-between
+        {:data-test fee-dt}
+        [:div fee-copy]
+        [:div fee-amount]])
+     [:div.border-bottom.border-width-2.my2]
+     [:div.flex.items-center.justify-between
+      [:div.content-3.bold.shout total-cashout-copy]
+      [:div total-cashout]]]))
+
+(defn ^:private payout-component
+  [{:payout/keys [return-link date-sent card transfer-method arrival-time transfer-confirmation-data] :as data}]
+  [:div
+   [:div.hide-on-tb-dt
+    [:div.border-bottom.border-cool-gray.border-width-2.m-auto.col-7-on-dt
+     [:div.px2.my2 (ui-molecules/return-link return-link)]]]
+   [:div.hide-on-mb
+    [:div.m-auto.container
+     [:div.px2.my2 (ui-molecules/return-link return-link)]]]
+   [:div.bg-cool-gray
+    [:span.flex.items-center.pl1.pt1
+     (info-on-payout-molecule date-sent)
+     (info-on-payout-molecule card)]
+    [:span.flex.items-center.pl1.pb2
+     (info-on-payout-molecule transfer-method)
+     (info-on-payout-molecule arrival-time)]]
+   (transfer-confirmation-molecule transfer-confirmation-data)])
 
 (defn ^:private award-component
   [{:keys [balance-transfer] :as queried-data}]
@@ -251,27 +298,53 @@
       [:div.col.col-2.mtp1.right-align
        [:div.h5.medium.s-color (mf/as-money amount)]]]]))
 
+(def ^:private return-link<-
+  #:return-link{:id            "back-link"
+                :event-message [events/navigate-v2-stylist-dashboard-payments]
+                :copy          "Back"})
+
+(defn ^:private payout-info-query
+  [id title copy]
+  {:id id
+   :title title
+   :copy copy})
+
 (defn query [data]
-  (let [balance-transfer-id (get-in data keypaths/stylist-earnings-balance-transfer-details-id)
-        balance-transfer    (get-in data (conj keypaths/stylist-earnings-balance-transfers
-                                               balance-transfer-id))
-        skus                (get-in data keypaths/v2-skus)
-        type                (:type balance-transfer)]
+  (let [balance-transfer-id      (get-in data keypaths/stylist-earnings-balance-transfer-details-id)
+        {:keys [id type amount data fee]
+         :as   balance-transfer} (get-in data (conj keypaths/stylist-earnings-balance-transfers
+                                                    balance-transfer-id))
+        skus                     (get-in data keypaths/v2-skus)
+        instapay?                (experiments/instapay? data)
+        total                    (- (js/parseFloat amount) (js/parseFloat fee))]
     (merge
-     {:return-link/id            "back-link"
-      :return-link/event-message [events/navigate-v2-stylist-dashboard-payments]
-      :return-link/copy          "Back"
-      :service-skus              (when (= "voucher_award" type)
-                                   (->> balance-transfer
-                                        :data
-                                        :voucher
-                                        :services
-                                        (mapv :sku)
-                                        (select-keys skus)
-                                        vals
-                                        (sort-by :order.view/addon-sort)))
-      :balance-transfer          balance-transfer
-      :fetching?                 (utils/requesting? data request-keys/get-stylist-balance-transfer)}
+     {:payout/return-link                return-link<-
+      :payout/date-sent                  (payout-info-query "date-sent-info-id" "Date Sent" "January 16, 2019")
+      :payout/card                       (payout-info-query "card-info-id" "Card" (str "xxxx-xxxx-xxxx-" "last"))
+      :payout/transfer-method            (payout-info-query "transfer-method-id" "Transfer Method" "Instapay")
+      :payout/arrival-time               (payout-info-query "arrival-time-id" "Estimated Arrival" "Instant")
+      :payout/transfer-confirmation-data {:id                 "transfer-confirmation-id"
+                                          :title              "Transfer Confirmation"
+                                          :earnings-copy      "Your Earnings"
+                                          :earnings-amount    (mf/as-money amount)
+                                          :earnings-dt        "earnings-row"
+                                          :fee-dt             (when (> fee 0) "instapay-fee-row")
+                                          :fee-copy           "Instapay Fee"
+                                          :fee-amount         (mf/as-money (- fee))
+                                          :total-cashout-copy "Cashout Amount"
+                                          :total-cashout      (mf/as-money total)}}
+     {:service-skus     (when (= "voucher_award" type)
+                          (->> balance-transfer
+                               :data
+                               :voucher
+                               :services
+                               (mapv :sku)
+                               (select-keys skus)
+                               vals
+                               (sort-by :order.view/addon-sort)))
+      :balance-transfer balance-transfer
+      :fetching?        (utils/requesting? data request-keys/get-stylist-balance-transfer)
+      :instapay?        instapay?}
      (when (= type "commission")
        (let [line-items (->> (:order (:data balance-transfer))
                              orders/first-commissioned-shipment
@@ -281,12 +354,14 @@
                                      (get-in data keypaths/v2-facets))
                             line-items)})))))
 
-(defcomponent component [{:keys [fetching? balance-transfer] :as data} owner opts]
+(defcomponent component [{:keys [fetching? balance-transfer instapay?] :as data} owner opts]
   (if (and fetching? (not balance-transfer))
     [:div.my2.h2 ui/spinner]
     (when balance-transfer
       (case (:type balance-transfer)
-        "payout"        (payout-component data)
+        "payout"        (if instapay? ;NOTE: when removing experiment, clean up old payout component
+                          (payout-component data)
+                          (payout-component-old data))
         "commission"    (commission-component data)
         "award"         (award-component data)
         "voucher_award" (voucher-award-component data)))))
