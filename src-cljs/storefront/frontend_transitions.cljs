@@ -225,15 +225,12 @@
 (defn ensure-direct-load-of-checkout-auth-advances-to-checkout-flow [app-state]
   (let [direct-load? (= [events/navigate-home {}]
                         (get-in app-state keypaths/return-navigation-message))]
-    (cond-> app-state
-      direct-load?
-      (assoc-in keypaths/return-navigation-message [events/navigate-checkout-address {}]))))
+    (when direct-load?
+      (assoc-in app-state keypaths/return-navigation-message
+                [events/navigate-checkout-address {}]))))
 
 (defmethod transition-state events/navigate-checkout-returning-or-guest [_ event args app-state]
-  (let [phone-marketing-opt-in (get-in app-state keypaths/order-phone-marketing-opt-in)]
-    (-> app-state
-        ensure-direct-load-of-checkout-auth-advances-to-checkout-flow
-        (assoc-in keypaths/checkout-phone-marketing-opt-in phone-marketing-opt-in))))
+  (ensure-direct-load-of-checkout-auth-advances-to-checkout-flow app-state))
 
 (defmethod transition-state events/navigate-checkout-sign-in [_ event args app-state]
   (ensure-direct-load-of-checkout-auth-advances-to-checkout-flow app-state))
@@ -267,10 +264,7 @@
                        (orders/shipping-item (:order app-state))))))
 
 (defmethod transition-state events/navigate-checkout-address [_ event args app-state]
-  (let [phone-marketing-opt-in (get-in app-state keypaths/order-phone-marketing-opt-in)]
-    (-> app-state
-        prefill-guest-email-address
-        (assoc-in keypaths/checkout-phone-marketing-opt-in phone-marketing-opt-in))))
+  (prefill-guest-email-address app-state))
 
 (defmethod transition-state events/navigate-checkout-confirmation [_ event args app-state]
   (-> app-state
