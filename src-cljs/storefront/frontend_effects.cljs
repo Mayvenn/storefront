@@ -579,24 +579,19 @@
     (history/enqueue-navigate events/navigate-gallery-edit)))
 
 (defmethod effects/perform-effects events/control-checkout-update-addresses-submit [_ event args _ app-state]
-  (let [guest-checkout?        (get-in app-state keypaths/checkout-as-guest)
-        billing-address        (get-in app-state keypaths/checkout-billing-address)
-        shipping-address       (get-in app-state keypaths/checkout-shipping-address)
-        phone-marketing-opt-in (get-in app-state keypaths/checkout-phone-marketing-opt-in)
-        update-addresses       (if guest-checkout? api/guest-update-addresses api/update-addresses)]
+  (let [guest-checkout? (get-in app-state keypaths/checkout-as-guest)
+        billing-address (get-in app-state keypaths/checkout-billing-address)
+        shipping-address (get-in app-state keypaths/checkout-shipping-address)
+        update-addresses (if guest-checkout? api/guest-update-addresses api/update-addresses)]
     (update-addresses
      (get-in app-state keypaths/session-id)
      (cond-> (merge (select-keys (get-in app-state keypaths/order) [:number :token])
-                    {:billing-address billing-address
-                     :shipping-address shipping-address})
+                    {:billing-address billing-address :shipping-address shipping-address})
        guest-checkout?
        (assoc :email (get-in app-state keypaths/checkout-guest-email))
 
        (get-in app-state keypaths/checkout-bill-to-shipping-address)
-       (assoc :billing-address shipping-address)
-
-       (experiments/phone-opt-in? app-state)
-       (assoc :phone-marketing-opt-in phone-marketing-opt-in)))))
+       (assoc :billing-address shipping-address)))))
 
 (defmethod effects/perform-effects events/control-checkout-shipping-method-select [_ event args _ app-state]
   (api/update-shipping-method (get-in app-state keypaths/session-id)

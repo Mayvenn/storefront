@@ -53,7 +53,6 @@
 (def order-user (conj order :user))
 (def order-user-id (conj order-user :id))
 (def order-user-email (conj order-user :email))
-(def order-phone-marketing-opt-in (conj order :phone-marketing-opt-in))
 
 (def stripe-card-element [:stripe :card-element])
 

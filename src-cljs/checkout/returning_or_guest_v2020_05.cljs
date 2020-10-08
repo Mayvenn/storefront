@@ -2,15 +2,16 @@
   (:require [checkout.ui.secure-checkout :as secure-checkout]
             [checkout.ui.checkout-address-form :as checkout-address-form]
             [storefront.accessors.auth :as auth]
-            [storefront.accessors.experiments :as experiments]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.checkout-address :as checkout-address]
             [storefront.component :as c :refer [defcomponent]]
+            [storefront.components.ui :as ui]
             [storefront.events :as e]
             [storefront.keypaths :as k]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [ui.promo-banner :as promo-banner]))
+            [ui.promo-banner :as promo-banner]
+            ))
 
 (def or-separator
   [:div.black.py1.flex.items-center.col-10.mx-auto
@@ -60,9 +61,7 @@
    google-maps-loaded?
    field-errors
    focused
-   saving?
-   phone-marketing-opt-in?
-   phone-marketing-opt-in-value]
+   saving?]
   (cond->
       (merge
        #:checkout-address-title {:primary "Shipping Address"
@@ -278,26 +277,21 @@
                                   :focused         focused
                                   :errors          (get field-errors ["billing-address" "address1"])
                                   :auto-complete   "billing address-line1"
-                                  :value           (:address1 billing-address)}})
-    phone-marketing-opt-in?
-    (merge
-     (checkout-address/phone-marketing-opt-in-query phone-marketing-opt-in-value))))
+                                  :value           (:address1 billing-address)}})))
 
 (defn query [app-state]
-  (let [facebook-loaded?             (get-in app-state k/loaded-facebook)
-        current-nav-event            (get-in app-state k/navigation-event)
-        guest?                       (= :guest (::auth/as (auth/signed-in app-state)))
-        shipping-address             (get-in app-state k/checkout-shipping-address)
-        billing-address              (get-in app-state k/checkout-billing-address)
-        bill-to-shipping-address?    (get-in app-state k/checkout-bill-to-shipping-address)
-        states                       (map (juxt :name :abbr) (get-in app-state k/states))
-        email                        (get-in app-state k/checkout-guest-email)
-        google-maps-loaded?          (get-in app-state k/loaded-google-maps)
-        field-errors                 (get-in app-state k/field-errors)
-        focused                      (get-in app-state k/ui-focus)
-        saving?                      (utils/requesting? app-state request-keys/update-addresses)
-        phone-marketing-opt-in?      (experiments/phone-opt-in? app-state)
-        phone-marketing-opt-in-value (get-in app-state k/checkout-phone-marketing-opt-in)]
+  (let [facebook-loaded?          (get-in app-state k/loaded-facebook)
+        current-nav-event         (get-in app-state k/navigation-event)
+        guest?                    (= :guest (::auth/as (auth/signed-in app-state)))
+        shipping-address          (get-in app-state k/checkout-shipping-address)
+        billing-address           (get-in app-state k/checkout-billing-address)
+        bill-to-shipping-address? (get-in app-state k/checkout-bill-to-shipping-address)
+        states                    (map (juxt :name :abbr) (get-in app-state k/states))
+        email                     (get-in app-state k/checkout-guest-email)
+        google-maps-loaded?       (get-in app-state k/loaded-google-maps)
+        field-errors              (get-in app-state k/field-errors)
+        focused                   (get-in app-state k/ui-focus)
+        saving?                   (utils/requesting? app-state request-keys/update-addresses)]
     {:promo-banner          (promo-banner/query app-state) ;; no app-states
      :secure-checkout       (secure-checkout-query facebook-loaded?)
      :checkout-steps        (checkout-steps-query current-nav-event guest?)
@@ -309,9 +303,7 @@
                                                          google-maps-loaded?
                                                          field-errors
                                                          focused
-                                                         saving?
-                                                         phone-marketing-opt-in?
-                                                         phone-marketing-opt-in-value)}))
+                                                         saving?)}))
 
 #_(defn ^:export page [app-state] ;pipedream
   (c/build
