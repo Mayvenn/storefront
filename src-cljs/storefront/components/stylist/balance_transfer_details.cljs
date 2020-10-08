@@ -202,7 +202,7 @@
 (defn ^:private transfer-confirmation-molecule
   [{:keys [id title earnings-copy earnings-amount
            fee-copy fee-amount fee-dt earnings-dt
-           total-cashout-copy total-cashout]}]
+           total-cashout-copy total-cashout total-dt]}]
   (when id
     [:div.p4
      [:div.col-12.content-3.pb2 title]
@@ -217,6 +217,7 @@
         [:div fee-amount]])
      [:div.border-bottom.border-width-2.my2]
      [:div.flex.items-center.justify-between
+      {:data-test total-dt}
       [:div.content-3.bold.shout total-cashout-copy]
       [:div total-cashout]]]))
 
@@ -319,6 +320,7 @@
    :fee-dt             (when (> fee 0) "instapay-fee-row")
    :fee-copy           "Instapay Fee"
    :fee-amount         (mf/as-money (- fee))
+   :total-dt           "total-row"
    :total-cashout-copy "Cashout Amount"
    :total-cashout      (mf/as-money total)})
 
