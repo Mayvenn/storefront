@@ -309,6 +309,19 @@
    :title title
    :copy copy})
 
+(defn ^:private transfer-confirmation-data-query
+  [amount fee total]
+  {:id                 "transfer-confirmation-id"
+   :title              "Transfer Confirmation"
+   :earnings-copy      "Your Earnings"
+   :earnings-amount    (mf/as-money amount)
+   :earnings-dt        "earnings-row"
+   :fee-dt             (when (> fee 0) "instapay-fee-row")
+   :fee-copy           "Instapay Fee"
+   :fee-amount         (mf/as-money (- fee))
+   :total-cashout-copy "Cashout Amount"
+   :total-cashout      (mf/as-money total)})
+
 (defn query [data]
   (let [balance-transfer-id      (get-in data keypaths/stylist-earnings-balance-transfer-details-id)
         {:keys [id type amount data fee]
@@ -323,28 +336,19 @@
       :payout/card                       (payout-info-query "card-info-id" "Card" (str "xxxx-xxxx-xxxx-" "last"))
       :payout/transfer-method            (payout-info-query "transfer-method-id" "Transfer Method" "Instapay")
       :payout/arrival-time               (payout-info-query "arrival-time-id" "Estimated Arrival" "Instant")
-      :payout/transfer-confirmation-data {:id                 "transfer-confirmation-id"
-                                          :title              "Transfer Confirmation"
-                                          :earnings-copy      "Your Earnings"
-                                          :earnings-amount    (mf/as-money amount)
-                                          :earnings-dt        "earnings-row"
-                                          :fee-dt             (when (> fee 0) "instapay-fee-row")
-                                          :fee-copy           "Instapay Fee"
-                                          :fee-amount         (mf/as-money (- fee))
-                                          :total-cashout-copy "Cashout Amount"
-                                          :total-cashout      (mf/as-money total)}}
-     {:service-skus     (when (= "voucher_award" type)
-                          (->> balance-transfer
-                               :data
-                               :voucher
-                               :services
-                               (mapv :sku)
-                               (select-keys skus)
-                               vals
-                               (sort-by :order.view/addon-sort)))
-      :balance-transfer balance-transfer
-      :fetching?        (utils/requesting? data request-keys/get-stylist-balance-transfer)
-      :instapay?        instapay?}
+      :payout/transfer-confirmation-data (transfer-confirmation-data-query amount fee total)
+      :service-skus                      (when (= "voucher_award" type)
+                                           (->> balance-transfer
+                                                :data
+                                                :voucher
+                                                :services
+                                                (mapv :sku)
+                                                (select-keys skus)
+                                                vals
+                                                (sort-by :order.view/addon-sort)))
+      :balance-transfer                  balance-transfer
+      :fetching?                         (utils/requesting? data request-keys/get-stylist-balance-transfer)
+      :instapay?                         instapay?}
      (when (= type "commission")
        (let [line-items (->> (:order (:data balance-transfer))
                              orders/first-commissioned-shipment
