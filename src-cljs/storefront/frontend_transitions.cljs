@@ -275,11 +275,6 @@
   (when-not (get-in app-state keypaths/user-id)
     (add-return-event app-state)))
 
-;; Duplicated from above
-(defmethod transition-state events/navigate-need-match-order-complete [_ event args app-state]
-  (when-not (get-in app-state keypaths/user-id)
-    (add-return-event app-state)))
-
 (defmethod transition-state events/navigate-gallery-edit [_ event args app-state]
   (assoc-in app-state keypaths/editing-gallery? false))
 
@@ -453,7 +448,8 @@
 
 (def vals-empty? (comp (partial every? string/blank?) vals))
 
-(defmethod transition-state events/autocomplete-update-address [_ event {:keys [address address-keypath]} app-state]
+(defmethod transition-state events/autocomplete-update-address
+  [_ _ {:keys [address address-keypath]} app-state]
   (update-in app-state address-keypath merge address))
 
 (defmethod transition-state events/api-success-account [_ event {:keys [billing-address shipping-address] :as args} app-state]

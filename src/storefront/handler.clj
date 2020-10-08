@@ -949,8 +949,7 @@
   (fn [{:keys [subdomains uri query-params] :as req}]
     (let [[event {:keys [stylist-id store-slug]}] (routes/navigation-message-for uri query-params (first subdomains))]
       (if (#{events/navigate-adventure-stylist-gallery
-             events/navigate-adventure-stylist-profile
-             events/navigate-adventure-stylist-profile-post-purchase} event)
+             events/navigate-adventure-stylist-profile} event)
         (if-let [stylist (api/get-servicing-stylist (:storeback-config ctx) stylist-id)]
           (if (not= (:store-slug stylist) store-slug)
             ;; Correct stylist slug

@@ -44,14 +44,10 @@
 
 (def stylist-matching-routes
   {"/adv/find-your-stylist"                                            (edn->bidi events/navigate-adventure-find-your-stylist)
-   "/adv/stylist-results"                                              (edn->bidi events/navigate-adventure-stylist-results-pre-purchase)
-   "/adv/stylist-results-post-purchase"                                (edn->bidi events/navigate-adventure-stylist-results-post-purchase)
-   "/adv/match-success"                                                (edn->bidi events/navigate-adventure-match-success-pre-purchase)
-   "/adv/match-success-post-purchase"                                  (edn->bidi events/navigate-adventure-match-success-post-purchase)
+   "/adv/stylist-results"                                              (edn->bidi events/navigate-adventure-stylist-results)
+   "/adv/match-success"                                                (edn->bidi events/navigate-adventure-match-success)
    "/adv/match-success-pick-service"                                   (edn->bidi events/navigate-adventure-match-success-pre-purchase-pick-service)
-   "/adv/checkout-wait"                                                (edn->bidi events/navigate-adventure-checkout-wait)
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug]                  (edn->bidi events/navigate-adventure-stylist-profile)
-   ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "-post-purchase"] (edn->bidi events/navigate-adventure-stylist-profile-post-purchase)
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "/gallery"]       (edn->bidi events/navigate-adventure-stylist-gallery)
    "/certified-stylists"                                               (edn->bidi events/navigate-info-certified-stylists)
    "/about-our-hair"                                                   (edn->bidi events/navigate-info-about-our-hair)
@@ -137,8 +133,7 @@
               "/checkout/payment"                         (edn->bidi events/navigate-checkout-payment)
               "/checkout/confirm"                         (edn->bidi events/navigate-checkout-confirmation)
               "/checkout/processing"                      (edn->bidi events/navigate-checkout-processing)
-              ["/orders/" :number "/complete"]            (edn->bidi events/navigate-order-complete)
-              ["/orders/" :number "/complete-need-match"] (edn->bidi events/navigate-need-match-order-complete)})])
+              ["/orders/" :number "/complete"]            (edn->bidi events/navigate-order-complete)})])
 
 ;; provide fast urls resolution for urls in the footer
 (def ^:private fast-inverse-path-for

@@ -1,6 +1,5 @@
 (ns storefront.components.checkout-complete
-  (:require [adventure.keypaths :as adv-keypaths]
-            [storefront.components.svg :as svg]
+  (:require [storefront.components.svg :as svg]
             api.orders
             [storefront.events :as events]
             [storefront.component :as component :refer [defcomponent]]
@@ -134,53 +133,32 @@
   (let [{completed-waiter-order :waiter/order
          services-only?         :order/services-only?
          customer-phone         :order.shipping/phone} (api.orders/completed data)
-        {servicing-stylist-id :services/stylist-id
-         servicing-stylist    :services/stylist
-         service-items        :services/items}         (api.orders/services data completed-waiter-order)
-
-        need-match?      (nil? servicing-stylist-id)
-        matched-stylists (get-in data adv-keypaths/adventure-matched-stylists)
-        match-via-web?   (seq matched-stylists)]
+        {servicing-stylist    :services/stylist
+         service-items        :services/items}         (api.orders/services data completed-waiter-order)]
     (when (seq service-items)
       (merge
        (when services-only?
          {:thank-you/primary "We've received your order and will contact you to make an appointment within 2 business days."} )
-       (if need-match?
-         {:matched-component.message/id    (str "to-be-matched" (if match-via-web? "-via-web" "-via-phone"))
-          :matched-component.message/title "Let's match you with a stylist!"
-          :matched-component.message/body  [:div.flex.col-12.justify-center.content-3
-                                            [:div.left-align
-                                             (for [label ["Licensed Salon Stylist"
-                                                          "Mayvenn Certified"
-                                                          "In your area"]]
-                                               [:div.mb1
-                                                (svg/check-mark {:class "black"
-                                                                 :style {:width  10
-                                                                         :height 10}})
-                                                [:span.pl2 label]])]]
-          :matched-component.cta/id        (when match-via-web? "pick-a-stylist")
-          :matched-component.cta/label     "Pick a Stylist"
-          :matched-component.cta/target    [events/navigate-adventure-stylist-results-post-purchase]}
-         (let [stylist-display-name (stylists/->display-name servicing-stylist)]
-           {:matched-component.message/id    "servicing-stylist-name"
-            :matched-component.message/title (str "Chat with " stylist-display-name)
-            :matched-component.message/body  [:span
-                                              "A group text message has been sent to "
-                                              (if customer-phone
-                                                [:span.nowrap (formatters/phone-number customer-phone)]
-                                                "you")
-                                              " and your stylist, "
-                                              [:span.nowrap {:data-test "servicing-stylist-name"}
-                                               stylist-display-name]]
+       (let [stylist-display-name (stylists/->display-name servicing-stylist)]
+         {:matched-component.message/id    "servicing-stylist-name"
+          :matched-component.message/title (str "Chat with " stylist-display-name)
+          :matched-component.message/body  [:span
+                                            "A group text message has been sent to "
+                                            (if customer-phone
+                                              [:span.nowrap (formatters/phone-number customer-phone)]
+                                              "you")
+                                            " and your stylist, "
+                                            [:span.nowrap {:data-test "servicing-stylist-name"}
+                                             stylist-display-name]]
 
-            :stylist-card/id                 "stylist-card"
-            :stylist-card.thumbnail/id       "portrait"
-            :stylist-card.thumbnail/ucare-id (-> servicing-stylist :portrait :resizable-url)
-            :rating/value                    (:rating servicing-stylist)
-            :stylist-card.title/id           "stylist-name"
-            :stylist-card.title/primary      stylist-display-name
-            :stylist-card.title/secondary    (-> servicing-stylist :salon :name)
-            :phone-link/phone-number         (some-> servicing-stylist :address :phone formatters/phone-number-parens)}))))))
+          :stylist-card/id                 "stylist-card"
+          :stylist-card.thumbnail/id       "portrait"
+          :stylist-card.thumbnail/ucare-id (-> servicing-stylist :portrait :resizable-url)
+          :rating/value                    (:rating servicing-stylist)
+          :stylist-card.title/id           "stylist-name"
+          :stylist-card.title/primary      stylist-display-name
+          :stylist-card.title/secondary    (-> servicing-stylist :salon :name)
+          :phone-link/phone-number         (some-> servicing-stylist :address :phone formatters/phone-number-parens)})))))
 
 (defn query
   [data]

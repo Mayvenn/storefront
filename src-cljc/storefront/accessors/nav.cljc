@@ -60,8 +60,7 @@
   (set/union plain-auth-events checkout-auth-events))
 
 (def ^:private order-complete-events
-  #{events/navigate-order-complete
-    events/navigate-need-match-order-complete})
+  #{events/navigate-order-complete})
 
 (def return-blacklisted?
   (conj auth-events events/navigate-not-found))

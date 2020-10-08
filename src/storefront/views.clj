@@ -119,7 +119,6 @@
     events/navigate-checkout-payment
     events/navigate-checkout-confirmation
     events/navigate-order-complete
-    events/navigate-need-match-order-complete
     events/navigate-checkout-processing})
 
 (def ^:private catalog-events

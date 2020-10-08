@@ -17,6 +17,7 @@
    [catalog.services :as services]
    [storefront.platform.messages :as messages]
    [stylist-directory.keypaths]
+   [stylist-matching.core :refer [stylist-matching<- query-params<-]]
    [storefront.css-transitions :as css-transitions]))
 
 (defn specialty->filter [selected-filters [primary specialty price]]
@@ -38,7 +39,9 @@
 
 (defn query
   [data]
-  (let [selected-filters         (get-in data stylist-directory.keypaths/stylist-search-selected-filters)
+  (let [matching (stylist-matching<- data)
+
+        selected-filters         (:stylist-matching/services matching)
         all-skus                 (vals (get-in data storefront.keypaths/v2-skus))
         expanded-filter-sections (get-in data stylist-directory.keypaths/stylist-search-expanded-filter-sections)]
     {:stylist-search-filters/show? (get-in data stylist-directory.keypaths/stylist-search-show-filters?)
@@ -129,40 +132,28 @@
                            "DONE")]))
    [:div.mb5 (map #(component/build filter-section % {}) sections)]])
 
-(defmethod transitions/transition-state events/control-stylist-search-toggle-filter
-  [_ event {:keys [previously-checked? stylist-filter-selection]} app-state]
-  (update-in app-state stylist-directory.keypaths/stylist-search-selected-filters
-             #(set (if previously-checked?
-                     (disj % stylist-filter-selection)
-                     (conj % stylist-filter-selection)))))
-
 (defmethod effects/perform-effects events/control-stylist-search-toggle-filter
-  [_ event _ _ app-state]
-  (let [[nav-event nav-args] (get-in app-state storefront.keypaths/navigation-message) ; pre- or post- purchase
-        service-filters      (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)
-        selected-location    (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)]
+  [_ _ {:keys [previously-checked? stylist-filter-selection]} _ state]
+  (let [matching                           (-> (stylist-matching<- state)
+                                               (update :stylist-matching/services
+                                                       (if previously-checked? disj conj)
+                                                       stylist-filter-selection))
+        [nav-event {:keys [query-params]}] (get-in state storefront.keypaths/navigation-message)]
+    (messages/handle-message events/flow|stylist-matching|param-services-constrained
+                             {:services (:stylist-matching/services matching)})
     (history/enqueue-redirect nav-event
-                              {:query-params
-                               (merge (dissoc (:query-params nav-args) :preferred-services)
-                                      {:lat  (:latitude selected-location)
-                                       :long (:longitude selected-location)}
-                                      (when (seq service-filters)
-                                        {:preferred-services (clojure.string/join "~" service-filters)}))})))
-
-(defmethod transitions/transition-state events/control-stylist-search-reset-filters
-  [_ event _ app-state]
-  (update-in app-state stylist-directory.keypaths/stylist-search dissoc :selected-filters))
+                              {:query-params (query-params<- query-params matching)})))
 
 (defmethod effects/perform-effects events/control-stylist-search-reset-filters
-  [_ event _ _ app-state]
-  (let [[nav-event nav-args] (get-in app-state storefront.keypaths/navigation-message) ; pre- or post- purchase
-        selected-location    (get-in app-state stylist-directory.keypaths/stylist-search-selected-location)]
+  [_ _ _ _ state]
+  (let [matching                           (-> (stylist-matching<- state)
+                                               (assoc :stylist-matching/services
+                                                       nil))
+        [nav-event {:keys [query-params]}] (get-in state storefront.keypaths/navigation-message)]
+    (messages/handle-message events/flow|stylist-matching|param-services-constrained
+                             {:services (:stylist-matching/services matching)})
     (history/enqueue-redirect nav-event
-                              {:query-params
-                               (-> (merge (:query-params nav-args)
-                                          {:lat  (:latitude selected-location)
-                                           :long (:longitude selected-location)})
-                                   (dissoc :preferred-services))})))
+                              {:query-params (query-params<- query-params matching)})))
 
 (def select (partial selector/match-all {:selector/strict? true}))
 
@@ -179,7 +170,7 @@
   (let [service-skus                  (->> (get-in app-state storefront.keypaths/v2-skus)
                                            vals
                                            (select catalog.services/service))
-        selected-filters              (get-in app-state stylist-directory.keypaths/stylist-search-selected-filters)
+        selected-filters              (:stylist-matching/services (stylist-matching<- app-state))
         free-mayvenn-services-filters (when (select-first (assoc services/discountable :catalog/sku-id selected-filters)
                                                           service-skus)
                                         "free-mayvenn-services")

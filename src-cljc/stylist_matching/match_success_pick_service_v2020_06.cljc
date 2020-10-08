@@ -1,7 +1,6 @@
 (ns stylist-matching.match-success-pick-service-v2020-06
   (:require adventure.keypaths
             api.orders
-            [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
             [storefront.component :as c]
             [storefront.components.header :as header]
@@ -16,23 +15,18 @@
    (c/build congrats/organism congrats)])
 
 (defn header-query
-  [order browser-history]
-  (let [submitted? (= "submitted" (-> order :waiter/order :state))]
-    (cond-> {:header.title/id           "adventure-title"
-             :header.title/primary      "Meet Your Stylist"
-             :header.back-navigation/id "adventure-back"}
+  [{:order.items/keys [quantity]}
+   browser-history]
+  (cond-> {:header.title/id               "adventure-title"
+           :header.title/primary          "Meet Your Stylist"
+           :header.back-navigation/id     "adventure-back"
+           :header.back-navigation/target [e/navigate-adventure-find-your-stylist]
+           :header.cart/id                "mobile-cart"
+           :header.cart/value             quantity
+           :header.cart/color             "white"}
 
-      (seq browser-history)
-      (merge {:header.back-navigation/back (first browser-history)})
-
-      submitted?
-      (merge {:header.back-navigation/target [e/navigate-adventure-stylist-results-post-purchase]})
-
-      (not submitted?)
-      (merge {:header.back-navigation/target [e/navigate-adventure-find-your-stylist]
-              :header.cart/id                "mobile-cart"
-              :header.cart/value             (:order.items/quantity order)
-              :header.cart/color             "white"}))))
+    (seq browser-history)
+    (merge {:header.back-navigation/back (first browser-history)})))
 
 (defn congrats-query
   [stylist]
