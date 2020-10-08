@@ -347,15 +347,15 @@
                                                 vals
                                                 (sort-by :order.view/addon-sort)))
       :balance-transfer                  balance-transfer
-      :fetching?                         (utils/requesting? data request-keys/get-stylist-balance-transfer)
+      :fetching?                         (utils/requesting? app-state request-keys/get-stylist-balance-transfer)
       :instapay?                         instapay?}
      (when (= type "commission")
        (let [line-items (->> (:order (:data balance-transfer))
                              orders/first-commissioned-shipment
                              orders/product-items-for-shipment)]
          {:line-items (mapv (partial checkout.classic-cart/add-product-title-and-color-to-line-item
-                                     (get-in data keypaths/v2-products)
-                                     (get-in data keypaths/v2-facets))
+                                     (get-in app-state keypaths/v2-products)
+                                     (get-in app-state keypaths/v2-facets))
                             line-items)})))))
 
 (defcomponent component [{:keys [fetching? balance-transfer instapay?] :as data} owner opts]
