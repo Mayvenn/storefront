@@ -160,7 +160,7 @@
   [_ _ {:keys [results]} state]
   (cond-> state
     (pos? (count results))
-    (assoc-in k/stylist-results stylists)))
+    (assoc-in k/stylist-results results)))
 
 
 ;; FIXME Location queries send this, but why? is it just historical?
@@ -186,4 +186,3 @@
                                                                        :stylist      stylist
                                                                        :result-index result-index})))))
   )
-

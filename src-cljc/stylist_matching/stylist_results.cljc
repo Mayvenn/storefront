@@ -501,7 +501,7 @@
 (defn page
   [app-state]
   (let [current-order (api.orders/current app-state)
-        matching      (spice/spy (stylist-matching.core/stylist-matching<- app-state))
+        matching      (stylist-matching.core/stylist-matching<- app-state)
 
         stylist-search-results        (:results/stylists matching)
         preferences                   (:stylist-matching/services matching)
@@ -571,4 +571,3 @@
                         :stylist.analytics/cards      (into matching-stylist-cards non-matching-stylist-cards)
                         :shopping-method-choice       (shopping-method-choice-query)}
                        {:key (str "stylist-results-" (hash stylist-search-results) "-" (hash stylist-data))}))))
-
