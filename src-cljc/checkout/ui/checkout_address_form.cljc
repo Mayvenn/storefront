@@ -91,6 +91,22 @@
      (address-city billing-address-city)
      (address-state billing-address-state)])
 
+(defn ^:private marketing-opt-in
+  [{:marketing-opt-in/keys [id label copy value keypath]}]
+  (when id
+    [:div.flex.flex-column.items-center.col-12.mtj1
+     [:span.content-3 copy]
+     [:div.col-12.my1
+      [:label.h6.py1
+       [:div.mr1.
+        (ui/check-box
+         {:type      "checkbox"
+          :label     label
+          :id        id
+          :data-test id
+          :value     value
+          :keypath   keypath})]]]]))
+
 (defn ^:private continue-to-payment
   [{:continue-to-pay-cta/keys [spinning? label data-test id]}]
   (when id
@@ -108,4 +124,5 @@
       :data-test "address-form"}
      (shipping-address data)
      (billing-address data)
+     (marketing-opt-in data)
      (continue-to-payment data)]]])
