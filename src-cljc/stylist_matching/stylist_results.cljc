@@ -4,7 +4,7 @@
                        [storefront.hooks.stringer :as stringer]
                        [stylist-matching.search.filters-modal :as filter-menu]])
             adventure.keypaths
-            [stylist-matching.core :refer [stylist-matching<-]]
+            [stylist-matching.core :refer [stylist-matching<- service-delimiter]]
             [stylist-matching.keypaths :as k]
             api.orders
             [clojure.string :refer [split join blank?]]
@@ -31,8 +31,6 @@
             [storefront.request-keys :as request-keys]
             [spice.date :as date]))
 
-(def query-param-separator "~") ;; FIXME(matching) categories separator??
-
 ;;  Navigating to the results page causes the effect of searching for stylists
 ;;
 ;;  This allows:
@@ -56,12 +54,9 @@
   (when (seq s)
     (messages/handle-message e/flow|stylist-matching|param-ids-constrained {:ids s}))
   ;; Pull preferred services from URI; filters for service types
-  (when (not-empty preferred-services)
+  (when-let [services (some-> preferred-services not-empty (split #"~") set)]
     (messages/handle-message e/flow|stylist-matching|param-services-constrained
-                             {:services (->> (split preferred-services query-param-separator)
-                                             ;; FIXME(matching) express this as in the domain
-                                             (filter accessors.filters/allowed-stylist-filters)
-                                             set)}))
+                             {:services services}))
   ;; Pull lat/long from URI; search by proximity
   (when (and (not-empty lat)
              (not-empty long))
@@ -91,9 +86,8 @@
             adventure.keypaths/adventure-stylist-gallery-image-urls
             []))
 
-;; --------------------- address input behavior
+;; --------------------- Address Input behavior
 
-;; FIXME(matching) Merge this with stylist-search.cljc
 (defmethod effects/perform-effects e/stylist-results-address-component-mounted
   [_ _ _ _ _]
   #?(:cljs
@@ -110,9 +104,9 @@
 
 (defmethod trackings/perform-track e/stylist-results-address-selected
   [_ _ _ state]
-  #?(:cljs
-     (let [{:param/keys [location address]}        (stylist-matching<- state)
-           {:keys [latitude longitude city state]} location]
+  (let [{:param/keys [location address]}        (stylist-matching<- state)
+        {:keys [latitude longitude city state]} location]
+    #?(:cljs
        (stringer/track-event "adventure_location_submitted"
                              {:location_submitted address
                               :city               city
@@ -122,7 +116,9 @@
 
 (defmethod effects/perform-effects e/stylist-results-address-selected
   [_ _ _ _ state]
+  ;; Unconstrains stylist-id search
   (messages/handle-message e/flow|stylist-matching|param-ids-constrained)
+  ;; Address/Location search
   (messages/handle-message e/flow|stylist-matching|param-address-constrained
                            {:address (address-input "stylist-search-input")})
   (messages/handle-message e/flow|stylist-matching|param-location-constrained
@@ -548,7 +544,7 @@
                                                             (first (get-in app-state storefront.keypaths/navigation-undo-stack)))
                         :stylist-results-present? (seq (concat matching-stylists non-matching-stylists))
 
-                        :stylist-results-returned?    (get-in app-state adventure.keypaths/adventure-stylist-results-returned)
+                        :stylist-results-returned?    (not (contains? (:status matching) :results/stylists))
                         :list.stylist-counter/title   (str (count matching-stylists) " Stylists Found")
                         :list.stylist-counter/key     (when (pos? (count matching-stylists))
                                                         "stylist-count-content")

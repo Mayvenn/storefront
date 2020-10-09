@@ -3,7 +3,7 @@
                        storefront.keypaths
                        adventure.keypaths
                        [storefront.hooks.stringer :as stringer]
-                       [storefront.browser.cookie-jar :as cookie]])
+                       ])
             [stylist-matching.core :refer [stylist-matching<-]]
             [stylist-matching.keypaths :as k]
             [storefront.component :as c]
@@ -14,48 +14,49 @@
             [storefront.trackings :as trackings]
             [storefront.events :as e]))
 
+;; --------------------- Address Input behavior
+
 (defmethod fx/perform-effects e/adventure-address-component-mounted
   [_ _ {:keys [address-elem result-keypath]} _ _]
   #?(:cljs
-     (google-maps/attach "geocode" address-elem result-keypath)))
-
-;; FIXME(matching) Want to use init event, but it does more than the location
-;; FIXME(matching) Not sure this ever fires
-(defmethod fx/perform-effects e/clear-selected-location
-  [_ _ _ _ _]
-  (messages/handle-message e/flow|stylist-matching|param-location-constrained))
+     (google-maps/attach "geocode"
+                         address-elem
+                         result-keypath)))
 
 (defn ^:private address-input
   [elemID]
   #?(:cljs (-> js/document
-                (.getElementById elemID)
-                .-value)))
-
-(defmethod fx/perform-effects e/control-adventure-location-submit
-  [_ _ _ _ state]
-  (messages/handle-message e/flow|stylist-matching|param-address-constrained
-                           {:address (address-input "stylist-match-address")})
-  (messages/handle-message e/flow|stylist-matching|param-location-constrained
-                           (get-in state k/google-location))
-  (messages/handle-message e/flow|stylist-matching|prepared)
-  ;; FIXME(matching) stores whats in adventure, but obviously not too important
-  ;; because only the half the data is here.
-  #?(:cljs
-     (let [cookie    (get-in state storefront.keypaths/cookie)
-           adventure (get-in state adventure.keypaths/adventure)]
-       (cookie/save-adventure cookie adventure))))
+               (.getElementById elemID)
+               .-value)))
 
 (defmethod trackings/perform-track e/control-adventure-location-submit
   [_ _ _ state]
-  #?(:cljs
-     (let [{:param/keys [location address]}        (stylist-matching<- state)
-           {:keys [latitude longitude city state]} location]
+  (let [{:param/keys [location address]}        (stylist-matching<- state)
+        {:keys [latitude longitude city state]} location]
+    #?(:cljs
        (stringer/track-event "adventure_location_submitted"
                              {:location_submitted address
                               :city               city
                               :state              state
                               :latitude           latitude
                               :longitude          longitude}))))
+
+(defmethod fx/perform-effects e/control-adventure-location-submit
+  [_ _ _ _ state]
+  ;; Address/Location search
+  (messages/handle-message e/flow|stylist-matching|param-address-constrained
+                           {:address (address-input "stylist-match-address")})
+  (messages/handle-message e/flow|stylist-matching|param-location-constrained
+                           (get-in state k/google-location))
+  (messages/handle-message e/flow|stylist-matching|prepared))
+
+;; ---------------------------------------------
+
+;; FIXME(matching) Want to use init event, but it does more than the location
+;; FIXME(matching) Not sure this ever fires
+(defmethod fx/perform-effects e/clear-selected-location
+  [_ _ _ _ _]
+  (messages/handle-message e/flow|stylist-matching|param-location-constrained))
 
 (defn ^:private change-state
   [clear? #?(:cljs ^js/Event e :clj e)]

@@ -11,3 +11,5 @@
 (def google-location (conj stylist-matching :google/location))
 
 (def stylist-results (conj stylist-matching :results/stylists))
+
+(def status (conj stylist-matching :status))

@@ -20,11 +20,26 @@
                        [clojure.set :refer [union]]
                        storefront.keypaths])
             [stylist-matching.keypaths :as k]
+            [stylist-matching.search.accessors.filters :as filters]
             [clojure.string :refer [join]]
             [storefront.effects :as fx]
             [storefront.transitions :as t]
             [storefront.platform.messages :refer [handle-message] :rename {handle-message publish}]
             [storefront.events :as e]))
+
+(def ^:private query-param-keys
+  #{:lat :long :preferred-services :s})
+
+(def service-delimiter #"~")
+
+(defn ^:private query-params<-
+  [query-params {:param/keys [location services]}]
+  (merge (apply dissoc query-params query-param-keys)
+         (when-let [{:keys [latitude longitude]} location]
+           {:lat latitude :long longitude})
+         (when (seq services)
+           {:preferred-services (join service-delimiter
+                                      services)})))
 
 ;; ---------------------- Models
 
@@ -32,19 +47,6 @@
   [state]
   (not-empty
    (get-in state k/stylist-matching)))
-
-(def query-param-keys #{:lat
-                        :long
-                        :preferred-services
-                        :s})
-
-(defn query-params<-
-  [query-params {:param/keys [location services]}]
-  (merge (apply dissoc query-params query-param-keys)
-         (when-let [{:keys [latitude longitude]} location]
-           {:lat latitude :long longitude})
-         (when (seq services)
-           {:preferred-services (join "~" services)})))
 
 (defn google-place-autocomplete<-
   [state]
@@ -93,8 +95,11 @@
 
 (defmethod t/transition-state e/flow|stylist-matching|param-services-constrained
   [_ _ {:keys [services]} state]
-  ;; FIXME(matching) filter valid services
-  (assoc-in state k/services services))
+  (let [valid-services (->> services
+                            (filter filters/allowed-stylist-filters)
+                            not-empty
+                            set)]
+    (assoc-in state k/services valid-services)))
 
 ;; Param 'ids' constrained
 ;; -> model <> ids
@@ -113,6 +118,8 @@
 ;; -> uri: params set
 (defmethod fx/perform-effects e/flow|stylist-matching|prepared
   [_ _ _ _ state]
+  #?(:cljs (cookie-jar/save-adventure (get-in state storefront.keypaths/cookie)
+                                      (get-in state adventure.keypaths/adventure)))
   #?(:cljs
      (let [query-params (->> (stylist-matching<- state)
                              (query-params<- {}))]
@@ -123,6 +130,10 @@
 ;; -> screen: results
 ;; -> api: stylist search
 ;; -> stylist db: sync
+(defmethod t/transition-state e/flow|stylist-matching|searched
+  [_ _ _ state]
+  (update-in state k/status (comp set #(conj % :results/stylists))))
+
 (defmethod fx/perform-effects e/flow|stylist-matching|searched
   [_ _ _ _ state]
   #?(:cljs
@@ -148,7 +159,9 @@
   [_ _ {:keys [results]} state]
   (cond-> state
     (pos? (count results))
-    (assoc-in k/stylist-results results)))
+    (assoc-in k/stylist-results results)
+    :always
+    (update-in k/status disj :results/stylists)))
 
 ;; FIXME Location queries send this, but why? is it just historical?
 ;; No, it's because the the apis are chained...
