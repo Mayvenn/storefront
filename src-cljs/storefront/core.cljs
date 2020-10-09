@@ -50,13 +50,16 @@
           :when (pos? (count event-fragment))]
     (perform-track event-fragment event args app-state)))
 
+(defn- ns-clj->js [args]
+  (clj->js args :keyword-fn (comp #(subs % 1) str)))
+
 (defn- log-deltas [old-app-state new-app-state [event args]]
   (let [[deleted added _unchanged] (diff old-app-state new-app-state)]
-    (js/console.groupCollapsed (string/join "-" (map name event)) (clj->js args))
-    (apply js/console.log (map clj->js (remove nil? [(when (seq deleted) "Δ-")
-                                                     deleted
-                                                     (when (seq added) "Δ+")
-                                                     added])))
+    (js/console.groupCollapsed (string/join "-" (map name event)) (ns-clj->js args))
+    (apply js/console.log (map ns-clj->js (remove nil? [(when (seq deleted) "Δ-")
+                                                        deleted
+                                                        (when (seq added) "Δ+")
+                                                        added])))
     (js/console.trace "Stacktrace")
     (js/console.groupEnd))
   new-app-state)
