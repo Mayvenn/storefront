@@ -19,7 +19,6 @@
             [stylist-matching.ui.stylist-cards :as stylist-cards]
             [stylist-matching.ui.gallery-modal :as gallery-modal]
             [stylist-matching.search.accessors.filters :as accessors.filters]
-            stylist-directory.keypaths
             storefront.keypaths
             [storefront.components.ui :as ui]
             [spice.core :as spice]
@@ -54,7 +53,7 @@
   (when (seq s)
     (messages/handle-message e/flow|stylist-matching|param-ids-constrained {:ids s}))
   ;; Pull preferred services from URI; filters for service types
-  (when-let [services (some-> preferred-services not-empty (split #"~") set)]
+  (when-let [services (some-> preferred-services not-empty (split service-delimiter) set)]
     (messages/handle-message e/flow|stylist-matching|param-services-constrained
                              {:services services}))
   ;; Pull lat/long from URI; search by proximity
@@ -398,7 +397,6 @@
   (did-mount
    [this]
    (let [{:keys [stylist.analytics/cards stylist-results-returned?]} (component/get-props this)]
-     ;; FIXME(matching) this should use the domain event, resulted...
      (when stylist-results-returned?
        (messages/handle-message e/adventure-stylist-search-results-displayed
                                 {:stylist-results cards}))))

@@ -2,8 +2,7 @@
   (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
                        storefront.keypaths
                        adventure.keypaths
-                       [storefront.hooks.stringer :as stringer]
-                       ])
+                       [storefront.hooks.stringer :as stringer]])
             [stylist-matching.core :refer [stylist-matching<-]]
             [stylist-matching.keypaths :as k]
             [storefront.component :as c]
