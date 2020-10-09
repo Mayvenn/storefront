@@ -312,17 +312,18 @@
 
 (defn ^:private transfer-confirmation-data-query
   [amount fee total]
-  {:id                 "transfer-confirmation-id"
-   :title              "Transfer Confirmation"
-   :earnings-copy      "Your Earnings"
-   :earnings-amount    (mf/as-money (js/parseFloat amount))
-   :earnings-dt        "earnings-row"
-   :fee-dt             (when (> fee 0) "instapay-fee-row")
-   :fee-copy           "Instapay Fee"
-   :fee-amount         (mf/as-money (- fee))
-   :total-dt           "total-row"
-   :total-cashout-copy "Cashout Amount"
-   :total-cashout      (mf/as-money total)})
+  (let [fee (js/parseFloat (or fee 0))]
+    {:id                 "transfer-confirmation-id"
+    :title              "Transfer Confirmation"
+    :earnings-copy      "Your Earnings"
+    :earnings-amount    (mf/as-money (+ (js/parseFloat amount) fee))
+    :earnings-dt        "earnings-row"
+    :fee-dt             (when (> fee 0) "instapay-fee-row")
+    :fee-copy           "Instapay Fee"
+    :fee-amount         (mf/as-money (- fee))
+    :total-dt           "total-row"
+    :total-cashout-copy "Cashout Amount"
+    :total-cashout      (mf/as-money total)}))
 
 (defn query [app-state]
   (let [instapay?                (experiments/instapay? app-state)
@@ -331,7 +332,7 @@
          :as   balance-transfer} (get-in app-state (conj keypaths/stylist-earnings-balance-transfers
                                                     balance-transfer-id))
         skus                     (get-in app-state keypaths/v2-skus)
-        total                    (- (js/parseFloat amount) (js/parseFloat fee))]
+        total                    (js/parseFloat amount)]
     (merge
      {:payout/return-link                return-link<-
       :payout/date-sent                  (payout-info-query "date-sent-info-id" "Date Sent" "January 16, 2019")
