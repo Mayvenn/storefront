@@ -223,7 +223,7 @@
 
 (defn ^:private payout-component
   [{:payout/keys [return-link date-sent card transfer-method arrival-time transfer-confirmation-data] :as data}]
-  [:div.max-580
+  [:div.stretch.max-580.mx-auto
    [:div.hide-on-tb-dt
     [:div.border-bottom.border-cool-gray.border-width-2.m-auto.col-7-on-dt
      [:div.px2.my2 (ui-molecules/return-link return-link)]]]
