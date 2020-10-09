@@ -41,7 +41,7 @@
   (when id
     (component/html
      [:div.content-3.col-12.flex.items-center.pyp1
-      (svg/map-pin {:class  "mrp3"
+      (svg/map-pin {:class  "mrp3 fill-p-color"
                     :width  "14px"
                     :height "14px"})
       [:span.overflow-hidden.nowrap
