@@ -36,7 +36,7 @@
       (messages/handle-message events/flash-later-show-failure
                                {:message error-message}))
     (let [{:order/keys [items]} (api.orders/current state)]
-      (messages/handle-message events/flow|stylist-matching|init)
+      (messages/handle-message events/flow|stylist-matching|initialized)
       (when-let [preferred-services (->> (select ?service items)
                                          (mapv :catalog/sku-id)
                                          not-empty)]

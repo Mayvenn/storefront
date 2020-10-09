@@ -1,11 +1,10 @@
 (ns stylist-matching.stylist-results
-  (:require #?@(:cljs [[storefront.history :as history]
-                       [storefront.hooks.facebook-analytics :as facebook-analytics]
+  (:require #?@(:cljs [[storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.google-maps :as google-maps]
                        [storefront.hooks.stringer :as stringer]
                        [stylist-matching.search.filters-modal :as filter-menu]])
             adventure.keypaths
-            [stylist-matching.core :refer [stylist-matching<- query-params<-]]
+            [stylist-matching.core :refer [stylist-matching<-]]
             [stylist-matching.keypaths :as k]
             api.orders
             [clojure.string :refer [split join blank?]]
@@ -43,7 +42,7 @@
 (defmethod transitions/transition-state e/navigate-adventure-stylist-results
   [_ _ _ state]
   ;; Prefill address input with previously collected address
-  (let [previous-address (not-empty (:stylist-matching/address (stylist-matching<- state)))]
+  (let [previous-address (not-empty (:param/address (stylist-matching<- state)))]
     (cond-> state
       previous-address
       (assoc-in k/google-input previous-address))))
@@ -52,11 +51,10 @@
   [_ _ {{:keys [preferred-services lat long s]} :query-params} prev-state state]
   ;; Init the model if there isn't one, e.g. Direct load
   (when-not (stylist-matching<- state)
-    (messages/handle-message e/flow|stylist-matching|init))
+    (messages/handle-message e/flow|stylist-matching|initialized))
   ;; Pull stylist-ids (s) from URI; predetermined search results
   (when (seq s)
-    (messages/handle-message e/flow|stylist-matching|param-ids-constrained
-                             {:ids s}))
+    (messages/handle-message e/flow|stylist-matching|param-ids-constrained {:ids s}))
   ;; Pull preferred services from URI; filters for service types
   (when (not-empty preferred-services)
     (messages/handle-message e/flow|stylist-matching|param-services-constrained
@@ -113,8 +111,8 @@
 (defmethod trackings/perform-track e/stylist-results-address-selected
   [_ _ _ state]
   #?(:cljs
-     (let [{:stylist-matching/keys [location address]} (stylist-matching<- state)
-           {:keys [latitude longitude city state]}     location]
+     (let [{:param/keys [location address]}        (stylist-matching<- state)
+           {:keys [latitude longitude city state]} location]
        (stringer/track-event "adventure_location_submitted"
                              {:location_submitted address
                               :city               city
@@ -124,18 +122,12 @@
 
 (defmethod effects/perform-effects e/stylist-results-address-selected
   [_ _ _ _ state]
+  (messages/handle-message e/flow|stylist-matching|param-ids-constrained)
   (messages/handle-message e/flow|stylist-matching|param-address-constrained
                            {:address (address-input "stylist-search-input")})
   (messages/handle-message e/flow|stylist-matching|param-location-constrained
                            (get-in state k/google-location))
   (messages/handle-message e/flow|stylist-matching|prepared))
-
-;; -------------------------- search by filters behavior
-
-(defmethod effects/perform-effects e/api-success-fetch-stylists-matching-filters
-  [_ _ {:keys [stylists query]} _ _]
-  (messages/handle-message e/flow|stylist-matching|resulted
-                           {:results stylists}))
 
 ;; -------------------------- Matching behavior
 
@@ -180,9 +172,9 @@
 (defmethod trackings/perform-track e/adventure-stylist-search-results-displayed
   [_ _ {:keys [stylist-results]} state]
   (prn "TRACK")
-  (let [{:results/keys          [stylists]
-         :stylist-matching/keys [location address services]} (stylist-matching<- state)
-        {:keys [latitude longitude]}                         location]
+  (let [{:results/keys [stylists]
+         :param/keys   [location address services]} (stylist-matching<- state)
+        {:keys [latitude longitude]}                location]
         #?(:cljs
            (stringer/track-event "stylist_search_results_displayed"
                                  {:results            (map stylist-results->stringer-event stylists)
@@ -410,6 +402,7 @@
   (did-mount
    [this]
    (let [{:keys [stylist.analytics/cards stylist-results-returned?]} (component/get-props this)]
+     ;; FIXME(matching) this should use the domain event, resulted...
      (when stylist-results-returned?
        (messages/handle-message e/adventure-stylist-search-results-displayed
                                 {:stylist-results cards}))))
@@ -504,7 +497,7 @@
         matching      (stylist-matching.core/stylist-matching<- app-state)
 
         stylist-search-results        (:results/stylists matching)
-        preferences                   (:stylist-matching/services matching)
+        preferences                   (:param/services matching)
         matches-preferences?          (fn matches-preferences?
                                         [{:keys [service-menu]}]
                                         (every? #(service-menu (accessors.filters/service-sku-id->service-menu-key %)) preferences))

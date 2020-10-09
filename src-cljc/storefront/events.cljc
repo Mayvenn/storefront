@@ -572,7 +572,7 @@
 
 ;; Flows
 
-(defpath flow|stylist-matching|init)
+(defpath flow|stylist-matching|initialized)
 (defpath flow|stylist-matching|param-ids-constrained)
 (defpath flow|stylist-matching|param-address-constrained)
 (defpath flow|stylist-matching|param-location-constrained)

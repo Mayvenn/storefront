@@ -48,8 +48,8 @@
 (defmethod trackings/perform-track e/control-adventure-location-submit
   [_ _ _ state]
   #?(:cljs
-     (let [{:stylist-matching/keys [location address]} (stylist-matching<- state)
-           {:keys [latitude longitude city state]}     location]
+     (let [{:param/keys [location address]}        (stylist-matching<- state)
+           {:keys [latitude longitude city state]} location]
        (stringer/track-event "adventure_location_submitted"
                              {:location_submitted address
                               :city               city

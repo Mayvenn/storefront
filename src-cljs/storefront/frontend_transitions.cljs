@@ -314,8 +314,7 @@
 
 (defmethod transition-state events/control-checkout-update-addresses-submit [_ event {:keys [become-guest?]} app-state]
   (cond-> app-state
-    become-guest? (assoc-in keypaths/checkout-as-guest true)
-    :always       (assoc-in adventure.keypaths/adventure-matched-stylists nil)))
+    become-guest? (assoc-in keypaths/checkout-as-guest true)))
 
 (defmethod transition-state events/control-checkout-cart-paypal-setup [_ event args app-state]
   (assoc-in app-state keypaths/cart-paypal-redirect true))

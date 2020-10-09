@@ -3,6 +3,12 @@
   Represents the matching (searching) of a stylist.
 
   The outcome of this flow is a matched stylist.
+
+  Stylists can be matched according to many different parameters
+  - Location
+  - Services offered
+  - IDs
+  - Name
   "
   (:require #?@(:cljs [adventure.keypaths
                        [storefront.api :as api]
@@ -12,33 +18,15 @@
                        [storefront.hooks.google-maps :as google-maps]
                        [catalog.skuers :as skuers]
                        [clojure.set :refer [union]]
-                       [storefront.platform.messages :as messages]
                        storefront.keypaths])
             [stylist-matching.keypaths :as k]
             [clojure.string :refer [join]]
             [storefront.effects :as fx]
             [storefront.transitions :as t]
+            [storefront.platform.messages :refer [handle-message] :rename {handle-message publish}]
             [storefront.events :as e]))
 
-;; TODO not-empty on model keys
-
-;; {:address  ""
-;;  :location {:latitude  0.0 ;; longs
-;;             :longitude 0.0
-;;             :radius    "100mi"}
-;;  :services #{ "A" "B" }
-;;  :ids []
-;;  :name     ""
-
-;;  :results  []}
-
-;; {:params {}
-;;  :name/input
-;;  :google/input ""
-;;  :google/location {}
-;;  :results/stylists
-;;  :results/suggestions}
-
+;; ---------------------- Models
 
 (defn stylist-matching<-
   [state]
@@ -51,7 +39,7 @@
                         :s})
 
 (defn query-params<-
-  [query-params {:stylist-matching/keys [location services]}]
+  [query-params {:param/keys [location services]}]
   (merge (apply dissoc query-params query-param-keys)
          (when-let [{:keys [latitude longitude]} location]
            {:lat latitude :long longitude})
@@ -65,15 +53,15 @@
 
 (def initial-state {})
 
-;;; -------------- Events
+;;; -------------- Domain events
 
 ;; Init
 ;; <- screen: collect address
 ;; -> model: unit
-(defmethod t/transition-state e/flow|stylist-matching|init ;; FIXME(matching) initialized
+(defmethod t/transition-state e/flow|stylist-matching|initialized
   [_ _ _ state]
   (assoc-in state k/stylist-matching initial-state))
-(defmethod fx/perform-effects e/flow|stylist-matching|init
+(defmethod fx/perform-effects e/flow|stylist-matching|initialized
   [_ _ _ _ state]
   #?(:cljs
      (let [cache         (get-in state storefront.keypaths/api-cache)
@@ -83,7 +71,8 @@
                                      (skuers/essentials (categories/id->category "31" categories-db)))]
        (api/get-products cache
                          criteria
-                         #(messages/handle-message e/api-success-v3-products-for-stylist-filters %))))
+                         #(publish e/api-success-v3-products-for-stylist-filters
+                                   %))))
   #?(:cljs (google-maps/insert)))
 
 ;; Param 'location' constrained
@@ -137,13 +126,13 @@
 (defmethod fx/perform-effects e/flow|stylist-matching|searched
   [_ _ _ _ state]
   #?(:cljs
-     (let [{:stylist-matching/keys [ids location services]} (stylist-matching<- state)]
+     (let [{:param/keys [ids location services]} (stylist-matching<- state)]
        (cond
          ids
          (api/fetch-matched-stylists (get-in state storefront.keypaths/api-cache)
                                      ids
-                                     #(messages/handle-message e/api-success-fetch-matched-stylists
-                                                               %))
+                                     #(publish e/api-success-fetch-matched-stylists
+                                               %))
          location
          (let [query
                (-> location
@@ -151,9 +140,8 @@
                    (assoc :radius "100mi")
                    (assoc :preferred-services services))]
            (api/fetch-stylists-matching-filters query
-                                                #(messages/handle-message
-                                                  e/api-success-fetch-stylists-matching-filters
-                                                  (merge {:query query} %))))))))
+                                                #(publish e/api-success-fetch-stylists-matching-filters
+                                                          (merge {:query query} %))))))))
 
 ;; Stylists: Resulted
 (defmethod t/transition-state e/flow|stylist-matching|resulted
@@ -161,7 +149,6 @@
   (cond-> state
     (pos? (count results))
     (assoc-in k/stylist-results results)))
-
 
 ;; FIXME Location queries send this, but why? is it just historical?
 ;; No, it's because the the apis are chained...
@@ -181,8 +168,23 @@
                                            token
                                            features
                                            (fn [order]
-                                             (messages/handle-message e/api-success-assign-servicing-stylist
-                                                                      {:order        order
-                                                                       :stylist      stylist
-                                                                       :result-index result-index})))))
-  )
+                                             (publish e/api-success-assign-servicing-stylist
+                                                      {:order        order
+                                                       :stylist      stylist
+                                                       :result-index result-index}))))))
+
+;; -------------------------- stylist search by ids
+
+(defmethod fx/perform-effects e/api-success-fetch-matched-stylists
+  [_ _ {:keys [stylists]} _]
+  (publish e/flow|stylist-matching|resulted
+           {:method  :by-ids
+            :results stylists}))
+
+;; -------------------------- stylist search by filters behavior
+
+(defmethod fx/perform-effects e/api-success-fetch-stylists-matching-filters
+  [_ _ {:keys [stylists]} _ _]
+  (publish e/flow|stylist-matching|resulted
+           {:method  :by-location
+            :results stylists}))
