@@ -110,12 +110,12 @@
    events/navigate-info-certified-stylists (constantly adventure.informational.certified-stylists/built-component)
    events/navigate-info-about-our-hair     (constantly adventure.informational.about-our-hair/built-component)
 
-   events/navigate-adventure-find-your-stylist                       (constantly stylist-matching.find-your-stylist/page)
-   events/navigate-adventure-stylist-results                         (constantly stylist-matching.stylist-results/page)
-   events/navigate-adventure-match-success                           (constantly stylist-matching.match-success/page)
-   events/navigate-adventure-match-success-pre-purchase-pick-service (constantly stylist-matching.match-success-pick-service-v2020-06/page)
-   events/navigate-adventure-stylist-profile                         (constantly adventure.stylist-matching.stylist-profile/built-component)
-   events/navigate-adventure-stylist-gallery                         (constantly adventure.stylist-matching.stylist-gallery/built-component)})
+   events/navigate-adventure-find-your-stylist          (constantly stylist-matching.find-your-stylist/page)
+   events/navigate-adventure-stylist-results            (constantly stylist-matching.stylist-results/page)
+   events/navigate-adventure-match-success              (constantly stylist-matching.match-success/page)
+   events/navigate-adventure-match-success-pick-service (constantly stylist-matching.match-success-pick-service-v2020-06/page)
+   events/navigate-adventure-stylist-profile            (constantly adventure.stylist-matching.stylist-profile/built-component)
+   events/navigate-adventure-stylist-gallery            (constantly adventure.stylist-matching.stylist-gallery/built-component)})
 
 (defn main-component [nav-event]
   (doto ((get nav-table nav-event (constantly (first-arg-only homepage.core/page))))

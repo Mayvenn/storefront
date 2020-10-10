@@ -17,15 +17,14 @@
             [stylist-matching.ui.matched-stylist :as matched-stylist]
             [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]))
 
-(defmethod transitions/transition-state events/api-success-assign-servicing-stylist-pre-purchase
-  [_ _ {:keys [order]} app-state]
-  (assoc-in app-state storefront.keypaths/order order))
-
 (defmethod transitions/transition-state events/api-success-assign-servicing-stylist
-  [_ _ {:keys [servicing-stylist]} app-state]
-  (assoc-in app-state adventure.keypaths/adventure-servicing-stylist servicing-stylist))
+  [_ _ {:keys [order servicing-stylist]} app-state]
+  (-> app-state
+      (assoc-in storefront.keypaths/order order)
+      (assoc-in adventure.keypaths/adventure-servicing-stylist servicing-stylist)))
 
-(defmethod effects/perform-effects events/api-success-assign-servicing-stylist-pre-purchase [_ _ _ _ app-state]
+(defmethod effects/perform-effects events/api-success-assign-servicing-stylist
+  [_ _ _ _ app-state]
   #?(:cljs
      (let [current-order            (api.orders/current app-state)
            {services       "service"
@@ -35,12 +34,12 @@
               events/navigate-cart
 
               (seq services)
-              events/navigate-adventure-match-success-pre-purchase
+              events/navigate-adventure-match-success
 
               :else
-              events/navigate-adventure-match-success-pre-purchase-pick-service)))))
+              events/navigate-adventure-match-success-pick-service)))))
 
-(defmethod effects/perform-effects events/navigate-adventure-match-success-pre-purchase
+(defmethod effects/perform-effects events/navigate-adventure-match-success
   [_ _ _ _ app-state]
   #?(:cljs
      (when (nil? (get-in app-state adventure.keypaths/adventure-servicing-stylist))

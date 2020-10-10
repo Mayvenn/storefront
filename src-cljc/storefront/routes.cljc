@@ -46,7 +46,7 @@
   {"/adv/find-your-stylist"                                            (edn->bidi events/navigate-adventure-find-your-stylist)
    "/adv/stylist-results"                                              (edn->bidi events/navigate-adventure-stylist-results)
    "/adv/match-success"                                                (edn->bidi events/navigate-adventure-match-success)
-   "/adv/match-success-pick-service"                                   (edn->bidi events/navigate-adventure-match-success-pre-purchase-pick-service)
+   "/adv/match-success-pick-service"                                   (edn->bidi events/navigate-adventure-match-success-pick-service)
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug]                  (edn->bidi events/navigate-adventure-stylist-profile)
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "/gallery"]       (edn->bidi events/navigate-adventure-stylist-gallery)
    "/certified-stylists"                                               (edn->bidi events/navigate-info-certified-stylists)

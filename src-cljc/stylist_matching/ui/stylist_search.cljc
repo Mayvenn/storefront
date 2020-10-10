@@ -100,17 +100,19 @@
       [:div.h5.my2.light secondary]])))
 
 (c/defdynamic-component organism
-  (did-mount [_]
-             (messages/handle-message e/adventure-address-component-mounted
-                                      {:address-elem   "stylist-match-address"
-                                       :result-keypath k/google-location}))
-  (render [this]
-          (let [data (c/get-props this)]
-            (c/html
-             [:div.m5
-              [:div.mb4
-               (stylist-search-title-molecule data)]
-              [:div.mb4
-               (stylist-search-location-search-box data)]
-              [:div
-               (stylist-search-button data)]]))))
+  (did-mount
+   [_]
+   (messages/handle-message e/adventure-address-component-mounted
+                            {:address-elem   "stylist-match-address"
+                             :result-keypath k/google-location}))
+  (render
+   [this]
+   (let [data (c/get-props this)]
+     (c/html
+      [:div.m5
+       [:div.mb4
+        (stylist-search-title-molecule data)]
+       [:div.mb4
+        (stylist-search-location-search-box data)]
+       [:div
+        (stylist-search-button data)]]))))

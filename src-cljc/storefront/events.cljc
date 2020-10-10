@@ -319,7 +319,6 @@
 (defpath api-success-shared-cart-fetch)
 
 (defpath api-success-assign-servicing-stylist)
-(defpath api-success-assign-servicing-stylist-pre-purchase)
 
 (defpath api-success-update-order)
 (defpath api-success-update-order-from-shared-cart)
@@ -489,15 +488,12 @@
 (defpath navigate-adventure)
 (defpath navigate-adventure-find-your-stylist)
 (defpath navigate-adventure-stylist-results)
-(defpath navigate-adventure-stylist-results-pre-purchase)
 (defpath navigate-adventure-stylist-gallery)
 (defpath navigate-adventure-match-success)
-(defpath navigate-adventure-match-success-pre-purchase)
-(defpath navigate-adventure-match-success-pre-purchase-pick-service)
+(defpath navigate-adventure-match-success-pick-service)
 (defpath navigate-adventure-stylist-profile)
 
 (defpath control-adventure-select-stylist)
-(defpath control-adventure-select-stylist-pre-purchase)
 
 (defpath adventure-address-component-mounted)
 (defpath control-adventure-stylist-salon-address-clicked)

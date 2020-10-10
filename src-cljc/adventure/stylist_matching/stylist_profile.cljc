@@ -125,7 +125,7 @@
 (defn cta<-
   [stylist]
   {:cta/id     "select-stylist"
-   :cta/target [events/control-adventure-select-stylist-pre-purchase
+   :cta/target [events/control-adventure-select-stylist
                 {:servicing-stylist stylist
                  :card-index        0}]
    :cta/label  (str "Select " (stylists/->display-name stylist))})
