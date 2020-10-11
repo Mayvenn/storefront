@@ -13,12 +13,12 @@
             [storefront.transitions :as t]))
 
 (defmethod t/transition-state e/api-success-assign-servicing-stylist
-  [_ _ {:keys [order servicing-stylist]} state]
+  [_ _ {:keys [order stylist]} state]
   (-> state
       (assoc-in storefront.keypaths/order
                 order)
       (assoc-in adventure.keypaths/adventure-servicing-stylist
-                servicing-stylist)))
+                stylist)))
 
 (defmethod fx/perform-effects e/api-success-assign-servicing-stylist
   [_ _ _ _ app-state]
