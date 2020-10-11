@@ -150,20 +150,19 @@
      :displayed_years_experience years-of-experience}))
 
 (defmethod trackings/perform-track e/adventure-stylist-search-results-displayed
-  [_ _ {:keys [stylist-results]} state]
-  (prn "TRACK")
+  [_ _ {:keys [cards]} state]
   (let [{:results/keys [stylists]
          :param/keys   [location address services]} (stylist-matching<- state)
         {:keys [latitude longitude]}                location]
-        #?(:cljs
-           (stringer/track-event "stylist_search_results_displayed"
-                                 {:results            (map stylist-results->stringer-event stylists)
-                                  :filters_on         services
-                                  :latitude           latitude
-                                  :longitude          longitude
-                                  :location_submitted address
-                                  :radius             "100mi"
-                                  :current_step       2}))))
+    #?(:cljs
+       (stringer/track-event "stylist_search_results_displayed"
+                             {:results            (map stylist-results->stringer-event cards)
+                              :filters_on         services
+                              :latitude           latitude
+                              :longitude          longitude
+                              :location_submitted address
+                              :radius             "100mi"
+                              :current_step       2}))))
 
 (defn header<-
   [{:order.items/keys [quantity]} back]
@@ -384,7 +383,7 @@
    (let [{:keys [stylist.analytics/cards stylist-results-returned?]} (component/get-props this)]
      (when stylist-results-returned?
        (messages/handle-message e/adventure-stylist-search-results-displayed
-                                {:stylist-results cards}))))
+                                {:cards cards}))))
   (render
    [this]
    (let [{:keys [spinning? stylist-results-present? gallery-modal
@@ -527,7 +526,7 @@
                                                             (first (get-in app-state storefront.keypaths/navigation-undo-stack)))
                         :stylist-results-present? (seq (concat matching-stylists non-matching-stylists))
 
-                        :stylist-results-returned?    (not (contains? (:status matching) :results/stylists))
+                        :stylist-results-returned?    (contains? (:status matching) :results/stylists)
                         :list.stylist-counter/title   (str (count matching-stylists) " Stylists Found")
                         :list.stylist-counter/key     (when (pos? (count matching-stylists))
                                                         "stylist-count-content")

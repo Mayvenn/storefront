@@ -117,6 +117,10 @@
 ;; Prepared
 ;; -> screen: results
 ;; -> uri: params set
+(defmethod t/transition-state e/flow|stylist-matching|prepared
+  [_ _ _ state]
+  (update-in state k/status disj :results/stylists))
+
 (defmethod fx/perform-effects e/flow|stylist-matching|prepared
   [_ _ _ _ state]
   #?(:cljs (cookie-jar/save-adventure (get-in state storefront.keypaths/cookie)
@@ -131,10 +135,6 @@
 ;; -> screen: results
 ;; -> api: stylist search
 ;; -> stylist db: sync
-(defmethod t/transition-state e/flow|stylist-matching|searched
-  [_ _ _ state]
-  (update-in state k/status (comp set #(conj % :results/stylists))))
-
 (defmethod fx/perform-effects e/flow|stylist-matching|searched
   [_ _ _ _ state]
   #?(:cljs
@@ -162,7 +162,7 @@
     (pos? (count results))
     (assoc-in k/stylist-results results)
     :always
-    (update-in k/status disj :results/stylists)))
+    (update-in k/status (comp set #(conj % :results/stylists)))))
 
 ;; FIXME Location queries send this, but why? is it just historical?
 ;; No, it's because the the apis are chained...
