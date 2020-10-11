@@ -1,6 +1,5 @@
 (ns stylist-matching.match-success
-  (:require #?@(:cljs [[storefront.history :as history]
-                       [storefront.accessors.orders :as orders]])
+  (:require #?@(:cljs [[storefront.history :as history]])
             adventure.keypaths
             api.orders
             [clojure.string :as string]
@@ -11,33 +10,10 @@
             [storefront.effects :as effects]
             [storefront.events :as events]
             storefront.keypaths
-            [storefront.transitions :as transitions]
             [stylist-directory.stylists :as stylists]
             [stylist-matching.ui.atoms :as stylist-matching.A]
             [stylist-matching.ui.matched-stylist :as matched-stylist]
             [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]))
-
-(defmethod transitions/transition-state events/api-success-assign-servicing-stylist
-  [_ _ {:keys [order servicing-stylist]} app-state]
-  (-> app-state
-      (assoc-in storefront.keypaths/order order)
-      (assoc-in adventure.keypaths/adventure-servicing-stylist servicing-stylist)))
-
-(defmethod effects/perform-effects events/api-success-assign-servicing-stylist
-  [_ _ _ _ app-state]
-  #?(:cljs
-     (let [current-order            (api.orders/current app-state)
-           {services       "service"
-            physical-items "spree"} (group-by :source (orders/product-and-service-items (:waiter/order current-order)))]
-       (history/enqueue-navigate
-        (cond (and (seq services) (seq physical-items))
-              events/navigate-cart
-
-              (seq services)
-              events/navigate-adventure-match-success
-
-              :else
-              events/navigate-adventure-match-success-pick-service)))))
 
 (defmethod effects/perform-effects events/navigate-adventure-match-success
   [_ _ _ _ app-state]

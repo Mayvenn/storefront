@@ -1,13 +1,13 @@
 (ns stylist-matching.find-your-stylist
   (:require api.orders
+            spice.selector
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.flash :as flash]
             [storefront.components.header :as header]
             [storefront.effects :as effects]
             [storefront.events :as events]
-            [storefront.platform.messages :as messages]
             storefront.keypaths
-            spice.selector
+            [storefront.platform.messages :as messages]
             [stylist-matching.core :refer [google-place-autocomplete<-]]
             [stylist-matching.ui.spinner :as spinner]
             [stylist-matching.ui.stylist-search :as stylist-search]))

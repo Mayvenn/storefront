@@ -21,6 +21,7 @@
                        storefront.keypaths])
             [stylist-matching.keypaths :as k]
             [stylist-matching.search.accessors.filters :as filters]
+            stylist-matching.selected
             [clojure.string :refer [join]]
             [storefront.effects :as fx]
             [storefront.transitions :as t]
@@ -120,9 +121,9 @@
   [_ _ _ _ state]
   #?(:cljs (cookie-jar/save-adventure (get-in state storefront.keypaths/cookie)
                                       (get-in state adventure.keypaths/adventure)))
-  #?(:cljs
-     (let [query-params (->> (stylist-matching<- state)
-                             (query-params<- {}))]
+  (let [query-params (->> (stylist-matching<- state)
+                          (query-params<- {}))]
+    #?(:cljs
        (history/enqueue-navigate e/navigate-adventure-stylist-results
                                  {:query-params query-params}))))
 

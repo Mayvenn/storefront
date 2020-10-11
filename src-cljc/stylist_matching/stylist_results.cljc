@@ -1,6 +1,5 @@
 (ns stylist-matching.stylist-results
-  (:require #?@(:cljs [[storefront.hooks.facebook-analytics :as facebook-analytics]
-                       [storefront.hooks.google-maps :as google-maps]
+  (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
                        [storefront.hooks.stringer :as stringer]
                        [stylist-matching.search.filters-modal :as filter-menu]])
             adventure.keypaths
@@ -131,20 +130,6 @@
   (messages/handle-message e/flow|stylist-matching|matched
                            {:stylist      servicing-stylist
                             :result-index card-index}))
-
-;; FIXME(matching) ain't this just more effects from the flow's matched event?
-(defmethod trackings/perform-track e/api-success-assign-servicing-stylist
-  [_ _ {:keys [stylist order result-index]} _]
-  #?(:cljs (facebook-analytics/track-event "AddToCart"
-                                           {:content_type "stylist"
-                                            :content_ids  [(:stylist-id stylist)]
-                                            :num_items    1}))
-  #?(:cljs (stringer/track-event "stylist_selected"
-                                 {:stylist_id     (:stylist-id stylist)
-                                  :card_index     result-index
-                                  :current_step   2
-                                  :order_number   (:number order)
-                                  :stylist_rating (:rating stylist)})))
 
 (defn stylist-results->stringer-event
   [stylist]
