@@ -315,14 +315,13 @@
      :gallery-modal/ucare-image-urls gallery-images
      :gallery-modal/initial-index    index}))
 
-;; TODO this name and query and such
 (defdynamic-component stylist-results-address-input-molecule
   (did-mount
    [_]
    (messages/handle-message e/stylist-results-address-component-mounted))
   (render
    [this]
-   (let [{:stylist.results.location-search-box/keys [id value errors keypath]} (component/get-props this)]
+   (let [{:stylist-results.address-input/keys [id value errors keypath]} (component/get-props this)]
      (component/html
       (ui/input-with-charm
        {:errors        errors
@@ -339,7 +338,7 @@
                                         :class  "fill-gray"})])))))
 
 (defn stylist-results-service-filters-molecule
-  [{:stylist.results.location-search-box/keys [preferences]}]
+  [{:stylist-results.service-filters/keys [preferences]}]
   (component/html
    [:div.flex.flex-wrap
     [:div
@@ -426,12 +425,12 @@
                          shopping-method-choice))))))
 
 (defcomponent template
-  [{:keys [spinning? gallery-modal header location-search-box ] :as data} _ _]
+  [{:keys [spinning? gallery-modal header location-search-box] :as data} _ _]
   [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
    (component/build gallery-modal/organism gallery-modal nil)
    (components.header/adventure-header header)
 
-   (when (:stylist.results.location-search-box/id location-search-box)
+   (when (seq location-search-box)
      [:div.px3.py2.bg-white.border-bottom.border-gray.flex.flex-column
       (component/build stylist-results-address-input-molecule location-search-box)
       (stylist-results-service-filters-molecule location-search-box)])
@@ -497,11 +496,11 @@
         just-added-experience?        (experiments/just-added-experience? app-state)
         just-added-control?           (experiments/just-added-control? app-state)
         stylist-results-test?         (experiments/stylist-results-test? app-state)
-        stylist-data                  {:filter-prefences        preferences
-                                       :hide-bookings?          hide-bookings?
-                                       :just-added-only?        just-added-only?
-                                       :just-added-experience?  just-added-experience?
-                                       :stylist-results-test?   stylist-results-test?}
+        stylist-data                  {:filter-prefences       preferences
+                                       :hide-bookings?         hide-bookings?
+                                       :just-added-only?       just-added-only?
+                                       :just-added-experience? just-added-experience?
+                                       :stylist-results-test?  stylist-results-test?}
         matching-stylist-cards        (stylist-data->stylist-cards (assoc stylist-data :stylists matching-stylists))
         non-matching-stylist-cards    (stylist-data->stylist-cards (assoc stylist-data :stylists non-matching-stylists))
         filter-menu                   #?(:cljs (filter-menu/query app-state) :clj  nil)]
@@ -520,17 +519,17 @@
                                                                (not just-added-only?)
                                                                (not just-added-experience?))))
                         :location-search-box      (when (get-in app-state storefront.keypaths/loaded-google-maps)
-                                                    {:stylist.results.location-search-box/id          "stylist-search-input"
-                                                     :stylist.results.location-search-box/value       (get-in app-state k/google-input)
-                                                     :stylist.results.location-search-box/keypath     k/google-input
-                                                     :stylist.results.location-search-box/errors      []
-                                                     :stylist.results.location-search-box/preferences (mapv
-                                                                                                       (fn [preference]
-                                                                                                         {:preference-pill/target  [e/control-stylist-search-toggle-filter
-                                                                                                                                    {:previously-checked? true :stylist-filter-selection preference}]
-                                                                                                          :preference-pill/id      (str "remove-preference-button-" (name preference))
-                                                                                                          :preference-pill/primary (get-in skus [preference :sku/name])})
-                                                                                                       (vec preferences))})
+                                                    {:stylist-results.address-input/id            "stylist-search-input"
+                                                     :stylist-results.address-input/value         (get-in app-state k/google-input)
+                                                     :stylist-results.address-input/keypath       k/google-input
+                                                     :stylist-results.address-input/errors        []
+                                                     :stylist-results.service-filters/preferences (mapv
+                                                                                                   (fn [preference]
+                                                                                                     {:preference-pill/target  [e/control-stylist-search-toggle-filter
+                                                                                                                                {:previously-checked? true :stylist-filter-selection preference}]
+                                                                                                      :preference-pill/id      (str "remove-preference-button-" (name preference))
+                                                                                                      :preference-pill/primary (get-in skus [preference :sku/name])})
+                                                                                                   (vec preferences))})
                         :header                   (header<- current-order
                                                             (first (get-in app-state storefront.keypaths/navigation-undo-stack)))
                         :stylist-results-present? (seq (concat matching-stylists non-matching-stylists))
