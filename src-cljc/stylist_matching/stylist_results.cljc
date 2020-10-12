@@ -179,7 +179,7 @@
    :header.cart/color             "white"})
 
 (defn stylist-card<-
-  [hide-stylist-specialty? hide-bookings? just-added-only? just-added-experience? stylist-results-test? idx stylist]
+  [hide-bookings? just-added-only? just-added-experience? stylist-results-test? idx stylist]
   (let [{:keys [rating-star-counts
                 salon
                 service-menu
@@ -209,7 +209,6 @@
                 specialty-sew-in-frontal
                 specialty-wig-customization]} service-menu]
     {:react/key                                   (str "stylist-card-" store-slug)
-     :stylist-card.header/hide-stylist-specialty? hide-stylist-specialty?
      :stylist-card.header/target                  [e/navigate-adventure-stylist-profile {:stylist-id stylist-id
                                                                                          :store-slug store-slug}]
      :stylist-card.header/id                      (str "stylist-card-header-" store-slug)
@@ -299,11 +298,9 @@
                                                    zipcode])}))
 
 (defn stylist-cards-query
-  [{:keys [hide-stylist-specialty? hide-bookings?
-           just-added-only? just-added-experience? stylist-results-test?]} stylists]
+  [{:keys [hide-bookings? just-added-only? just-added-experience? stylist-results-test?]} stylists]
   (map-indexed
    (partial stylist-card<-
-            hide-stylist-specialty?
             hide-bookings?
             just-added-only?
             just-added-experience?
@@ -491,14 +488,12 @@
         skus                          (get-in app-state storefront.keypaths/v2-skus)
         {matching-stylists     true
          non-matching-stylists false} (group-by matches-preferences? stylist-search-results)
-        hide-stylist-specialty?       (experiments/hide-stylist-specialty? app-state)
         hide-bookings?                (experiments/hide-bookings? app-state)
         just-added-only?              (experiments/just-added-only? app-state)
         just-added-experience?        (experiments/just-added-experience? app-state)
         just-added-control?           (experiments/just-added-control? app-state)
         stylist-results-test?         (experiments/stylist-results-test? app-state)
         stylist-data                  {:filter-prefences        preferences
-                                       :hide-stylist-specialty? hide-stylist-specialty?
                                        :hide-bookings?          hide-bookings?
                                        :just-added-only?        just-added-only?
                                        :just-added-experience?  just-added-experience?

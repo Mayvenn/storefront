@@ -73,10 +73,6 @@
   [data]
   (display-feature? data "color-picker-redesign"))
 
-(defn hide-stylist-specialty?
-  [data]
-  (display-feature? data "hide-stylist-specialty"))
-
 (defn hide-bookings?
   [data]
   (display-feature? data "hide-bookings"))

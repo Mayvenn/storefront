@@ -6,29 +6,6 @@
             [storefront.platform.component-utils :as utils]
             [ui.molecules :as molecules]))
 
-(defn checks-or-x-atom
-  [label value?]
-  [:div.inline-block.content-3.proxima
-   [:div.mr2.flex.items-center
-    [:span.mr1
-     (if value?
-       (svg/check-mark {:class "black"
-                        :style {:width  10
-                                :height 10}})
-       (svg/x-sharp {:class "black"
-                     :style {:width  8
-                             :height 8}}))]
-    label]])
-
-(defn stylist-card-services-list-molecule
-  [{:stylist-card.services-list/keys [id items]}]
-  (when id
-    (component/html
-     [:div.h8.col-12
-      (for [{:keys [label value id]} items]
-        [:div.inline {:key id}
-         (checks-or-x-atom label value)])])))
-
 (defn stylist-card-salon-name-molecule
   [{:stylist-card.salon-name/keys [id value]}]
   (when id
@@ -142,7 +119,7 @@
      [:span content]]))
 
 (defn stylist-card-header-molecule
-  [{:stylist-card.header/keys [target id hide-stylist-specialty?] :as data}]
+  [{:stylist-card.header/keys [target id] :as data}]
   (when id
     [:div.col-12.flex.items-start.pb2.pt4
      (assoc (apply utils/route-to target) :data-test id)
@@ -157,9 +134,7 @@
       (stylist-card-salon-name-molecule data)
       (stylist-card-address-marker-molecule data)
       (stylist-card-bookings-count-molecule data)
-      (stylist-card-experience-molecule data)
-      (when-not hide-stylist-specialty?
-        (stylist-card-services-list-molecule data))]]))
+      (stylist-card-experience-molecule data)]]))
 
 (defcomponent organism
   [data _ {:keys [id]}]
