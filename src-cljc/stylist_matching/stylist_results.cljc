@@ -52,7 +52,10 @@
   (when (seq s)
     (messages/handle-message e/flow|stylist-matching|param-ids-constrained {:ids s}))
   ;; Pull preferred services from URI; filters for service types
-  (when-let [services (some-> preferred-services not-empty (split service-delimiter) set)]
+  (when-let [services (some-> preferred-services
+                              not-empty
+                              (split (re-pattern service-delimiter))
+                              set)]
     (messages/handle-message e/flow|stylist-matching|param-services-constrained
                              {:services services}))
   ;; Pull lat/long from URI; search by proximity

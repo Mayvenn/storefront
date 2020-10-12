@@ -31,7 +31,7 @@
 (def ^:private query-param-keys
   #{:lat :long :preferred-services :s})
 
-(def service-delimiter #"~")
+(def service-delimiter "~")
 
 (defn ^:private query-params<-
   [query-params {:param/keys [location services]}]
