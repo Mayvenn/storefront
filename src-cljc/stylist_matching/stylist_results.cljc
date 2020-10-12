@@ -315,54 +315,56 @@
      :gallery-modal/ucare-image-urls gallery-images
      :gallery-modal/initial-index    index}))
 
-
 ;; TODO this name and query and such
-(defdynamic-component location-input-and-filters-molecule
-  (did-mount [_]
-             (messages/handle-message e/stylist-results-address-component-mounted))
-  (render [this]
-          (let [{:stylist.results.location-search-box/keys
-                 [id value errors keypath preferences]} (component/get-props this)
-                preference-count                        (count preferences)]
-            (component/html
-             [:div.px3.py2.bg-white.border-bottom.border-gray.flex.flex-column
-              (ui/input-with-charm
-               {:errors        errors
-                :value         value
-                :keypath       keypath
-                :data-test     id
-                :id            id
-                :wrapper-class "flex items-center col-12 bg-white border-black"
-                :type          "text"}
-               [:div.flex.items-center.px2.border.border-black
-                {:style {:border-left "none"}}
-                ^:inline (svg/magnifying-glass {:width  "19px"
-                                                :height "19px"
-                                                :class  "fill-gray"})])
-              [:div.flex.flex-wrap
-               [:div
-                (ui/button-pill {:class     "p1 mr1"
-                                 :key       "filters-key"
-                                 :data-test "button-show-stylist-search-filters"
-                                 :on-click  (utils/send-event-callback e/control-show-stylist-search-filters)}
-                                [:div.flex.items-center.px1
-                                 (svg/funnel {:class  "mrp3"
-                                              :height "9px"
-                                              :width  "10px"})
-                                 (if (= 0 preference-count)
-                                   "Filters"
-                                   (str "- " preference-count))])]
-               (for [{:preference-pill/keys [id target primary]} preferences]
-                 [:div.pb1 {:key id}
-                  (ui/button-pill {:class "p1 mr1"
-                                   :on-click identity} ;; TODO: ????
-                                  [:div.flex.pl1 primary
-                                   [:div.flex.items-center.pl1
-                                    ^:attrs (merge {:data-test id}
-                                                   (apply utils/fake-href target))
-                                    (svg/close-x {:class  "stroke-white fill-gray"
-                                                  :width  "13px"
-                                                  :height "13px"})]])])]]))))
+(defdynamic-component stylist-results-address-input-molecule
+  (did-mount
+   [_]
+   (messages/handle-message e/stylist-results-address-component-mounted))
+  (render
+   [this]
+   (let [{:stylist.results.location-search-box/keys [id value errors keypath]} (component/get-props this)]
+     (component/html
+      (ui/input-with-charm
+       {:errors        errors
+        :value         value
+        :keypath       keypath
+        :data-test     id
+        :id            id
+        :wrapper-class "flex items-center col-12 bg-white border-black"
+        :type          "text"}
+       [:div.flex.items-center.px2.border.border-black
+        {:style {:border-left "none"}}
+        ^:inline (svg/magnifying-glass {:width  "19px"
+                                        :height "19px"
+                                        :class  "fill-gray"})])))))
+
+(defn stylist-results-service-filters-molecule
+  [{:stylist.results.location-search-box/keys [preferences]}]
+  (component/html
+   [:div.flex.flex-wrap
+    [:div
+     (ui/button-pill {:class     "p1 mr1"
+                      :key       "filters-key"
+                      :data-test "button-show-stylist-search-filters"
+                      :on-click  (utils/send-event-callback e/control-show-stylist-search-filters)}
+                     [:div.flex.items-center.px1
+                      (svg/funnel {:class  "mrp3"
+                                   :height "9px"
+                                   :width  "10px"})
+                      (if (= 0 (count preferences))
+                        "Filters"
+                        (str "- " (count preferences)))])]
+    (for [{:preference-pill/keys [id target primary]} preferences]
+      [:div.pb1 {:key id}
+       (ui/button-pill {:class "p1 mr1"
+                        :on-click identity} ;; TODO: ????
+                       [:div.flex.pl1 primary
+                        [:div.flex.items-center.pl1
+                         ^:attrs (merge {:data-test id}
+                                        (apply utils/fake-href target))
+                         (svg/close-x {:class  "stroke-white fill-gray"
+                                       :width  "13px"
+                                       :height "13px"})]])])]))
 
 (defcomponent matching-count-organism
   [{:keys [stylist-count-content]} _ _]
@@ -430,7 +432,9 @@
    (components.header/adventure-header header)
 
    (when (:stylist.results.location-search-box/id location-search-box)
-     (component/build location-input-and-filters-molecule location-search-box nil))
+     [:div.px3.py2.bg-white.border-bottom.border-gray.flex.flex-column
+      (component/build stylist-results-address-input-molecule location-search-box)
+      (stylist-results-service-filters-molecule location-search-box)])
 
    (if spinning?
      [:div.mt6 ui/spinner]
