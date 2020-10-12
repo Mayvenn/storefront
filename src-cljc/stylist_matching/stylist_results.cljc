@@ -380,58 +380,64 @@
      breaker-results])
    breaker-content])
 
-(defdynamic-component template
+(defdynamic-component results
   (did-mount
    [this]
-   (let [{:keys [stylist.analytics/cards stylist-results-returned?]} (component/get-props this)]
+   (let [{:keys [stylist.analytics/cards stylist-results-returned?]}
+         (component/get-props this)]
      (when stylist-results-returned?
        (messages/handle-message e/adventure-stylist-search-results-displayed
                                 {:cards cards}))))
   (render
    [this]
-   (let [{:keys [spinning? stylist-results-present? gallery-modal
-                 header location-search-box shopping-method-choice]
-          :as   data} (component/get-props this)]
+   (let [{:keys [stylist-results-present? shopping-method-choice] :as data}
+         (component/get-props this)]
      (component/html
-      [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
+      (if stylist-results-present?
+        [:div
+         (when-let [count-id (:list.stylist-counter/key data)]
+           [:div
+            {:key count-id}
+            (ui/screen-aware matching-count-organism
+                             {:stylist-count-content (:list.stylist-counter/title data)}
+                             (component/component-id count-id))])
+         (when (:list.matching/key data)
+           [:div
+            (for [card (:list.matching/cards data)]
+              [:div {:key (:react/key card)}
+               (ui/screen-aware stylist-cards/organism
+                                card
+                                (component/component-id (:react/key card)))])])
+         (when (:list.breaker/id data)
+           [:div
+            {:key       "non-matching-breaker"
+             :data-test (:list.breaker/id data)}
+            (component/build non-matching-breaker
+                             {:breaker-results (:list.breaker/results-content data)
+                              :breaker-content (:list.breaker/content data)})])
+         (when (:list.non-matching/key data)
+           [:div
+            (for [card (:list.non-matching/cards data)]
+              [:div {:key (:react/key card)}
+               (ui/screen-aware stylist-cards/organism
+                                card
+                                (component/component-id (:react/key card)))])])]
 
-       (component/build gallery-modal/organism gallery-modal nil)
-       (components.header/adventure-header header)
+        (component/build shopping-method-choice/organism
+                         shopping-method-choice))))))
 
-       (when (:stylist.results.location-search-box/id location-search-box)
-         (component/build location-input-and-filters-molecule location-search-box nil))
+(defcomponent template
+  [{:keys [spinning? gallery-modal header location-search-box ] :as data} _ _]
+  [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
+   (component/build gallery-modal/organism gallery-modal nil)
+   (components.header/adventure-header header)
 
-       (cond
-         spinning? [:div.mt6 ui/spinner]
+   (when (:stylist.results.location-search-box/id location-search-box)
+     (component/build location-input-and-filters-molecule location-search-box nil))
 
-
-         stylist-results-present?
-         [:div
-          (when-let [count-id (:list.stylist-counter/key data)]
-            [:div
-             {:key count-id}
-             (ui/screen-aware matching-count-organism
-                              {:stylist-count-content (:list.stylist-counter/title data)}
-                              (component/component-id count-id))])
-          (when (:list.matching/key data)
-            [:div
-             (for [card (:list.matching/cards data)]
-               [:div {:key (:react/key card)}
-                (ui/screen-aware stylist-cards/organism card (component/component-id (:react/key card)))])])
-          (when (:list.breaker/id data)
-            [:div
-             {:key       "non-matching-breaker"
-              :data-test (:list.breaker/id data)}
-             (component/build non-matching-breaker {:breaker-results (:list.breaker/results-content data)
-                                                    :breaker-content (:list.breaker/content data)})])
-          (when (:list.non-matching/key data)
-            [:div
-             (for [card (:list.non-matching/cards data)]
-               [:div {:key (:react/key card)}
-                (ui/screen-aware stylist-cards/organism card (component/component-id (:react/key card)))])])]
-
-         :else
-         (component/build shopping-method-choice/organism shopping-method-choice nil))]))))
+   (if spinning?
+     [:div.mt6 ui/spinner]
+     (component/build results data))])
 
 (defn shopping-method-choice-query []
   {:shopping-method-choice.error-title/id        "stylist-matching-shopping-method-choice"
@@ -505,7 +511,8 @@
                           :cljs filter-menu/component) filter-menu nil)
       (component/build template
                        {:gallery-modal            (gallery-modal-query app-state)
-                        :spinning?                (or (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
+                        :spinning?                (or (empty? (:status matching))
+                                                      (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
                                                       (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters)
                                                       (utils/requesting-from-endpoint? app-state request-keys/get-products)
                                                       (and (not (get-in app-state storefront.keypaths/loaded-convert))
