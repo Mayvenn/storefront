@@ -139,7 +139,7 @@
       (merge
        (when services-only?
          {:thank-you/primary "We've received your order and will contact you to make an appointment within 2 business days."} )
-       (let [stylist-display-name (stylists/->display-name servicing-stylist)]
+       (when-let [stylist-display-name (some-> servicing-stylist not-empty stylists/->display-name)]
          {:matched-component.message/id    "servicing-stylist-name"
           :matched-component.message/title (str "Chat with " stylist-display-name)
           :matched-component.message/body  [:span
