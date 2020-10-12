@@ -300,41 +300,37 @@
        (ui/submit-button "Continue to Payment" {:spinning? saving?
                                                 :data-test "address-form-submit"})]]]]])
 
-(defn phone-marketing-opt-in-query [phone-marketing-opt-in-value]
-  {:marketing-opt-in/id      "phone-marketing-opt-in"
-   :marketing-opt-in/label   "I agree."
-   :marketing-opt-in/value   phone-marketing-opt-in-value
-   :marketing-opt-in/keypath keypaths/checkout-phone-marketing-opt-in
-   :marketing-opt-in/copy    "By checking box below, I agree to receive recurring autodialed marketing
-     text messages and phone calls from or on behalf of Mayvenn at the phone
-     number provided above. I understand that consent is not a condition of any
-     purchase and that my wireless carrier’s message and data rates may apply."})
-
 (defn query [data]
   (let [google-maps-loaded? (get-in data keypaths/loaded-google-maps)
         states              (map (juxt :name :abbr) (get-in data keypaths/states))
         field-errors        (get-in data keypaths/field-errors)]
-    (merge
-     {:saving?                  (utils/requesting? data request-keys/update-addresses)
-      :step-bar                 (cond-> (checkout-steps/query data)
-                                  (= :guest (::auth/as (auth/signed-in data)))
-                                  (assoc :checkout-title "Guest Checkout"))
-      :promo-banner             (promo-banner/query data)
-      :billing-address-data     {:billing-address           (get-in data keypaths/checkout-billing-address)
-                                 :states                    states
-                                 :bill-to-shipping-address? (get-in data keypaths/checkout-bill-to-shipping-address)
-                                 :google-maps-loaded?       google-maps-loaded?
-                                 :field-errors              field-errors
-                                 :focused                   (get-in data keypaths/ui-focus)}
-      :shipping-address-data    {:shipping-address    (get-in data keypaths/checkout-shipping-address)
-                                 :states              states
-                                 :email               (get-in data keypaths/checkout-guest-email)
-                                 :become-guest?       false
-                                 :google-maps-loaded? google-maps-loaded?
-                                 :field-errors        field-errors
-                                 :focused             (get-in data keypaths/ui-focus)}}
-     (when (experiments/phone-opt-in? data)
-       (phone-marketing-opt-in-query (get-in data keypaths/checkout-phone-marketing-opt-in))))))
+    {:saving?                  (utils/requesting? data request-keys/update-addresses)
+     :step-bar                 (cond-> (checkout-steps/query data)
+                                 (= :guest (::auth/as (auth/signed-in data)))
+                                 (assoc :checkout-title "Guest Checkout"))
+     :promo-banner             (promo-banner/query data)
+     :marketing-opt-in/id      (when (experiments/phone-opt-in? data)
+                                 "opt-in")
+     :marketing-opt-in/label   "I agree."
+     :marketing-opt-in/value   (get-in data keypaths/checkout-phone-marketing-opt-in)
+     :marketing-opt-in/keypath keypaths/checkout-phone-marketing-opt-in
+     :marketing-opt-in/copy    "By checking box below, I agree to receive recurring autodialed marketing
+     text messages and phone calls from or on behalf of Mayvenn at the phone
+     number provided above. I understand that consent is not a condition of any
+     purchase and that my wireless carrier’s message and data rates may apply."
+     :billing-address-data     {:billing-address           (get-in data keypaths/checkout-billing-address)
+                                :states                    states
+                                :bill-to-shipping-address? (get-in data keypaths/checkout-bill-to-shipping-address)
+                                :google-maps-loaded?       google-maps-loaded?
+                                :field-errors              field-errors
+                                :focused                   (get-in data keypaths/ui-focus)}
+     :shipping-address-data    {:shipping-address    (get-in data keypaths/checkout-shipping-address)
+                                :states              states
+                                :email               (get-in data keypaths/checkout-guest-email)
+                                :become-guest?       false
+                                :google-maps-loaded? google-maps-loaded?
+                                :field-errors        field-errors
+                                :focused             (get-in data keypaths/ui-focus)}}))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data)))
