@@ -87,7 +87,7 @@
       [:div.my2.h2 ui/spinner]
 
       [:div.container.mb4.px3
-       [:div.py3 (ui-molecules/return-link queried-data)]
+       [:div.py3 (ui-molecules/return-link (:payout/return-link queried-data))]
        [:div.col.col-1 (svg/coin-in-slot {:height 14
                                           :width  20})]
        [:div.col.col-11.pl1
@@ -242,9 +242,10 @@
 (defn ^:private award-component
   [{:keys [balance-transfer] :as queried-data}]
   (let [{:keys [id transfered-at amount data]} balance-transfer
-        {:keys [reason]}                       data]
+        {:keys [reason]}                       data
+        _ (prn queried-data)]
     [:div.container.mb4.px3
-     [:div.py3.pl1 (ui-molecules/return-link queried-data)]
+     [:div.py3.pl1 (ui-molecules/return-link (:payout/return-link queried-data))]
      [:div
       [:div.col.col-1.px2 (svg/coin-in-slot {:height 14
                                              :width  20})]
@@ -264,7 +265,7 @@
         {:keys [order campaign-name order-number voucher]} data
         client-name                                        (orders/first-name-plus-last-name-initial order)]
     [:div.container.mb4.px3
-     [:div.py3 (ui-molecules/return-link queried-data)]
+     [:div.py3 (ui-molecules/return-link (:payout/return-link queried-data))]
      [:div
       [:div.col.col-1.px2 (svg/coin-in-slot {:height 14
                                              :width  20})]
