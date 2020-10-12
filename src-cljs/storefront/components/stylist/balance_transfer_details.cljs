@@ -242,8 +242,7 @@
 (defn ^:private award-component
   [{:keys [balance-transfer] :as queried-data}]
   (let [{:keys [id transfered-at amount data]} balance-transfer
-        {:keys [reason]}                       data
-        _ (prn queried-data)]
+        {:keys [reason]}                       data]
     [:div.container.mb4.px3
      [:div.py3.pl1 (ui-molecules/return-link (:payout/return-link queried-data))]
      [:div
