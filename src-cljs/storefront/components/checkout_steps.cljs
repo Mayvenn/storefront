@@ -24,7 +24,11 @@
        (for [{:keys [step-index name id events]} steps]
          [:.content-3.canela.col-12.center.flex.flex-column.justify-center
           {:key id :id id}
-          [:a.inherit-color (when (< step-index current-index) (route-to (first events)))
+          [:a.inherit-color
+           (merge
+            {:data-test (str "checkout-step-" id)}
+            (when (< step-index current-index)
+              (route-to (first events))))
            [:.mx-auto {:style {:width "12px" :height "12px"}}
             [:.relative {:style {:width "0"}}
              [:div.absolute {:style {:margin-top "-3px"}}
