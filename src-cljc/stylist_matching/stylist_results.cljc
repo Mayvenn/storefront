@@ -325,6 +325,13 @@
       :keypath       keypath
       :data-test     id
       :id            id
+      :on-change     (fn [e]
+                       (messages/handle-message e/flow|stylist-matching|param-name-presearched
+                                                {:presearch/name (.. e -target -value)}))
+      :on-key-up     (fn [e]
+                       (when (= "Enter" (.. e -key))
+                         (messages/handle-message e/flow|stylist-matching|param-name-constrained
+                                                  {:name (.. e -target -value)})))
       :label         "All Stylists"
       :wrapper-class "flex items-center col-12 bg-white border-black"
       :type          "text"}
@@ -477,26 +484,24 @@
   1. name (under experiment)
   2. address (location)
   3. service filters"
-  [[search-by-name? name-input]
-   [google-loaded? google-input]
-   [services skus-db]]
+  [matching search-by-name? google-loaded? skus-db]
   (merge
    (when search-by-name?
      {:stylist-results.name-input/id      "stylist-search-name-input"
-      :stylist-results.name-input/value   name-input
-      :stylist-results.name-input/keypath [:a :b]
+      :stylist-results.name-input/value   (:presearch/name matching)
+      :stylist-results.name-input/keypath k/presearch-name
       :stylist-results.name-input/errors  []})
    (when google-loaded?
      (if search-by-name?
        {:stylist-results.address-input/id      "stylist-search-input"
-        :stylist-results.address-input/value   google-input
+        :stylist-results.address-input/value   (:google/input matching)
         :stylist-results.address-input/keypath k/google-input
         :stylist-results.address-input/errors  []}
        {:stylist-results.address-input-charmed-right/id      "stylist-search-input"
-        :stylist-results.address-input-charmed-right/value   google-input
+        :stylist-results.address-input-charmed-right/value   (:google/input matching)
         :stylist-results.address-input-charmed-right/keypath k/google-input
         :stylist-results.address-input-charmed-right/errors  []}))
-   (when-let [pills (->> services
+   (when-let [pills (->> (:param/services matching)
                          (keep
                           (fn [sku-id]
                             (when-let [sku-name (get-in skus-db [sku-id :sku/name])]
@@ -507,20 +512,64 @@
                                :id      (str "remove-preference-button-" sku-id)
                                :primary sku-name})))
                          not-empty)]
-     {:stylist-results.service-filters/preferences pills})))
+     {:stylist-results.service-filters/preferences pills})
+   (when (contains? (:status matching)
+                    :results.presearch/name)
+     {:stylist-results.name-presearch-results/list
+      (for [result (:results.presearch/name matching)]
+        (merge
+         {:stylist-results.name-presearch-results.result/primary
+          (:name result)}
+         (when (= "stylist" (:type result))
+           {:stylist-results.name-presearch-results.result/ucare-uri
+            "https://ucarecdn.com/adfd85d5-bb87-4171-ad1d-bcbfd9da5541/"})
+         (when (:address result)
+           {:stylist-results.name-presearch-results.result/secondary
+            (:address result)})))})))
+
+;; TODO(corey) eval the effectiveness of the various 'elements' and
+;; use the best version here
+(defn stylist-results-name-presearch-results-molecule
+  [{elements :stylist-results.name-presearch-results/list}]
+  (when (seq elements)
+    (component/html
+     [:div.absolute.left-0.right-0.bg-white.z5.border.border-gray
+      (for [{:stylist-results.name-presearch-results.result/keys [ucare-uri primary secondary]}
+            elements]
+        [:div.flex.px4.py2
+         {:key primary}
+         [:div.self-center.mr3
+          {:style {:width "26px"}}
+          (if ucare-uri
+            (ui/circle-picture {:width "26px"}
+                               (ui/square-image {:resizable-url ucare-uri}
+                                                26))
+            (svg/mirror {:class  "fill-gray"
+                         :width  "20px"
+                         :height "20px"}))]
+         [:div.left-align
+          [:div primary]
+          (when secondary
+            [:div.content-4.dark-gray
+             secondary])]])])))
 
 (defcomponent search-inputs-organism
   [data _ _]
-  [:div.px3.py2.bg-white.border-bottom.border-gray.flex.flex-column
+  [:div.px3.py2.bg-white.border-bottom.border-gray
    (component/build stylist-results-name-input-molecule data)
    (when (:stylist-results.address-input/id data)
      (component/build stylist-results-address-input-molecule data))
    (when (:stylist-results.address-input-charmed-right/id data)
      (component/build stylist-results-address-input-charmed-right-molecule data))
-   (stylist-results-service-filters-molecule data)])
+   [:div.relative
+    (stylist-results-name-presearch-results-molecule data)
+    (stylist-results-service-filters-molecule data)]])
+
+(def scrim-atom
+  [:div.absolute.overlay.bg-darken-4])
 
 (defcomponent template
-  [{:keys [spinning? gallery-modal header stylist-search-inputs] :as data} _ _]
+  [{:keys [spinning? gallery-modal header stylist-search-inputs scrim?] :as data} _ _]
   [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
    (component/build gallery-modal/organism gallery-modal nil)
    (components.header/adventure-header header)
@@ -529,7 +578,10 @@
 
    (if spinning?
      [:div.mt6 ui/spinner]
-     (component/build results data))])
+     [:div.relative
+      (component/build results data)
+      (when scrim?
+        scrim-atom)])])
 
 (defn shopping-method-choice-query []
   {:shopping-method-choice.error-title/id        "stylist-matching-shopping-method-choice"
@@ -582,9 +634,6 @@
         matching      (stylist-matching.core/stylist-matching<- app-state)
         skus-db       (get-in app-state storefront.keypaths/v2-skus)
 
-        name-input   (get-in app-state k/ui-stylist-matching-name-input)
-        google-input (get-in app-state k/google-input)
-
         ;; Experiments
         search-by-name?        (experiments/search-by-name? app-state)
         hide-bookings?         (experiments/hide-bookings? app-state)
@@ -621,9 +670,12 @@
                                                            (or (not just-added-control?)
                                                                (not just-added-only?)
                                                                (not just-added-experience?))))
-                        :stylist-search-inputs    (stylist-search-inputs<- [search-by-name? name-input]
-                                                                           [google-loaded? google-input]
-                                                                           [preferences skus-db])
+                        :scrim?                   (contains? (:status matching)
+                                                             :results.presearch/name)
+                        :stylist-search-inputs    (stylist-search-inputs<- matching
+                                                                           search-by-name?
+                                                                           google-loaded?
+                                                                           skus-db)
                         :header                   (header<- current-order
                                                             (first (get-in app-state storefront.keypaths/navigation-undo-stack)))
                         :stylist-results-present? (seq (concat matching-stylists non-matching-stylists))

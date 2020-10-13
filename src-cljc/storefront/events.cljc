@@ -572,6 +572,7 @@
 (defpath flow|stylist-matching|param-ids-constrained)
 (defpath flow|stylist-matching|param-address-constrained)
 (defpath flow|stylist-matching|param-location-constrained)
+(defpath flow|stylist-matching|param-name-presearched)
 (defpath flow|stylist-matching|param-name-constrained)
 (defpath flow|stylist-matching|param-services-constrained)
 (defpath flow|stylist-matching|prepared)

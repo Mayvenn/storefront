@@ -17,11 +17,11 @@
                        [storefront.history :as history]
                        [storefront.hooks.google-maps :as google-maps]
                        [catalog.skuers :as skuers]
-                       [clojure.set :refer [union]]
                        storefront.keypaths])
             [stylist-matching.keypaths :as k]
             [stylist-matching.search.accessors.filters :as filters]
             stylist-matching.selected
+            [clojure.set :refer [union]]
             [clojure.string :refer [join]]
             [storefront.effects :as fx]
             [storefront.transitions :as t]
@@ -108,11 +108,44 @@
   [_ _ {:keys [ids]} state]
   (assoc-in state k/ids ids))
 
+;; Param 'name' presearched
+(defmethod t/transition-state e/flow|stylist-matching|param-name-presearched
+  [_ _ {name-presearch :presearch/name} state]
+  (if (< (count name-presearch) 2)
+    (-> state
+        (assoc-in k/presearch-name name-presearch)
+        (update-in k/status disj :results.presearch/name))
+    (-> state
+        (assoc-in k/presearch-name name-presearch)
+
+        ;; Simulate results until endpoint exists
+        (assoc-in k/name-presearch-results
+                  [{:type    "stylist"
+                    :name    "Taylor Smith"
+                    :address "123 long name st."}
+                   {:type    "stylist"
+                    :name    "Alexander Taylor"
+                    :address "123 long name st."}
+                   {:type    "stylist"
+                    :name    "Taylor Momsen"
+                    :address "1 long name st."}
+                   {:type "salon"
+                    :name "Tay's Salon"}
+                   {:type "salon"
+                    :name "Tay Le"}
+                   {:type "salon"
+                    :name "Salon de Tay"}])
+        (update-in k/status union #{:results.presearch/name}))))
+
 ;; Param 'name' constrained
 ;; -> model <> name
+(defmethod t/transition-state e/flow|stylist-matching|param-name-constrained
+  [_ _ {moniker :name} state]
+  (assoc-in state k/name moniker))
+
 (defmethod fx/perform-effects e/flow|stylist-matching|param-name-constrained
-  [_ _ _ _ _]
-  )
+  [_ _ _ _ state]
+  #_ api/new-query)
 
 ;; Prepared
 ;; -> screen: results
@@ -162,7 +195,7 @@
     (pos? (count results))
     (assoc-in k/stylist-results results)
     :always
-    (update-in k/status (comp set #(conj % :results/stylists)))))
+    (update-in k/status union #{:results/stylists})))
 
 ;; FIXME Location queries send this, but why? is it just historical?
 ;; No, it's because the the apis are chained...
