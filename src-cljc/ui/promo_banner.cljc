@@ -22,14 +22,6 @@
   [_ _ _]
   [:div])
 
-(defmethod component :shop/covid19 covid19
-  [_ _ {hide-dt? :hide-dt?}]
-  [:div.block.inherit-color.p2.bg-warm-gray.flex.items-top.justify-center
-   {:data-test (when-not hide-dt? "shop-covid19-promo-banner")}
-   [:div.mtp2.mr1 (svg/info-filled {:height "16px"
-                                    :width  "16px"})]
-   [:div.h6 "Mayvenn appointments are now available. Our stylists are committed to your health & safety."]])
-
 (defmethod component :basic basic
   [{:keys [promo]} _ {hide-dt? :hide-dt?}]
   [:div.inherit-color.center.pp5.bg-warm-gray.h5.bold
@@ -74,11 +66,10 @@
   (let [no-applied-promo? (orders/no-applied-promo? (get-in data keypaths/order))
         on-shop?          (= :shop (sites/determine-site data))
         nav-event         (get-in data keypaths/navigation-event)
-        promo-type        (if on-shop? :shop/covid19 :basic)
         show?             (contains? (nav-whitelist-for no-applied-promo? on-shop?) nav-event)
         hide-on-mb-tb?    (boolean (get-in data catalog.keypaths/category-panel))]
     (cond-> {:promo (promotion-to-advertise data)}
-      show?          (assoc :promo/type promo-type)
+      show?          (assoc :promo/type :basic)
       hide-on-mb-tb? (assoc :hide-on-mb-tb? true))))
 
 (defn static-organism
