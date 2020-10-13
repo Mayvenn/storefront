@@ -315,16 +315,62 @@
      :gallery-modal/ucare-image-urls gallery-images
      :gallery-modal/initial-index    index}))
 
+(defcomponent stylist-results-name-input-molecule
+  [{:stylist-results.name-input/keys [id value errors keypath]} _ _]
+  (when id
+    (ui/input-with-left-charm
+     {:errors        errors
+      :autoComplete  "off"
+      :value         value
+      :keypath       keypath
+      :data-test     id
+      :id            id
+      :label         "All Stylists"
+      :wrapper-class "flex items-center col-12 bg-white border-black"
+      :type          "text"}
+     [:div.flex.items-center.px2.border.border-black
+      {:style {:border-right "none"}}
+      ^:inline (svg/magnifying-glass {:width  "19px"
+                                      :height "19px"
+                                      :class  "fill-gray"})])))
+
 (defdynamic-component stylist-results-address-input-molecule
   (did-mount
    [_]
    (messages/handle-message e/stylist-results-address-component-mounted))
   (render
    [this]
-   (let [{:stylist-results.address-input/keys [id value errors keypath]} (component/get-props this)]
+   (let [{:stylist-results.address-input/keys [id value errors keypath]}
+         (component/get-props this)]
+     (component/html
+      (ui/input-with-left-charm
+       {:errors        errors
+        :autoComplete  "off"
+        :value         value
+        :keypath       keypath
+        :data-test     id
+        :id            id
+        :wrapper-class "flex items-center col-12 bg-white border-black"
+        :type          "text"}
+       [:div.flex.items-center.px2.border.border-black
+        {:style {:border-right "none"}}
+        ^:inline (svg/map-pin {:width  "21px"
+                               :height "21px"
+                               :class  "fill-gray"})])))))
+
+;; This variation will probably be deprecated when new feature goes live
+(defdynamic-component stylist-results-address-input-charmed-right-molecule
+  (did-mount
+   [_]
+   (messages/handle-message e/stylist-results-address-component-mounted))
+  (render
+   [this]
+   (let [{:stylist-results.address-input-charmed-right/keys [id value errors keypath]}
+         (component/get-props this)]
      (component/html
       (ui/input-with-charm
        {:errors        errors
+        :autoComplete  "off"
         :value         value
         :keypath       keypath
         :data-test     id
@@ -356,7 +402,8 @@
     (for [{:preference-pill/keys [id target primary]} preferences]
       [:div.pb1 {:key id}
        (ui/button-pill {:class "p1 mr1"
-                        :on-click identity} ;; TODO: ????
+                        ;; TODO: REMOVE
+                        :on-click identity}
                        [:div.flex.pl1 primary
                         [:div.flex.items-center.pl1
                          ^:attrs (merge {:data-test id}
@@ -424,16 +471,61 @@
         (component/build shopping-method-choice/organism
                          shopping-method-choice))))))
 
+(defn stylist-search-inputs<-
+  "Stylist Search inputs
+
+  1. name (under experiment)
+  2. address (location)
+  3. service filters"
+  [[search-by-name? name-input]
+   [google-loaded? google-input]
+   [services skus-db]]
+  (merge
+   (when search-by-name?
+     {:stylist-results.name-input/id      "stylist-search-name-input"
+      :stylist-results.name-input/value   name-input
+      :stylist-results.name-input/keypath [:a :b]
+      :stylist-results.name-input/errors  []})
+   (when google-loaded?
+     (if search-by-name?
+       {:stylist-results.address-input/id      "stylist-search-input"
+        :stylist-results.address-input/value   google-input
+        :stylist-results.address-input/keypath k/google-input
+        :stylist-results.address-input/errors  []}
+       {:stylist-results.address-input-charmed-right/id      "stylist-search-input"
+        :stylist-results.address-input-charmed-right/value   google-input
+        :stylist-results.address-input-charmed-right/keypath k/google-input
+        :stylist-results.address-input-charmed-right/errors  []}))
+   (when-let [pills (->> services
+                         (keep
+                          (fn [sku-id]
+                            (when-let [sku-name (get-in skus-db [sku-id :sku/name])]
+                              #:preference-pill
+                              {:target  [e/control-stylist-search-toggle-filter
+                                         {:previously-checked?      true
+                                          :stylist-filter-selection sku-id}]
+                               :id      (str "remove-preference-button-" sku-id)
+                               :primary sku-name})))
+                         not-empty)]
+     {:stylist-results.service-filters/preferences pills})))
+
+(defcomponent search-inputs-organism
+  [data _ _]
+  [:div.px3.py2.bg-white.border-bottom.border-gray.flex.flex-column
+   (component/build stylist-results-name-input-molecule data)
+   (when (:stylist-results.address-input/id data)
+     (component/build stylist-results-address-input-molecule data))
+   (when (:stylist-results.address-input-charmed-right/id data)
+     (component/build stylist-results-address-input-charmed-right-molecule data))
+   (stylist-results-service-filters-molecule data)])
+
 (defcomponent template
-  [{:keys [spinning? gallery-modal header location-search-box] :as data} _ _]
+  [{:keys [spinning? gallery-modal header stylist-search-inputs] :as data} _ _]
   [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
    (component/build gallery-modal/organism gallery-modal nil)
    (components.header/adventure-header header)
 
-   (when (seq location-search-box)
-     [:div.px3.py2.bg-white.border-bottom.border-gray.flex.flex-column
-      (component/build stylist-results-address-input-molecule location-search-box)
-      (stylist-results-service-filters-molecule location-search-box)])
+   (component/build search-inputs-organism stylist-search-inputs)
 
    (if spinning?
      [:div.mt6 ui/spinner]
@@ -478,26 +570,37 @@
   (when (seq stylists)
     (into [] (mapcat identity [(stylist-cards-query data stylists)]))))
 
+(defn matches-preferences?
+  [preferences {:keys [service-menu]}]
+  (every? #(service-menu (accessors.filters/service-sku-id->service-menu-key %))
+          preferences))
+
 (defn page
   [app-state]
-  (let [current-order (api.orders/current app-state)
+  (let [;; Models
+        current-order (api.orders/current app-state)
         matching      (stylist-matching.core/stylist-matching<- app-state)
+        skus-db       (get-in app-state storefront.keypaths/v2-skus)
+
+        name-input   (get-in app-state k/ui-stylist-matching-name-input)
+        google-input (get-in app-state k/google-input)
+
+        ;; Experiments
+        search-by-name?        (experiments/search-by-name? app-state)
+        hide-bookings?         (experiments/hide-bookings? app-state)
+        just-added-only?       (experiments/just-added-only? app-state)
+        just-added-experience? (experiments/just-added-experience? app-state)
+        just-added-control?    (experiments/just-added-control? app-state)
+        stylist-results-test?  (experiments/stylist-results-test? app-state)
+
+        google-loaded? (get-in app-state storefront.keypaths/loaded-google-maps)
 
         stylist-search-results        (:results/stylists matching)
         preferences                   (:param/services matching)
-        matches-preferences?          (fn matches-preferences?
-                                        [{:keys [service-menu]}]
-                                        (every? #(service-menu (accessors.filters/service-sku-id->service-menu-key %)) preferences))
-        skus                          (get-in app-state storefront.keypaths/v2-skus)
         {matching-stylists     true
-         non-matching-stylists false} (group-by matches-preferences? stylist-search-results)
-        hide-bookings?                (experiments/hide-bookings? app-state)
-        just-added-only?              (experiments/just-added-only? app-state)
-        just-added-experience?        (experiments/just-added-experience? app-state)
-        just-added-control?           (experiments/just-added-control? app-state)
-        stylist-results-test?         (experiments/stylist-results-test? app-state)
-        stylist-data                  {:filter-prefences       preferences
-                                       :hide-bookings?         hide-bookings?
+         non-matching-stylists false} (group-by (partial matches-preferences? preferences)
+                                                stylist-search-results)
+        stylist-data                  {:hide-bookings?         hide-bookings?
                                        :just-added-only?       just-added-only?
                                        :just-added-experience? just-added-experience?
                                        :stylist-results-test?  stylist-results-test?}
@@ -518,18 +621,9 @@
                                                            (or (not just-added-control?)
                                                                (not just-added-only?)
                                                                (not just-added-experience?))))
-                        :location-search-box      (when (get-in app-state storefront.keypaths/loaded-google-maps)
-                                                    {:stylist-results.address-input/id            "stylist-search-input"
-                                                     :stylist-results.address-input/value         (get-in app-state k/google-input)
-                                                     :stylist-results.address-input/keypath       k/google-input
-                                                     :stylist-results.address-input/errors        []
-                                                     :stylist-results.service-filters/preferences (mapv
-                                                                                                   (fn [preference]
-                                                                                                     {:preference-pill/target  [e/control-stylist-search-toggle-filter
-                                                                                                                                {:previously-checked? true :stylist-filter-selection preference}]
-                                                                                                      :preference-pill/id      (str "remove-preference-button-" (name preference))
-                                                                                                      :preference-pill/primary (get-in skus [preference :sku/name])})
-                                                                                                   (vec preferences))})
+                        :stylist-search-inputs    (stylist-search-inputs<- [search-by-name? name-input]
+                                                                           [google-loaded? google-input]
+                                                                           [preferences skus-db])
                         :header                   (header<- current-order
                                                             (first (get-in app-state storefront.keypaths/navigation-undo-stack)))
                         :stylist-results-present? (seq (concat matching-stylists non-matching-stylists))

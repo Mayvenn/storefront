@@ -242,13 +242,14 @@
                            :hint?    hint?
                            :value?   (seq value)}]
      [:div ^:attrs (merge (field-wrapper-class {:wrapper-class wrapper-class
-                                                :large?                large?} status)
+                                                :large?        large?}
+                                               status)
                           {:style wrapper-style})
       [:div.pp1.col-12
        ^:inline (floating-label label id status)
        [:label
         [:input.col-12.line-height-1
-         ^:attrs (field-class (merge {:key id
+         ^:attrs (field-class (merge {:key         id
                                       :placeholder label
                                       :data-test   data-test
                                       :type        (or type "text")
@@ -320,6 +321,22 @@
                              (update :wrapper-class str " x-group-item")
                              (assoc-in [:wrapper-style :border-right] "none")))
        (button-square args content)]
+      (field-error-message error "input-group")])))
+
+(defn input-with-left-charm
+  [{:keys [label keypath value errors] :as text-input-attrs :or {class "col-12"}}
+   charm]
+  (component/html
+   (let [error (first errors)]
+     [:div.mb2
+      [:div.flex
+       charm
+       (plain-text-field nil keypath value (not (nil? error))
+                         (-> text-input-attrs
+                             (assoc :placeholder label)
+                             (dissoc :label :keypath :value :errors)
+                             (update :wrapper-class str " x-group-item")
+                             (assoc-in [:wrapper-style :border-left] "none")))]
       (field-error-message error "input-group")])))
 
 (defn input-with-charm
