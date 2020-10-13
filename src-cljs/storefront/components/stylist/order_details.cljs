@@ -4,6 +4,7 @@
             [storefront.accessors.sales :as sales]
             [storefront.accessors.shipping :as shipping]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.line-items :as line-items-accessors]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.formatters :as f]
             [storefront.components.stylist.line-items :as line-items]
@@ -257,5 +258,7 @@
                            {:sku-ids (->> single-sale-map
                                           vals
                                           (map :order)
-                                          (mapcat orders/all-product-items)
+                                          (mapcat :shipments)
+                                          (mapcat :line-items)
+                                          (filter line-items-accessors/product-or-service?)
                                           (map :sku))}))
