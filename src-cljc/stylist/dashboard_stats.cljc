@@ -147,8 +147,7 @@
                                     (dissoc :services))
         payout-method             (get-in data keypaths/stylist-manage-account-chosen-payout-method)
         cash-balance              (-> stats :earnings :cash-balance)
-        instapay-balance-too-low? (and (experiments/instapay? data)
-                                       (<= cash-balance 1)
+        instapay-balance-too-low? (and (<= cash-balance 1)
                                        (boolean (#{"Mayvenn::GreenDotPayoutMethod"
                                                    "green_dot"}
                                                  (or (:type payout-method)

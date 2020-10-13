@@ -2,7 +2,6 @@
   (:require checkout.classic-cart
             [ui.molecules :as ui-molecules]
             [storefront.accessors.adjustments :as adjustments]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.line-items :as accessors.line-items]
             [storefront.component :as component :refer [defcomponent]]
@@ -167,31 +166,6 @@
       "Check"            (check-payout-details date-string payout-method)
       "Venmo"            (venmo-payout-details date-string payout-method))))
 
-(defn ^:private payout-component-old
-  [{:keys [balance-transfer] :as queried-data}]
-  (let [{:keys [id
-                number
-                amount
-                data]}    balance-transfer
-        {:keys [created-at
-                payout-method
-                payout-method-name
-                by-self]} data]
-    [:div.container.mb4.px3
-     [:div.py3 (ui-molecules/return-link (:payout/return-link queried-data))]
-     [:div
-      [:div.col.col-1 (svg/stack-o-cash {:height 14
-                                         :width  20})]
-      [:div.col.col-11.pl1
-       [:div.col.col-9
-        [:h4.col-12.left.medium "Money Transfer"]]
-       [:div.col.col-3.mtp1.right-align
-        [:div.h5.medium.s-color (mf/as-money amount)]]
-       [:div.h8.col.col-12.pb4.right-align payout-method-name]
-       (payout-method-details
-        (f/long-date (or created-at (:transfered_at data)))
-        (or payout-method (:payout_method data)))]]]))
-
 (defn ^:private info-on-payout-molecule
   [{:keys [id title copy]}]
   (when id
@@ -326,8 +300,7 @@
     :total-cashout      (mf/as-money total)}))
 
 (defn query [app-state]
-  (let [instapay?                (experiments/instapay? app-state)
-        balance-transfer-id      (get-in app-state keypaths/stylist-earnings-balance-transfer-details-id)
+  (let [balance-transfer-id      (get-in app-state keypaths/stylist-earnings-balance-transfer-details-id)
         {:keys [id type amount data fee]
          :as   balance-transfer} (get-in app-state (conj keypaths/stylist-earnings-balance-transfers
                                                     balance-transfer-id))
@@ -350,8 +323,7 @@
                                                 vals
                                                 (sort-by :order.view/addon-sort)))
       :balance-transfer                  balance-transfer
-      :fetching?                         (utils/requesting? app-state request-keys/get-stylist-balance-transfer)
-      :instapay?                         instapay?}
+      :fetching?                         (utils/requesting? app-state request-keys/get-stylist-balance-transfer)}
      (when (= type "commission")
        (let [line-items (->> (:order (:data balance-transfer))
                              orders/first-commissioned-shipment
@@ -361,14 +333,12 @@
                                      (get-in app-state keypaths/v2-facets))
                             line-items)})))))
 
-(defcomponent component [{:keys [fetching? balance-transfer instapay?] :as data} owner opts]
+(defcomponent component [{:keys [fetching? balance-transfer] :as data} owner opts]
   (if (and fetching? (not balance-transfer))
     [:div.my2.h2 ui/spinner]
     (when balance-transfer
       (case (:type balance-transfer)
-        "payout"        (if instapay? ;NOTE: when removing experiment, clean up old payout component
-                          (payout-component data)
-                          (payout-component-old data))
+        "payout"        (payout-component data)
         "commission"    (commission-component data)
         "award"         (award-component data)
         "voucher_award" (voucher-award-component data)))))

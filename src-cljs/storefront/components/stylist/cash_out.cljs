@@ -86,8 +86,7 @@
         {:keys [name type last-4 email payout-timeframe]} payout-method
         greendot?                                         (= type "Mayvenn::GreenDotPayoutMethod")
         friday?                                           (friday-et? (spice.date/now))
-        fee-due?                                          (and (experiments/instapay? data)
-                                                               greendot?
+        fee-due?                                          (and greendot?
                                                                (not friday?))
         fee-amount                                        1
         total-amount                                      (if fee-due?
