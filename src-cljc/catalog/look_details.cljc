@@ -10,7 +10,6 @@
             [spice.maps :as maps]
             [spice.selector :as selector]
             [storefront.accessors.contentful :as contentful]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.images :as images]
             [storefront.accessors.products :as products]
             [storefront.accessors.sites :as sites]
@@ -51,9 +50,7 @@
                                  (get-in app-state keypaths/user-id)
                                  (get-in app-state keypaths/user-token)
                                  (get-in app-state keypaths/store-stylist-id)
-                                 (get-in app-state keypaths/order-servicing-stylist-id)
-                                 (and (= :shop (sites/determine-site app-state))
-                                      (experiments/cart-interstitial? app-state)))))
+                                 (get-in app-state keypaths/order-servicing-stylist-id))))
 
 (defn carousel [data imgs]
   (component/build carousel/component

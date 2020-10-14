@@ -118,10 +118,6 @@
   [data]
   (display-feature? data "upsell-addons-opened"))
 
-(defn cart-interstitial?
-  [data]
-  (display-feature? data "cart-interstitial"))
-
 (defn interrupt-checkout?
   [data]
   (display-feature? data "interrupt-checkout"))

@@ -927,7 +927,7 @@
    {:params  {:shared-cart-id shared-cart-id}
     :handler #(messages/handle-message events/api-success-shared-cart-fetch %)}))
 
-(defn create-order-from-cart [session-id shared-cart-id look-id user-id user-token stylist-id servicing-stylist-id cart-interstitial?]
+(defn create-order-from-cart [session-id shared-cart-id look-id user-id user-token stylist-id servicing-stylist-id]
   (storeback-api-req
    POST
    "/create-order-from-shared-cart"
@@ -942,9 +942,7 @@
                                              {:order          (orders/TEMP-pretend-service-items-do-not-exist %)
                                               :look-id        look-id
                                               :shared-cart-id shared-cart-id
-                                              :navigate       (if cart-interstitial?
-                                                                events/navigate-added-to-cart
-                                                                events/navigate-cart)})
+                                              :navigate       events/navigate-added-to-cart})
     :error-handler #(do
                       ;; Order is important here, for correct display of errors
                       (default-error-handler %)

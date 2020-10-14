@@ -1014,15 +1014,10 @@
            sku-is-free-mayvenn-service?        (-> sku :promo.mayvenn-install/discountable first)
            service-swap?                       (and cart-contains-free-mayvenn-service? sku-is-free-mayvenn-service?)
            add-sku-to-bag-command              [events/add-sku-to-bag
-                                                (if (experiments/cart-interstitial? app-state)
-                                                  {:sku           sku
-                                                   :stay-on-page? (and service-swap? (= events/navigate-category (get-in app-state storefront.keypaths/navigation-event)))
-                                                   :service-swap? service-swap?
-                                                   :quantity      quantity}
-                                                  {:sku           sku
-                                                   :stay-on-page? (= events/navigate-category (get-in app-state storefront.keypaths/navigation-event))
-                                                   :service-swap? service-swap?
-                                                   :quantity      quantity})]]
+                                                {:sku           sku
+                                                 :stay-on-page? (and service-swap? (= events/navigate-category (get-in app-state storefront.keypaths/navigation-event)))
+                                                 :service-swap? service-swap?
+                                                 :quantity      quantity}]]
        (if service-swap?
          (messages/handle-message events/popup-show-service-swap {:sku-intended sku :confirmation-command add-sku-to-bag-command})
          (apply messages/handle-message add-sku-to-bag-command)))))
@@ -1033,8 +1028,7 @@
      (let [nav-event          (get-in app-state keypaths/navigation-event)
            cart-interstitial? (and
                                (not service-swap?)
-                               (= :shop (sites/determine-site app-state))
-                               (experiments/cart-interstitial? app-state))]
+                               (= :shop (sites/determine-site app-state)))]
        (api/add-sku-to-bag
         (get-in app-state keypaths/session-id)
         {:sku                sku
@@ -1089,8 +1083,7 @@
   [dispatch event {:keys [items service-swap?] :as args} _ app-state]
   #?(:cljs
      (let [cart-interstitial? (and (= :shop (sites/determine-site app-state))
-                                   (not service-swap?)
-                                   (experiments/cart-interstitial? app-state))]
+                                   (not service-swap?))]
        (api/add-skus-to-bag (get-in app-state keypaths/session-id)
                             {:number           (get-in app-state keypaths/order-number)
                              :token            (get-in app-state keypaths/order-token)
