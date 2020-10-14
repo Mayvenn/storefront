@@ -34,8 +34,10 @@
 (def service-delimiter "~")
 
 (defn ^:private query-params<-
-  [query-params {:param/keys [location services]}]
+  [query-params {:param/keys [location services] moniker :param/name}]
   (merge (apply dissoc query-params query-param-keys)
+         (when moniker
+           {:name moniker})
          (when-let [{:keys [latitude longitude]} location]
            {:lat latitude :long longitude})
          (when (seq services)
@@ -141,7 +143,9 @@
 ;; -> model <> name
 (defmethod t/transition-state e/flow|stylist-matching|param-name-constrained
   [_ _ {moniker :name} state]
-  (assoc-in state k/name moniker))
+  (-> state
+      (assoc-in k/name moniker)
+      (update-in k/status disj :results.presearch/name)))
 
 (defmethod fx/perform-effects e/flow|stylist-matching|param-name-constrained
   [_ _ _ _ state]
@@ -171,7 +175,7 @@
 (defmethod fx/perform-effects e/flow|stylist-matching|searched
   [_ _ _ _ state]
   #?(:cljs
-     (let [{:param/keys [ids location services]} (stylist-matching<- state)]
+     (let [{:param/keys [ids location services] moniker :param/name} (stylist-matching<- state)]
        (cond
          ids
          (api/fetch-matched-stylists (get-in state storefront.keypaths/api-cache)
@@ -183,6 +187,7 @@
                (-> location
                    (select-keys [:latitude :longitude])
                    (assoc :radius "100mi")
+                   (assoc :name moniker)
                    (assoc :preferred-services services))]
            (api/fetch-stylists-matching-filters query
                                                 #(publish e/api-success-fetch-stylists-matching-filters
@@ -191,11 +196,9 @@
 ;; Stylists: Resulted
 (defmethod t/transition-state e/flow|stylist-matching|resulted
   [_ _ {:keys [results]} state]
-  (cond-> state
-    (pos? (count results))
-    (assoc-in k/stylist-results results)
-    :always
-    (update-in k/status union #{:results/stylists})))
+  (-> state
+      (assoc-in k/stylist-results results)
+      (update-in k/status union #{:results/stylists})))
 
 ;; FIXME Location queries send this, but why? is it just historical?
 ;; No, it's because the the apis are chained...

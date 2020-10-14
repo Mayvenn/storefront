@@ -44,13 +44,19 @@
       (assoc-in k/google-input previous-address))))
 
 (defmethod effects/perform-effects e/navigate-adventure-stylist-results
-  [_ _ {{:keys [preferred-services lat long s]} :query-params} prev-state state]
+  [_ _ {{:keys [preferred-services lat long s] moniker :name} :query-params} prev-state state]
   ;; Init the model if there isn't one, e.g. Direct load
   (when-not (stylist-matching<- state)
     (messages/handle-message e/flow|stylist-matching|initialized))
   ;; Pull stylist-ids (s) from URI; predetermined search results
   (when (seq s)
-    (messages/handle-message e/flow|stylist-matching|param-ids-constrained {:ids s}))
+    (messages/handle-message e/flow|stylist-matching|param-ids-constrained
+                             {:ids s}))
+  ;; Pull name search from URI
+  (when (seq moniker)
+    (messages/handle-message e/flow|stylist-matching|param-name-constrained
+                             {:name moniker}))
+
   ;; Pull preferred services from URI; filters for service types
   (when-let [services (some-> preferred-services
                               not-empty
@@ -331,7 +337,8 @@
       :on-key-up     (fn [e]
                        (when (= "Enter" (.. e -key))
                          (messages/handle-message e/flow|stylist-matching|param-name-constrained
-                                                  {:name (.. e -target -value)})))
+                                                  {:name (.. e -target -value)})
+                         (messages/handle-message e/flow|stylist-matching|prepared)))
       :label         "All Stylists"
       :wrapper-class "flex items-center col-12 bg-white border-black"
       :type          "text"}
