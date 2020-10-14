@@ -94,7 +94,7 @@
 (defn ^:private marketing-opt-in
   [{:marketing-opt-in/keys [id label copy value keypath]}]
   (when id
-    [:div.flex.flex-column.items-center.col-12.mtj1
+    [:div.flex.flex-column.items-center.col-12
      [:span.content-3 copy]
      [:div.col-12.my1
       [:label.h6.py1

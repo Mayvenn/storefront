@@ -576,15 +576,13 @@
      (get-in app-state keypaths/session-id)
      (cond-> (merge (select-keys (get-in app-state keypaths/order) [:number :token])
                     {:billing-address billing-address
-                     :shipping-address shipping-address})
+                     :shipping-address shipping-address
+                     :phone-marketing-opt-in phone-marketing-opt-in})
        guest-checkout?
        (assoc :email (get-in app-state keypaths/checkout-guest-email))
 
        (get-in app-state keypaths/checkout-bill-to-shipping-address)
-       (assoc :billing-address shipping-address)
-
-       (experiments/phone-opt-in? app-state)
-       (assoc :phone-marketing-opt-in phone-marketing-opt-in)))))
+       (assoc :billing-address shipping-address)))))
 
 (defmethod effects/perform-effects events/control-checkout-shipping-method-select [_ event args _ app-state]
   (api/update-shipping-method (get-in app-state keypaths/session-id)

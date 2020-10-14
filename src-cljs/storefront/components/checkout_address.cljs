@@ -332,8 +332,7 @@
                                  :google-maps-loaded? google-maps-loaded?
                                  :field-errors        field-errors
                                  :focused             (get-in data keypaths/ui-focus)}}
-     (when (experiments/phone-opt-in? data)
-       (phone-marketing-opt-in-query (get-in data keypaths/checkout-phone-marketing-opt-in))))))
+     (phone-marketing-opt-in-query (get-in data keypaths/checkout-phone-marketing-opt-in)))))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data)))

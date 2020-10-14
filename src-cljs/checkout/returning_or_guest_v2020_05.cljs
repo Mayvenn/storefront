@@ -61,7 +61,6 @@
    field-errors
    focused
    saving?
-   phone-marketing-opt-in?
    phone-marketing-opt-in-value]
   (cond->
       (merge
@@ -175,7 +174,9 @@
         :continue-to-pay-cta/label     "Continue to Payment"
         :continue-to-pay-cta/data-test "address-form-submit"
         :continue-to-pay-cta/id        "address-form-submit"
-        :become-guest?                 true})
+        :become-guest?                 true}
+       (checkout-address/phone-marketing-opt-in-query phone-marketing-opt-in-value))
+
     (not bill-to-shipping-address?)
     (merge
      {:billing-address-first-name {:type          "text"
@@ -278,10 +279,7 @@
                                   :focused         focused
                                   :errors          (get field-errors ["billing-address" "address1"])
                                   :auto-complete   "billing address-line1"
-                                  :value           (:address1 billing-address)}})
-    phone-marketing-opt-in?
-    (merge
-     (checkout-address/phone-marketing-opt-in-query phone-marketing-opt-in-value))))
+                                  :value           (:address1 billing-address)}})))
 
 (defn query [app-state]
   (let [facebook-loaded?             (get-in app-state k/loaded-facebook)
@@ -296,7 +294,6 @@
         field-errors                 (get-in app-state k/field-errors)
         focused                      (get-in app-state k/ui-focus)
         saving?                      (utils/requesting? app-state request-keys/update-addresses)
-        phone-marketing-opt-in?      (experiments/phone-opt-in? app-state)
         phone-marketing-opt-in-value (get-in app-state k/checkout-phone-marketing-opt-in)]
     {:promo-banner          (promo-banner/query app-state) ;; no app-states
      :secure-checkout       (secure-checkout-query facebook-loaded?)
@@ -310,7 +307,6 @@
                                                          field-errors
                                                          focused
                                                          saving?
-                                                         phone-marketing-opt-in?
                                                          phone-marketing-opt-in-value)}))
 
 #_(defn ^:export page [app-state] ;pipedream

@@ -126,10 +126,6 @@
   [data]
   (display-feature? data "remove-closures"))
 
-(defn phone-opt-in?
-  [data]
-  (display-feature? data "phone-opt-in"))
-
 (defn search-by-name?
   [data]
   (display-feature? data "search-by-name"))
