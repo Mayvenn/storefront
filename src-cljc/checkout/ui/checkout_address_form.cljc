@@ -98,14 +98,15 @@
      [:span.content-3 copy]
      [:div.col-12.my1
       [:label.h6.py1
-       [:div.mr1.
+       [:div.mr1
         (ui/check-box
-         {:type      "checkbox"
-          :label     label
-          :id        id
-          :data-test id
-          :value     value
-          :keypath   keypath})]]]]))
+         {:type          "checkbox"
+          :label         label
+          :label-classes "line-height-3"
+          :id            id
+          :data-test     id
+          :value         value
+          :keypath       keypath})]]]]))
 
 (defn ^:private continue-to-payment
   [{:continue-to-pay-cta/keys [spinning? label data-test id]}]
@@ -123,6 +124,6 @@
                                             {:become-guest? become-guest?})
       :data-test "address-form"}
      (shipping-address data)
-     (billing-address data)
      (marketing-opt-in data)
+     (billing-address data)
      (continue-to-payment data)]]])

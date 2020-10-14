@@ -445,7 +445,7 @@
 (defn check-box [{:keys [label data-test errors keypath value label-classes disabled] :as attributes}]
   (component/html
    [:div.col-12.mb2
-    [:label.flex.items-center
+    [:label.flex.items-start
      ^:attrs (merge {:class label-classes}
                     (when data-test
                       {:data-test (str "label-" data-test)}))

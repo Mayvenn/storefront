@@ -302,13 +302,12 @@
 
 (defn phone-marketing-opt-in-query [phone-marketing-opt-in-value]
   {:marketing-opt-in/id      "phone-marketing-opt-in"
-   :marketing-opt-in/label   "I agree."
+   :marketing-opt-in/label   (str "I agree to receive information and recurring automated marketing SMS "
+                                  "& phone calls from Mayvenn at the number provided above. "
+                                  "Consent is not a condition of any purchase. SMS & data rates may apply.")
    :marketing-opt-in/value   phone-marketing-opt-in-value
    :marketing-opt-in/keypath keypaths/checkout-phone-marketing-opt-in
-   :marketing-opt-in/copy    "By checking box below, I agree to receive recurring autodialed marketing
-     text messages and phone calls from or on behalf of Mayvenn at the phone
-     number provided above. I understand that consent is not a condition of any
-     purchase and that my wireless carrier’s message and data rates may apply."})
+   :marketing-opt-in/copy    nil})
 
 (defn query [data]
   (let [google-maps-loaded? (get-in data keypaths/loaded-google-maps)
