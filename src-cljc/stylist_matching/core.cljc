@@ -253,7 +253,6 @@
                                                 city
                                                 state
                                                 zipcode]} salon]
-                               (prn display-name)
                                (if (includes? (lower-case display-name)
                                               (lower-case name-presearch))
                                  {:type    "stylist"
