@@ -22,7 +22,8 @@
             [stylist-matching.search.accessors.filters :as filters]
             stylist-matching.selected
             [clojure.set :refer [union]]
-            [clojure.string :refer [join]]
+            [clojure.string :refer [blank? includes? join lower-case]]
+            [storefront.accessors.stylists :as stylists]
             [storefront.effects :as fx]
             [storefront.transitions :as t]
             [storefront.platform.messages :refer [handle-message] :rename {handle-message publish}]
@@ -36,7 +37,7 @@
 (defn ^:private query-params<-
   [query-params {:param/keys [location services] moniker :param/name}]
   (merge (apply dissoc query-params query-param-keys)
-         (when moniker
+         (when (seq moniker)
            {:name moniker})
          (when-let [{:keys [latitude longitude]} location]
            {:lat latitude :long longitude})
@@ -117,27 +118,23 @@
     (-> state
         (assoc-in k/presearch-name name-presearch)
         (update-in k/status disj :results.presearch/name))
-    (-> state
-        (assoc-in k/presearch-name name-presearch)
+    (assoc-in state k/presearch-name name-presearch)))
 
-        ;; Simulate results until endpoint exists
-        (assoc-in k/name-presearch-results
-                  [{:type    "stylist"
-                    :name    "Taylor Smith"
-                    :address "123 long name st."}
-                   {:type    "stylist"
-                    :name    "Alexander Taylor"
-                    :address "123 long name st."}
-                   {:type    "stylist"
-                    :name    "Taylor Momsen"
-                    :address "1 long name st."}
-                   {:type "salon"
-                    :name "Tay's Salon"}
-                   {:type "salon"
-                    :name "Tay Le"}
-                   {:type "salon"
-                    :name "Salon de Tay"}])
-        (update-in k/status union #{:results.presearch/name}))))
+(defmethod fx/perform-effects e/flow|stylist-matching|param-name-presearched
+  [_ _ {name-presearch :presearch/name} _ state]
+  #?(:cljs
+     (let [{:param/keys [ids location services]} (stylist-matching<- state)]
+       (when (and location (> (count name-presearch) 2))
+         (let [query
+               (-> (select-keys location [:latitude :longitude])
+                   (assoc :radius "100mi")
+                   (assoc :name name-presearch)
+                   (assoc :preferred-services services))]
+           (api/presearch-name query
+                               #(publish e/api-success-presearch-name
+                                         (merge {:query          query
+                                                 :presearch/name name-presearch}
+                                                %))))))))
 
 ;; Param 'name' constrained
 ;; -> model <> name
@@ -238,3 +235,32 @@
   (publish e/flow|stylist-matching|resulted
            {:method  :by-location
             :results stylists}))
+
+;; -------------------------- presearch name
+
+;; TODO(corey) probably should represent 'presearch resultings' in the domain
+(defmethod t/transition-state e/api-success-presearch-name
+  [_ _ {:keys [stylists] name-presearch :presearch/name } state]
+  (-> state
+      (assoc-in k/name-presearch-results
+                (->> stylists
+                     (take 6)
+                     (mapv (fn [{:keys [salon] :as stylist}]
+                             (let [display-name             (stylists/->display-name stylist)
+                                   {salon-name :name
+                                    :keys      [address-1
+                                                address-2
+                                                city
+                                                state
+                                                zipcode]} salon]
+                               (prn display-name)
+                               (if (includes? (lower-case display-name)
+                                              (lower-case name-presearch))
+                                 {:type    "stylist"
+                                  :name    (stylists/->display-name stylist)
+                                  :address (join " " [(join ", " (->> [address-1 address-2 city state]
+                                                                      (remove blank?)))
+                                                      zipcode])}
+                                 {:type "salon"
+                                  :name salon-name}))))))
+      (update-in k/status union #{:results.presearch/name})))

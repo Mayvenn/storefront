@@ -64,6 +64,7 @@
 (def voucher-redemption [:voucher-redemption])
 (def fetch-user-stylist-service-menu [:fetch-user-stylist-service-menu])
 (def fetch-stylists-matching-filters [:fetch-stylists-matching-filters])
+(def presearch-name [:presearch-name])
 
 (def fetch-matched-stylist [:fetch-matched-stylist])
 (def fetch-matched-stylists [:fetch-matched-stylists])

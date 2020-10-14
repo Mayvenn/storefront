@@ -1015,6 +1015,13 @@
               :user-token user-token}
     :handler #(messages/handle-message events/api-success-user-stylist-service-menu-fetch %)}))
 
+(defn presearch-name
+  [params handler]
+  (storeback-api-req GET "/v2/stylist/within-radius"
+                     request-keys/presearch-name
+                     {:params  params
+                      :handler handler}))
+
 (defn fetch-stylists-matching-filters [params handler]
   (storeback-api-req
    GET
@@ -1022,7 +1029,8 @@
    request-keys/fetch-stylists-matching-filters
    {:params  params
     :handler (or handler
-                 #(messages/handle-message events/api-success-fetch-stylists-matching-filters %))}))
+                 #(messages/handle-message events/api-success-fetch-stylists-matching-filters
+                                           %))}))
 
 (defn fetch-matched-stylist
   ([cache stylist-id]

@@ -579,3 +579,6 @@
 (defpath flow|stylist-matching|searched)
 (defpath flow|stylist-matching|resulted)
 (defpath flow|stylist-matching|matched)
+
+;; TODO(corey) think about general solutions to the api handlers problem
+(defpath api-success-presearch-name)

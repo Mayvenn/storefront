@@ -495,7 +495,8 @@
   (merge
    (when search-by-name?
      {:stylist-results.name-input/id      "stylist-search-name-input"
-      :stylist-results.name-input/value   (:presearch/name matching)
+      :stylist-results.name-input/value   (or (:presearch/name matching)
+                                              (:param/name matching))
       :stylist-results.name-input/keypath k/presearch-name
       :stylist-results.name-input/errors  []})
    (when google-loaded?
