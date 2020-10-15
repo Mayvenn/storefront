@@ -185,7 +185,6 @@
 (defpath control-facebook-reset)
 
 (defpath control-browse-variant)
-(defpath control-add-to-bag)
 (defpath control-bulk-add-to-bag)
 (defpath api-success-bulk-add-to-bag)
 
