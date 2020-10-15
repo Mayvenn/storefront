@@ -266,11 +266,11 @@
 (defcomponent marketing-opt-in
   [{:marketing-opt-in/keys [id label copy value keypath]} owner _]
   (when id
-    [:div.flex.flex-column.items-center.col-12.mtj1
+    [:div.flex.flex-column.items-center.col-12
      [:span.content-3 copy]
      [:div.col-12.my1
       [:label.h6.py1
-       [:div.mr1.
+       [:div.mr1
         (ui/check-box
          {:type      "checkbox"
           :label     label
@@ -293,8 +293,8 @@
        :data-test "address-form"}
 
       (component/build shipping-address-component shipping-address-data)
-      (component/build billing-address-component billing-address-data)
       (component/build marketing-opt-in data)
+      (component/build billing-address-component billing-address-data)
 
       [:div.my2.col-12.col-8-on-tb-dt.mx-auto
        (ui/submit-button "Continue to Payment" {:spinning? saving?
