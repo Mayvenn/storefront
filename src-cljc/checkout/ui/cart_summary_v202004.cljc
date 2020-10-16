@@ -22,7 +22,8 @@
       [:div.my2
        ^:inline (ui.M/field-reveal-molecule promo-field-data)
        (when (and text-input-attrs button-attrs)
-         ^:inline (ui/input-group text-input-attrs button-attrs))])
+         ^:inline (ui/input-group text-input-attrs
+                                  button-attrs))])
 
     ^:inline (checkout.M/freeinstall-informational query)]
 

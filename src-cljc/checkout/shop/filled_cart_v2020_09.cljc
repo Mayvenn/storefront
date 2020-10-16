@@ -532,7 +532,7 @@
                                    {:args    {:data-test "cart-apply-promo"
                                               :disabled? disabled?
                                               :on-click  (utils/send-event-callback events/control-cart-update-coupon)
-                                              :style     {:width   "42px"
+                                              :style     {:width   "55px"
                                                           :padding "0"}}
                                     :content (svg/forward-arrow {:class (if disabled?
                                                                           "fill-gray"
