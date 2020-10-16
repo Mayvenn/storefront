@@ -133,17 +133,15 @@
   (when (seq service-line-items)
     [:div.mb3
      [:div.title-2.proxima.mb1 "Services"]
-     [:div
-      [:div.mbn1
-       (component/build cart-item-v202004/stylist-organism stylist nil)
-       (component/build cart-item-v202004/no-stylist-organism stylist nil)]
+     (component/build cart-item-v202004/stylist-organism stylist nil)
+     (component/build cart-item-v202004/no-stylist-organism stylist nil)
 
-      ;; TODO: Separate mayvenn install base into its own service line item key
-      (for [service-line-item service-line-items]
-        [:div {:key (:react/key service-line-item)}
-         [:div.mt2-on-mb
-          (component/build cart-item-v202004/organism {:cart-item service-line-item}
-                           (component/component-id (:react/key service-line-item)))]])]
+     ;; TODO: Separate mayvenn install base into its own service line item key
+     (for [service-line-item service-line-items]
+       [:div {:key (:react/key service-line-item)}
+        [:div.mt2-on-mb
+         (component/build cart-item-v202004/organism {:cart-item service-line-item}
+                          (component/component-id (:react/key service-line-item)))]])
      [:div.border-bottom.border-gray.hide-on-mb]]))
 
 (defcomponent full-component
@@ -167,24 +165,27 @@
       (service-items-component service-items)
       (physical-items-component physical-items suggestions)]]
 
-    [:div.col-on-tb-dt.col-6-on-tb-dt.bg-refresh-gray.bg-white-on-mb
+    [:div.col-on-tb-dt.col-6-on-tb-dt.bg-refresh-gray.bg-white-on-mb.mbj1
      (component/build cart-summary-v202004/organism cart-summary nil)
      [:div.px4.center.bg-white-on-mb ; Checkout buttons
       #?@(:cljs
           [(component/build quadpay/component quadpay nil)])
 
-      [:div.p2
-       (when-let [{:keys [checkout-caption-copy servicing-stylist-portrait-url]} checkout-caption]
-         [:div.flex.h6.pt1.pr3.pb2
-          {:data-test "checkout-caption"}
-          [:div
-           (ui/circle-picture
-            {:width 50}
-            ;; Note: We are not using ucare-id because stylist portraits may have
-            ;; ucarecdn crop parameters saved into the url
-            (ui/square-image {:resizable-url servicing-stylist-portrait-url} 50))]
-          [:div.left-align.pl2 checkout-caption-copy]])
+      ;; Caption
+      (when-let [{:keys [checkout-caption-copy servicing-stylist-portrait-url]} checkout-caption]
+        [:div.flex.h6.items-center.mtj1
+         {:data-test "checkout-caption"}
+         [:div.pr2
+          (ui/circle-picture
+           {:width 50}
+           ;; Note: We are not using ucare-id because stylist portraits may have
+           ;; ucarecdn crop parameters saved into the url
+           (ui/square-image {:resizable-url servicing-stylist-portrait-url} 50))]
+         [:div.left-align
+          checkout-caption-copy]])
 
+      ;; CTAs for checking out
+      [:div.py2
        ;; cta button
        (let [{:cta/keys [id content disabled? target]} cta]
          (when id
@@ -202,28 +203,34 @@
            [:div.flex-grow-1.border-bottom.border-gray]]
 
           [:div
-           (ui/button-large-paypal {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
-                                    :spinning? redirecting-to-paypal?
-                                    :data-test "paypal-checkout"}
-                                   (component/html
-                                    [:div
-                                     "Check out with "
-                                     [:span.medium.italic "PayPal™"]]))]])
+           (ui/button-large-paypal
+            {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
+             :spinning? redirecting-to-paypal?
+             :data-test "paypal-checkout"}
+            (component/html
+             [:div
+              "Check out with "
+              [:span.medium.italic "PayPal™"]]))]])
 
        ;; browser pay
-       #?@(:cljs [(when browser-pay? (payment-request-button/built-component nil {}))])]]
+       #?(:cljs (when browser-pay?
+                  (payment-request-button/built-component nil
+                                                          {})))]]
 
      (when-let [{:keys [requesting-shared-cart?]} shared-cart]
-       [:div.py2.px6
-        [:div.h6.center.pt2.black.bold "Is this bag for a customer?"]
-        (ui/button-large-secondary {:on-click  (utils/send-event-callback events/control-cart-share-show)
-                                    :spinning? requesting-shared-cart?
-                                    :data-test "share-cart"}
-                                   [:div.flex.items-center.justify-center.bold
-                                    (svg/share-arrow {:class  "stroke-black mr1 fill-black"
-                                                      :width  "24px"
-                                                      :height "24px"})
-                                    "Share your bag"])])]]])
+       [:div.py2.px4
+        [:div.content-2.center.pt2
+         "Is this bag for a customer?"]
+        (ui/button-large-secondary
+         {:on-click  (utils/send-event-callback events/control-cart-share-show)
+          :spinning? requesting-shared-cart?
+          :data-test "share-cart"}
+         [:div.flex.items-center.justify-center.bold
+          (svg/share-arrow
+           {:class  "stroke-black mr2 fill-black"
+            :width  "18px"
+            :height "18px"})
+          "Share your bag"])])]]])
 
 (defcomponent template
   [{:keys [header footer popup flash cart nav-event]} _ _]

@@ -64,7 +64,7 @@
 (defn new-cart-item-service-thumbnail-molecule
   [{:cart-item-service-thumbnail/keys [id image-url]}]
   (when id
-    [:div.flex.justify-center
+    [:div.flex
      {:style {:border-radius "50%"
               :width         "60px"
               :height        "60px"}}
@@ -168,7 +168,8 @@
 (component/defcomponent stylist-organism
   [{:servicing-stylist-banner/keys [id title image-url rating action-id target]} _ _]
   (when id
-    [:div.flex.bg-white.pl3 {:data-test id}
+    [:div.flex.bg-white.pl2
+     {:data-test id}
      [:div.py2
       {:style {:min-width "70px"}}
       (ui/circle-picture {:width 56} (ui/square-image {:resizable-url image-url} 50))]
