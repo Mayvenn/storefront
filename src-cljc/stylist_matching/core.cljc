@@ -13,25 +13,25 @@
   (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.accessors.categories :as categories]
                        [storefront.browser.cookie-jar :as cookie-jar]
+                       [storefront.frontend-effects :as ffx]
                        [storefront.history :as history]
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
+                       [storefront.request-keys :as request-keys]
                        [storefront.hooks.google-maps :as google-maps]
+                       [goog.functions]
                        [catalog.skuers :as skuers]
                        storefront.keypaths])
-            [spice.core :as spice]
             [adventure.keypaths]
             [stylist-directory.keypaths]
+            [storefront.effects :as fx]
+            [storefront.events :as e]
             [stylist-matching.keypaths :as k]
             [stylist-matching.search.accessors.filters :as filters]
-            stylist-matching.selected
-            [clojure.set :refer [union]]
-            [clojure.string :refer [blank? includes? join lower-case]]
-            [storefront.accessors.stylists :as stylists]
-            [storefront.effects :as fx]
             [storefront.trackings :as trackings]
-            [storefront.transitions :as t]
             [storefront.platform.messages :refer [handle-message] :rename {handle-message publish}]
-            [storefront.events :as e]))
+            clojure.set
+            [clojure.string :as string]
+            [storefront.transitions :as t]))
 
 (def ^:private query-param-keys
   #{:lat :long :preferred-services :s})
@@ -46,8 +46,8 @@
          (when-let [{:keys [latitude longitude]} location]
            {:lat latitude :long longitude})
          (when (seq services)
-           {:preferred-services (join service-delimiter
-                                      services)})))
+           {:preferred-services (string/join service-delimiter
+                                             services)})))
 
 ;; ---------------------- Models
 
@@ -71,12 +71,13 @@
 (defmethod t/transition-state e/flow|stylist-matching|initialized
   [_ _ _ state]
   (assoc-in state k/stylist-matching initial-state))
+
 (defmethod fx/perform-effects e/flow|stylist-matching|initialized
   [_ _ _ _ state]
   #?(:cljs
      (let [cache         (get-in state storefront.keypaths/api-cache)
            categories-db (get-in state storefront.keypaths/categories)
-           criteria      (merge-with union
+           criteria      (merge-with clojure.set/union
                                      (skuers/essentials (categories/id->category "35" categories-db))
                                      (skuers/essentials (categories/id->category "31" categories-db)))]
        (api/get-products cache
@@ -116,11 +117,15 @@
 ;; Param 'name' presearched
 (defmethod t/transition-state e/flow|stylist-matching|param-name-presearched
   [_ _ {name-presearch :presearch/name} state]
-  (if (< (count name-presearch) 2)
-    (-> state
-        (assoc-in k/presearch-name name-presearch)
-        (update-in k/status disj :results.presearch/name))
-    (assoc-in state k/presearch-name name-presearch)))
+  (cond-> state
+    (< (count name-presearch) 3)
+    (update-in k/status disj :results.presearch/name)
+    :always
+    (assoc-in k/presearch-name name-presearch)))
+
+#?(:cljs
+   (def debounced-presearch
+     (goog.functions/debounce api/presearch-name 200)))
 
 (defmethod fx/perform-effects e/flow|stylist-matching|param-name-presearched
   [_ _ {name-presearch :presearch/name} _ state]
@@ -132,11 +137,16 @@
                    (assoc :radius "100mi")
                    (assoc :name name-presearch)
                    (assoc :preferred-services services))]
-           (api/presearch-name query
-                               #(publish e/api-success-presearch-name
-                                         (merge {:query          query
-                                                 :presearch/name name-presearch}
-                                                %))))))))
+           (when-let [pending-requests (->> storefront.keypaths/api-requests
+                                            (get-in state)
+                                            (filter (comp (partial = request-keys/presearch-name) :request-key))
+                                            not-empty)]
+             (ffx/abort-pending-requests pending-requests))
+           (debounced-presearch query
+                                #(publish e/api-success-presearch-name
+                                          (merge {:query          query
+                                                  :presearch/name name-presearch}
+                                                 %))))))))
 
 ;; Param 'name' constrained
 ;; -> model <> name
@@ -146,9 +156,11 @@
       (assoc-in k/name moniker)
       (update-in k/status disj :results.presearch/name)))
 
-(defmethod fx/perform-effects e/flow|stylist-matching|param-name-constrained
-  [_ _ _ _ state]
-  #_ api/new-query)
+(defmethod t/transition-state e/flow|stylist-matching|presearch-canceled
+  [_ _ {moniker :name} state]
+  (-> state
+      (assoc-in k/name moniker)
+      (update-in k/status disj :results.presearch/name)))
 
 ;; Prepared
 ;; -> screen: results
@@ -197,7 +209,7 @@
   [_ _ {:keys [results]} state]
   (-> state
       (assoc-in k/stylist-results results)
-      (update-in k/status union #{:results/stylists})))
+      (update-in k/status clojure.set/union #{:results/stylists})))
 
 ;; FIXME Location queries send this, but why? is it just historical?
 ;; No, it's because the the apis are chained...
@@ -267,28 +279,11 @@
 
 ;; -------------------------- presearch name
 
+
 ;; TODO(corey) probably should represent 'presearch resultings' in the domain
 (defmethod t/transition-state e/api-success-presearch-name
-  [_ _ {:keys [stylists] name-presearch :presearch/name } state]
-  (-> state
-      (assoc-in k/name-presearch-results
-                (->> stylists
-                     (take 6)
-                     (mapv (fn [{:keys [salon] :as stylist}]
-                             (let [display-name             (stylists/->display-name stylist)
-                                   {salon-name :name
-                                    :keys      [address-1
-                                                address-2
-                                                city
-                                                state
-                                                zipcode]} salon]
-                               (if (includes? (lower-case display-name)
-                                              (lower-case name-presearch))
-                                 {:type    "stylist"
-                                  :name    (stylists/->display-name stylist)
-                                  :address (join " " [(join ", " (->> [address-1 address-2 city state]
-                                                                      (remove blank?)))
-                                                      zipcode])}
-                                 {:type "salon"
-                                  :name salon-name}))))))
-      (update-in k/status union #{:results.presearch/name})))
+  [_ _ {:keys [results query]} state]
+  (cond-> (assoc-in state k/name-presearch-results results)
+
+    (= (:name query) (get-in state k/presearch-name))
+    (update-in k/status clojure.set/union #{:results.presearch/name})))

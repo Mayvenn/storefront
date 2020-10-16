@@ -6,7 +6,7 @@
             [stylist-matching.core :refer [stylist-matching<- service-delimiter]]
             [stylist-matching.keypaths :as k]
             api.orders
-            [clojure.string :refer [split join blank?]]
+            [clojure.string :as string]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.categories :as categories]
@@ -18,7 +18,6 @@
             [stylist-matching.ui.stylist-cards :as stylist-cards]
             [stylist-matching.ui.gallery-modal :as gallery-modal]
             [stylist-matching.search.accessors.filters :as accessors.filters]
-            storefront.keypaths
             [storefront.components.ui :as ui]
             [spice.core :as spice]
             [storefront.effects :as effects]
@@ -27,7 +26,8 @@
             [storefront.platform.messages :as messages]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [spice.date :as date]))
+            [spice.date :as date]
+            storefront.keypaths))
 
 ;;  Navigating to the results page causes the effect of searching for stylists
 ;;
@@ -44,16 +44,21 @@
       (assoc-in k/google-input previous-address))))
 
 (defmethod effects/perform-effects e/navigate-adventure-stylist-results
-  [_ _ {{:keys [preferred-services lat long s] moniker :name} :query-params} prev-state state]
+  [_ _ {{preferred-services :preferred-services
+         moniker            :name
+         stylist-ids        :s
+         latitude           :lat
+         longitude          :long} :query-params} prev-state state]
   #?(:cljs (google-maps/insert))
 
   ;; Init the model if there isn't one, e.g. Direct load
   (when-not (stylist-matching<- state)
     (messages/handle-message e/flow|stylist-matching|initialized))
+
   ;; Pull stylist-ids (s) from URI; predetermined search results
-  (when (seq s)
+  (when (seq stylist-ids)
     (messages/handle-message e/flow|stylist-matching|param-ids-constrained
-                             {:ids s}))
+                             {:ids stylist-ids}))
   ;; Pull name search from URI
   (when (seq moniker)
     (messages/handle-message e/flow|stylist-matching|param-name-constrained
@@ -62,16 +67,16 @@
   ;; Pull preferred services from URI; filters for service types
   (when-let [services (some-> preferred-services
                               not-empty
-                              (split (re-pattern service-delimiter))
+                              (string/split (re-pattern service-delimiter))
                               set)]
     (messages/handle-message e/flow|stylist-matching|param-services-constrained
                              {:services services}))
   ;; Pull lat/long from URI; search by proximity
-  (when (and (not-empty lat)
-             (not-empty long))
+  (when (and (not-empty latitude)
+             (not-empty longitude))
     (messages/handle-message e/flow|stylist-matching|param-location-constrained
-                             {:latitude  (spice/parse-double lat)
-                              :longitude (spice/parse-double long)}))
+                             {:latitude  (spice/parse-double latitude)
+                              :longitude (spice/parse-double longitude)}))
   ;; FIXME(matching)
   (when-not (= (get-in prev-state storefront.keypaths/navigation-event)
                (get-in state storefront.keypaths/navigation-event))
@@ -186,6 +191,13 @@
    :header.cart/value             quantity
    :header.cart/color             "white"})
 
+(defn- address->display-string
+  [{:keys [address-1 address-2 city state zipcode]}]
+  (string/join " "
+               [(string/join ", " (->> [address-1 address-2 city state]
+                                       (remove string/blank?)))
+                zipcode]))
+
 (defn stylist-card<-
   [hide-bookings? just-added-only? just-added-experience? stylist-results-test? idx stylist]
   (let [{:keys [rating-star-counts
@@ -204,24 +216,18 @@
                                                        (and stylist-results-test? just-added-experience?)))
         years-of-experience                   (some->> stylist-since (- (date/year (date/now))))
         {salon-name :name
-         :keys      [address-1
-                     address-2
-                     city
-                     state
-                     zipcode
-                     latitude
-                     longitude]}                salon
+         :keys      [latitude longitude]}     salon
         {:keys [specialty-sew-in-leave-out
                 specialty-sew-in-closure
                 specialty-sew-in-360-frontal
                 specialty-sew-in-frontal
                 specialty-wig-customization]} service-menu]
-    {:react/key                                   (str "stylist-card-" store-slug)
-     :stylist-card.header/target                  [e/flow|stylist-matching|selected-for-inspection {:stylist-id stylist-id
-                                                                                                    :store-slug store-slug}]
-     :stylist-card.header/id                      (str "stylist-card-header-" store-slug)
-     :stylist-card.thumbnail/id                   (str "stylist-card-thumbnail-" store-slug)
-     :stylist-card.thumbnail/ucare-id             (-> stylist :portrait :resizable-url)
+    {:react/key                       (str "stylist-card-" store-slug)
+     :stylist-card.header/target      [e/flow|stylist-matching|selected-for-inspection {:stylist-id stylist-id
+                                                                                        :store-slug store-slug}]
+     :stylist-card.header/id          (str "stylist-card-header-" store-slug)
+     :stylist-card.thumbnail/id       (str "stylist-card-thumbnail-" store-slug)
+     :stylist-card.thumbnail/ucare-id (-> stylist :portrait :resizable-url)
 
      :stylist-card.title/id            "stylist-name"
      :stylist-card.title/primary       (stylists/->display-name stylist)
@@ -301,9 +307,7 @@
      :stylist-card.salon-name/id        salon-name
      :stylist-card.salon-name/value     salon-name
      :stylist-card.address-marker/id    (str "stylist-card-address-" store-slug)
-     :stylist-card.address-marker/value (join " " [(join ", " (->> [address-1 address-2 city state]
-                                                                   (remove blank?)))
-                                                   zipcode])}))
+     :stylist-card.address-marker/value (address->display-string salon)}))
 
 (defn stylist-cards-query
   [{:keys [hide-bookings? just-added-only? just-added-experience? stylist-results-test?]} stylists]
@@ -333,6 +337,7 @@
       :keypath       keypath
       :data-test     id
       :id            id
+      :max-length    100
       :on-change     (fn [e]
                        (messages/handle-message e/flow|stylist-matching|param-name-presearched
                                                 {:presearch/name (.. e -target -value)}))
@@ -490,10 +495,11 @@
 (defn stylist-search-inputs<-
   "Stylist Search inputs
 
-  1. name (under experiment)
-  2. address (location)
-  3. service filters"
-  [matching search-by-name? google-loaded? skus-db]
+  1. empty name results? (under experiment)
+  2. name (under experiment)
+  3. address (location)
+  4. service filters"
+  [matching empty-search-results? search-by-name? google-loaded? skus-db]
   (merge
    (when search-by-name?
      {:stylist-results.name-input/id      "stylist-search-name-input"
@@ -523,19 +529,25 @@
                                :primary sku-name})))
                          not-empty)]
      {:stylist-results.service-filters/preferences pills})
-   (when (contains? (:status matching)
-                    :results.presearch/name)
+
+   ;; Things that can appear in the results list
+   (when empty-search-results?
+     {:empty-stylist-search/id      "empty-stylist-results-id"
+      :empty-stylist-search/primary "No results for this search."})
+   (when (contains? (:status matching) :results.presearch/name)
      {:stylist-results.name-presearch-results/list
-      (for [result (:results.presearch/name matching)]
+      (for [{moniker       :name
+             result-type   :type
+             salon-address :salon-address
+             :as result} (:results.presearch/name matching)]
         (merge
-         {:stylist-results.name-presearch-results.result/primary
-          (:name result)}
-         (when (= "stylist" (:type result))
+         {:stylist-results.name-presearch-results.result/primary moniker}
+         (when (= "stylist" result-type)
            {:stylist-results.name-presearch-results.result/ucare-uri
-            "https://ucarecdn.com/adfd85d5-bb87-4171-ad1d-bcbfd9da5541/"})
-         (when (:address result)
+            (:portrait-uri result)})
+         (when salon-address
            {:stylist-results.name-presearch-results.result/secondary
-            (:address result)})))})))
+            (address->display-string salon-address)})))})))
 
 ;; TODO(corey) eval the effectiveness of the various 'elements' and
 ;; use the best version here
@@ -543,10 +555,10 @@
   [{elements :stylist-results.name-presearch-results/list}]
   (when (seq elements)
     (component/html
-     [:div.absolute.left-0.right-0.bg-white.z5.border.border-gray
+     [:div.absolute.left-0.right-0.bg-white.z1.border.border-gray
       (for [{:stylist-results.name-presearch-results.result/keys [ucare-uri primary secondary]}
             elements]
-        [:div.flex.px4.py2
+        [:div.flex.px4.py2.presearch-result
          {:key primary}
          [:div.self-center.mr3
           {:style {:width "26px"}}
@@ -563,6 +575,15 @@
             [:div.content-4.dark-gray
              secondary])]])])))
 
+(defn stylist-results-empty-name-presearch-results-molecule
+  [{:empty-stylist-search/keys [id primary]}]
+  (when id
+    (component/html
+     [:div.absolute.left-0.right-0.bg-white.z1.border.border-gray
+      {:data-test id}
+      [:div.flex.px4.py2.justify-center
+       [:div.flex.items-center {:style {:height "37px"}} primary]]])))
+
 (defcomponent search-inputs-organism
   [data _ _]
   [:div.px3.py2.bg-white.border-bottom.border-gray
@@ -573,6 +594,7 @@
      (component/build stylist-results-address-input-charmed-right-molecule data))
    [:div.relative
     (stylist-results-name-presearch-results-molecule data)
+    (stylist-results-empty-name-presearch-results-molecule data)
     (stylist-results-service-filters-molecule data)]])
 
 (def scrim-atom
@@ -588,44 +610,45 @@
 
    (if spinning?
      [:div.mt6 ui/spinner]
-     [:div.relative
+     [:div.relative.stretch
       (component/build results data)
       (when scrim?
         scrim-atom)])])
 
-(defn shopping-method-choice-query []
+(def shopping-method-choice-query
   {:shopping-method-choice.error-title/id        "stylist-matching-shopping-method-choice"
    :shopping-method-choice.error-title/primary   "We need some time to find you the perfect stylist!"
    :shopping-method-choice.error-title/secondary (str
                                                   "A Mayvenn representative will contact you soon "
                                                   "to help select a Certified Mayvenn Stylist. In the meantime…")
-   :list/buttons                                 [{:shopping-method-choice.button/id       "button-looks"
-                                                   :shopping-method-choice.button/label    "Shop by look"
-                                                   :shopping-method-choice.button/target   [e/navigate-shop-by-look
-                                                                                            {:album-keyword :look}]
-                                                   :shopping-method-choice.button/ucare-id "a9009728-efd3-4917-9541-b4514b8e4776"}
-                                                  {:shopping-method-choice.button/id       "button-bundle-sets"
-                                                   :shopping-method-choice.button/label    "Pre-made bundle sets"
-                                                   :shopping-method-choice.button/target   [e/navigate-shop-by-look
-                                                                                            {:album-keyword :all-bundle-sets}]
-                                                   :shopping-method-choice.button/ucare-id "87b46db7-4c70-4d3a-8fd0-6e99e78d3c96"}
-                                                  {:shopping-method-choice.button/id       "button-a-la-carte"
-                                                   :shopping-method-choice.button/label    "Choose individual bundles"
-                                                   :shopping-method-choice.button/target   [e/navigate-category
-                                                                                            {:page/slug           "mayvenn-install"
-                                                                                             :catalog/category-id "23"}]
-                                                   :shopping-method-choice.button/ucare-id "6c39cd72-6fde-4ec2-823c-5e39412a6d54"}
-                                                  {:shopping-method-choice.button/id       "button-shop-wigs"
-                                                   :shopping-method-choice.button/label    "Shop Virgin Wigs"
-                                                   :shopping-method-choice.button/target   [e/navigate-category
-                                                                                            {:page/slug           "wigs"
-                                                                                             :catalog/category-id "13"
-                                                                                             :query-params
-                                                                                             {:family
-                                                                                              (str "lace-front-wigs"
-                                                                                                   categories/query-param-separator
-                                                                                                   "360-wigs")}}]
-                                                   :shopping-method-choice.button/ucare-id "71dcdd17-f9cc-456f-b763-2c1c047c30b4"}]})
+
+   :list/buttons [{:shopping-method-choice.button/id       "button-looks"
+                   :shopping-method-choice.button/label    "Shop by look"
+                   :shopping-method-choice.button/target   [e/navigate-shop-by-look
+                                                            {:album-keyword :look}]
+                   :shopping-method-choice.button/ucare-id "a9009728-efd3-4917-9541-b4514b8e4776"}
+                  {:shopping-method-choice.button/id       "button-bundle-sets"
+                   :shopping-method-choice.button/label    "Pre-made bundle sets"
+                   :shopping-method-choice.button/target   [e/navigate-shop-by-look
+                                                            {:album-keyword :all-bundle-sets}]
+                   :shopping-method-choice.button/ucare-id "87b46db7-4c70-4d3a-8fd0-6e99e78d3c96"}
+                  {:shopping-method-choice.button/id       "button-a-la-carte"
+                   :shopping-method-choice.button/label    "Choose individual bundles"
+                   :shopping-method-choice.button/target   [e/navigate-category
+                                                            {:page/slug           "mayvenn-install"
+                                                             :catalog/category-id "23"}]
+                   :shopping-method-choice.button/ucare-id "6c39cd72-6fde-4ec2-823c-5e39412a6d54"}
+                  {:shopping-method-choice.button/id       "button-shop-wigs"
+                   :shopping-method-choice.button/label    "Shop Virgin Wigs"
+                   :shopping-method-choice.button/target   [e/navigate-category
+                                                            {:page/slug           "wigs"
+                                                             :catalog/category-id "13"
+                                                             :query-params
+                                                             {:family
+                                                              (str "lace-front-wigs"
+                                                                   categories/query-param-separator
+                                                                   "360-wigs")}}]
+                   :shopping-method-choice.button/ucare-id "71dcdd17-f9cc-456f-b763-2c1c047c30b4"}]})
 
 (defn stylist-data->stylist-cards
   [{:keys [stylists] :as data}]
@@ -636,6 +659,10 @@
   [preferences {:keys [service-menu]}]
   (every? #(service-menu (accessors.filters/service-sku-id->service-menu-key %))
           preferences))
+
+(defmethod effects/perform-effects e/presearch-result-click-away
+  [_ _ _ _ state]
+  (messages/handle-message e/flow|stylist-matching|presearch-canceled))
 
 (defn page
   [app-state]
@@ -653,6 +680,9 @@
         stylist-results-test?  (experiments/stylist-results-test? app-state)
 
         google-loaded? (get-in app-state storefront.keypaths/loaded-google-maps)
+        presearching-name?    (contains? (:status matching) :results.presearch/name)
+        empty-search-results? (and (empty? (:results.presearch/name matching))
+                                   presearching-name?)
 
         stylist-search-results        (:results/stylists matching)
         preferences                   (:param/services matching)
@@ -680,9 +710,9 @@
                                                            (or (not just-added-control?)
                                                                (not just-added-only?)
                                                                (not just-added-experience?))))
-                        :scrim?                   (contains? (:status matching)
-                                                             :results.presearch/name)
+                        :scrim?                   presearching-name?
                         :stylist-search-inputs    (stylist-search-inputs<- matching
+                                                                           empty-search-results?
                                                                            search-by-name?
                                                                            google-loaded?
                                                                            skus-db)
@@ -704,5 +734,5 @@
                         :list.non-matching/key        (when (seq non-matching-stylists) "non-matching-stylists")
                         :list.non-matching/cards      non-matching-stylist-cards
                         :stylist.analytics/cards      (into matching-stylist-cards non-matching-stylist-cards)
-                        :shopping-method-choice       (shopping-method-choice-query)}
+                        :shopping-method-choice       shopping-method-choice-query}
                        {:key (str "stylist-results-" (hash stylist-search-results) "-" (hash stylist-data))}))))

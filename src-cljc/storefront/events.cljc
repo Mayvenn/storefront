@@ -574,6 +574,7 @@
 (defpath flow|stylist-matching|param-name-presearched)
 (defpath flow|stylist-matching|param-name-constrained)
 (defpath flow|stylist-matching|param-services-constrained)
+(defpath flow|stylist-matching|presearch-canceled)
 (defpath flow|stylist-matching|prepared)
 (defpath flow|stylist-matching|searched)
 (defpath flow|stylist-matching|resulted)
@@ -583,3 +584,6 @@
 
 ;; TODO(corey) think about general solutions to the api handlers problem
 (defpath api-success-presearch-name)
+
+;; Pretty mechanical, is there a way to abstract away?
+(defpath presearch-result-click-away)

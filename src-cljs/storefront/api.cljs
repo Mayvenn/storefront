@@ -1017,7 +1017,7 @@
 
 (defn presearch-name
   [params handler]
-  (storeback-api-req GET "/v2/stylist/within-radius"
+  (storeback-api-req GET "/v1/stylist/presearch"
                      request-keys/presearch-name
                      {:params  params
                       :handler handler}))

@@ -106,7 +106,7 @@
   (stringer/fetch-browser-id)
   (refresh-account app-state)
   (browser-events/attach-global-listeners)
-  (browser-events/attach-flyout-click-away-handler)
+  (browser-events/attach-click-away-handler)
   (browser-events/attach-esc-key-listener)
   (browser-events/attach-capture-late-readystatechange-callbacks)
   (lucky-orange/track-store-experience (get-in app-state keypaths/store-experience))
@@ -120,7 +120,7 @@
   (lucky-orange/remove-tracking)
   (pixlee/remove-tracking)
   (browser-events/unattach-capture-late-readystatechange-callbacks)
-  (browser-events/detach-flyout-click-away-handler)
+  (browser-events/detach-click-away-handler)
   (browser-events/detach-esc-key-listener))
 
 (defmethod effects/perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
@@ -511,7 +511,7 @@
   (messages/handle-message events/flash-show-failure
                            {:message "We need your Facebook email address to communicate with you about your orders. Please try again."}))
 
-(defn- abort-pending-requests [requests]
+(defn abort-pending-requests [requests]
   (doseq [{xhr :xhr} requests] (when xhr (ajax/abort xhr))))
 
 (defmethod effects/perform-effects events/control-sign-out [_ event args _ app-state]
