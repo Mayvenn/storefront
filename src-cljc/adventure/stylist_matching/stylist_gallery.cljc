@@ -8,7 +8,7 @@
                  [storefront.browser.scroll :as scroll]
                  [storefront.platform.messages :as messages]])
             [storefront.components.header :as header]
-            [adventure.keypaths :as keypaths]
+            stylist-matching.keypaths
             [spice.core :as spice]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.svg :as svg]
@@ -23,7 +23,9 @@
 
 (defn query
   [data]
-  (let [stylist-id (get-in data keypaths/stylist-profile-id)
+  (let [stylist-id (->> (get-in data storefront.keypaths/navigation-args)
+                        :stylist-id
+                        spice/parse-int)
         stylist    (stylists/by-id data stylist-id)
         back       (first (get-in data storefront.keypaths/navigation-undo-stack))]
     (cond-> {}
@@ -102,10 +104,6 @@
                                        (js/setTimeout
                                         (fn [] (scroll/scroll-to-selector (str "[data-ref=offset-" offset "]")))
                                         500))))))
-
-(defmethod transitions/transition-state events/navigate-adventure-stylist-gallery
-  [_ _ {:keys [stylist-id]} app-state]
-  (assoc-in app-state keypaths/stylist-profile-id (spice/parse-int stylist-id)))
 
 (defn built-component
   [data opts]

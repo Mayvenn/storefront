@@ -4,10 +4,13 @@
                 [[storefront.api :as api]
                  [storefront.hooks.facebook-analytics :as facebook-analytics]
                  [storefront.hooks.google-maps :as google-maps]
+                 [storefront.hooks.seo :as seo]
                  [storefront.platform.messages :refer [handle-message]]])
-            [adventure.keypaths :as keypaths]
+            [stylist-matching.core :refer [stylist-matching<-]]
+            stylist-matching.keypaths
             [adventure.stylist-matching.maps :as maps]
             api.orders
+            [catalog.services :as services]
             [clojure.string :as string]
             [spice.date :as date]
             [storefront.component :as component :refer [defcomponent]]
@@ -17,16 +20,19 @@
             [storefront.components.header :as components.header]
             [storefront.effects :as effects]
             [storefront.events :as events]
+            storefront.keypaths
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
-            storefront.keypaths
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
             [stylist-directory.stylists :as stylists]
             stylist-directory.keypaths
             [spice.core :as spice]
+            [spice.selector :as selector]
             [storefront.request-keys :as request-keys]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.accessors.experiments :as experiments]
+            [storefront.keypaths :as storefront.keypaths]
+            [storefront.components.money-formatters :as mf]))
 
 (defn transposed-title-molecule
   [{:transposed-title/keys [id primary secondary]}]
@@ -256,7 +262,7 @@
   [dispatch event args prev-app-state app-state]
   #?(:cljs
      (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache)
-                                {:stylist-id (get-in app-state keypaths/stylist-profile-id)
+                                {:stylist-id (get-in app-state stylist-matching.keypaths/stylist-profile-id)
                                  :page       (-> (get-in app-state stylist-directory.keypaths/paginated-reviews)
                                                  :current-page
                                                  (or 0)
@@ -465,7 +471,7 @@
   (let [;; data layer - session
         {host-name :host}                  (get-in data storefront.keypaths/navigation-uri)
         undo-history                       (get-in data storefront.keypaths/navigation-undo-stack)
-        stylist-id                         (get-in data keypaths/stylist-profile-id)
+        stylist-id                         (get-in data stylist-matching.keypaths/stylist-profile-id)
         fetching-reviews?                  (utils/requesting? data request-keys/fetch-stylist-reviews)
         hide-bookings?                     (experiments/hide-bookings? data)
         hide-star-distribution?            (experiments/hide-star-distribution? data)
@@ -505,22 +511,13 @@
                   (handle-message events/api-failure-shared-stylist {:stylist-id stylist-id
                                                                      :error (.toString err)}))))))
 
-(defmethod transitions/transition-state events/navigate-adventure-stylist-profile
-  [_ _ {:keys [stylist-id]} app-state]
-  (-> app-state
-      (assoc-in keypaths/stylist-profile-id (spice/parse-int stylist-id))
-      (assoc-in stylist-directory.keypaths/paginated-reviews nil)))
-
 (defmethod effects/perform-effects events/navigate-adventure-stylist-profile
-  [dispatch event {:keys [stylist-id]} prev-app-state app-state]
+  [dispatch event {:keys [stylist-id store-slug]} prev-app-state app-state]
   #?(:cljs
-     (let [stylist-id (spice/parse-int stylist-id)]
+     (do
        (google-maps/insert)
-       (api/fetch-stylist-details (get-in app-state storefront.keypaths/api-cache) stylist-id)
-       (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache) {:stylist-id stylist-id
-                                                                                    :page       1}))))
-(defmethod trackings/perform-track events/navigate-adventure-stylist-profile
-  [_ event {:keys [stylist-id]} app-state]
-  #?(:cljs
-     (facebook-analytics/track-event "ViewContent" {:content_type "stylist"
-                                                    :content_ids [(spice/parse-int stylist-id)]})))
+       (when-not (stylist-matching<- app-state)
+         (handle-message events/flow|stylist-matching|initialized))
+       (handle-message events/flow|stylist-matching|stylist-inspected {:stylist-id (spice/parse-int stylist-id)
+                                                                       :store-slug store-slug})
+       (seo/set-tags app-state))))

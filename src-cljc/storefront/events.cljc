@@ -577,6 +577,8 @@
 (defpath flow|stylist-matching|prepared)
 (defpath flow|stylist-matching|searched)
 (defpath flow|stylist-matching|resulted)
+(defpath flow|stylist-matching|selected-for-inspection)
+(defpath flow|stylist-matching|stylist-inspected)
 (defpath flow|stylist-matching|matched)
 
 ;; TODO(corey) think about general solutions to the api handlers problem

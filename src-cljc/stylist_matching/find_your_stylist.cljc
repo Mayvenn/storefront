@@ -1,5 +1,6 @@
 (ns stylist-matching.find-your-stylist
-  (:require api.orders
+  (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]])
+            api.orders
             spice.selector
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.flash :as flash]
@@ -36,6 +37,7 @@
       (messages/handle-message events/flash-later-show-failure
                                {:message error-message}))
     (let [{:order/keys [items]} (api.orders/current state)]
+      #?(:cljs (google-maps/insert))
       (messages/handle-message events/flow|stylist-matching|initialized)
       (when-let [preferred-services (->> (select ?service items)
                                          (mapv :catalog/sku-id)

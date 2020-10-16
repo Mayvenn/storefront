@@ -10,14 +10,17 @@
   - IDs
   - Name
   "
-  (:require #?@(:cljs [adventure.keypaths
-                       [storefront.api :as api]
+  (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.accessors.categories :as categories]
                        [storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.history :as history]
+                       [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.google-maps :as google-maps]
                        [catalog.skuers :as skuers]
                        storefront.keypaths])
+            [spice.core :as spice]
+            [adventure.keypaths]
+            [stylist-directory.keypaths]
             [stylist-matching.keypaths :as k]
             [stylist-matching.search.accessors.filters :as filters]
             stylist-matching.selected
@@ -25,6 +28,7 @@
             [clojure.string :refer [blank? includes? join lower-case]]
             [storefront.accessors.stylists :as stylists]
             [storefront.effects :as fx]
+            [storefront.trackings :as trackings]
             [storefront.transitions :as t]
             [storefront.platform.messages :refer [handle-message] :rename {handle-message publish}]
             [storefront.events :as e]))
@@ -77,9 +81,7 @@
                                      (skuers/essentials (categories/id->category "31" categories-db)))]
        (api/get-products cache
                          criteria
-                         #(publish e/api-success-v3-products-for-stylist-filters
-                                   %))))
-  #?(:cljs (google-maps/insert)))
+                         (partial publish e/api-success-v3-products-for-stylist-filters)))))
 
 ;; Param 'location' constrained
 ;; -> model <> location
@@ -201,7 +203,34 @@
 ;; No, it's because the the apis are chained...
 ;; :choices (get-in app-state adventure.keypaths/adventure-choices) ; For trackings purposes only
 
-;; Matched
+;; ------------------ Stylist selected for inspection
+(defmethod fx/perform-effects e/flow|stylist-matching|selected-for-inspection
+  [_ _ {:keys [stylist-id store-slug]} state]
+  #?(:cljs
+     (history/enqueue-navigate e/navigate-adventure-stylist-profile {:stylist-id stylist-id
+                                                                     :store-slug store-slug})))
+
+;; ------------------ Stylist inspected
+(defmethod t/transition-state e/flow|stylist-matching|stylist-inspected
+  [_ _ {:keys [stylist-id]} app-state]
+  (-> app-state
+      (assoc-in k/stylist-profile-id stylist-id)
+      (assoc-in stylist-directory.keypaths/paginated-reviews nil)
+      ))
+(defmethod fx/perform-effects e/flow|stylist-matching|stylist-inspected
+  [_ _ {:keys [stylist-id store-slug]} state]
+  #?(:cljs
+     (do
+       (api/fetch-stylist-details (get-in state storefront.keypaths/api-cache) stylist-id)
+       (api/fetch-stylist-reviews (get-in state storefront.keypaths/api-cache) {:stylist-id stylist-id
+                                                                                :page       1}))))
+(defmethod trackings/perform-track e/flow|stylist-matching|stylist-inspected
+  [_ event {:keys [stylist-id]} app-state]
+  #?(:cljs
+     (facebook-analytics/track-event "ViewContent" {:content_type "stylist"
+                                                    :content_ids [stylist-id]})))
+
+;; ------------------- Matched
 ;; -> current stylist: selected
 (defmethod fx/perform-effects e/flow|stylist-matching|matched
   [_ _ {:keys [stylist result-index]} _ state]

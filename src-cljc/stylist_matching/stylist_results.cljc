@@ -45,6 +45,8 @@
 
 (defmethod effects/perform-effects e/navigate-adventure-stylist-results
   [_ _ {{:keys [preferred-services lat long s] moniker :name} :query-params} prev-state state]
+  #?(:cljs (google-maps/insert))
+
   ;; Init the model if there isn't one, e.g. Direct load
   (when-not (stylist-matching<- state)
     (messages/handle-message e/flow|stylist-matching|initialized))
@@ -215,8 +217,8 @@
                 specialty-sew-in-frontal
                 specialty-wig-customization]} service-menu]
     {:react/key                                   (str "stylist-card-" store-slug)
-     :stylist-card.header/target                  [e/navigate-adventure-stylist-profile {:stylist-id stylist-id
-                                                                                         :store-slug store-slug}]
+     :stylist-card.header/target                  [e/flow|stylist-matching|selected-for-inspection {:stylist-id stylist-id
+                                                                                                    :store-slug store-slug}]
      :stylist-card.header/id                      (str "stylist-card-header-" store-slug)
      :stylist-card.thumbnail/id                   (str "stylist-card-thumbnail-" store-slug)
      :stylist-card.thumbnail/ucare-id             (-> stylist :portrait :resizable-url)

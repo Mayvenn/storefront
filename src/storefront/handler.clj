@@ -41,6 +41,7 @@
             [storefront.events :as events]
             [storefront.feature-flags :as feature-flags]
             [adventure.keypaths :as adventure-keypaths]
+            [stylist-matching.keypaths]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.system.contentful :as contentful]
@@ -958,7 +959,7 @@
                                   :store-slug (:store-slug stylist)}))
             ;; No correction needed
             (h (-> req
-                   (assoc-in-req-state adventure.keypaths/stylist-profile-id (:stylist-id stylist))
+                   (assoc-in-req-state stylist-matching.keypaths/stylist-profile-id (:stylist-id stylist))
                    (assoc-in-req-state (conj stylist-directory.keypaths/stylists (:stylist-id stylist)) stylist))))
           (-> req ; redirect to find your stylist
               (path-for events/navigate-adventure-find-your-stylist {:query-params {:error "stylist-not-found"}})

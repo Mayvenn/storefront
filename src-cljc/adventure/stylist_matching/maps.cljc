@@ -1,6 +1,6 @@
 (ns adventure.stylist-matching.maps
   (:require #?@(:cljs [[storefront.hooks.google-maps :as maps]])
-            adventure.keypaths
+            stylist-matching.keypaths
             [clojure.string :as string]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.svg :as svg]
@@ -10,7 +10,7 @@
 
 (defn map-query [data]
   (let [loaded-google-maps? (get-in data storefront.keypaths/loaded-google-maps)
-        salon               (->> (get-in data adventure.keypaths/stylist-profile-id)
+        salon               (->> (get-in data stylist-matching.keypaths/stylist-profile-id)
                                  (stylists/by-id data)
                                  :salon)
         latitude            (:latitude salon)
