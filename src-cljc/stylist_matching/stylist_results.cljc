@@ -692,7 +692,7 @@
 (defmethod effects/perform-effects e/control-stylist-matching-presearch-salon-result-selected
   [_ _ args _ state]
   (messages/handle-message e/flow|stylist-matching|set-presearch-field args)
-  (execute-named-search args))
+  (execute-named-search (:name args)))
 
 (defn page
   [app-state]
