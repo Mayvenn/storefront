@@ -568,6 +568,10 @@
 ;; Flows
 
 (defpath flow|stylist-matching|initialized)
+
+;; TODO: bad name
+(defpath flow|stylist-matching|set-presearch-field)
+
 (defpath flow|stylist-matching|param-ids-constrained)
 (defpath flow|stylist-matching|param-address-constrained)
 (defpath flow|stylist-matching|param-location-constrained)
@@ -584,6 +588,9 @@
 (defpath flow|stylist-matching|selected-for-inspection)
 (defpath flow|stylist-matching|stylist-inspected)
 (defpath flow|stylist-matching|matched)
+
+(defpath control-stylist-matching-presearch-salon-result-selected)
+(defpath control-stylist-matching-presearch-stylist-result-selected)
 
 ;; TODO(corey) think about general solutions to the api handlers problem
 (defpath api-success-presearch-name)

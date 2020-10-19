@@ -1,6 +1,7 @@
 (ns stylist-matching.stylist-results
   (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
                        [storefront.hooks.stringer :as stringer]
+                       [storefront.history :as history]
                        [stylist-matching.search.filters-modal :as filter-menu]])
             adventure.keypaths
             [stylist-matching.core :refer [stylist-matching<- service-delimiter]]
@@ -61,6 +62,7 @@
                              {:ids stylist-ids}))
   ;; Pull name search from URI
   (when (seq moniker)
+    (messages/handle-message e/flow|stylist-matching|set-presearch-field {:name moniker})
     (messages/handle-message e/flow|stylist-matching|param-name-constrained
                              {:name moniker}))
 
@@ -327,6 +329,10 @@
      :gallery-modal/ucare-image-urls gallery-images
      :gallery-modal/initial-index    index}))
 
+(defn execute-named-search [name]
+  (messages/handle-message e/flow|stylist-matching|param-name-constrained {:name name})
+  (messages/handle-message e/flow|stylist-matching|prepared))
+
 (defcomponent stylist-results-name-input-molecule
   [{:stylist-results.name-input/keys [id value errors keypath]} _ _]
   (when id
@@ -346,9 +352,7 @@
                                                               {:presearch/name (.. e -target -value)}))
                     :on-key-up     (fn [e]
                                      (when (= "Enter" (.. e -key))
-                                       (messages/handle-message e/flow|stylist-matching|param-name-constrained
-                                                                {:name (.. e -target -value)})
-                                       (messages/handle-message e/flow|stylist-matching|prepared)))
+                                       (execute-named-search (.. e -target -value))))
                     :label         "All Stylists"
                     :wrapper-class "flex items-center col-12 bg-white border-black"
                     :type          "text"}
@@ -545,7 +549,10 @@
          {:stylist-results.name-presearch-results.result/primary moniker}
          (when (= "stylist" result-type)
            {:stylist-results.name-presearch-results.result/ucare-uri (:portrait-uri result)
-            :stylist-results.name-presearch-results.result/target [e/navigate-adventure-stylist-profile (select-keys result [:stylist-id :store-slug])]})
+            :stylist-results.name-presearch-results.result/target
+            [e/control-stylist-matching-presearch-stylist-result-selected (select-keys result [:stylist-id :store-slug])]})
+         (when (= "salon" result-type)
+           {:stylist-results.name-presearch-results.result/target [e/control-stylist-matching-presearch-salon-result-selected {:name moniker}]})
          (when salon-address
            {:stylist-results.name-presearch-results.result/secondary
             (address->display-string salon-address)})))})))
@@ -561,7 +568,7 @@
             elements]
         [:a.flex.px4.py2.presearch-result.inherit-color
          (merge {:key primary}
-                (apply utils/route-to target))
+                (apply utils/fake-href target))
          [:div.self-center.mr3
           {:style {:width "26px"}}
           (if ucare-uri
@@ -665,6 +672,27 @@
 (defmethod effects/perform-effects e/presearch-result-click-away
   [_ _ _ _ state]
   (messages/handle-message e/flow|stylist-matching|presearch-canceled))
+
+(defmethod effects/perform-effects e/control-stylist-matching-presearch-stylist-result-selected
+  [_ _ args _ state]
+  #?(:cljs
+     (do
+       ;; Bit hacky
+       (execute-named-search (get-in state k/presearch-name))
+       (history/enqueue-navigate e/navigate-adventure-stylist-profile args))))
+
+(defmethod transitions/transition-state e/flow|stylist-matching|set-presearch-field
+  [_ _ args state]
+  (-> state
+      ;; Close search results
+      (update-in k/status disj :results.presearch/name)
+      ;; Place selected name in presearch field
+      (assoc-in k/presearch-name (:name args))))
+
+(defmethod effects/perform-effects e/control-stylist-matching-presearch-salon-result-selected
+  [_ _ args _ state]
+  (messages/handle-message e/flow|stylist-matching|set-presearch-field args)
+  (execute-named-search args))
 
 (defn page
   [app-state]

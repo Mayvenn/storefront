@@ -131,7 +131,7 @@
 (defmethod fx/perform-effects e/flow|stylist-matching|param-name-presearched
   [_ _ {name-presearch :presearch/name} _ state]
   #?(:cljs
-     (let [{:param/keys [ids location services]} (stylist-matching<- state)]
+     (let [{:param/keys [location services]} (stylist-matching<- state)]
        (when (and location (> (count name-presearch) 2))
          (let [query
                (-> (select-keys location [:latitude :longitude])
