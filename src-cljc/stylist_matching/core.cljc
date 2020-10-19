@@ -31,7 +31,8 @@
             [storefront.platform.messages :refer [handle-message] :rename {handle-message publish}]
             clojure.set
             [clojure.string :as string]
-            [storefront.transitions :as t]))
+            [storefront.transitions :as t]
+            [storefront.platform.messages :as messages]))
 
 (def ^:private query-param-keys
   #{:lat :long :preferred-services :s})
@@ -157,10 +158,20 @@
       (update-in k/status disj :results.presearch/name)))
 
 (defmethod t/transition-state e/flow|stylist-matching|presearch-canceled
-  [_ _ {moniker :name} state]
+  [_ _ _ state]
+  (update-in state k/status disj :results.presearch/name))
+
+
+(defmethod t/transition-state e/flow|stylist-matching|presearch-cleared
+  [_ _ _ state]
   (-> state
-      (assoc-in k/name moniker)
+      (assoc-in k/presearch-name nil)
+      (assoc-in k/name nil)
       (update-in k/status disj :results.presearch/name)))
+
+(defmethod fx/perform-effects e/flow|stylist-matching|presearch-cleared
+  [_ _ _ _ state]
+  (messages/handle-message e/flow|stylist-matching|prepared))
 
 ;; Prepared
 ;; -> screen: results
@@ -173,9 +184,9 @@
   [_ _ _ _ state]
   #?(:cljs (cookie-jar/save-adventure (get-in state storefront.keypaths/cookie)
                                       (get-in state adventure.keypaths/adventure)))
-  (let [query-params (->> (stylist-matching<- state)
-                          (query-params<- {}))]
-    #?(:cljs
+  #?(:cljs
+     (let [query-params (->> (stylist-matching<- state)
+                             (query-params<- {}))]
        (history/enqueue-navigate e/navigate-adventure-stylist-results
                                  {:query-params query-params}))))
 

@@ -339,6 +339,36 @@
                              (assoc-in [:wrapper-style :border-left] "none")))]
       (field-error-message error "input-group")])))
 
+(defn input-with-charms
+  [{left-charm               :left-charm
+    {:keys [label keypath value errors]
+     :as   text-input-attrs} :input-field
+    right-charm              :right-charm}]
+  (component/html
+   (let [error (first errors)]
+     [:div.mb2
+      [:div.flex
+       (when left-charm
+         [:div.flex.items-center.px2.border.border-black
+          {:style {:border-right "none"}}
+          left-charm])
+       (plain-text-field nil keypath value (not (nil? error))
+                         (cond-> text-input-attrs
+                           :always
+                           (->
+                            (assoc :placeholder label)
+                            (dissoc :label :keypath :value :errors)
+                            (update :wrapper-class str " x-group-item"))
+                           left-charm
+                           (assoc-in [:wrapper-style :border-left] "none")
+                           right-charm
+                           (assoc-in [:wrapper-style :border-right] "none")))
+       (when right-charm
+         [:div.flex.items-center.px2.border.border-black
+          {:style {:border-left "none"}}
+          right-charm])]
+      (field-error-message error "input-group")])))
+
 (defn input-with-charm
   [{:keys [label keypath value errors] :as text-input-attrs :or {class "col-12"}}
    charm]

@@ -330,30 +330,33 @@
 (defcomponent stylist-results-name-input-molecule
   [{:stylist-results.name-input/keys [id value errors keypath]} _ _]
   (when id
-    (ui/input-with-left-charm
-     {:errors        errors
-      :autoComplete  "off"
-      :value         value
-      :keypath       keypath
-      :data-test     id
-      :id            id
-      :max-length    100
-      :on-change     (fn [e]
-                       (messages/handle-message e/flow|stylist-matching|param-name-presearched
-                                                {:presearch/name (.. e -target -value)}))
-      :on-key-up     (fn [e]
-                       (when (= "Enter" (.. e -key))
-                         (messages/handle-message e/flow|stylist-matching|param-name-constrained
-                                                  {:name (.. e -target -value)})
-                         (messages/handle-message e/flow|stylist-matching|prepared)))
-      :label         "All Stylists"
-      :wrapper-class "flex items-center col-12 bg-white border-black"
-      :type          "text"}
-     [:div.flex.items-center.px2.border.border-black
-      {:style {:border-right "none"}}
-      ^:inline (svg/magnifying-glass {:width  "19px"
-                                      :height "19px"
-                                      :class  "fill-gray"})])))
+    (ui/input-with-charms
+     {:left-charm (svg/magnifying-glass {:width  "19px"
+                                         :height "19px"
+                                         :class  "fill-gray"})
+      :input-field {:errors        errors
+                    :autoComplete  "off"
+                    :value         value
+                    :keypath       keypath
+                    :data-test     id
+                    :id            id
+                    :max-length    100
+                    :on-change     (fn [e]
+                                     (messages/handle-message e/flow|stylist-matching|param-name-presearched
+                                                              {:presearch/name (.. e -target -value)}))
+                    :on-key-up     (fn [e]
+                                     (when (= "Enter" (.. e -key))
+                                       (messages/handle-message e/flow|stylist-matching|param-name-constrained
+                                                                {:name (.. e -target -value)})
+                                       (messages/handle-message e/flow|stylist-matching|prepared)))
+                    :label         "All Stylists"
+                    :wrapper-class "flex items-center col-12 bg-white border-black"
+                    :type          "text"}
+
+      :right-charm
+      [:a.flex.items-center.pr1
+       {:on-click (utils/send-event-callback e/flow|stylist-matching|presearch-cleared)}
+       (svg/close-x {:class "stroke-white fill-gray"})]})))
 
 (defdynamic-component stylist-results-address-input-molecule
   (did-mount
@@ -364,20 +367,18 @@
    (let [{:stylist-results.address-input/keys [id value errors keypath]}
          (component/get-props this)]
      (component/html
-      (ui/input-with-left-charm
-       {:errors        errors
-        :autoComplete  "off"
-        :value         value
-        :keypath       keypath
-        :data-test     id
-        :id            id
-        :wrapper-class "flex items-center col-12 bg-white border-black"
-        :type          "text"}
-       [:div.flex.items-center.px2.border.border-black
-        {:style {:border-right "none"}}
-        ^:inline (svg/map-pin {:width  "21px"
-                               :height "21px"
-                               :class  "fill-gray"})])))))
+      (ui/input-with-charms
+       {:left-charm  (svg/map-pin {:width  "21px"
+                                   :height "21px"
+                                   :class  "fill-gray"})
+        :input-field {:errors        errors
+                      :autoComplete  "off"
+                      :value         value
+                      :keypath       keypath
+                      :data-test     id
+                      :id            id
+                      :wrapper-class "flex items-center col-12 bg-white border-black"
+                      :type          "text"}})))))
 
 ;; This variation will probably be deprecated when new feature goes live
 (defdynamic-component stylist-results-address-input-charmed-right-molecule
