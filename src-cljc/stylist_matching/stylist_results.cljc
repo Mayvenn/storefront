@@ -543,8 +543,8 @@
         (merge
          {:stylist-results.name-presearch-results.result/primary moniker}
          (when (= "stylist" result-type)
-           {:stylist-results.name-presearch-results.result/ucare-uri
-            (:portrait-uri result)})
+           {:stylist-results.name-presearch-results.result/ucare-uri (:portrait-uri result)
+            :stylist-results.name-presearch-results.result/target [e/navigate-adventure-stylist-profile (select-keys result [:stylist-id :store-slug])]})
          (when salon-address
            {:stylist-results.name-presearch-results.result/secondary
             (address->display-string salon-address)})))})))
@@ -556,10 +556,11 @@
   (when (seq elements)
     (component/html
      [:div.absolute.left-0.right-0.bg-white.z1.border.border-gray
-      (for [{:stylist-results.name-presearch-results.result/keys [ucare-uri primary secondary]}
+      (for [{:stylist-results.name-presearch-results.result/keys [ucare-uri primary secondary target]}
             elements]
-        [:div.flex.px4.py2.presearch-result
-         {:key primary}
+        [:a.flex.px4.py2.presearch-result.inherit-color
+         (merge {:key primary}
+                (apply utils/route-to target))
          [:div.self-center.mr3
           {:style {:width "26px"}}
           (if ucare-uri
