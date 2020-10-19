@@ -21,5 +21,7 @@
 (def adventure-servicing-stylist-service-menu (conj adventure-servicing-stylist :service-menu))
 
 (def stylist-matching-ui (conj keypaths/ui :stylist-matching))
+(def stylist-profile (conj stylist-matching-ui :stylist-profile))
+(def stylist-profile-id (conj stylist-profile :id))
 
 (def adventure-stylist-results-returned (conj adventure :stylist-results-returned))

@@ -222,26 +222,6 @@
      (history/enqueue-navigate e/navigate-adventure-stylist-profile {:stylist-id stylist-id
                                                                      :store-slug store-slug})))
 
-;; ------------------ Stylist inspected
-(defmethod t/transition-state e/flow|stylist-matching|stylist-inspected
-  [_ _ {:keys [stylist-id]} app-state]
-  (-> app-state
-      (assoc-in k/stylist-profile-id stylist-id)
-      (assoc-in stylist-directory.keypaths/paginated-reviews nil)
-      ))
-(defmethod fx/perform-effects e/flow|stylist-matching|stylist-inspected
-  [_ _ {:keys [stylist-id store-slug]} state]
-  #?(:cljs
-     (do
-       (api/fetch-stylist-details (get-in state storefront.keypaths/api-cache) stylist-id)
-       (api/fetch-stylist-reviews (get-in state storefront.keypaths/api-cache) {:stylist-id stylist-id
-                                                                                :page       1}))))
-(defmethod trackings/perform-track e/flow|stylist-matching|stylist-inspected
-  [_ event {:keys [stylist-id]} app-state]
-  #?(:cljs
-     (facebook-analytics/track-event "ViewContent" {:content_type "stylist"
-                                                    :content_ids [stylist-id]})))
-
 ;; ------------------- Matched
 ;; -> current stylist: selected
 (defmethod fx/perform-effects e/flow|stylist-matching|matched

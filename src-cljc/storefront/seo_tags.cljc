@@ -19,9 +19,8 @@
             [storefront.ugc :as ugc]
             [clojure.string :as string]
             [clojure.set :as set]
-            [spice.core :as spice]
             [spice.maps :as maps]
-            stylist-matching.keypaths
+            adventure.keypaths
             [stylist-directory.stylists :as stylists]
             [storefront.accessors.sites :as sites]))
 
@@ -326,10 +325,7 @@
 
        events/navigate-adventure-stylist-profile
        (let [{{salon-name :name
-               :keys      [city state]} :salon} (->> (get-in data keypaths/navigation-args)
-                                                     :stylist-id
-                                                     spice/parse-int
-                                                     (stylists/by-id data))]
+               :keys      [city state]} :salon} (stylists/by-id data (get-in data adventure.keypaths/stylist-profile-id))]
          (merge default-tagmap
                 {:title (str salon-name " " city ", " state " | Mayvenn")
                  :description (str salon-name " in " city ", " state " offers sew-in installs, leave outs & more. Check out their full salon menu & book today.")}))

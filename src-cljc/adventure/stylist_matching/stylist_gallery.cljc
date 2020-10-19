@@ -8,7 +8,7 @@
                  [storefront.browser.scroll :as scroll]
                  [storefront.platform.messages :as messages]])
             [storefront.components.header :as header]
-            stylist-matching.keypaths
+            [adventure.keypaths :as keypaths]
             [spice.core :as spice]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.svg :as svg]
@@ -23,9 +23,7 @@
 
 (defn query
   [data]
-  (let [stylist-id (->> (get-in data storefront.keypaths/navigation-args)
-                        :stylist-id
-                        spice/parse-int)
+  (let [stylist-id (get-in data keypaths/stylist-profile-id)
         stylist    (stylists/by-id data stylist-id)
         back       (first (get-in data storefront.keypaths/navigation-undo-stack))]
     (cond-> {}

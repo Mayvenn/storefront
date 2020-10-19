@@ -7,8 +7,8 @@
                  [storefront.hooks.seo :as seo]
                  [storefront.platform.messages :refer [handle-message]]])
             [stylist-matching.core :refer [stylist-matching<-]]
-            stylist-matching.keypaths
             [adventure.stylist-matching.maps :as maps]
+            adventure.keypaths
             api.orders
             [catalog.services :as services]
             [clojure.string :as string]
@@ -262,7 +262,7 @@
   [dispatch event args prev-app-state app-state]
   #?(:cljs
      (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache)
-                                {:stylist-id (get-in app-state stylist-matching.keypaths/stylist-profile-id)
+                                {:stylist-id (get-in app-state adventure.keypaths/stylist-profile-id)
                                  :page       (-> (get-in app-state stylist-directory.keypaths/paginated-reviews)
                                                  :current-page
                                                  (or 0)
@@ -471,7 +471,7 @@
   (let [;; data layer - session
         {host-name :host}                  (get-in data storefront.keypaths/navigation-uri)
         undo-history                       (get-in data storefront.keypaths/navigation-undo-stack)
-        stylist-id                         (get-in data stylist-matching.keypaths/stylist-profile-id)
+        stylist-id                         (get-in data adventure.keypaths/stylist-profile-id)
         fetching-reviews?                  (utils/requesting? data request-keys/fetch-stylist-reviews)
         hide-bookings?                     (experiments/hide-bookings? data)
         hide-star-distribution?            (experiments/hide-star-distribution? data)
@@ -516,8 +516,19 @@
   #?(:cljs
      (do
        (google-maps/insert)
-       (when-not (stylist-matching<- app-state)
-         (handle-message events/flow|stylist-matching|initialized))
-       (handle-message events/flow|stylist-matching|stylist-inspected {:stylist-id (spice/parse-int stylist-id)
-                                                                       :store-slug store-slug})
+       (api/fetch-stylist-details (get-in app-state storefront.keypaths/api-cache) stylist-id)
+       (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache) {:stylist-id stylist-id
+                                                                                    :page       1})
        (seo/set-tags app-state))))
+
+(defmethod transitions/transition-state events/navigate-adventure-stylist-profile
+  [_ _ {:keys [stylist-id]} app-state]
+  (-> app-state
+      (assoc-in adventure.keypaths/stylist-profile-id (spice.core/parse-double stylist-id))
+      (assoc-in stylist-directory.keypaths/paginated-reviews nil)))
+
+(defmethod trackings/perform-track events/navigate-adventure-stylist-profile
+  [_ event {:keys [stylist-id]} app-state]
+  #?(:cljs
+     (facebook-analytics/track-event "ViewContent" {:content_type "stylist"
+                                                    :content_ids [stylist-id]})))

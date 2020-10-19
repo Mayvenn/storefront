@@ -20,11 +20,6 @@
 
 ;; Stylist Profile Selection
 
-;; TODO, think about names
-(def stylist-profile (conj stylist-matching :stylist-profile))
-(def stylist-profile-id (conj stylist-profile :stylist-id))
-(def stylist-profile-stylist (conj stylist-profile :stylist))
-
 ;; Presearching
 
 ;; Our matching domain includes params that are 'presearched'
