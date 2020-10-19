@@ -63,8 +63,7 @@
   ;; Pull name search from URI
   (when (seq moniker)
     (messages/handle-message e/flow|stylist-matching|set-presearch-field {:name moniker})
-    (messages/handle-message e/flow|stylist-matching|param-name-constrained
-                             {:name moniker}))
+    (messages/handle-message e/flow|stylist-matching|param-name-constrained {:name moniker}))
 
   ;; Pull preferred services from URI; filters for service types
   (when-let [services (some-> preferred-services
@@ -170,8 +169,9 @@
 (defmethod trackings/perform-track e/adventure-stylist-search-results-displayed
   [_ _ {:keys [cards]} state]
   (let [{:results/keys [stylists]
-         :param/keys   [location address services]} (stylist-matching<- state)
-        {:keys [latitude longitude]}                location]
+         :param/keys   [location address services]
+         moniker       :param/name}  (stylist-matching<- state)
+        {:keys [latitude longitude]} location]
     #?(:cljs
        (stringer/track-event "stylist_search_results_displayed"
                              {:results            (map stylist-results->stringer-event cards)
@@ -180,7 +180,8 @@
                               :longitude          longitude
                               :location_submitted address
                               :radius             "100mi"
-                              :current_step       2}))))
+                              :current_step       2
+                              :name_query         moniker}))))
 
 (defn header<-
   [{:order.items/keys [quantity]} back]
@@ -541,21 +542,26 @@
       :empty-stylist-search/primary "No results for this search."})
    (when (contains? (:status matching) :results.presearch/name)
      {:stylist-results.name-presearch-results/list
-      (for [{moniker       :name
+      (map-indexed
+       (fn [index
+            {moniker       :name
              result-type   :type
              salon-address :salon-address
-             :as result} (:results.presearch/name matching)]
-        (merge
-         {:stylist-results.name-presearch-results.result/primary moniker}
-         (when (= "stylist" result-type)
-           {:stylist-results.name-presearch-results.result/ucare-uri (:portrait-uri result)
-            :stylist-results.name-presearch-results.result/target
-            [e/control-stylist-matching-presearch-stylist-result-selected (select-keys result [:stylist-id :store-slug])]})
-         (when (= "salon" result-type)
-           {:stylist-results.name-presearch-results.result/target [e/control-stylist-matching-presearch-salon-result-selected {:name moniker}]})
-         (when salon-address
-           {:stylist-results.name-presearch-results.result/secondary
-            (address->display-string salon-address)})))})))
+             :as result}]
+         (merge
+          {:stylist-results.name-presearch-results.result/primary moniker}
+          (when (= "stylist" result-type)
+            {:stylist-results.name-presearch-results.result/ucare-uri (:portrait-uri result)
+             :stylist-results.name-presearch-results.result/target
+             [e/control-stylist-matching-presearch-stylist-result-selected (-> result
+                                                                               (select-keys [:stylist-id :store-slug])
+                                                                               (assoc :result-index index))]})
+          (when (= "salon" result-type)
+            {:stylist-results.name-presearch-results.result/target [e/control-stylist-matching-presearch-salon-result-selected {:name moniker}]})
+          (when salon-address
+            {:stylist-results.name-presearch-results.result/secondary
+             (address->display-string salon-address)})))
+            (:results.presearch/name matching))})))
 
 ;; TODO(corey) eval the effectiveness of the various 'elements' and
 ;; use the best version here
@@ -680,6 +686,17 @@
        ;; Bit hacky
        (execute-named-search (get-in state k/presearch-name))
        (history/enqueue-navigate e/navigate-adventure-stylist-profile args))))
+
+(defmethod trackings/perform-track e/control-stylist-matching-presearch-stylist-result-selected
+  [_ _ args state]
+  #?(:cljs
+     (stringer/track-event "search_suggestion_clicked"
+                           {:stylist_id       (:stylist-id args)
+                            :stylist_position (:result-index args)})))
+
+(defmethod trackings/perform-track e/control-stylist-matching-presearch-salon-result-selected
+  [_ _ args state]
+  #?(:cljs (stringer/track-event "search_suggestion_clicked" {:salon_name (:name args)})))
 
 (defmethod transitions/transition-state e/flow|stylist-matching|set-presearch-field
   [_ _ args state]
