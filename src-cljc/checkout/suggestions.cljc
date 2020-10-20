@@ -55,7 +55,7 @@
                         :skus                   skus
                         :initial-sku            sku
                         :any-adding-to-bag?     (utils/requesting? data (fn [req]
-                                                                          (subvec (:request-key req []) 0 1))
+                                                                          (vector (first req)))
                                                                    request-keys/add-to-bag)
                         :this-is-adding-to-bag? (utils/requesting? data
                                                                    (conj request-keys/add-to-bag
