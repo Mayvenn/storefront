@@ -66,7 +66,9 @@
        (when (empty? (get-in app-state keypaths/cart-recently-added-skus))
          (let [previous-nav (-> (get-in app-state keypaths/navigation-undo-stack) first :navigation-message)]
            (if (some #{e/navigate-sign-in}  previous-nav)
-             (apply history/enqueue-redirect [e/navigate-home])
+             (do
+               (history/enqueue-navigate e/navigate-cart)
+               (messages/handle-message e/flash-later-show-success {:message "Logged out successfully"}))
              (apply history/enqueue-redirect previous-nav)))))))
 
 (defmethod storefront.effects/perform-effects e/control-cart-interstitial-view-cart
