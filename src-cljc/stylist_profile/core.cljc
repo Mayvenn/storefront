@@ -1,4 +1,4 @@
-(ns adventure.stylist-matching.stylist-profile
+(ns stylist-profile.core
   "This organism is a stylist profile that includes a map and gallery."
   (:require #?@(:cljs
                 [[storefront.api :as api]

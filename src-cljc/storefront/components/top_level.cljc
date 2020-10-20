@@ -16,7 +16,7 @@
             adventure.informational.about-our-hair
             adventure.informational.certified-stylists
 
-            adventure.stylist-matching.stylist-profile
+            stylist-profile.core
             adventure.stylist-matching.stylist-gallery
 
             stylist-matching.find-your-stylist
@@ -114,7 +114,7 @@
    events/navigate-adventure-stylist-results            (constantly stylist-matching.stylist-results/page)
    events/navigate-adventure-match-success              (constantly stylist-matching.match-success/page)
    events/navigate-adventure-match-success-pick-service (constantly stylist-matching.match-success-pick-service-v2020-06/page)
-   events/navigate-adventure-stylist-profile            (constantly adventure.stylist-matching.stylist-profile/built-component)
+   events/navigate-adventure-stylist-profile            (constantly stylist-profile.core/built-component)
    events/navigate-adventure-stylist-gallery            (constantly adventure.stylist-matching.stylist-gallery/built-component)})
 
 (defn main-component [nav-event]
