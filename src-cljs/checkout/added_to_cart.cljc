@@ -63,9 +63,11 @@
   #?(:cljs
      (do
        (tags/add-classname ".kustomer-app-icon" "hide")
-       (let [previous-nav (-> (get-in app-state keypaths/navigation-undo-stack) first :navigation-message)]
-         (when (empty? (get-in app-state keypaths/cart-recently-added-skus))
-           (apply history/enqueue-redirect (or previous-nav [e/navigate-home])))))))
+       (when (empty? (get-in app-state keypaths/cart-recently-added-skus))
+         (let [previous-nav (-> (get-in app-state keypaths/navigation-undo-stack) first :navigation-message)]
+           (if (some #{e/navigate-sign-in}  previous-nav)
+             (apply history/enqueue-redirect [e/navigate-home])
+             (apply history/enqueue-redirect previous-nav)))))))
 
 (defmethod storefront.effects/perform-effects e/control-cart-interstitial-view-cart
   [_ _ _ _ _]
