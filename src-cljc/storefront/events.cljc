@@ -585,6 +585,7 @@
 (defpath flow|stylist-matching|presearch-cleared)
 
 (defpath flow|stylist-matching|prepared)
+(defpath flow|stylist-matching|search-canceled)
 (defpath flow|stylist-matching|searched)
 (defpath flow|stylist-matching|resulted)
 (defpath flow|stylist-matching|selected-for-inspection)
@@ -594,6 +595,8 @@
 (defpath control-stylist-matching-presearch-salon-result-selected)
 (defpath control-stylist-matching-presearch-stylist-result-selected)
 
+;; TODO more sepcific name
+(defpath cancel-presearch-requests)
 ;; TODO(corey) think about general solutions to the api handlers problem
 (defpath api-success-presearch-name)
 

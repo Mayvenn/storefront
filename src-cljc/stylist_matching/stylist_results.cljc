@@ -331,6 +331,7 @@
      :gallery-modal/initial-index    index}))
 
 (defn execute-named-search [name]
+  (messages/handle-message e/flow|stylist-matching|presearch-canceled)
   (messages/handle-message e/flow|stylist-matching|param-name-constrained {:name name})
   (messages/handle-message e/flow|stylist-matching|prepared))
 
@@ -351,7 +352,7 @@
                     :on-change     (fn [e]
                                      (messages/handle-message e/flow|stylist-matching|param-name-presearched
                                                               {:presearch/name (.. e -target -value)}))
-                    :on-key-up     (fn [e]
+                    :on-key-up     (fn name-input-enter-handler [e]
                                      (when (= "Enter" (.. e -key))
                                        (execute-named-search (.. e -target -value))))
                     :label         "All Stylists"
@@ -682,7 +683,6 @@
   [_ _ args _ state]
   #?(:cljs
      (do
-       ;; Bit hacky
        (execute-named-search (get-in state k/presearch-name))
        (history/enqueue-navigate e/navigate-adventure-stylist-profile args))))
 

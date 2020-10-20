@@ -15,10 +15,7 @@
                        [storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.frontend-effects :as ffx]
                        [storefront.history :as history]
-                       [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.request-keys :as request-keys]
-                       [storefront.hooks.google-maps :as google-maps]
-                       [goog.functions]
                        [catalog.skuers :as skuers]
                        storefront.keypaths])
             [adventure.keypaths]
@@ -28,11 +25,13 @@
             [stylist-matching.keypaths :as k]
             [stylist-matching.search.accessors.filters :as filters]
             [storefront.trackings :as trackings]
-            [storefront.platform.messages :refer [handle-message] :rename {handle-message publish}]
+            [storefront.platform.messages
+             :as messages
+             :refer [handle-message] :rename {handle-message publish}]
             clojure.set
             [clojure.string :as string]
-            [storefront.transitions :as t]
-            [storefront.platform.messages :as messages]))
+            [storefront.transitions :as t])
+  #?(:cljs (:import [goog.async Debouncer])))
 
 (def ^:private query-param-keys
   #{:lat :long :preferred-services :s})
@@ -121,7 +120,7 @@
 
 #?(:cljs
    (def debounced-presearch
-     (goog.functions/debounce api/presearch-name 200)))
+     (Debouncer. api/presearch-name 200)))
 
 (defmethod fx/perform-effects e/flow|stylist-matching|param-name-presearched
   [_ _ {name-presearch :presearch/name} _ state]
@@ -133,16 +132,12 @@
                    (assoc :radius "100mi")
                    (assoc :name name-presearch)
                    (assoc :preferred-services services))]
-           (when-let [pending-requests (->> storefront.keypaths/api-requests
-                                            (get-in state)
-                                            (filter (comp (partial = request-keys/presearch-name) :request-key))
-                                            not-empty)]
-             (ffx/abort-pending-requests pending-requests))
-           (debounced-presearch query
-                                #(publish e/api-success-presearch-name
-                                          (merge {:query          query
-                                                  :presearch/name name-presearch}
-                                                 %))))))))
+           (messages/handle-message e/cancel-presearch-requests)
+           (.fire debounced-presearch query
+                  #(publish e/api-success-presearch-name
+                            (merge {:query          query
+                                    :presearch/name name-presearch}
+                                   %))))))))
 
 ;; Param 'name' constrained
 ;; -> model <> name
@@ -156,6 +151,19 @@
   [_ _ _ state]
   (update-in state k/status disj :results.presearch/name))
 
+(defmethod fx/perform-effects e/cancel-presearch-requests
+  [_ _ _ state]
+  #?(:cljs
+     (when-let [pending-requests (->> storefront.keypaths/api-requests
+                                      (get-in state)
+                                      (filter (comp (partial = request-keys/presearch-name) :request-key))
+                                      not-empty)]
+       (ffx/abort-pending-requests pending-requests))))
+
+(defmethod fx/perform-effects e/flow|stylist-matching|presearch-canceled
+  [_ _ _ state]
+  #?(:cljs (.stop debounced-presearch))
+  (messages/handle-message e/cancel-presearch-requests))
 
 (defmethod t/transition-state e/flow|stylist-matching|presearch-cleared
   [_ _ _ state]
