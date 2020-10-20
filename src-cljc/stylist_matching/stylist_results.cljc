@@ -359,9 +359,10 @@
                     :type          "text"}
 
       :right-charm
-      [:a.flex.items-center.pr1
-       {:on-click (utils/send-event-callback e/flow|stylist-matching|presearch-cleared)}
-       (svg/close-x {:class "stroke-white fill-gray"})]})))
+      (when value
+        [:a.flex.items-center.pr1
+         {:on-click (utils/send-event-callback e/flow|stylist-matching|presearch-cleared)}
+         (svg/close-x {:class "stroke-white fill-gray"})])})))
 
 (defdynamic-component stylist-results-address-input-molecule
   (did-mount
