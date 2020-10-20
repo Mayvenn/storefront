@@ -4,6 +4,7 @@
             catalog.keypaths
             [catalog.facets :as facets]
             [catalog.product-details :as product-details]
+            [catalog.services :as services]
             [catalog.products :as products]
             [catalog.skuers :as skuers]
             [cheshire.core :as json]
@@ -945,21 +946,30 @@
           (cookies/set (:environment ctx) :number (:number order) cookie-options)
           (cookies/set (:environment ctx) :token (:token order) cookie-options)))))
 
-(defn wrap-fetch-stylist-profile [h ctx]
+(defn wrap-fetch-stylist-profile [h {:keys [storeback-config]}]
   (fn [{:keys [subdomains uri query-params] :as req}]
     (let [[event {:keys [stylist-id store-slug]}] (routes/navigation-message-for uri query-params (first subdomains))]
       (if (#{events/navigate-adventure-stylist-gallery
              events/navigate-adventure-stylist-profile} event)
-        (if-let [stylist (api/get-servicing-stylist (:storeback-config ctx) stylist-id)]
+        (if-let [stylist (api/get-servicing-stylist storeback-config stylist-id)]
           (if (not= (:store-slug stylist) store-slug)
             ;; Correct stylist slug
             (util.response/redirect
              (path-for req event {:stylist-id (:stylist-id stylist)
                                   :store-slug (:store-slug stylist)}))
             ;; No correction needed
-            (h (-> req
-                   (assoc-in-req-state adventure.keypaths/stylist-profile-id (:stylist-id stylist))
-                   (assoc-in-req-state (conj stylist-directory.keypaths/stylists (:stylist-id stylist)) stylist))))
+            (let [{service-skus     :skus
+                   service-products :products
+                   service-images   :images} (api/fetch-v3-products storeback-config
+                                                                    (merge-with clojure.set/union
+                                                                                 catalog.services/discountable
+                                                                                 catalog.services/a-la-carte))]
+              (h (-> req
+                     (assoc-in-req-state adventure.keypaths/stylist-profile-id (:stylist-id stylist))
+                     (assoc-in-req-state (conj stylist-directory.keypaths/stylists (:stylist-id stylist)) stylist)
+                     (assoc-in-req-state keypaths/v2-products service-products)
+                     (assoc-in-req-state keypaths/v2-skus service-skus)
+                     (assoc-in-req-state keypaths/v2-images service-images)))))
           (-> req ; redirect to find your stylist
               (path-for events/navigate-adventure-find-your-stylist {:query-params {:error "stylist-not-found"}})
               util.response/redirect))

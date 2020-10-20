@@ -5,6 +5,9 @@
                  [storefront.hooks.facebook-analytics :as facebook-analytics]
                  [storefront.hooks.google-maps :as google-maps]
                  [storefront.hooks.seo :as seo]
+                 [storefront.accessors.categories :as categories]
+                 [catalog.skuers :as skuers]
+                 [storefront.platform.messages :as messages]
                  [storefront.platform.messages :refer [handle-message]]])
             [stylist-matching.core :refer [stylist-matching<-]]
             [adventure.stylist-matching.maps :as maps]
@@ -14,6 +17,7 @@
             [clojure.string :as string]
             [spice.date :as date]
             [storefront.component :as component :refer [defcomponent]]
+            [stylist-matching.search.accessors.filters :as filters]
             [storefront.components.formatters :as formatters]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -297,9 +301,35 @@
       (footer-body-molecule data)
       (footer-cta-molecule data)]]))
 
+(defn service-card-molecule
+  [{:keys [id title subtitle content cta-label cta-target]}]
+  (when id
+    [:div.flex.flex-auto.justify-between.border-bottom.border-cool-gray.py2
+     {:key id}
+     [:div
+      [:div
+       [:span title]
+       ui/nbsp
+       [:span.dark-gray.shout.content-3 subtitle]]
+      [:div.dark-gray.content-3 content]]
+     [:div.my1
+      (ui/button-small-secondary {
+                                  ;; :on-click  (apply utils/send-event-callback cta-target)
+                                  :data-test id}
+                                 cta-label)]]))
+
+(defn service-card-section-molecule
+  [{:keys [id title service-cards]}]
+  [:div
+   {:data-test id
+    :key id}
+   [:div.title-3.proxima.shout.mt5.mb1 title]
+   (mapv service-card-molecule service-cards)])
+
 (defcomponent component
   [{:keys [header footer cta carousel reviews stylist-profile-card google-maps
-           ratings-bar-chart section-details] :as query} owner opts]
+           ratings-bar-chart section-details service-card-sections
+           service-cards-id service-cards-title] :as query} owner opts]
   [:div.bg-white.col-12.mb6.stretch {:style {:margin-bottom "-1px"}}
    [:main
     (components.header/adventure-header header)
@@ -313,7 +343,8 @@
      (carousel-molecule carousel)
 
      (for [section-detail section-details]
-       (section-details-molecule section-detail))]
+       (section-details-molecule section-detail))
+     (mapv service-card-section-molecule service-card-sections)]
     [:div.clearfix]
     (ratings-bar-chart-molecule ratings-bar-chart)
 
@@ -415,56 +446,94 @@
 
 (defn details<-
   [hide-bookings?
+   new-service-cards?
    {:keys [service-menu rating-star-counts] :as stylist}]
-  (let [rating-count (reduce + 0 (vals rating-star-counts))]
-    [{:section-details/title   "Experience"
-      :section-details/content ^:ignore-interpret-warning
-      [:div
-       [:div (string/join ", "
-                          (remove nil?
-                                  [(when-let [stylist-since (:stylist-since stylist)]
-                                     (ui/pluralize-with-amount
-                                      (- (date/year (date/now)) stylist-since)
-                                      "year"))
-                                   (case (-> stylist :salon :salon-type)
-                                     "salon"   "in-salon"
-                                     "in-home" "in-home"
-                                     nil)
-                                   (when (:licensed stylist)
-                                     "licensed")]))]
-       (when (and (not hide-bookings?)
-                  (> rating-count 0))
-         [:div (str "Booked " (ui/pluralize-with-amount rating-count "time") " with Mayvenn")])]}
-     {:section-details/title "Specialties"
-      :section-details/content
-      ^:ignore-interpret-warning
-      [:div.mt1.col-12.col
-       (for [s (filter (comp true? second)
-                       [["Leave Out Install"         (:specialty-sew-in-leave-out service-menu)]
-                        ["Closure Install"           (:specialty-sew-in-closure service-menu)]
-                        ["360 Frontal Install"       (:specialty-sew-in-360-frontal service-menu)]
-                        ["Frontal Install"           (:specialty-sew-in-frontal service-menu)]
-                        ["Wig Customization"         (:specialty-wig-customization service-menu)]
-                        ["Natural Hair Trim"         (:specialty-addon-natural-hair-trim service-menu)]
-                        ["Weave Take Down"           (:specialty-addon-weave-take-down service-menu)]
-                        ["Hair Deep Conditioning"    (:specialty-addon-hair-deep-conditioning service-menu)]
-                        ["Closure Customization"     (:specialty-addon-closure-customization service-menu)]
-                        ["Frontal Customization"     (:specialty-addon-frontal-customization service-menu)]
-                        ["360 Frontal Customization" (:specialty-addon-360-frontal-customization service-menu)]
-                        ["Custom U-Part Wig"         (:specialty-custom-unit-leave-out service-menu)]
-                        ["Custom Lace Closure Wig"   (:specialty-custom-unit-closure service-menu)]
-                        ["Custom Lace Front Wig"     (:specialty-custom-unit-frontal service-menu)]
-                        ["Custom 360 Lace Wig"       (:specialty-custom-unit-360-frontal service-menu)]
-                        ["Wig Install"               (:specialty-wig-install service-menu)]
-                        ["Silk Press"                (:specialty-silk-press service-menu)]
-                        ["Weave Maintenance"         (:specialty-weave-maintenance service-menu)]
-                        ["Wig Maintenance"           (:specialty-wig-maintenance service-menu)]
-                        ["Braid Down"                (:specialty-braid-down service-menu)]
-                        ["Leave Out Reinstall"       (:specialty-reinstall-leave-out service-menu)]
-                        ["Closure Reinstall"         (:specialty-reinstall-closure service-menu)]
-                        ["Frontal Reinstall"         (:specialty-reinstall-frontal service-menu)]
-                        ["360 Frontal Reinstall"     (:specialty-reinstall-360-frontal service-menu)]])]
-         [:div.col-6.col (apply checks-or-x s)])]}]))
+  (let [rating-count (reduce + 0 (vals rating-star-counts))
+        experience-section {:section-details/title   "Experience"
+                            :section-details/content ^:ignore-interpret-warning
+                            [:div
+                             [:div (string/join ", "
+                                                (remove nil?
+                                                        [(when-let [stylist-since (:stylist-since stylist)]
+                                                           (ui/pluralize-with-amount
+                                                            (- (date/year (date/now)) stylist-since)
+                                                            "year"))
+                                                         (case (-> stylist :salon :salon-type)
+                                                           "salon"   "in-salon"
+                                                           "in-home" "in-home"
+                                                           nil)
+                                                         (when (:licensed stylist)
+                                                           "licensed")]))]
+                             (when (and (not hide-bookings?)
+                                        (> rating-count 0))
+                               [:div (str "Booked " (ui/pluralize-with-amount rating-count "time") " with Mayvenn")])]}
+        services-section {:section-details/title "Specialties"
+                          :section-details/content
+                          ^:ignore-interpret-warning
+                          [:div.mt1.col-12.col
+                           (for [s (filter (comp true? second)
+                                           [["Leave Out Install"         (:specialty-sew-in-leave-out service-menu)]
+                                            ["Closure Install"           (:specialty-sew-in-closure service-menu)]
+                                            ["360 Frontal Install"       (:specialty-sew-in-360-frontal service-menu)]
+                                            ["Frontal Install"           (:specialty-sew-in-frontal service-menu)]
+                                            ["Wig Customization"         (:specialty-wig-customization service-menu)]
+                                            ["Natural Hair Trim"         (:specialty-addon-natural-hair-trim service-menu)]
+                                            ["Weave Take Down"           (:specialty-addon-weave-take-down service-menu)]
+                                            ["Hair Deep Conditioning"    (:specialty-addon-hair-deep-conditioning service-menu)]
+                                            ["Closure Customization"     (:specialty-addon-closure-customization service-menu)]
+                                            ["Frontal Customization"     (:specialty-addon-frontal-customization service-menu)]
+                                            ["360 Frontal Customization" (:specialty-addon-360-frontal-customization service-menu)]
+                                            ["Custom U-Part Wig"         (:specialty-custom-unit-leave-out service-menu)]
+                                            ["Custom Lace Closure Wig"   (:specialty-custom-unit-closure service-menu)]
+                                            ["Custom Lace Front Wig"     (:specialty-custom-unit-frontal service-menu)]
+                                            ["Custom 360 Lace Wig"       (:specialty-custom-unit-360-frontal service-menu)]
+                                            ["Wig Install"               (:specialty-wig-install service-menu)]
+                                            ["Silk Press"                (:specialty-silk-press service-menu)]
+                                            ["Weave Maintenance"         (:specialty-weave-maintenance service-menu)]
+                                            ["Wig Maintenance"           (:specialty-wig-maintenance service-menu)]
+                                            ["Braid Down"                (:specialty-braid-down service-menu)]
+                                            ["Leave Out Reinstall"       (:specialty-reinstall-leave-out service-menu)]
+                                            ["Closure Reinstall"         (:specialty-reinstall-closure service-menu)]
+                                            ["Frontal Reinstall"         (:specialty-reinstall-frontal service-menu)]
+                                            ["360 Frontal Reinstall"     (:specialty-reinstall-360-frontal service-menu)]])]
+                             [:div.col-6.col (apply checks-or-x s)])]}]
+    (cond-> [experience-section]
+            (not new-service-cards?) (concat [services-section]))))
+
+(defn ^:private service-sku-query
+  [{:sku/keys [name title price] ;; add service menu price
+    :promo.mayvenn-install/keys [discountable requirement-copy]
+    :catalog/keys [sku-id]}]
+  {:id         (str "stylist-service-card-" sku-id)
+   :title      title
+   :subtitle   (if (true? (first discountable))
+                 "(Free)"
+                 (str "(" (mf/as-money price) ")"))
+   :content    requirement-copy
+   :cta-label  "Add"
+   :cta-target []}) ; TODO
+
+(def ^:private select (comp seq (partial selector/match-all {:selector/strict? true})))
+
+(defn ^:private service-card-sections<-
+  [stylist skus]
+  (let [{free-mayvenn-services :free-mayvenn-services
+         a-la-carte-services   :a-la-carte-services}
+        (->> skus
+             vals
+             (filter #(filters/stylist-provides-service-by-sku-id? stylist
+                                                                   (:catalog/sku-id %)))
+             ((fn [services] {:free-mayvenn-services (select services/discountable services)
+                              :a-la-carte-services   (select services/a-la-carte services)})))]
+    (conj []
+     (when (not-empty free-mayvenn-services)
+       {:id            "free-mayvenn-services"
+        :title         "Free Mayvenn Services"
+        :service-cards (mapv service-sku-query free-mayvenn-services)})
+     (when (not-empty a-la-carte-services)
+       {:id            "a-la-carte-services"
+        :title         "A La Carte Services"
+        :service-cards (mapv service-sku-query a-la-carte-services)}))))
 
 (defn built-component
   [data _]
@@ -475,29 +544,34 @@
         fetching-reviews?                  (utils/requesting? data request-keys/fetch-stylist-reviews)
         hide-bookings?                     (experiments/hide-bookings? data)
         hide-star-distribution?            (experiments/hide-star-distribution? data)
+        new-service-cards?                 (experiments/shop-stylist-profile? data)
         newly-added-stylist-ui-experiment? (and (experiments/stylist-results-test? data)
                                                 (or (experiments/just-added-only? data)
                                                     (experiments/just-added-experience? data)))
+        skus                               (get-in data storefront.keypaths/v2-skus)
 
         ;; business layers
         current-order     (api.orders/current data)
         stylist           (stylists/by-id data stylist-id)
         paginated-reviews (get-in data stylist-directory.keypaths/paginated-reviews)]
-    (component/build component (merge {:header (header<- current-order undo-history)
-                                       :footer footer<-}
-                                      (when stylist
-                                        {:cta                  (cta<- stylist)
-                                         :carousel             (carousel<- stylist)
-                                         :reviews              (reviews<- fetching-reviews? stylist paginated-reviews)
-                                         :stylist-profile-card (stylist-profile-card<-
-                                                                host-name
-                                                                hide-star-distribution?
-                                                                newly-added-stylist-ui-experiment?
-                                                                stylist)
-                                         :ratings-bar-chart    (ratings-bar-chart<- hide-star-distribution?
-                                                                                    stylist)
-                                         :section-details      (details<- hide-bookings? stylist)
-                                         :google-maps          (maps/map-query data)})))))
+    (component/build component
+                     (merge {:header (header<- current-order undo-history)
+                             :footer footer<-}
+                            (when stylist
+                              {:cta                  (cta<- stylist)
+                               :carousel             (carousel<- stylist)
+                               :reviews              (reviews<- fetching-reviews? stylist paginated-reviews)
+                               :stylist-profile-card (stylist-profile-card<-
+                                                      host-name
+                                                      hide-star-distribution?
+                                                      newly-added-stylist-ui-experiment?
+                                                      stylist)
+                               :ratings-bar-chart    (ratings-bar-chart<- hide-star-distribution?
+                                                                          stylist)
+                               :section-details      (details<- hide-bookings? new-service-cards? stylist)
+                               :google-maps          (maps/map-query data)})
+                            (when new-service-cards?
+                              {:service-card-sections (service-card-sections<- stylist skus)})))))
 
 (defmethod effects/perform-effects events/share-stylist
   [_ _ {:keys [url text title stylist-id]} _]
@@ -515,6 +589,9 @@
   [dispatch event {:keys [stylist-id store-slug]} prev-app-state app-state]
   #?(:cljs
      (do
+       (api/get-products (get-in app-state storefront.keypaths/api-cache)
+                         (merge-with clojure.set/union catalog.services/discountable catalog.services/a-la-carte)
+                         (partial messages/handle-message events/api-success-v3-products-for-stylist-filters))
        (google-maps/insert)
        (api/fetch-stylist-details (get-in app-state storefront.keypaths/api-cache) stylist-id)
        (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache) {:stylist-id stylist-id
