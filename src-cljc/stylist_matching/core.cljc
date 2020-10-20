@@ -76,14 +76,9 @@
 (defmethod fx/perform-effects e/flow|stylist-matching|initialized
   [_ _ _ _ state]
   #?(:cljs
-     (let [cache         (get-in state storefront.keypaths/api-cache)
-           categories-db (get-in state storefront.keypaths/categories)
-           criteria      (merge-with clojure.set/union
-                                     (skuers/essentials (categories/id->category "35" categories-db))
-                                     (skuers/essentials (categories/id->category "31" categories-db)))]
-       (api/get-products cache
-                         criteria
-                         (partial publish e/api-success-v3-products-for-stylist-filters)))))
+     (api/get-products (get-in state storefront.keypaths/api-cache)
+                       (merge-with clojure.set/union catalog.services/discountable catalog.services/a-la-carte)
+                       (partial publish e/api-success-v3-products-for-stylist-filters))))
 
 ;; Param 'location' constrained
 ;; -> model <> location
