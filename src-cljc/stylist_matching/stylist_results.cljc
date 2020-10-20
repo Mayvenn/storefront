@@ -429,16 +429,14 @@
                         (str "- " (count preferences)))])]
     (for [{:preference-pill/keys [id target primary]} preferences]
       [:div.pb1 {:key id}
-       (ui/button-pill {:class "p1 mr1"
-                        ;; TODO: REMOVE
-                        :on-click identity}
-                       [:div.flex.pl1 primary
-                        [:div.flex.items-center.pl1
-                         ^:attrs (merge {:data-test id}
-                                        (apply utils/fake-href target))
-                         (svg/close-x {:class  "stroke-white fill-gray"
-                                       :width  "13px"
-                                       :height "13px"})]])])]))
+       [:div {:class "btn-pill content-3 black p1 mr1"}
+        [:div.flex.pl1 primary
+         [:a.flex.items-center.pl1
+          ^:attrs (merge {:data-test id}
+                         (apply utils/fake-href target))
+          (svg/close-x {:class  "stroke-white fill-gray"
+                        :width  "13px"
+                        :height "13px"})]]]])]))
 
 (defcomponent matching-count-organism
   [{:keys [stylist-count-content]} _ _]
