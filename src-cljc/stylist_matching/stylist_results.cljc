@@ -359,7 +359,7 @@
                     :type          "text"}
 
       :right-charm
-      (when value
+      (when (not-empty value)
         [:a.flex.items-center.pr1
          {:on-click (utils/send-event-callback e/flow|stylist-matching|presearch-cleared)}
          (svg/close-x {:class "stroke-white fill-gray"})])})))
