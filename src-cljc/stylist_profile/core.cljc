@@ -2,6 +2,7 @@
   "This organism is a stylist profile that includes a map and gallery."
   (:require #?@(:cljs
                 [[storefront.api :as api]
+                 [storefront.history :as history]
                  [storefront.hooks.facebook-analytics :as facebook-analytics]
                  [storefront.hooks.google-maps :as google-maps]
                  [storefront.hooks.seo :as seo]
@@ -16,6 +17,7 @@
             [catalog.services :as services]
             [clojure.string :as string]
             [spice.date :as date]
+            [storefront.accessors.orders :as orders]
             [storefront.component :as component :refer [defcomponent]]
             [stylist-matching.search.accessors.filters :as filters]
             [storefront.components.formatters :as formatters]
@@ -35,8 +37,8 @@
             [spice.selector :as selector]
             [storefront.request-keys :as request-keys]
             [storefront.accessors.experiments :as experiments]
-            [storefront.keypaths :as storefront.keypaths]
-            [storefront.components.money-formatters :as mf]))
+            [storefront.components.money-formatters :as mf]
+            [storefront.accessors.sites :as sites]))
 
 (defn transposed-title-molecule
   [{:transposed-title/keys [id primary secondary]}]
@@ -302,7 +304,7 @@
       (footer-cta-molecule data)]]))
 
 (defn service-card-molecule
-  [{:keys [id title subtitle content cta-label cta-target]}]
+  [{:keys [id title subtitle content cta-label disabled? cta-target]}]
   (when id
     [:div.flex.flex-auto.justify-between.border-bottom.border-cool-gray.py2
      {:key id}
@@ -313,8 +315,8 @@
        [:span.dark-gray.shout.content-3 subtitle]]
       [:div.dark-gray.content-3 content]]
      [:div.my1
-      (ui/button-small-secondary {
-                                  ;; :on-click  (apply utils/send-event-callback cta-target)
+      (ui/button-small-secondary {:disabled? disabled?
+                                  :on-click  (apply utils/send-event-callback cta-target)
                                   :data-test id}
                                  cta-label)]]))
 
@@ -501,22 +503,33 @@
             (not new-service-cards?) (concat [services-section]))))
 
 (defn ^:private service-sku-query
-  [{:sku/keys [name title price] ;; add service menu price
+  [order
+   adding-a-service-sku-to-bag?
+   {:sku/keys [name title price] ;; add service menu price
     :promo.mayvenn-install/keys [discountable requirement-copy]
-    :catalog/keys [sku-id]}]
-  {:id         (str "stylist-service-card-" sku-id)
-   :title      title
-   :subtitle   (if (true? (first discountable))
-                 "(Free)"
-                 (str "(" (mf/as-money price) ")"))
-   :content    requirement-copy
-   :cta-label  "Add"
-   :cta-target []}) ; TODO
+    :catalog/keys [sku-id] :as sku}]
+  (cond-> {:id         (str "stylist-service-card-" sku-id)
+           :title      title
+           :subtitle   (str "(" (mf/as-money price) ")")
+           :content    requirement-copy
+           :cta-label  "Add"
+           :cta-target [events/control-stylist-profile-add-service-to-bag {:sku sku
+                                                                           :quantity 1}]}
+    (true? (first discountable))
+    (merge {:subtitle "(Free)"})
+
+    (some #(= sku-id (:sku %))
+          (orders/service-line-items order))
+    (merge {:disabled? true
+            :cta-label "Added"})
+
+    adding-a-service-sku-to-bag?
+    (merge {:disabled? true})))
 
 (def ^:private select (comp seq (partial selector/match-all {:selector/strict? true})))
 
 (defn ^:private service-card-sections<-
-  [stylist skus]
+  [stylist skus order adding-a-service-sku-to-bag?]
   (let [{free-mayvenn-services :free-mayvenn-services
          a-la-carte-services   :a-la-carte-services}
         (->> skus
@@ -529,11 +542,11 @@
      (when (not-empty free-mayvenn-services)
        {:id            "free-mayvenn-services"
         :title         "Free Mayvenn Services"
-        :service-cards (mapv service-sku-query free-mayvenn-services)})
+        :service-cards (mapv (partial service-sku-query order adding-a-service-sku-to-bag?) free-mayvenn-services)})
      (when (not-empty a-la-carte-services)
        {:id            "a-la-carte-services"
         :title         "A La Carte Services"
-        :service-cards (mapv service-sku-query a-la-carte-services)}))))
+        :service-cards (mapv (partial service-sku-query order) a-la-carte-services)}))))
 
 (defn built-component
   [data _]
@@ -548,7 +561,12 @@
         newly-added-stylist-ui-experiment? (and (experiments/stylist-results-test? data)
                                                 (or (experiments/just-added-only? data)
                                                     (experiments/just-added-experience? data)))
+        adding-a-service-sku-to-bag?       (utils/requesting? data
+                                                              (fn [req]
+                                                                (vec (first req)))
+                                                              request-keys/add-to-bag)
         skus                               (get-in data storefront.keypaths/v2-skus)
+        order                              (get-in data storefront.keypaths/order)
 
         ;; business layers
         current-order     (api.orders/current data)
@@ -571,7 +589,7 @@
                                :section-details      (details<- hide-bookings? new-service-cards? stylist)
                                :google-maps          (maps/map-query data)})
                             (when new-service-cards?
-                              {:service-card-sections (service-card-sections<- stylist skus)})))))
+                              {:service-card-sections (service-card-sections<- stylist skus order adding-a-service-sku-to-bag?)})))))
 
 (defmethod effects/perform-effects events/share-stylist
   [_ _ {:keys [url text title stylist-id]} _]
@@ -609,3 +627,45 @@
   #?(:cljs
      (facebook-analytics/track-event "ViewContent" {:content_type "stylist"
                                                     :content_ids [stylist-id]})))
+
+(defmethod effects/perform-effects events/control-stylist-profile-add-service-to-bag
+  [dispatch event {:keys [sku quantity] :as args} _ app-state]
+  #?(:cljs
+     (let [cart-contains-free-mayvenn-service? (orders/discountable-services-on-order? (get-in app-state storefront.keypaths/order))
+           sku-is-free-mayvenn-service?        (-> sku :promo.mayvenn-install/discountable first)
+           service-swap?                       (and cart-contains-free-mayvenn-service? sku-is-free-mayvenn-service?)
+           add-sku-to-bag-command              [events/stylist-profile-add-service-to-bag
+                                                {:sku           sku
+                                                 :stay-on-page? true
+                                                 :service-swap? service-swap?
+                                                 :quantity      quantity}]]
+       (if service-swap?
+         (messages/handle-message events/popup-show-service-swap {:sku-intended sku :confirmation-command add-sku-to-bag-command})
+         (apply messages/handle-message add-sku-to-bag-command)))))
+
+(defmethod effects/perform-effects events/stylist-profile-add-service-to-bag
+  [dispatch event {:keys [sku quantity stay-on-page? service-swap?] :as args} _ app-state]
+  #?(:cljs
+     (let [nav-event          (get-in app-state storefront.keypaths/navigation-event)
+           cart-interstitial? (and
+                               (not service-swap?)
+                               (= :shop (sites/determine-site app-state)))]
+       (api/add-sku-to-bag
+        (get-in app-state storefront.keypaths/session-id)
+        {:sku                sku
+         :quantity           quantity
+         :stylist-id         (get-in app-state storefront.keypaths/store-stylist-id)
+         :token              (get-in app-state storefront.keypaths/order-token)
+         :number             (get-in app-state storefront.keypaths/order-number)
+         :user-id            (get-in app-state storefront.keypaths/user-id)
+         :user-token         (get-in app-state storefront.keypaths/user-token)
+         :heat-feature-flags (get-in app-state storefront.keypaths/features)}
+        #(do
+           (messages/handle-message events/api-success-add-sku-to-bag
+                                    {:order         %
+                                     :quantity      quantity
+                                     :sku           sku})
+           (when (not (or (= events/navigate-cart nav-event) stay-on-page?))
+             (history/enqueue-navigate (if cart-interstitial?
+                                         events/navigate-added-to-cart
+                                         events/navigate-cart))))))))

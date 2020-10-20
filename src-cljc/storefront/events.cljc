@@ -190,6 +190,7 @@
 
 (defpath control-add-sku-to-bag)
 (defpath control-suggested-add-to-bag)
+(defpath control-stylist-profile-add-service-to-bag)
 
 (defpath control-create-order-from-shared-cart)
 
@@ -433,6 +434,7 @@
 
 (defpath add-sku-to-bag)
 (defpath bulk-add-sku-to-bag)
+(defpath stylist-profile-add-service-to-bag)
 
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)
