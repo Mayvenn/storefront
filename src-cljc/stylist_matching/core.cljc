@@ -11,12 +11,11 @@
   - Name
   "
   (:require #?@(:cljs [[storefront.api :as api]
-                       [storefront.accessors.categories :as categories]
                        [storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.frontend-effects :as ffx]
                        [storefront.history :as history]
                        [storefront.request-keys :as request-keys]
-                       [catalog.skuers :as skuers]
+                       catalog.services
                        storefront.keypaths])
             [adventure.keypaths]
             [stylist-directory.keypaths]
