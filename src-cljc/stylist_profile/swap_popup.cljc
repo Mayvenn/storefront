@@ -70,14 +70,15 @@
      :service-swap-popup/confirm-copy "Confirm Swap"
      :service-swap-popup/dismiss-copy "Cancel"
      :service-swap-popup/title          "Before we move on..."
-     :service-swap-popup.secondary/notices [(when (not= service-title-to-be-swapped intended-service-title)
-                                              ["1 Free Mayvenn Service per order."
-                                               (str  "You are about to swap " service-title-to-be-swapped
-                                                     " with " intended-service-title ".")])
-                                            (when (not= stylist-to-be-swapped intended-stylist-name)
-                                              ["1 Stylist per order."
-                                               (str "You are about to swap " stylist-to-be-swapped
-                                                    " with " intended-stylist-name ".")])]
+     :service-swap-popup.secondary/notices (cond-> []
+                                             (not= service-title-to-be-swapped intended-service-title)
+                                             (conj ["1 Free Mayvenn Service per order."
+                                                    (str  "You are about to swap " service-title-to-be-swapped
+                                                          " with " intended-service-title ".")])
+                                             (not= stylist-to-be-swapped intended-stylist-name)
+                                             (conj ["1 Stylist per order."
+                                                    (str "You are about to swap " stylist-to-be-swapped
+                                                         " with " intended-stylist-name ".")]))
      :service-swap-popup.secondary/id   "service-swap-explanation"}))
 
 #?(:cljs
