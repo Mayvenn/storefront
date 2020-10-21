@@ -68,7 +68,7 @@
            (if (some #{e/navigate-sign-in}  previous-nav)
              (do
                (history/enqueue-navigate e/navigate-cart)
-               (messages/handle-message e/flash-later-show-success {:message "Logged out successfully"}))
+               (messages/handle-message e/flash-later-show-success {:message "Logged in successfully"}))
              (apply history/enqueue-redirect previous-nav)))))))
 
 (defmethod storefront.effects/perform-effects e/control-cart-interstitial-view-cart
