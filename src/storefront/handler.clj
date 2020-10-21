@@ -766,7 +766,8 @@
    events/navigate-checkout-processing       generic-server-render
    events/navigate-mayvenn-made              generic-server-render
    events/navigate-adventure-stylist-profile generic-server-render
-   events/navigate-adventure-stylist-gallery generic-server-render})
+   events/navigate-adventure-stylist-gallery generic-server-render
+   events/navigate-shop-by-look              generic-server-render})
 
 (defn robots [_]
   (string/join "\n" robots-content))
