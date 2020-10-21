@@ -435,6 +435,9 @@
 (defpath add-sku-to-bag)
 (defpath bulk-add-sku-to-bag)
 (defpath stylist-profile-add-service-to-bag)
+(defpath stylist-profile-swap-popup-show)
+(defpath control-stylist-profile-swap-popup-dismiss)
+(defpath control-stylist-profile-swap-popup-confirm)
 
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)

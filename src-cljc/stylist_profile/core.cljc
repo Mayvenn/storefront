@@ -40,6 +40,11 @@
             [storefront.components.money-formatters :as mf]
             [storefront.accessors.sites :as sites]))
 
+(def stylist-profile [:models :stylist-profile])
+(def swap-popup (conj stylist-profile :swap-popup))
+(def sku-intended-for-swap (conj swap-popup :sku-intended-for-swap))
+(def service-swap-confirmation-command (conj swap-popup :service-swap-confirmation-command))
+
 (defn transposed-title-molecule
   [{:transposed-title/keys [id primary secondary]}]
   [:div {:data-test id}
@@ -640,7 +645,9 @@
                                                  :service-swap? service-swap?
                                                  :quantity      quantity}]]
        (if service-swap?
-         (messages/handle-message events/popup-show-service-swap {:sku-intended sku :confirmation-command add-sku-to-bag-command})
+         (messages/handle-message events/stylist-profile-swap-popup-show
+                                  {:sku-intended         sku
+                                   :confirmation-command add-sku-to-bag-command})
          (apply messages/handle-message add-sku-to-bag-command)))))
 
 (defmethod effects/perform-effects events/stylist-profile-add-service-to-bag
