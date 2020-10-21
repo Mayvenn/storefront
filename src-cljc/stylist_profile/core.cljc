@@ -318,7 +318,7 @@
        [:span title]
        ui/nbsp
        [:span.dark-gray.shout.content-3 subtitle]]
-      [:div.dark-gray.content-3 content]]
+      [:div.dark-gray.content-3.mr6 content]]
      [:div.my1
       (ui/button-small-secondary {:disabled? disabled?
                                   :on-click  (apply utils/send-event-callback cta-target)
@@ -551,7 +551,7 @@
      (when (not-empty a-la-carte-services)
        {:id            "a-la-carte-services"
         :title         "A La Carte Services"
-        :service-cards (mapv (partial service-sku-query order) a-la-carte-services)}))))
+        :service-cards (mapv (partial service-sku-query order adding-a-service-sku-to-bag?) a-la-carte-services)}))))
 
 (defn built-component
   [data _]
