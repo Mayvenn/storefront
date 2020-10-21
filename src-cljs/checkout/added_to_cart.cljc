@@ -67,11 +67,11 @@
         recent-sku-ids (get-in state keypaths/cart-recently-added-skus)]
     #?(:cljs (when (empty? recent-sku-ids)
                (apply history/enqueue-redirect (or previous-nav
-                                                   [e/navigate-home])))))
+                                                   [e/navigate-home]))))))
 
-  (defmethod storefront.effects/perform-effects e/control-cart-interstitial-view-cart
-    [_ _ _ _ _]
-    #?(:cljs (history/enqueue-navigate e/navigate-cart))))
+(defmethod storefront.effects/perform-effects e/control-cart-interstitial-view-cart
+  [_ _ _ _ _]
+  #?(:cljs (history/enqueue-navigate e/navigate-cart)))
 
 (defmethod storefront.trackings/perform-track e/control-cart-interstitial-view-cart
   [_ _ _ app-state]
