@@ -194,22 +194,11 @@
 
 (def ^:private hostname (comp :host url/url))
 
-(defn assoc-valid-path [app-state path]
-  (let [[event msg] (routes/navigation-message-for path)]
-    (if (not= event events/navigate-not-found)
-      (assoc-in app-state keypaths/return-navigation-message [event msg])
-      app-state)))
-
 (defmethod transition-state events/navigate-cart
   [_ event _ app-state]
   (-> app-state
       (assoc-in keypaths/cart-paypal-redirect false)
       (assoc-in keypaths/promo-code-entry-open? false)))
-
-(defmethod transition-state events/navigate-sign-in
-  [_ event {{:keys [path]} :query-params} app-state]
-  (-> app-state
-      (assoc-valid-path path)))
 
 (defmethod transition-state events/navigate-reset-password [_ event {:keys [reset-token]} app-state]
   (assoc-in app-state keypaths/reset-password-token reset-token))

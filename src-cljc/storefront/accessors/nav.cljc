@@ -63,7 +63,9 @@
   #{events/navigate-order-complete})
 
 (def return-blacklisted?
-  (conj auth-events events/navigate-not-found))
+  (-> auth-events
+      (conj events/navigate-added-to-cart)
+      (conj events/navigate-not-found)))
 
 (def minimal-footer-events
   (set/union account-events

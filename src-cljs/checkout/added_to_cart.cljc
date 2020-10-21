@@ -59,21 +59,19 @@
         [:div])))))
 
 (defmethod storefront.effects/perform-effects e/navigate-added-to-cart
-  [_ _ _ _ app-state]
-  #?(:cljs
-     (do
-       (tags/add-classname ".kustomer-app-icon" "hide")
-       (when (empty? (get-in app-state keypaths/cart-recently-added-skus))
-         (let [previous-nav (-> (get-in app-state keypaths/navigation-undo-stack) first :navigation-message)]
-           (if (some #{e/navigate-sign-in}  previous-nav)
-             (do
-               (history/enqueue-navigate e/navigate-cart)
-               (messages/handle-message e/flash-later-show-success {:message "Logged in successfully"}))
-             (apply history/enqueue-redirect previous-nav)))))))
+  [_ _ _ _ state]
+  #?(:cljs (tags/add-classname ".kustomer-app-icon" "hide"))
+  (let [previous-nav   (-> (get-in state keypaths/navigation-undo-stack)
+                           first
+                           :navigation-message)
+        recent-sku-ids (get-in state keypaths/cart-recently-added-skus)]
+    #?(:cljs (when (empty? recent-sku-ids)
+               (apply history/enqueue-redirect (or previous-nav
+                                                   [e/navigate-home])))))
 
-(defmethod storefront.effects/perform-effects e/control-cart-interstitial-view-cart
-  [_ _ _ _ _]
-  #?(:cljs (history/enqueue-navigate e/navigate-cart)))
+  (defmethod storefront.effects/perform-effects e/control-cart-interstitial-view-cart
+    [_ _ _ _ _]
+    #?(:cljs (history/enqueue-navigate e/navigate-cart))))
 
 (defmethod storefront.trackings/perform-track e/control-cart-interstitial-view-cart
   [_ _ _ app-state]
