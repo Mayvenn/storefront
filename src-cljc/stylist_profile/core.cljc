@@ -43,7 +43,8 @@
 (def stylist-profile [:models :stylist-profile])
 (def swap-popup (conj stylist-profile :swap-popup))
 (def sku-intended-for-swap (conj swap-popup :sku-intended-for-swap))
-(def service-swap-confirmation-command (conj swap-popup :service-swap-confirmation-command))
+(def selected-stylist-intended-for-swap (conj swap-popup :selected-stylist-intended-for-swap))
+(def service-swap-confirmation-commands (conj swap-popup :service-swap-confirmation-commands))
 
 (defn transposed-title-molecule
   [{:transposed-title/keys [id primary secondary]}]
@@ -518,8 +519,7 @@
            :subtitle   (str "(" (mf/as-money price) ")")
            :content    requirement-copy
            :cta-label  "Add"
-           :cta-target [events/control-stylist-profile-add-service-to-bag {:sku sku
-                                                                           :quantity 1}]}
+           :cta-target [events/control-stylist-profile-add-service-to-bag {:sku sku :quantity 1}]}
     (true? (first discountable))
     (merge {:subtitle "(Free)"})
 
@@ -640,24 +640,31 @@
      (let [cart-contains-free-mayvenn-service? (orders/discountable-services-on-order? (get-in app-state storefront.keypaths/order))
            sku-is-free-mayvenn-service?        (-> sku :promo.mayvenn-install/discountable first)
            service-swap?                       (and cart-contains-free-mayvenn-service? sku-is-free-mayvenn-service?)
+           stylist-to-be-swapped               (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+           stylist-id                          (get-in app-state adventure.keypaths/stylist-profile-id)
+           intended-stylist                    (stylists/by-id app-state stylist-id)
+           stylist-swap?                       (not= stylist-to-be-swapped intended-stylist)
            add-sku-to-bag-command              [events/stylist-profile-add-service-to-bag
                                                 {:sku           sku
                                                  :stay-on-page? true
                                                  :service-swap? service-swap?
-                                                 :quantity      quantity}]]
+                                                 :quantity      quantity}]
+           add-selected-stylist                [events/flow|stylist-matching|matched
+                                                {:stylist      intended-stylist
+                                                 :result-index 0}]]
        (if service-swap?
          (messages/handle-message events/stylist-profile-swap-popup-show
-                                  {:sku-intended         sku
-                                   :confirmation-command add-sku-to-bag-command})
+                                  {:sku-intended              sku
+                                   :selected-stylist-intended (when stylist-swap? intended-stylist)
+                                   :confirmation-commands     (cond-> [add-sku-to-bag-command]
+                                                                stylist-swap?
+                                                                (conj add-selected-stylist))})
          (apply messages/handle-message add-sku-to-bag-command)))))
 
 (defmethod effects/perform-effects events/stylist-profile-add-service-to-bag
-  [dispatch event {:keys [sku quantity stay-on-page? service-swap?] :as args} _ app-state]
+  [dispatch event {:keys [sku quantity stay-on-page? service-swap? stylist] :as args} _ app-state]
   #?(:cljs
-     (let [nav-event          (get-in app-state storefront.keypaths/navigation-event)
-           cart-interstitial? (and
-                               (not service-swap?)
-                               (= :shop (sites/determine-site app-state)))]
+     (let [nav-event          (get-in app-state storefront.keypaths/navigation-event)]
        (api/add-sku-to-bag
         (get-in app-state storefront.keypaths/session-id)
         {:sku                sku
@@ -672,8 +679,11 @@
            (messages/handle-message events/api-success-add-sku-to-bag
                                     {:order         %
                                      :quantity      quantity
-                                     :sku           sku})
-           (when (not (or (= events/navigate-cart nav-event) stay-on-page?))
-             (history/enqueue-navigate (if cart-interstitial?
-                                         events/navigate-added-to-cart
-                                         events/navigate-cart))))))))
+                                     :sku           sku})))))
+  )
+
+;; #?(:cljs
+;;    (when stylist
+;;      (messages/handle-message  [events/flow|stylist-matching|matched
+;;                                 {:servicing-stylist stylist
+;;                                  :result-index        0}])))

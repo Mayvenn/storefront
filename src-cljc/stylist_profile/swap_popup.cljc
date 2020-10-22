@@ -58,18 +58,18 @@
                                          first
                                          :variant-name)
         intended-service-title      (-> data (get-in core/sku-intended-for-swap) :sku/title)
-        stylist-to-be-swapped  (->  data
-                                    (get-in adventure.keypaths/adventure-servicing-stylist)
-                                    stylists/->display-name)
+        stylist-to-be-swapped  (-> data
+                                   (get-in adventure.keypaths/adventure-servicing-stylist)
+                                   stylists/->display-name)
         stylist-id             (get-in data adventure.keypaths/stylist-profile-id)
-        intended-stylist-name  (->  data
-                                    (stylists/by-id stylist-id)
-                                    stylists/->display-name)]
-    {:service-swap-popup/confirm-target [events/control-stylist-profile-swap-popup-confirm]
-     :service-swap-popup/dismiss-target [events/control-stylist-profile-swap-popup-dismiss]
-     :service-swap-popup/confirm-copy "Confirm Swap"
-     :service-swap-popup/dismiss-copy "Cancel"
-     :service-swap-popup/title          "Before we move on..."
+        intended-stylist-name  (-> data
+                                   (stylists/by-id stylist-id)
+                                   stylists/->display-name)]
+    {:service-swap-popup/confirm-target    [events/control-stylist-profile-swap-popup-confirm]
+     :service-swap-popup/dismiss-target    [events/control-stylist-profile-swap-popup-dismiss]
+     :service-swap-popup/confirm-copy      "Confirm Swap"
+     :service-swap-popup/dismiss-copy      "Cancel"
+     :service-swap-popup/title             "Before we move on..."
      :service-swap-popup.secondary/notices (cond-> []
                                              (not= service-title-to-be-swapped intended-service-title)
                                              (conj ["1 Free Mayvenn Service per order."
@@ -79,7 +79,7 @@
                                              (conj ["1 Stylist per order."
                                                     (str "You are about to swap " stylist-to-be-swapped
                                                          " with " intended-stylist-name ".")]))
-     :service-swap-popup.secondary/id   "service-swap-explanation"}))
+     :service-swap-popup.secondary/id      "service-swap-explanation"}))
 
 #?(:cljs
    [(defmethod popup/query :stylist-profile-swap [data]
@@ -88,27 +88,32 @@
       (service-swap-popup-component data))])
 
 (defmethod transitions/transition-state events/stylist-profile-swap-popup-show
-  [_ event {:keys [sku-intended confirmation-command]} app-state]
+  [_ event {:keys [sku-intended selected-stylist-intended confirmation-commands]} app-state]
   (-> app-state
       (assoc-in core/sku-intended-for-swap sku-intended)
-      (assoc-in core/service-swap-confirmation-command confirmation-command)
+      (assoc-in core/selected-stylist-intended-for-swap selected-stylist-intended)
+      (assoc-in core/service-swap-confirmation-commands confirmation-commands)
       (assoc-in storefront.keypaths/popup :stylist-profile-swap)))
 
 (defmethod effects/perform-effects events/control-stylist-profile-swap-popup-confirm
   [_ _ _ previous-app-state]
-  (apply messages/handle-message (get-in previous-app-state core/service-swap-confirmation-command))
-  (messages/handle-message events/popup-hide))
+  (let [confirmation-commands (get-in previous-app-state core/service-swap-confirmation-commands)]
+    (doseq [command confirmation-commands]
+      (apply messages/handle-message command))
+    (messages/handle-message events/popup-hide)))
 
 (defmethod transitions/transition-state events/control-stylist-profile-swap-popup-confirm
   [_ event _ app-state]
   (-> app-state
-      (assoc-in core/service-swap-confirmation-command nil)
+      (assoc-in core/selected-stylist-intended-for-swap nil)
+      (assoc-in core/service-swap-confirmation-commands nil)
       (assoc-in core/sku-intended-for-swap nil)))
 
 (defmethod transitions/transition-state events/control-stylist-profile-swap-popup-dismiss
   [_ event args app-state]
   (-> app-state
-      (assoc-in catalog.keypaths/sku-intended-for-swap nil)
+      (assoc-in core/selected-stylist-intended-for-swap nil)
+      (assoc-in core/sku-intended-for-swap nil)
       (assoc-in storefront.keypaths/popup nil)))
 
 (defmethod effects/perform-effects events/control-stylist-profile-swap-popup-dismiss
