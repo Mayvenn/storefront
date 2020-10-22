@@ -177,9 +177,9 @@
 (defn cta-molecule
   [{:cta/keys [id label target]}]
   (when (and id label target)
-    (ui/button-large-primary
+    (ui/button-medium-primary
      (merge {:data-test id} (apply utils/fake-href target))
-     [:div.flex.items-center.justify-center.inherit-color label])))
+     [:div.flex.items-center.justify-center.inherit-color.button-font-2 label])))
 
 (defn section-details-molecule
   [{:section-details/keys [title content]}]
@@ -346,8 +346,6 @@
     (component/build maps/component google-maps)
 
     [:div.my2.m1-on-tb-dt.mb2-on-tb-dt.px3
-     [:div.mb3 (cta-molecule cta)]
-
      (carousel-molecule carousel)
 
      (for [section-detail section-details]
@@ -358,7 +356,12 @@
 
     (reviews-molecule reviews)]
 
-   [:footer (component/build footer-organism footer nil)]])
+   [:div.col-12.fixed.bottom-0.center.bg-pale-purple.mtj3
+    [:div.flex.justify-center.my4 (cta-molecule cta)]]
+
+   [:footer.mbj3.pbj3
+    (component/build footer-organism footer)
+    [:div.py4 ui/nbsp]]])
 
 (defn carousel<-
   [{:keys [store-slug stylist-id gallery-images]}]
@@ -679,11 +682,4 @@
            (messages/handle-message events/api-success-add-sku-to-bag
                                     {:order         %
                                      :quantity      quantity
-                                     :sku           sku})))))
-  )
-
-;; #?(:cljs
-;;    (when stylist
-;;      (messages/handle-message  [events/flow|stylist-matching|matched
-;;                                 {:servicing-stylist stylist
-;;                                  :result-index        0}])))
+                                     :sku           sku}))))))
