@@ -12,7 +12,9 @@
     1 1
     {:class "flex items-center"}
     (if seen?
-      [:img.col-12.block {:src image-url}]
+      (ui/ucare-img {:class           "col-12"
+                     :picture-classes "col-12"}
+                    image-url)
       [:div.col-12 " "]))
    (when overlay
      [:div.absolute.flex.justify-end.bottom-0.right-0.mb8
