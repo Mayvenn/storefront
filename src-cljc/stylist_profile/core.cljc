@@ -630,8 +630,9 @@
 (defmethod trackings/perform-track events/navigate-adventure-stylist-profile
   [_ event {:keys [stylist-id]} app-state]
   #?(:cljs
-     (facebook-analytics/track-event "ViewContent" {:content_type "stylist"
-                                                    :content_ids [stylist-id]})))
+     (facebook-analytics/track-event "ViewContent"
+                                     {:content_type "stylist"
+                                      :content_ids [(spice.core/parse-int stylist-id)]})))
 
 (defmethod effects/perform-effects events/control-stylist-profile-add-service-to-bag
   [dispatch event {:keys [sku quantity] :as args} _ app-state]
