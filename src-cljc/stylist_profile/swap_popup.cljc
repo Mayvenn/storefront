@@ -75,7 +75,8 @@
                                              (conj ["1 Free Mayvenn Service per order."
                                                     (str  "You are about to swap " service-title-to-be-swapped
                                                           " with " intended-service-title ".")])
-                                             (not= stylist-to-be-swapped intended-stylist-name)
+                                             (and stylist-to-be-swapped
+                                                  (not= stylist-to-be-swapped intended-stylist-name))
                                              (conj ["1 Stylist per order."
                                                     (str "You are about to swap " stylist-to-be-swapped
                                                          " with " intended-stylist-name ".")]))
