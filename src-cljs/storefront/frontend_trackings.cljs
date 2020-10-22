@@ -72,6 +72,10 @@
            (= (:catalog/product-id nav-args) (:catalog/product-id prev-nav-args))))))
 
 (defmethod perform-track events/navigate [_ event {:keys [navigate/caused-by] :as args} app-state]
+  (when (->> (get-in app-state keypaths/navigation-undo-stack)
+             count
+             (= 1))
+    (google-tag-manager/track-second-page-loaded))
   (when (not (#{:module-load} caused-by))
     (let [path (routes/current-path app-state)]
       (when (not (nav-was-selecting-bundle-option? app-state))

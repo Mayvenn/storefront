@@ -51,3 +51,7 @@
           :storeSlug      store-slug
           :storeIsStylist store-is-stylist
           :items          (mapv line-item-skuer->gtm-cart-item line-item-skuers)}))
+
+(defn track-second-page-loaded
+  []
+  (track {:event "secondPageLoaded"}))
