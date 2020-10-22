@@ -6,7 +6,8 @@
              #?@(:cljs [[goog.string]])))
 
 (defcomponent ugc-image [{:screen/keys [seen?]
-                          :keys [image-url overlay]} _ _]
+                          :hack/keys   [above-the-fold?]
+                          :keys        [image-url overlay]} _ _]
   [:div.relative.bg-white
    (ui/aspect-ratio
     1 1
@@ -27,10 +28,11 @@
 
 (defcomponent social-image-card-component
   [{:keys                [desktop-aware?
-                          id image-url overlay description social-service icon-url title]
+                          id overlay description icon-url title]
     :screen/keys         [seen?]
     [nav-event nav-args] :cta/navigation-message
-    button-type          :cta/button-type}
+    button-type          :cta/button-type
+    :as card}
    owner
    {:keys [copy]}]
   (let [cta-button-fn (case button-type
@@ -43,7 +45,7 @@
      [:div.relative.bg-white
       (util/route-to nav-event nav-args {:back-copy  (:back-copy copy)
                                          :short-name (:short-name copy)})
-      (ui/screen-aware ugc-image {:overlay overlay :image-url image-url})
+      (ui/screen-aware ugc-image (select-keys card [:overlay :image-url :hack/above-the-fold?]))
       (when overlay
         [:div.absolute.flex.justify-end.bottom-0.right-0.mb8
          [:div {:style {:width       "0"
