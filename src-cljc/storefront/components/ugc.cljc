@@ -12,7 +12,7 @@
    (ui/aspect-ratio
     1 1
     {:class "flex items-center"}
-    (if seen?
+    (if (or above-the-fold? seen?)
       (ui/ucare-img {:class           "col-12"
                      :picture-classes "col-12"}
                     image-url)
