@@ -53,6 +53,7 @@
      (c/html
       (if id
         [:div.px4.mtj1
+         {:data-test id}
          [:div.canela.title-3.center "FREE Mayvenn Service Tracker"]
          (elements drawer-contents/drawer-contents-condition-organism data
                    :promotion-helper.ui.drawer-contents/conditions)]
