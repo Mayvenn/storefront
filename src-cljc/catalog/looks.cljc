@@ -18,10 +18,11 @@
      [:div.flex.flex-wrap.mbn2.justify-center.justify-start-on-tb-dt.bg-cool-gray.py2-on-tb-dt.px1-on-tb-dt
       (map-indexed
        (fn [idx look]
-         (component/build component-ugc/social-image-card-component
+         (ui/screen-aware component-ugc/social-image-card-component
                           (assoc look :hack/above-the-fold? (zero? idx))
-                          {:opts {:copy copy}
-                           :key  (str (:id look))}))
+                          {:opts               {:copy copy}
+                           :child-handles-ref? true
+                           :key                (str (:id look))}))
        looks)]]))
 
 (defn query [data]
