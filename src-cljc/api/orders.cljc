@@ -5,7 +5,6 @@
             [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.sites :as sites]
-            [storefront.accessors.products :as products]
             storefront.keypaths
             [stylist-matching.search.accessors.filters :as stylist-filters]
             [spice.maps :as maps]))
@@ -180,7 +179,8 @@
 
 (defn current
   [app-state]
-  (->order app-state (get-in app-state storefront.keypaths/order)))
+  (when-let [waiter-order (not-empty (get-in app-state storefront.keypaths/order))]
+    (->order app-state waiter-order)))
 
 (defn services
   "Model: Services on an order
@@ -323,11 +323,16 @@
   ;; NOTE: HACK: The cart uses :copy/title from the product that the sku belongs
   ;; to This seems to be the long term name. We should canonicalize this name
   ;; (perhaps under :sku/cart-title) into cellar to prevent the need to enrich from the product
-  (assoc sku :hacky/cart-title
-         (->> sku
-              :catalog/sku-id
-              (products/find-product-by-sku-id products-db)
-              :copy/title)))
+  (let [product-title (some->> products-db
+                               (filter (fn [product]
+                                         (contains? (set (:selector/skus product))
+                                                    (:catalog/sku-id sku))))
+                               first
+                               :copy/title
+                               not-empty)]
+    (cond-> sku
+      product-title
+      (assoc :hacky/cart-title product-title))))
 
 (defn items<-
   "
