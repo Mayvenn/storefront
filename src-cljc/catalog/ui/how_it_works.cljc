@@ -1,7 +1,6 @@
 (ns catalog.ui.how-it-works
-  (:require
-   [storefront.component :as c]
-   [storefront.components.svg :as svg]))
+  (:require [storefront.component :as c]
+            [storefront.components.svg :as svg]))
 
 (defn ^:private how-it-works-title-molecule
   [{:how-it-works/keys [title-primary title-secondary]}]
@@ -37,25 +36,12 @@
    [:div.pt1
     (how-it-works-step-body-molecule step)]])
 
-(defn ^:private elements
-  "Embed a list of organisms in another organism."
-  ([organism data elem-key]
-   (elements organism data elem-key :default))
-  ([organism data elem-key breakpoint]
-   (let [elems (get data elem-key)]
-     (for [[idx elem] (map-indexed vector elems)]
-       (c/build organism
-                elem
-                (c/component-id elem-key
-                                breakpoint
-                                idx))))))
-
 (c/defcomponent organism
   [data _ _]
   (when-let [how-it-works (:how-it-works data)]
     [:div.center.mbj3.col-5-on-dt.mx-auto
      (how-it-works-title-molecule how-it-works)
      how-it-works-straight-line-atom
-     (elements how-it-works-step-organism
-               how-it-works
-               :how-it-works/step-elements)]))
+     (c/elements how-it-works-step-organism
+                 how-it-works
+                 :how-it-works/step-elements)]))

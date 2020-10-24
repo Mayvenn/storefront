@@ -5,19 +5,6 @@
             [storefront.platform.component-utils :as utils]
             [storefront.routes :as routes]))
 
-(defn ^:private elements
-  "Embed a list of organisms in another organism."
-  ([organism data elem-key]
-   (elements organism data elem-key :default))
-  ([organism data elem-key breakpoint]
-   (let [elems (get data elem-key)]
-     (for [[idx elem] (map-indexed vector elems)]
-       (c/build organism
-                elem
-                (c/component-id elem-key
-                                breakpoint
-                                idx))))))
-
 (def drawer-contents-step-teal-checkmark-atom
   (svg/check-mark {:class "fill-teal ml1"
                    :style {:height "14px" :width "18px"}}))
@@ -101,5 +88,6 @@
   (when (seq data)
     [:div.bg-refresh-gray.p3
      {:data-test (:promotion-helper.ui.drawer-contents/id data)}
-     (elements drawer-contents-condition-organism data :promotion-helper.ui.drawer-contents/conditions)
+     (c/elements drawer-contents-condition-organism data
+                 :promotion-helper.ui.drawer-contents/conditions)
      (drawer-contents-footer data)]))

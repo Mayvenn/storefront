@@ -9,7 +9,7 @@
                        [storefront.platform.component-utils :as utils]
                        [clojure.walk :as walk]]
                 :clj [[storefront.safe-hiccup :as safe-hiccup]]))
-  #?(:cljs (:require-macros [storefront.component :refer [defcomponent]])))
+  #?(:cljs (:require-macros [storefront.component :refer [defcomponent build]])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Port om-like component functions
@@ -101,13 +101,6 @@
               attrs `[~tag ~(normalize-attrs attrs) ~@body]
               :else `[~tag ~@body])))
    :cljs (def normalize-element identity))
-
-(defn component-id
-  "This helper creates a map with a react-key and makes that
-   value also available to the component itself through opts"
-  [& strs]
-  (let [id (apply str strs)]
-    {:opts {:id id} :key id}))
 
 (defn ^:private element? [v]
   (and (vector? v) (keyword? (first v))))
@@ -347,3 +340,24 @@
 (defmacro ^{:style/indent :defn} defdynamic-component [name & methods]
   `(def ~name (create-dynamic ~name ~@methods)))
 
+;; ----
+
+(defn component-id
+  "This helper creates a map with a react-key and makes that
+   value also available to the component itself through opts"
+  [& strs]
+  (let [id (apply str strs)]
+    {:opts {:id id} :key id}))
+
+(defn elements
+  "Embed a list of organisms in another organism."
+  ([organism data elem-key]
+   (elements organism data elem-key :default))
+  ([organism data elem-key breakpoint]
+   (let [elems (get data elem-key)]
+     (for [[idx elem] (map-indexed vector elems)]
+       (build organism
+              elem
+              (component-id elem-key
+                            breakpoint
+                            idx))))))

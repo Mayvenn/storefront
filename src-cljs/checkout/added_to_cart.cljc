@@ -20,15 +20,6 @@
             storefront.trackings
             ui.molecules))
 
-(defn ^:private elements
-  "Embed a list of organisms in another organism."
-  ([organism data elem-key]
-   (elements organism data elem-key :default))
-  ([organism data elem-key breakpoint]
-   (let [elems (get data elem-key)]
-     (for [[idx elem] (map-indexed vector elems)]
-       (c/build organism elem (c/component-id elem-key breakpoint idx))))))
-
 (defmethod storefront.trackings/perform-track e/cart-interstitial-free-mayvenn-service-tracker-mounted
   [_ _ _ app-state]
   #?(:cljs
@@ -55,8 +46,8 @@
         [:div.px4.mtj1
          {:data-test id}
          [:div.canela.title-3.center "FREE Mayvenn Service Tracker"]
-         (elements drawer-contents/drawer-contents-condition-organism data
-                   :promotion-helper.ui.drawer-contents/conditions)]
+         (c/elements drawer-contents/drawer-contents-condition-organism data
+                     :promotion-helper.ui.drawer-contents/conditions)]
         [:div])))))
 
 (defmethod storefront.effects/perform-effects e/navigate-added-to-cart
