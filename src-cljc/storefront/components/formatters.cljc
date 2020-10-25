@@ -51,15 +51,21 @@
     #?(:cljs (goog.string/format "%d/%d" (inc (.getMonth date)) (.getDate date))
        :clj (.print (org.joda.time.format.DateTimeFormat/forPattern "M/d") date))))
 
+(defn short-date [date-like]
+  #?(:clj date-like
+     :cljs
+     (when-let [date (date/to-datetime date-like)]
+       (goog.string/format "%02d.%02d.%d"
+                           (inc (.getMonth date))
+                           (.getDate date)
+                           (.getFullYear date)))))
+
 ;; TODO: perhaps we should make this work with clojure as well
 (do
   #?@(:cljs
       [(defn short-date-with-interposed-str [date-like s]
          (when-let [date (date/to-datetime date-like)]
            (goog.string/format "%d%s%ds%d" (inc (.getMonth date)) s (.getDate date) s (.getFullYear date))))
-       (defn short-date [date-like]
-         (when-let [date (date/to-datetime date-like)]
-           (goog.string/format "%02d.%02d.%d" (inc (.getMonth date)) (.getDate date) (.getFullYear date))))
 
        (defn less-year-more-day-date [date-like]
          (when-let [date (date/to-datetime date-like)]
