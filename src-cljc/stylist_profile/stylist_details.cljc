@@ -85,12 +85,19 @@
    :footer.body/id    "meet-more-stylists"})
 
 (defn ^:private sticky-select-stylist<-
-  [stylist]
-  {:sticky-select-stylist.cta/id     "select-stylist"
-   :sticky-select-stylist.cta/target [e/control-adventure-select-stylist
-                                      {:servicing-stylist (:diva/stylist stylist)
-                                       :card-index        0}]
-   :sticky-select-stylist.cta/label  (str "Select " (:stylist/name stylist))})
+  [current-stylist detailed-stylist]
+  (merge
+   {:sticky-select-stylist.cta/id     "select-stylist"
+    :sticky-select-stylist.cta/target [e/control-adventure-select-stylist
+                                       {:servicing-stylist (:diva/stylist detailed-stylist)
+                                        :card-index        0}]
+    :sticky-select-stylist.cta/label (str
+                                      (cond
+                                        (empty? current-stylist)              "Select "
+                                        (not= (:stylist/id current-stylist)
+                                              (:stylist/id detailed-stylist)) "Switch to "
+                                        :else                                 "Continue with ")
+                                      (:stylist/name detailed-stylist))}))
 
 (defn ^:private carousel<-
   [{:stylist/keys [slug id] :stylist.gallery/keys [images]}]
@@ -286,6 +293,7 @@
   [state _]
   (let [skus-db           (get-in state storefront.keypaths/v2-skus)
         current-order     (api.orders/current state)
+        current-stylist   (stylist/current state)
         detailed-stylist  (stylist/detailed state)
         paginated-reviews (get-in state stylist-directory.keypaths/paginated-reviews)
 
@@ -324,7 +332,8 @@
                        :experience            (experience<- hide-bookings?
                                                             detailed-stylist)
                        :google-maps           (maps/map-query state)
-                       :sticky-select-stylist (sticky-select-stylist<- detailed-stylist)})
+                       :sticky-select-stylist (sticky-select-stylist<- current-stylist
+                                                                       detailed-stylist)})
                     (if shop-stylist-profile?
                       {:specialties-discountable (shop-discountable-services<-
                                                   skus-db
