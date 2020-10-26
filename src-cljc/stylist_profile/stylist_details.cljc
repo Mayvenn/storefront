@@ -241,42 +241,44 @@
 (defn ^:private shop-discountable-services<-
   [skus-db {:order/keys [items]} adding-a-service-sku-to-bag?
    {:stylist.services/keys [offered-sku-ids offered-ordering]}]
-  (let [services-items   (select services/discountable items)
-        offered-services (->> (vals skus-db)
-                              (select services/discountable)
-                              (filter (comp offered-sku-ids
-                                            :catalog/sku-id))
-                              (sort-by (comp offered-ordering
-                                             :catalog/sku-id))
-                              not-empty)]
-    (when offered-services
-      {:specialties-shopping.title/id      "free-mayvenn-services"
-       :specialties-shopping.title/primary "Free Mayvenn Services"
-       :specialties-shopping/specialties
-       (map (partial service-sku-query
-                      services-items
-                      adding-a-service-sku-to-bag?)
-             offered-services)})))
+  (when (seq offered-sku-ids)
+    (let [services-items   (select services/discountable items)
+          offered-services (->> (vals skus-db)
+                                (select services/discountable)
+                                (filter (comp offered-sku-ids
+                                              :catalog/sku-id))
+                                (sort-by (comp offered-ordering
+                                               :catalog/sku-id))
+                                not-empty)]
+      (when offered-services
+        {:specialties-shopping.title/id      "free-mayvenn-services"
+         :specialties-shopping.title/primary "Free Mayvenn Services"
+         :specialties-shopping/specialties
+         (map (partial service-sku-query
+                       services-items
+                       adding-a-service-sku-to-bag?)
+              offered-services)}))))
 
 (defn ^:private shop-a-la-carte-services<-
   [skus-db {:order/keys [items]} adding-a-service-sku-to-bag?
    {:stylist.services/keys [offered-sku-ids offered-ordering]}]
-  (let [services-items   (select services/a-la-carte items)
-        offered-services (->> (vals skus-db)
-                              (select services/a-la-carte)
-                              (filter (comp offered-sku-ids
-                                            :catalog/sku-id))
-                              (sort-by (comp offered-ordering
-                                             :catalog/sku-id))
-                              not-empty)]
-    (when offered-services
-      {:specialties-shopping.title/id      "a-la-carte-services"
-       :specialties-shopping.title/primary "À La Carte Services"
-       :specialties-shopping/specialties
-       (map (partial service-sku-query
-                      services-items
-                      adding-a-service-sku-to-bag?)
-             offered-services)})))
+  (when offered-sku-ids
+    (let [services-items   (select services/a-la-carte items)
+          offered-services (->> (vals skus-db)
+                                (select services/a-la-carte)
+                                (filter (comp offered-sku-ids
+                                              :catalog/sku-id))
+                                (sort-by (comp offered-ordering
+                                               :catalog/sku-id))
+                                not-empty)]
+      (when offered-services
+        {:specialties-shopping.title/id      "a-la-carte-services"
+         :specialties-shopping.title/primary "À La Carte Services"
+         :specialties-shopping/specialties
+         (map (partial service-sku-query
+                       services-items
+                       adding-a-service-sku-to-bag?)
+              offered-services)}))))
 
 ;; TODO(corey) Stylist not found template? currently redirects to find-your-stylist
 
