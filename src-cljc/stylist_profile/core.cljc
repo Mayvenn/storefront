@@ -68,6 +68,7 @@
 (defmethod transitions/transition-state events/navigate-adventure-stylist-profile
   [_ _ {:keys [stylist-id]} app-state]
   (-> app-state
+      ;; TODO use model?
       (assoc-in adventure.keypaths/stylist-profile-id (spice.core/parse-double stylist-id))
       (assoc-in stylist-directory.keypaths/paginated-reviews nil)))
 

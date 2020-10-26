@@ -19,7 +19,7 @@
 
 (defn service-swap-popup-component
   [{:service-swap-popup/keys [dismiss-target confirm-target title confirm-copy dismiss-copy] :as data}]
-   (ui/modal {:col-class   "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
+  (ui/modal {:col-class   "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
              :close-attrs (apply utils/fake-href dismiss-target)
              :bg-class    "bg-darken-4"}
             [:div.bg-white.flex.flex-column.items-center.p2.mx2
@@ -43,7 +43,7 @@
                       [:div copy])])]])
              [:div.flex.mb5.items-center.justify-center.col-12
               (ui/button-medium-primary (merge (apply utils/fake-href confirm-target)
-                                               {:class "col-8"
+                                               {:class     "col-8"
                                                 :data-test "service-swap-popup-confirm"}) confirm-copy)]
              [:div.flex.mb10.items-center.justify-center.col-12
               (ui/button-medium-underline-primary (merge (apply utils/fake-href dismiss-target)
@@ -58,13 +58,13 @@
                                          first
                                          :variant-name)
         intended-service-title      (-> data (get-in core/sku-intended-for-swap) :sku/title)
-        stylist-to-be-swapped  (-> data
-                                   (get-in adventure.keypaths/adventure-servicing-stylist)
-                                   stylists/->display-name)
-        stylist-id             (get-in data adventure.keypaths/stylist-profile-id)
-        intended-stylist-name  (-> data
-                                   (stylists/by-id stylist-id)
-                                   stylists/->display-name)]
+        stylist-to-be-swapped       (-> data
+                                        (get-in adventure.keypaths/adventure-servicing-stylist)
+                                        stylists/->display-name)
+        stylist-id                  (get-in data adventure.keypaths/stylist-profile-id)
+        intended-stylist-name       (-> data
+                                        (stylists/by-id stylist-id)
+                                        stylists/->display-name)]
     {:service-swap-popup/confirm-target    [events/control-stylist-profile-swap-popup-confirm]
      :service-swap-popup/dismiss-target    [events/control-stylist-profile-swap-popup-dismiss]
      :service-swap-popup/confirm-copy      "Confirm Swap"
