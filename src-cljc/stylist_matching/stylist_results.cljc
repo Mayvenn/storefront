@@ -180,11 +180,11 @@
                               :name_query         moniker}))))
 
 (defn header<-
-  [{:order.items/keys [quantity]} back]
+  [{:order.items/keys [quantity]}]
   {:header.title/id               "adventure-title"
    :header.title/primary          "Meet Your Stylist"
    :header.back-navigation/id     "adventure-back"
-   :header.back-navigation/back   back
+
    :header.back-navigation/target [e/navigate-adventure-find-your-stylist]
    :header.cart/id                "mobile-cart"
    :header.cart/value             quantity
@@ -771,8 +771,7 @@
                                                                            search-by-name?
                                                                            google-loaded?
                                                                            skus-db)
-                        :header                   (header<- current-order
-                                                            (first (get-in app-state storefront.keypaths/navigation-undo-stack)))
+                        :header                   (header<- current-order)
                         :stylist-results-present? (seq (concat matching-stylists non-matching-stylists))
 
                         :stylist-results-returned?    (contains? (:status matching) :results/stylists)
