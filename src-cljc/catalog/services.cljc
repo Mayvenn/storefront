@@ -21,4 +21,4 @@
    :service/type       #{"addon"}})
 
 (def physical
-  {:catalog/department #{"hair"}})
+  {:catalog/department #{"hair" "stylist-exclusives"}})

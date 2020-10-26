@@ -210,13 +210,13 @@
 ;;; ---- API in progress; Please chat Corey
 
 (def ^:private select
-  (partial match-all {:selector/strict? true}))
+  (comp seq (partial match-all {:selector/strict? true})))
 
 (def ^:private recent
   {:item/recent? #{true}})
 
 (def ^:private physical
-  {:catalog/department #{"hair"}})
+  {:catalog/department #{"hair" "stylist-exclusives"}})
 
 (def ^:private addons
   {:catalog/department #{"service"}

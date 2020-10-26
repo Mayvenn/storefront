@@ -186,13 +186,13 @@
            ui/ucare-img-id))
 
 (def ^:private select
-  (partial spice.selector/match-all {:selector/strict? true}))
+  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
 
 (def ^:private ?recent
   {:item/recent? #{true}})
 
 (def ^:private ?physical
-  {:catalog/department #{"hair"}})
+  {:catalog/department #{"hair" "stylist-exclusives"}})
 
 (def ^:private ?discountable
   {:catalog/department                 #{"service"}
@@ -247,7 +247,7 @@
 
 (defn cart-items<-
   [items]
-  (for [item (select (merge ?recent ?physical) items)
+  (for [item (select (merge ?physical ?recent) items)
         :let
         [{:catalog/keys [sku-id]
           :hacky/keys   [cart-title]

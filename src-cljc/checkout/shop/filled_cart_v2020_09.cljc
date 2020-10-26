@@ -37,7 +37,7 @@
   (comp seq (partial spice.selector/match-all {:selector/strict? true})))
 
 (def ^:private ?physical
-  {:catalog/department #{"hair"}})
+  {:catalog/department #{"hair" "stylist-exclusives"}})
 
 (def ^:private ?wig
   {:catalog/department #{"hair"}
