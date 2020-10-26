@@ -74,7 +74,7 @@
    :header.back-navigation/back   (not-empty (first undo-history))
    :header.back-navigation/target [e/navigate-adventure-find-your-stylist]
    :header.cart/id                "mobile-cart"
-   :header.cart/value             quantity
+   :header.cart/value             (or quantity 0)
    :header.cart/color             "white"})
 
 (def ^:private footer<-
