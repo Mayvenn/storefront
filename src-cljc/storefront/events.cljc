@@ -574,8 +574,8 @@
 
 (defpath flow|stylist-matching|initialized)
 
-;; TODO: bad name
 (defpath flow|stylist-matching|set-presearch-field)
+(defpath flow|stylist-matching|set-address-field)
 
 (defpath flow|stylist-matching|param-ids-constrained)
 (defpath flow|stylist-matching|param-address-constrained)
@@ -602,6 +602,3 @@
 (defpath cancel-presearch-requests)
 ;; TODO(corey) think about general solutions to the api handlers problem
 (defpath api-success-presearch-name)
-
-;; Pretty mechanical, is there a way to abstract away?
-(defpath presearch-result-click-away)

@@ -37,8 +37,9 @@
 
 (def service-delimiter "~")
 
+;; TODO: string/blank?
 (defn ^:private query-params<-
-  [query-params {:param/keys [location services] moniker :param/name}]
+  [query-params {:param/keys [location services address] moniker :param/name}]
   (merge (apply dissoc query-params query-param-keys)
          (when (seq moniker)
            {:name moniker})
@@ -46,7 +47,9 @@
            {:lat latitude :long longitude})
          (when (seq services)
            {:preferred-services (string/join service-delimiter
-                                             services)})))
+                                             services)})
+         (when (seq address)
+           {:address address})))
 
 ;; ---------------------- Models
 

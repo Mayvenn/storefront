@@ -96,9 +96,7 @@
 (defn click-away-handler [e]
   (let [target (.-target e)]
     (when-not (some #(.contains % target) (array-seq (js/document.querySelectorAll ".flyout")))
-      (handle-message events/flyout-click-away))
-    (when-not (some #(.contains % target) (array-seq (js/document.querySelectorAll ".presearch-result")))
-      (handle-message events/presearch-result-click-away))))
+      (handle-message events/flyout-click-away))))
 
 (defn attach-click-away-handler
   []

@@ -36,20 +36,14 @@
 ;;  - Cold loads of the page, both with lat+long and stylist ids
 ;;  - Refining of search results
 ;;
-(defmethod transitions/transition-state e/navigate-adventure-stylist-results
-  [_ _ _ state]
-  ;; Prefill address input with previously collected address
-  (let [previous-address (not-empty (:param/address (stylist-matching<- state)))]
-    (cond-> state
-      previous-address
-      (assoc-in k/google-input previous-address))))
 
 (defmethod effects/perform-effects e/navigate-adventure-stylist-results
   [_ _ {{preferred-services :preferred-services
          moniker            :name
          stylist-ids        :s
          latitude           :lat
-         longitude          :long} :query-params} prev-state state]
+         longitude          :long
+         address            :address} :query-params} prev-state state]
   #?(:cljs (google-maps/insert))
 
   ;; Init the model if there isn't one, e.g. Direct load
@@ -61,9 +55,11 @@
     (messages/handle-message e/flow|stylist-matching|param-ids-constrained
                              {:ids stylist-ids}))
   ;; Pull name search from URI
-  (when (seq moniker)
-    (messages/handle-message e/flow|stylist-matching|set-presearch-field {:name moniker})
-    (messages/handle-message e/flow|stylist-matching|param-name-constrained {:name moniker}))
+  (messages/handle-message e/flow|stylist-matching|set-presearch-field {:name moniker})
+  (messages/handle-message e/flow|stylist-matching|param-name-constrained {:name moniker})
+
+  ;; Address from URI
+  (messages/handle-message e/flow|stylist-matching|set-address-field {:address address})
 
   ;; Pull preferred services from URI; filters for service types
   (when-let [services (some-> preferred-services
@@ -339,9 +335,9 @@
   [{:stylist-results.name-input/keys [id value errors keypath]} _ _]
   (when id
     (ui/input-with-charms
-     {:left-charm (svg/magnifying-glass {:width  "19px"
-                                         :height "19px"
-                                         :class  "fill-gray"})
+     {:left-charm  (svg/magnifying-glass {:width  "19px"
+                                          :height "19px"
+                                          :class  "fill-gray"})
       :input-field {:errors        errors
                     :autoComplete  "off"
                     :value         value
@@ -355,6 +351,13 @@
                     :on-key-up     (fn name-input-enter-handler [e]
                                      (when (= "Enter" (.. e -key))
                                        (execute-named-search (.. e -target -value))))
+                    :on-blur       (fn name-input-blur-handler [e]
+                                     (when-not (some-> e
+                                                       .-relatedTarget
+                                                       (.getAttribute "class")
+                                                       (string/includes? "presearch-result"))
+                                       (messages/handle-message e/flow|stylist-matching|presearch-canceled)
+                                       (messages/handle-message e/flow|stylist-matching|set-presearch-field)))
                     :label         "All Stylists"
                     :wrapper-class "flex items-center col-12 bg-white border-black"
                     :type          "text"}
@@ -383,6 +386,8 @@
                       :value         value
                       :keypath       keypath
                       :data-test     id
+                      :on-blur       (fn [e]
+                                       (messages/handle-message e/flow|stylist-matching|set-address-field))
                       :id            id
                       :wrapper-class "flex items-center col-12 bg-white border-black"
                       :type          "text"}})))))
@@ -509,8 +514,7 @@
   (merge
    (when search-by-name?
      {:stylist-results.name-input/id      "stylist-search-name-input"
-      :stylist-results.name-input/value   (or (:presearch/name matching)
-                                              (:param/name matching))
+      :stylist-results.name-input/value   (:presearch/name matching)
       :stylist-results.name-input/keypath k/presearch-name
       :stylist-results.name-input/errors  []})
    (when google-loaded?
@@ -675,10 +679,6 @@
   (every? #(service-menu (accessors.filters/service-sku-id->service-menu-key %))
           preferences))
 
-(defmethod effects/perform-effects e/presearch-result-click-away
-  [_ _ _ _ state]
-  (messages/handle-message e/flow|stylist-matching|presearch-canceled))
-
 (defmethod effects/perform-effects e/control-stylist-matching-presearch-stylist-result-selected
   [_ _ args _ state]
   #?(:cljs
@@ -699,11 +699,20 @@
 
 (defmethod transitions/transition-state e/flow|stylist-matching|set-presearch-field
   [_ _ args state]
-  (-> state
-      ;; Close search results
-      (update-in k/status disj :results.presearch/name)
-      ;; Place selected name in presearch field
-      (assoc-in k/presearch-name (:name args))))
+  ;; "Set or Reset"
+  (let [{{moniker :name} :query-params} (get-in state storefront.keypaths/navigation-args)]
+    (-> state
+        ;; Close search results
+        (update-in k/status disj :results.presearch/name)
+        ;; Place selected name in presearch field
+        (assoc-in k/presearch-name (or (:name args) moniker)))))
+
+(defmethod transitions/transition-state e/flow|stylist-matching|set-address-field
+  [_ _ args state]
+  (let [{{address :address} :query-params} (get-in state storefront.keypaths/navigation-args)]
+    (-> state
+        (assoc-in k/address (or (:address args) address))
+        (assoc-in k/google-input (or (:address args) address)))))
 
 (defmethod effects/perform-effects e/control-stylist-matching-presearch-salon-result-selected
   [_ _ args _ state]
