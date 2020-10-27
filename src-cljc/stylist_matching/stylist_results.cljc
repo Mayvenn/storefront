@@ -446,7 +446,7 @@
 
 (defcomponent matching-count-organism
   [{:keys [stylist-count-content]} _ _]
-  [:div.col-12.content-3.mt2.mb1.left-align.mx3
+  [:div.col-12.content-3.mt2.mb1.left-align.px3
    stylist-count-content])
 
 (defcomponent non-matching-breaker
