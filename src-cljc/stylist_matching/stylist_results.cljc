@@ -344,6 +344,7 @@
                     :data-test     id
                     :id            id
                     :max-length    100
+                    :on-click      (fn [e] (.focus (.-target e)))
                     :on-change     (fn [e]
                                      (messages/handle-message e/flow|stylist-matching|param-name-presearched
                                                               {:presearch/name (.. e -target -value)}))
@@ -573,25 +574,28 @@
   (when (seq elements)
     (component/html
      [:div.absolute.left-0.right-0.bg-white.z1.border.border-gray
-      (for [{:stylist-results.name-presearch-results.result/keys [ucare-uri primary secondary target]}
-            elements]
-        [:a.flex.px4.py2.presearch-result.inherit-color
-         (merge {:key primary}
-                (apply utils/fake-href target))
-         [:div.self-center.mr3
-          {:style {:width "26px"}}
-          (if ucare-uri
-            (ui/circle-picture {:width "26px"}
-                               (ui/square-image {:resizable-url ucare-uri}
-                                                26))
-            (svg/mirror {:class  "fill-gray"
-                         :width  "20px"
-                         :height "20px"}))]
-         [:div.left-align
-          [:div primary]
-          (when secondary
-            [:div.content-4.dark-gray
-             secondary])]])])))
+      (map-indexed
+       (fn [index {:stylist-results.name-presearch-results.result/keys [ucare-uri primary secondary target]}]
+         [:a.flex.px4.py2.presearch-result.inherit-color
+          (merge {:key primary
+                  :tab-index (str index)}
+
+                 (apply utils/fake-href target))
+          [:div.self-center.mr3
+           {:style {:width "26px"}}
+           (if ucare-uri
+             (ui/circle-picture {:width "26px"}
+                                (ui/square-image {:resizable-url ucare-uri}
+                                                 26))
+             (svg/mirror {:class  "fill-gray"
+                          :width  "20px"
+                          :height "20px"}))]
+          [:div.left-align
+           [:div primary]
+           (when secondary
+             [:div.content-4.dark-gray
+              secondary])]])
+        elements)])))
 
 (defn stylist-results-empty-name-presearch-results-molecule
   [{:empty-stylist-search/keys [id primary]}]
