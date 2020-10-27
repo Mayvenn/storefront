@@ -78,7 +78,7 @@
   [_ _ _ _ state]
   #?(:cljs
      (api/get-products (get-in state storefront.keypaths/api-cache)
-                       (merge-with clojure.set/union catalog.services/discountable catalog.services/a-la-carte)
+                       catalog.services/base
                        (partial publish e/api-success-v3-products-for-stylist-filters))))
 
 ;; Param 'location' constrained

@@ -16,6 +16,10 @@
    :service/type                       #{"base"}
    :promo.mayvenn-install/discountable #{false}})
 
+(def base
+  {:catalog/department #{"service"}
+   :service/type       #{"base"}})
+
 (def addons
   {:catalog/department #{"service"}
    :service/type       #{"addon"}})
