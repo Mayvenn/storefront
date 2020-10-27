@@ -290,7 +290,7 @@
                 :copy          "Continue Shopping"
                 :event-message [e/navigate-category {:catalog/category-id "23"
                                                      :page/slug           "mayvenn-install"}]
-                :id            "continue-shopping-link"})
+                :id            "continue-shopping"})
 
 (def cta<-
   #:cta{:target [e/control-cart-interstitial-view-cart]
