@@ -99,20 +99,18 @@
     disabled-id                        :vertical-direct-to-cart-card.disabled/id
     disabled-primary                   :vertical-direct-to-cart-card.disabled/primary}]
   (c/html
-   (let [non-cta-action (merge (apply utils/route-to card-target)
-                               {:data-test react-key})]
+   (let [non-cta-action (apply utils/route-to card-target)]
      [:div.inherit-color.col.col-6.col-4-on-tb-dt.p1
       {:key react-key}
       [:div.border.border-cool-gray.container-height.center.flex.flex-column.justify-between
        {:class (when disabled-background? "bg-cool-gray")}
        [:a.inherit-color.mb2 non-cta-action
         (ui/screen-aware card-image-molecule data)]
-       [:a.inherit-color non-cta-action primary]
+       [:a.inherit-color (assoc non-cta-action :data-test react-key) primary]
        [:a.inherit-color non-cta-action secondary]
        (when disabled-id
          [:a.red.content-3.mt2.mb4
-          (merge {:data-test not-offered-id}
-                 non-cta-action)
+          (assoc non-cta-action :data-test not-offered-id)
           disabled-primary])
        (when cta-id
          [:div.my2.mx5
