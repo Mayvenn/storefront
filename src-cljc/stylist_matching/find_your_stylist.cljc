@@ -73,7 +73,7 @@
    :header.back-navigation/target [events/navigate-adventure-find-your-stylist]
    :header.cart/color             "white"
    :header.cart/id                "mobile-cart"
-   :header.cart/value             quantity
+   :header.cart/value             (or quantity 0)
    :header.title/id               "adventure-title"
    :header.title/primary          "Meet Your Stylist"})
 

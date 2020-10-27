@@ -184,10 +184,9 @@
   {:header.title/id               "adventure-title"
    :header.title/primary          "Meet Your Stylist"
    :header.back-navigation/id     "adventure-back"
-
    :header.back-navigation/target [e/navigate-adventure-find-your-stylist]
    :header.cart/id                "mobile-cart"
-   :header.cart/value             quantity
+   :header.cart/value             (or quantity 0)
    :header.cart/color             "white"})
 
 (defn- address->display-string
