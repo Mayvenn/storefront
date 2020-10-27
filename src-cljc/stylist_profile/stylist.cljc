@@ -96,7 +96,8 @@
             :stylist/name     (display-name<- diva-stylist)
             :stylist/salon    (:name salon)
 
-            :stylist/setting    (case (:salon-type salon) "salon"   "in-salon"
+            :stylist/setting    (case (:salon-type salon)
+                                  "salon"   "in-salon"
                                   "in-home" "in-home"
                                   nil)
             :stylist/experience (when-let [since (:stylist-since diva-stylist)]
