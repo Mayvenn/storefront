@@ -46,9 +46,7 @@
             [storefront.routes :as routes]
             [storefront.system.contentful :as contentful]
             [storefront.transitions :as transitions]
-            [storefront.views :as views]
-            storefront.accessors.contentful
-            [storefront.accessors.sites :as sites]))
+            [storefront.views :as views]))
 
 (def root-domain-pages-to-preserve-paths-in-redirects
   #{"/mayvenn-made"})
@@ -535,29 +533,6 @@
     (-> ((if prerender? views/prerendered-page views/index) render-ctx data)
         ->html-resp)))
 
-(defn render-look-details
-  [{:keys [storeback-config] :as render-ctx} data req {:keys [look-id album-keyword]}]
-  (let [kw-look-id                 (keyword look-id)
-        {:keys
-         [shared-cart
-          skus
-          products
-          shared-cart-creator]} (some->> (get-in data (conj keypaths/cms-ugc-collection-all-looks kw-look-id))
-                                         storefront.accessors.contentful/shared-cart-id
-                                         (api/fetch-shared-cart storeback-config))
-        shop?                   (sites/determine-site data)
-        override-keyword        (when (and shop? (= :look album-keyword))
-                                  :aladdin-free-install)]
-    (if (nil? shared-cart)
-      (util.response/redirect (path-for req events/navigate-shop-by-look {:album-keyword album-keyword}))
-      (html-response render-ctx (-> data
-                                    (assoc-in keypaths/selected-album-keyword (or override-keyword album-keyword))
-                                    (assoc-in keypaths/selected-look-id kw-look-id)
-                                    (assoc-in keypaths/shared-cart-current shared-cart)
-                                    (assoc-in keypaths/shared-cart-creator shared-cart-creator)
-                                    (update-in keypaths/v2-skus merge (products/index-skus skus))
-                                    (update-in keypaths/v2-products merge (products/index-products products)))))))
-
 (defn generic-server-render [render-ctx data req params]
   (html-response render-ctx data))
 
@@ -791,9 +766,7 @@
    events/navigate-checkout-processing       generic-server-render
    events/navigate-mayvenn-made              generic-server-render
    events/navigate-adventure-stylist-profile generic-server-render
-   events/navigate-adventure-stylist-gallery generic-server-render
-   events/navigate-shop-by-look              generic-server-render
-   events/navigate-shop-by-look-details      render-look-details})
+   events/navigate-adventure-stylist-gallery generic-server-render})
 
 (defn robots [_]
   (string/join "\n" robots-content))

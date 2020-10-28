@@ -149,10 +149,3 @@
                                                {:query-params {:additional-promo-code promo-code}})]
     (when (<= 200 status 299)
       (:promotions body))))
-
-(defn fetch-shared-cart [storeback-config shared-cart-id]
-  (let [{:keys [status body]} (storeback-fetch storeback-config
-                                               "/fetch-shared-cart"
-                                               {:query-params {:shared-cart-id shared-cart-id}})]
-    (when (<= 200 status 299)
-      body)))

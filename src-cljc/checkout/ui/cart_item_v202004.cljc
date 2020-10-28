@@ -49,15 +49,15 @@
            :data-test sticker-id
            :style     {:height "26px"
                        :width  "26px"
-                       :right  "-10px"
-                       :top    "-5px"}}
+                       :right  -10
+                       :top    -5}}
           sticker-label])
        [:div.flex.items-center.justify-center
         {:style     {:height "45px"
                      :width  "48px"}
          :key       (str "cart-item-square-thumbnail-" sku-id)
          :data-test (str "line-item-img-" sku-id)}
-        (ui/ucare-img {:width "48"
+        (ui/ucare-img {:width 48
                        :class "block border border-cool-gray"}
                       ucare-id)]])))
 
@@ -70,7 +70,7 @@
               :height        "60px"}}
 
      [:div.relative
-      (ui/ucare-img {:width "56"
+      (ui/ucare-img {:width "56px"
                      :class "mtp2"} image-url)]]))
 
 (defn cart-item-remove-action-molecule

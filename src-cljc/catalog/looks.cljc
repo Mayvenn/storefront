@@ -16,14 +16,9 @@
       [:h1.title-1.canela.py3 (:title copy)]
       [:p.col-10.col-6-on-tb-dt.mx-auto.proxima.content-2 (:description copy)]]
      [:div.flex.flex-wrap.mbn2.justify-center.justify-start-on-tb-dt.bg-cool-gray.py2-on-tb-dt.px1-on-tb-dt
-      (map-indexed
-       (fn [idx look]
-         (ui/screen-aware component-ugc/social-image-card-component
-                          (assoc look :hack/above-the-fold? (zero? idx))
-                          {:opts               {:copy copy}
-                           :child-handles-ref? true
-                           :key                (str (:id look))}))
-       looks)]]))
+      (for [look looks]
+        (component/build component-ugc/social-image-card-component look {:opts {:copy copy}
+                                                                         :key  (str (:id look))}))]]))
 
 (defn query [data]
   (let [selected-album-kw (get-in data keypaths/selected-album-keyword)
