@@ -402,31 +402,6 @@
                       :wrapper-class "flex items-center col-12 bg-white border-black"
                       :type          "text"}})))))
 
-;; This variation will probably be deprecated when new feature goes live
-(defdynamic-component stylist-results-address-input-charmed-right-molecule
-  (did-mount
-   [_]
-   (messages/handle-message e/stylist-results-address-component-mounted))
-  (render
-   [this]
-   (let [{:stylist-results.address-input-charmed-right/keys [id value errors keypath]}
-         (component/get-props this)]
-     (component/html
-      (ui/input-with-charm
-       {:errors        errors
-        :autoComplete  "off"
-        :value         value
-        :keypath       keypath
-        :data-test     id
-        :id            id
-        :wrapper-class "flex items-center col-12 bg-white border-black"
-        :type          "text"}
-       [:div.flex.items-center.px2.border.border-black
-        {:style {:border-left "none"}}
-        ^:inline (svg/magnifying-glass {:width  "19px"
-                                        :height "19px"
-                                        :class  "fill-gray"})])))))
-
 (defn stylist-results-service-filters-molecule
   [{:stylist-results.service-filters/keys [preferences]}]
   (component/html
@@ -520,23 +495,17 @@
   2. name (under experiment)
   3. address (location)
   4. service filters"
-  [matching empty-search-results? search-by-name? google-loaded? skus-db]
+  [matching empty-search-results? google-loaded? skus-db]
   (merge
-   (when search-by-name?
-     {:stylist-results.name-input/id      "stylist-search-name-input"
-      :stylist-results.name-input/value   (:presearch/name matching)
-      :stylist-results.name-input/keypath k/presearch-name
-      :stylist-results.name-input/errors  []})
+   {:stylist-results.name-input/id      "stylist-search-name-input"
+    :stylist-results.name-input/value   (:presearch/name matching)
+    :stylist-results.name-input/keypath k/presearch-name
+    :stylist-results.name-input/errors  []}
    (when google-loaded?
-     (if search-by-name?
-       {:stylist-results.address-input/id      "stylist-search-input"
-        :stylist-results.address-input/value   (:google/input matching)
-        :stylist-results.address-input/keypath k/google-input
-        :stylist-results.address-input/errors  []}
-       {:stylist-results.address-input-charmed-right/id      "stylist-search-input"
-        :stylist-results.address-input-charmed-right/value   (:google/input matching)
-        :stylist-results.address-input-charmed-right/keypath k/google-input
-        :stylist-results.address-input-charmed-right/errors  []}))
+     {:stylist-results.address-input/id      "stylist-search-input"
+      :stylist-results.address-input/value   (:google/input matching)
+      :stylist-results.address-input/keypath k/google-input
+      :stylist-results.address-input/errors  []})
    (when-let [pills (->> (:param/services matching)
                          (keep
                           (fn [sku-id]
@@ -622,8 +591,6 @@
    (component/build stylist-results-name-input-molecule data)
    (when (:stylist-results.address-input/id data)
      (component/build stylist-results-address-input-molecule data))
-   (when (:stylist-results.address-input-charmed-right/id data)
-     (component/build stylist-results-address-input-charmed-right-molecule data))
    [:div.relative
     (stylist-results-name-presearch-results-molecule data)
     (stylist-results-empty-name-presearch-results-molecule data)
@@ -740,7 +707,6 @@
         skus-db       (get-in app-state storefront.keypaths/v2-skus)
 
         ;; Experiments
-        search-by-name?        (experiments/search-by-name? app-state)
         hide-bookings?         (experiments/hide-bookings? app-state)
         just-added-only?       (experiments/just-added-only? app-state)
         just-added-experience? (experiments/just-added-experience? app-state)
@@ -781,7 +747,6 @@
                         :scrim?                   presearching-name?
                         :stylist-search-inputs    (stylist-search-inputs<- matching
                                                                            empty-search-results?
-                                                                           search-by-name?
                                                                            google-loaded?
                                                                            skus-db)
                         :header                   (header<- current-order)

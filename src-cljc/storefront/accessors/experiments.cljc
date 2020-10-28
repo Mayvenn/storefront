@@ -126,10 +126,6 @@
   [data]
   (display-feature? data "remove-closures"))
 
-(defn search-by-name?
-  [data]
-  (display-feature? data "search-by-name"))
-
 (defn shop-stylist-profile?
   [data]
   (display-feature? data "shop-stylist-profile"))
