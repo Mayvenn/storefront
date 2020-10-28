@@ -105,7 +105,17 @@
      (google-maps/attach "geocode"
                          "stylist-search-input"
                          k/google-location
-                         #(messages/handle-message e/stylist-results-address-selected))))
+                         #(messages/handle-message e/stylist-results-address-selected)
+                         ;; HACK: in order to bypass google maps' default enter behavior
+                         ;; we are overwriting it to ensure we call our own code that's
+                         ;; attched to the blur event. Otherwise it was triggering a new search.
+                         [(fn [elem _]
+                            (js/google.maps.event.addDomListener
+                             elem
+                             "keydown"
+                             (fn [e]
+                               (when (= "Enter" (.. e -key))
+                                 (.blur (.-target e))))))])))
 
 (defn ^:private address-input
   [elemID]

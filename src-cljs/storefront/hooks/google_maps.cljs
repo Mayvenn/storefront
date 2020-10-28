@@ -1,9 +1,10 @@
 (ns storefront.hooks.google-maps
-  (:require [spice.core :as spice]
-            [storefront.browser.tags :as tags]
-            [storefront.events :as events]
-            [storefront.platform.messages :as m]
-            [storefront.config :as config]))
+  (:require
+   [spice.core :as spice]
+   [storefront.browser.tags :as tags]
+   [storefront.events :as events]
+   [storefront.platform.messages :as m]
+   [storefront.config :as config]))
 
 (def key-map
   {"street_number"               :street-number
@@ -46,8 +47,8 @@
 
 (defn attach
   ([completion-type address-elem address-keypath]
-   (attach completion-type address-elem address-keypath (constantly nil)))
-  ([completion-type address-elem address-keypath place-change-callback]
+   (attach completion-type address-elem address-keypath (constantly nil) nil))
+  ([completion-type address-elem address-keypath place-change-callback additional-fns]
    (when (.hasOwnProperty js/window "google")
      (let [options      (clj->js {"types"                 [completion-type]
                                   "componentRestrictions" {"country" "us"}})
@@ -60,7 +61,9 @@
                        (m/handle-message events/autocomplete-update-address
                                          {:address         (address autocomplete)
                                           :address-keypath address-keypath})
-                       (place-change-callback)))))))
+                       (place-change-callback)))
+       (doseq [f additional-fns]
+         (f elem autocomplete))))))
 
 (defn remove-containers []
   (let [containers (.querySelectorAll js/document ".pac-container")]
