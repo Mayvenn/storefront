@@ -284,8 +284,7 @@
           [storeback-requests storeback-handler] (with-requests-chan (routes
                                                                       common/default-storeback-handler
                                                                       (GET "/v2/orders/:number" req {:status 200
-                                                                                                     ;; TODO: fixme
-                                                                                                     :body   "{\"number\": \"W123456\"}"})))]
+                                                                                                     :body (generate-string {:number "W123456"})})))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
           (let [resp (handler (-> (mock/request :get "https://bob.mayvenn.com/")
