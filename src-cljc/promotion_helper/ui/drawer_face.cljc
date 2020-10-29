@@ -3,8 +3,8 @@
             [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as utils]))
 
-(def drawer-face-teal-checkmark-atom
-  (svg/check-mark {:class "fill-teal"
+(def drawer-face-s-color-checkmark-atom
+  (svg/check-mark {:class "fill-s-color"
                    :style {:height "12px" :width "14px"}}))
 
 (defn drawer-face-circle-molecule

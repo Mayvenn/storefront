@@ -5,8 +5,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.routes :as routes]))
 
-(def drawer-contents-step-teal-checkmark-atom
-  (svg/check-mark {:class "fill-teal ml1"
+(def drawer-contents-step-s-color-checkmark-atom
+  (svg/check-mark {:class "fill-s-color ml1"
                    :style {:height "14px" :width "18px"}}))
 
 (def drawer-contents-step-gray-checkmark-atom
@@ -40,7 +40,7 @@
           :let [dt (str "drawer-contents.checkmarks.s-color.completed-" id "-" n)]]
       [:span {:key       dt
               :data-test dt}
-       drawer-contents-step-teal-checkmark-atom])
+       drawer-contents-step-s-color-checkmark-atom])
     (for [n    (range remaining)
           :let [dt (str "drawer-contents.checkmarks.gray.remaining-" id "-" n)]]
       [:span {:key       dt

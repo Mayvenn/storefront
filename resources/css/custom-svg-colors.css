@@ -19,7 +19,6 @@
 .stroke-aqua      { stroke: var(--aqua); }
 .fill-aqua        { fill: var(--aqua); }
 
-.fill-teal         { fill: var(--teal); }
 .fill-twitter-blue { fill: var(--twitter-blue); }
 .fill-none         { fill: none; }
 
@@ -39,5 +38,4 @@
   --dark-gray:    #8B8B8B;
   --cool-gray:    #eeefef;
   --black:        #000000;
-  --teal:         #6BC8AD; /* TODO GROT (see s-color above)*/
 }

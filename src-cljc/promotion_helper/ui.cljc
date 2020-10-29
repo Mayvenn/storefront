@@ -136,7 +136,7 @@
         :promotion-helper.ui.drawer-face.circle/id    "failed-criteria-count"}
        {:promotion-helper.ui.drawer-face.circle/color "bg-white"
         :promotion-helper.ui.drawer-face.circle/id    "success-criteria-count"
-        :promotion-helper.ui.drawer-face.circle/value [:svg/check-mark {:class "fill-teal"
+        :promotion-helper.ui.drawer-face.circle/value [:svg/check-mark {:class "fill-s-color"
                                                                         :style {:height "12px" :width "14px"}}]}))}
    (when opened?
      {:drawer-contents (drawer-contents-ui<- free-mayvenn-service)})))

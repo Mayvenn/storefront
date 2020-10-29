@@ -616,7 +616,7 @@
 
      (when free-mayvenn-service?
        {:price-block/primary-struck            (mf/as-money sku-price)
-        :price-block/secondary                 ^:ignore-interpret-warning [:span.teal "FREE"]
+        :price-block/secondary                 ^:ignore-interpret-warning [:span.s-color "FREE"]
         :title/secondary                       (:promo.mayvenn-install/requirement-copy product)
         :browse-stylists-banner/title          "Amazing Stylists"
         :browse-stylists-banner/icon           [:svg/heart {:class  "fill-p-color"
