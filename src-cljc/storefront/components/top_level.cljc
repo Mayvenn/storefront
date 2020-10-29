@@ -11,7 +11,7 @@
                        storefront.components.share-your-cart
                        storefront.components.wig-customization-popup
                        storefront.components.service-swap-popup
-                       stylist-profile.cart-swap])
+                       checkout.cart.swap])
             #?@(:clj
                 [[design-system.home :as design-system]])
             adventure.informational.about-our-hair

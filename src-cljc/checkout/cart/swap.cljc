@@ -1,4 +1,4 @@
-(ns stylist-profile.cart-swap
+(ns checkout.cart.swap
   (:require #?@(:cljs [[storefront.components.popup :as popup]])
             api.orders
             catalog.services

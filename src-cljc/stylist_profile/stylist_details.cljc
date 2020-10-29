@@ -29,7 +29,7 @@
             [storefront.platform.messages :refer [handle-message]]
             [storefront.request-keys :as request-keys]
             stylist-directory.keypaths
-            [stylist-profile.cart-swap :as cart-swap]
+            [checkout.cart.swap :as swap]
             [stylist-profile.stylist :as stylist]
             [stylist-profile.ui.card :as card]
             [stylist-profile.ui.carousel :as carousel]
@@ -109,7 +109,7 @@
                                  {:service/intended intended-service})
                                (when intended-stylist
                                  {:stylist/intended intended-stylist}))
-                              (cart-swap/cart-swap<- state))]
+                              (swap/cart-swap<- state))]
     (if (or (:service/swap? cart-swap)
             (:stylist/swap? cart-swap))
       (handle-message e/cart-swap-popup-show cart-swap)
