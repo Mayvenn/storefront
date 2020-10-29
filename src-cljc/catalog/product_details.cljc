@@ -18,6 +18,7 @@
             [catalog.product-details-ugc :as ugc]
             [catalog.products :as products]
             [catalog.selector.sku :as sku-selector]
+            catalog.services
             [catalog.ui.molecules :as catalog.M]
             [catalog.ui.how-it-works :as how-it-works]
             [checkout.cart.swap :as swap]
@@ -1121,16 +1122,22 @@
                                                           events/navigate-added-to-cart
                                                           events/navigate-cart)))))))
 
+(def ^:private select
+  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
+
 (defmethod effects/perform-effects events/control-bulk-add-to-bag
-  [_ _ {:keys [items]} _ app-state]
-  #?(:cljs
-     (let [cart-contains-free-mayvenn-service? (orders/discountable-services-on-order? (get-in app-state keypaths/order))
-           free-service-sku                    (:sku (first (filter (comp true? first :promo.mayvenn-install/discountable :sku) items)))
-           service-swap?                       (and cart-contains-free-mayvenn-service? free-service-sku)
-           bulk-add-command                    [events/bulk-add-sku-to-bag {:items         items
-                                                                            :service-swap? service-swap?}]]
-       (if service-swap?
-         (messages/handle-message events/popup-show-service-swap
-                                  {:sku-intended         free-service-sku
-                                   :confirmation-command bulk-add-command})
-         (apply messages/handle-message bulk-add-command)))))
+  [_ _ {:keys [items]} _ state]
+  (let [skus           (mapv :sku items)
+        addon-services (select catalog.services/addons skus)
+        cart-swap      (some->> (select catalog.services/discountable skus)
+                                first
+                                (assoc {:addons/intended addon-services}
+                                       :service/intended)
+                                (swap/cart-swap<- state))]
+    (if (:service/swap? cart-swap)
+      (messages/handle-message events/cart-swap-popup-show
+                               cart-swap)
+      (messages/handle-message events/bulk-add-sku-to-bag
+                               {:items         items
+                                :service-swap? false}))))
+

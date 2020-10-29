@@ -23,6 +23,7 @@
 
 (defn cart-swap<-
   [state {intended-service :service/intended
+          intended-addons  :addons/intended
           intended-stylist :stylist/intended}]
   (let [original-service (when intended-service
                            (->> (api.orders/current state)
@@ -35,6 +36,8 @@
              :stylist/swap? false}
       intended-service
       (merge {:service/intended intended-service})
+      (seq intended-addons)
+      (merge {:addons/intended (seq intended-addons)})
 
       ;; Consider swapping for discountable services, only 1 allowed
       (and intended-service original-service)
@@ -72,12 +75,19 @@
                                {:sku               (:service/intended cart-swap)
                                 :servicing-stylist (:stylist/intended cart-swap)
                                 :quantity          1})
-      (messages/handle-message e/add-sku-to-bag
-                               {:sku           (:service/intended cart-swap)
-                                :stay-on-page? (= e/navigate-category
-                                                  (get-in state storefront.keypaths/navigation-event))
-                                :service-swap? true
-                                :quantity      1})))
+      (if-let [addons (:addons/intended cart-swap)]
+        (messages/handle-message e/bulk-add-sku-to-bag
+                                 {:items         (->>
+                                                  (:service/intended cart-swap)
+                                                  (conj addons)
+                                                  (into [] (map (fn [x] {:sku x :quantity 1}))))
+                                  :service-swap? true})
+        (messages/handle-message e/add-sku-to-bag
+                                 {:sku           (:service/intended cart-swap)
+                                  :stay-on-page? (= e/navigate-category
+                                                    (get-in state storefront.keypaths/navigation-event))
+                                  :service-swap? true
+                                  :quantity      1}))))
   (messages/handle-message e/popup-hide
                            {:clear/keypath k-cart-swap}))
 
