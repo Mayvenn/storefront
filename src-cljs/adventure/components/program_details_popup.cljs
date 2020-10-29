@@ -49,7 +49,9 @@
                    bullets)]
 
      [:a.mt8
-      (apply utils/route-to [events/navigate-home {:query-params {:video "free-install"}}])
+      (apply utils/route-to [events/navigate-category {:catalog/category-id "23"
+                                                       :page/slug "mayvenn-install"
+                                                       :query-params {:video "free-install"}}])
       (svg/play-video {:width  "30px"
                        :height "30px"})
       [:div.underline.block.content-3.bold.p-color.shout

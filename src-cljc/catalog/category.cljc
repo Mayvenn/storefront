@@ -20,10 +20,12 @@
    [storefront.assets :as assets]
    [storefront.component :as c]
    [storefront.components.ui :as ui]
+   [storefront.components.video :as video]
    [storefront.config :as config]
    [storefront.effects :as effects]
    [storefront.events :as e]
    [storefront.keypaths :as k]
+   [storefront.platform.component-utils :as utils]
    [storefront.trackings :as trackings]
    [storefront.transitions :as transitions]
    [spice.selector :as selector]
@@ -65,9 +67,21 @@
            category-filters
            service-card-listing
            product-card-listing
-           faq-section] :as queried-data} _ _]
+           faq-section video] :as queried-data} _ _]
   [:div
    (c/build category-hero/organism category-hero)
+   (when video
+     (c/build video/component
+                      video
+                      ;; NOTE(jeff): we use an invalid video slug to preserve back behavior. There probably should be
+                      ;;             an investigation to why history is replaced when doing A -> B -> A navigation
+                      ;;             (B is removed from history).
+                      {:opts
+                       {:close-attrs
+                        (utils/route-to e/navigate-category
+                                        {:query-params        {:video "0"}
+                                         :page/slug           "mayvenn-install"
+                                         :catalog/category-id 23})}}))
    (c/build molecules/stylist-bar queried-data {})
    [:div.max-960.mx-auto
     [:div.pt4]
@@ -131,6 +145,7 @@
                                                                      loaded-category-products
                                                                      category-products-matching-criteria
                                                                      selections)
+                     :video                  (when-let [video (get-in app-state adventure.keypaths/adventure-home-video)] video)
                      :how-it-works           (when (:how-it-works/title-primary current) current)
                      :content-box            (when (and shop? (:content-block/type current))
                                                {:title    (:content-block/title current)
@@ -167,6 +182,10 @@
   (let [{:page/keys [icp?]} (accessors.categories/current-category app-state)]
     ((if icp? icp/page page) app-state opts)))
 
+(def ^:private adventure-slug->video
+  {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}
+   "free-install"   {:youtube-id "oR1keQ-31yc"}})
+
 (defmethod transitions/transition-state e/navigate-category
   [_ event {:keys [catalog/category-id query-params]} app-state]
   (let [[_ {prev-category-id :catalog/category-id}] (-> (get-in app-state k/navigation-undo-stack)
@@ -179,6 +198,10 @@
       true
       (assoc-in catalog.keypaths/category-selections
                 (accessors.categories/query-params->selector-electives query-params))
+
+      true
+      (assoc-in adventure.keypaths/adventure-home-video
+                (adventure-slug->video (:video query-params)))
 
       (not= prev-category-id category-id)
       (assoc-in catalog.keypaths/category-panel nil))))
