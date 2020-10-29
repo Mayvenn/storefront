@@ -9,7 +9,6 @@
                        [storefront.history :as history]
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.reviews :as review-hooks]
-                       [storefront.platform.messages :as messages]
                        [storefront.trackings :as trackings]])
             adventure.keypaths
             api.orders
@@ -21,6 +20,7 @@
             [catalog.selector.sku :as sku-selector]
             [catalog.ui.molecules :as catalog.M]
             [catalog.ui.how-it-works :as how-it-works]
+            [checkout.cart.swap :as swap]
             [spice.selector :as selector]
             [spice.core :as spice]
             [storefront.accessors.contentful :as contentful]
@@ -40,6 +40,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages :as messages]
             [storefront.platform.reviews :as review-component]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
@@ -1011,19 +1012,16 @@
      (messages/handle-later events/added-to-bag)))
 
 (defmethod effects/perform-effects events/control-add-sku-to-bag
-  [dispatch event {:keys [sku quantity] :as args} _ app-state]
-  #?(:cljs
-     (let [cart-contains-free-mayvenn-service? (orders/discountable-services-on-order? (get-in app-state keypaths/order))
-           sku-is-free-mayvenn-service?        (-> sku :promo.mayvenn-install/discountable first)
-           service-swap?                       (and cart-contains-free-mayvenn-service? sku-is-free-mayvenn-service?)
-           add-sku-to-bag-command              [events/add-sku-to-bag
-                                                {:sku           sku
-                                                 :stay-on-page? (and service-swap? (= events/navigate-category (get-in app-state storefront.keypaths/navigation-event)))
-                                                 :service-swap? service-swap?
-                                                 :quantity      quantity}]]
-       (if service-swap?
-         (messages/handle-message events/popup-show-service-swap {:sku-intended sku :confirmation-command add-sku-to-bag-command})
-         (apply messages/handle-message add-sku-to-bag-command)))))
+  [_ _ {:keys [sku quantity]} _ state]
+  (let [cart-swap (swap/cart-swap<- state {:service/intended sku})]
+    (if (:service/swap? cart-swap)
+      (messages/handle-message events/cart-swap-popup-show
+                               cart-swap)
+      (messages/handle-message events/add-sku-to-bag
+                               {:sku           sku
+                                :stay-on-page? false
+                                :service-swap? false
+                                :quantity      quantity}))))
 
 ;; TODO(corey) Move this to cart
 (defmethod effects/perform-effects events/add-sku-to-bag
@@ -1132,6 +1130,7 @@
            bulk-add-command                    [events/bulk-add-sku-to-bag {:items         items
                                                                             :service-swap? service-swap?}]]
        (if service-swap?
-         (messages/handle-message events/popup-show-service-swap {:sku-intended         free-service-sku
-                                                                  :confirmation-command bulk-add-command})
+         (messages/handle-message events/popup-show-service-swap
+                                  {:sku-intended         free-service-sku
+                                   :confirmation-command bulk-add-command})
          (apply messages/handle-message bulk-add-command)))))

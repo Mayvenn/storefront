@@ -37,7 +37,7 @@
       (merge {:service/intended intended-service})
 
       ;; Consider swapping for discountable services, only 1 allowed
-      (and intended-stylist original-service)
+      (and intended-service original-service)
       (merge {:service/original original-service ; already selected for discountable
               :service/swap?    (and (select catalog.services/discountable
                                              [intended-service])
@@ -64,11 +64,20 @@
 
 (defmethod fx/perform-effects e/control-cart-swap-popup-confirm
   [_ _ _ _ state]
+  ;; NOTE:
+  ;; quantity is always 1 because if it could be more, it wouldn't be a swap
   (let [cart-swap (get-in state k-cart-swap)]
-    (messages/handle-message e/add-servicing-stylist-and-sku
-                             {:sku               (:service/intended cart-swap)
-                              :servicing-stylist (:stylist/intended cart-swap)
-                              :quantity          1}))
+    (if (:stylist/intended cart-swap)
+      (messages/handle-message e/add-servicing-stylist-and-sku
+                               {:sku               (:service/intended cart-swap)
+                                :servicing-stylist (:stylist/intended cart-swap)
+                                :quantity          1})
+      (messages/handle-message e/add-sku-to-bag
+                               {:sku           (:service/intended cart-swap)
+                                :stay-on-page? (= e/navigate-category
+                                                  (get-in state storefront.keypaths/navigation-event))
+                                :service-swap? true
+                                :quantity      1})))
   (messages/handle-message e/popup-hide
                            {:clear/keypath k-cart-swap}))
 
