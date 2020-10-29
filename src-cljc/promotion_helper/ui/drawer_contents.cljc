@@ -86,7 +86,7 @@
 (defcomponent organism
   [data _ _]
   (when (seq data)
-    [:div.bg-refresh-gray.p3
+    [:div.bg-refresh-gray.p3.z3
      {:data-test (:promotion-helper.ui.drawer-contents/id data)}
      (c/elements drawer-contents-condition-organism data
                  :promotion-helper.ui.drawer-contents/conditions)
