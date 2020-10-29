@@ -1,9 +1,16 @@
 (ns stylist-profile.stylist-details
   "Stylist details (profile) that includes a map and gallery."
-  (:require [adventure.stylist-matching.maps :as maps]
+  (:require #?@(:cljs
+                [[storefront.api :as api]
+                 [storefront.hooks.facebook-analytics :as facebook-analytics]
+                 [storefront.hooks.google-maps :as google-maps]
+                 [storefront.hooks.seo :as seo]])
+            [adventure.stylist-matching.maps :as maps]
+            adventure.keypaths
             api.orders
             [catalog.services :as services]
             [clojure.string :refer [join]]
+            spice.core
             [spice.selector :as selector]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as c]
@@ -12,12 +19,16 @@
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.effects :as fx]
             [storefront.events :as e]
+            [storefront.trackings :as trackings]
+            [storefront.transitions :as t]
             storefront.keypaths
             [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages :refer [handle-message]]
             [storefront.request-keys :as request-keys]
             stylist-directory.keypaths
-            stylist-profile.core ;; for behavior
+            [stylist-profile.cart-swap :as cart-swap]
             [stylist-profile.stylist :as stylist]
             [stylist-profile.ui.card :as card]
             [stylist-profile.ui.carousel :as carousel]
@@ -32,7 +43,80 @@
 (def ^:private select
   (comp seq (partial selector/match-all {:selector/strict? true})))
 
-;; ---------------------------------
+;; ---------------------------- behavior
+
+(defmethod t/transition-state e/navigate-adventure-stylist-profile
+  [_ _ {:keys [stylist-id]} app-state]
+  (-> app-state
+      ;; TODO(corey) use model?
+      (assoc-in adventure.keypaths/stylist-profile-id (spice.core/parse-double stylist-id))
+      (assoc-in stylist-directory.keypaths/paginated-reviews nil)))
+
+(defmethod fx/perform-effects e/navigate-adventure-stylist-profile
+  [_ _ {:keys [stylist-id]} _ state]
+  (let [cache (get-in state storefront.keypaths/api-cache)]
+    #?(:cljs
+       (api/fetch-stylist-details cache
+                                  stylist-id))
+    #?(:cljs
+       (api/fetch-stylist-reviews cache
+                                  {:stylist-id stylist-id
+                                   :page       1}))
+    #?(:cljs
+       (seo/set-tags state))
+    #?(:cljs
+       (google-maps/insert))))
+
+(defmethod trackings/perform-track e/navigate-adventure-stylist-profile
+  [_ event {:keys [stylist-id]} app-state]
+  #?(:cljs
+     (facebook-analytics/track-event "ViewContent"
+                                     {:content_type "stylist"
+                                      :content_ids [(spice.core/parse-int stylist-id)]})))
+
+(defmethod fx/perform-effects e/share-stylist
+  [_ _ {:keys [url text title stylist-id]} _]
+  #?(:cljs
+     (.. (js/navigator.share (clj->js {:title title
+                                       :text  text
+                                       :url   url}))
+         (then  (fn []
+                  (handle-message e/api-success-shared-stylist
+                                  {:stylist-id stylist-id})))
+         (catch (fn [err]
+                  (handle-message e/api-failure-shared-stylist
+                                  {:stylist-id stylist-id
+                                   :error      (.toString err)}))))))
+
+(defmethod fx/perform-effects e/control-fetch-stylist-reviews
+  [dispatch event args prev-app-state app-state]
+  #?(:cljs
+     (api/fetch-stylist-reviews (get-in app-state storefront.keypaths/api-cache)
+                                {:stylist-id (get-in app-state adventure.keypaths/stylist-profile-id)
+                                 :page       (-> (get-in app-state stylist-directory.keypaths/paginated-reviews)
+                                                 :current-page
+                                                 (or 0)
+                                                 inc)})))
+
+(defmethod fx/perform-effects e/control-stylist-profile-add-service-to-bag
+  [_ _ {:keys [quantity] intended-service :sku} _ state]
+  (let [intended-stylist (stylist/detailed state)
+        cart-swap        (->> (merge
+                               (when intended-service
+                                 {:service/intended intended-service})
+                               (when intended-stylist
+                                 {:stylist/intended intended-stylist}))
+                              (cart-swap/cart-swap<- state))]
+    (if (or (:service/swap? cart-swap)
+            (:stylist/swap? cart-swap))
+      (handle-message e/cart-swap-popup-show cart-swap)
+      (handle-message e/add-sku-to-bag
+                      {:sku           intended-service
+                       :stay-on-page? true
+                       :service-swap? true
+                       :quantity      quantity}))))
+
+;; ---------------------------- display
 
 (def ^:private clear-float-atom [:div.clearfix])
 

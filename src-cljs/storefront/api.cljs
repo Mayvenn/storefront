@@ -1090,3 +1090,17 @@
                     :page       page}
     :handler       #(messages/handle-message events/api-success-fetch-stylist-reviews %)
     :error-handler #(messages/handle-message events/api-failure-fetch-stylist-reviews %)}))
+
+(defn add-servicing-stylist-and-sku
+  [session-id {:as params :keys [token number sku servicing-stylist heat-feature-flags]} handler]
+  (storeback-api-req
+   POST "/add-servicing-stylist-and-sku"
+   (conj request-keys/add-to-bag (:catalog/sku-id sku))
+   {:params  (merge (select-keys params [:quantity :stylist-id :user-id :user-token])
+                    {:session-id           session-id
+                     :sku                  (:catalog/sku-id sku)
+                     :servicing-stylist-id (:stylist/id servicing-stylist)}
+                    (when heat-feature-flags {:heat-feature-flags heat-feature-flags})
+                    (when (and token number) {:token token :number number}))
+    :handler (comp handler
+                   orders/TEMP-pretend-service-items-do-not-exist)}))

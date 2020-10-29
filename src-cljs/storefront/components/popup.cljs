@@ -39,10 +39,12 @@
   (messages/handle-message events/popup-hide))
 
 (defmethod transitions/transition-state events/popup-hide
-  [_ _ args app-state]
-  (-> app-state
-      transitions/clear-flash
-      (assoc-in keypaths/popup nil)))
+  [_ _ {:clear/keys [keypath]} app-state]
+  (cond-> (-> app-state
+              transitions/clear-flash
+              (assoc-in keypaths/popup nil))
+    (vector? keypath)
+    (assoc-in keypath nil)))
 
 (defmethod effects/perform-effects events/popup-hide
   [_ _ _ _ _]

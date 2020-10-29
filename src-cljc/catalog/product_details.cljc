@@ -1025,6 +1025,7 @@
          (messages/handle-message events/popup-show-service-swap {:sku-intended sku :confirmation-command add-sku-to-bag-command})
          (apply messages/handle-message add-sku-to-bag-command)))))
 
+;; TODO(corey) Move this to cart
 (defmethod effects/perform-effects events/add-sku-to-bag
   [dispatch event {:keys [sku quantity stay-on-page? service-swap?] :as args} _ app-state]
   #?(:cljs
@@ -1051,6 +1052,25 @@
              (history/enqueue-navigate (if cart-interstitial?
                                          events/navigate-added-to-cart
                                          events/navigate-cart))))))))
+
+(defmethod effects/perform-effects events/add-servicing-stylist-and-sku
+  [_ _ {:keys [sku quantity servicing-stylist]} _ state]
+  #?(:cljs
+     (api/add-servicing-stylist-and-sku
+      (get-in state keypaths/session-id)
+      {:sku                sku
+       :servicing-stylist  servicing-stylist
+       :quantity           quantity
+       :stylist-id         (get-in state keypaths/store-stylist-id)
+       :token              (get-in state keypaths/order-token)
+       :number             (get-in state keypaths/order-number)
+       :user-id            (get-in state keypaths/user-id)
+       :user-token         (get-in state keypaths/user-token)
+       :heat-feature-flags (get-in state keypaths/features)}
+      #(messages/handle-message events/api-success-add-sku-to-bag
+                                {:order    %
+                                 :quantity quantity
+                                 :sku      sku}))))
 
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
   [_ event {:keys [quantity sku]} app-state]
