@@ -2,6 +2,7 @@
   "Stylist details (profile) that includes a map and gallery."
   (:require #?@(:cljs
                 [[storefront.api :as api]
+                 [storefront.browser.tags :as tags]
                  [storefront.hooks.facebook-analytics :as facebook-analytics]
                  [storefront.hooks.google-maps :as google-maps]
                  [storefront.hooks.seo :as seo]])
@@ -55,6 +56,8 @@
 (defmethod fx/perform-effects e/navigate-adventure-stylist-profile
   [_ _ {:keys [stylist-id]} _ state]
   (let [cache (get-in state storefront.keypaths/api-cache)]
+    #?(:cljs
+       (tags/add-classname ".kustomer-app-icon" "hide"))
     #?(:cljs
        (api/fetch-stylist-details cache
                                   stylist-id))
