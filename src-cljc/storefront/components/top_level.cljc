@@ -10,7 +10,6 @@
                        adventure.components.program-details-popup
                        storefront.components.share-your-cart
                        storefront.components.wig-customization-popup
-                       storefront.components.service-swap-popup
                        checkout.cart.swap])
             #?@(:clj
                 [[design-system.home :as design-system]])

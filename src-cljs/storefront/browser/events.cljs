@@ -79,7 +79,6 @@
    :design-system                  events/control-design-system-popup-dismiss
    :addon-services-menu            events/control-addon-service-menu-dismiss
    :stylist-search-filters         events/control-stylist-search-filters-dismiss
-   :service-swap                   events/control-service-swap-popup-dismiss
    :cart-swap                      events/control-cart-swap-popup-dismiss})
 
 (defn dismiss-stylist-filter-modal-event

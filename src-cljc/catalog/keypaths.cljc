@@ -26,8 +26,5 @@
 ;; Contains the data used to render the category page (ICP)
 (def category-query (conj ui :category-query))
 
-(def sku-intended-for-swap (conj ui :sku-intended-for-swap))
-(def service-swap-confirmation-command (conj ui :service-swap-confirmation-command))
-
 (def initial (-> {}
                  (assoc-in detailed-product {})))

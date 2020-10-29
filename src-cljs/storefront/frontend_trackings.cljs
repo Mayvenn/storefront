@@ -490,16 +490,3 @@
   (->> (orders/product-and-service-items order)
        (waiter-line-items->line-item-skuer skus-db)
        (mapv (partial line-item-skuer->stringer-cart-item images-db))))
-
-(defmethod perform-track events/control-service-swap-popup-dismiss
-  [_ _ _ _] (stringer/track-event "swap_service_modal_closed" {}))
-
-(defmethod perform-track events/popup-show-service-swap
-  [_ _ {:keys [sku-intended]} app-state]
-  (let [order          (get-in app-state keypaths/order)
-        images-catalog (get-in app-state keypaths/v2-images)
-        skus-db        (get-in app-state keypaths/v2-skus)]
-    (stringer/track-event "swap_service_modal_deployed" {:cart_items   (cart-items-model<- order images-catalog skus-db)
-                                                         :selected_sku (merge (line-item-skuer->stringer-cart-item images-catalog sku-intended)
-                                                                              {:variant_quantity 1})
-                                                         :order_number (get-in app-state keypaths/order-number)})))

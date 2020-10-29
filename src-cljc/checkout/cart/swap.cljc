@@ -1,5 +1,6 @@
 (ns checkout.cart.swap
-  (:require #?@(:cljs [[storefront.components.popup :as popup]])
+  (:require #?@(:cljs [[storefront.components.popup :as popup]
+                       [storefront.hooks.stringer :as stringer]])
             api.orders
             catalog.services
             spice.selector
@@ -12,6 +13,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.transitions :as t]
+            [storefront.trackings :as trackings]
             [stylist-profile.stylist :as stylist]))
 
 (def ^:private select
@@ -65,6 +67,21 @@
       (assoc-in k-cart-swap cart-swap)
       (assoc-in storefront.keypaths/popup :cart-swap)))
 
+(defmethod trackings/perform-track e/cart-swap-popup-show
+  [_ _ cart-swap app-state]
+  (let [order          (get-in app-state storefront.keypaths/order)
+        images-catalog (get-in app-state storefront.keypaths/v2-images)
+        skus-db        (get-in app-state storefront.keypaths/v2-skus)]
+    #?(:cljs
+       (when-let [sku (:service/intended cart-swap)]
+         (stringer/track-event "swap_modal_deployed"
+                               {:cart_items   (trackings/cart-items-model<- order images-catalog skus-db)
+                                :selected_sku (merge (trackings/line-item-skuer->stringer-cart-item
+                                                      images-catalog
+                                                      sku)
+                                                     {:variant_quantity 1})
+                                :order_number (:number order)})))))
+
 (defmethod fx/perform-effects e/control-cart-swap-popup-confirm
   [_ _ _ _ state]
   ;; NOTE:
@@ -95,6 +112,11 @@
   [_ _ _ _ _]
   (messages/handle-message e/popup-hide
                            {:clear/keypath k-cart-swap}))
+
+(defmethod trackings/perform-track e/control-cart-swap-popup-dismiss
+  [_ _ _ _]
+  #?(:cljs
+     (stringer/track-event "swap_modal_closed" {})))
 
 ;; ------------- views
 
