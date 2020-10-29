@@ -39,7 +39,7 @@
 (c/defcomponent organism
   [data _ _]
   (when-let [how-it-works (:how-it-works data)]
-    [:div.center.mbj3.col-5-on-dt.mx-auto
+    [:div.center.mbj3.px5-on-dt.mx-auto
      (how-it-works-title-molecule how-it-works)
      how-it-works-straight-line-atom
      (c/elements how-it-works-step-organism
