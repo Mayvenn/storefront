@@ -74,14 +74,28 @@
         images-catalog (get-in app-state storefront.keypaths/v2-images)
         skus-db        (get-in app-state storefront.keypaths/v2-skus)]
     #?(:cljs
-       (when-let [sku (:service/intended cart-swap)]
-         (stringer/track-event "swap_modal_deployed"
-                               {:cart_items   (storefront.frontend-trackings/cart-items-model<- order images-catalog skus-db)
-                                :selected_sku (merge (storefront.frontend-trackings/line-item-skuer->stringer-cart-item
-                                                      images-catalog
-                                                      sku)
-                                                     {:variant_quantity 1})
-                                :order_number (:number order)})))))
+       (stringer/track-event "swap_modal_deployed"
+                             (cond->
+                                 {:cart_items                   (storefront.frontend-trackings/cart-items-model<- order
+                                                                                                                  images-catalog
+                                                                                                                  skus-db)
+                                  :order_number                 (:number order)
+                                  :current_servicing_stylist_id (some->> cart-swap
+                                                                         :stylist/original
+                                                                         :stylist/id)
+                                  :current_service_variant_id   (some->> cart-swap
+                                                                         :service/original
+                                                                         :legacy/variant-id)}
+                               (:stylist/swap? cart-swap)
+                               (merge
+                                {:switch_to_servicing_stylist_id (some->> cart-swap
+                                                                          :stylist/intended
+                                                                          :stylist/id)})
+                               (:service/swap? cart-swap)
+                               (merge
+                                {:switch_to_service_variant_id (some->> cart-swap
+                                                                        :service/intended
+                                                                        :legacy/variant-id)}))))))
 
 (defmethod fx/perform-effects e/control-cart-swap-popup-confirm
   [_ _ _ _ state]
