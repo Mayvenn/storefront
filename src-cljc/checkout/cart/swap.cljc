@@ -160,13 +160,13 @@
 (defn ^:private cart-swap-popup-title-molecule
   [{:cart-swap.popup.title/keys [primary]}]
   (c/html
-   [:div
+   [:div.flex.flex-column.items-center
     [:div.my5
      (svg/swap-arrows
       {:width  "30px"
        :height "36px"
        :class  "stroke-p-color fill-p-color"})]
-    [:div.title-2.canela.center
+    [:div.title-2.canela
      [:div primary]]]))
 
 (c/defcomponent ^:private cart-swap-popup-body-notice-molecule
