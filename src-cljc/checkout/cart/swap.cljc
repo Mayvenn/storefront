@@ -1,6 +1,7 @@
 (ns checkout.cart.swap
   (:require #?@(:cljs [[storefront.components.popup :as popup]
-                       [storefront.hooks.stringer :as stringer]])
+                       [storefront.hooks.stringer :as stringer]
+                       storefront.frontend-trackings])
             api.orders
             catalog.services
             spice.selector
@@ -75,8 +76,8 @@
     #?(:cljs
        (when-let [sku (:service/intended cart-swap)]
          (stringer/track-event "swap_modal_deployed"
-                               {:cart_items   (trackings/cart-items-model<- order images-catalog skus-db)
-                                :selected_sku (merge (trackings/line-item-skuer->stringer-cart-item
+                               {:cart_items   (storefront.frontend-trackings/cart-items-model<- order images-catalog skus-db)
+                                :selected_sku (merge (storefront.frontend-trackings/line-item-skuer->stringer-cart-item
                                                       images-catalog
                                                       sku)
                                                      {:variant_quantity 1})
