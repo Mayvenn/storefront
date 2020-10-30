@@ -113,11 +113,10 @@
     (if (or (:service/swap? cart-swap)
             (:stylist/swap? cart-swap))
       (handle-message e/cart-swap-popup-show cart-swap)
-      (handle-message e/add-sku-to-bag
-                      {:sku           intended-service
-                       :stay-on-page? true
-                       :service-swap? true
-                       :quantity      quantity}))))
+      (handle-message e/add-servicing-stylist-and-sku
+                      {:sku               intended-service
+                       :servicing-stylist intended-stylist
+                       :quantity          1}))))
 
 ;; ---------------------------- display
 
