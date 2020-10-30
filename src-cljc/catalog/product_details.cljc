@@ -1054,22 +1054,25 @@
 
 (defmethod effects/perform-effects events/add-servicing-stylist-and-sku
   [_ _ {:keys [sku quantity servicing-stylist]} _ state]
-  #?(:cljs
-     (api/add-servicing-stylist-and-sku
-      (get-in state keypaths/session-id)
-      {:sku                sku
-       :servicing-stylist  servicing-stylist
-       :quantity           quantity
-       :stylist-id         (get-in state keypaths/store-stylist-id)
-       :token              (get-in state keypaths/order-token)
-       :number             (get-in state keypaths/order-number)
-       :user-id            (get-in state keypaths/user-id)
-       :user-token         (get-in state keypaths/user-token)
-       :heat-feature-flags (get-in state keypaths/features)}
-      #(messages/handle-message events/api-success-add-sku-to-bag
-                                {:order    %
-                                 :quantity quantity
-                                 :sku      sku}))))
+  (let [token  (get-in state keypaths/order-token)
+        number (get-in state keypaths/order-number)]
+    #?(:cljs
+       (api/add-servicing-stylist-and-sku
+        (get-in state keypaths/session-id)
+        (cond-> {:sku                sku
+                 :servicing-stylist  servicing-stylist
+                 :quantity           quantity
+                 :stylist-id         (get-in state keypaths/store-stylist-id)
+                 :user-id            (get-in state keypaths/user-id)
+                 :user-token         (get-in state keypaths/user-token)
+                 :heat-feature-flags (get-in state keypaths/features)}
+          (and token number)
+          (merge {:token  token
+                  :number number}))
+        #(messages/handle-message events/api-success-add-sku-to-bag
+                                  {:order    %
+                                   :quantity quantity
+                                   :sku      sku})))))
 
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
   [_ event {:keys [quantity sku]} app-state]
