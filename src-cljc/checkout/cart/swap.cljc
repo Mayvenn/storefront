@@ -1,4 +1,13 @@
 (ns checkout.cart.swap
+  "Carts can only contain one stylist and discountable base service.
+
+  The model 'cart-swap', when given stylist and service intended contains:
+  - whether a swap is necessary
+  - originals and intended for both stylist and discountable service
+  - because of product debt, associated addons for the intended service base
+
+  A popup can be invoked that uses the model to prompt the user and
+  follows up with confirm or dismiss events "
   (:require #?@(:cljs [[storefront.components.popup :as popup]
                        [storefront.hooks.stringer :as stringer]
                        storefront.frontend-trackings])
@@ -42,7 +51,7 @@
       (seq intended-addons)
       (merge {:addons/intended (seq intended-addons)})
 
-      ;; Consider swapping for discountable services, only 1 allowed
+      ;; Swapping is for discountable services, only 1 allowed
       (and intended-service original-service)
       (merge {:service/original original-service ; already selected for discountable
               :service/swap?    (and (select catalog.services/discountable
@@ -53,7 +62,7 @@
       intended-stylist
       (merge {:stylist/intended intended-stylist})
 
-      ;; Consider swapping for stylists when a new one is intended
+      ;; Swapping for stylists when a new one is intended
       (and intended-stylist original-stylist)
       (merge {:stylist/intended intended-stylist
               :stylist/original original-stylist
