@@ -110,9 +110,7 @@
   (ui/aspect-ratio
    640 580
    (if (zero? i)
-     [:img.col-12
-      {:src (str url "-/format/auto/-/resize/640x/" filename)
-       :alt alt}]
+     (ui/img {:src url :class "col-12" :width "100%" :alt alt})
      (ui/defer-ucare-img
        {:class       "col-12"
         :alt         alt

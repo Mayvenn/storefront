@@ -552,40 +552,98 @@
 (defn square-image [{:keys [resizable-url]} size]
   (some-> resizable-url (str "-/scale_crop/" size "x" size "/center/")))
 
-(defn ucare-img-id [url-or-image-id]
+(defn- is-ucare-img-url? ;; NOTE(jeff): please do not make this public, use img function
+  [url-or-image-id]
+  (let [url-or-image-id (str url-or-image-id)]
+    (or (string/includes? url-or-image-id "ucarecdn.com")
+        (not (string/includes? "/" url-or-image-id)))))
+
+(defn ucare-img-id ;; NOTE(jeff): should be private insteaed of public, please use img function instead
+  [url-or-image-id]
   (if (string/includes? (str url-or-image-id) "ucarecdn.com")
     (last (butlast (string/split url-or-image-id #"/" 5)))
     url-or-image-id))
 
-(defn ucare-img
+(defn- -ucare-img ;; NOTE(jeff): please do not make this public, use img function
+  ;; WARN(jeff): it is strongly recommended to specify max-size to minimize srcSet sizes!!
+  ;; TODO(jeff): remove picture-classes (using img tag natively now)
+  ;; NOTE(jeff): picture-classes is deprecated, please do not use
   [{:as   img-attrs
-    :keys [width retina-quality default-quality picture-classes retina? square? size]
+    :keys [width retina-quality default-quality picture-classes retina? square? size max-size]
     :or   {retina-quality  "lightest"
            default-quality "normal"
            retina?         true
-           square?         false}}
+           square?         false
+           max-size        nil}}
    image-id]
   (component/html
-   (let [width         (spice/parse-int width)
-         image-id      (ucare-img-id image-id)
-         default-url   (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" default-quality "/")
-                         square? (str "-/scale_crop/" size "x" size "/center/")
-                         width   (str "-/resize/" width "x/"))
-         retina-url    (if retina?
-                         (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" retina-quality "/")
-                           square? (str "-/scale_crop/" size "x" size "/center/")
-                           width (str "-/resize/" (* 2 width) "x/"))
-                         default-url)
-         picture-attrs (merge {:key image-id}
-                              (when picture-classes
-                                {:class picture-classes}))]
-     (if image-id
-       [:picture ^:attrs picture-attrs
-        [:source {:src-set (str retina-url " 2x," default-url " 1x")}]
-        [:img ^:attrs (-> img-attrs
-                          (dissoc :width :retina-quality :default-quality :picture-classes :retina? :square? :size)
-                          (assoc :src default-url))]]
-       [:picture ^:attrs picture-attrs]))))
+   (let [width          (spice/parse-int width)
+         px?            (or (= (str (:width img-attrs)) (str width))
+                            (string/includes? (str (:width img-attrs)) "px"))
+         image-id       (ucare-img-id image-id)
+         compute-url    (fn [image-id retina? width]
+                          (let [quality (if retina? retina-quality default-quality)]
+                            (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" quality "/")
+                              square? (str "-/scale_crop/" size "x" size "/center/")
+                              width   (str "-/resize/" width "x/"))))
+         default-url    (compute-url image-id false (when px? width))
+         compute-srcset (fn []
+                          (->> (for [multiplier (if retina?
+                                                  [1 2]
+                                                  [1])
+                                     w          [180 ;; half size of smallest device
+                                                 360 ;; Samsung Galaxy S9
+                                                 375 ;; iPhone 6/7/8/X/Xs/11/12 mini, Pixel 2
+                                                 ;;390 ;; iPhone 12/12 Pro ;; not common enough
+                                                 414 ;; iPhone 8+/Xs Max/Xr
+                                                 550 ;; Most other phones
+                                                 800 ;; Tablets
+                                                 1024 ;; Desktops
+                                                 ]
+                                     :let       [retina? (< 1 multiplier)
+                                                 effective-width (if retina? (* 2 w) w)]
+                                     :when      (and (or (nil? max-size) (>= max-size w))
+                                                     (or (not px?) (>= width w)))]
+                                 (str (compute-url image-id retina? effective-width) " " effective-width "w"))
+                               (string/join ", ")))]
+     [:img ^:attrs
+      (-> img-attrs
+          (dissoc :retina-quality :default-quality :picture-classes :retina? :square? :size :src)
+          (assoc :class (str picture-classes " " (:class img-attrs)))
+          (cond-> image-id (assoc :src default-url
+                                  :src-set (compute-srcset)
+                                  :sizes "(min-width: 1000px) 1000px, 100vw"
+                                  :key image-id)))])))
+
+(defn img
+  "Smarter variation of doing [:img attrs]. Will drop to -ucare-img helper if the src image is an upload-care image.
+
+  ucare-img specific attributes are cleared if the image src isn't a uploadcare image.
+  "
+  ;; WARN(jeff): it is strongly recommended to specify max-size to minimize srcSet sizes!!
+  [{:as   img-attrs
+    :keys [width retina-quality default-quality retina? square? size max-size src]
+    :or   {retina-quality  "lightest"
+           default-quality "normal"
+           retina?         true
+           square?         false
+           max-size        nil}}]
+  (if (is-ucare-img-url? src)
+    (-ucare-img img-attrs src)
+    (component/html
+     [:img ^:attrs (dissoc img-attrs :retina-quality :default-quality :picture-classes :retina? :square? :size)])))
+
+(defn ucare-img ;; TODO(jeff): for legacy callers, we should remove this call and use img function instead
+  ;; WARN(jeff): it is strongly recommended to specify max-size to minimize srcSet sizes!!
+  [{:as   img-attrs
+    :keys [width retina-quality default-quality retina? square? size max-size]
+    :or   {retina-quality  "lightest"
+           default-quality "normal"
+           retina?         true
+           square?         false
+           max-size        nil}}
+   image-id]
+  (img (assoc img-attrs :src image-id)))
 
 (defn circle-ucare-img
   [{:keys [width] :as attrs :or {width "4em"}} image-id]
@@ -606,7 +664,7 @@
                     (dissoc attrs :width :overlay-copy))
      (if src
        [:img {:style {:width width :height width} :src src}]
-       (ucare-img attrs "9664879b-07e0-432e-9c09-b2cf4c899b10"))
+       (ucare-img {:style {:width width :height width}} "9664879b-07e0-432e-9c09-b2cf4c899b10"))
      (when overlay-copy
        [:div.absolute.overlay.bg-darken-2
         [:div.absolute.m-auto.overlay {:style {:height "50%"}} overlay-copy]])])))
