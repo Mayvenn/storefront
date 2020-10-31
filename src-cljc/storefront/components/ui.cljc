@@ -578,8 +578,8 @@
    image-id]
   (component/html
    (let [width          (spice/parse-int width)
-         px?            (or (= (str (:width img-attrs)) (str width))
-                            (string/includes? (str (:width img-attrs)) "px"))
+         px?            (and width (or (= (str (:width img-attrs)) (str width))
+                                       (string/includes? (str (:width img-attrs)) "px")))
          image-id       (ucare-img-id image-id)
          compute-url    (fn [image-id retina? width]
                           (let [quality (if retina? retina-quality default-quality)]
