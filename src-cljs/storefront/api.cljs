@@ -698,7 +698,8 @@
   ([session-id order]
    (remove-freeinstall-line-item session-id order
                                  #(messages/handle-message events/api-success-remove-from-bag {:order %})))
-  ([session-id {:keys [install-type number token] :as order} success-handler]
+  ([session-id {:keys [number token] :as order} success-handler]
+   ;; TODO(corey) this is domain logic inside the api effect
    (let [mayvenn-install-line-item-variant-id (->> order
                                                    orders/service-line-items
                                                    (filter line-items/mayvenn-install-service?)
