@@ -1,3 +1,5 @@
+;; TODO(corey) this should be generalized and moved from homepage
+;; It gets thrown into the ui js module
 (ns homepage.ui.faq
   (:require [storefront.component :as c]
             [storefront.components.accordion :as accordion]

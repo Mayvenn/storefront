@@ -12,7 +12,6 @@
             [catalog.keypaths :as k]
             [catalog.facets :as facets]
             [storefront.events :as events]
-            [homepage.ui-v2020-07 :as homepage.ui]
             [catalog.categories :as categories]
             [catalog.products :as products]
             [spice.selector :as selector]

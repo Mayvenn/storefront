@@ -83,10 +83,13 @@
                         ;; Read: https://clojurescript.org/news/2017-07-10-code-splitting#_technical_description
                         ;; To predict which modules will contain what code
                         :modules          {:cljs-base     {:output-to "target/release/js/out/cljs_base.js"}
-                                           :ui            {:output-to  "target/release/js/out/ui.js"
-                                                           :entries    #{storefront.components.ui}}
-                                           :main          {:output-to "target/release/js/out/main.js"
-                                                           :entries   #{storefront.core}
+                                           :ui            {:output-to "target/release/js/out/ui.js"
+                                                           :entries   #{storefront.components.ui}}
+                                           :homepage      {:output-to  "target/release/js/out/homepage.js"
+                                                           :entries    #{homepage.core}
+                                                           :depends-on #{:ui}}
+                                           :main          {:output-to  "target/release/js/out/main.js"
+                                                           :entries    #{storefront.core}
                                                            :depends-on #{:ui}}
                                            :dashboard     {:output-to  "target/release/js/out/dashboard.js"
                                                            :entries    #{stylist.dashboard}

@@ -129,6 +129,9 @@
     events/navigate-shared-cart
     events/navigate-cart})
 
+(def ^:private homepage-events
+  #{events/navigate-home})
+
 (def ^:private voucher-redeem
   #{events/navigate-voucher-redeem events/navigate-voucher-redeemed})
 
@@ -136,10 +139,11 @@
   (let [files (mapcat (config/frontend-modules)
                       (concat [:cljs_base :ui]
                               (cond
+                                (homepage-events nav-event)  [:catalog :homepage]
                                 (dashboard-events nav-event) [:catalog :dashboard]
-                                (checkout-events nav-event) [:catalog :checkout]
-                                (catalog-events nav-event) [:catalog]
-                                (voucher-redeem nav-event) [:catalog :redeem])
+                                (checkout-events nav-event)  [:catalog :checkout]
+                                (catalog-events nav-event)   [:catalog]
+                                (voucher-redeem nav-event)   [:catalog :redeem])
                               [:main]))]
     (assert (every? (complement nil?) files)
             (str "Incorrectly wired module to load: " (pr-str files)))

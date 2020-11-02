@@ -1,3 +1,5 @@
+;; TODO(corey) This should be moved to homepage ns
+;; It goes with homepage js module
 (ns storefront.components.homepage-hero
   (:require [storefront.routes :as routes]
             [storefront.events :as events]))

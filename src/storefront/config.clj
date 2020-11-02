@@ -25,6 +25,7 @@
                    {:cljs-base     [(assets/path "/js/out/cljs_base.js")]
                     :ui            [(assets/path "/js/out/ui.js")]
                     :main          [(assets/path "/js/out/main.js")]
+                    :homepage      [(assets/path "/js/out/homepage.js")]
                     :dashboard     [(assets/path "/js/out/dashboard.js")]
                     :redeem        [(assets/path "/js/out/redeem.js")]
                     :design-system [(assets/path "/js/out/design-system.js")]

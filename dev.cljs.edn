@@ -8,8 +8,11 @@
  :modules          {:cljs-base     {:output-to "resources/public/js/out/cljs_base.js"}
                     :ui            {:output-to "resources/public/js/out/ui.js"
                                     :entries   #{storefront.components.ui}}
-                    :main          {:output-to "resources/public/js/out/main.js"
-                                    :entries   #{storefront.core}
+                    :main          {:output-to  "resources/public/js/out/main.js"
+                                    :entries    #{storefront.core}
+                                    :depends-on #{:ui}}
+                    :homepage      {:output-to  "resources/public/js/out/homepage.js"
+                                    :entries    #{homepage.core}
                                     :depends-on #{:ui}}
                     :dashboard     {:output-to  "resources/public/js/out/dashboard.js"
                                     :entries    #{stylist.dashboard}

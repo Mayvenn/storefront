@@ -35,7 +35,6 @@
             [storefront.components.gallery :as gallery]
             [storefront.components.gallery-edit :as gallery-edit]
             [storefront.components.header :as header]
-            homepage.core
             [ui.promo-banner :as promo-banner]
             storefront.components.shared-cart
             [storefront.components.sign-in :as sign-in]
@@ -77,7 +76,9 @@
         events/navigate-checkout-confirmation                      #(ui/lazy-load-component :checkout 'checkout.confirmation/built-component events/navigate-checkout-confirmation)
         events/navigate-order-complete                             #(ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-order-complete)])
 
-   events/navigate-home                    (constantly (first-arg-only homepage.core/page))
+   events/navigate-home                    #(ui/lazy-load-component :homepage
+                                                                    'homepage.core/page
+                                                                    events/navigate-home)
    events/navigate-about-mayvenn-install   (constantly mayvenn-install.about/built-component)
    events/navigate-shop-by-look            #(ui/lazy-load-component :catalog 'catalog.looks/built-component
                                                                     events/navigate-shop-by-look)
@@ -117,9 +118,16 @@
    events/navigate-adventure-stylist-profile            (constantly stylist-profile.stylist-details/page)
    events/navigate-adventure-stylist-gallery            (constantly adventure.stylist-matching.stylist-gallery/built-component)})
 
-(defn main-component [nav-event]
-  (doto ((get nav-table nav-event (constantly (first-arg-only homepage.core/page))))
-    (assert (str "Expected main-component to return a component, but did not: " (pr-str nav-event)))))
+(defn main-component
+  [nav-event]
+  (doto ((get nav-table
+              nav-event
+              #(ui/lazy-load-component :homepage
+                                       'homepage.core/page
+                                       events/navigate-home)))
+    (assert
+     (str "Expected main-component to return a component, but did not: "
+          (pr-str nav-event)))))
 
 (defn main-layout
   [data nav-event]
