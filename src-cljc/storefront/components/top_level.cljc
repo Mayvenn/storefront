@@ -118,7 +118,7 @@
                                                                                  'stylist-matching.match-success-pick-service-v2020-06/page
                                                                                  events/navigate-adventure-match-success-pick-service)
    events/navigate-adventure-stylist-profile            #(ui/lazy-load-component :catalog
-                                                                                 'profile.stylist-details/page
+                                                                                 'stylist-profile.stylist-details/page
                                                                                  events/navigate-adventure-stylist-profile)
    events/navigate-adventure-stylist-gallery            #(ui/lazy-load-component :catalog
                                                                                  'adventure.stylist-matching.stylist-gallery/built-component
