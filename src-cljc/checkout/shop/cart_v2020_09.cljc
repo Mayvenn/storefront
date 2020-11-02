@@ -8,6 +8,7 @@
   [app-state nav-event]
   (when (= :shop (sites/determine-site app-state))
     (let [{:order.items/keys [quantity]} (api.orders/current app-state)]
-      (if (zero? quantity)
+      (if (or (nil? quantity)
+              (zero? quantity))
         (shop-empty/page app-state nav-event)
         (shop-filled/page app-state nav-event)))))

@@ -177,6 +177,7 @@
   [app-state]
   (->order app-state (get-in app-state storefront.keypaths/completed-order)))
 
+;; TODO(corey) what should an order model look like if the order doesn't exist
 (defn current
   [app-state]
   (when-let [waiter-order (not-empty (get-in app-state storefront.keypaths/order))]
