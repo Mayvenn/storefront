@@ -24,7 +24,7 @@
                                     :entries    #{design-system.home}
                                     :depends-on #{:dashboard :main :redeem :catalog :checkout}}
                     :catalog       {:output-to  "resources/public/js/out/catalog.js"
-                                    :entries    #{catalog.core}
+                                    :entries    #{catalog.core stylist-profile.stylist-details}
                                     :depends-on #{:ui}}
                     :checkout      {:output-to  "resources/public/js/out/checkout.js"
                                     :entries    #{checkout.core}

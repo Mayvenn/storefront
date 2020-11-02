@@ -699,8 +699,8 @@
   (messages/handle-message e/flow|stylist-matching|set-presearch-field args)
   (execute-named-search (:name args)))
 
-(defn page
-  [app-state]
+(defn ^:export page
+  [app-state _]
   (let [;; Models
         current-order (api.orders/current app-state)
         matching      (stylist-matching.core/stylist-matching<- app-state)

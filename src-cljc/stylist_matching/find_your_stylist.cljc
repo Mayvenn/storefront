@@ -87,8 +87,8 @@
      [:div.px2.mt8.pt4
       (component/build stylist-search/organism stylist-search nil)])])
 
-(defn page
-  [state]
+(defn ^:export page
+  [state _]
   (let [place-autocomplete (google-place-autocomplete<- state)
         current-order      (api.orders/current state)
         undo-history       (get-in state storefront.keypaths/navigation-undo-stack)]

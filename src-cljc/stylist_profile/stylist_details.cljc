@@ -375,7 +375,7 @@
 
 ;; TODO(corey) Stylist not found template? currently redirects to find-your-stylist
 
-(defn page
+(defn ^:export page
   [state _]
   (let [skus-db           (get-in state storefront.keypaths/v2-skus)
         current-order     (api.orders/current state)

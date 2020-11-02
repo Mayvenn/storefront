@@ -103,6 +103,6 @@
                                         (fn [] (scroll/scroll-to-selector (str "[data-ref=offset-" offset "]")))
                                         500))))))
 
-(defn built-component
-  [data opts]
+(defn ^:export built-component
+  [data _]
   (component/build component (query data) {}))

@@ -16,14 +16,6 @@
             adventure.informational.about-our-hair
             adventure.informational.certified-stylists
 
-            stylist-profile.stylist-details
-            adventure.stylist-matching.stylist-gallery
-
-            stylist-matching.find-your-stylist
-            stylist-matching.stylist-results
-            stylist-matching.match-success
-            [stylist-matching.match-success-pick-service-v2020-06 :as pick-service-v2020-06]
-
             mayvenn-install.about
 
             [storefront.components.ui :as ui]
@@ -111,13 +103,26 @@
    events/navigate-info-certified-stylists (constantly adventure.informational.certified-stylists/built-component)
    events/navigate-info-about-our-hair     (constantly adventure.informational.about-our-hair/built-component)
 
-   events/navigate-adventure-find-your-stylist          (constantly stylist-matching.find-your-stylist/page)
-   events/navigate-adventure-stylist-results            (constantly stylist-matching.stylist-results/page)
-   events/navigate-adventure-match-success              (constantly stylist-matching.match-success/page)
-   events/navigate-adventure-match-success-pick-service (constantly stylist-matching.match-success-pick-service-v2020-06/page)
-   events/navigate-adventure-stylist-profile            (constantly stylist-profile.stylist-details/page)
-   events/navigate-adventure-stylist-gallery            (constantly adventure.stylist-matching.stylist-gallery/built-component)})
 
+
+   events/navigate-adventure-find-your-stylist          #(ui/lazy-load-component :catalog
+                                                                                 'stylist-matching.find-your-stylist/page
+                                                                                 events/navigate-adventure-find-your-stylist)
+   events/navigate-adventure-stylist-results            #(ui/lazy-load-component :catalog
+                                                                                 'stylist-matching.stylist-results/page
+                                                                                 events/navigate-adventure-stylist-results)
+   events/navigate-adventure-match-success              #(ui/lazy-load-component :catalog
+                                                                                 'stylist-matching.match-success/page
+                                                                                 events/navigate-adventure-match-success)
+   events/navigate-adventure-match-success-pick-service #(ui/lazy-load-component :catalog
+                                                                                 'stylist-matching.match-success-pick-service-v2020-06/page
+                                                                                 events/navigate-adventure-match-success-pick-service)
+   events/navigate-adventure-stylist-profile            #(ui/lazy-load-component :catalog
+                                                                                 'profile.stylist-details/page
+                                                                                 events/navigate-adventure-stylist-profile)
+   events/navigate-adventure-stylist-gallery            #(ui/lazy-load-component :catalog
+                                                                                 'adventure.stylist-matching.stylist-gallery/built-component
+                                                                                 events/navigate-adventure-stylist-gallery)})
 (defn main-component
   [nav-event]
   (doto ((get nav-table

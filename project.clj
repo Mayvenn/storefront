@@ -101,7 +101,7 @@
                                                            :entries    #{design-system.home}
                                                            :depends-on #{:dashboard :main :redeem :catalog :checkout}}
                                            :catalog       {:output-to  "target/release/js/out/catalog.js"
-                                                           :entries    #{catalog.core}
+                                                           :entries    #{catalog.core stylist-profile.stylist-details}
                                                            :depends-on #{:ui}}
                                            :checkout      {:output-to  "target/release/js/out/checkout.js"
                                                            :entries    #{checkout.core}

@@ -40,8 +40,8 @@
    :stylist-matching.ui.congrats.cta/target      [e/navigate-category {:page/slug           "free-mayvenn-services"
                                                                        :catalog/category-id "31"}]})
 
-(defn page
-  [app-state]
+(defn ^:export page
+  [app-state _]
   (let [servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
         current-order     (api.orders/current app-state)
         browser-history   (get-in app-state storefront.keypaths/navigation-undo-stack)]

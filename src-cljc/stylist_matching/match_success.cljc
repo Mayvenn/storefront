@@ -140,8 +140,8 @@
    (component/build shopping-method-choice/organism shopping-method-choice nil)
    (component/build matched-stylist/organism matched-stylist nil)])
 
-(defn page
-  [app-state]
+(defn ^:export page
+  [app-state _]
   (let [servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
         order             (api.orders/current app-state)
         browser-history   (get-in app-state storefront.keypaths/navigation-undo-stack)]
