@@ -312,7 +312,7 @@
    {:sku/keys                   [title price]
     :promo.mayvenn-install/keys [discountable requirement-copy]
     :catalog/keys               [sku-id] :as sku}]
-  (cond-> {:id         (str "stylist-service-card-" sku-id)
+  (cond-> {:id         sku-id
            :title      title
            :subtitle   (str "(" (mf/as-money price) ")")
            :content    requirement-copy

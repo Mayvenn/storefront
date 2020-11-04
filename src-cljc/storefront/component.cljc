@@ -350,14 +350,22 @@
     {:opts {:id id} :key id}))
 
 (defn elements
-  "Embed a list of organisms in another organism."
-  ([organism data elem-key]
-   (elements organism data elem-key :default))
-  ([organism data elem-key breakpoint]
-   (let [elems (get data elem-key)]
+  "Embed a list of organisms in another organism.
+
+   The id passed to the opts of the component will be a str of these vals:
+   - :data/coll-key - how to access the coll in the data
+   - 'variation' - either :default or a string to contrast uses, e.g. breakpoints
+   - {:id 'individual-elem-id'} - the :id value from the elem
+   - index of the elem
+  "
+  ([organism data elems-key]
+   (elements organism data elems-key :default))
+  ([organism data elems-key variation]
+   (let [elems (get data elems-key)]
      (for [[idx elem] (map-indexed vector elems)]
        (build organism
               elem
-              (component-id elem-key
-                            breakpoint
+              (component-id elems-key
+                            variation
+                            (:id elem)
                             idx))))))
