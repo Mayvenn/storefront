@@ -50,7 +50,9 @@
                                  (get-in app-state keypaths/user-id)
                                  (get-in app-state keypaths/user-token)
                                  (get-in app-state keypaths/store-stylist-id)
-                                 (get-in app-state keypaths/order-servicing-stylist-id))))
+                                 (get-in app-state keypaths/order-servicing-stylist-id)
+                                 (and (= :shop (sites/determine-site app-state))
+                                      (= events/navigate-shop-by-look-details (get-in app-state keypaths/navigation-event))))))
 
 (defn carousel [data imgs]
   (component/build carousel/component
