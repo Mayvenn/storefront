@@ -151,7 +151,7 @@
     [:a.p2
      (svg/x-sharp
       (merge (apply utils/fake-href target)
-             {:data-test "service-swap-popup-dismiss"
+             {:data-test "cart-swap-popup-dismiss"
               :height    "20px"
               :width     "20px"}))]]))
 
@@ -177,7 +177,7 @@
     (ui/button-medium-primary
      (merge (apply utils/fake-href target)
             {:class     "col-8"
-             :data-test "service-swap-popup-confirm"})
+             :data-test "cart-swap-popup-confirm"})
      label)]))
 
 (defn ^:private cart-swap-popup-title-molecule
@@ -236,7 +236,7 @@
      :cart-swap.popup.dismiss/target [e/control-cart-swap-popup-dismiss]
      :cart-swap.popup.dismiss/label  "Cancel"
      :cart-swap.popup.title/primary  "Before we move on..."
-     :cart-swap.popup.body/id        "service-swap-explanation"
+     :cart-swap.popup.body/id        "cart-swap-explanation"
      :cart-swap.popup.body/notices
      (cond-> []
        (:service/swap? cart-swap)
