@@ -50,8 +50,7 @@
                                  (get-in app-state keypaths/user-id)
                                  (get-in app-state keypaths/user-token)
                                  (get-in app-state keypaths/store-stylist-id)
-                                 (get-in app-state keypaths/order-servicing-stylist-id)
-                                 (= :shop (sites/determine-site app-state)))))
+                                 (get-in app-state keypaths/order-servicing-stylist-id))))
 
 (defn carousel [data imgs]
   (component/build carousel/component

@@ -935,8 +935,7 @@
    user-id
    user-token
    stylist-id
-   servicing-stylist-id
-   cart-interstitial?]
+   servicing-stylist-id]
   (storeback-api-req
    POST
    "/create-order-from-shared-cart"
@@ -951,9 +950,7 @@
                                              {:order          (orders/TEMP-pretend-service-items-do-not-exist %)
                                               :look-id        look-id
                                               :shared-cart-id shared-cart-id
-                                              :navigate       (if cart-interstitial?
-                                                                events/navigate-added-to-cart
-                                                                events/navigate-cart)})
+                                              :navigate       events/navigate-cart})
     :error-handler #(do
                       ;; Order is important here, for correct display of errors
                       (default-error-handler %)
