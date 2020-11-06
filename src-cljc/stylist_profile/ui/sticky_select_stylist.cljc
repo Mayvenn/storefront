@@ -16,12 +16,12 @@
   ;; TODO(corey) find a way to implement without dup responsive buttons
   [data _ _]
   [:div
-   [:div.hide-on-mb.bg-pale-purple.col-12.pyj1
-    [:div.flex.justify-center.my4
-     (sticky-select-stylist-cta-molecule (update data
-                                                 :sticky-select-stylist.cta/id
-                                                 str "-desktop"))]]
+   [:div.hide-on-mb
+    [:div.bg-pale-purple.fixed.max-580.border-none.col-12.bottom-0.py3
+     [:div.flex.justify-center.my4
+      (sticky-select-stylist-cta-molecule
+       (update data :sticky-select-stylist.cta/id str "-desktop"))]]]
    [:div.hide-on-tb-dt
-    [:div.col-12.fixed.bottom-0.center.bg-pale-purple.mtj3
+    [:div.bg-pale-purple.col-12.fixed.bottom-0.center.mtj3
      [:div.flex.justify-center.my4
       (sticky-select-stylist-cta-molecule data)]]]])
