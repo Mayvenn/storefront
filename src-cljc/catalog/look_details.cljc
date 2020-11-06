@@ -70,8 +70,9 @@
   [:div.clearfix
    (when look
      [:div.bg-cool-gray.slides-middle.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
-      (when shared-cart
-        (carousel {:look look :shared-cart shared-cart} (:carousel/images queried-data)))
+      [:div {:style {:min-height "390px"}}
+       (when shared-cart
+         (carousel {:look look :shared-cart shared-cart} (:carousel/images queried-data)))]
       [:div.px3.pb3.pt1
        [:div.flex.items-center
         [:div.flex-auto.content-1.proxima {:style {:word-break "break-all"}}
@@ -193,9 +194,9 @@
                                             {:image/of #{"model"}})
                         (sort-by :order)
                         first)]
-    [:img.col-12.mb4
-     {:src (str (:url image) "-/format/auto/")
-      :alt title}]))
+    (ui/ucare-img {:class           "col-12 mb4"
+                   :picture-classes "col-12 mb4"
+                   :alt             title} (:url image))))
 
 (defn ^:private get-cart-product-image
   [images-catalog {:keys [copy/title] :as skuer}]
@@ -205,14 +206,15 @@
                                              :image/of #{"product"}})
                         (sort-by :order)
                         first)]
-    [:img.col-12.mb4
-     {:src (str (:url image) "-/format/auto/")
-      :alt title}]))
+    (ui/ucare-img {:class           "col-12 mb4"
+                   :picture-classes "col-12 mb4"
+                   :alt             title} (:url image))))
 
 (defn ^:private imgs [images-catalog look skus]
   (let [sorted-line-items (sort-by-depart-and-price skus)]
     (list
-     [:img.col-12 {:src (str (:image-url look)) :alt ""}]
+     (ui/ucare-img {:class "col-12" :picture-classes "col-12"}
+                   (:image-url look))
      (get-model-image images-catalog (first sorted-line-items))
      (get-cart-product-image images-catalog (first sorted-line-items)))))
 

@@ -987,13 +987,14 @@
 
 (def ^:private screen-aware-component
   #?(:clj (fn [data owner {:keys [embed opts]}]
-            (component/create [:div
-                               (component/build embed
-                                                (assoc data
-                                                       :screen/seen? nil
-                                                       :screen/visible? nil
-                                                       :screen/loaded? nil)
-                                                opts)]))
+            (component/create
+             (let [embed-comp (component/build embed
+                                               (assoc data
+                                                      :screen/seen? nil
+                                                      :screen/visible? nil
+                                                      :screen/loaded? nil)
+                                               opts)]
+               (if (:child-handles-ref? opts) embed-comp [:div embed-comp]))))
      :cljs (component/create-dynamic
             "screen-aware-component"
             (constructor [this props]
@@ -1035,18 +1036,23 @@
                     (let [trigger                                    (component/use-ref this "trigger")
                           {:keys [seen? visible? loaded?] :as state} (component/get-state this)
                           data                                       (component/get-props this)
-                          {:keys [embed opts]}                       (component/get-opts this)]
-                      (component/html
-                       [:div {:ref trigger}
-                        (when-not seen? nbsp)  ; When the content has no height, isIntersecting is always false.
-                        (component/build embed
-                                         (assoc data
-                                                :screen/seen? seen?
-                                                ;;:screen/visible? visible?
-                                                :screen/loaded? loaded?)
-                                         (-> {:key "embed"}
-                                             (merge opts)
-                                             (update :opts assoc :screen/loaded (fn [] (component/set-state! this :loaded? true)))))]))))))
+                          {:keys [embed opts]}    (component/get-opts this)
+
+                          data' (assoc data
+                                       :screen/seen? seen?
+                                       ;;:screen/visible? visible?
+                                       :screen/loaded? loaded?)
+                          opts' (-> {:key "embed"}
+                                    (merge opts)
+                                    (update :opts assoc
+                                            :screen/loaded (fn [] (component/set-state! this :loaded? true))
+                                            :screen/ref    trigger))]
+                      (if (:child-handles-ref? opts)
+                        (component/build embed data' opts')
+                        (component/html
+                         [:div {:ref trigger}
+                          (when-not seen? nbsp)  ; When the content has no height, isIntersecting is always false.
+                          (component/build embed data' opts')])))))))
 
 (defn screen-aware
   "A decorator around component/build that sets the screen information data to
