@@ -194,9 +194,10 @@
                                             {:image/of #{"model"}})
                         (sort-by :order)
                         first)]
-    (ui/ucare-img {:class           "col-12 mb4"
-                   :picture-classes "col-12 mb4"
-                   :alt             title} (:url image))))
+    (ui/img {:class    "col-12 mb4"
+             :alt      title
+             :max-size 749
+             :src      (:url image)})))
 
 (defn ^:private get-cart-product-image
   [images-catalog {:keys [copy/title] :as skuer}]
@@ -206,15 +207,17 @@
                                              :image/of #{"product"}})
                         (sort-by :order)
                         first)]
-    (ui/ucare-img {:class           "col-12 mb4"
-                   :picture-classes "col-12 mb4"
-                   :alt             title} (:url image))))
+    (ui/img {:class    "col-12 mb4"
+             :alt      title
+             :max-size 749
+             :src      (:url image)})))
 
 (defn ^:private imgs [images-catalog look skus]
   (let [sorted-line-items (sort-by-depart-and-price skus)]
     (list
-     (ui/ucare-img {:class "col-12" :picture-classes "col-12"}
-                   (:image-url look))
+     (ui/img {:class    "col-12"
+              :max-size 749
+              :src      (:image-url look)})
      (get-model-image images-catalog (first sorted-line-items))
      (get-cart-product-image images-catalog (first sorted-line-items)))))
 

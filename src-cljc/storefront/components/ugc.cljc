@@ -9,9 +9,9 @@
    (ui/aspect-ratio
     1 1
     {:class "flex items-center"}
-    (ui/ucare-img {:class           "col-12"
-                   :picture-classes "col-12"}
-                  image-url))
+    (ui/img {:class    "col-12"
+             :src      image-url
+             :max-size 749}))
    (when overlay
      [:div.absolute.flex.justify-end.bottom-0.right-0.mb8
       [:div {:style {:width       "0"
