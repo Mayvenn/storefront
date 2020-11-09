@@ -1,6 +1,7 @@
 (ns storefront.hooks.convert
   (:require [storefront.browser.tags :as tags]
             [storefront.effects :as effects]
+            [storefront.transitions :as transitions]
             [storefront.events :as events]
             [storefront.hooks.exception-handler :as exception-handler]
             [storefront.keypaths :as keypaths]
@@ -14,7 +15,16 @@
   (or (.hasOwnProperty js/window "_conv_q")
       (set! (.-_conv_q js/window) (clj->js []))))
 
-(defmethod effects/perform-effects events/did-insert-convert [_ _ _ _ app-state]
+(defmethod transitions/transition-state events/inserted-convert
+  [_ event args app-state]
+  (assoc-in app-state keypaths/loaded-convert true))
+
+(defmethod transitions/transition-state events/did-insert-convert
+  [_ event args app-state]
+  (assoc-in app-state keypaths/loaded-convert true))
+
+(defmethod effects/perform-effects events/did-insert-convert
+  [_ _ _ _ app-state]
   (when (not (get-in app-state keypaths/loaded-convert))
     (exception-handler/report :convert-not-loaded {})))
 
