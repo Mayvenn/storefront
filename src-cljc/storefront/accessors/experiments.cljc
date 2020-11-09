@@ -125,7 +125,3 @@
 (defn remove-closures?
   [data]
   (display-feature? data "remove-closures"))
-
-(defn shop-stylist-profile?
-  [data]
-  (display-feature? data "shop-stylist-profile"))

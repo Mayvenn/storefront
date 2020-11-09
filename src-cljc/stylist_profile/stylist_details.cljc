@@ -36,7 +36,6 @@
             [stylist-profile.ui.experience :as experience]
             [stylist-profile.ui.footer :as footer]
             [stylist-profile.ui.ratings-bar-chart :as ratings-bar-chart]
-            [stylist-profile.ui.specialties-list :as specialties-list]
             [stylist-profile.ui.specialties-shopping :as specialties-shopping]
             [stylist-profile.ui.sticky-select-stylist :as sticky-select-stylist]
             [stylist-profile.ui.stylist-reviews :as stylist-reviews]))
@@ -130,7 +129,6 @@
            ratings-bar-chart
            stylist-reviews
            experience
-           specialties-list
            specialties-discountable
            specialties-a-la-carte
            sticky-select-stylist
@@ -143,7 +141,6 @@
     [:div.my2.m1-on-tb-dt.mb2-on-tb-dt.px3
      (carousel/organism carousel)
      (c/build experience/organism experience)
-     (c/build specialties-list/organism specialties-list)
      (c/build specialties-shopping/organism specialties-discountable)
      (c/build specialties-shopping/organism specialties-a-la-carte)]
     clear-float-atom
@@ -294,18 +291,6 @@
                                       (ui/pluralize-with-amount cardinality "time")
                                       " with Mayvenn")})))
 
-(defn ^:private specialties-list<-
-  [skus-db
-   {:stylist.services/keys [offered-sku-ids offered-ordering]}]
-  {:specialties-list.title/primary "Specialties"
-   :specialties-list.title/id      "specialties-list.title"
-   :specialties-list/specialties
-   (->> offered-sku-ids
-        (sort-by offered-ordering)
-        (mapv (fn [sku-id]
-                (let [service-title (:sku/title (get skus-db sku-id) "a")]
-                  {:specialties-list.specialty.title/primary service-title}))))})
-
 (defn ^:private service-sku-query
   [service-items
    adding-a-service-sku-to-bag?
@@ -390,7 +375,6 @@
         ;; Feature flags
         hide-bookings?                     (experiments/hide-bookings? state)
         hide-star-distribution?            (experiments/hide-star-distribution? state)
-        shop-stylist-profile?              (experiments/shop-stylist-profile? state)
         newly-added-stylist-ui-experiment? (and (experiments/stylist-results-test? state)
                                                 (or (experiments/just-added-only? state)
                                                     (experiments/just-added-experience? state)))
@@ -420,16 +404,13 @@
                        :google-maps           (maps/map-query state)
                        :sticky-select-stylist (sticky-select-stylist<- current-stylist
                                                                        detailed-stylist)})
-                    (if shop-stylist-profile?
-                      {:specialties-discountable (shop-discountable-services<-
-                                                  skus-db
-                                                  current-order
-                                                  adding-a-service-sku-to-bag?
-                                                  detailed-stylist)
-                       :specialties-a-la-carte   (shop-a-la-carte-services<-
-                                                  skus-db
-                                                  current-order
-                                                  adding-a-service-sku-to-bag?
-                                                  detailed-stylist)}
-                      {:specialties-list (specialties-list<- skus-db
-                                                             detailed-stylist)})))))
+                    {:specialties-discountable (shop-discountable-services<-
+                                                skus-db
+                                                current-order
+                                                adding-a-service-sku-to-bag?
+                                                detailed-stylist)
+                     :specialties-a-la-carte   (shop-a-la-carte-services<-
+                                                skus-db
+                                                current-order
+                                                adding-a-service-sku-to-bag?
+                                                detailed-stylist)}))))
