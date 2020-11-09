@@ -368,7 +368,7 @@
                                                        (string/includes? "presearch-result"))
                                        (messages/handle-message e/flow|stylist-matching|presearch-canceled)
                                        (messages/handle-message e/flow|stylist-matching|set-presearch-field)))
-                    :label         "All Stylists"
+                    :label         "Search by Stylist Name"
                     :wrapper-class "flex items-center col-12 bg-white border-black"
                     :type          "text"}
 
