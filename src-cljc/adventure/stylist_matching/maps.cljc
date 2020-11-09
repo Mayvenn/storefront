@@ -1,6 +1,7 @@
 (ns adventure.stylist-matching.maps
   (:require #?@(:cljs [[storefront.hooks.google-maps :as maps]])
             stylist-matching.keypaths
+            adventure.keypaths
             [clojure.string :as string]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.svg :as svg]
