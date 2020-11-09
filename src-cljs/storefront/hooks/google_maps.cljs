@@ -155,17 +155,20 @@
 (defn- place-marker
   [lat-long map]
   (let [position-sprite-element (some-> "position" js/document.getElementById (.cloneNode true))
-        sprite-element-string   (.-outerHTML (doto (js/document.createElement "svg")
+        sprite-element-string   (when position-sprite-element
+                                 (.-outerHTML (doto (js/document.createElement "svg")
                                                (.setAttribute "xmlns" "http://www.w3.org/2000/svg")
                                                (.setAttribute "xmlns:xlink" "http://www.w3.org/1999/xlink")
                                                (.setAttribute "viewBox" (.getAttribute position-sprite-element "viewBox"))
-                                               (aset "innerHTML" (.-innerHTML position-sprite-element))))
-        marker                  (google.maps.Marker.
-                                 (clj->js {:position lat-long
-                                           :icon     {:url  (str "data:image/svg+xml;charset=UTF-8,"
-                                                                 (js/encodeURIComponent sprite-element-string))
-                                                      :size (google.maps.Size. 36 52 "px" "px")}}))]
-    (.setMap marker map)))
+                                               (aset "innerHTML" (.-innerHTML position-sprite-element)))))
+        marker                  (when sprite-element-string
+                                  (google.maps.Marker.
+                                   (clj->js {:position lat-long
+                                             :icon     {:url  (str "data:image/svg+xml;charset=UTF-8,"
+                                                                   (js/encodeURIComponent sprite-element-string))
+                                                        :size (google.maps.Size. 36 52 "px" "px")}})))]
+    (when marker
+        (.setMap marker map))))
 
 (defn attach-map
   [latitude longitude address-elem]
