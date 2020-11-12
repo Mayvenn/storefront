@@ -80,7 +80,7 @@
       {:layer/type   :shop-text-block
        :header/value [:div.py1.shout
                       ;; NOTE: this is a design exception
-                      [:div.title-1.proxima {:style {:font-size "34px"}} "Sit back and"]
+                      [:div.title-1.proxima.my1 {:style {:font-size "34px"}} "Sit back and"]
                       [:div.light.canela.mt2.mb4 {:style {:font-size "54px"}} "relax"]]
        :body/value   "We’ve rounded up the best stylists in the country so you can be sure your hair is in really, really good hands."
        :cta/value    "Learn more"
@@ -94,7 +94,7 @@
       {:layer/type   :shop-text-block
        :header/value [:div.py1.shout
                       ;; NOTE: this is a design exception
-                      [:div.title-1.proxima {:style {:font-size "19px"}} "Hold your hair"]
+                      [:div.title-1.proxima.my1 {:style {:font-size "19px"}} "Hold your hair"]
                       [:div.canela.mt2.mb4 {:style {:font-size "72px"}} "high"]]
        :body/value   "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
        :cta/id       "info-about-our-hair"

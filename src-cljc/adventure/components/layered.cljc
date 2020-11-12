@@ -354,7 +354,7 @@
       [:h2.title-1.canela
        (interpose [:br] title-value)])
     (when subtitle-value
-      [:div.title-1.proxima.shout.sub
+      [:div.title-1.proxima.shout.sub.my1
        (interpose [:br] subtitle-value)])]
    [:div.col-8.flex.flex-column.items-center.hide-on-dt
     [:div.stroke-s-color

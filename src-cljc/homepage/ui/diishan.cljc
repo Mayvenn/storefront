@@ -47,7 +47,7 @@
        diishan-portrait]
       [:div.relative.col-6
        [:div.absolute.white.right-0.py6.px4.right-align.z1
-        [:div.proxima.title-1.shout primary]
+        [:div.proxima.title-1.my1.shout primary]
         [:div secondary]]
        diishan-portrait])))
 

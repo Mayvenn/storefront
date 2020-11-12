@@ -117,7 +117,7 @@
             discount-text])
          (when-not (= discounted-price base-price)
            [:div.strike.content-3.proxima.mt2 (mf/as-money base-price)])
-         [:div.title-1.proxima.bold (mf/as-money discounted-price)]]
+         [:div.title-1.proxima.bold.my1 (mf/as-money discounted-price)]]
         [:div.col-11.mx-auto
          (add-to-cart-button sold-out? creating-order? look shared-cart)]
         #?(:cljs

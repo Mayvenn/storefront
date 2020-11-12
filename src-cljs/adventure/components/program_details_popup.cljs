@@ -38,7 +38,7 @@
      [:div.mt2
       [:h2.title-1.canela
        "You buy the hair, we cover the service."]
-      [:div.title-1.proxima.shout.sub
+      [:div.title-1.proxima.shout.sub.my1
        "Here's how it works."]]
 
      [:div.col-10.flex.flex-column.items-center

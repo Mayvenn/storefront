@@ -7,7 +7,7 @@
   (c/html
    [:div
     [:div.canela.title-1 title-primary]
-    [:div.proxima.title-1.shout title-secondary]]))
+    [:div.proxima.title-1.shout.my1 title-secondary]]))
 
 (defn ^:private how-it-works-step-body-molecule
   [{:how-it-works.step.body/keys [primary]}]

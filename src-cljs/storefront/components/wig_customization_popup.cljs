@@ -43,7 +43,7 @@
      [:div.mt2
       [:h2.title-1.canela
        "We’re taking the work out of wigs with free customization."]
-      [:div.title-1.proxima.shout.sub
+      [:div.title-1.proxima.my1.shout.sub
        "Here's how it works."]
       [:div.conent-2.proxima.py1.mx-auto.col-10.pb4
        "Purchase any of our virgin lace front wigs or virgin 360 lace wigs and we’ll find you a Mayvenn Certified Stylist to customize it for free."]]

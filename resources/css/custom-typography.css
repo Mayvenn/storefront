@@ -44,7 +44,7 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: 0.45px;
 }
 .title-1.proxima {
-    font: 900 24px/46px var(--font-family-proxima);
+    font: 900 24px/30px var(--font-family-proxima);
     letter-spacing: 1.07px;
 }
 .title-2.proxima {
