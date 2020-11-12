@@ -125,3 +125,7 @@
 (defn remove-closures?
   [data]
   (display-feature? data "remove-closures"))
+
+(defn homepage-rebrand?
+  [data]
+  (display-feature? data "homepage-rebrand"))

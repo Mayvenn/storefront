@@ -123,6 +123,10 @@ h1, h2, h3, h4, h5, h6 {
     .left-align-on-dt  { text-align: left; }
 }
 
+@media (--on-mobile) {
+    .center-align-on-mb  { text-align: center; }
+}
+
 /* @custom-media --on-desktop            (min-width: 1000px); */
 
 :root {

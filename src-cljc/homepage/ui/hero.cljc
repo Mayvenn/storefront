@@ -18,3 +18,8 @@
   [:div
    (c/build hero data)
    free-standard-shipping-bar])
+
+(c/defcomponent organism-without-shipping-bar
+  [data _ _]
+  [:div
+   (c/build hero data)])

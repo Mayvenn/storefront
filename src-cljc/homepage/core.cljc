@@ -1,14 +1,22 @@
 (ns homepage.core
-  "Homepages are apt to change often, fork and use feature-flags."
+  "Homepages are apt to change often; fork and use feature-flags."
   (:require #?(:cljs [storefront.loader :as loader])
             [homepage.classic-v2020-07 :as classic]
             [homepage.shop-v2020-07 :as shop]
+            [homepage.shop-v2020-11 :as shop-new]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.sites :as sites]))
 
 (defn ^:export page
   [app-state _]
-  (if (= :shop (sites/determine-site app-state))
-    (shop/page app-state)
-    (classic/page app-state)))
+  (cond
+    (not= :shop (sites/determine-site app-state))
+    (classic/page app-state)
+
+    (experiments/homepage-rebrand? app-state)
+    (shop-new/page app-state)
+
+    :else
+    (shop/page app-state)))
 
 #?(:cljs (loader/set-loaded! :homepage))
