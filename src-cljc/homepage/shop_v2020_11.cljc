@@ -15,5 +15,6 @@
      {:hero                           (ui/hero-query cms :shop)
       :title-with-subtitle            ui/title-with-subtitle-query
       :square-image-and-text-diptychs ui/square-image-and-text-diptychs
+      :portrait-triptychs             ui/portrait-triptychs
       :faq                            (ui/faq-query (-> cms :faq :free-mayvenn-services) expanded-index)
       :contact-us                     ui/contact-us-query})))

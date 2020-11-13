@@ -8,21 +8,41 @@
             [storefront.components.homepage-hero :as homepage-hero]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.events :as e]))
+            [storefront.events :as e]
+            [storefront.platform.component-utils :as utils]))
 
+;; TODO move html into components
 (c/defcomponent template
   [{:keys [contact-us
            faq
            hero
            title-with-subtitle
-           square-image-and-text-diptychs]} _ _]
+           square-image-and-text-diptychs
+           portrait-triptychs]} _ _]
   [:div
    (c/build hero/organism-without-shipping-bar hero)
    (A/divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
 
    (c/build l/title-with-subtitle title-with-subtitle)
-   (for [diptych square-image-and-text-diptychs]
-     (c/build l/square-image-and-text-diptych diptych))
+   (into [:div.pb10.bg-refresh-gray]
+         (for [diptych square-image-and-text-diptychs]
+           (c/build l/square-image-and-text-diptych diptych)))
+
+   [:div.bg-warm-gray.pt8.pb5
+    [:div.title-1.canela.center.m3 "Need Inspiration? Look No Further."]
+    [:div.title-2.proxima.shout.center.m3 "#mayvennmade"]]
+
+   ;; TODO (c/build l/triptychs portrait-triptychs) to replace:
+   (into [:div.flex-on-tb-dt]
+         (for [triptych portrait-triptychs]
+           (c/build l/triptych triptych)))
+
+   ;; TODO (c/build l/desktop-simple-cta) to replace:
+   [:div.bg-warm-gray.hide-on-mb
+    (ui/button-medium-secondary (assoc
+                                 (apply utils/route-to [e/navigate-shop-by-look {:album-keyword :look}])
+                                :data-test "cta-shop-by-look")
+                                "Shop by look")]
    (c/build faq/organism faq)
    (c/build contact-us/organism contact-us)])
 
@@ -70,6 +90,19 @@
     :target                [e/navigate-adventure-find-your-stylist nil]
     :link-text             "Browse stylists near you"
     :pic-right-on-desktop? false}])
+
+(def portrait-triptychs
+  [{:id "triptych-1"
+    :large-pic-right-on-mobile? false
+    :image-ids ["eb70fa1b-449f-4415-b038-4fe25952cf43"
+                "ea1ccf14-276e-4da1-a449-c5cfb6055bf0"
+                "54f0180b-ce09-4f14-a5f0-c8e5c7a3d5b9"]}
+   {:id "triptych-2"
+    :large-pic-right-on-mobile? true
+    :image-ids [
+                "4b8c6087-96f3-41ac-b12a-63e06695ee2d"
+                "b026b457-50bb-4548-8c29-22038a9a5ad1"
+                "d5a56ee3-86e3-4932-b832-2b98b497a6f7"]}])
 
 (defn faq-query
   [faq expanded-index]

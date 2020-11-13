@@ -1,3 +1,7 @@
+@media (--on-mobile) {
+    .flex-row-reverse-on-mb { flex-direction: row-reverse; }
+}
+
 @media (--on-tablet) {
     .flex-on-tb { display: flex }
 }

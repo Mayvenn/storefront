@@ -448,8 +448,7 @@
       {:style {:flex-direction "row-reverse"}}))
    [:div.col-6-on-tb-dt
     (ui/defer-ucare-img
-      {:src   ucare-id
-       :class "block col-12"}
+      {:class "block col-12"}
       ucare-id)]
    [:div.bg-white.p5.col-6-on-tb-dt.flex.flex-column.justify-center
     [:div.col-9-on-tb-dt.mx-auto
@@ -460,6 +459,38 @@
                                           (apply utils/route-to target)
                                           {:data-test id})
                                          link-text)]]]])
+
+;; TODO wrap in `triptychs` component and privatize this
+(defcomponent triptych
+  [{:keys [large-pic-right-on-mobile?
+           image-ids
+           id]} _ _]
+  (let [[primary-id secondary-id tertiary-id] image-ids]
+    [:div.col-6-on-tb-dt.flex
+     (merge
+      {:key id}
+      (when large-pic-right-on-mobile?
+        {:class "flex-row-reverse-on-mb"}))
+     [:div.col-8
+      (ui/aspect-ratio
+       1 1
+       (ui/defer-ucare-img
+         {:class "col-12"
+          :style {:object-fit "fill"}}
+         primary-id))]
+     [:div.flex.flex-column.col-4
+      (ui/aspect-ratio
+       1 1
+       (ui/defer-ucare-img
+         {:class "col-12"
+          :style {:object-fit "fill"}}
+         secondary-id))
+      (ui/aspect-ratio
+       1 1
+       (ui/defer-ucare-img
+         {:class "col-12"
+          :style {:object-fit "fill"}}
+         tertiary-id))]]))
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
