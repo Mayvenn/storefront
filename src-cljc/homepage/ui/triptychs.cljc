@@ -1,7 +1,8 @@
 (ns homepage.ui.triptychs
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.events :as e]))
 
 (defn ^:private square-deferred-ucare-img
   [ucare-id]
@@ -18,7 +19,7 @@
     [:div.title-1.canela.center.m3 title]
     [:div.title-2.proxima.shout.center.m3 subtitle]]
    (->> data
-        (mapv (fn [{:keys [large-pic-right-on-mobile?
+        (mapv (fn triptych [{:keys [large-pic-right-on-mobile?
                            image-ids
                            id]}]
                 (let [[primary-id secondary-id tertiary-id] image-ids]
