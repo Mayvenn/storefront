@@ -433,65 +433,6 @@
    [:div.canela.title-1.center.my5 primary]
    [:div.content-2.center.my5.mx6 secondary]])
 
-(defcomponent square-image-and-text-diptych
-  [{:keys [ucare-id
-           primary
-           secondary
-           target
-           link-text
-           id
-           pic-right-on-desktop?]} _ _]
-  [:div.bg-refresh-gray.px2.flex-on-tb-dt.py1-on-mb
-   (merge
-    {:key id}
-    (when pic-right-on-desktop?
-      {:style {:flex-direction "row-reverse"}}))
-   [:div.col-6-on-tb-dt
-    (ui/defer-ucare-img
-      {:class "block col-12"}
-      ucare-id)]
-   [:div.bg-white.p5.col-6-on-tb-dt.flex.flex-column.justify-center
-    [:div.col-9-on-tb-dt.mx-auto
-     [:div.proxima.title-1.bold.shout.center-align-on-mb.m3 primary]
-     [:div.center-align-on-mb.m3 secondary]
-     [:div.center-align-on-mb.m3
-      (ui/button-small-underline-primary (merge
-                                          (apply utils/route-to target)
-                                          {:data-test id})
-                                         link-text)]]]])
-
-;; TODO wrap in `triptychs` component and privatize this
-(defcomponent triptych
-  [{:keys [large-pic-right-on-mobile?
-           image-ids
-           id]} _ _]
-  (let [[primary-id secondary-id tertiary-id] image-ids]
-    [:div.col-6-on-tb-dt.flex
-     (merge
-      {:key id}
-      (when large-pic-right-on-mobile?
-        {:class "flex-row-reverse-on-mb"}))
-     [:div.col-8
-      (ui/aspect-ratio
-       1 1
-       (ui/defer-ucare-img
-         {:class "col-12"
-          :style {:object-fit "fill"}}
-         primary-id))]
-     [:div.flex.flex-column.col-4
-      (ui/aspect-ratio
-       1 1
-       (ui/defer-ucare-img
-         {:class "col-12"
-          :style {:object-fit "fill"}}
-         secondary-id))
-      (ui/aspect-ratio
-       1 1
-       (ui/defer-ucare-img
-         {:class "col-12"
-          :style {:object-fit "fill"}}
-         tertiary-id))]]))
-
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (when type
     (component/build
