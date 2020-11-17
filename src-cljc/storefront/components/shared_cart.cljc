@@ -26,7 +26,7 @@
         (when (:resizable-url portrait)
           [:div.mb2.h2
            (ui/circle-picture {:class "mx-auto"} (ui/square-image portrait 96))])
-        [:p.center.h3.medium
+        [:p.center.h3.medium {:data-test "cart-creator-nickname"}
          store-nickname " has created a bag for you!"]]
        [:div.flex.items-center.px1.py3.border-top.border-bottom
         (ui/ucare-img {:width 90} "8787e30c-2879-4a43-8d01-9d6790575084")
