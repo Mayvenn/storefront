@@ -12,7 +12,6 @@
             storefront.keypaths
             [stylist-directory.stylists :as stylists]
             [stylist-matching.ui.atoms :as stylist-matching.A]
-            [stylist-matching.ui.matched-stylist :as matched-stylist]
             [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]))
 
 (defmethod effects/perform-effects events/navigate-adventure-match-success
@@ -72,27 +71,6 @@
                                                                    (remove string/blank? [address-1 address-2 city state]))
                                                       zipcode])}))
 
-(defn matched-stylist-query
-  [servicing-stylist {:order/keys [submitted?] :order.shipping/keys [phone]}]
-  (when submitted?
-    (merge {:matched-stylist.title/id            "matched-with-stylist"
-            :matched-stylist.title/primary       "Chat with your Stylist"
-            :matched-stylist.title/secondary     [:div.h5.line-height-3.center
-                                                  "A group text message will be sent to "
-                                                  (if phone
-                                                    [:span.bold.nowrap (formatters/phone-number phone)]
-                                                    "you")
-                                                  " and your stylist, "
-                                                  [:span.nowrap {:data-test "servicing-stylist-name"}
-                                                   (-> servicing-stylist :address :firstname)]
-                                                  "."]
-            :matched-stylist.cta-title/id        "matched-stylist-cta"
-            :matched-stylist.cta-title/label     "View #MayvennFreeInstall"
-            :matched-stylist.cta-title/primary   "In the meantime…"
-            :matched-stylist.cta-title/secondary "Get inspired for your appointment"
-            :matched-stylist.cta-title/target    ["https://www.instagram.com/explore/tags/mayvennfreeinstall/"]}
-           (stylist-card-query servicing-stylist))))
-
 (defn shopping-method-choice-query
   [servicing-stylist {:order/keys [submitted?]}]
   (when-not submitted?
@@ -133,12 +111,11 @@
                  :shopping-method-choice.button/ucare-id "71dcdd17-f9cc-456f-b763-2c1c047c30b4"}]))}))
 
 (defcomponent template
-  [{:keys [header shopping-method-choice matched-stylist]} _ _]
+  [{:keys [header shopping-method-choice]} _ _]
   [:div.center.flex.flex-auto.flex-column
    stylist-matching.A/bottom-right-party-background
    (header/adventure-header header)
-   (component/build shopping-method-choice/organism shopping-method-choice nil)
-   (component/build matched-stylist/organism matched-stylist nil)])
+   (component/build shopping-method-choice/organism shopping-method-choice nil)])
 
 (defn ^:export page
   [app-state _]
@@ -148,6 +125,4 @@
     (component/build template
                      {:header                 (header-query order browser-history)
                       :shopping-method-choice (shopping-method-choice-query servicing-stylist
-                                                                            order)
-                      :matched-stylist        (matched-stylist-query servicing-stylist
-                                                                     order)})))
+                                                                            order)})))
