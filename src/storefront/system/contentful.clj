@@ -231,56 +231,77 @@
        (exception-handler t)
        (logger :error t)))))
 
+(defn- start-end [start {:keys [minutes]}]
+  [start (date/add-delta start {:minutes minutes})])
+
+(defn- date-time-for-every [[start end] {:keys [seconds]}]
+  (range (date/to-millis start) (date/to-millis end) (* 1000 seconds)))
+
+(def black-friday
+  (date/date-time 2020 11 28 04 55 0))
+
+(def increased-polling-intervals
+  [(-> (start-end black-friday {:minutes 15})
+       (date-time-for-every {:seconds 10}))])
+
 (defprotocol CMSCache
   (read-cache [_] "Returns a map representing the CMS cache"))
 
 (defrecord ContentfulContext [logger exception-handler environment cache-timeout api-key space-id endpoint]
   component/Lifecycle
   (start [c]
-    (let [pool        (at-at/mk-pool)
-          production? (= environment "production")
-          cache       (atom {})
-          env-param   (if production?
-                        "production"
-                        "acceptance")]
-      (doseq [content-params [{:content-type     :homepage
-                               :latest?          false
-                               :primary-key-fn   (comp keyword :experience)
-                               :item-tx-fn       identity
-                               :collection-tx-fn identity}
-                              {:content-type   :faq
-                               :latest?        false
-                               :primary-key-fn (comp keyword :slug)
-                               :exists         ["fields.faqSection"]
-                               :select         ["fields.faqSection"
-                                                "fields.questionsAnswers"]}
-                              {:content-type :mayvennMadePage
-                               :latest?      true}
-                              {:content-type :advertisedPromo
-                               :latest?      true}
-                              {:content-type     :ugc-collection
-                               :exists           ["fields.slug"]
-                               :primary-key-fn   (comp keyword :slug)
-                               :select           [(if production?
-                                                    "fields.looks"
-                                                    "fields.acceptanceLooks")
-                                                  "fields.slug"
-                                                  "fields.name"
-                                                  "sys.contentType"
-                                                  "sys.updatedAt"
-                                                  "sys.id"
-                                                  "sys.type"]
-                               :item-tx-fn       (fn [u]
-                                                   (let [u' (if production?
-                                                              (dissoc u :acceptance-looks)
-                                                              (set/rename-keys u {:acceptance-looks :looks}))]
-                                                     (utils/?update u' :looks (partial remove :sys))))
-                               :collection-tx-fn (fn [m]
-                                                   (->> (vals m)
-                                                        (mapcat :looks)
-                                                        (maps/index-by (comp keyword :content/id))
-                                                        (assoc m :all-looks)))
-                               :latest?          false}]]
+    (let [pool                    (at-at/mk-pool)
+          production?             (= environment "production")
+          cache                   (atom {})
+          env-param               (if production?
+                                    "production"
+                                    "acceptance")
+          content-type-parameters [{:content-type     :homepage
+                                    :latest?          false
+                                    :primary-key-fn   (comp keyword :experience)
+                                    :item-tx-fn       identity
+                                    :collection-tx-fn identity}
+                                   {:content-type   :faq
+                                    :latest?        false
+                                    :primary-key-fn (comp keyword :slug)
+                                    :exists         ["fields.faqSection"]
+                                    :select         ["fields.faqSection"
+                                                     "fields.questionsAnswers"]}
+                                   {:content-type :mayvennMadePage
+                                    :latest?      true}
+                                   {:content-type :advertisedPromo
+                                    :latest?      true}
+                                   {:content-type     :ugc-collection
+                                    :exists           ["fields.slug"]
+                                    :primary-key-fn   (comp keyword :slug)
+                                    :select           [(if production?
+                                                         "fields.looks"
+                                                         "fields.acceptanceLooks")
+                                                       "fields.slug"
+                                                       "fields.name"
+                                                       "sys.contentType"
+                                                       "sys.updatedAt"
+                                                       "sys.id"
+                                                       "sys.type"]
+                                    :item-tx-fn       (fn [u]
+                                                        (let [u' (if production?
+                                                                   (dissoc u :acceptance-looks)
+                                                                   (set/rename-keys u {:acceptance-looks :looks}))]
+                                                          (utils/?update u' :looks (partial remove :sys))))
+                                    :collection-tx-fn (fn [m]
+                                                        (->> (vals m)
+                                                             (mapcat :looks)
+                                                             (maps/index-by (comp keyword :content/id))
+                                                             (assoc m :all-looks)))
+                                    :latest?          false}]]
+      (doseq [content-params content-type-parameters
+              timestamps     increased-polling-intervals
+              :let           [num-checks (count timestamps)]
+              [i ts-millis]  (map-indexed vector timestamps)]
+        (at-at/at ts-millis #(do-fetch-entries (assoc c :cache cache :env-param env-param) content-params)
+                  pool
+                  :desc (str "setting up" i "of" num-checks)))
+      (doseq [content-params content-type-parameters]
         (at-at/interspaced cache-timeout
                            #(do-fetch-entries (assoc c :cache cache :env-param env-param) content-params)
                            pool
