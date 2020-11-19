@@ -139,15 +139,11 @@
        {:thank-you/primary "We've received your order and a Mayvenn Concierge representative will contact you to make an appointment within 2 business days."}
        (when-let [stylist-display-name (some-> servicing-stylist not-empty stylists/->display-name)]
          {:matched-component.message/id    "servicing-stylist-name"
-          :matched-component.message/title (str "Chat with " stylist-display-name)
+          :matched-component.message/title (str "Chat with Concierge")
           :matched-component.message/body  [:span
-                                            "A group text message has been sent to "
-                                            (if customer-phone
-                                              [:span.nowrap (formatters/phone-number customer-phone)]
-                                              "you")
-                                            " and your stylist, "
+                                            "A Mayvenn Concierge Representative will contact you to coordinate your appointment with your stylist, "
                                             [:span.nowrap {:data-test "servicing-stylist-name"}
-                                             stylist-display-name]]
+                                             stylist-display-name] "."]
 
           :stylist-card/id                 "stylist-card"
           :stylist-card.thumbnail/id       "portrait"
