@@ -166,7 +166,6 @@
                                (maps/map-values (fn [facet]
                                                   (update facet :facet/options (partial maps/index-by :option/slug)))))]
     {:waiter/order         waiter-order
-     :order/services-only? (every? line-items/service? (orders/product-and-service-items waiter-order))
      :order/submitted?     (= "submitted" (:state waiter-order))
      :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
      :order.items/quantity (orders/displayed-cart-count waiter-order)

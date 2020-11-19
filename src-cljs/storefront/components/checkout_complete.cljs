@@ -131,14 +131,12 @@
 
 (defn shop-query [data]
   (let [{completed-waiter-order :waiter/order
-         services-only?         :order/services-only?
          customer-phone         :order.shipping/phone} (api.orders/completed data)
         {servicing-stylist    :services/stylist
          service-items        :services/items}         (api.orders/services data completed-waiter-order)]
     (when (seq service-items)
       (merge
-       (when services-only?
-         {:thank-you/primary "We've received your order and will contact you to make an appointment within 2 business days."} )
+       {:thank-you/primary "We've received your order and a Mayvenn Concierge representative will contact you to make an appointment within 2 business days."}
        (when-let [stylist-display-name (some-> servicing-stylist not-empty stylists/->display-name)]
          {:matched-component.message/id    "servicing-stylist-name"
           :matched-component.message/title (str "Chat with " stylist-display-name)
