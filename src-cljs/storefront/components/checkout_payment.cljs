@@ -45,10 +45,12 @@
       (create-stripe-token app-state {:place-order? false})
       (api/update-cart-payments
        (get-in app-state keypaths/session-id)
-       {:order    (cond-> waiter-order
-                    :always                (select-keys [:token :number])
-                    :always                (merge {:cart-payments selected-payment-methods})
-                    selected-saved-card-id (assoc-in [:cart-payments :stripe :source] selected-saved-card-id))
+       {:order    (cond-> (merge
+                           (select-keys waiter-order [:token :number])
+                           {:cart-payments selected-payment-methods})
+                    selected-saved-card-id
+                    (merge {:cart-payments {:stripe {:source         selected-saved-card-id
+                                                     :idempotent-key (str (random-uuid))}}}))
         :navigate events/navigate-checkout-confirmation}))))
 
 (defmethod transitions/transition-state events/control-checkout-payment-select
