@@ -1,6 +1,7 @@
 (ns storefront.components.checkout-complete
   (:require [storefront.components.svg :as svg]
             api.orders
+            [storefront.accessors.experiments :as experiments]
             [storefront.events :as events]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.formatters :as formatters]
@@ -116,13 +117,15 @@
 
 
 (defcomponent component
-  [{:thank-you/keys [primary]
+  [{:thank-you/keys [primary secondary]
     :as data} _ _]
   (ui/narrow-container
    [:div.p3 {:style {:min-height "95vh"}}
     [:div.center
      [:div.mt5.mb2.canela.title-1 {:data-test "checkout-success-message"} "Thank You"]
-     [:div.proxima.content-2 primary]]
+     [:div.proxima.content-2 primary]
+     (when secondary
+       [:div.proxima.content-2.mt4.red secondary])]
 
     [:div.py2.mx-auto.white.border-bottom
      {:style {:border-width "0.5px"}}]
@@ -136,7 +139,10 @@
          service-items        :services/items}         (api.orders/services data completed-waiter-order)]
     (when (seq service-items)
       (merge
-       {:thank-you/primary "We've received your order and a Mayvenn Concierge representative will contact you to make an appointment within 2 business days."}
+       {:thank-you/primary
+        (if (experiments/shipping-delay? data)
+          "We've received your order and will contact you to make an appointment over the next few business days."
+          "We've received your order and a Mayvenn Concierge representative will contact you to make an appointment within 2 business days.")}
        (when-let [stylist-display-name (some-> servicing-stylist not-empty stylists/->display-name)]
          {:matched-component.message/id    "servicing-stylist-name"
           :matched-component.message/title (str "Chat with Concierge")
@@ -160,6 +166,10 @@
         guest? (not (get-in data keypaths/user-id))]
     (cond->
         {:thank-you/primary "We've received your order and will contact you as soon as your package is shipped."}
+
+      (experiments/shipping-delay? data)
+      (merge
+       {:thank-you/secondary (str "Due to the high volume of orders we are receiving, your order may take longer to process than usual. We are working hard to deliver your order as quickly as possible. You will receive order updates directly to your email address. Happy Holidays!")})
 
       guest?
       (merge

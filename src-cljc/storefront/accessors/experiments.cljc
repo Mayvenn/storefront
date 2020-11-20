@@ -129,3 +129,7 @@
 (defn homepage-rebrand?
   [data]
   (display-feature? data "homepage-rebrand"))
+
+(defn shipping-delay?
+  [data]
+  (display-feature? data "shipping-delay"))
