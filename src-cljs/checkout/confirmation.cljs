@@ -185,6 +185,8 @@
            (component/build checkout-credit-card/component payment nil)])
         (component/build cart-summary/organism cart-summary nil)
         (component/build quadpay/component
+                         ;; If you're here and you had quadpay you should still
+                         ;; see it even if the hide-quadpay feature flag is on
                          {:quadpay/show?       (and selected-quadpay? loaded-quadpay?)
                           :quadpay/order-total (:total order)
                           :quadpay/directive   :continue-with}

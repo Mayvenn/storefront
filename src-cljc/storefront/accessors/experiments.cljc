@@ -133,3 +133,9 @@
 (defn shipping-delay?
   [data]
   (display-feature? data "shipping-delay"))
+
+(defn hide-quadpay?
+  [data]
+  (boolean
+   (and (display-feature? data "hide-quadpay")
+        (not (get-in data keypaths/order-cart-payments-quadpay)))))

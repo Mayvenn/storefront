@@ -1,6 +1,7 @@
 (ns storefront.components.checkout-payment
   (:require api.orders
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.checkout-credit-card :as cc]
             [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
@@ -90,7 +91,8 @@
   [{:payment-method/keys
     [show-quadpay-component?
      selected-stripe-or-store-credit?
-     selected-quadpay?]
+     selected-quadpay?
+     hide-quadpay?]
     :as                  data}]
   [:div
    (ui/radio-section
@@ -108,33 +110,35 @@
      [:div.ml5
       (credit-card-entry data)])
 
-   (ui/radio-section
-    (merge {:name         "payment-method"
-            :id           "payment-method-quadpay"
-            :data-test    "payment-method"
-            :data-test-id "quadpay"
-            :on-click     (utils/send-event-callback events/control-checkout-payment-select
-                                                     {:payment-method :quadpay})}
-           (when selected-quadpay?
-             {:checked "checked"}))
+   (when-not hide-quadpay?
+     (list
+      (ui/radio-section
+       (merge {:name         "payment-method"
+               :id           "payment-method-quadpay"
+               :data-test    "payment-method"
+               :data-test-id "quadpay"
+               :on-click     (utils/send-event-callback events/control-checkout-payment-select
+                                                        {:payment-method :quadpay})}
+              (when selected-quadpay?
+                {:checked "checked"}))
 
-    [:div.overflow-hidden
-     [:div.flex
-      [:div.mr1 "Pay with "]
-      [:div.mt1 {:style {:width "85px" :height "17px"}}
-       ^:inline (svg/quadpay-logo)]]
-     [:div.h6 "4 interest-free payments with QuadPay. "
-      [:a.blue.block {:href     "#"
-                      :on-click (fn [e]
-                                  (.preventDefault e)
-                                  (quadpay/show-modal))}
-       "Learn more."]
-      (when show-quadpay-component?
-        [:div.hide (component/build quadpay/widget-component {} nil)])]])
+       [:div.overflow-hidden
+        [:div.flex
+         [:div.mr1 "Pay with "]
+         [:div.mt1 {:style {:width "85px" :height "17px"}}
+          ^:inline (svg/quadpay-logo)]]
+        [:div.h6 "4 interest-free payments with QuadPay. "
+         [:a.blue.block {:href     "#"
+                         :on-click (fn [e]
+                                     (.preventDefault e)
+                                     (quadpay/show-modal))}
+          "Learn more."]
+         (when show-quadpay-component?
+           [:div.hide (component/build quadpay/widget-component {} nil)])]])
 
-   (when selected-quadpay?
-     [:div.h6.px2.ml5
-      "Before completing your purchase, you will be redirected to Quadpay to securely set up your payment plan."])])
+      (when selected-quadpay?
+        [:div.h6.px2.ml5
+         "Before completing your purchase, you will be redirected to Quadpay to securely set up your payment plan."])))])
 
 (defn cta-submit [{:cta/keys [id saving? disabled? label]}]
   (when id
@@ -189,12 +193,12 @@
        (merge {:credit-note/id "store-credit-note"})
 
        (not can-use-store-credit?)
-       (merge {:credit-note/color      "warning-yellow"
-               :credit-note/content    ^:ignore-interpret-warning [:div.proxima.content-3
-                                                                   "Your "
-                                                                   (as-money credit-to-use)
-                                                                   " in store credit cannot be used with Mayvenn Service orders."
-                                                                   " To use store credit, please remove any Mayvenn Services from your cart."]})
+       (merge {:credit-note/color   "warning-yellow"
+               :credit-note/content ^:ignore-interpret-warning [:div.proxima.content-3
+                                                                "Your "
+                                                                (as-money credit-to-use)
+                                                                " in store credit cannot be used with Mayvenn Service orders."
+                                                                " To use store credit, please remove any Mayvenn Services from your cart."]})
 
        can-use-store-credit?
        (merge
@@ -212,6 +216,7 @@
       :credit-card-entry/field-errors (:field-errors (get-in data keypaths/errors))}
 
      {:payment-method/show-quadpay-component?          (get-in data keypaths/loaded-quadpay)
+      :payment-method/hide-quadpay?                    (experiments/hide-quadpay? data)
       :payment-method/selected-stripe-or-store-credit? (some #{:stripe :store-credit} selected-payment-methods)
       :payment-method/selected-quadpay?                selected-quadpay?}
 

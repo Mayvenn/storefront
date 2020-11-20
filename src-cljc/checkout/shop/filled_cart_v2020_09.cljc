@@ -611,9 +611,10 @@
 
 (defn quadpay<-
   [data order]
-  {:quadpay/order-total (:total order)
-   :quadpay/show?       (get-in data keypaths/loaded-quadpay)
-   :quadpay/directive   :just-select})
+  (when-not (experiments/hide-quadpay? data)
+    {:quadpay/order-total (:total order)
+     :quadpay/show?       (get-in data keypaths/loaded-quadpay)
+     :quadpay/directive   :just-select}))
 
 (defn paypal<-
   [data]

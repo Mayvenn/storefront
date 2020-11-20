@@ -383,7 +383,9 @@
 
       (not (accessors.products/product-is-mayvenn-install-service? selected-sku))
       (merge
-       {:add-to-cart.quadpay/loaded? quadpay-loaded?
+       {:add-to-cart.quadpay/loaded? (and
+                                      (not (experiments/hide-quadpay? app-state))
+                                      quadpay-loaded?)
         :add-to-cart.quadpay/price   sku-price})
 
       (and stylist-mismatch?

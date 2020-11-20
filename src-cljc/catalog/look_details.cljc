@@ -24,7 +24,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.reviews :as reviews]
             [storefront.request-keys :as request-keys]
-            [storefront.ugc :as ugc]))
+            [storefront.ugc :as ugc]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn add-to-cart-button
   [sold-out? creating-order? look {:keys [number]}]
@@ -318,7 +319,9 @@
             :fetching-shared-cart? (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
             :base-price            base-price
             :discounted-price      (:discounted-price discount)
-            :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
+            :quadpay-loaded?       (and
+                                    (get-in data keypaths/loaded-quadpay)
+                                    (not (experiments/hide-quadpay? data)))
             :discount-text         (:discount-text discount)
             :cart-items            (->> line-items
                                         (remove service?)

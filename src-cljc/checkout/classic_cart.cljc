@@ -223,7 +223,9 @@
      :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
      :share-carts?              (stylists/own-store? data)
      :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
-     :loaded-quadpay?           (get-in data keypaths/loaded-quadpay)
+     :loaded-quadpay?           (and
+                                 (get-in data keypaths/loaded-quadpay)
+                                 (not (experiments/hide-quadpay? data)))
      :show-browser-pay?         (and (get-in data keypaths/loaded-stripe)
                                      (experiments/browser-pay? data)
                                      (seq (get-in data keypaths/shipping-methods))
