@@ -23,7 +23,7 @@
      [:div.fixed.bottom-0.left-0.right-0.z3.hide-on-dt.stacking-context
       face
       contents]
-     [:div.fixed.z3.hide-on-mb-tb.col-4.bottom-0.mx-auto.lit-strong.stacking-context
+     [:div.fixed.z3.hide-on-mb-tb.bottom-0.mx-auto.lit-strong.stacking-context
       {:style {:left      "50%"
                :transform "translate(-50%, 0)"}}
       face contents]]))
