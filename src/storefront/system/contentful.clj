@@ -235,7 +235,7 @@
   (range (date/to-millis start) (date/to-millis end) (* 1000 seconds)))
 
 (defn increased-polling-intervals [current-time]
-  (let [black-friday            (date/date-time 2020 11 28 04 55 0)
+  (let [black-friday            (date/date-time 2020 11 27 04 55 0)
         increased-interval-stop (date/add-delta black-friday {:minutes 15})]
     (when (date/after? increased-interval-stop current-time)
       (let [start-time (if (date/after? current-time black-friday)
