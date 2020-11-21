@@ -144,38 +144,6 @@
               (get indexed-catalog-skus (:legacy/variant-id line-item))))
      shared-cart-line-items)))
 
-(defn ^:private shared-cart->discount
-  [{:keys [promotions base-price shared-cart-promo base-service]}]
-  (if base-service
-    (let [service-price (:sku/price base-service)]
-      {:discount-text    "Hair + FREE Service"
-       :discounted-price (- base-price service-price)})
-    (let [promotion% (some->> promotions
-                              (filter (comp #{shared-cart-promo} str/lower-case :code))
-                              first
-                              :description
-                              (re-find #"\b(\d\d?\d?)%")
-                              second)]
-      {:discount-text    (some-> promotion% (str "%"))
-       :discounted-price (or
-                          (some->> promotion%
-                                   spice/parse-int
-                                   (* 0.01)
-                                   (- 1.0)  ;; 100% - discount %
-                                   (* base-price))
-                          base-price)})))
-
-(defn ^:private add-product-title-and-color-to-line-item [products facets line-item]
-  (merge line-item {:product-title (->> line-item
-                                        :catalog/sku-id
-                                        (products/find-product-by-sku-id products)
-                                        :copy/title)
-                    :color-name    (-> line-item
-                                       :hair/color
-                                       first
-                                       (facets/get-color facets)
-                                       :option/name)}))
-
 (defn ^:private service?
   [line-item]
   (-> line-item :catalog/department first #{"service"} boolean))
@@ -187,6 +155,41 @@
 (defn ^:private discountable?
   [line-item]
   (-> line-item :promo.mayvenn-install/discountable first true?))
+
+(defn ^:private shared-cart->discount
+  [{:keys [promotions base-price shared-cart-promo base-service]}]
+  (let [promotion     (some->> promotions
+                               (filter (comp #{shared-cart-promo} str/lower-case :code))
+                               first)
+        promotion%    (some->> promotion
+                               :description
+                               (re-find #"\b(\d\d?\d?)%")
+                               second)
+        markdown-rate (some->> promotion%
+                               spice/parse-int
+                               (* 0.01)
+                               (- 1.0))
+        service-price (:sku/price base-service)]
+    {:discount-text    (if (discountable? base-service)
+                         "Hair + FREE Service"
+                         (some-> promotion% (str "%")))
+     :discounted-price (if (discountable? base-service)
+                         (-> base-price
+                             (- service-price)
+                             (* (if (= "gift" (:code promotion)) markdown-rate 1)))
+                         (-> base-price
+                             (* (or markdown-rate 1))))}))
+
+(defn ^:private add-product-title-and-color-to-line-item [products facets line-item]
+  (merge line-item {:product-title (->> line-item
+                                        :catalog/sku-id
+                                        (products/find-product-by-sku-id products)
+                                        :copy/title)
+                    :color-name    (-> line-item
+                                       :hair/color
+                                       first
+                                       (facets/get-color facets)
+                                       :option/name)}))
 
 (defn ^:private get-model-image
   [images-catalog {:keys [copy/title] :as skuer}]
