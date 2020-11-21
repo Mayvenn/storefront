@@ -231,18 +231,16 @@
        (exception-handler t)
        (logger :error t)))))
 
-(defn- start-end [start {:keys [minutes]}]
-  [start (date/add-delta start {:minutes minutes})])
-
 (defn- date-time-for-every [[start end] {:keys [seconds]}]
   (range (date/to-millis start) (date/to-millis end) (* 1000 seconds)))
 
-(def black-friday
-  (date/date-time 2020 11 28 04 55 0))
-
-(def increased-polling-intervals
-  [(-> (start-end black-friday {:minutes 15})
-       (date-time-for-every {:seconds 10}))])
+(defn increased-polling-intervals [current-time]
+  (let [black-friday            (date/date-time 2020 11 28 04 55 0)
+        increased-interval-stop (date/add-delta black-friday {:minutes 15})]
+    (when (date/after? increased-interval-stop current-time)
+      (let [start-time (if (date/after? current-time black-friday)
+                         current-time black-friday)]
+        (date-time-for-every [start-time increased-interval-stop] {:seconds 10})))))
 
 (defprotocol CMSCache
   (read-cache [_] "Returns a map representing the CMS cache"))
@@ -293,14 +291,14 @@
                                                              (mapcat :looks)
                                                              (maps/index-by (comp keyword :content/id))
                                                              (assoc m :all-looks)))
-                                    :latest?          false}]]
+                                    :latest?          false}]
+          timestamps              (increased-polling-intervals (date/now))]
       (doseq [content-params content-type-parameters
-              timestamps     increased-polling-intervals
               :let           [num-checks (count timestamps)]
               [i ts-millis]  (map-indexed vector timestamps)]
         (at-at/at ts-millis #(do-fetch-entries (assoc c :cache cache :env-param env-param) content-params)
                   pool
-                  :desc (str "setting up" i "of" num-checks)))
+                  :desc (str "setting up " i " of " num-checks " for " (:content-type content-params))))
       (doseq [content-params content-type-parameters]
         (at-at/interspaced cache-timeout
                            #(do-fetch-entries (assoc c :cache cache :env-param env-param) content-params)
