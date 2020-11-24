@@ -28,6 +28,10 @@
     }
 }
 
+.max-1080 {
+    max-width: 1080px;
+}
+
 @custom-media --on-tablet  (min-width: 750px) and (max-width: 999px);
 @custom-media --on-desktop (min-width: 1000px);
 @custom-media --over-max-580 (min-width: 580px);

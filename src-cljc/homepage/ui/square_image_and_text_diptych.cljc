@@ -11,7 +11,7 @@
            link-text
            id
            pic-right-on-desktop?]} _ _]
-  [:div.bg-refresh-gray.px2.flex-on-tb-dt.py1-on-mb
+  [:div.bg-refresh-gray.max-1080.mx-auto.flex-on-tb-dt.py1-on-mb.px2-on-mb
    (merge
     {:key id}
     (when pic-right-on-desktop?

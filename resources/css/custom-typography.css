@@ -55,12 +55,8 @@ h1, h2, h3, h4, h5, h6 {
     font: 900 12px/27px var(--font-family-proxima);
     letter-spacing: 0.92px;
 }
-.content-1 {
-    font: 20px/30px var(--font-family-proxima);
-}
-.content-2 {
-    font: 16px/21px var(--font-family-proxima);
-}
+.content-1 { font: var(--content-1-font); }
+.content-2 { font: var(--content-2-font); }
 .content-3 {
     font: 13px/18px var(--font-family-proxima);
 }
@@ -125,9 +121,17 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (--on-mobile) {
     .center-align-on-mb  { text-align: center; }
+
+    .content-2-on-mb { font: var(--content-2-font); }
 }
 
-/* @custom-media --on-desktop            (min-width: 1000px); */
+@media (--on-tablet-and-desktop) {
+    .content-1-on-tb-dt { font: var(--content-1-font); }
+}
+
+@custom-media --on-mobile             (max-width: 749px);
+@custom-media --on-tablet-and-desktop (min-width: 750px);
+@custom-media --on-desktop            (min-width: 1000px);
 
 :root {
     --serif: serif;
@@ -144,4 +148,7 @@ h1, h2, h3, h4, h5, h6 {
     --light-font-weight: 300;
     --medium-font-weight: 400;
     --bold-font-weight: 700;
+
+    --content-1-font: 20px/30px var(--font-family-proxima);
+    --content-2-font: 16px/21px var(--font-family-proxima);
 }

@@ -23,7 +23,7 @@
    (c/build hero/organism-without-shipping-bar hero)
    (A/divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
    (c/build l/title-with-subtitle title-with-subtitle)
-   (into [:div.pb10.bg-refresh-gray]
+   (into [:div.bg-refresh-gray.pbj3-on-mb.pbj3-on-tb-dt]
          (for [d square-image-and-text-diptychs]
            (c/build square-image-and-text-diptych/organism d)))
    (c/build triptychs/organism portrait-triptychs)
