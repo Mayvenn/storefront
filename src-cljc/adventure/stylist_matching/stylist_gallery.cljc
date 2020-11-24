@@ -90,6 +90,11 @@
    (stylist-gallery-header-molecule data)
    (map-indexed stylist-gallery-image (:gallery data))])
 
+(defmethod transitions/transition-state events/navigate-adventure-stylist-gallery
+  [_ _ {:keys [stylist-id]} state]
+  ;; NOTE this complects stylist-profile with gallery
+  (assoc-in state keypaths/stylist-profile-id (spice/parse-int stylist-id)))
+
 (defmethod effects/perform-effects events/navigate-adventure-stylist-gallery
   [dispatch event {:keys [stylist-id query-params] :as args} prev-app-state app-state]
   #?(:cljs
