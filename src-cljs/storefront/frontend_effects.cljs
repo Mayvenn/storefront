@@ -360,7 +360,7 @@
   (refresh-current-order app-state)
   (refresh-servicing-stylist app-state)
   (when-let [error-msg (-> args :query-params :error cart-error-codes)]
-    (messages/handle-message events/flash-show-failure {:message error-msg})))
+    (messages/handle-later events/flash-show-failure {:message error-msg})))
 
 (defn ensure-bucketed-for [app-state experiment]
   (let [already-bucketed? (contains? (get-in app-state keypaths/experiments-bucketed) experiment)]
@@ -687,7 +687,7 @@
                            {:message "Logged in successfully"}))
 
 (defmethod effects/perform-effects events/api-success-auth-sign-up [dispatch event args _ app-state]
-  (messages/handle-later events/flash-later-show-success {:message "Welcome! You have signed up successfully."}))
+  (messages/handle-message events/flash-later-show-success {:message "Welcome! You have signed up successfully."}))
 
 (defmethod effects/perform-effects events/api-success-auth-reset-password [dispatch event args _ app-state]
   (messages/handle-message events/flash-later-show-success {:message "Your password was changed successfully. You are now signed in."}))
@@ -794,7 +794,9 @@
   (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
 
 (defmethod effects/perform-effects events/api-failure-order-not-created-from-shared-cart [_ event args _ app-state]
-  (history/enqueue-navigate events/navigate-home))
+  (history/enqueue-navigate events/navigate-home)
+  (when-let [error-message (get-in app-state keypaths/error-message)]
+    (messages/handle-later events/flash-show-failure {:message error-message})))
 
 (defmethod effects/perform-effects events/api-failure-errors [_ event {:keys [error-code scroll-selector] :as errors} _ app-state]
   (condp = error-code
