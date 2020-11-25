@@ -19,7 +19,6 @@
             mayvenn-install.about
 
             [storefront.components.ui :as ui]
-            [mayvenn-made.home :as mayvenn-made.home]
             [storefront.components.content :as content]
             [storefront.components.flash :as flash]
             [storefront.components.footer :as footer]
@@ -84,7 +83,6 @@
    events/navigate-checkout-add            #(ui/lazy-load-component :checkout 'checkout.add/built-component events/navigate-checkout-add)
    events/navigate-voucher-redeem          #(ui/lazy-load-component :redeem   'voucher.redeem/built-component events/navigate-voucher-redeem)
    events/navigate-voucher-redeemed        #(ui/lazy-load-component :redeem   'voucher.redeemed/built-component events/navigate-voucher-redeemed)
-   events/navigate-mayvenn-made            (constantly mayvenn-made.home/built-component)
    events/navigate-content-guarantee       (constantly content/built-component)
    events/navigate-content-help            (constantly content/built-component)
    events/navigate-content-privacy         (constantly content/built-component)

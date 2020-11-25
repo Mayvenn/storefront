@@ -117,8 +117,6 @@
 (defpath navigate-checkout-processing)
 (defpath navigate-checkout-add)
 
-(defpath navigate-mayvenn-made)
-
 (defpath navigate-about-mayvenn-install)
 
 (defpath menu-traverse-root)
@@ -171,7 +169,6 @@
 (defpath control-menu-collapse-all)
 
 (defpath control-menu-expand-hamburger)
-(defpath control-mayvenn-made-hero-clicked)
 
 (defpath control-sign-in-submit)
 (defpath control-sign-out)
@@ -390,7 +387,6 @@
 (defpath inserted-stringer)
 (defpath inserted-convert)
 (defpath inserted-facebook)
-(defpath inserted-pixlee)
 (defpath inserted-google-maps)
 (defpath inserted-quadpay)
 (defpath inserted-stripe)

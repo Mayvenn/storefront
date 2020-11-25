@@ -265,8 +265,6 @@
                                     :exists         ["fields.faqSection"]
                                     :select         ["fields.faqSection"
                                                      "fields.questionsAnswers"]}
-                                   {:content-type :mayvennMadePage
-                                    :latest?      true}
                                    {:content-type :advertisedPromo
                                     :latest?      true}
                                    {:content-type     :ugc-collection

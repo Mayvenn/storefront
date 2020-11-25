@@ -24,7 +24,6 @@
             [storefront.hooks.facebook :as facebook]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.lucky-orange :as lucky-orange]
-            [storefront.hooks.pixlee :as pixlee]
             [storefront.hooks.google-maps :as google-maps]
             [storefront.hooks.reviews :as reviews]
             [storefront.hooks.riskified :as riskified]
@@ -118,7 +117,6 @@
   (convert/remove-tracking)
   (riskified/remove-tracking)
   (lucky-orange/remove-tracking)
-  (pixlee/remove-tracking)
   (browser-events/unattach-capture-late-readystatechange-callbacks)
   (browser-events/detach-click-away-handler)
   (browser-events/detach-esc-key-listener))

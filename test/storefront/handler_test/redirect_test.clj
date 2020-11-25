@@ -187,28 +187,6 @@
                       (is (= "https://bob.mayvenn.com/?yo=lo&mo=fo"
                              (get-in resp [:headers "Location"])))))))
 
-(deftest redirects-requests-without-store-slug-to-mayvenn-made-page
-  (let [[storeback-requests storeback-handler]
-        (with-requests-chan (constantly {:status  200
-                                         :headers {"Content-Type" "application/json"}
-                                         :body    (generate-string {:number "W123456"
-                                                                    :token  "order-token"
-                                                                    :state  "cart"})}))]
-    (with-services {:storeback-handler (routes (GET "/store" req common/storeback-stylist-response)
-                                               (GET "/v2/facets" req {:status 200
-                                                                      :body   ""})
-                                               storeback-handler)}
-      (with-handler handler
-        (let [resp     (-> (mock/request :get "https://mayvenn.com/mayvenn-made")
-                           (set-cookies {"number"  "W123456"
-                                         "token"   "order-token"
-                                         "expires" "Sat, 03 May 2025 17:44:22 GMT"})
-                           handler)
-              location (get-in resp [:headers "Location"])]
-          (is (= 301 (:status resp)) location)
-          (is (= "https://shop.mayvenn.com/mayvenn-made" location) location)
-          (is (= 1 (count (txfm-requests storeback-requests identity)))))))))
-
 (deftest redirects-classes
   (with-services {}
     (with-handler handler
@@ -512,6 +490,13 @@
         (is (= 301 (:status resp)) (pr-str resp))
         (is (= "https://shop.mayvenn.com/" (get-in resp [:headers "Location"])))
         (is (= "max-age=604800" (get-in resp [:headers "cache-control"])))))))
+
+(deftest redirects-mayvenn-made-to-homepage
+  (with-services {}
+    (with-handler handler
+      (let [resp (handler (mock/request :get "https://shop.mayvenn.com/mayvenn-made"))]
+        (is (= 302 (:status resp)) (pr-str resp))
+        (is (= "https://shop.mayvenn.com/" (get-in resp [:headers "Location"])))))))
 
 (deftest classic-and-aladdin-standalone-service-pages-redirect-to-shop-service-pages
   (with-services {:storeback-handler (routes (GET "/v3/products" req {:status 200

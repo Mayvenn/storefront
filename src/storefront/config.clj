@@ -110,5 +110,3 @@
 
 (defn system-config [overrides]
   (deep-merge default-config (env-config) overrides))
-
-(def pixlee {})

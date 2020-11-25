@@ -50,9 +50,6 @@
             storefront.accessors.contentful
             [storefront.accessors.sites :as sites]))
 
-(def root-domain-pages-to-preserve-paths-in-redirects
-  #{"/mayvenn-made"})
-
 (defn ^:private path-for
   "Like routes/path-for, but preserves query params."
   ([req navigation-event] (path-for req navigation-event nil))
@@ -314,11 +311,7 @@
       (h (update-in-req-state req keypaths/cms
                               merge
                               (update-data {} [:advertisedPromo])
-                              (cond (= events/navigate-mayvenn-made nav-event)
-                                    (-> {}
-                                        (update-data [:mayvennMadePage]))
-
-                                    (= events/navigate-home nav-event)
+                              (cond (= events/navigate-home nav-event)
                                     (-> {}
                                         (update-data [:homepage (if shop? :shop :unified)])
                                         (update-data [:ugc-collection :free-install-mayvenn])
@@ -789,7 +782,6 @@
    events/navigate-content-program-terms     generic-server-render
    events/navigate-store-gallery             generic-server-render
    events/navigate-checkout-processing       generic-server-render
-   events/navigate-mayvenn-made              generic-server-render
    events/navigate-adventure-stylist-profile generic-server-render
    events/navigate-adventure-stylist-gallery generic-server-render
    events/navigate-shop-by-look              generic-server-render
@@ -1095,6 +1087,9 @@
                (GET "/products/" req (redirect-to-home environment req))
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
                (GET "/how-it-works" req (wrap-set-cache-header (partial redirect-to-home environment) "max-age=604800"))
+               (GET "/mayvenn-made" req (util.response/redirect
+                                         (store-url "shop" environment
+                                                    (assoc req :uri "/"))))
                (GET "/share" req (redirect-to-home environment req :found))
                (GET "/account/referrals" req (redirect-to-home environment req :found))
                (GET "/stylist/referrals" req (redirect-to-home environment req :found))

@@ -535,7 +535,7 @@
                          (parse-string true)
                          :faq)))))))))
 
-  (let [number-of-contentful-entities-to-fetch 5]
+  (let [number-of-contentful-entities-to-fetch 4]
     (testing "caching content"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
                                                                               {:status 200

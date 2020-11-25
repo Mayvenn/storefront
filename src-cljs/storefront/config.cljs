@@ -92,13 +92,6 @@
     "acceptance" "AIzaSyA25Ehwf5yqYjAVfzYeAT5VEfqsKZjVbKY"
     "AIzaSyBF1WsIRs4wIRTEsnNi8Klynxtxqz5RoIA"))
 
-(def pixlee
-  (case js/environment
-    "production" {:api-key                "PUTXr6XBGuAhWqoIP4ir"
-                  :mayvenn-made-widget-id 1048394}
-    {:api-key                "iiQ27jLOrmKgTfIcRIk"
-     :mayvenn-made-widget-id 1057225}))
-
 (def manual-experiments
   (case js/environment
     "production"
