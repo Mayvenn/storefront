@@ -105,6 +105,7 @@
 (def portrait-triptychs
   {:title    "Need Inspiration? Look No Further."
    :subtitle "#mayvennmade"
+   :target   [e/navigate-shop-by-look {:album-keyword :look}]
    :data     [{:id                         "triptych-1"
                :large-pic-right-on-mobile? false
                :image-ids                  ["eb70fa1b-449f-4415-b038-4fe25952cf43"
