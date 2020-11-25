@@ -25,8 +25,7 @@
     {:style {:max-width "750px"}}
     (interpose
      [:div.pbj3-on-mb]
-     (for [{:sit-back-and-relax.items/keys [caption icon
-                                            height width]} items]
+     (for [{:sit-back-and-relax.items/keys [caption icon]} items]
        [:div.flex.flex-column.justify-start.items-center {:key (str icon)}
         [:div.flex.items-top {:style {:height "50px" :width "50px"}}
          (svg/symbolic->html [icon {:height "42px" :width "42px" :class "fill-mayvenn-pink"}])]
