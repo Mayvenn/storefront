@@ -18,6 +18,7 @@
 .bg-cool-gray    { background-color: var(--cool-gray); }
 .bg-warm-gray    { background-color: var(--warm-gray); }
 .bg-pale-purple  { background-color: var(--pale-purple); }
+.bg-deep-purple  { background-color: var(--deep-purple); }
 .bg-pink         { background-color: var(--pink); }
 .bg-warning-yellow         { background-color: var(--warning-yellow); }
 
@@ -54,6 +55,7 @@
     --light-red:    #fef7fa;
     --paypal:       #49bbf0;
     --pale-purple:  #dedbe5;
+    --deep-purple:  #4e4899;
     --white:        #ffffff;
     --gray-mask:    rgba(204, 204, 204, 0.1);
     --gray:         #cccccc;

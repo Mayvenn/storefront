@@ -48,52 +48,52 @@
 /* Juri sizes */
 /* TODO: migrate all to mobile sizes */
 
-.ptj3,.pyj3 { padding-top: 60px }
-.ptj2,.pyj2 { padding-top: 45px }
-.ptj1,.pyj1 { padding-top: 30px }
+.ptj3,.pyj3 { padding-top: 60px;}
+.ptj2,.pyj2 { padding-top: 45px;}
+.ptj1,.pyj1 { padding-top: 30px;}
 
-.pbj3,.pyj3 { padding-bottom: 60px }
-.pbj2,.pyj2 { padding-bottom: 45px }
-.pbj1,.pyj1 { padding-bottom: 30px }
+.pbj3,.pyj3 { padding-bottom: 60px;}
+.pbj2,.pyj2 { padding-bottom: 45px;}
+.pbj1,.pyj1 { padding-bottom: 30px;}
 
 /* Juri mobile sizes */
 
 @media (--on-mobile) {
-    .ptj3-on-mb,.pyj3-on-mb { padding-top: 60px }
-    .ptj2-on-mb,.pyj2-on-mb { padding-top: 45px }
-    .ptj1-on-mb,.pyj1-on-mb { padding-top: 30px }
+    .ptj3-on-mb,.pyj3-on-mb,.pj3-on-mb { padding-top: 60px;   }
+    .ptj2-on-mb,.pyj2-on-mb,.pj2-on-mb { padding-top: 45px;   }
+    .ptj1-on-mb,.pyj1-on-mb,.pj1-on-mb { padding-top: 30px;   }
 
-    .pbj3-on-mb,.pyj3-on-mb { padding-bottom: 60px }
-    .pbj2-on-mb,.pyj2-on-mb { padding-bottom: 45px }
-    .pbj1-on-mb,.pyj1-on-mb { padding-bottom: 30px }
+    .pbj3-on-mb,.pyj3-on-mb,.pj3-on-mb { padding-bottom: 60px;}
+    .pbj2-on-mb,.pyj2-on-mb,.pj2-on-mb { padding-bottom: 45px;}
+    .pbj1-on-mb,.pyj1-on-mb,.pj1-on-mb { padding-bottom: 30px;}
 
-    .plj3-on-mb,.pxj3-on-mb { padding-left: 60px }
-    .plj2-on-mb,.pxj2-on-mb { padding-left: 45px }
-    .plj1-on-mb,.pxj1-on-mb { padding-left: 30px }
+    .plj3-on-mb,.pxj3-on-mb,.pj3-on-mb { padding-left: 60px;  }
+    .plj2-on-mb,.pxj2-on-mb,.pj2-on-mb { padding-left: 45px;  }
+    .plj1-on-mb,.pxj1-on-mb,.pj1-on-mb { padding-left: 30px;  }
 
-    .prj3-on-mb,.pxj3-on-mb { padding-right: 60px }
-    .prj2-on-mb,.pxj2-on-mb { padding-right: 45px }
-    .prj1-on-mb,.pxj1-on-mb { padding-right: 30px }
+    .prj3-on-mb,.pxj3-on-mb,.pj3-on-mb { padding-right: 60px; }
+    .prj2-on-mb,.pxj2-on-mb,.pj2-on-mb { padding-right: 45px; }
+    .prj1-on-mb,.pxj1-on-mb,.pj1-on-mb { padding-right: 30px; }
 }
 
 /* Juri desktop sizes */
 
 @media (--on-tablet-and-desktop) {
-    .ptj3-on-tb-dt,.pyj3-on-tb-dt { padding-top: 110px }
-    .ptj2-on-tb-dt,.pyj2-on-tb-dt { padding-top: 60px }
-    .ptj1-on-tb-dt,.pyj1-on-tb-dt { padding-top: 35px }
+    .ptj3-on-tb-dt,.pyj3-on-tb-dt,.pj3-on-tb-dt { padding-top: 110px;   }
+    .ptj2-on-tb-dt,.pyj2-on-tb-dt,.pj2-on-tb-dt { padding-top: 60px;    }
+    .ptj1-on-tb-dt,.pyj1-on-tb-dt,.pj1-on-tb-dt { padding-top: 35px;    }
 
-    .pbj3-on-tb-dt,.pyj3-on-tb-dt { padding-bottom: 110px }
-    .pbj2-on-tb-dt,.pyj2-on-tb-dt { padding-bottom: 60px }
-    .pbj1-on-tb-dt,.pyj1-on-tb-dt { padding-bottom: 35px }
+    .pbj3-on-tb-dt,.pyj3-on-tb-dt,.pj3-on-tb-dt { padding-bottom: 110px;}
+    .pbj2-on-tb-dt,.pyj2-on-tb-dt,.pj2-on-tb-dt { padding-bottom: 60px; }
+    .pbj1-on-tb-dt,.pyj1-on-tb-dt,.pj1-on-tb-dt { padding-bottom: 35px; }
 
-    .plj3-on-tb-dt,.pxj3-on-tb-dt { padding-left: 110px }
-    .plj2-on-tb-dt,.pxj2-on-tb-dt { padding-left: 60px }
-    .plj1-on-tb-dt,.pxj1-on-tb-dt { padding-left: 35px }
+    .plj3-on-tb-dt,.pxj3-on-tb-dt,.pj3-on-tb-dt { padding-left: 110px;  }
+    .plj2-on-tb-dt,.pxj2-on-tb-dt,.pj2-on-tb-dt { padding-left: 60px;   }
+    .plj1-on-tb-dt,.pxj1-on-tb-dt,.pj1-on-tb-dt { padding-left: 35px;   }
 
-    .prj3-on-tb-dt,.pxj3-on-tb-dt { padding-right: 110px }
-    .prj2-on-tb-dt,.pxj2-on-tb-dt { padding-right: 60px }
-    .prj1-on-tb-dt,.pxj1-on-tb-dt { padding-right: 35px }
+    .prj3-on-tb-dt,.pxj3-on-tb-dt,.pj3-on-tb-dt { padding-right: 110px; }
+    .prj2-on-tb-dt,.pxj2-on-tb-dt,.pj2-on-tb-dt { padding-right: 60px;  }
+    .prj1-on-tb-dt,.pxj1-on-tb-dt,.pj1-on-tb-dt { padding-right: 35px;  }
 }
 
 @custom-media --on-tablet-and-desktop (min-width: 750px);

@@ -1,6 +1,7 @@
 (ns homepage.ui.atoms)
 
 ;; TODO can this use ucare-img utilities / picture tag?
+;; TODO what about an svg?
 (defn divider-atom
   [ucare-id]
   (let [uri (str "url('//ucarecdn.com/" ucare-id "/-/resize/x24/')")]

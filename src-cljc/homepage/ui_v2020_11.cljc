@@ -12,13 +12,38 @@
             [storefront.components.ui :as ui]
             [storefront.events :as e]))
 
+(c/defcomponent x-organism
+  [{:sit-back-and-relax.title/keys
+    [primary secondary]
+    items :list/items} _ _]
+  [:div.bg-deep-purple.white.center.pj3-on-mb.pyj3-on-tb-dt
+   [:div.shout.title-2.proxima.mb3 secondary]
+   [:div.shout.title-1.canela.mt2.pbj3-on-mb.pbj2-on-tb-dt
+    ;; NOTE: this is a design exception
+    {:style {:font-size "56px"}} primary]
+   [:div.flex-on-tb-dt.justify-around.mx-auto.px2-on-tb-dt
+    {:style {:max-width "750px"}}
+    (interpose
+     [:div.pbj3-on-mb]
+     (for [{:sit-back-and-relax.items/keys [caption icon
+                                            height width]} items]
+       [:div.flex.flex-column.justify-start.items-center {:key (str icon)}
+        [:div.flex.items-top {:style {:height "50px" :width "50px"}}
+         (svg/symbolic->html [icon {:height "42px" :width "42px" :class "fill-mayvenn-pink"}])]
+        [:div.shout.title-3.proxima.mt1.mx-auto
+         {:style {:line-height "18px"
+                  :width       "150px"}} caption]]))]])
+
+(def purple-pink-divider-id
+  "937451d3-070b-4f2c-b839-4f5b621ef661")
 (c/defcomponent template
   [{:keys [contact-us
            faq
            hero
            title-with-subtitle
            square-image-and-text-diptychs
-           portrait-triptychs]} _ _]
+           portrait-triptychs
+           sit-back-and-relax]} _ _]
   [:div
    (c/build hero/organism-without-shipping-bar hero)
    (A/divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
@@ -27,6 +52,8 @@
          (for [d square-image-and-text-diptychs]
            (c/build square-image-and-text-diptych/organism d)))
    (c/build triptychs/organism portrait-triptychs)
+   (A/divider-atom purple-pink-divider-id)
+   (c/build x-organism sit-back-and-relax)
    (c/build faq/organism faq)
    (c/build contact-us/organism contact-us)])
 
@@ -85,8 +112,7 @@
                                             "54f0180b-ce09-4f14-a5f0-c8e5c7a3d5b9"]}
               {:id                         "triptych-2"
                :large-pic-right-on-mobile? true
-               :image-ids                  [
-                                            "4b8c6087-96f3-41ac-b12a-63e06695ee2d"
+               :image-ids                  ["4b8c6087-96f3-41ac-b12a-63e06695ee2d"
                                             "b026b457-50bb-4548-8c29-22038a9a5ad1"
                                             "d5a56ee3-86e3-4932-b832-2b98b497a6f7"]}]})
 
@@ -96,6 +122,18 @@
    :list/sections      (for [{:keys [question answer]} (:question-answers faq)]
                          {:faq/title   (:text question)
                           :faq/content answer})})
+;; TODO: set min-ish height for images to prevent content reflow
+
+(def sit-back-and-relax
+  {:sit-back-and-relax.title/primary   "Relax"
+   :sit-back-and-relax.title/secondary "Sit Back And"
+   :list/items
+   [{:sit-back-and-relax.items/icon    :svg/shaded-shipping-package
+     :sit-back-and-relax.items/caption "Fast, Free Shipping"}
+    {:sit-back-and-relax.items/icon    :svg/customer-service-representative
+     :sit-back-and-relax.items/caption "Easy Returns & Exchanges"}
+    {:sit-back-and-relax.items/icon    :svg/heart
+     :sit-back-and-relax.items/caption "Enhanced Safety Standards"}]})
 
 ;; TODO svg ns returns components full of undiffable data
 (def contact-us-query

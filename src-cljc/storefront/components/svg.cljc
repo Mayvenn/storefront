@@ -457,6 +457,16 @@
    [:svg opts
     ^:inline (svg-xlink "description")]))
 
+(defn shaded-shipping-package [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "shaded-shipping-package")]))
+
+(defn customer-service-representative [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "customer-service-representative")]))
+
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.
 
@@ -466,8 +476,10 @@
   (component/html
    (if kind
      (case kind
-       :svg/close-x      ^:inline (close-x attrs)
-       :svg/discount-tag ^:inline (discount-tag attrs)
-       :svg/check-mark   ^:inline (check-mark attrs)
-       :svg/heart        ^:inline (heart attrs))
+       :svg/close-x                         ^:inline (close-x attrs)
+       :svg/discount-tag                    ^:inline (discount-tag attrs)
+       :svg/check-mark                      ^:inline (check-mark attrs)
+       :svg/heart                           ^:inline (heart attrs)
+       :svg/shaded-shipping-package         ^:inline (shaded-shipping-package attrs)
+       :svg/customer-service-representative ^:inline (customer-service-representative attrs))
      [:div])))
