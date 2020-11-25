@@ -12,7 +12,7 @@
             [storefront.components.ui :as ui]
             [storefront.events :as e]))
 
-(c/defcomponent x-organism
+(c/defcomponent sit-back-and-relax-organism
   [{:sit-back-and-relax.title/keys
     [primary secondary]
     items :list/items} _ _]
@@ -52,7 +52,7 @@
            (c/build square-image-and-text-diptych/organism d)))
    (c/build triptychs/organism portrait-triptychs)
    (A/divider-atom purple-pink-divider-id)
-   (c/build x-organism sit-back-and-relax)
+   (c/build sit-back-and-relax-organism sit-back-and-relax)
    (c/build faq/organism faq)
    (c/build contact-us/organism contact-us)])
 
