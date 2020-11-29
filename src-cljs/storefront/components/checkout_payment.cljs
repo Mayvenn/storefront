@@ -50,8 +50,8 @@
                            (select-keys waiter-order [:token :number])
                            {:cart-payments selected-payment-methods})
                     selected-saved-card-id
-                    (merge {:cart-payments {:stripe {:source         selected-saved-card-id
-                                                     :idempotent-key (str (random-uuid))}}}))
+                    (assoc-in [:cart-payments :stripe] {:source         selected-saved-card-id
+                                                        :idempotent-key (str (random-uuid))}))
         :navigate events/navigate-checkout-confirmation}))))
 
 (defmethod transitions/transition-state events/control-checkout-payment-select
