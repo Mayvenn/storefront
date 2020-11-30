@@ -76,6 +76,24 @@
     .prj1-on-mb,.pxj1-on-mb,.pj1-on-mb { padding-right: 30px; }
 }
 
+@media (--on-mobile-and-tablet) {
+    .ptj3-on-mb-tb,.pyj3-on-mb-tb,.pj3-on-mb-tb { padding-top: 60px;   }
+    .ptj2-on-mb-tb,.pyj2-on-mb-tb,.pj2-on-mb-tb { padding-top: 45px;   }
+    .ptj1-on-mb-tb,.pyj1-on-mb-tb,.pj1-on-mb-tb { padding-top: 30px;   }
+
+    .pbj3-on-mb-tb,.pyj3-on-mb-tb,.pj3-on-mb-tb { padding-bottom: 60px;}
+    .pbj2-on-mb-tb,.pyj2-on-mb-tb,.pj2-on-mb-tb { padding-bottom: 45px;}
+    .pbj1-on-mb-tb,.pyj1-on-mb-tb,.pj1-on-mb-tb { padding-bottom: 30px;}
+
+    .plj3-on-mb-tb,.pxj3-on-mb-tb,.pj3-on-mb-tb { padding-left: 60px;  }
+    .plj2-on-mb-tb,.pxj2-on-mb-tb,.pj2-on-mb-tb { padding-left: 45px;  }
+    .plj1-on-mb-tb,.pxj1-on-mb-tb,.pj1-on-mb-tb { padding-left: 30px;  }
+
+    .prj3-on-mb-tb,.pxj3-on-mb-tb,.pj3-on-mb-tb { padding-right: 60px; }
+    .prj2-on-mb-tb,.pxj2-on-mb-tb,.pj2-on-mb-tb { padding-right: 45px; }
+    .prj1-on-mb-tb,.pxj1-on-mb-tb,.pj1-on-mb-tb { padding-right: 30px; }
+}
+
 /* Juri desktop sizes */
 
 @media (--on-tablet-and-desktop) {
@@ -98,6 +116,7 @@
 
 @custom-media --on-tablet-and-desktop (min-width: 750px);
 @custom-media --on-mobile             (max-width: 749px);
+@custom-media --on-mobile-and-tablet  (max-width: 999px);
 
 :root {
     --space-1: .5rem;
