@@ -19,7 +19,7 @@
    [:div.bg-warm-gray.ptj2-on-mb.pxj1-on-mb.pbj1-on-mb.ptj3-on-tb-dt.pxj1-on-tb-dt.pbj2-on-tb-dt
     [:div.title-1.canela.center.mb3 title]
     [:div.title-2.proxima.shout.center subtitle]]
-   [:div
+   [:a.block
     (apply utils/route-to target)
     (->> data
          (mapv (fn triptych [{:keys [large-pic-right-on-mobile?
