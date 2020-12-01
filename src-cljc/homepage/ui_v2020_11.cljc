@@ -43,10 +43,11 @@
     body-secondary      :diishan.body/secondary
     signature-primary   :diishan.signature/primary
     signature-secondary :diishan.signature/secondary
-    ucare-id            :diishan.image/ucare-id} _ _]
+    mobile-ucare-id     :diishan.image/mobile-ucare-id
+    desktop-ucare-id    :diishan.image/desktop-ucare-id} _ _]
   [:div
    [:div.hide-on-dt
-    [:div.pj1-on-mb-tb
+    [:div.pj3-on-mb-tb
      {:style {:background     "linear-gradient(to top, #424242, #222429 100px)"
               :padding-bottom "30px"}}
      [:div.title-1.canela.white
@@ -60,7 +61,7 @@
      [:div.absolute.right-0.right-align.z1.prj1-on-mb-tb.white
       [:div.title-2.proxima.shout signature-primary]
       [:div.content-2 signature-secondary]]
-     (ui/img {:src      ucare-id
+     (ui/img {:src      mobile-ucare-id
               :max-size 800
               :style    (let [gradient "linear-gradient(to bottom, transparent, rgb(0 0 0) 30px)"]
                           {:mask-image         gradient
@@ -82,7 +83,7 @@
     [:div
      {:style {:width  "520px"
               :height "520px"}}
-     (ui/img {:src      ucare-id
+     (ui/img {:src      desktop-ucare-id
               :size     1040
               :max-size 414
               :width    "1040"
@@ -221,10 +222,11 @@
      :contact-us.contact-method/copy  "help@mayvenn.com"}]})
 
 (def diishan-query
-  {:diishan.title/primary       "Black Owned,"
-   :diishan.title/secondary     "Oakland Bred"
-   :diishan.body/primary        "I grew up watching hairstylists in my family become cornerstones of the community. I noticed that all of the products they were buying, they weren’t selling - that didn’t sit right with me."
-   :diishan.body/secondary      "Your hair should be cared for by expert stylists who understand you, and celebrated by a company that takes pride in offering the best experience possible. We’re removing every barrier in the way of making your hair dreams come true."
-   :diishan.signature/primary   "– Diishan Imira"
-   :diishan.signature/secondary "CEO of Mayvenn"
-   :diishan.image/ucare-id      "3208fac6-c974-4c80-8e88-3244ee50226b"})
+  {:diishan.title/primary          "Black Owned,"
+   :diishan.title/secondary        "Oakland Bred"
+   :diishan.body/primary           "I grew up watching hairstylists in my family become cornerstones of the community. I noticed that all of the products they were buying, they weren’t selling - that didn’t sit right with me."
+   :diishan.body/secondary         "Your hair should be cared for by expert stylists who understand you, and celebrated by a company that takes pride in offering the best experience possible. We’re removing every barrier in the way of making your hair dreams come true."
+   :diishan.signature/primary      "– Diishan Imira"
+   :diishan.signature/secondary    "CEO of Mayvenn"
+   :diishan.image/mobile-ucare-id  "3208fac6-c974-4c80-8e88-3244ee50226b"
+   :diishan.image/desktop-ucare-id "7a63315b-9cc9-4c3c-9e40-555d303a10c2"})
