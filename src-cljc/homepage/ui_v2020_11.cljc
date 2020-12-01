@@ -23,17 +23,18 @@
     {:style {:font-size "56px"}} primary]
    [:div.flex-on-tb-dt.justify-around.mx-auto.px2-on-tb-dt
     {:style {:max-width "750px"}}
-    (for [[index {:sit-back-and-relax.items/keys [caption icon]}] (mapv vector items)]
-      [:div.flex.flex-column.justify-start.items-center
-       (merge
-        {:key (str icon "-" index)}
-        (when-not (= (inc index) (count items))
-          {:class "pbj3-on-mb"}))
-       [:div.flex.items-top {:style {:height "50px" :width "50px"}}
-        (svg/symbolic->html [icon {:height "42px" :width "42px" :class "fill-mayvenn-pink"}])]
-       [:div.shout.title-3.proxima.mt1.mx-auto
-        {:style {:line-height "18px"
-                 :width       "150px"}} caption]])]])
+    (let [item-count (count items)]
+      (for [[index {:sit-back-and-relax.items/keys [caption icon] :as i}] (map-indexed vector items)]
+        [:div.flex.flex-column.justify-start.items-center
+         (merge
+          {:key (str icon "-" index)}
+          (when-not (= (inc index) item-count)
+            {:class "pbj3-on-mb"}))
+         [:div.flex.items-top {:style {:height "50px" :width "50px"}}
+          (svg/symbolic->html [icon {:height "42px" :width "42px" :class "fill-mayvenn-pink"}])]
+         [:div.shout.title-3.proxima.mt1.mx-auto
+          {:style {:line-height "18px"
+                   :width       "150px"}} caption]]))]])
 
 (c/defcomponent diishan
   [{title-primary       :diishan.title/primary
