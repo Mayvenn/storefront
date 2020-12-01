@@ -23,15 +23,17 @@
     {:style {:font-size "56px"}} primary]
    [:div.flex-on-tb-dt.justify-around.mx-auto.px2-on-tb-dt
     {:style {:max-width "750px"}}
-    (interpose
-     [:div.pbj3-on-mb]
-     (for [{:sit-back-and-relax.items/keys [caption icon]} items]
-       [:div.flex.flex-column.justify-start.items-center {:key (str icon)}
-        [:div.flex.items-top {:style {:height "50px" :width "50px"}}
-         (svg/symbolic->html [icon {:height "42px" :width "42px" :class "fill-mayvenn-pink"}])]
-        [:div.shout.title-3.proxima.mt1.mx-auto
-         {:style {:line-height "18px"
-                  :width       "150px"}} caption]]))]])
+    (for [[index {:sit-back-and-relax.items/keys [caption icon]}] (mapv vector items)]
+      [:div.flex.flex-column.justify-start.items-center
+       (merge
+        {:key (str icon "-" index)}
+        (when-not (= (inc index) (count items))
+          {:class "pbj3-on-mb"}))
+       [:div.flex.items-top {:style {:height "50px" :width "50px"}}
+        (svg/symbolic->html [icon {:height "42px" :width "42px" :class "fill-mayvenn-pink"}])]
+       [:div.shout.title-3.proxima.mt1.mx-auto
+        {:style {:line-height "18px"
+                 :width       "150px"}} caption]])]])
 
 (c/defcomponent diishan
   [{title-primary       :diishan.title/primary
@@ -57,11 +59,11 @@
      [:div.absolute.right-0.right-align.z1.prj1-on-mb-tb.white
       [:div.title-2.proxima.shout signature-primary]
       [:div.content-2 signature-secondary]]
-     (ui/img {:src       ucare-id
-              :max-width 800
-              :style     (let [gradient "linear-gradient(to bottom, transparent, rgb(0 0 0) 30px)"]
-                           {:mask-image         gradient
-                            :-webkit-mask-image gradient})})]]
+     (ui/img {:src      ucare-id
+              :max-size 800
+              :style    (let [gradient "linear-gradient(to bottom, transparent, rgb(0 0 0) 30px)"]
+                          {:mask-image         gradient
+                           :-webkit-mask-image gradient})})]]
    [:div.hide-on-mb-tb.flex
     [:div.ptj3-on-tb-dt.pxj2-on-tb-dt.pbj1-on-tb-dt.bg-refresh-gray.flex-grow-1
      [:div.mx-auto
