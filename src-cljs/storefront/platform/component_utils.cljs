@@ -9,7 +9,8 @@
             [storefront.browser.scroll :as scroll]
             [clojure.string :as str]
             [goog.object :as gobj]
-            ["react" :as react]))
+            ["react" :as react]
+            [spice.core :as spice]))
 
 (defn create-class [super-class init-fn static-properties method-names]
   (let [ctor (fn constructor [props]
@@ -70,7 +71,17 @@
     :on-click (send-event-callback event args)}))
 
 (defn route-to [navigation-event & [navigation-args nav-stack-item]]
-  (if-let [routable-path (routes/path-for navigation-event navigation-args)]
+  (if-let [routable-path (try
+                           (routes/path-for navigation-event navigation-args)
+                           (catch js/Error e
+                             (throw
+                              (ex-info
+                               (str "Cannot find path for event: " navigation-event " and args:" navigation-args)
+                               (clj->js
+                                {:navigation-event navigation-event
+                                 :navigation-args  navigation-args}
+                                :keyword-fn spice/kw-name)
+                               e))))]
     {:href routable-path
      :on-click
      (fn [e]
