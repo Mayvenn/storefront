@@ -91,6 +91,10 @@
 
 (def purple-pink-divider-id
   "937451d3-070b-4f2c-b839-4f5b621ef661")
+
+(def red-purple-divider-id
+  "4783adeb-94d7-49f5-9101-0e377a5fdaf0")
+
 (c/defcomponent template
   [{:keys [contact-us
            faq
@@ -112,6 +116,7 @@
    (c/build sit-back-and-relax-organism sit-back-and-relax)
    (c/build diishan diishan-data)
    (c/build faq/organism faq)
+   (A/divider-atom red-purple-divider-id)
    (c/build contact-us/organism contact-us)])
 
 (defn hero-query
