@@ -16,4 +16,5 @@
       :portrait-triptychs             ui/portrait-triptychs
       :sit-back-and-relax             ui/sit-back-and-relax
       :faq                            (ui/faq-query (-> cms :faq :free-mayvenn-services) expanded-index)
-      :contact-us                     ui/contact-us-query})))
+      :contact-us                     ui/contact-us-query
+      :diishan-data                   ui/diishan-query})))

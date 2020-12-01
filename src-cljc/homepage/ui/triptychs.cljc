@@ -1,8 +1,7 @@
 (ns homepage.ui.triptychs
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
-            [storefront.events :as e]))
+            [storefront.platform.component-utils :as utils]))
 
 (defn ^:private square-deferred-ucare-img
   [ucare-id]

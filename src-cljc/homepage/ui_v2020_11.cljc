@@ -34,55 +34,57 @@
                   :width       "150px"}} caption]]))]])
 
 (c/defcomponent diishan
- [_ _ _ #_#_:diishan/keys [primary copy signature-primary signature-secondary]]
-  (let [primary   "Black-Owned,"
-        secondary "Oakland-Bred"
-        copy-1    "I grew up watching hairstylists in my family become cornerstones of the community. I noticed that all of the products they were buying, they weren’t selling - that didn’t sit right with me."
-        copy-2    "Your hair should be cared for by expert stylists who understand you, and celebrated by a company that takes pride in offering the best experience possible. We’re removing every barrier in the way of making your hair dreams come true."]
-    [:div
-     [:div.hide-on-dt
-      [:div.pj1-on-mb-tb
-       {:style {:background     "linear-gradient(to top, #424242, #222429 100px)"
-                :padding-bottom "30px"}}
+  [{title-primary       :diishan.title/primary
+    title-secondary     :diishan.title/secondary
+    body-primary        :diishan.body/primary
+    body-secondary      :diishan.body/secondary
+    signature-primary   :diishan.signature/primary
+    signature-secondary :diishan.signature/secondary
+    ucare-id            :diishan.image/ucare-id} _ _]
+  [:div
+   [:div.hide-on-dt
+    [:div.pj1-on-mb-tb
+     {:style {:background     "linear-gradient(to top, #424242, #222429 100px)"
+              :padding-bottom "30px"}}
+     [:div.title-1.canela.white
+      [:div title-primary]
+      [:div title-secondary]]
+     [:div.content-2.proxima.pyj1-on-mb-tb.gray
+      [:div.mb2 body-primary]
+      [:div body-secondary]]]
+    [:div.relative
+     {:style {:margin "-30px 0 -30px 0"}}
+     [:div.absolute.right-0.right-align.z1.prj1-on-mb-tb.white
+      [:div.title-2.proxima.shout signature-primary]
+      [:div.content-2 signature-secondary]]
+     (ui/img {:src       ucare-id
+              :max-width 800
+              :style     (let [gradient "linear-gradient(to bottom, transparent, rgb(0 0 0) 30px)"]
+                           {:mask-image         gradient
+                            :-webkit-mask-image gradient})})]]
+   [:div.hide-on-mb-tb.flex
+    [:div.ptj3-on-tb-dt.pxj2-on-tb-dt.pbj1-on-tb-dt.bg-refresh-gray.flex-grow-1
+     [:div.mx-auto
+      {:style {:max-width "675px"}}
+      [:div.title-1.canela.mb3
+       [:div title-primary]
+       [:div title-secondary]]
+      [:div.content-2.proxima
+       [:div.mb2 body-primary]
+       [:div body-secondary]]
 
-       [:div.title-1.canela.white
-        [:div primary]
-        [:div secondary]]
-       [:div.content-2.proxima.pyj1-on-mb-tb.gray
-        [:div.mb2 copy-1]
-        [:div copy-2]]]
-      [:div.relative
-       {:style {:margin "-30px 0 -30px 0"}}
-       [:div.absolute.right-0.right-align.z1.prj1-on-mb-tb.white
-        [:div.title-2.proxima.shout "– Diishan Imira"]
-        [:div.content-2 "CEO of Mayvenn"]]
-       ;; todo: max size
-       (ui/img {:src   "3208fac6-c974-4c80-8e88-3244ee50226b"
-                :style {:mask-image         "linear-gradient(to bottom, transparent, rgb(0 0 0) 30px)"
-                        :-webkit-mask-image "linear-gradient(to bottom, transparent, rgb(0 0 0) 30px)"}})]]
-     [:div.hide-on-mb-tb.flex
-      [:div.ptj3-on-tb-dt.pxj2-on-tb-dt.pbj1-on-tb-dt.bg-refresh-gray.flex-grow-1
-       [:div.mx-auto
-        {:style {:max-width "675px"}}
-        [:div.title-1.canela.mb3
-         [:div primary]
-         [:div secondary]]
-        [:div.content-2.proxima
-         [:div.mb2 copy-1]
-         [:div copy-2]]
-        [:div.right-align
-         [:div.title-2.proxima.shout "– Diishan Imira"]
-         [:div.content-2 "CEO of Mayvenn"]]]]
-      [:div
-       {:style {:width "520px"
-                :height "520px"}}
-       (ui/img {:src "3208fac6-c974-4c80-8e88-3244ee50226b"
-                :size 1040
-                :max-size 414
-                :width "1040"
-                :square? true
-                :style {:width "520px"}})]]])
-  )
+      [:div.right-align.mt10.mr7
+       [:div.title-2.proxima.shout signature-primary]
+       [:div.title-3 signature-secondary]]]]
+    [:div
+     {:style {:width  "520px"
+              :height "520px"}}
+     (ui/img {:src      ucare-id
+              :size     1040
+              :max-size 414
+              :width    "1040"
+              :square?  true
+              :style    {:width "520px"}})]]])
 
 (def purple-pink-divider-id
   "937451d3-070b-4f2c-b839-4f5b621ef661")
@@ -93,7 +95,8 @@
            title-with-subtitle
            square-image-and-text-diptychs
            portrait-triptychs
-           sit-back-and-relax]} _ _]
+           sit-back-and-relax
+           diishan-data]} _ _]
   [:div
    (c/build hero/organism-without-shipping-bar hero)
    (A/divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
@@ -104,7 +107,7 @@
    (c/build triptychs/organism portrait-triptychs)
    (A/divider-atom purple-pink-divider-id)
    (c/build sit-back-and-relax-organism sit-back-and-relax)
-   (c/build diishan {})
+   (c/build diishan diishan-data)
    (c/build faq/organism faq)
    (c/build contact-us/organism contact-us)])
 
@@ -174,7 +177,6 @@
    :list/sections      (for [{:keys [question answer]} (:question-answers faq)]
                          {:faq/title   (:text question)
                           :faq/content answer})})
-;; TODO: set min-ish height for images to prevent content reflow
 
 (def sit-back-and-relax
   {:sit-back-and-relax.title/primary   "Relax"
@@ -209,3 +211,12 @@
                                                        :width  56})
      :contact-us.contact-method/title "Email Us"
      :contact-us.contact-method/copy  "help@mayvenn.com"}]})
+
+(def diishan-query
+  {:diishan.title/primary       "Black Owned,"
+   :diishan.title/secondary     "Oakland Bred"
+   :diishan.body/primary        "I grew up watching hairstylists in my family become cornerstones of the community. I noticed that all of the products they were buying, they weren’t selling - that didn’t sit right with me."
+   :diishan.body/secondary      "Your hair should be cared for by expert stylists who understand you, and celebrated by a company that takes pride in offering the best experience possible. We’re removing every barrier in the way of making your hair dreams come true."
+   :diishan.signature/primary   "– Diishan Imira"
+   :diishan.signature/secondary "CEO of Mayvenn"
+   :diishan.image/ucare-id      "3208fac6-c974-4c80-8e88-3244ee50226b"})
