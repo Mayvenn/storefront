@@ -147,7 +147,7 @@
     :secondary             "Hair + Service for the price of one. Get the best value for your money with our hair plus Free Service pairings."
     :target                [e/navigate-category {:page/slug           "human-hair-bundles"
                                                  :catalog/category-id "27"}]
-    :link-text             "Pick your dream look"
+    :link-text             "Browse Hair"
     :pic-right-on-desktop? false}
    {:id                    "cta-salon-services"
     :ucare-id              "045c8b5b-1230-41f1-8b4e-0a712b802ec9"
