@@ -91,8 +91,7 @@
 (defmethod effects/perform-effects events/checkout-order-cleared-for-mayvenn-checkout
   [_ _ _ _ app-state]
   #?(:cljs
-     (if (and (experiments/interrupt-checkout? app-state)
-              (not (current-order-has-addons app-state))
+     (if (and (not (current-order-has-addons app-state))
               (not (current-order-does-not-have-services-that-can-have-addons app-state)))
        (history/enqueue-navigate events/navigate-checkout-add)
        (history/enqueue-navigate events/navigate-checkout-address))))
