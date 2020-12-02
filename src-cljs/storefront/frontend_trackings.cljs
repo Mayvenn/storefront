@@ -235,26 +235,33 @@
 
 (defmethod perform-track events/api-success-update-order-from-shared-cart
   [_ _ {:keys [look-id order shared-cart-id]} app-state]
-  (let [line-item-skuers   (waiter-line-items->line-item-skuer
-                            (get-in app-state keypaths/v2-skus)
-                            (orders/product-and-service-items order))
-        line-item-quantity (->> line-item-skuers (map :item/quantity) (reduce + 0))
-
-        images-catalog (get-in app-state keypaths/v2-images)
-        cart-items     (mapv (partial line-item-skuer->stringer-cart-item images-catalog) line-item-skuers)]
+  (let [line-item-skuers       (waiter-line-items->line-item-skuer
+                                (get-in app-state keypaths/v2-skus)
+                                (orders/product-and-service-items order))
+        line-item-quantity     (->> line-item-skuers (map :item/quantity) (reduce + 0))
+        images-catalog         (get-in app-state keypaths/v2-images)
+        cart-items             (mapv (partial line-item-skuer->stringer-cart-item images-catalog) line-item-skuers)
+        {non-upsell-skus false
+         upsell-skus     true} (group-by
+                                #(->> % :service/type first (= "addon"))
+                                line-item-skuers)]
     (facebook-analytics/track-event "AddToCart" {:content_type "product"
                                                  :content_ids  (map :catalog/sku-id line-item-skuers)
                                                  :num_items    line-item-quantity})
     (google-tag-manager/track-add-to-cart {:number           (:number order)
                                            :line-item-skuers line-item-skuers})
-    (stringer/track-event "bulk_add_to_cart" (merge {:shared_cart_id   shared-cart-id
-                                                     :store_experience (get-in app-state keypaths/store-experience)
-                                                     :order_number     (:number order)
-                                                     :order_total      (:total order)
-                                                     :order_quantity   line-item-quantity
-                                                     :skus             (->> line-item-skuers (map :catalog/sku-id) (string/join ","))
-                                                     :variant_ids      (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
-                                                     :context          {:cart-items cart-items}}
+    (stringer/track-event "bulk_add_to_cart" (merge {:shared_cart_id       shared-cart-id
+                                                     :store_experience     (get-in app-state keypaths/store-experience)
+                                                     :order_number         (:number order)
+                                                     :order_total          (:total order)
+                                                     :order_quantity       line-item-quantity
+                                                     :inherent_skus        (->> non-upsell-skus (map :catalog/sku-id) (string/join ","))
+                                                     :inherent_variant_ids (->> non-upsell-skus (map :legacy/variant-id) (string/join ","))
+                                                     :upsell_skus          (->> upsell-skus (mapv :catalog/sku-id) (string/join ","))
+                                                     :upsell_variant_ids   (->> upsell-skus (mapv :legacy/variant-id) (string/join ","))
+                                                     :skus                 (->> line-item-skuers (map :catalog/sku-id) (string/join ","))
+                                                     :variant_ids          (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
+                                                     :context              {:cart-items cart-items}}
                                                     (when look-id
                                                       {:look_id look-id})))))
 
