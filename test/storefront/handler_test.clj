@@ -596,7 +596,7 @@
     (with-handler handler
       (testing "regular category pages"
         (testing "with allowed and extraneous query params"
-          (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave?base-material=lace&origin=peruvian&foo=bar" ;; NOTE: need to be in remove-closures experiment?
+          (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave?base-material=lace&origin=peruvian&foo=bar"
                           (mock/request :get)
                           handler)]
             (is (= 200 (:status resp)))

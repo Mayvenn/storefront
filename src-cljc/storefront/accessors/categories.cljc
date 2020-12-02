@@ -83,7 +83,7 @@
   "With ICPs, the 'canonical category id' may be different from the ICP category
   id. E.g. 13-wigs with a selected family of 'lace-front-wigs' will have a
   canonical cateogry id of 24, or in other words, lace-front-wigs' category id."
-  [categories requested-category current-nav-url remove-closures-experiment?]
+  [categories requested-category current-nav-url]
   (let [query-map         (some-> current-nav-url :query)
         category-27?      (=  "27" (:catalog/category-id requested-category))
         texture-selection (some-> query-map
@@ -95,10 +95,9 @@
     (cond
       ;; Are we on human hair bundles ICP w/ a texture chosen?
       ;; we have to check specifically for category 27 because multiple categories use texture as a filter
-      (and remove-closures-experiment?
-           category-27?
-           (and texture-selection
-                (= (count texture-selection) 1)))
+      (and category-27?
+           texture-selection
+           (= (count texture-selection) 1))
       (let [canonical-category (->> categories
                                     (filter #(and (= 1 (count (:hair/texture %)))
                                                   (some (:hair/texture %) texture-selection)))
@@ -108,8 +107,7 @@
          :selections    query-map})
 
       ;; Are we on a bundle texture category page?
-      (and remove-closures-experiment?
-           (:seo/self-referencing-texture? requested-category))
+      (:seo/self-referencing-texture? requested-category)
       {:category-id   (:catalog/category-id requested-category)
        :category-slug (:page/slug requested-category)
        :selections    query-map}

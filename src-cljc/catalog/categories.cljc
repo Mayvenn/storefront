@@ -268,13 +268,13 @@
            :hair/texture                  #{"straight"}
            :hair/color.process            #{"natural" "dyed"}
            :hair/source                   #{"virgin"}
-           :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
-           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives            [:hair/family :hair/origin :hair/color :hair/base-material]
+           :hair/family                   #{"bundles"}
+           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source :hair/family]
+           :selector/electives            [:hair/origin :hair/color],
            :category/description          (copy "For those who want it given to them"
-                                                    "straight, our collection of 100% virgin straight hair"
-                                                    "is your go-to for a sleek look with"
-                                                    "minimal effort.")
+                                                "straight, our collection of 100% virgin straight hair"
+                                                "is your go-to for a sleek look with"
+                                                "minimal effort.")
            :icon                          "/images/categories/straight-icon.svg"
            :subcategory/title             "Straight"
            :header/title                  "Virgin Straight"}
@@ -306,16 +306,16 @@
            :hair/texture                  #{"yaki-straight"}
            :hair/color.process            #{"natural" "dyed"}
            :hair/source                   #{"virgin"}
-           :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
-           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives            [:hair/family :hair/origin]
+           :hair/family                   #{"bundles"}
+           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source :hair/family]
+           :selector/electives            [:hair/origin]
            :category/description          (copy "Tired of having to break out the hot"
-                                                    "tools for a textured straight look? Our Yaki"
-                                                    "Straight hair collection is here to save your"
-                                                    "strands! Yaki Straight hair matches the rhythm of"
-                                                    "your natural hair that's been pressed straight or"
-                                                    "freshly relaxed. Your flat iron has been officially"
-                                                    "cancelled.")
+                                                "tools for a textured straight look? Our Yaki"
+                                                "Straight hair collection is here to save your"
+                                                "strands! Yaki Straight hair matches the rhythm of"
+                                                "your natural hair that's been pressed straight or"
+                                                "freshly relaxed. Your flat iron has been officially"
+                                                "cancelled.")
            :icon                          "/images/categories/yaki-straight-icon.svg"
            :subcategory/title             "Yaki Straight"
            :header/title                  "Virgin Yaki Straight"}
@@ -335,9 +335,9 @@
            :hair/texture                  #{"kinky-straight"}
            :hair/color.process            #{"natural" "dyed"}
            :hair/source                   #{"virgin"}
-           :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
-           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives            [:hair/family :hair/origin :hair/color :hair/base-material]
+           :hair/family                   #{"bundles"}
+           :selector/essentials           [:catalog/department :hair/color.process :hair/family :hair/source :hair/texture]
+           :selector/electives            [:hair/origin :hair/color]
            :content-block/type            :about-attributes ;; incase we have different templates in the future
            :content-block/title           "Hair Bundles 101:"
            :content-block/header          "How to Style"
@@ -351,10 +351,10 @@
                                            {:title "Free Install"
                                             :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]
            :category/description          (copy "Blending is a breeze with our Kinky Straight"
-                                                    "hair collection! Like a fresh blow out, the"
-                                                    "Kinky Straight hair texture moves freely and gives"
-                                                    "a naturally flawless look that mimics your own"
-                                                    "locks.")
+                                                "hair collection! Like a fresh blow out, the"
+                                                "Kinky Straight hair texture moves freely and gives"
+                                                "a naturally flawless look that mimics your own"
+                                                "locks.")
            :icon                          "/images/categories/kinky-straight-icon.svg"
            :subcategory/title             "Kinky Straight"
            :header/title                  "Virgin Kinky Straight"}
@@ -374,9 +374,9 @@
            :hair/texture                  #{"body-wave"}
            :hair/color.process            #{"natural" "dyed"}
            :hair/source                   #{"virgin"}
-           :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
-           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives            [:hair/family :hair/origin :hair/color :hair/base-material]
+           :hair/family                   #{"bundles"}
+           :selector/essentials           [:catalog/department :hair/color.process :hair/family :hair/source :hair/texture]
+           :selector/electives            [:hair/origin :hair/color]
            :content-block/type            :about-attributes ;; incase we have different templates in the future
            :content-block/title           "Hair Bundles 101:"
            :content-block/header          "How to Style"
@@ -390,7 +390,7 @@
                                            {:title "Free Install"
                                             :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]
            :category/description          (copy "Step into the spotlight with our collection of luscious Body Wave hair."
-                                                    "Body Wave is unbelievably soft and goes from straight to wavy and back again with ease.")
+                                                "Body Wave is unbelievably soft and goes from straight to wavy and back again with ease.")
            :icon                          "/images/categories/body-wave-icon.svg"
            :subcategory/title             "Body Wave"
            :header/title                  "Virgin Body Wave"}
@@ -409,9 +409,9 @@
            :hair/texture                  #{"loose-wave"}
            :hair/color.process            #{"natural" "dyed"}
            :hair/source                   #{"virgin"}
-           :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
-           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives            [:hair/family :hair/origin :hair/color :hair/base-material]
+           :hair/family                   #{"bundles"}
+           :selector/essentials           [:catalog/department :hair/color.process :hair/family :hair/source :hair/texture]
+           :selector/electives            [:hair/origin :hair/color]
            :content-block/type            :about-attributes ;; incase we have different templates in the future
            :content-block/title           "Hair Bundles 101:"
            :content-block/header          "How to Style"
@@ -425,9 +425,9 @@
                                            {:title "Free Install"
                                             :body  "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]
            :category/description          (copy "For hair that holds a curl beautifully,"
-                                                    "our collection of 100% virgin Loose Wave hair"
-                                                    "is the perfect foundation for all your carefree,"
-                                                    "flirty, wavy looks.")
+                                                "our collection of 100% virgin Loose Wave hair"
+                                                "is the perfect foundation for all your carefree,"
+                                                "flirty, wavy looks.")
            :icon                          "/images/categories/loose-wave-icon.svg"
            :subcategory/title             "Loose Wave"
            :header/title                  "Virgin Loose Wave"}
@@ -447,14 +447,14 @@
            :hair/texture                  #{"water-wave"}
            :hair/color.process            #{"natural" "dyed"}
            :hair/source                   #{"virgin"}
-           :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
-           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives            [:hair/family :hair/origin]
+           :hair/family                   #{"bundles"}
+           :selector/essentials           [:catalog/department :hair/color.process :hair/family :hair/source :hair/texture]
+           :selector/electives            [:hair/origin]
            :category/description          (copy "Ride the lush, carefree waves of the bundles,"
-                                                    "closures, and frontals in our Water Wave hair"
-                                                    "collection. For curls you can rock everywhere from"
-                                                    "the office to your tropical vacation, make a"
-                                                    "statement with Water Wave hair.")
+                                                "closures, and frontals in our Water Wave hair"
+                                                "collection. For curls you can rock everywhere from"
+                                                "the office to your tropical vacation, make a"
+                                                "statement with Water Wave hair.")
            :content-block/type            :about-attributes ;; incase we have different templates in the future
            :content-block/title           "Hair Bundles 101:"
            :content-block/header          "How to Style"
@@ -486,12 +486,12 @@
            :hair/texture                  #{"deep-wave"}
            :hair/color.process            #{"natural" "dyed"}
            :hair/source                   #{"virgin"}
-           :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
-           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives            [:hair/family :hair/origin :hair/color :hair/base-material]
+           :hair/family                   #{"bundles"}
+           :selector/essentials           [:catalog/department :hair/color.process :hair/family :hair/source :hair/texture]
+           :selector/electives            [:hair/origin :hair/color]
            :category/description          (copy "Reigning supreme in versatility, the Deep Wave hair collection features"
-                                                    "a soft, spiral wave full of body and bounce. Our deep wave hair is perfect"
-                                                    "for those who want big waves that make an even bigger splash.")
+                                                "a soft, spiral wave full of body and bounce. Our deep wave hair is perfect"
+                                                "for those who want big waves that make an even bigger splash.")
            :content-block/type            :about-attributes ;; incase we have different templates in the future
            :content-block/title           "Hair Bundles 101:"
            :content-block/header          "How to Style"
@@ -524,11 +524,11 @@
            :hair/texture                  #{"curly"}
            :hair/color.process            #{"natural" "dyed"}
            :hair/source                   #{"virgin"}
-           :hair/family                   #{"bundles" "closures" "frontals" "360-frontals"}
-           :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source]
-           :selector/electives            [:hair/family :hair/origin :hair/base-material]
+           :hair/family                   #{"bundles"}
+           :selector/essentials           [:catalog/department :hair/color.process :hair/family :hair/source :hair/texture]
+           :selector/electives            [:hair/origin]
            :category/description          (copy "Let your bold, beautiful curls take center stage! Our curly hair collection is a tight,"
-                                                    "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")
+                                                "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")
            :content-block/type            :about-attributes ;; incase we have different templates in the future
            :content-block/title           "Hair Bundles 101:"
            :content-block/header          "How to Style"
@@ -1188,15 +1188,3 @@
           mayvenn-install-services
           custom-wig-services
           free-weave-installation-services))
-
-(def categories-for-remove-closure-experiment
-  (let [texture-category-ids #{"2" "3" "4" "5" "6" "7" "8" "9"}]
-    (mapv
-     (fn [category]
-       (cond-> category
-         (contains? texture-category-ids (:catalog/category-id category))
-         (->
-          (assoc :hair/family #{"bundles"})
-          (update :selector/essentials concat [:hair/family :catalog/department]) ;; Affects query
-          (update :selector/electives (comp vec (partial remove #{:hair/family :hair/base-material}))))))
-     initial-categories)))

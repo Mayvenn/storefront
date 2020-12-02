@@ -146,9 +146,7 @@
                                              (accessors.categories/id->category
                                               (get-in data catalog.keypaths/category-id)
                                               categories)
-                                             (get-in data keypaths/navigation-uri)
-                                             #?(:cljs (experiments/remove-closures? data)
-                                                :clj true)))
+                                             (get-in data keypaths/navigation-uri)))
         category              (accessors.categories/id->category canonical-category-id categories)
         faq                   (get-in data (conj keypaths/cms-faq (:contentful/faq-id category)))
         allowed-query-params  (category->allowed-query-params category)
@@ -198,9 +196,7 @@
                                 (-> data
                                     (get-in catalog.keypaths/category-id)
                                     (accessors.categories/id->category categories))
-                                (get-in data keypaths/navigation-uri)
-                                #?(:cljs (experiments/remove-closures? data)
-                                   :clj true))
+                                (get-in data keypaths/navigation-uri))
         category               (accessors.categories/id->category category-id categories)
         permitted-query-params (category->allowed-query-params category)
         query                  (-> uri

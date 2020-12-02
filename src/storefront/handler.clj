@@ -450,9 +450,7 @@
              (update-in-req-state keypaths/v2-images merge order-images pdp-images)
              (assoc-in-req-state keypaths/v2-facets (map #(update % :facet/slug keyword) facets))
              (assoc-in-req-state catalog.keypaths/detailed-product-related-addons related-addon-skus)
-             ;; NOTE: we are using categories-for-remove-closure-experiment instead of initial-categories for
-             ;; user niceness. if the experiment causes a flicker, then they'll see more products instead of fewer.
-             (assoc-in-req-state keypaths/categories categories/categories-for-remove-closure-experiment))))))
+             (assoc-in-req-state keypaths/categories categories/initial-categories))))))
 
 (defn wrap-set-user [h]
   (fn [req]
@@ -822,8 +820,7 @@
                                   canonical-category-id (:category-id (accessors.categories/canonical-category-data
                                                                        categories
                                                                        (accessors.categories/id->category category-id categories)
-                                                                       {:query (codec/form-encode query-params)}
-                                                                       true))] ;; NOTE: assume remove-closures experiment is on
+                                                                       {:query (codec/form-encode query-params)}))]
          :when (= category-id canonical-category-id)]
      [(str "https://shop.mayvenn.com" (routes/path-for events/navigate-category
                                                        {:catalog/category-id category-id

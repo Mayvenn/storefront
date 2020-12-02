@@ -529,10 +529,7 @@
 (defmethod transition-state events/enable-feature [_ event {:keys [feature]} app-state]
   (cond-> app-state
     (not (contains? (set (get-in app-state keypaths/features)) feature))
-    (update-in keypaths/features conj feature)
-
-    (= "remove-closures" feature)
-    (assoc-in keypaths/categories catalog.categories/categories-for-remove-closure-experiment)))
+    (update-in keypaths/features conj feature)))
 
 (defmethod transition-state events/clear-features [_ event _ app-state]
   (assoc-in app-state keypaths/features []))
