@@ -77,10 +77,8 @@
                              (throw
                               (ex-info
                                (str "Cannot find path for event: " navigation-event " and args:" navigation-args)
-                               (clj->js
-                                {:navigation-event navigation-event
-                                 :navigation-args  navigation-args}
-                                :keyword-fn spice/kw-name)
+                               {:navigation-event navigation-event
+                                :navigation-args  navigation-args}
                                e))))]
     {:href routable-path
      :on-click
