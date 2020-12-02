@@ -280,9 +280,9 @@
                     :on/success   #(navigate success-event)
                     :result-index result-index}))))))
 
-(defmethod trackings/perform-track e/flow|stylist-matching|matched
-  [_ _ {:keys [stylist result-index]} state]
-  (let [{:keys [number]} (:waiter/order (api.orders/current state))]
+(defmethod trackings/perform-track e/biz|current-stylist|selected
+  [_ _ {:keys [order stylist result-index]} state]
+  (let [{:keys [number]} order]
     #?(:cljs
        (stringer/track-event "stylist_selected"
                              {:stylist_id     (:stylist-id stylist)
