@@ -1,10 +1,30 @@
-(ns stylist-profile.stylist
-  (:require adventure.keypaths
-            [spice.core :as spice]
+(ns api.stylist
+  "Business Domain: Stylist
+
+   Represents the stylist that can perform the services.
+
+   Read API:
+
+   - by-id
+
+   Cache Domain: Current Stylist
+
+   behavior:
+
+   - requested
+     Requests the stylist model for caching
+   - fetched
+     The stylist model is cached locally "
+  (:require [spice.core :as spice]
             [spice.date :as date]
             [storefront.components.formatters :as f]
-            [stylist-directory.keypaths :as keypaths]
-            [stylist-directory.stylists :as stylists]))
+            [storefront.effects :as fx]
+            [storefront.events :as e]
+            [storefront.transitions :as t]
+            [storefront.keypaths :as storefront.k]
+            [storefront.platform.messages :as m]
+            [stylist-directory.keypaths :as k]
+            #?@(:cljs [[storefront.api :as api]])))
 
 (defn ->display-name
   [{:keys [store-nickname address] :as stylist}]
@@ -14,8 +34,6 @@
       store-nickname)))
 
 (def ^:private display-name<- ->display-name)
-
-;; ----- Model
 
 (def ^:private menu-slugs->offered-sku-ids
   ;; This defines a mapping between diva service slugs and sku-ids
@@ -84,8 +102,8 @@
      :stylist.rating/publishable? mayvenn-rating-publishable}))
 
 ;; TODO(corey) extend reviews
-
 (defn stylist<-
+  "Stylist schema situated for Storefront"
   [state diva-stylist]
   (let [salon (:salon diva-stylist)]
     (merge {:diva/stylist diva-stylist
@@ -107,24 +125,45 @@
             ;; unsure if phone should be considered part of an address, seems odd
             :stylist/phone-number (some-> diva-stylist :address :phone f/phone-number-parens)
 
-            :stylist.address/city (:city salon)
+            :stylist.address/city  (:city salon)
+            :stylist.address/state (:state salon)
 
             :stylist.gallery/images (:gallery-images diva-stylist)}
            (extend-rating diva-stylist)
            (extend-offered-services diva-stylist))))
 
-;; ----- api
+;; - Read API
 
 (defn by-id
-  [app-state stylist-id]
-  (get-in app-state (conj keypaths/stylists stylist-id)))
+  "Get a stylist by id"
+  [state stylist-id]
+  (get-in state (conj storefront.k/models-stylists stylist-id)))
 
-(defn current
-  [state]
-  (when-let [diva-stylist (get-in state adventure.keypaths/adventure-servicing-stylist)]
-    (stylist<- state diva-stylist)))
+;; - Behavior API
 
-(defn detailed
-  [state]
-  (when-let [diva-stylist (stylists/by-id state (get-in state adventure.keypaths/stylist-profile-id))]
-    (stylist<- state diva-stylist)))
+(defmethod fx/perform-effects e/cache|stylist|requested
+  [_ _ {:stylist/keys [id] :on/keys [success failure] :keys [forced?]} _ state]
+  (let [cache (get-in state storefront.k/api-cache)]
+    (->> {:error-handler   failure
+          :cache/bypass?   forced?
+          :success-handler #(m/handle-message e/cache|stylist|fetched
+                                              (assoc % :on/success success))}
+         #?(:cljs
+            (api/fetch-matched-stylist cache id)))))
+
+(defmethod t/transition-state e/cache|stylist|fetched
+  [_ _ {diva-stylist :stylist} state]
+  (when diva-stylist
+    (let [{:as stylist-model :stylist/keys [id]} (stylist<- state diva-stylist)]
+      (-> state
+          ;; Store stylist in the original diva format, removal soon
+          (assoc-in (conj k/stylists id)
+                    diva-stylist)
+          ;; store stylist baked for storefront
+          (assoc-in (conj storefront.k/models-stylists id)
+                    stylist-model)))))
+
+(defmethod fx/perform-effects e/cache|stylist|fetched
+  [_ _ {:on/keys [success]} _ _]
+  (when-not (nil? success)
+    (success)))

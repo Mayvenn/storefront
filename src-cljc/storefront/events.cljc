@@ -504,8 +504,6 @@
 
 (defpath api-success-fetch-matched-stylist)
 (defpath api-success-fetch-matched-stylists)
-(defpath api-success-fetch-stylist-details)
-(defpath api-failure-fetch-stylist-details)
 (defpath api-success-fetch-stylist-reviews)
 (defpath api-failure-fetch-stylist-reviews)
 (defpath control-fetch-stylist-reviews)
@@ -560,9 +558,6 @@
 
 (defpath visual-add-on-services-displayed)
 
-(defpath service-model-requested)
-(defpath service-model-fetched)
-
 ;; Flows
 
 (defpath flow|stylist-matching|initialized)
@@ -595,3 +590,15 @@
 (defpath cancel-presearch-requests)
 ;; TODO(corey) think about general solutions to the api handlers problem
 (defpath api-success-presearch-name)
+
+;; Business domains
+
+(defpath biz|current-stylist|selected)
+(defpath biz|current-stylist|deselected)
+
+;; Cache domains
+
+(defpath cache|stylist|requested)
+(defpath cache|stylist|fetched)
+
+(defpath cache|current-stylist|requested)

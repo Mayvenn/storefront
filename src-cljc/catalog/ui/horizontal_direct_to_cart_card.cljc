@@ -1,5 +1,5 @@
 (ns catalog.ui.horizontal-direct-to-cart-card
-  (:require adventure.keypaths
+  (:require api.current
             [storefront.accessors.images :as images]
             [storefront.component :as c]
             [storefront.components.money-formatters :as mf]
@@ -22,7 +22,7 @@
         product-slug      (:page/slug product)
         cta-disabled?     (boolean (some (comp #{sku-id} :sku)
                                          (orders/service-line-items (get-in data keypaths/order))))
-        servicing-stylist (get-in data adventure.keypaths/adventure-servicing-stylist)
+        servicing-stylist (:diva/stylist (api.current/stylist data))
         store-nickname    (:store-nickname servicing-stylist)
         any-updates?      (utils/requesting-from-endpoint? data request-keys/add-to-bag)
         card-disabled?    (and (experiments/stylist-mismatch? data)

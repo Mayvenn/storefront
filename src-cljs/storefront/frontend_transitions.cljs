@@ -359,8 +359,7 @@
 (defmethod transition-state events/save-order
   [_ event {:keys [order]} app-state]
   (if (orders/incomplete? order)
-    (let [previous-order        (get-in app-state keypaths/order)
-          no-servicing-stylist? (nil? (:servicing-stylist-id order))]
+    (let [previous-order (get-in app-state keypaths/order)]
       (cond-> (-> app-state
                   (assoc-in keypaths/order order)
                   (update-in keypaths/checkout-billing-address merge (:billing-address order))
@@ -371,10 +370,7 @@
                   prefill-guest-email-address)
 
         (not= previous-order order)
-        (assoc-in keypaths/cart-recently-added-skus (orders/recently-added-sku-ids->quantities previous-order order))
-
-        no-servicing-stylist?
-        (assoc-in adventure.keypaths/adventure-servicing-stylist nil)))
+        (assoc-in keypaths/cart-recently-added-skus (orders/recently-added-sku-ids->quantities previous-order order))))
     (assoc-in app-state keypaths/order nil)))
 
 (defmethod transition-state events/clear-order [_ event _ app-state]
@@ -484,8 +480,7 @@
       (assoc-in keypaths/sign-up-email (get-in app-state keypaths/checkout-guest-email))
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/cart state/initial-cart-state)
-      (assoc-in keypaths/completed-order order)
-      (assoc-in adventure.keypaths/adventure-servicing-stylist nil)))
+      (assoc-in keypaths/completed-order order)))
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]
   (update-in app-state keypaths/promotions #(-> (concat % promotions) set vec)))

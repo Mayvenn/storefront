@@ -1,7 +1,6 @@
 (ns mayvenn-install.about
   (:require [adventure.components.layered :as layered]
             [adventure.faq :as faq]
-            adventure.handlers
             adventure.keypaths
             [storefront.accessors.contentful :as contentful]
             [storefront.component :as component]

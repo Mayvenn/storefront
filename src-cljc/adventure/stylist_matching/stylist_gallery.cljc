@@ -1,41 +1,39 @@
 (ns adventure.stylist-matching.stylist-gallery
+  (:refer-clojure :exclude [name])
   (:require #?@(:cljs
                 [[goog.dom]
                  [goog.events.EventType :as EventType]
                  [goog.events]
                  [goog.style]
-                 [storefront.api :as api]
                  [storefront.browser.scroll :as scroll]
-                 [storefront.platform.messages :as messages]])
+                 [storefront.platform.messages :refer [handle-message]]])
+            api.stylist
             [storefront.components.header :as header]
             [adventure.keypaths :as keypaths]
             [spice.core :as spice]
-            [storefront.component :as component :refer [defcomponent defdynamic-component]]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
-            [storefront.components.ui :as ui]
-            [storefront.effects :as effects]
-            [storefront.events :as events]
+            [storefront.effects :as fx]
+            [storefront.events :as e]
             storefront.keypaths
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]
-            [storefront.transitions :as transitions]
-            [stylist-directory.stylists :as stylists]))
+            [storefront.transitions :as transitions]))
 
 (defn query
   [data]
-  (let [stylist-id (get-in data keypaths/stylist-profile-id)
-        stylist    (stylists/by-id data stylist-id)
-        back       (first (get-in data storefront.keypaths/navigation-undo-stack))]
-    (cond-> {}
-
-      stylist
-      (merge {:stylist-gallery-header/title       (str (stylists/->display-name stylist) "'s Recent work")
-              :stylist-gallery-header/close-id    "close-stylist-gallery"
-              :stylist-gallery-header/close-route (utils/route-back-or-to back
-                                                                          events/navigate-adventure-stylist-profile
-                                                                          {:stylist-id stylist-id
-                                                                           :store-slug (:store-slug stylist)})
-              :gallery                            (map :resizable-url (:gallery-images stylist))}))))
+  (let [{:as                   detailed-stylist
+         :stylist/keys         [id name slug]
+         :stylist.gallery/keys [images]}
+        (api.stylist/by-id data (get-in data keypaths/stylist-profile-id))
+        back (first (get-in data storefront.keypaths/navigation-undo-stack))]
+    (when detailed-stylist
+      {:stylist-gallery-header/title       (str name "'s Recent work")
+       :stylist-gallery-header/close-id    "close-stylist-gallery"
+       :stylist-gallery-header/close-route (utils/route-back-or-to back
+                                                                   e/navigate-adventure-stylist-profile
+                                                                   {:stylist-id id
+                                                                    :store-slug slug})
+       :gallery                            (map :resizable-url images)})))
 
 (defn ^:private component-overhead-magic-number [mobile-overhead desktop-overhead]
   #?(:cljs
@@ -90,23 +88,28 @@
    (stylist-gallery-header-molecule data)
    (map-indexed stylist-gallery-image (:gallery data))])
 
-(defmethod transitions/transition-state events/navigate-adventure-stylist-gallery
+(defmethod transitions/transition-state e/navigate-adventure-stylist-gallery
   [_ _ {:keys [stylist-id]} state]
   ;; NOTE this complects stylist-profile with gallery
   (assoc-in state keypaths/stylist-profile-id (spice/parse-int stylist-id)))
 
-(defmethod effects/perform-effects events/navigate-adventure-stylist-gallery
-  [dispatch event {:keys [stylist-id query-params] :as args} prev-app-state app-state]
+(defmethod fx/perform-effects e/navigate-adventure-stylist-gallery
+  [_ _ {:keys [stylist-id query-params] :as args} _ _]
   #?(:cljs
-     (api/fetch-stylist-details (get-in app-state storefront.keypaths/api-cache)
-                                stylist-id
-                                #(do (messages/handle-message events/api-success-fetch-stylist-details %)
-                                     (when-let [offset (:offset query-params)]
-
-                                       ;; We wait a moment for the images to at least start to load so that we know where to scroll to.
-                                       (js/setTimeout
-                                        (fn [] (scroll/scroll-to-selector (str "[data-ref=offset-" offset "]")))
-                                        500))))))
+     (handle-message e/cache|stylist|requested
+                     {:stylist/id stylist-id
+                      :on/success
+                      #(when-let [offset (:offset query-params)]
+                         ;; We wait a moment for the images to at least start to load so that we know where to scroll to.
+                         (js/setTimeout
+                          (fn [] (scroll/scroll-to-selector (str "[data-ref=offset-" offset "]")))
+                          500))
+                      :on/failure
+                      (fn [] (handle-message e/flash-later-show-failure
+                                             {:message
+                                              (str "The stylist you are looking for is not available. "
+                                                   "Please search for another stylist in your area below. ")})
+                        (fx/redirect e/navigate-adventure-find-your-stylist))})))
 
 (defn ^:export built-component
   [data _]

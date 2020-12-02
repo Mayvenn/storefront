@@ -1,9 +1,9 @@
 (ns checkout.shop.addon-services-menu
   (:require
+   api.current
    api.orders
    [clojure.set :as set]
    [clojure.string :as string]
-   [adventure.keypaths :as adv-keypaths]
    [spice.maps :as maps]
    [storefront.accessors.orders :as orders]
    [storefront.api :as api]
@@ -115,7 +115,7 @@
         {:keys [available-addon-skus
                 unavailable-addon-skus]}     (addon-skus-for-stylist-grouped-by-availability
                                               {:base-service-line-item discountable-service-line-item
-                                               :stylist-service-menu   (get-in data adv-keypaths/adventure-servicing-stylist-service-menu)
+                                               :stylist-service-menu   (:service-menu (:diva/stylist (api.current/stylist data)))
                                                :skus                   (get-in data keypaths/v2-skus)})]
     {:addon-services/spinning? (utils/requesting? data request-keys/get-skus)
      :addon-services/services  (map (partial addon-service-sku->addon-service-menu-entry data)

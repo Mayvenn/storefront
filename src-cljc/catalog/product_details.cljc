@@ -11,6 +11,7 @@
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.trackings :as trackings]])
             adventure.keypaths
+            api.current
             api.orders
             [homepage.ui.faq :as faq]
             [catalog.facets :as facets]
@@ -300,7 +301,7 @@
 (defn add-to-cart-query
   [app-state]
   (let [selected-sku                         (get-in app-state catalog.keypaths/detailed-product-selected-sku)
-        servicing-stylist                    (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        servicing-stylist                    (:diva/stylist (api.current/stylist app-state))
         product                              (products/current-product app-state)
         addon-list-open?                     (get-in app-state catalog.keypaths/detailed-product-addon-list-open?)
         out-of-stock?                        (not (:inventory/in-stock? selected-sku))
@@ -493,7 +494,7 @@
         wig-customization?         (= #{"SRV-WGC-000"} (:catalog/sku-id product))
 
         stylist-mismatch? (experiments/stylist-mismatch? data)
-        servicing-stylist (get-in data adventure.keypaths/adventure-servicing-stylist)
+        servicing-stylist (:diva/stylist (api.current/stylist data))
         faq               (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
                             (get-in data (conj keypaths/cms-faq pdp-faq-id)))]
     (merge

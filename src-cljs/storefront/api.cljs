@@ -1046,14 +1046,14 @@
 (defn fetch-matched-stylist
   ([cache stylist-id]
    (fetch-matched-stylist cache stylist-id nil))
-  ([cache stylist-id {:keys [error-handler cache/bypass?]}]
+  ([cache stylist-id {:keys [error-handler cache/bypass? success-handler]}]
    (cache-req
     cache
     GET
     "/v1/stylist/matched-by-id"
     request-keys/fetch-matched-stylist
     {:params        {:stylist-id stylist-id}
-     :handler       #(messages/handle-message events/api-success-fetch-matched-stylist %)
+     :handler       success-handler
      :error-handler error-handler
      :cache/bypass? bypass?})))
 
@@ -1065,19 +1065,6 @@
    request-keys/fetch-matched-stylist
    {:params  {:stylist-ids stylist-ids}
     :handler handler}))
-
-(defn fetch-stylist-details
-  ([cache stylist-id]
-   (fetch-stylist-details cache stylist-id (partial messages/handle-message events/api-success-fetch-stylist-details)))
-  ([cache stylist-id handler]
-   (cache-req
-    cache
-    GET
-    "/v1/stylist/matched-by-id"
-    request-keys/fetch-matched-stylist
-    {:params        {:stylist-id stylist-id}
-     :handler       handler
-     :error-handler #(messages/handle-message events/api-failure-fetch-stylist-details %)})))
 
 (defn fetch-stylist-reviews
   [cache {:as params :keys [stylist-id page]}]

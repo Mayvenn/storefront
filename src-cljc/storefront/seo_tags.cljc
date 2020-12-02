@@ -3,6 +3,7 @@
                 :clj [[cheshire.core :as json]
                       [storefront.uri :as uri]
                       [storefront.safe-hiccup :as safe-hiccup]])
+            api.stylist
             [storefront.assets :as assets]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.categories :as accessors.categories]
@@ -20,7 +21,6 @@
             [clojure.set :as set]
             [spice.maps :as maps]
             adventure.keypaths
-            [stylist-directory.stylists :as stylists]
             [storefront.accessors.sites :as sites]))
 
 (defn- use-case-then-order-key [img]
@@ -323,11 +323,12 @@
               {:title "Our Hair: Virgin and Dyed Virgin Human Hair | Mayvenn"})
 
        events/navigate-adventure-stylist-profile
-       (let [{{salon-name :name
-               :keys      [city state]} :salon} (stylists/by-id data (get-in data adventure.keypaths/stylist-profile-id))]
+       (let [{:stylist/keys [salon] :stylist.address/keys [city state]}
+             (api.stylist/by-id data (get-in data adventure.keypaths/stylist-profile-id))]
          (merge default-tagmap
-                {:title (str salon-name " " city ", " state " | Mayvenn")
-                 :description (str salon-name " in " city ", " state " offers sew-in installs, leave outs & more. Check out their full salon menu & book today.")}))
+                {:title       (str salon " " city ", " state " | Mayvenn")
+                 :description (str salon " in " city ", " state " offers sew-in installs, leave outs & more. "
+                                   "Check out their full salon menu & book today.")}))
 
        ;; else
        default-tagmap)

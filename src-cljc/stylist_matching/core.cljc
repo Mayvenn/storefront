@@ -10,15 +10,18 @@
   - IDs
   - Name
   "
-  (:require #?@(:cljs [[storefront.api :as api]
+  (:require #?@(:cljs [[adventure.keypaths]
+                       [storefront.api :as api]
                        [storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.frontend-effects :as ffx]
                        [storefront.history :as history]
+                       [storefront.hooks.stringer :as stringer]
                        [storefront.request-keys :as request-keys]
-                       catalog.services
-                       storefront.keypaths])
-            [adventure.keypaths]
-            [stylist-directory.keypaths]
+                       catalog.services])
+            api.orders
+            api.stylist
+            storefront.keypaths
+            [spice.maps :as maps]
             [storefront.effects :as fx]
             [storefront.events :as e]
             [stylist-matching.keypaths :as k]
@@ -29,7 +32,8 @@
              :refer [handle-message] :rename {handle-message publish}]
             clojure.set
             [clojure.string :as string]
-            [storefront.transitions :as t])
+            [storefront.transitions :as t]
+            spice.selector)
   #?(:cljs (:import [goog.async Debouncer])))
 
 (def ^:private query-param-keys
@@ -223,13 +227,14 @@
 ;; Stylists: Resulted
 (defmethod t/transition-state e/flow|stylist-matching|resulted
   [_ _ {:keys [results]} state]
-  (-> state
-      (assoc-in k/stylist-results results)
-      (update-in k/status clojure.set/union #{:results/stylists})))
-
-;; FIXME Location queries send this, but why? is it just historical?
-;; No, it's because the the apis are chained...
-;; :choices (get-in app-state adventure.keypaths/adventure-choices) ; For trackings purposes only
+  (let [stylist-models (->> results
+                            (mapv #(api.stylist/stylist<- state %))
+                            (maps/index-by :stylist/id))]
+    (-> state
+        ;; TODO(corey) ideally this should go through a cache|stylist|fetched event
+        (update-in storefront.keypaths/models-stylists merge stylist-models)
+        (assoc-in k/stylist-results results)
+        (update-in k/status clojure.set/union #{:results/stylists}))))
 
 ;; ------------------ Stylist selected for inspection
 (defmethod fx/perform-effects e/flow|stylist-matching|selected-for-inspection
@@ -238,27 +243,57 @@
      (history/enqueue-navigate e/navigate-adventure-stylist-profile {:stylist-id stylist-id
                                                                      :store-slug store-slug})))
 
+(def ^:private select
+  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
+
+(def ^:private ?physical
+  {:catalog/department #{"hair" "stylist-exclusives"}})
+
+(def ^:private ?service
+  {:catalog/department #{"service"}})
+
 ;; ------------------- Matched
 ;; -> current stylist: selected
 (defmethod fx/perform-effects e/flow|stylist-matching|matched
   [_ _ {:keys [stylist result-index]} _ state]
-  #?(:cljs (cookie-jar/save-adventure (get-in state storefront.keypaths/cookie)
-                                      (get-in state adventure.keypaths/adventure)))
-  #?(:cljs (let [{:keys [number token]} (get-in state storefront.keypaths/order)
-                 features               (get-in state storefront.keypaths/features)]
-             (api/assign-servicing-stylist (:stylist-id stylist)
-                                           1
-                                           number
-                                           token
-                                           features
-                                           (fn [order]
-                                             (publish e/api-success-assign-servicing-stylist
-                                                      {:order        order
-                                                       :stylist      stylist
-                                                       :result-index result-index}))))))
+  #?(:cljs
+     (cookie-jar/save-adventure (get-in state storefront.keypaths/cookie)
+                                (get-in state adventure.keypaths/adventure)))
+  (let [features (get-in state storefront.keypaths/features)
+        {:order/keys [items] {:keys [number token]} :waiter/order}
+        (api.orders/current state)
+        success-event
+        (cond
+          (and (select ?service items)
+               (select ?physical items)) e/navigate-cart
+          (select ?service items)        e/navigate-adventure-match-success
+          :else                          e/navigate-adventure-match-success-pick-service)
+        navigate #?(:clj identity :cljs history/enqueue-navigate)]
+    #?(:cljs
+       (api/assign-servicing-stylist
+        (:stylist-id stylist) 1
+        number token features
+        (fn [order]
+          (publish e/biz|current-stylist|selected
+                   {:order        order
+                    :stylist      stylist
+                    :on/success   #(navigate success-event)
+                    :result-index result-index}))))))
+
+(defmethod trackings/perform-track e/flow|stylist-matching|matched
+  [_ _ {:keys [stylist result-index]} state]
+  (let [{:keys [number]} (:waiter/order (api.orders/current state))]
+    #?(:cljs
+       (stringer/track-event "stylist_selected"
+                             {:stylist_id     (:stylist-id stylist)
+                              :card_index     result-index
+                              :current_step   2
+                              :order_number   number
+                              :stylist_rating (:rating stylist)}))))
 
 ;; -------------------------- stylist search by ids
 
+;; TODO: perhaps add these stylist to the k/models-stylists?
 (defmethod fx/perform-effects e/api-success-fetch-matched-stylists
   [_ _ {:keys [stylists]} _]
   (publish e/flow|stylist-matching|resulted

@@ -1,5 +1,5 @@
 (ns stylist-matching.match-success-pick-service-v2020-06
-  (:require adventure.keypaths
+  (:require api.current
             api.orders
             [storefront.accessors.stylists :as stylists]
             [storefront.component :as c]
@@ -42,7 +42,7 @@
 
 (defn ^:export page
   [app-state _]
-  (let [servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+  (let [servicing-stylist (:diva/stylist (api.current/stylist app-state))
         current-order     (api.orders/current app-state)
         browser-history   (get-in app-state storefront.keypaths/navigation-undo-stack)]
     (c/build

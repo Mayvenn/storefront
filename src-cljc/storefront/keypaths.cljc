@@ -326,4 +326,4 @@
 (def promo-code-entry-open? (conj ui :promo-code-entry-open?))
 
 (def models-root [:models])
-(def models-services (conj models-root :services))
+(def models-stylists (conj models-root :stylists))

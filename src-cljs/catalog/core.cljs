@@ -18,7 +18,6 @@
             checkout.behavior
 
             ;; Stylist matching/profile
-            adventure.handlers ;; TODO, wherever these go, maybe they shouldn't be here
             stylist-matching.find-your-stylist
             stylist-matching.stylist-results
             stylist-profile.core

@@ -1,5 +1,5 @@
 (ns api.orders
-  (:require adventure.keypaths
+  (:require api.stylist
             [spice.selector :refer [match-all]]
             [storefront.accessors.images :as images]
             [storefront.accessors.line-items :as line-items]
@@ -157,8 +157,8 @@
         products-db       (get-in app-state storefront.keypaths/v2-products)
         skus-db           (get-in app-state storefront.keypaths/v2-skus)
         images-db         (get-in app-state storefront.keypaths/v2-images)
-        servicing-stylist (when-let [stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)]
-                            (when (= (:stylist-id stylist) (:servicing-stylist-id waiter-order))
+        servicing-stylist (when-let [stylist-id (:servicing-stylist-id waiter-order)]
+                            (when-let [stylist (:diva/stylist (api.stylist/by-id app-state stylist-id))]
                               (assoc stylist :offered-skus (offered-services-sku-ids stylist))))
         facets-db         (->> storefront.keypaths/v2-facets
                                (get-in app-state)
@@ -199,11 +199,12 @@
   ;; Ideally: [stylist-db waiter-order]
   (when (= :shop (sites/determine-site app-state))
     (let [servicing-stylist-id (:servicing-stylist-id waiter-order)
-          cached-stylist       (get-in app-state adventure.keypaths/adventure-servicing-stylist)]
+          cached-stylist       (when-let [stylist-id (:servicing-stylist-id waiter-order)]
+                                 (:diva/stylist (api.stylist/by-id app-state stylist-id)))]
       (merge
        #:services{:stylist-id servicing-stylist-id
                   :items      (orders/service-line-items waiter-order)}
-       (when (= (:stylist-id cached-stylist) servicing-stylist-id)
+       (when cached-stylist
          #:services{:stylist                  cached-stylist
                     :offered-services-sku-ids (offered-services-sku-ids cached-stylist)})))))
 

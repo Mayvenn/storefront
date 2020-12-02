@@ -1,6 +1,6 @@
 (ns catalog.icp
   (:require [adventure.components.layered :as layered]
-            adventure.keypaths
+            api.current
             catalog.keypaths
             [catalog.skuers :as skuers]
             [catalog.ui.category-filters :as category-filters]
@@ -292,7 +292,7 @@
                                                                 loaded-category-products)
         shop?                               (= "shop" (get-in app-state keypaths/store-slug))
         stylist-mismatch?                   (experiments/stylist-mismatch? app-state)
-        servicing-stylist                   (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        servicing-stylist                   (:diva/stylist (api.current/stylist app-state))
         service-category-page?              (contains? (:catalog/department interstitial-category) "service")
         faq                                 (get-in app-state (conj keypaths/cms-faq (:contentful/faq-id interstitial-category)))]
     (cond->

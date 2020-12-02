@@ -1,5 +1,5 @@
 (ns catalog.ui.vertical-direct-to-cart-card
-  (:require adventure.keypaths
+  (:require api.current
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as c]
             [storefront.components.money-formatters :as mf]
@@ -20,7 +20,7 @@
                                (filter (comp #{"catalog"} :use-case))
                                first)
         product-slug      (:page/slug product)
-        servicing-stylist (get-in data adventure.keypaths/adventure-servicing-stylist)
+        servicing-stylist (:diva/stylist (api.current/stylist data))
         store-nickname    (:store-nickname servicing-stylist)
         cta-disabled?     (boolean (some #(= sku-id (:sku %))
                                          (orders/service-line-items (get-in data keypaths/order))))

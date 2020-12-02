@@ -1,23 +1,22 @@
 (ns stylist-matching.match-success
   (:require #?@(:cljs [[storefront.history :as history]])
-            adventure.keypaths
+            api.current
             api.orders
+            api.stylist
             [clojure.string :as string]
             [storefront.accessors.categories :as accessors.categories]
             [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.formatters :as formatters]
             [storefront.components.header :as header]
             [storefront.effects :as effects]
             [storefront.events :as events]
             storefront.keypaths
-            [stylist-directory.stylists :as stylists]
             [stylist-matching.ui.atoms :as stylist-matching.A]
             [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]))
 
 (defmethod effects/perform-effects events/navigate-adventure-match-success
-  [_ _ _ _ app-state]
-  #?(:cljs
-     (when (nil? (get-in app-state adventure.keypaths/adventure-servicing-stylist))
+  [_ _ _ _ state]
+  (when-not (api.current/stylist state)
+    #?(:cljs
        (history/enqueue-redirect events/navigate-adventure-find-your-stylist))))
 
 (defn header-query
@@ -49,7 +48,7 @@
      :stylist-card.thumbnail/id         (str "stylist-card-thumbnail-" store-slug)
      :stylist-card.thumbnail/ucare-id   (-> stylist :portrait :resizable-url)
      :stylist-card.title/id             "stylist-name"
-     :stylist-card.title/primary        (stylists/->display-name stylist)
+     :stylist-card.title/primary        (api.stylist/->display-name stylist)
      :rating/value                      rating
      :stylist-card.services-list/id     (str "stylist-card-services-" store-slug)
      :stylist-card.services-list/items  [{:id    (str "stylist-service-leave-out-" store-slug)
@@ -76,7 +75,7 @@
   (when-not submitted?
     {:shopping-method-choice.title/id        "stylist-matching-shopping-method-choice"
      :shopping-method-choice.title/primary   [:div "Congratulations on matching with "
-                                              (stylists/->display-name servicing-stylist)
+                                              (api.stylist/->display-name servicing-stylist)
                                               "!"]
      :shopping-method-choice.title/secondary [:div
                                               [:div "Now for the fun part!"]
@@ -119,7 +118,7 @@
 
 (defn ^:export page
   [app-state _]
-  (let [servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+  (let [servicing-stylist (:diva/stylist (api.current/stylist app-state))
         order             (api.orders/current app-state)
         browser-history   (get-in app-state storefront.keypaths/navigation-undo-stack)]
     (component/build template

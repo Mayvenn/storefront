@@ -58,26 +58,6 @@
     (when (and user-id user-token)
       (api/get-account user-id user-token))))
 
-(def ^:private unavailable-servicing-stylist-msg
-  "Your previously selected stylist selected is no longer eligible for Mayvenn Install and has been removed from your order.")
-
-(defn refresh-servicing-stylist [app-state]
-  (let [order                (get-in app-state keypaths/order)
-        servicing-stylist-id (:servicing-stylist-id order)]
-    (when servicing-stylist-id
-      (api/fetch-matched-stylist
-       (get-in app-state keypaths/api-cache)
-       servicing-stylist-id
-       ;; Remove the servicing stylist from order to avoid 404'ing on every page
-       ;; if stylist leaves program
-       {:error-handler #(when (<= 400 (:status %) 499)
-                          (api/remove-servicing-stylist servicing-stylist-id
-                                                        (:number order)
-                                                        (:token order))
-                          (messages/handle-message events/flash-show-failure
-                                                   {:message unavailable-servicing-stylist-msg}))
-        :cache/bypass? true}))))
-
 (defn refresh-current-order [app-state]
   (let [user-id      (get-in app-state keypaths/user-id)
         user-token   (get-in app-state keypaths/user-token)
@@ -349,14 +329,15 @@
    "ineligible-for-free-install" (str "The 'FreeInstall' promotion code has been removed from your order."
                                       " Please visit shop.mayvenn.com to complete your order.")})
 
-(defmethod effects/perform-effects events/navigate-cart [_ event args _ app-state]
+(defmethod effects/perform-effects events/navigate-cart
+  [_ event args _ app-state]
   (api/get-shipping-methods)
   (api/get-states (get-in app-state keypaths/api-cache))
   (google-maps/insert) ;; for address screen on the next page
   (stripe/insert)
   (quadpay/insert)
   (refresh-current-order app-state)
-  (refresh-servicing-stylist app-state)
+  (messages/handle-message events/cache|current-stylist|requested)
   (when-let [error-msg (-> args :query-params :error cart-error-codes)]
     (messages/handle-later events/flash-show-failure {:message error-msg})))
 
@@ -416,17 +397,19 @@
     (effects/redirect events/navigate-checkout-payment))
   (api/get-shipping-methods))
 
-(defmethod effects/perform-effects events/navigate-order-complete [_ event {{:keys [paypal order-token]} :query-params number :number} _ app-state]
-  (when (not (get-in app-state keypaths/user-id))
+(defmethod effects/perform-effects events/navigate-order-complete
+  [_ _ {{:keys [paypal order-token]} :query-params number :number} _ state]
+  ;; TODO(corey) getting the current stylist here seems odd, may
+  ;; want to fetch the previous-stylist instead
+  (messages/handle-message events/cache|current-stylist|requested)
+  (when-not (get-in state keypaths/user-id)
     (facebook/insert))
-  (when (and number order-token)
+  (when (and number
+             order-token)
     (api/get-completed-order number order-token))
   (when paypal
-    (effects/redirect events/navigate-order-complete {:number number}))
-  (let [servicing-stylist    (get-in app-state adv-keypaths/adventure-servicing-stylist)
-        servicing-stylist-id (get-in app-state adv-keypaths/adventure-choices-selected-stylist-id)]
-    (when (and servicing-stylist-id (not servicing-stylist))
-      (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))))
+    (effects/redirect events/navigate-order-complete
+                      {:number number})))
 
 (defmethod effects/perform-effects events/api-success-get-completed-order [_ event order _ app-state]
   (messages/handle-message events/order-completed order))
@@ -639,36 +622,32 @@
                        (stylists/retrieve-parsed-affiliate-id app-state)))))
 
 (defmethod effects/perform-effects events/save-order
-  [_ _ {:keys [order]} _ app-state]
-  (let [servicing-stylist-id          (:servicing-stylist-id order)
-        incomplete-order?             (and order (orders/incomplete? order))
-        servicing-stylist-not-loaded? (and servicing-stylist-id
-                                           (not=
-                                            servicing-stylist-id
-                                            (-> app-state
-                                                (get-in adventure.keypaths/adventure-servicing-stylist)
-                                                :stylist-id)))]
-    (if incomplete-order?
-      (do
-        (let [sku-ids (->> (:shipments order)
-                           (mapcat :storefront/all-line-items)
-                           (remove line-items/shipping-method?)
-                           (map :sku))]
-          (messages/handle-message events/ensure-sku-ids {:sku-ids sku-ids}))
+  [_ _ {:keys [order]} _ state]
+  ;; Clear the order if it is submitted or frozen
+  (if (and order
+           (orders/incomplete? order))
+    (do
+      (let [sku-ids (->> (:shipments order)
+                         (mapcat :storefront/all-line-items)
+                         (remove line-items/shipping-method?)
+                         (map :sku))]
+        (messages/handle-message events/ensure-sku-ids
+                                 {:sku-ids sku-ids}))
+      (messages/handle-message events/cache|current-stylist|requested)
+      (cookie-jar/save-order (get-in state keypaths/cookie)
+                             order)
+      (add-pending-promo-code state
+                              order))
+    (messages/handle-message events/clear-order))
 
-        (when servicing-stylist-not-loaded?
-          (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))
-        (cookie-jar/save-order (get-in app-state keypaths/cookie) order)
-        (add-pending-promo-code app-state order))
-      (messages/handle-message events/clear-order))
-
-    (when (-> order orders/service-line-items not-empty)
-      (api/get-skus
-       (get-in app-state keypaths/api-cache)
-       {:catalog/department                 "service"
-        :service/type                       "base"
-        :promo.mayvenn-install/discountable true}
-       #(messages/handle-message events/api-success-get-skus %)))))
+  ;; TODO(corey) not sure what use case this is covering
+  (when (-> order orders/service-line-items not-empty)
+    (api/get-skus
+     (get-in state keypaths/api-cache)
+     {:catalog/department                 "service"
+      :service/type                       "base"
+      :promo.mayvenn-install/discountable true}
+     #(messages/handle-message events/api-success-get-skus %))))
 
 (defmethod effects/perform-effects events/clear-order [_ _ _ _ app-state]
   (cookie-jar/clear-order (get-in app-state keypaths/cookie)))
@@ -748,12 +727,10 @@
   (cookie-jar/save-completed-order (get-in app-state keypaths/cookie)
                                    (get-in app-state keypaths/completed-order))
   (messages/handle-message events/clear-order)
-  (let [{service-items        :services/items
-         servicing-stylist-id :services/stylist-id} (api.orders/services app-state order)]
-    (when (and (= :shop (sites/determine-site app-state))
-               (not (empty? service-items))
-               servicing-stylist-id)
-      (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))))
+  (when (= :shop (sites/determine-site app-state))
+    (when-let [stylist-id (:servicing-stylist-id order)]
+      (messages/handle-message events/cache|stylist|requested
+                               {:stylist/id stylist-id}))))
 
 (defmethod effects/perform-effects events/api-success-update-order-update-cart-payments [_ event {:keys [order place-order?]} _ app-state]
   (when place-order?
@@ -769,10 +746,8 @@
   (when navigate
     (history/enqueue-navigate navigate {:number (:number order)})))
 
-(defmethod effects/perform-effects events/api-success-get-order [_ event order _ app-state]
-  (when-let [servicing-stylist-id (:servicing-stylist-id order)]
-    (api/fetch-matched-stylist (get-in app-state keypaths/api-cache)
-                               servicing-stylist-id))
+(defmethod effects/perform-effects events/api-success-get-order
+  [_ _ order _ _]
   (messages/handle-message events/save-order {:order order}))
 
 (defmethod effects/perform-effects events/api-failure-no-network-connectivity [_ event response _ app-state]

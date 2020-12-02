@@ -1,5 +1,5 @@
 (ns catalog.ui.service-card-listing
-  (:require adventure.keypaths
+  (:require api.current
             [catalog.skuers :as skuers]
             [catalog.ui.vertical-direct-to-cart-card :as vertical-direct-to-cart-card]
             [catalog.ui.horizontal-direct-to-cart-card :as horizontal-direct-to-cart-card]
@@ -93,13 +93,13 @@
 
 (defn query
   [app-state category matching-services]
-  (let [servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
-        subsections       (->> matching-services
-                               (map #(assoc %
-                                            :stylist-provides-service
-                                            (stylist-filters/stylist-provides-service? servicing-stylist %)))
-                               (subsections-query app-state category))
-        no-cards?         (empty? subsections)]
+  (let [current-stylist (:diva/stylist (api.current/stylist app-state))
+        subsections     (->> matching-services
+                             (map #(assoc %
+                                          :stylist-provides-service
+                                          (stylist-filters/stylist-provides-service? current-stylist %)))
+                             (subsections-query app-state category))
+        no-cards?       (empty? subsections)]
     {:id                "service-card-listing"
      :subsections       subsections
      :no-cards?         no-cards?

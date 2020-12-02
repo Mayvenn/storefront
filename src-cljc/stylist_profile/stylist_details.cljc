@@ -8,7 +8,9 @@
                  [storefront.hooks.seo :as seo]])
             [adventure.stylist-matching.maps :as maps]
             adventure.keypaths
+            api.current
             api.orders
+            api.stylist
             [catalog.services :as services]
             [clojure.string :refer [join]]
             spice.core
@@ -30,7 +32,6 @@
             [storefront.request-keys :as request-keys]
             stylist-directory.keypaths
             [checkout.cart.swap :as swap]
-            [stylist-profile.stylist :as stylist]
             [stylist-profile.ui.card :as card]
             [stylist-profile.ui.carousel :as carousel]
             [stylist-profile.ui.experience :as experience]
@@ -58,14 +59,18 @@
     #?(:cljs
        (tags/add-classname ".kustomer-app-icon" "hide"))
     #?(:cljs
-       (api/fetch-stylist-details cache
-                                  stylist-id))
+       (handle-message e/cache|stylist|requested
+                       {:stylist/id stylist-id
+                        :on/success #(seo/set-tags state)
+                        :on/failure (fn [] (handle-message e/flash-later-show-failure
+                                                           {:message
+                                                            (str "The stylist you are looking for is not available. "
+                                                                 "Please search for another stylist in your area below. ")})
+                                      (fx/redirect e/navigate-adventure-find-your-stylist))}))
     #?(:cljs
        (api/fetch-stylist-reviews cache
                                   {:stylist-id stylist-id
                                    :page       1}))
-    #?(:cljs
-       (seo/set-tags state))
     #?(:cljs
        (google-maps/insert))))
 
@@ -75,6 +80,14 @@
      (facebook-analytics/track-event "ViewContent"
                                      {:content_type "stylist"
                                       :content_ids [(spice.core/parse-int stylist-id)]})))
+
+(defmethod t/transition-state e/api-success-fetch-stylist-reviews
+  [_ _ paginated-reviews app-state]
+  (let [existing-reviews (:reviews (get-in app-state stylist-directory.keypaths/paginated-reviews))]
+    (-> app-state
+        (assoc-in stylist-directory.keypaths/paginated-reviews paginated-reviews)
+        (update-in (conj stylist-directory.keypaths/paginated-reviews :reviews)
+                   (partial concat existing-reviews)))))
 
 (defmethod fx/perform-effects e/share-stylist
   [_ _ {:keys [url text title stylist-id]} _]
@@ -102,7 +115,9 @@
 
 (defmethod fx/perform-effects e/control-stylist-profile-add-service-to-bag
   [_ _ {:keys [quantity] intended-service :sku} _ state]
-  (let [intended-stylist (stylist/detailed state)
+  (let [intended-stylist (api.stylist/by-id state
+                                            (get-in state
+                                                    adventure.keypaths/stylist-profile-id))
         cart-swap        (->> (merge
                                (when intended-service
                                  {:service/intended intended-service})
@@ -362,10 +377,12 @@
 
 (defn ^:export page
   [state _]
-  (let [skus-db           (get-in state storefront.keypaths/v2-skus)
-        current-order     (api.orders/current state)
-        current-stylist   (stylist/current state)
-        detailed-stylist  (stylist/detailed state)
+  (let [skus-db          (get-in state storefront.keypaths/v2-skus)
+        current-order    (api.orders/current state)
+        current-stylist  (api.current/stylist state)
+        detailed-stylist (api.stylist/by-id state
+                                            (get-in state
+                                                    adventure.keypaths/stylist-profile-id))
         paginated-reviews (get-in state stylist-directory.keypaths/paginated-reviews)
 
         ;; Navigation
@@ -389,28 +406,28 @@
              (merge {:header (header<- current-order undo-history)
                      :footer footer<-}
                     (when detailed-stylist
-                      {:carousel              (carousel<- detailed-stylist)
-                       :reviews               (reviews<- fetching-reviews?
-                                                         detailed-stylist
-                                                         paginated-reviews)
-                       :card                  (card<- host-name
-                                                      hide-star-distribution?
-                                                      newly-added-stylist-ui-experiment?
-                                                      detailed-stylist)
-                       :ratings-bar-chart     (ratings-bar-chart<- hide-star-distribution?
-                                                                   detailed-stylist)
-                       :experience            (experience<- hide-bookings?
-                                                            detailed-stylist)
-                       :google-maps           (maps/map-query state)
-                       :sticky-select-stylist (sticky-select-stylist<- current-stylist
-                                                                       detailed-stylist)})
-                    {:specialties-discountable (shop-discountable-services<-
-                                                skus-db
-                                                current-order
-                                                adding-a-service-sku-to-bag?
-                                                detailed-stylist)
-                     :specialties-a-la-carte   (shop-a-la-carte-services<-
-                                                skus-db
-                                                current-order
-                                                adding-a-service-sku-to-bag?
-                                                detailed-stylist)}))))
+                      {:carousel                 (carousel<- detailed-stylist)
+                       :reviews                  (reviews<- fetching-reviews?
+                                                            detailed-stylist
+                                                            paginated-reviews)
+                       :card                     (card<- host-name
+                                                         hide-star-distribution?
+                                                         newly-added-stylist-ui-experiment?
+                                                         detailed-stylist)
+                       :ratings-bar-chart        (ratings-bar-chart<- hide-star-distribution?
+                                                                      detailed-stylist)
+                       :experience               (experience<- hide-bookings?
+                                                               detailed-stylist)
+                       :google-maps              (maps/map-query state)
+                       :sticky-select-stylist    (sticky-select-stylist<- current-stylist
+                                                                          detailed-stylist)
+                       :specialties-discountable (shop-discountable-services<-
+                                                  skus-db
+                                                  current-order
+                                                  adding-a-service-sku-to-bag?
+                                                  detailed-stylist)
+                       :specialties-a-la-carte   (shop-a-la-carte-services<-
+                                                  skus-db
+                                                  current-order
+                                                  adding-a-service-sku-to-bag?
+                                                  detailed-stylist)})))))

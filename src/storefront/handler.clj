@@ -48,7 +48,8 @@
             [storefront.transitions :as transitions]
             [storefront.views :as views]
             storefront.accessors.contentful
-            [storefront.accessors.sites :as sites]))
+            [storefront.accessors.sites :as sites]
+            [api.stylist :as stylist]))
 
 (defn ^:private path-for
   "Like routes/path-for, but preserves query params."
@@ -402,9 +403,10 @@
     (let [{:keys [servicing-stylist-id]} (get-in-req-state req keypaths/order)]
       (h (cond-> req
            servicing-stylist-id
-           (assoc-in-req-state adventure.keypaths/adventure-servicing-stylist
-                               (api/get-servicing-stylist storeback-config
-                                                          servicing-stylist-id)))))))
+           (assoc-in-req-state (conj keypaths/models-stylists servicing-stylist-id)
+                               (stylist/stylist<- {}
+                                                  (api/get-servicing-stylist storeback-config
+                                                                             servicing-stylist-id))))))))
 
 (defn wrap-fetch-servicing-stylist-for-completed-order
   [h storeback-config]
@@ -413,9 +415,10 @@
       (h (cond-> req
            (and servicing-stylist-id
                 (= events/navigate-order-complete (-> req :nav-message first)))
-           (assoc-in-req-state adventure.keypaths/adventure-servicing-stylist
-                               (api/get-servicing-stylist storeback-config
-                                                          servicing-stylist-id)))))))
+           (assoc-in-req-state (conj keypaths/models-stylists servicing-stylist-id)
+                               (stylist/stylist<- {}
+                                                  (api/get-servicing-stylist storeback-config
+                                                                             servicing-stylist-id))))))))
 
 (defn wrap-fetch-catalog [h storeback-config]
   (fn [req]

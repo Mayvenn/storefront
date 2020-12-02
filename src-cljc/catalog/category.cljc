@@ -6,6 +6,7 @@
               [storefront.browser.scroll :as scroll]
               [storefront.hooks.facebook-analytics :as facebook-analytics]])
    adventure.keypaths
+   api.current
    [catalog.icp :as icp]
    [catalog.skuers :as skuers]
    catalog.keypaths
@@ -136,7 +137,7 @@
                                                                  selections)
                                                                 loaded-category-products)
         service-category-page?              (contains? (:catalog/department current) "service")
-        servicing-stylist                   (get-in app-state adventure.keypaths/adventure-servicing-stylist)
+        servicing-stylist                   (:diva/stylist (api.current/stylist app-state))
         faq                                 (get-in app-state (conj storefront.keypaths/cms-faq (:contentful/faq-id current)))]
     (c/build template
              (merge {:category-hero          (category-hero-query current)

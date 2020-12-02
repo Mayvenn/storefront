@@ -11,6 +11,7 @@
   (:require #?@(:cljs [[storefront.components.popup :as popup]
                        [storefront.hooks.stringer :as stringer]
                        storefront.frontend-trackings])
+            api.current
             api.orders
             catalog.services
             spice.selector
@@ -23,8 +24,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.transitions :as t]
-            [storefront.trackings :as trackings]
-            [stylist-profile.stylist :as stylist]))
+            [storefront.trackings :as trackings]))
 
 (def ^:private select
   (comp seq (partial spice.selector/match-all {:selector/strict? true})))
@@ -43,7 +43,7 @@
                                 (select catalog.services/discountable)
                                 first))
         original-stylist (when intended-stylist
-                           (stylist/current state))]
+                           (api.current/stylist state))]
     (cond-> {:service/swap? false
              :stylist/swap? false}
       intended-service

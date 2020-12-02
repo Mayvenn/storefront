@@ -7,7 +7,6 @@
             storefront.components.checkout-payment
             storefront.components.checkout-complete
             storefront.components.places
-            adventure.handlers
             checkout.confirmation
             checkout.returning-or-guest-v2020-05
             checkout.processing
