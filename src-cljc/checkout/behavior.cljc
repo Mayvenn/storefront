@@ -7,6 +7,8 @@
                        [storefront.history :as history]
                        [storefront.accessors.experiments :as experiments]])
             [api.orders :as api.orders]
+            catalog.services
+            [spice.selector :as selector]
             [storefront.accessors.orders :as orders]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -21,11 +23,12 @@
            (mapcat :addons)
            not-empty))
 
-(defn ^:private current-order-does-not-have-services
+(defn ^:private current-order-does-not-have-services-that-can-have-addons
   [app-state]
   (some->> app-state
            api.orders/current
-           :order.items/services
+           :order/items
+           (selector/match-all {:selector/strict? true} catalog.services/discountable)
            empty?))
 
 ;; == /checkout/add page ==
@@ -33,7 +36,7 @@
 (defmethod effects/perform-effects events/navigate-checkout-add
   [_ event {:keys [navigate/caused-by]} previous-app-state app-state]
   (when (and (#{:module-load :first-nav} caused-by)
-             (or (current-order-does-not-have-services app-state)
+             (or (current-order-does-not-have-services-that-can-have-addons app-state)
                  (current-order-has-addons app-state)))
     (effects/redirect events/navigate-cart)))
 
@@ -90,7 +93,7 @@
   #?(:cljs
      (if (and (experiments/interrupt-checkout? app-state)
               (not (current-order-has-addons app-state))
-              (not (current-order-does-not-have-services app-state)))
+              (not (current-order-does-not-have-services-that-can-have-addons app-state)))
        (history/enqueue-navigate events/navigate-checkout-add)
        (history/enqueue-navigate events/navigate-checkout-address))))
 
