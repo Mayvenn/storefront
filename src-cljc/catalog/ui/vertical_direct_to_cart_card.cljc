@@ -24,8 +24,7 @@
         any-updates?      (utils/requesting-from-endpoint? data request-keys/add-to-bag)]
     (cond-> {:card-image/src                             (str (:url image) "-/format/auto/" (:filename image))
              :card/type                                  :vertical-direct-to-cart-card
-             :sort/value                                 [card-disabled?
-                                                          (:sku/price service-sku)]
+             :sort/value                                 [(:sku/price service-sku)]
              :card-image/alt                             (:alt image)
              :react/key                                  (str "product-" product-slug)
              :vertical-direct-to-cart-card-title/id      (some->> product-slug (str "product-card-title-"))
