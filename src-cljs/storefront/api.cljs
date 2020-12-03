@@ -983,7 +983,7 @@
              :number               number
              :token                token}
     :handler  #(messages/handle-message
-                events/api-success-remove-servicing-stylist
+                events/api-success-update-order-remove-servicing-stylist
                 {:order (orders/TEMP-pretend-service-items-do-not-exist %)})}))
 
 (defn- static-content-req [method path req-key {:keys [handler] :as request-opts}]

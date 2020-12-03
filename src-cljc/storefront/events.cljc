@@ -520,7 +520,7 @@
 (defpath initialize-stylist-search-filters)
 (defpath control-toggle-stylist-search-filter-section)
 
-(defpath api-success-remove-servicing-stylist)
+(defpath api-success-update-order-remove-servicing-stylist)
 
 (defpath api-shipping-address-geo-lookup)
 (defpath api-success-shipping-address-geo-lookup)
