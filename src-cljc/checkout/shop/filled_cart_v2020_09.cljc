@@ -198,8 +198,10 @@
                                       :disabled? disabled?
                                       :on-click  (apply utils/send-event-callback target)}
                                      content)
-            (when disabled?
-              [:div.red.content-3.mt2 disabled-reason])]))
+            (when disabled-reason
+              [:div.red.content-3.mt2
+               {:data-test "checkout-disabled-reason"}
+               disabled-reason])]))
 
        ;; paypal button
        (let [{:keys [spinning? disabled?]} paypal]
