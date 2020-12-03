@@ -95,10 +95,10 @@
   [{:keys [rating rating-star-counts mayvenn-rating-publishable]}]
   (let [histogram (mapv last (sort-by first rating-star-counts))]
     ;; we produce a histogram of ratings, with 0-numbering
-    {:stylist.rating/score        (spice/parse-double rating)
+    {:stylist.rating/score        (some-> rating spice/parse-double)
      :stylist.rating/histogram    histogram
-     :stylist.rating/cardinality  (apply + histogram)
-     :stylist.rating/maximum      (apply max histogram)
+     :stylist.rating/cardinality  (some->> histogram (apply +))
+     :stylist.rating/maximum      (some->> histogram seq (apply max))
      :stylist.rating/publishable? mayvenn-rating-publishable}))
 
 ;; TODO(corey) extend reviews
