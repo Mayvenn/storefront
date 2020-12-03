@@ -242,8 +242,7 @@
    [:div.max-960.mx-auto
     (component/build drill-category-list-organism drill-category-list)
     (component/build drill-category-grid-organism drill-category-grid)]
-   [:div.mb10 purple-divider-atom
-    (component/build molecules/stylist-bar queried-data {})]
+   [:div.mb10 purple-divider-atom]
    [:div.max-960.mx-auto
     (when-let [title (:title category-filters)]
       [:div.canela.title-1.center.mb2 title])
@@ -291,8 +290,6 @@
                                                                  selections)
                                                                 loaded-category-products)
         shop?                               (= "shop" (get-in app-state keypaths/store-slug))
-        stylist-mismatch?                   (experiments/stylist-mismatch? app-state)
-        servicing-stylist                   (:diva/stylist (api.current/stylist app-state))
         service-category-page?              (contains? (:catalog/department interstitial-category) "service")
         faq                                 (get-in app-state (conj keypaths/cms-faq (:contentful/faq-id interstitial-category)))]
     (cond->
@@ -331,18 +328,7 @@
       (merge (let [values (mapv category->drill-category-list-entry subcategories)]
                {:drill-category-list {:drill-category-list/values                   values
                                       :drill-category-list/use-three-column-layout? (>= (count values) 3)
-                                      :drill-category-list/tablet-desktop-columns   (max 1 (min 3 (count values)))}}))
-
-      (and service-category-page? servicing-stylist stylist-mismatch?)
-      (merge {:stylist-bar/id             "category-page-stylist-bar"
-              :stylist-bar/primary        (:store-nickname servicing-stylist)
-              :stylist-bar/secondary      "Your Certified Mayvenn Stylist"
-              :stylist-bar/rating         {:rating/id    "rating-stuff"
-                                           :rating/value (spice.core/parse-double (:rating servicing-stylist))}
-              :stylist-bar.thumbnail/id   "stylist-bar-thumbnail"
-              :stylist-bar.thumbnail/url  (-> servicing-stylist :portrait :resizable-url)
-              :stylist-bar.action/primary "change"
-              :stylist-bar.action/target  [events/navigate-adventure-find-your-stylist {}]}))))
+                                      :drill-category-list/tablet-desktop-columns   (max 1 (min 3 (count values)))}})))))
 
 (defn page
   [app-state opts]

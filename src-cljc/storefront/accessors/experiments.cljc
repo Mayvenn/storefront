@@ -101,10 +101,6 @@
   [data]
   (display-feature? data "just-added-only"))
 
-(defn stylist-mismatch?
-  [data]
-  (display-feature? data "stylist-mismatch"))
-
 (defn add-on-services?
   [data]
   (or (display-feature? data "upsell-addons-opened")

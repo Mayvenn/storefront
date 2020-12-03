@@ -8,30 +8,23 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [storefront.accessors.orders :as orders]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.accessors.orders :as orders]))
 
 (defn query
   [data product]
-  (let [sku-id            (first (:selector/skus product))
-        service-sku       (get-in data (conj keypaths/v2-skus sku-id))
-        image             (->> service-sku
-                               (images/for-skuer (get-in data keypaths/v2-images))
-                               (filter (comp #{"catalog"} :use-case))
-                               first)
-        product-slug      (:page/slug product)
-        cta-disabled?     (boolean (some (comp #{sku-id} :sku)
-                                         (orders/service-line-items (get-in data keypaths/order))))
-        servicing-stylist (:diva/stylist (api.current/stylist data))
-        store-nickname    (:store-nickname servicing-stylist)
-        any-updates?      (utils/requesting-from-endpoint? data request-keys/add-to-bag)
-        card-disabled?    (and (experiments/stylist-mismatch? data)
-                               servicing-stylist
-                               (not (:stylist-provides-service product)))]
+  (let [sku-id        (first (:selector/skus product))
+        service-sku   (get-in data (conj keypaths/v2-skus sku-id))
+        image         (->> service-sku
+                           (images/for-skuer (get-in data keypaths/v2-images))
+                           (filter (comp #{"catalog"} :use-case))
+                           first)
+        product-slug  (:page/slug product)
+        cta-disabled? (boolean (some (comp #{sku-id} :sku)
+                                     (orders/service-line-items (get-in data keypaths/order))))
+        any-updates?  (utils/requesting-from-endpoint? data request-keys/add-to-bag)]
     (cond-> {:card-image/src                                      (str (:url image) "-/format/auto/" (:filename image))
              :card/type                                           :horizontal-direct-to-cart-card
-             :sort/value                                          [card-disabled?
-                                                                   (case (first (:service/category service-sku))
+             :sort/value                                          [(case (first (:service/category service-sku))
                                                                      "install" 1
                                                                      "construction" 2
                                                                      3)
@@ -47,12 +40,10 @@
                                                                    {:catalog/product-id (:catalog/product-id product)
                                                                     :page/slug          product-slug
                                                                     :query-params       {:SKU sku-id}}]
-             :horizontal-direct-to-cart-card/disabled-background? false
              :horizontal-direct-to-cart-card/cta-ready?           (not any-updates?)
              :horizontal-direct-to-cart-card/cta-spinning?        (utils/requesting? data (conj request-keys/add-to-bag sku-id))}
 
-      (and (not card-disabled?)
-           (not cta-disabled?))
+      (not cta-disabled?)
       (merge {:horizontal-direct-to-cart-card/cta-id        (str "add-to-cart-" sku-id)
               :horizontal-direct-to-cart-card/cta-disabled? false
               :horizontal-direct-to-cart-card/cta-max-width "111px"
@@ -60,19 +51,12 @@
               :horizontal-direct-to-cart-card/cta-target    [events/control-add-sku-to-bag {:sku      service-sku
                                                                                             :quantity 1}]})
 
-      (and (not card-disabled?)
-           cta-disabled?)
+      cta-disabled?
       (merge {:horizontal-direct-to-cart-card/cta-id        (str "add-to-cart-disabled-" sku-id)
               :horizontal-direct-to-cart-card/cta-disabled? true
               :horizontal-direct-to-cart-card/cta-ready?    false
               :horizontal-direct-to-cart-card/cta-max-width "139px"
-              :horizontal-direct-to-cart-card/cta-label     "Already In Cart"})
-
-      card-disabled?
-      (merge {:horizontal-direct-to-cart-card/disabled-background? true
-              :horizontal-direct-to-cart-card/cta-ready?           false
-              :horizontal-direct-to-cart-card.disabled/id          "disabled-not-available"
-              :horizontal-direct-to-cart-card.disabled/primary     (str "Not Available with " store-nickname)}))))
+              :horizontal-direct-to-cart-card/cta-label     "Already In Cart"}))))
 
 (c/defcomponent card-image-molecule
   [{:keys [card-image/src card-image/alt screen/seen?]}
@@ -99,11 +83,19 @@
 (defn organism
   [{:as                                  data
     react-key                            :react/key
-    :horizontal-direct-to-cart-card/keys [primary secondary secondary-struck tertiary
-                                          cta-id cta-target card-target cta-disabled? cta-ready? cta-label cta-max-width
-                                          disabled-background? cta-spinning?]
-    disabled-id                          :horizontal-direct-to-cart-card.disabled/id
-    disabled-primary                     :horizontal-direct-to-cart-card.disabled/primary}]
+    :horizontal-direct-to-cart-card/keys
+    [card-target
+     cta-disabled?
+     cta-id
+     cta-label
+     cta-max-width
+     cta-ready?
+     cta-spinning?
+     cta-target
+     primary
+     secondary
+     secondary-struck
+     tertiary]}]
   (c/html
    (let [non-cta-action
          (merge (apply utils/route-to card-target)
@@ -111,7 +103,6 @@
      [:div.col.col-12.col-6-on-tb-dt
       {:key react-key}
       [:div.border.border-cool-gray.m1
-       {:class (when disabled-background? "bg-cool-gray")}
        [:div.container-height.flex.justify-between
         [:a.col-5.inherit-color
          non-cta-action
@@ -124,11 +115,6 @@
           [:div.mb1
            [:span.strike secondary-struck]
            [:span.ml2.s-color secondary]]]
-         (when disabled-id
-           [:a.red.content-3
-            (merge {:data-test disabled-id}
-                   non-cta-action)
-            disabled-primary])
          (when cta-id
            [:div.mbn1
             {:style {:max-width cta-max-width}

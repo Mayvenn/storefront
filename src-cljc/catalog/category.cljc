@@ -83,7 +83,6 @@
                                         {:query-params        {:video "0"}
                                          :page/slug           "mayvenn-install"
                                          :catalog/category-id 23})}}))
-   (c/build molecules/stylist-bar queried-data {})
    [:div.max-960.mx-auto
     [:div.pt4]
     (when-let [title (:title category-filters)]
@@ -121,8 +120,7 @@
 
 (defn page
   [app-state opts]
-  (let [stylist-mismatch?                   (experiments/stylist-mismatch? app-state)
-        current                             (accessors.categories/current-category app-state)
+  (let [current                             (accessors.categories/current-category app-state)
         selections                          (get-in app-state catalog.keypaths/category-selections)
         loaded-category-products            (selector/match-all
                                              {:selector/strict? true}
@@ -137,7 +135,6 @@
                                                                  selections)
                                                                 loaded-category-products)
         service-category-page?              (contains? (:catalog/department current) "service")
-        servicing-stylist                   (:diva/stylist (api.current/stylist app-state))
         faq                                 (get-in app-state (conj storefront.keypaths/cms-faq (:contentful/faq-id current)))]
     (c/build template
              (merge {:category-hero          (category-hero-query current)
@@ -158,24 +155,13 @@
                      :product-card-listing   (when-not service-category-page?
                                                (product-card-listing/query app-state current category-products-matching-criteria))
                      :service-category-page? service-category-page?
-                     :stylist-mismatch?      stylist-mismatch?
                      :faq-section            (when (and shop? faq)
                                                (let [{:keys [question-answers]} faq]
                                                  {:faq/expanded-index (get-in app-state storefront.keypaths/faq-expanded-section)
                                                   :list/sections      (for [{:keys [question answer]} question-answers]
                                                                         {:faq/title   (:text question)
-                                                                         :faq/content answer})}))}
+                                                                         :faq/content answer})}))})
 
-                    (when (and service-category-page? servicing-stylist stylist-mismatch?)
-                      {:stylist-bar/id             "category-page-stylist-bar"
-                       :stylist-bar/primary        (:store-nickname servicing-stylist)
-                       :stylist-bar/secondary      "Your Certified Mayvenn Stylist"
-                       :stylist-bar/rating         {:rating/id    "rating-stuff"
-                                                    :rating/value (spice.core/parse-double (:rating servicing-stylist))}
-                       :stylist-bar.thumbnail/id   "stylist-bar-thumbnail"
-                       :stylist-bar.thumbnail/url  (-> servicing-stylist :portrait :resizable-url)
-                       :stylist-bar.action/primary "change"
-                       :stylist-bar.action/target  [e/navigate-adventure-find-your-stylist {}]}))
              opts)))
 
 (defn ^:export built-component
