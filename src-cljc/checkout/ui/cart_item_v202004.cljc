@@ -61,7 +61,7 @@
                        :class "block border border-cool-gray"}
                       ucare-id)]])))
 
-(defn new-cart-item-service-thumbnail-molecule
+(defn cart-item-service-thumbnail-molecule
   [{:cart-item-service-thumbnail/keys [id image-url]}]
   (when id
     [:div.flex
@@ -77,21 +77,7 @@
   [{:cart-item-remove-action/keys [id target spinning?]}]
   (when target
     (if spinning?
-      [:div.h3
-       {:style {:width "1.2em"}}
-       ui/spinner]
-      [:div
-       [:a.gray.medium.m1
-        (merge {:data-test id}
-               (apply utils/fake-href target))
-        (svg/consolidated-trash-can {:width  "14px"
-                                     :height "16px"})]])))
-
-(defn new-cart-item-remove-action-molecule
-  [{:cart-item-remove-action/keys [id target spinning?]}]
-  (when target
-    (if spinning?
-      [:div.h3
+      [:div.h3.flex
        {:style {:width "1.2em"}}
        ui/spinner]
       [:div
@@ -164,9 +150,36 @@
                title]
               [:div {:data-test (str "line-item-price-ea-" sku-id)} price]]) items)]))
 
+(component/defcomponent stylist-remove-molecule
+  [{:servicing-stylist-banner.remove-icon/keys [spinning? target id]} _ _]
+  (when id
+    (if spinning?
+      [:div.h3.flex
+       {:style {:width "1.2em"}}
+       ui/spinner]
+      [:a.block.gray.medium.p1.flex.justify-center.items-center
+       (merge {:data-test id
+               :on-click  (apply utils/send-event-callback target)})
+       (svg/x-sharp {:width  "14px"
+                     :height "14px"
+                     :stroke-width "0.4"
+                     :class  "fill-dark-gray stroke-dark-gray"})])) )
+
+(component/defcomponent stylist-swap-molecule
+  [{:servicing-stylist-banner.swap-icon/keys [id target]} _ _]
+  (when id
+    [:a.block.gray.medium.p1.flex.justify-center.items-center
+     (merge {:data-test id
+             :href      (routes/path-for events/navigate-adventure-find-your-stylist)
+             :on-click  (apply utils/send-event-callback target)})
+     (svg/swap-arrows {:width  "18px"
+                       :height "22px"
+                       :class  "fill-dark-gray stroke-dark-gray"})]))
 
 (component/defcomponent stylist-organism
-  [{:servicing-stylist-banner/keys [id title image-url rating action-id target]} _ _]
+  [{:as data
+    :servicing-stylist-banner/keys
+    [id title image-url rating]} _ _]
   (when id
     [:div.flex.bg-white.pl2
      {:data-test id}
@@ -180,14 +193,9 @@
          [:div.content-2.proxima.flex.justify-between title]
          [:div.content-3.proxima "Your Certified Mayvenn Stylist"]
          [:div.mt1 (ui.molecules/stars-rating-molecule rating)]]]
-       (when action-id
-         [:a.block.gray.medium
-          (merge {:data-test action-id
-                  :href (routes/path-for events/navigate-adventure-find-your-stylist)
-                  :on-click (apply utils/send-event-callback target)})
-          (svg/swap-arrows {:width "16px"
-                            :height "20px"
-                            :class "fill-dark-gray stroke-dark-gray"})])]
+       [:div.flex.flex-column.justify-between.items-end
+        (component/build stylist-remove-molecule data nil)
+        (component/build stylist-swap-molecule data nil)]]
       [:div.mt1.border-bottom.border-cool-gray.hide-on-mb]]]))
 
 (component/defcomponent no-stylist-organism
@@ -202,6 +210,17 @@
              "Pick Your Stylist")]]
      [:div.mb1.border-bottom.border-cool-gray.hide-on-mb]]))
 
+(component/defcomponent no-services-organism
+  [{:no-services/keys [id cta-target cta-label title]} _ _]
+  (when id
+    [:div.bg-white.mt2
+     [:div.pt3.pb4.px3.flex.flex-column.items-center
+      [:div.canela.dark-gray.title-2.center.mb1 title]
+      [:div (ui/button-small-primary
+             (assoc (apply utils/route-to cta-target)
+                    :data-test id)
+             [:span.px1 cta-label])]]]))
+
 (component/defcomponent no-items
   [_ _ _]
   [:div.bg-white.dark-gray.title-2.canela.center.py3
@@ -215,7 +234,7 @@
    [:div.relative.self-start
     {:style {:min-width "70px"}}
     (cart-item-square-thumbnail-molecule cart-item)
-    (new-cart-item-service-thumbnail-molecule cart-item)]
+    (cart-item-service-thumbnail-molecule cart-item)]
 
    ;; info group
    [:div.flex-grow-1
@@ -229,9 +248,9 @@
        (cart-item-adjustable-quantity-molecule cart-item)]]
 
      ;; price group
-     [:div.right-align.flex.flex-column.self-stretch
+     [:div.right-align.flex.flex-column.self-stretch.items-end
       {:style {:min-width "67px"}}
-      (new-cart-item-remove-action-molecule cart-item)
+      (cart-item-remove-action-molecule cart-item)
       (cart-item-floating-box-molecule cart-item)]]
 
     (cart-item-sub-items-molecule cart-item)

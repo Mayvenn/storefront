@@ -201,6 +201,7 @@
 (defpath control-addon-service-menu-dismiss)
 (defpath control-addon-checkbox)
 (defpath control-change-stylist)
+(defpath control-remove-stylist)
 (defpath share-stylist)
 
 (defpath control-popup-hide)

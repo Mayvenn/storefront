@@ -3,8 +3,9 @@
    #?@(:cljs [[storefront.components.payment-request-button :as payment-request-button]
               [storefront.components.popup :as popup]
               [storefront.hooks.quadpay :as quadpay]])
-   spice.selector
+   api.current
    api.orders
+   spice.selector
    [checkout.header :as header]
    [checkout.suggestions :as suggestions]
    [checkout.ui.cart-item-v202004 :as cart-item-v202004]
@@ -94,7 +95,8 @@
           [request-keys/add-promotion-code
            [request-key-prefix request-keys/add-to-bag]
            [request-key-prefix request-keys/update-line-item]
-           [request-key-prefix request-keys/delete-line-item]])))
+           [request-key-prefix request-keys/delete-line-item]
+           [request-key-prefix request-keys/remove-servicing-stylist]])))
 
 ;; formatters
 
@@ -129,20 +131,22 @@
                        (component/component-id "no-items"))])])
 
 (defn service-items-component
-  [{:keys [service-line-items stylist]}]
-  (when (seq service-line-items)
-    [:div.mb3
-     [:div.title-2.proxima.mb1 "Services"]
-     (component/build cart-item-v202004/stylist-organism stylist nil)
-     (component/build cart-item-v202004/no-stylist-organism stylist nil)
+  [{:keys [service-line-items stylist] :as data}]
+  [:div.mb3
+   [:div.title-2.proxima.mb1 "Services"]
+   (component/build cart-item-v202004/stylist-organism stylist nil)
+   (component/build cart-item-v202004/no-stylist-organism stylist nil)
 
-     ;; TODO: Separate mayvenn install base into its own service line item key
+   (if (seq service-line-items)
      (for [service-line-item service-line-items]
        [:div {:key (:react/key service-line-item)}
         [:div.mt2-on-mb
          (component/build cart-item-v202004/organism {:cart-item service-line-item}
                           (component/component-id (:react/key service-line-item)))]])
-     [:div.border-bottom.border-gray.hide-on-mb]]))
+
+     (component/build cart-item-v202004/no-services-organism data nil))
+
+   [:div.border-bottom.border-gray.hide-on-mb]])
 
 (defcomponent full-component
   [{:keys [promo-banner
@@ -187,15 +191,18 @@
       ;; CTAs for checking out
       [:div.py2
        ;; cta button
-       (let [{:cta/keys [id content disabled? target]} cta]
+       (let [{:cta/keys [id content disabled? disabled-reason target]} cta]
          (when id
-           (ui/button-large-primary {:data-test id
-                                     :disabled? disabled?
-                                     :on-click  (apply utils/send-event-callback target)}
-                                    content)))
+           [:div
+            (ui/button-large-primary {:data-test id
+                                      :disabled? disabled?
+                                      :on-click  (apply utils/send-event-callback target)}
+                                     content)
+            (when disabled?
+              [:div.red.content-3.mt2 disabled-reason])]))
 
        ;; paypal button
-       (let [{:keys [redirecting-to-paypal?]} paypal]
+       (let [{:keys [spinning? disabled?]} paypal]
          [:div
           [:div.h5.black.py1.flex.items-center
            [:div.flex-grow-1.border-bottom.border-gray]
@@ -205,7 +212,8 @@
           [:div
            (ui/button-large-paypal
             {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
-             :spinning? redirecting-to-paypal?
+             :disabled? disabled?
+             :spinning? spinning?
              :data-test "paypal-checkout"}
             (component/html
              [:div
@@ -326,24 +334,34 @@
      :cart-item-service-thumbnail/image-url (hacky-cart-image item)}))
 
 (defn service-items<-
-  [items delete-line-item-requests]
-  (when-let [services (select ?service items)]
-    ;; COREY the order/session model should have currently selected stylist at an order level?
-    (let [{:item.service/keys [stylist]} (first services)]
-      {:stylist            (if stylist
-                             {:servicing-stylist-portrait-url     (-> stylist :portrait :resizable-url)
-                              :servicing-stylist-banner/id        "servicing-stylist-banner"
-                              :servicing-stylist-banner/title     (stylists/->display-name stylist)
-                              :servicing-stylist-banner/rating    {:rating/value (:rating stylist)
-                                                                   :rating/id    "stylist-rating-id"}
-                              :servicing-stylist-banner/image-url (some-> stylist :portrait :resizable-url)
-                              :servicing-stylist-banner/target    [events/control-change-stylist {:stylist-id (:stylist-id stylist)}]
-                              :servicing-stylist-banner/action-id "stylist-swap"}
-                             {:stylist-organism/id            "stylist-organism"
-                              :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})
-       :service-line-items (concat
-                            (free-services<- items delete-line-item-requests)
-                            (a-la-carte-services<- items delete-line-item-requests))})))
+  [stylist items remove-in-progress? delete-line-item-requests]
+  (let [services (select ?service items)]
+    (merge
+     {:stylist (if stylist
+                 (let [stylist-id (:stylist/id stylist)]
+                   {:servicing-stylist-portrait-url                 (-> stylist :stylist/portrait :resizable-url)
+                    :servicing-stylist-banner/id                    "servicing-stylist-banner"
+                    :servicing-stylist-banner/title                 (:stylist/name stylist)
+                    :servicing-stylist-banner/rating                {:rating/value (:stylist.rating/score stylist)
+                                                                     :rating/id    "stylist-rating-id"}
+                    :servicing-stylist-banner/image-url             (some-> stylist :stylist/portrait :resizable-url)
+                    :servicing-stylist-banner.swap-icon/target      [events/control-change-stylist {:stylist-id stylist-id}]
+                    :servicing-stylist-banner.swap-icon/id          "stylist-swap"
+                    :servicing-stylist-banner.remove-icon/spinning? remove-in-progress?
+                    :servicing-stylist-banner.remove-icon/target    [events/control-remove-stylist {:stylist-id stylist-id}]
+                    :servicing-stylist-banner.remove-icon/id        "remove-stylist"})
+                 {:stylist-organism/id            "stylist-organism"
+                  :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})}
+     (if (seq services)
+       {:service-line-items (concat
+                             (free-services<- items delete-line-item-requests)
+                             (a-la-carte-services<- items delete-line-item-requests))}
+       (when stylist
+         {:no-services/id         "select-your-service"
+          :no-services/title      "No Service Selected"
+          :no-services/cta-label  "Select Your Service"
+          :no-services/cta-target [events/navigate-category {:catalog/category-id "31"
+                                                             :page/slug           "free-mayvenn-services"}]})))))
 
 (defn physical-items<-
   [items update-line-item-requests delete-line-item-requests]
@@ -589,11 +607,14 @@
     (regular-cart-summary-query order)))
 
 (defn cta<-
-  [pending-requests?]
-  {:cta/id        "start-checkout-button"
-   :cta/disabled? pending-requests?
-   :cta/target    [events/control-checkout-cart-submit]
-   :cta/content   "Check out"})
+  [no-items? pending-requests?]
+  (let [disabled? (or no-items? pending-requests?)]
+    {:cta/id              "start-checkout-button"
+     :cta/disabled?       disabled?
+     :cta/target          [events/control-checkout-cart-submit]
+     :cta/content         "Check out"
+     :cta/disabled-reason (when no-items?
+                            "Please add a product or service to check out")}))
 
 (defn return-link<-
   [items]
@@ -617,8 +638,11 @@
      :quadpay/directive   :just-select}))
 
 (defn paypal<-
-  [data]
-  {:redirecting-to-paypal? (get-in data keypaths/cart-paypal-redirect)})
+  [no-items? pending-requests? data]
+  (let [redirecting-to-paypal? (get-in data keypaths/cart-paypal-redirect)]
+    {:spinning? redirecting-to-paypal?
+     :disabled? (or no-items?
+                    pending-requests?)}))
 
 (defn checkout-caption<-
   ;; TODO(corey) This name seems confusing to me
@@ -646,6 +670,7 @@
 
         ;; TODO(corey) these are session
         pending-requests?         (update-pending? app-state)
+        remove-in-progress?       (utils/requesting? app-state request-keys/remove-servicing-stylist)
         update-line-item-requests (merge-with #(or %1 %2)
                                               (->> (map :catalog/sku-id items)
                                                    (variants-requests app-state request-keys/add-to-bag))
@@ -655,17 +680,21 @@
                                        (variants-requests app-state request-keys/delete-line-item))
 
         ;; TODO(corey) part item model / part order model
-        suggestions (suggestions/consolidated-query app-state)]
+        suggestions (suggestions/consolidated-query app-state)
+        no-items?   (empty? items)]
     (component/build template
                      {:cart      {:return-link      (return-link<- items)
                                   :promo-banner     (when (zero? (orders/product-quantity order))
                                                       (promo-banner/query app-state))
-                                  :cta              (cta<- pending-requests?)
+                                  :cta              (cta<- no-items? pending-requests?)
                                   :physical-items   (physical-items<- items
                                                                       update-line-item-requests
                                                                       delete-line-item-requests)
-                                  :service-items    (service-items<- items
-                                                                     delete-line-item-requests)
+                                  :service-items    (service-items<-
+                                                     (api.current/stylist app-state)
+                                                     items
+                                                     remove-in-progress?
+                                                     delete-line-item-requests)
                                   :checkout-caption (checkout-caption<- items)
                                   :cart-summary     (merge (cart-summary<- order items)
                                                            (freeinstall-informational<- order)
@@ -674,7 +703,9 @@
                                                                           pending-requests?))
                                   :shared-cart      (shared-cart<- app-state)
                                   :quadpay          (quadpay<- app-state order)
-                                  :paypal           (paypal<- app-state)
+                                  :paypal           (paypal<- no-items?
+                                                              pending-requests?
+                                                              app-state)
                                   :browser-pay?     (and (get-in app-state keypaths/loaded-stripe)
                                                          (experiments/browser-pay? app-state)
                                                          (seq (get-in app-state keypaths/shipping-methods))

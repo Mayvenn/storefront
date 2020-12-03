@@ -16,6 +16,13 @@
   [_ _ _ _ _]
   #?(:cljs (history/enqueue-navigate events/navigate-adventure-find-your-stylist)))
 
+(defmethod effects/perform-effects events/control-remove-stylist
+  [_ _ {:keys [stylist-id]} _ app-state]
+  #?(:cljs (let [order (get-in app-state keypaths/order)]
+             (api/remove-servicing-stylist stylist-id
+                                           (:number order)
+                                           (:token order)))))
+
 (defmethod transitions/transition-state events/control-toggle-promo-code-entry
   [_ _ _ app-state]
   (update-in app-state keypaths/promo-code-entry-open? not))
