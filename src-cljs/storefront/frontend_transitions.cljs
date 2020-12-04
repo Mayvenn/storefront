@@ -166,15 +166,6 @@
     (= previous-nav-event events/navigate-product-details)
     (assoc-in catalog.keypaths/detailed-product-related-addons nil)))
 
-(defn update-flash
-  [app-state {:keys [navigate/caused-by]}]
-  (cond-> app-state
-    (not= :first-nav caused-by)
-    (-> (assoc-in keypaths/flash-now-success (get-in app-state keypaths/flash-later-success))
-        (assoc-in keypaths/flash-now-failure (get-in app-state keypaths/flash-later-failure))
-        (assoc-in keypaths/flash-later-success nil)
-        (assoc-in keypaths/flash-later-failure nil))))
-
 (defmethod transition-state events/navigate [_ event args app-state]
   (let [args                 (dissoc args :nav-stack-item)
         uri                  (url/url js/window.location)
@@ -191,7 +182,10 @@
         clear-flash
         clear-completed-order
         (assoc-in keypaths/flyout-stuck-open? false)
-        (update-flash args)
+        (assoc-in keypaths/flash-now-success (get-in app-state keypaths/flash-later-success))
+        (assoc-in keypaths/flash-now-failure (get-in app-state keypaths/flash-later-failure))
+        (assoc-in keypaths/flash-later-success nil)
+        (assoc-in keypaths/flash-later-failure nil)
         (update-in keypaths/ui dissoc :navigation-stashed-stack-item)
         (assoc-in keypaths/navigation-uri uri)
         ;; order is important from here on
