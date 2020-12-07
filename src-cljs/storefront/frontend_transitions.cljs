@@ -213,9 +213,12 @@
 
 (defn ensure-direct-load-of-checkout-auth-advances-to-checkout-flow [app-state]
   (let [direct-load? (= [events/navigate-home {}]
-                        (get-in app-state keypaths/return-navigation-message))]
+                        (get-in app-state keypaths/return-navigation-message))
+        previously-upsell? (= [events/navigate-checkout-add nil]
+                              (get-in app-state keypaths/return-navigation-message))]
     (cond-> app-state
-      direct-load?
+      (or direct-load?
+          previously-upsell?)
       (assoc-in keypaths/return-navigation-message [events/navigate-checkout-address {}]))))
 
 (defmethod transition-state events/navigate-checkout-returning-or-guest [_ event args app-state]
