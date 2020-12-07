@@ -663,7 +663,7 @@
                            {:message "Logged in successfully"}))
 
 (defmethod effects/perform-effects events/api-success-auth-sign-up [dispatch event args _ app-state]
-  (messages/handle-later events/flash-later-show-success {:message "Welcome! You have signed up successfully."}))
+  (messages/handle-message events/flash-later-show-success {:message "Welcome! You have signed up successfully."}))
 
 (defmethod effects/perform-effects events/api-success-auth-reset-password [dispatch event args _ app-state]
   (messages/handle-message events/flash-later-show-success {:message "Your password was changed successfully. You are now signed in."}))
