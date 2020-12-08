@@ -3,14 +3,50 @@
   (:require [spice.maps :as maps]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.sites :as sites]
+            [storefront.events :as e]
             [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.svg :as svg]
             [storefront.components.ugc :as component-ugc]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
-            [storefront.ugc :as ugc]
-            [storefront.accessors.sites :as sites]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.ugc :as ugc]))
 
-(defcomponent component [{:keys [looks copy spinning?]} owner opts]
+(defn filters-status-molecule
+  [{:filters.status/keys [primary secondary]}]
+  [:div.flex.justify-between
+   [:div.bold.shout.content-4 primary]
+   [:div.content-3 secondary]])
+
+(defcomponent filters-pills-pill-molecule
+  [{:filters.pills.pill/keys [primary id target icon]} _ {:keys [id]}]
+  [:div {:key id}
+   (ui/button-pill
+    (cond-> {:class     "p1 mr1 black content-3"
+             :key       "filters-key"
+             :data-test "button-show-shop-by-look-filters"}
+      (not-empty target)
+      (assoc :on-click (apply utils/send-event-callback target)))
+    [:div.flex.items-center.px1
+     primary
+     (when (and target icon)
+       [:a.flex.items-center.pl1
+        ^:attrs (merge {:data-test id}
+                       (apply utils/fake-href target))
+        icon])])])
+
+(defcomponent filters-organism
+  [data _ _]
+  (when (seq data)
+    [:div.bg-white.py2.px3
+     (filters-status-molecule data)
+     [:div.flex.flex-wrap.py1
+      (component/elements filters-pills-pill-molecule data
+                          :filters/pills)]]))
+
+(defcomponent template
+  [{:keys [looks copy filters spinning?]} _ _]
   (if spinning?
     (ui/large-spinner {:style {:height "4em"}})
     [:div.bg-warm-gray
@@ -18,6 +54,24 @@
       [:h1.title-1.canela.py3 (:title copy)]
       [:p.col-10.col-6-on-tb-dt.mx-auto.proxima.content-2 (:description copy)]
       [:p.col-10.col-6-on-tb-dt.mx-auto.proxima.content-2 (:secondary-description copy)]]
+     (component/build filters-organism filters)
+     [:div.flex.flex-wrap.mbn2.justify-center.justify-start-on-tb-dt.bg-cool-gray.py2-on-tb-dt.px1-on-tb-dt
+      (map-indexed
+       (fn [idx look]
+         (ui/screen-aware component-ugc/social-image-card-component
+                          (assoc look :hack/above-the-fold? (zero? idx))
+                          {:opts               {:copy copy}
+                           :child-handles-ref? true
+                           :key                (str (:id look))}))
+       looks)]]))
+
+(defcomponent original-component [{:keys [looks copy spinning?]} owner opts]
+  (if spinning?
+    (ui/large-spinner {:style {:height "4em"}})
+    [:div.bg-warm-gray
+     [:div.center.py6
+      [:h1.title-1.canela.py3 (:title copy)]
+      [:p.col-10.col-6-on-tb-dt.mx-auto.proxima.content-2 (:description copy)]]
      [:div.flex.flex-wrap.mbn2.justify-center.justify-start-on-tb-dt.bg-cool-gray.py2-on-tb-dt.px1-on-tb-dt
       (map-indexed
        (fn [idx look]
@@ -64,16 +118,43 @@
                                :facet/options
                                (maps/index-by :option/slug))]
     {:looks     (mapv (partial contentful/look->social-card
-                               selected-album-kw
-                               color-details)
-                      looks)
+                             selected-album-kw
+                             color-details)
+                    looks)
      :copy      default-copy
+     :filters   (let [filters ["straight" "black"]
+                      pills   (concat
+                               [{:filters.pills.pill/primary
+                                 ^:inline
+                                 [:span.mr1
+                                  (svg/funnel {:class  "mrp3"
+                                               :height "9px"
+                                               :width  "10px"})
+                                  (if (empty? filters)
+                                    "Filters"
+                                    (str "- " (count filters)))]
+                                 :filters.pills.pill/target [e/navigate-home]}]
+                               (mapv (fn [filter]
+                                       {:filters.pills.pill/primary filter
+                                        :filters.pills.pill/target  [e/navigate-home]
+                                        :filters.pills.pill/icon
+                                        ^:inline
+                                        (svg/close-x
+                                         {:class  "stroke-white fill-gray"
+                                          :width  "13px"
+                                          :height "13px"})})
+                                     filters))]
+                  {:filters.status/primary   "Filter By:"
+                   :filters.status/secondary "88888 Looks"
+                   :filters/pills            pills})
      :spinning? (empty? looks)}))
 
 (defn ^:export built-component [data opts]
   (let [album-kw (ugc/determine-look-album data (get-in data keypaths/selected-album-keyword))]
-    (component/build component (if (and (experiments/sbl-update? data)        ;; featured
-                                        (= :shop (sites/determine-site data)) ;; dtc, shop
-                                        (= :aladdin-free-install album-kw))   ;; main look page
-                                 (sbl-query data)
-                                 (query data)) opts)))
+    (if (and (experiments/sbl-update? data)        ;; featured
+             (= :shop (sites/determine-site data)) ;; dtc, shop
+             (= :aladdin-free-install album-kw))   ;; main look page
+      (component/build template
+                       (merge (sbl-query data)
+                              {}))
+      (component/build original-component (query data) opts))))
