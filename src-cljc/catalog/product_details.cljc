@@ -341,6 +341,7 @@
                     :add-to-cart.incentive-block/link-id     "learn-more-mayvenn-install"
                     :add-to-cart.incentive-block/link-label  "Learn more"
                     :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
+                    :add-to-cart.incentive-block/callout     "✋Don't miss out on free Mayvenn Service"
                     :add-to-cart.incentive-block/message     (str "Get a free Mayvenn Service by a licensed "
                                                                   "stylist with qualifying purchases.* ")})
       (and shop?
