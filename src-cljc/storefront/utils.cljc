@@ -1,4 +1,5 @@
-(ns storefront.utils)
+(ns storefront.utils
+  (:require [spice.selector :refer [match-all]]))
 
 ;; TODO: move to spice
 (defn ?update
@@ -20,3 +21,6 @@
        (assoc k v)))
    m
    (partition 2 args)))
+
+(def select
+  (partial match-all {:selector/strict? true}))

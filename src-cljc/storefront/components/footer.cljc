@@ -1,6 +1,6 @@
 (ns storefront.components.footer
-  (:require [catalog.categories :as categories]
-            [promotion-helper.ui :refer [promotion-helper]]
+  (:require catalog.services
+            promotion-helper.ui
             [storefront.accessors.auth :as auth]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.sites :as sites]
@@ -12,8 +12,10 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
+            storefront.utils
             [storefront.platform.numbers :as numbers]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.accessors.experiments :as experiments]
+            [api.orders :as api.orders]))
 
 (defn phone-uri [tel-num]
   (apply str "tel://+" (numbers/digits-only tel-num)))
@@ -107,7 +109,7 @@
          ^:inline (dtc-link link))])]])
 
 (defcomponent dtc-full-component
-  [{:keys [contacts link-columns essence-copy]} owner opts]
+  [{:keys [additional-margin contacts link-columns essence-copy]} owner opts]
   [:div.bg-cool-gray
    [:div.bg-p-color.pt1]
    [:div.container
@@ -120,7 +122,9 @@
        [:div.col-on-tb-dt.col-6-on-tb-dt.pb2.content-4.dark-gray
         essence-copy])]]
 
-   [:div.hide-on-dt {:style {:margin-bottom "90px"}}
+   [:div.hide-on-dt
+    (when additional-margin
+      {:style {:margin-bottom additional-margin}})
     (component/build footer-links/component {:minimal? false} nil)]
    [:div.hide-on-mb-tb
     (component/build footer-links/component {:minimal? false} nil)]])
@@ -171,6 +175,15 @@
                                 (sort-by :sort-order))]
     {:contacts     (contacts-query data)
      :link-columns (split-evenly links)
+     ;; NOTE: necessary only when promo helper exists. Can remove if it goes away.
+     :additional-margin (when (:promotion-helper/exists?
+                               (promotion-helper.ui/promotion-helper-model<-
+                                data
+                                (->> (api.orders/current data)
+                                     :order/items
+                                     (storefront.utils/select catalog.services/discountable)
+                                     first)))
+                          "79px")
      :essence-copy (str "All orders include a one year subscription to ESSENCE Magazine - a $10 value! "
                         "Offer and refund details will be included with your confirmation.")}))
 
