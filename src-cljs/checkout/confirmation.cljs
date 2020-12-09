@@ -141,7 +141,7 @@
            [:div
             [:div.title-2.proxima.mb1 "Services"]
             [:div
-             [:div.mbn1
+             [:div
               (component/build cart-item-v202004/stylist-organism queried-data nil)
               (component/build cart-item-v202004/no-stylist-organism queried-data nil)]
 
