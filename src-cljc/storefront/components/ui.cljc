@@ -101,7 +101,7 @@
 
 (defn button
   [additional-classes
-   {:keys [disabled? disabled-class spinning? navigation-message href]
+   {:keys [disabled? disabled-content disabled-class spinning? navigation-message href]
     :as   opts}
    content]
   (component/html
@@ -115,7 +115,10 @@
                    spinning?                                                 (assoc :data-test-spinning "yes")
                    :always                                                   (update :class str " " additional-classes)
                    disabled?                                                 (update :class str (str " btn-gray btn-disabled cursor-not-allowed " (or disabled-class "is-disabled"))))
-         content (if spinning? [spinner] content)]
+         content (cond
+                   spinning? [spinner]
+                   disabled? disabled-content
+                   :else     content)]
      [:a (merge {:href "#"} attrs)
       ;; FIXME: the button helper functions with & content force us to do this for consistency
       (if (seq? content)

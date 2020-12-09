@@ -29,18 +29,15 @@
 
 (defn add-to-cart-button
   [sold-out? creating-order? look {:keys [number]}]
-  (if sold-out?
-    [:div.btn.col-12.h5.btn-primary.bg-gray.white
-     {:on-click nil}
-     "Sold Out"]
-    (ui/button-large-primary
-     (merge (utils/fake-href events/control-create-order-from-shared-cart
-                             {:shared-cart-id number
-                              :look-id        (:id look)})
-            {:data-test "add-to-cart-submit"
-             :disabled? (not look)
-             :spinning? creating-order?})
-     "Add items to cart")))
+  (ui/button-large-primary
+   (merge (utils/fake-href events/control-create-order-from-shared-cart
+                           {:shared-cart-id number
+                            :look-id        (:id look)})
+          {:data-test        "add-to-cart-submit"
+           :disabled?        (or (not look) sold-out?)
+           :disabled-content (when sold-out? "Sold Out")
+           :spinning?        creating-order?})
+   "Add items to cart"))
 
 (defmethod effects/perform-effects events/control-create-order-from-shared-cart
   [_ event {:keys [look-id shared-cart-id] :as args} _ app-state]
