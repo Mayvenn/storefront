@@ -52,13 +52,13 @@
     (component/html
      [:div.px2
       (component/build carousel/component
-                       {:data     items
-                        :settings {:nav   false
-                                   :items 3
-                                   ;; setting this to true causes some of our event listeners to
-                                   ;; get dropped by tiny-slider.
-                                   :loop  false}}
-                       {:opts {:slides (map stylist-card-gallery-item-molecule items)}})])))
+                       {:data items}
+                       {:opts {:settings {:nav   false
+                                          :items 3
+                                          ;; setting this to true causes some of our event listeners to
+                                          ;; get dropped by tiny-slider.
+                                          :loop  false}
+                               :slides   (map stylist-card-gallery-item-molecule items)}})])))
 
 (defn stylist-card-cta-molecule
   [{:stylist-card.cta/keys [id label target]}]

@@ -122,10 +122,10 @@
 
 (defn carousel [images _]
   (component/build carousel/component
-                   {:images   images
-                    :settings {:edgePadding 0
-                               :items       1}}
-                   {:opts {:slides (map-indexed image-body images)}}))
+                   {:images images}
+                   {:opts {:settings {:edgePadding 0
+                                      :items       1}
+                           :slides   (map-indexed image-body images)}}))
 
 (defn get-selected-options [selections options]
   (reduce

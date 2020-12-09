@@ -23,7 +23,7 @@
 
 (defcomponent social-image-card-component
   [{:keys                [desktop-aware?
-                          id description icon-url title]
+                          id description title]
     :screen/keys         [seen?]
     [nav-event nav-args] :cta/navigation-message
     button-type          :cta/button-type

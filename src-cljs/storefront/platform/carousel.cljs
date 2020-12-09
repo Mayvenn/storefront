@@ -5,7 +5,7 @@
   (when (some-> carousel .-destroy fn?)
     (.destroy carousel)))
 
-(defn build-carousel [this settings]
+(defn build-carousel [this events settings]
   (when (component/get-ref this "container")
     (let [carousel (js/tns
                     (clj->js (merge {:container        (component/get-ref this "container")
@@ -20,6 +20,8 @@
                                       {:prevButton (component/get-ref this "prev-button")
                                        :nextButton (component/get-ref this "next-button")})
                                     settings)))]
+      (doseq [[event-name f] events]
+        (.on (.-events carousel) event-name f))
       (set! (.-carousel this) carousel))))
 
 (defdynamic-component inner-component
@@ -29,8 +31,8 @@
                (component/create-ref! c "next-button")
                nil)
   (did-mount [this]
-             (let [{:keys [settings]} (component/get-opts this)]
-               (build-carousel this settings)))
+             (let [{:keys [events settings]} (component/get-opts this)]
+               (build-carousel this events settings)))
   (will-unmount [this]
                 (safely-destroy (.-carousel this)))
   (render [this]
@@ -52,21 +54,20 @@
 
 ;; Important note: carousels should be provided a react key, otherwise we'll get strange behavior
 ;; from dirty state when going between pages containing different carousels.
-(defcomponent component [data _ {:keys [slides]}]
-  ;; slides from data is legacy and shouldn't be used at risk of lots of re-renders
-  (let [slides (or slides (:slides data))]
-    (component/build inner-component
-                     {} ;; we're using key to invalidate the component
-                     (let [opts (cond-> (assoc-in data [:settings :autoplay] false)
-                                  :always (assoc :slides slides)
+(defcomponent component [data _ {:as opts-data :keys [slides events]}]
+  (component/build inner-component
+                   {} ;; we're using key to invalidate the component
+                   {:opts (-> opts-data
+                              (assoc-in [:settings :autoplay] false)
+                              (assoc :slides slides :events events)
+                              (cond->
 
                                   (= (count slides) 1)
-                                  (update-in [:settings] merge {:arrows    false
-                                                                :nav       false
-                                                                :touch     false
-                                                                :controls  false
-                                                                :mouseDrag false}))]
-                       {:opts opts
-                        :key  (->> data
-                                   hash
-                                   (str "product-carousel-inner-"))}))))
+                                (update-in [:settings] merge {:arrows    false
+                                                              :nav       false
+                                                              :touch     false
+                                                              :controls  false
+                                                              :mouseDrag false})))
+                    :key  (->> data
+                               hash
+                               (str "product-carousel-inner-"))}))

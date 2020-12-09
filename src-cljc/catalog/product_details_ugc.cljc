@@ -1,12 +1,13 @@
 (ns catalog.product-details-ugc
-  (:require #?@(:cljs [[goog.string]])
+  (:require #?@(:cljs [[goog.string]
+                       [storefront.history]])
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ugc :as ugc]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as util]
             [storefront.events :as events]
+            [storefront.platform.component-utils :as util]
             [storefront.platform.carousel :as carousel]
-            [clojure.string :as str]))
+            [clojure.string :as string]))
 
 (defn ^:private carousel-slide
   [destination-event product-id page-slug sku-id dt-prefix idx
@@ -27,7 +28,7 @@
       (ui/basic-defer-img {:class "col-12"} image-url))]]))
 
 (defn ->title-case [s]
-  #?(:clj (str/capitalize s)
+  #?(:clj (string/capitalize s)
      :cljs (goog.string/toTitleCase s)))
 
 (defn parse-int [v]
@@ -48,42 +49,58 @@
      [:div.proxima.title-2.m2.shout "#MayvennMade"]
      (component/build
       carousel/component
-      {:data     social-cards
-       :settings {:nav         false
-                  :startIndex  0
-                  :edgePadding 50
-                  ;; setting this to true causes some of our event listeners to
-                  ;; get dropped by tiny-slider.
-                  :loop        false
-                  ;; The breakpoints are mobile-first. That is, the
-                  ;; default values apply to the smallest screens, and
-                  ;; 1000 means 1000 and above.
-                  :items       2
-                  :responsive  {1000 {:items 3}}}}
-      (assoc-in opts [:opts :slides]
-                (map-indexed
-                 (partial carousel-slide destination-event product-id page-slug sku-id "mayvenn-made-slide-")
-                 social-cards)))
+      {:data social-cards}
+      (update opts
+              :opts
+              merge {:settings {:nav         false
+                                :startIndex  0
+                                :edgePadding 50
+                                ;; setting this to true causes some of our event listeners to
+                                ;; get dropped by tiny-slider.
+                                :loop        false
+                                ;; The breakpoints are mobile-first. That is, the
+                                ;; default values apply to the smallest screens, and
+                                ;; 1000 means 1000 and above.
+                                :items       2
+                                :responsive  {1000 {:items 3}}}
+                     :slides   (map-indexed
+                                (partial carousel-slide
+                                         destination-event
+                                         product-id
+                                         page-slug
+                                         sku-id "mayvenn-made-slide-")
+                              social-cards)}))
      [:p.center.px6.mb2.mt4.content-2.proxima
       "Want to show up on our homepage? "
       "Tag your best pictures wearing Mayvenn with "]
      [:div.block.shout.proxima.title-3 "#MayvennMade"]]))
 
 (defcomponent popup-component [{:keys [carousel-data offset close-message]} owner opts]
-  (let [close-attrs (apply util/route-to close-message)]
+  (let [[nav-event nav-args] close-message
+        close-attrs          (apply util/route-to close-message)]
     ;; navigation event of the PDP page (freeinstall and classic have different events)
     (ui/modal
      {:close-attrs close-attrs}
      (component/html
       [:div.relative
        (component/build carousel/component
-                        {:data     (:social-cards carousel-data)
-                         :settings {:items       1
-                                    :edgePadding 0
-                                    :nav         false
-                                    :startIndex  (parse-int offset)}}
-                        {:opts {:slides (map (partial popup-slide (:product-name carousel-data))
-                                             (:social-cards carousel-data))}})
+                        {:data (:social-cards carousel-data)}
+                        {:opts {:settings {:items       1
+                                           :edgePadding 0
+                                           :nav         false
+                                           :startIndex  (parse-int offset)}
+                                :slides (mapv (partial popup-slide (:product-name carousel-data))
+                                              (:social-cards carousel-data))
+                                :events [["indexChanged"
+                                          (fn [info _]
+                                            #?(:cljs
+                                               (storefront.history/enqueue-redirect
+                                                nav-event (-> nav-args
+                                                              (update
+                                                               :query-params
+                                                               assoc :offset (some-> info
+                                                                                     .-index
+                                                                                     dec))))))]]}})
        [:div.absolute
         {:style {:top "1.5rem" :right "1.5rem"}}
         (ui/modal-close {:class       "stroke-black fill-gray"

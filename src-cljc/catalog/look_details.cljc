@@ -57,12 +57,12 @@
 
 (defn carousel [data imgs]
   (component/build carousel/component
-                   {:dependencies data
-                    :settings     {:nav         true
-                                   :edgePadding 0
-                                   :controls    true
-                                   :items       1}}
-                   {:opts {:slides imgs}}))
+                   {:dependencies data}
+                   {:opts {:settings {:nav         true
+                                      :edgePadding 0
+                                      :controls    true
+                                      :items       1}
+                           :slides   imgs}}))
 
 (defn look-details-body
   [{:keys [creating-order? sold-out? look shared-cart skus fetching-shared-cart?

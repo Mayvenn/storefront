@@ -83,6 +83,7 @@
 
 ;; --------------- gallery modal
 
+;; TODO: this does not appear to be used anywhere consider removing?
 (defmethod transitions/transition-state e/control-adventure-stylist-gallery-open
   [_ _ {:keys [ucare-img-urls initially-selected-image-index]} state]
   (-> state
