@@ -121,7 +121,7 @@
                                           :shippingDetails {"@type"              "OfferShippingDetails"
                                                             :shippingDestination {"@type"         "DefinedRegion"
                                                                                   :addressCountry "US"}
-                                                            :deliveryTime        {"@type"       "ShippingDelieveryTime"
+                                                            :deliveryTime        {"@type"       "ShippingDeliveryTime"
                                                                                   :businessDays {"@type"    "OpeningHoursSpecification"
                                                                                                  :dayOfWeek ["https://schema.org/Monday"
                                                                                                              "https://schema.org/Tuesday"
