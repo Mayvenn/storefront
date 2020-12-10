@@ -68,9 +68,11 @@
 
 (defn header<-
   [{:order.items/keys [quantity]} undo-history]
-  {:header.back-navigation/back   (not-empty (first undo-history))
+  {:header.back-navigation/back   (when-let [back (not-empty (first undo-history))]
+                                    (when (not= events/navigate-adventure-stylist-results (first (:navigation-message back)))
+                                      back))
    :header.back-navigation/id     "adventure-back"
-   :header.back-navigation/target [events/navigate-adventure-find-your-stylist]
+   :header.back-navigation/target [events/navigate-home]
    :header.cart/color             "white"
    :header.cart/id                "mobile-cart"
    :header.cart/value             (or quantity 0)
