@@ -165,7 +165,7 @@
        {:style {:height "25em"}}
        (ui/large-spinner {:style {:height "4em"}})]
       [:div
-       [:div.container
+       [:div.container.pdp-on-tb
         (when (:offset ugc)
           [:div.absolute.overlay.z4.overflow-auto
            {:key "popup-ugc"}

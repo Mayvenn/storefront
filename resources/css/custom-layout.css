@@ -12,6 +12,7 @@
 }
 
 @media (--on-tablet) {
+  .container.pdp-on-tb { max-width: none; }
   .max-960, .container { max-width: 720px; }
 }
 
