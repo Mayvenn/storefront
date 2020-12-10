@@ -587,6 +587,13 @@
 (defpath control-stylist-matching-presearch-salon-result-selected)
 (defpath control-stylist-matching-presearch-stylist-result-selected)
 
+;; Flow - Looks Filtering
+
+(defpath flow|looks-filtering|reset)
+(defpath flow|looks-filtering|panel-toggled)
+(defpath flow|looks-filtering|section-toggled)
+(defpath flow|looks-filtering|filter-toggled)
+
 ;; TODO more sepcific name
 (defpath cancel-presearch-requests)
 ;; TODO(corey) think about general solutions to the api handlers problem
