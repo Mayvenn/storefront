@@ -107,17 +107,37 @@
      :og-image        image-url
      :og-description  (:opengraph/description product)
      :structured-data (cond->
-                       [{"@type"      "Product"
-                         :name        (:sku/title sku)
-                         :image       image-url
-                         :sku         (:catalog/sku-id sku)
-                         :description (:opengraph/description product)
-                         :offers      {"@type"        "Offer"
-                                       :price         (str (:sku/price sku))
-                                       :priceCurrency "USD"
-                                       :availability  (if (:inventory/in-stock? sku)
-                                                        "http://schema.org/InStock"
-                                                        "http://schema.org/OutOfStock")}}]
+                          [{"@type"      "Product"
+                            :name        (:sku/title sku)
+                            :image       image-url
+                            :sku         (:catalog/sku-id sku)
+                            :description (:opengraph/description product)
+                            :offers      {"@type"        "Offer"
+                                          :price         (str (:sku/price sku))
+                                          :priceCurrency "USD"
+                                          :availability  (if (:inventory/in-stock? sku)
+                                                           "http://schema.org/InStock"
+                                                           "http://schema.org/OutOfStock")
+                                          :shippingDetails {"@type"              "OfferShippingDetails"
+                                                            :shippingDestination {"@type"         "DefinedRegion"
+                                                                                  :addressCountry "US"}
+                                                            :deliveryTime        {"@type"       "ShippingDelieveryTime"
+                                                                                  :businessDays {"@type"    "OpeningHoursSpecification"
+                                                                                                 :dayOfWeek ["https://schema.org/Monday"
+                                                                                                             "https://schema.org/Tuesday"
+                                                                                                             "https://schema.org/Wednesday"
+                                                                                                             "https://schema.org/Thursday"
+                                                                                                             "https://schema.org/Friday"]}
+                                                                                  :cutOffTime   "18:00:00-05:00"
+                                                                                  :handlingTime {"@type"   "QuantitativeValue"
+                                                                                                 :minValue "0"
+                                                                                                 :maxValue "3"}
+                                                                                  :transitTime  {"@type"   "QuantitativeValue"
+                                                                                                 :minValue "4"
+                                                                                                 :maxValue "6"}}
+                                                            :shippingRate         {"@type"   "MonetaryAmount"
+                                                                                   :currency "USD"
+                                                                                   :value    "0"}}}}]
                         (and shop? faq)
                         (conj (faq->structured-data faq)))}))
 
