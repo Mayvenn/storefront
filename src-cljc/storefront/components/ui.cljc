@@ -116,9 +116,12 @@
                    :always                                                   (update :class str " " additional-classes)
                    disabled?                                                 (update :class str (str " btn-gray btn-disabled cursor-not-allowed " (or disabled-class "is-disabled"))))
          content (cond
-                   spinning? [spinner]
-                   disabled? disabled-content
-                   :else     content)]
+                   spinning?
+                   [spinner]
+                   (and disabled?
+                        disabled-content)
+                   disabled-content
+                   :else content)]
      [:a (merge {:href "#"} attrs)
       ;; FIXME: the button helper functions with & content force us to do this for consistency
       (if (seq? content)
