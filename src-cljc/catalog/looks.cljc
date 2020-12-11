@@ -14,7 +14,11 @@
             [storefront.transitions :as t]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.ugc :as ugc]))
+            [storefront.ugc :as ugc]
+            [spice.selector :as selector]))
+
+(def ^:private select
+  (comp seq (partial selector/match-all {:selector/strict? true})))
 
 ;; Visual: Looks (new version under experiment)
 
@@ -98,7 +102,7 @@
 
 (defcomponent looks-filtering-header-organism
   [data _ _]
-  (header/mobile-nav-header ;; TODO(corey) reconc with being wrapped in top-level
+  (header/mobile-nav-header
    {:class "border-bottom border-gray"}
    (looks-filtering-header-reset-molecule data)
    (component/html
@@ -167,8 +171,13 @@
   (let [initial-state #:looks-filtering{:panel    false
                                         :sections #{}
                                         :filters  {}}]
-    (merge initial-state
-           (get-in state k-models-looks-filtering))))
+    (-> initial-state
+        (merge (get-in state k-models-looks-filtering))
+        (update :looks-filtering/filters
+                ;; Remove empty vals
+                #(->> %
+                      (remove (comp empty? last))
+                      (into {}))))))
 
 (defmethod t/transition-state e/flow|looks-filtering|reset
   [_ _ _ state]
@@ -212,7 +221,7 @@
    - Filtering Summary
      - Status
      - Pills"
-  [facets-db {:looks-filtering/keys [filters]}]
+  [facets-db looks {:looks-filtering/keys [filters]}]
   (let [filtering-options (->> filters
                                (mapcat (fn selections->options
                                          [[facet-slug option-slugs]]
@@ -240,7 +249,9 @@
                                     :filtering-summary.pill/action-icon :close-x})
                                  filtering-options))]
     {:filtering-summary.status/primary   "Filter By:"
-     :filtering-summary.status/secondary "All Looks"
+     :filtering-summary.status/secondary (str
+                                          (count (select filters looks))
+                                          " Looks")
      :filtering-summary/pills            pills}))
 
 (defn sections<-
@@ -284,29 +295,49 @@
                               :filters.section.filter/url     option-name}))))))))))
 
 (defn looks-cards<-
-  [state]
-  (let [selected-album-kw (get-in state keypaths/selected-album-keyword)
-        actual-album-kw   (ugc/determine-look-album state selected-album-kw)
-        looks             (-> (get-in state keypaths/cms-ugc-collection)
-                              actual-album-kw
-                              :looks)
-        color-details     (->> (get-in state keypaths/v2-facets)
-                               (filter #(= :hair/color (:facet/slug %)))
-                               first
-                               :facet/options
-                               (maps/index-by :option/slug))]
-    {:looks (->> looks
-                 (mapv (partial contentful/look->social-card
-                                selected-album-kw
-                                color-details))
-                 (mapv #(assoc %
-                               ;; TODO(corey) tidy this up when the cards are worked on
-                               :button-copy           "Shop Look"
-                               :short-name            "look")))}))
+  [state facets-db looks {:looks-filtering/keys [filters]}]
+  (->> (select filters looks)
+       (mapv (partial contentful/look->social-card
+                      (get-in state keypaths/selected-album-keyword)
+                      (:facet/options (:hair/color facets-db))))
+       (mapv #(assoc %
+                     ;; TODO(corey) tidy this up when the cards are worked on
+                     :button-copy           "Shop Look"
+                     :short-name            "look"))))
+
 (def ^:private looks-hero<-
   {:looks.hero.title/primary   "Shop by Look"
    :looks.hero.title/secondary ["Get 3 or more hair items and receive a service for FREE"
                                 "#MayvennMade"]})
+
+;; Biz Domain: Looks
+
+(defn ^:private options|name->slug
+  "Used to enrich contenful looks to be selectable"
+  [facets-db]
+  (->> (vals facets-db)
+       (mapcat :facet/options)
+       (mapv (fn [[slug option]]
+               [(:option/name option) slug]))
+       (into {})))
+
+(defn ^:private looks<-
+  [state facets-db]
+  (let [name->slug (options|name->slug facets-db)]
+    (->> (get-in state keypaths/cms-ugc-collection)
+         ;; NOTE(corey) This is hardcoded because obstensibly
+         ;; filtering should replace albums
+         :aladdin-free-install
+         :looks
+         ;; Enrich contentful looks to be selectable
+         (mapv (fn [{:as look :keys [color origin texture]}]
+                 (assoc look
+                        :hair/color #{(get name->slug color)}
+                        :hair/origin #{(get name->slug (str origin
+                                                            " hair"))}
+                        :hair/texture #{(get name->slug texture)}))))))
+
+;; Visual Domain: Page
 
 (defn page
   "Looks, 'Shop by Look'
@@ -314,23 +345,18 @@
   Visually: Grid, Spinning, or Filtering
   "
   [state _]
-  (let [facets-db (->> storefront.keypaths/v2-facets
-                       (get-in state)
+  (let [facets-db (->> (get-in state storefront.keypaths/v2-facets)
                        (maps/index-by (comp keyword :facet/slug))
                        (maps/map-values (fn [facet]
                                           (update facet :facet/options
                                                   (partial maps/index-by :option/slug)))))
 
-        contentful-looks (-> (get-in state keypaths/cms-ugc-collection)
-                             ;; NOTE(corey) This is hardcoded because obstensibly
-                             ;; filtering should replace albums
-                             :aladdin-free-install
-                             :looks)
+        looks (looks<- state facets-db)
         ;; Flow models
         looks-filtering  (looks-filtering<- state)]
     (cond
       ;; Spinning
-      (empty? contentful-looks)
+      (empty? looks)
       (->> (component/build spinning-template)
            (template/wrap-standard state
                                    e/navigate-shop-by-look))
@@ -345,10 +371,14 @@
                                                          looks-filtering)}})
       ;; Grid of Looks
       :else
-      (->> (merge (looks-cards<- state)
-                  {:hero              looks-hero<-
-                   :filtering-summary (filtering-summary<- facets-db
-                                                           looks-filtering)})
+      (->> {:hero              looks-hero<-
+            :looks             (looks-cards<- state
+                                              facets-db
+                                              looks
+                                              looks-filtering)
+            :filtering-summary (filtering-summary<- facets-db
+                                                    looks
+                                                    looks-filtering)}
            (component/build looks-template)
            (template/wrap-standard state
                                    e/navigate-shop-by-look)))))
