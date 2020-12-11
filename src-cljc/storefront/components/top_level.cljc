@@ -140,11 +140,7 @@
      #?(:cljs (popup/built-component data nil))]
 
     [:div {:key "promo"}
-     ^:inline (promo-banner/built-static-organism data nil)
-     ;; Covid-19: Always use static banner; bring the below back in afterwards
-     #_(if (= events/navigate-category nav-event)
-         (promo-banner/built-static-organism data nil)
-         (promo-banner/built-static-sticky-organism data nil))]
+     ^:inline (promo-banner/built-static-organism data nil)]
 
     ^:inline (header/built-component data nil)
 
