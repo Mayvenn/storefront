@@ -76,8 +76,7 @@
      (fn [idx look]
        (ui/screen-aware component-ugc/social-image-card-component
                         (assoc look :hack/above-the-fold? (zero? idx))
-                        {:opts               {:copy copy}
-                         :child-handles-ref? true
+                        {:child-handles-ref? true
                          :key                (str (:id look))}))
      looks)]])
 
@@ -286,19 +285,24 @@
 
 (defn looks-cards<-
   [state]
-  (let [selected-album-kw (get-in data keypaths/selected-album-keyword)
-        actual-album-kw   (ugc/determine-look-album data selected-album-kw)
-        looks             (-> data (get-in keypaths/cms-ugc-collection) actual-album-kw :looks)
-        color-details     (->> (get-in data keypaths/v2-facets)
+  (let [selected-album-kw (get-in state keypaths/selected-album-keyword)
+        actual-album-kw   (ugc/determine-look-album state selected-album-kw)
+        looks             (-> (get-in state keypaths/cms-ugc-collection)
+                              actual-album-kw
+                              :looks)
+        color-details     (->> (get-in state keypaths/v2-facets)
                                (filter #(= :hair/color (:facet/slug %)))
                                first
                                :facet/options
                                (maps/index-by :option/slug))]
-    {:looks (mapv (partial contentful/look->social-card
-                           selected-album-kw
-                           color-details)
-                  looks)}))
-
+    {:looks (->> looks
+                 (mapv (partial contentful/look->social-card
+                                selected-album-kw
+                                color-details))
+                 (mapv #(assoc %
+                               ;; TODO(corey) tidy this up when the cards are worked on
+                               :button-copy           "Shop Look"
+                               :short-name            "look")))}))
 (def ^:private looks-hero<-
   {:looks.hero.title/primary   "Shop by Look"
    :looks.hero.title/secondary ["Get 3 or more hair items and receive a service for FREE"
@@ -341,7 +345,7 @@
                                                          looks-filtering)}})
       ;; Grid of Looks
       :else
-      (->> (merge (looks-template-query state)
+      (->> (merge (looks-cards<- state)
                   {:hero              looks-hero<-
                    :filtering-summary (filtering-summary<- facets-db
                                                            looks-filtering)})
