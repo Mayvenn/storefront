@@ -9,6 +9,7 @@
             [storefront.components.header :as header]
             [storefront.components.svg :as svg]
             [storefront.components.ugc :as component-ugc]
+            [storefront.components.template :as template]
             [storefront.components.ui :as ui]
             [storefront.transitions :as t]
             [storefront.keypaths :as keypaths]
@@ -317,10 +318,12 @@
                                    :header.done/target   [e/flow|looks-filtering|panel-toggled false]}
                         :sections {:sections (sections<- facets-db
                                                          looks-filtering)}})
-      (component/build looks-template
-                       (merge (looks-template-query state)
-                              {:filtering-summary (filtering-summary<- facets-db
-                                                                       looks-filtering)})))))
+      (->> (component/build looks-template
+                            (merge (looks-template-query state)
+                                   {:filtering-summary (filtering-summary<- facets-db
+                                                                            looks-filtering)}))
+           (template/wrap-standard state
+                                   e/navigate-shop-by-look)))))
 
 ;; -- Original Views
 
@@ -363,4 +366,8 @@
              (= :shop (sites/determine-site data)) ;; dtc, shop
              (= :aladdin-free-install album-kw))   ;; main look page
       (page data opts)
-      (component/build original-component (query data) opts))))
+      (->> (component/build original-component
+                            (query data)
+                            opts)
+           (template/wrap-standard data
+                                   e/navigate-shop-by-look)))))

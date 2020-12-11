@@ -121,6 +121,7 @@
    events/navigate-adventure-stylist-gallery            #(ui/lazy-load-component :catalog
                                                                                  'adventure.stylist-matching.stylist-gallery/built-component
                                                                                  events/navigate-adventure-stylist-gallery)})
+
 (defn main-component
   [nav-event]
   (doto ((get nav-table
@@ -132,6 +133,8 @@
      (str "Expected main-component to return a component, but did not: "
           (pr-str nav-event)))))
 
+;; NOTE(corey,stella) We came up with a inverted version of this so that each
+;; page can control what 'layout' it needs. Cf. storefront.components.template
 (defn main-layout
   [data nav-event]
   (component/html
@@ -147,7 +150,8 @@
     [:div.relative.flex.flex-column.flex-auto
      ^:inline (flash/built-component data nil)
 
-     [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+     [:main.bg-white.flex-auto
+      {:data-test (keypaths/->component-str nav-event)}
       ((main-component nav-event) data nil)]
 
      [:footer (footer/built-component data nil)]]]))
@@ -197,6 +201,9 @@
          {:style {:margin-bottom "-30px"}
           :class "max-580 mx-auto relative"}
          ((main-component nav-event) data nil)]]
+
+       (contains? #{events/navigate-shop-by-look} nav-event)
+       ((main-component nav-event) data nil)
 
        :else
        (main-layout data nav-event)))))
