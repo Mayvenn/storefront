@@ -287,13 +287,16 @@
                           (mapv
                            (fn option->filter [{option-slug :option/slug
                                                 option-name :option/name}]
-                             {:looks-filtering.section.filter/primary option-name
-                              :looks-filtering.section.filter/target  [e/flow|looks-filtering|filter-toggled
-                                                                       [facet-slug option-slug true]]
-                              :looks-filtering.section.filter/value   (contains?
-                                                                       (get filters facet-slug)
-                                                                       option-slug)
-                              :looks-filtering.section.filter/url     option-name}))))))))))
+                             (let [filter-toggled? (contains?
+                                                    (get filters facet-slug)
+                                                    option-slug)]
+                               {:looks-filtering.section.filter/primary option-name
+                                :looks-filtering.section.filter/target  [e/flow|looks-filtering|filter-toggled
+                                                                         [facet-slug
+                                                                          option-slug
+                                                                          (not filter-toggled?)]]
+                                :looks-filtering.section.filter/value   filter-toggled?
+                                :looks-filtering.section.filter/url     option-name})))))))))))
 
 (defn looks-cards<-
   [state facets-db looks {:looks-filtering/keys [filters]}]
