@@ -110,7 +110,7 @@
    (looks-filtering-header-done-molecule data)))
 
 (defn looks-filtering-section-title-molecule
-  [{:filters.section.title/keys [primary target id rotated?]}]
+  [{:looks-filtering.section.title/keys [primary target id rotated?]}]
   [:a.block.flex.justify-between.inherit-color.items-center
    (cond-> {:data-test id}
      target
@@ -125,8 +125,8 @@
                :height "20px"
                :width  "20px"})]])
 
-(defcomponent looks-filtering-section-option-molecule
-  [{:filters.section.filter/keys [primary target value url]} _ {:keys [id]}]
+(defcomponent looks-filtering-section-filter-molecule
+  [{:looks-filtering.section.filter/keys [primary target value url]} _ {:keys [id]}]
   [:div.col-12.mb2.flex
    {:on-click (apply utils/send-event-callback target)
     :key      id}
@@ -141,9 +141,9 @@
    {:key id}
    [:div.pyj1
     (looks-filtering-section-title-molecule data)]
-   (component/elements looks-filtering-section-option-molecule
+   (component/elements looks-filtering-section-filter-molecule
                        data
-                       :filters.section/filters)])
+                       :looks-filtering.section/filters)])
 
 (defcomponent looks-filtering-panel-template
   [{:keys [header sections]} _ _]
@@ -153,7 +153,7 @@
    [:div.mynp1.bg-refresh-gray
     (component/elements looks-filtering-section-organism
                         sections
-                        :sections)]])
+                        :looks-filtering/sections)]])
 
 ;; Visual: Spinning
 
@@ -215,11 +215,12 @@
 (defn ^:private filtering-summary<-
   "Takes (Biz)
    - Defined Facets
+   - Looks
    - User's desired Filters
 
    Produces (Viz)
    - Filtering Summary
-     - Status
+     - Status (with Filtered Count)
      - Pills"
   [facets-db looks {:looks-filtering/keys [filters]}]
   (let [filtering-options (->> filters
@@ -254,7 +255,7 @@
                                           " Looks")
      :filtering-summary/pills            pills}))
 
-(defn sections<-
+(defn filtering-sections<-
   "Takes (Biz)
    - Defined Facets
    - User's desired Filters
@@ -274,25 +275,25 @@
                              facet-options :facet/options}]
           (let [section-toggled? (contains? sections facet-slug)]
             (cond-> {:id                             facet-slug
-                     :filters.section.title/primary  (str "Hair " facet-name)
-                     :filters.section.title/target   [e/flow|looks-filtering|section-toggled
+                     :looks-filtering.section.title/primary  (str "Hair " facet-name)
+                     :looks-filtering.section.title/target   [e/flow|looks-filtering|section-toggled
                                                       [facet-slug (not section-toggled?)]]
-                     :filters.section.title/id       (str "section-filter-" facet-slug)
-                     :filters.section.title/rotated? section-toggled?}
+                     :looks-filtering.section.title/id       (str "section-filter-" facet-slug)
+                     :looks-filtering.section.title/rotated? section-toggled?}
               section-toggled?
-              (assoc :filters.section/filters
+              (assoc :looks-filtering.section/filters
                      (->> (vals facet-options)
                           (sort-by :filter/order)
                           (mapv
                            (fn option->filter [{option-slug :option/slug
-                                                  option-name :option/name}]
-                             {:filters.section.filter/primary option-name
-                              :filters.section.filter/target  [e/flow|looks-filtering|filter-toggled
-                                                               [facet-slug option-slug true]]
-                              :filters.section.filter/value   (contains?
-                                                               (get filters facet-slug)
-                                                               option-slug)
-                              :filters.section.filter/url     option-name}))))))))))
+                                                option-name :option/name}]
+                             {:looks-filtering.section.filter/primary option-name
+                              :looks-filtering.section.filter/target  [e/flow|looks-filtering|filter-toggled
+                                                                       [facet-slug option-slug true]]
+                              :looks-filtering.section.filter/value   (contains?
+                                                                       (get filters facet-slug)
+                                                                       option-slug)
+                              :looks-filtering.section.filter/url     option-name}))))))))))
 
 (defn looks-cards<-
   [state facets-db looks {:looks-filtering/keys [filters]}]
@@ -351,9 +352,9 @@
                                           (update facet :facet/options
                                                   (partial maps/index-by :option/slug)))))
 
-        looks (looks<- state facets-db)
+        looks           (looks<- state facets-db)
         ;; Flow models
-        looks-filtering  (looks-filtering<- state)]
+        looks-filtering (looks-filtering<- state)]
     (cond
       ;; Spinning
       (empty? looks)
@@ -367,8 +368,8 @@
                                    :header.reset/target  [e/flow|looks-filtering|reset]
                                    :header.done/primary  "DONE"
                                    :header.done/target   [e/flow|looks-filtering|panel-toggled false]}
-                        :sections {:sections (sections<- facets-db
-                                                         looks-filtering)}})
+                        :sections {:looks-filtering/sections
+                                   (filtering-sections<- facets-db looks-filtering)}})
       ;; Grid of Looks
       :else
       (->> {:hero              looks-hero<-
