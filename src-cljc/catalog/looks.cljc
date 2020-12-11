@@ -149,6 +149,13 @@
                         sections
                         :sections)]])
 
+;; Visual: Spinning
+
+(defcomponent spinning-template
+  [{:keys [header sections]} _ _]
+  (ui/large-spinner
+   {:style {:height "4em"}}))
+
 ;; Flow Domain: Filtering Looks
 
 (def k-models-looks-filtering (conj keypaths/models-root :looks-filtering))
@@ -243,7 +250,6 @@
      :filtering-summary.status/secondary "All Looks"
      :filtering-summary/pills            pills}))
 
-
 (defn sections<-
   "Takes (Biz)
    - Defined Facets
@@ -303,14 +309,28 @@
 
 (defn page
   [state _]
-  (let [facets-db       (->> storefront.keypaths/v2-facets
-                          (get-in state)
-                          (maps/index-by (comp keyword :facet/slug))
-                          (maps/map-values (fn [facet]
-                                             (update facet :facet/options
-                                                     (partial maps/index-by :option/slug)))))
-        looks-filtering (looks-filtering<- state)]
-    (if (:looks-filtering/panel looks-filtering)
+  (let [facets-db (->> storefront.keypaths/v2-facets
+                       (get-in state)
+                       (maps/index-by (comp keyword :facet/slug))
+                       (maps/map-values (fn [facet]
+                                          (update facet :facet/options
+                                                  (partial maps/index-by :option/slug)))))
+
+        contentful-looks (-> (get-in state keypaths/cms-ugc-collection)
+                             ;; NOTE(corey) This is hardcoded because obstensibly
+                             ;; filtering should replace albums
+                             :aladdin-free-install
+                             :looks)
+        ;; Flow models
+        looks-filtering  (looks-filtering<- state)]
+    (cond
+      ;; Spinning
+      (empty? contentful-looks)
+      (->> (component/build spinning-template)
+           (template/wrap-standard state
+                                   e/navigate-shop-by-look))
+      ;; Looks Filtering Panel
+      (:looks-filtering/panel looks-filtering)
       (component/build looks-filtering-panel-template
                        {:header   {:header.reset/primary "RESET"
                                    :header.reset/target  [e/flow|looks-filtering|reset]
@@ -318,10 +338,12 @@
                                    :header.done/target   [e/flow|looks-filtering|panel-toggled false]}
                         :sections {:sections (sections<- facets-db
                                                          looks-filtering)}})
-      (->> (component/build looks-template
-                            (merge (looks-template-query state)
-                                   {:filtering-summary (filtering-summary<- facets-db
-                                                                            looks-filtering)}))
+      ;; Grid of Looks
+      :else
+      (->> (merge (looks-template-query state)
+                  {:filtering-summary (filtering-summary<- facets-db
+                                                           looks-filtering)})
+           (component/build looks-template)
            (template/wrap-standard state
                                    e/navigate-shop-by-look)))))
 
