@@ -58,25 +58,28 @@
       (component/elements filtering-summary-pill-molecule data
                           :filtering-summary/pills)]]))
 
+(defcomponent looks-hero-organism
+  [{:looks.hero.title/keys [primary secondary]} _ _]
+  [:div.center.py6
+   [:h1.title-1.canela.py3
+    primary]
+   [:p.col-10.col-6-on-tb-dt.mx-auto.proxima.content-2
+    (interpose [:br] secondary)]])
+
 (defcomponent looks-template
-  [{:keys [looks copy filtering-summary spinning?]} _ _]
-  (if spinning?
-    (ui/large-spinner {:style {:height "4em"}})
-    [:div.bg-warm-gray
-     [:div.center.py6
-      [:h1.title-1.canela.py3 (:title copy)]
-      [:p.col-10.col-6-on-tb-dt.mx-auto.proxima.content-2 (:description copy)]
-      [:p.col-10.col-6-on-tb-dt.mx-auto.proxima.content-2 (:secondary-description copy)]]
-     (component/build filtering-summary-organism filtering-summary)
-     [:div.flex.flex-wrap.mbn2.justify-center.justify-start-on-tb-dt.bg-cool-gray.py2-on-tb-dt.px1-on-tb-dt
-      (map-indexed
-       (fn [idx look]
-         (ui/screen-aware component-ugc/social-image-card-component
-                          (assoc look :hack/above-the-fold? (zero? idx))
-                          {:opts               {:copy copy}
-                           :child-handles-ref? true
-                           :key                (str (:id look))}))
-       looks)]]))
+  [{:keys [looks hero filtering-summary]} _ _]
+  [:div.bg-warm-gray
+   (component/build looks-hero-organism hero)
+   (component/build filtering-summary-organism filtering-summary)
+   [:div.flex.flex-wrap.mbn2.justify-center.justify-start-on-tb-dt.bg-cool-gray.py2-on-tb-dt.px1-on-tb-dt
+    (map-indexed
+     (fn [idx look]
+       (ui/screen-aware component-ugc/social-image-card-component
+                        (assoc look :hack/above-the-fold? (zero? idx))
+                        {:opts               {:copy copy}
+                         :child-handles-ref? true
+                         :key                (str (:id look))}))
+     looks)]])
 
 (defn looks-filtering-header-reset-molecule
   [{:header.reset/keys [primary id target]}]
@@ -201,15 +204,6 @@
 
 ;; Biz domains -> Viz domains
 
-(def default-copy
-  {:title                 "Shop by Look"
-   :description           "Get 3 or more hair items and receive a service for FREE"
-   :secondary-description "#MayvennMade"
-   :button-copy           "Shop Look"
-   :short-name            "look"
-   :seo-title             "Shop by Look | Mayvenn"
-   :og-title              "Shop by Look - Find and Buy your favorite Mayvenn bundles!"})
-
 (defn ^:private filtering-summary<-
   "Takes (Biz)
    - Defined Facets
@@ -290,8 +284,8 @@
                                                                option-slug)
                               :filters.section.filter/url     option-name}))))))))))
 
-(defn looks-template-query
-  [data]
+(defn looks-cards<-
+  [state]
   (let [selected-album-kw (get-in data keypaths/selected-album-keyword)
         actual-album-kw   (ugc/determine-look-album data selected-album-kw)
         looks             (-> data (get-in keypaths/cms-ugc-collection) actual-album-kw :looks)
@@ -300,14 +294,21 @@
                                first
                                :facet/options
                                (maps/index-by :option/slug))]
-    {:looks     (mapv (partial contentful/look->social-card
-                               selected-album-kw
-                               color-details)
-                      looks)
-     :copy      default-copy
-     :spinning? (empty? looks)}))
+    {:looks (mapv (partial contentful/look->social-card
+                           selected-album-kw
+                           color-details)
+                  looks)}))
+
+(def ^:private looks-hero<-
+  {:looks.hero.title/primary   "Shop by Look"
+   :looks.hero.title/secondary ["Get 3 or more hair items and receive a service for FREE"
+                                "#MayvennMade"]})
 
 (defn page
+  "Looks, 'Shop by Look'
+
+  Visually: Grid, Spinning, or Filtering
+  "
   [state _]
   (let [facets-db (->> storefront.keypaths/v2-facets
                        (get-in state)
@@ -341,7 +342,8 @@
       ;; Grid of Looks
       :else
       (->> (merge (looks-template-query state)
-                  {:filtering-summary (filtering-summary<- facets-db
+                  {:hero              looks-hero<-
+                   :filtering-summary (filtering-summary<- facets-db
                                                            looks-filtering)})
            (component/build looks-template)
            (template/wrap-standard state
