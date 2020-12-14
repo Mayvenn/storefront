@@ -634,10 +634,9 @@
 
 (defn quadpay<-
   [data order]
-  (when-not (experiments/hide-quadpay? data)
-    {:quadpay/order-total (:total order)
-     :quadpay/show?       (get-in data keypaths/loaded-quadpay)
-     :quadpay/directive   :just-select}))
+  {:quadpay/order-total (:total order)
+   :quadpay/show?       (get-in data keypaths/loaded-quadpay)
+   :quadpay/directive   :just-select})
 
 (defn paypal<-
   [no-items? pending-requests? data]

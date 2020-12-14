@@ -319,9 +319,7 @@
             :fetching-shared-cart? (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
             :base-price            base-price
             :discounted-price      (:discounted-price discount)
-            :quadpay-loaded?       (and
-                                    (get-in data keypaths/loaded-quadpay)
-                                    (not (experiments/hide-quadpay? data)))
+            :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
             :discount-text         (:discount-text discount)
             :cart-items            (->> line-items
                                         (remove service?)

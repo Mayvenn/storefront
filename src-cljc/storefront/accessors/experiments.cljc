@@ -118,12 +118,6 @@
   [data]
   (display-feature? data "homepage-rebrand"))
 
-(defn hide-quadpay?
-  [data]
-  (boolean
-   (and (display-feature? data "hide-quadpay")
-        (not (get-in data keypaths/order-cart-payments-quadpay)))))
-
 (defn sbl-update?
   [data]
   (display-feature? data "sbl-update"))
