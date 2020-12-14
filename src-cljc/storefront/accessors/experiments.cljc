@@ -118,10 +118,6 @@
   [data]
   (display-feature? data "homepage-rebrand"))
 
-(defn shipping-delay?
-  [data]
-  (display-feature? data "shipping-delay"))
-
 (defn hide-quadpay?
   [data]
   (boolean

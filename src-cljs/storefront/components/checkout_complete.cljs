@@ -140,9 +140,7 @@
     (when (seq service-items)
       (merge
        {:thank-you/primary
-        (if (experiments/shipping-delay? data)
-          "We've received your order and will contact you to make an appointment over the next few business days."
-          "We've received your order and a Mayvenn Concierge representative will contact you to make an appointment within 2 business days.")}
+        "We've received your order and a Mayvenn Concierge representative will contact you to make an appointment within 2 business days."}
        (when-let [stylist-display-name (some-> servicing-stylist not-empty stylists/->display-name)]
          {:matched-component.message/id    "servicing-stylist-name"
           :matched-component.message/title (str "Chat with Concierge")
@@ -166,10 +164,6 @@
         guest? (not (get-in data keypaths/user-id))]
     (cond->
         {:thank-you/primary "We've received your order and will contact you as soon as your package is shipped."}
-
-      (experiments/shipping-delay? data)
-      (merge
-       {:thank-you/secondary (str "Due to the high volume of orders we are receiving, your order may take longer to process than usual. We are working hard to deliver your order as quickly as possible. You will receive order updates directly to your email address. Happy Holidays!")})
 
       guest?
       (merge
