@@ -21,19 +21,22 @@
     storefront.utils))
 
 (defcomponent component
-  [{:checkout-add/keys        [services title free-service-name]
+  [{:checkout-add/keys        [services title free-service-name whats-included]
     :checkout-add-button/keys [cta-id cta-target cta-title]} _ _]
   [:div.container.p2
    {:style {:max-width "580px"}}
-   [:div.center.mt4.mb2
+   [:div.center.mt6.mb2
     (svg/mirror {:width  40
                  :height 45
                  :class  "fill-p-color"})]
    [:div.center.canela.title-2
     title]
-   [:div.m2
-    [:div.proxima.title-2.shout.my6
+   [:div.m2.mt6
+    [:div.proxima.title-2.shout.mb1
      free-service-name]
+    [:div.proxima.content-3.mb6
+     whats-included]
+
     (mapv
      (fn [{:addon-service-entry/keys [id ready? disabled-classes primary secondary tertiary warning target checked? checkbox-spinning?]}]
        [:div.flex.my5
@@ -57,7 +60,7 @@
      (when cta-id
        (ui/button-medium-primary (-> (apply utils/route-to cta-target)
                                      (assoc :data-test cta-id))
-                                cta-title))]]])
+                                 cta-title))]]])
 
 (defn ^:private determine-unavailability-reason
   [stylist-offered-services-sku-ids
@@ -131,7 +134,8 @@
     {:checkout-add/spinning?         (utils/requesting? data request-keys/get-skus)
      :checkout-add/services          services
      :checkout-add/title             "Pair with Add-ons"
-     :checkout-add/free-service-name (:product-name discountable-service-line-item)
+     :checkout-add/free-service-name (:legacy/product-name discountable-service-line-item)
+     :checkout-add/whats-included    (:copy/whats-included discountable-service-line-item)
      :checkout-add-button/cta-id     "continue-to-checkout"
      :checkout-add-button/cta-target [events/control-checkout-add-continued]
      :checkout-add-button/cta-title  "Continue To Check Out"}))
