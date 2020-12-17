@@ -147,14 +147,20 @@
                :width  "20px"})]])
 
 (defcomponent looks-filtering-section-filter-molecule
-  [{:looks-filtering.section.filter/keys [primary target value url]} _ {:keys [id]}]
+  [{:looks-filtering.section.filter/keys [primary target value url icon-url]} _ {:keys [id]}]
   [:div.col-12.mb2.flex
    {:on-click (apply utils/send-event-callback target)
     :key      id}
    [:div (ui/check-box {:value     value
                         :id        id
                         :data-test id})]
-   [:div primary]])
+   (when icon-url
+     [:img.block.pr2
+      {:style {:width  "50px"
+               :height "30px"}
+       :src   icon-url}])
+   [:div
+    primary]])
 
 (defcomponent looks-filtering-section-organism
   [data _ {:keys [id]}]
@@ -306,18 +312,27 @@
                      (->> (vals facet-options)
                           (sort-by :filter/order)
                           (mapv
-                           (fn option->filter [{option-slug :option/slug
-                                                option-name :option/name}]
+                           (fn option->filter [{option-slug   :option/slug
+                                                option-name   :option/name
+                                                option-swatch :option/rectangle-swatch }]
                              (let [filter-toggled? (contains?
                                                     (get filters facet-slug)
                                                     option-slug)]
-                               {:looks-filtering.section.filter/primary option-name
-                                :looks-filtering.section.filter/target  [e/flow|looks-filtering|filter-toggled
-                                                                         [facet-slug
-                                                                          option-slug
-                                                                          (not filter-toggled?)]]
-                                :looks-filtering.section.filter/value   filter-toggled?
-                                :looks-filtering.section.filter/url     option-name})))))))))))
+                               (cond->
+                                   #:looks-filtering.section.filter
+                                   {:primary option-name
+                                    :target  [e/flow|looks-filtering|filter-toggled
+                                              [facet-slug
+                                               option-slug
+                                               (not filter-toggled?)]]
+                                    :value   filter-toggled?
+                                    :url     option-name}
+                                 option-swatch
+                                 (assoc :looks-filtering.section.filter/icon-url
+                                        (str "https://ucarecdn.com/"
+                                             (ui/ucare-img-id option-swatch)
+                                             "/-/format/auto/-/resize/50x/")
+                                        option-swatch)))))))))))))
 
 (defn no-matches<-
   [looks {:looks-filtering/keys [filters]}]
