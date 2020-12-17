@@ -22,6 +22,25 @@
 
 ;; Visual: Looks (new version under experiment)
 
+(defn no-matches-title-molecule
+  [{:no-matches.title/keys [primary secondary]}]
+  [:div
+   [:p.h1.py4 primary]
+   [:p.h2.py6 secondary]])
+
+(defn no-matches-action-molecule
+  [{:no-matches.action/keys [primary secondary target]}]
+  [:p.h4.mb10.pb10
+   [:a.p-color (apply utils/fake-href target) primary]
+   secondary])
+
+(defcomponent no-matches-organism
+  [data _ _]
+  (when (seq data)
+    [:div.col-12.my8.py4.center.bg-white
+     (no-matches-title-molecule data)
+     (no-matches-action-molecule data)]))
+
 (defn filtering-summary-status-molecule
   [{:filtering-summary.status/keys [primary secondary]}]
   [:div.flex.justify-between
@@ -64,25 +83,27 @@
 
 (defcomponent looks-hero-organism
   [{:looks.hero.title/keys [primary secondary]} _ _]
-  [:div.center.py6
+  [:div.center.py6.bg-warm-gray
    [:h1.title-1.canela.py3
     primary]
    [:p.col-10.col-6-on-tb-dt.mx-auto.proxima.content-2
     (interpose [:br] secondary)]])
 
 (defcomponent looks-template
-  [{:keys [looks hero filtering-summary]} _ _]
-  [:div.bg-warm-gray
+  [{:keys [looks hero filtering-summary no-matches]} _ _]
+  [:div
    (component/build looks-hero-organism hero)
    (component/build filtering-summary-organism filtering-summary)
-   [:div.flex.flex-wrap.mbn2.justify-center.justify-start-on-tb-dt.bg-cool-gray.py2-on-tb-dt.px1-on-tb-dt
-    (map-indexed
-     (fn [idx look]
-       (ui/screen-aware component-ugc/social-image-card-component
-                        (assoc look :hack/above-the-fold? (zero? idx))
-                        {:child-handles-ref? true
-                         :key                (str (:id look))}))
-     looks)]])
+   (component/build no-matches-organism no-matches)
+   (when (seq looks)
+     [:div.flex.flex-wrap.mbn2.justify-center.justify-start-on-tb-dt.bg-cool-gray.py2-on-tb-dt.px1-on-tb-dt
+      (map-indexed
+       (fn [idx look]
+         (ui/screen-aware component-ugc/social-image-card-component
+                          (assoc look :hack/above-the-fold? (zero? idx))
+                          {:child-handles-ref? true
+                           :key                (str (:id look))}))
+       looks)])])
 
 (defn looks-filtering-header-reset-molecule
   [{:header.reset/keys [primary id target]}]
@@ -158,7 +179,7 @@
 ;; Visual: Spinning
 
 (defcomponent spinning-template
-  [{:keys [header sections]} _ _]
+  [_ _ _]
   (ui/large-spinner
    {:style {:height "4em"}}))
 
@@ -174,7 +195,7 @@
     (-> initial-state
         (merge (get-in state k-models-looks-filtering))
         (update :looks-filtering/filters
-                ;; Remove empty vals
+                ;; Remove empty vals for selector
                 #(->> %
                       (remove (comp empty? last))
                       (into {}))))))
@@ -298,6 +319,15 @@
                                 :looks-filtering.section.filter/value   filter-toggled?
                                 :looks-filtering.section.filter/url     option-name})))))))))))
 
+(defn no-matches<-
+  [looks {:looks-filtering/keys [filters]}]
+  (when (empty? (select filters looks))
+    {:no-matches.title/primary    "😞"
+     :no-matches.title/secondary  "Sorry, we couldn’t find any matches."
+     :no-matches.action/primary   "Clear all filters"
+     :no-matches.action/secondary " to see more looks."
+     :no-matches.action/target    [e/flow|looks-filtering|reset]}))
+
 (defn looks-cards<-
   [state facets-db looks {:looks-filtering/keys [filters]}]
   (->> (select filters looks)
@@ -380,6 +410,8 @@
                                               facets-db
                                               looks
                                               looks-filtering)
+            :no-matches        (no-matches<- looks
+                                             looks-filtering)
             :filtering-summary (filtering-summary<- facets-db
                                                     looks
                                                     looks-filtering)}
