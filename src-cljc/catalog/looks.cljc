@@ -86,8 +86,8 @@
   [:div.center.py6.bg-warm-gray
    [:h1.title-1.canela.py3
     primary]
-   [:p.col-10.col-6-on-tb-dt.mx-auto.proxima.content-2
-    (interpose [:br] secondary)]])
+   (into [:p.col-10.col-6-on-tb-dt.mx-auto.proxima.content-2]
+         (interpose [:br] secondary))])
 
 (defcomponent looks-template
   [{:keys [looks hero filtering-summary no-matches]} _ _]
