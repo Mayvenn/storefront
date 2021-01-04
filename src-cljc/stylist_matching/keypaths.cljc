@@ -30,8 +30,9 @@
 (def name-presearch-results (conj stylist-matching :results.presearch/name))
 
 ;; Google location interaction (yes, thru keypaths)
-(def google-input    (conj stylist-matching :google/input))
-(def google-location (conj stylist-matching :google/location))
+(def google-input         (conj stylist-matching :google/input))
+(def address-field-errors (conj stylist-matching :address-field/errors))
+(def google-location      (conj stylist-matching :google/location))
 
 ;; UI model
 (def ui-stylist-matching-name-input [:ui :stylist-matching :name-input])

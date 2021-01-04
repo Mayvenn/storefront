@@ -184,7 +184,7 @@
 
 (defn field-error-message [error data-test]
   (when error
-    [:div.error.my1.h6.medium
+    [:div.error.my1.h6.medium.left-align
      {:data-test (str data-test "-error")}
      (or (some-> error :long-message string/capitalize) nbsp)]))
 

@@ -496,7 +496,7 @@
   2. name (under experiment)
   3. address (location)
   4. service filters"
-  [matching empty-search-results? google-loaded? skus-db]
+  [matching empty-search-results? google-loaded? skus-db address-field-errors]
   (merge
    {:stylist-results.name-input/id      "stylist-search-name-input"
     :stylist-results.name-input/value   (:presearch/name matching)
@@ -506,7 +506,7 @@
      {:stylist-results.address-input/id      "stylist-search-input"
       :stylist-results.address-input/value   (:google/input matching)
       :stylist-results.address-input/keypath k/google-input
-      :stylist-results.address-input/errors  []})
+      :stylist-results.address-input/errors  address-field-errors})
    (when-let [pills (->> (:param/services matching)
                          (keep
                           (fn [sku-id]
@@ -531,7 +531,7 @@
             {moniker       :name
              result-type   :type
              salon-address :salon-address
-             :as result}]
+             :as           result}]
          (merge
           {:stylist-results.name-presearch-results.result/primary moniker}
           (when (= "stylist" result-type)
@@ -545,7 +545,7 @@
           (when salon-address
             {:stylist-results.name-presearch-results.result/secondary
              (address->display-string salon-address)})))
-            (:results.presearch/name matching))})))
+       (:results.presearch/name matching))})))
 
 ;; TODO(corey) eval the effectiveness of the various 'elements' and
 ;; use the best version here
@@ -691,9 +691,16 @@
 (defmethod transitions/transition-state e/flow|stylist-matching|set-address-field
   [_ _ args state]
   (let [{{address :address} :query-params} (get-in state storefront.keypaths/navigation-args)]
-    (-> state
-        (assoc-in k/address (or (:address args) address))
-        (assoc-in k/google-input (or (:address args) address)))))
+    (cond-> state
+      (nil? args)
+      (assoc-in k/address-field-errors [{:long-message "Select an address from the suggested list."}])
+
+      (some? args)
+      (assoc-in k/address-field-errors [])
+
+      :always
+      (-> (assoc-in k/address (or (:address args) address))
+          (assoc-in k/google-input (or (:address args) address)))  )))
 
 (defmethod effects/perform-effects e/control-stylist-matching-presearch-salon-result-selected
   [_ _ args _ state]
@@ -730,7 +737,8 @@
                                        :stylist-results-test?  stylist-results-test?}
         matching-stylist-cards        (stylist-data->stylist-cards (assoc stylist-data :stylists matching-stylists))
         non-matching-stylist-cards    (stylist-data->stylist-cards (assoc stylist-data :stylists non-matching-stylists))
-        filter-menu                   #?(:cljs (filter-menu/query app-state) :clj  nil)]
+        filter-menu                   #?(:cljs (filter-menu/query app-state) :clj  nil)
+        address-field-errors    (get-in app-state k/address-field-errors)]
     (if (:stylist-search-filters/show? filter-menu)
       (component/build #?(:clj  (component/html [:div])
                           :cljs filter-menu/component) filter-menu nil)
@@ -749,7 +757,8 @@
                         :stylist-search-inputs    (stylist-search-inputs<- matching
                                                                            empty-search-results?
                                                                            google-loaded?
-                                                                           skus-db)
+                                                                           skus-db
+                                                                           address-field-errors)
                         :header                   (header<- current-order)
                         :stylist-results-present? (seq (concat matching-stylists non-matching-stylists))
 
