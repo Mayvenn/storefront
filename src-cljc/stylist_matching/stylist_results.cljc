@@ -101,7 +101,7 @@
 ;; --------------------- Address Input behavior
 
 (defmethod effects/perform-effects e/stylist-results-address-component-mounted
-  [_ _ _ _ _]
+  [_ _ {:keys [component]} _ _]
   #?(:cljs
      (google-maps/attach "geocode"
                          "stylist-search-input"
@@ -109,13 +109,14 @@
                          #(messages/handle-message e/stylist-results-address-selected)
                          ;; HACK: in order to bypass google maps' default enter behavior
                          ;; we are overwriting it to ensure we call our own code that's
-                         ;; attched to the blur event. Otherwise it was triggering a new search.
+                         ;; attched to the blur event. Otherwise it triggered a new search.
                          [(fn [elem _]
                             (js/google.maps.event.addDomListener
                              elem
                              "keydown"
                              (fn [e]
                                (when (= "Enter" (.. e -key))
+                                 ((.-enterKeyPressed component) true)
                                  (.blur (.-target e))))))])))
 
 (defn ^:private address-input
@@ -380,9 +381,14 @@
          (svg/close-x {:class "stroke-white fill-gray"})])})))
 
 (defdynamic-component stylist-results-address-input-molecule
+  (constructor [this _]
+               (set! (.-enterKeyPressed this)
+                     (fn [enter-key-pressed?]
+                       (component/set-state! this :enter-key-pressed? enter-key-pressed?)))
+               {:enter-key-pressed? false})
   (did-mount
-   [_]
-   (messages/handle-message e/stylist-results-address-component-mounted))
+   [this]
+   (messages/handle-message e/stylist-results-address-component-mounted {:component this}))
   (render
    [this]
    (let [{:stylist-results.address-input/keys [id value errors keypath]}
@@ -397,8 +403,9 @@
                       :value         value
                       :keypath       keypath
                       :data-test     id
-                      :on-blur       (fn [e]
-                                       (messages/handle-message e/flow|stylist-matching|set-address-field))
+                      :on-blur       (fn [_]
+                                       (messages/handle-message e/flow|stylist-matching|set-address-field {:enter-key-pressed? (:enter-key-pressed? (component/get-state this))})
+                                       ((.-enterKeyPressed this) false))
                       :id            id
                       :wrapper-class "flex items-center col-12 bg-white border-black"
                       :type          "text"}})))))
@@ -690,17 +697,18 @@
 
 (defmethod transitions/transition-state e/flow|stylist-matching|set-address-field
   [_ _ args state]
-  (let [{{address :address} :query-params} (get-in state storefront.keypaths/navigation-args)]
-    (cond-> state
-      (nil? args)
-      (assoc-in k/address-field-errors [{:long-message "Select an address from the suggested list."}])
-
-      (some? args)
-      (assoc-in k/address-field-errors [])
-
-      :always
-      (-> (assoc-in k/address (or (:address args) address))
-          (assoc-in k/google-input (or (:address args) address)))  )))
+  (let [{{address :address} :query-params} (get-in state storefront.keypaths/navigation-args)
+        new-address                        (:address args)
+        enter-key-pressed?                 (:enter-key-pressed? args)]
+    (if (and (nil? new-address) enter-key-pressed?)
+      (-> state
+          (assoc-in k/address nil)
+          (assoc-in k/google-input nil)
+          (assoc-in k/address-field-errors [{:long-message "Select an address from the suggested list."}]))
+      (-> state
+          (assoc-in k/address-field-errors [])
+          (assoc-in k/address (or new-address address))
+          (assoc-in k/google-input (or new-address address))))))
 
 (defmethod effects/perform-effects e/control-stylist-matching-presearch-salon-result-selected
   [_ _ args _ state]
