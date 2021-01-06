@@ -63,10 +63,10 @@
                                     " weft that flawlessly blends with your own hair."]})
 
 (def closures-templates
-  {:page/title-template            [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]
+  {:page/title-template            [:computed/selected-facet-string " " :seo/title " | Mayvenn"]
    :page.meta/description-template ["Mayvenn's "
                                     :computed/selected-facet-string
-                                    " Virgin "
+                                    " "
                                     :seo/title
                                     " are beautifully crafted and provide a realistic part to"
                                     " close off any unit or install."]})

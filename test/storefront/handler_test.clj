@@ -728,12 +728,11 @@
             (response->canonical-uri-query-string resp#)))))
 
 (def default-closure-title
-  "Hair Closures: Human Hair Closure Sew-Ins | Mayvenn")
+  "100% Virgin Hair Closures | Mayvenn")
 
 (def default-closure-description
-  (str "Mayvenn’s hair closures allow you to "
-       "close off any unit or install and come in a variety of "
-       "different combinations. Shop now to create your look."))
+  (str "Top off your look with the highest quality,"
+       " 100% virgin hair closures that blend perfectly with Mayvenn hair bundles to customize your style."))
 
 (def virgin-closures-category-url
   "https://shop.mayvenn.com/categories/0-virgin-closures")
@@ -824,9 +823,8 @@
         (-> (mock/request :get "https://shop.mayvenn.com/categories/23-mayvenn-install?family=closures")
             handler
             (validate-title-and-description-and-canonical
-             "Hair Closures: Human Hair Closure Sew-Ins | Mayvenn"
-             (str "Mayvenn’s hair closures allow you to close off any unit or "
-                  "install and come in a variety of different combinations. Shop now to create your look.")
+             default-closure-title
+             default-closure-description
              "/categories/0-virgin-closures"
              nil))))))
 
