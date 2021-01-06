@@ -175,6 +175,8 @@
            :subcategory/image-id             "1ccd94c8-7e9b-4d92-bc74-908beb14e126"
            :subcategory/description          (copy "Lace closures mimic the color of your scalp for a natural hairline,"
                                                    "but are more transparent compared to silk bases.")
+           :category/description             (copy "Lace closures mimic the color of your scalp for a natural hairline,"
+                                                   "but are more transparent compared to silk bases.")
            :catalog/department               #{"hair"}
            :hair/family                      #{"closures"}
            :hair/base-material               #{"lace"}
@@ -200,6 +202,8 @@
            :subcategory/image-id             "36d00fa3-8491-4674-b2a5-7226192771d6"
            :subcategory/description          (copy "Virgin silk closures conceal the knots in the base to give you a beautiful,"
                                                    "natural-looking part without needing much customization.")
+           :category/description             (copy "Virgin silk closures conceal the knots in the base to give you a beautiful,"
+                                                "natural-looking part without needing much customization.")
            :catalog/department               #{"hair"}
            :hair/family                      #{"closures"}
            :hair/base-material               #{"silk"}
