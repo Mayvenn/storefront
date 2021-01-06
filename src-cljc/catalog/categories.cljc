@@ -109,15 +109,18 @@
 
 (def closures
   [(merge {:catalog/category-id              "0"
-           :copy/title                       "Hair Closures"
+           :page/icp?                        true
+           :copy/title                       "Virgin Hair Closures"
            :page/slug                        "virgin-closures"
-           :seo/title                        "Hair Closures"
+           :seo/title                        "Virgin Hair Closures"
            :legacy/named-search-slug         "closures"
            :catalog/department               #{"hair"}
            :hair/family                      #{"closures"}
            :hair/color.process               #{"natural" "dyed"}
            :hair/source                      #{"virgin"}
            :category/tags                    #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals
+           :subcategories/ids                ["38" "39"]
+           :subcategories/layout             :list
            :selector/essentials              [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives               [:hair/origin :hair/texture :hair/color :hair/base-material]
            :subsections/subsection-selectors texture-subsection-selectors
@@ -130,9 +133,8 @@
            :homepage.ui-v2020-07/image-id "27e942b0-136c-4f7d-8b7b-ca98869fa272"
            :footer/order                  5
            :footer/title                  "Closures"
-           :category/description          (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                                "Our collection of closures blend seamlessly with our bundles"
-                                                "and can be customized to fit your unique look.")}
+           :category/description          (copy "Protect your hair and complete your look with Mayvenn’s collection of 100% virgin hair closures."
+                                                "Our closures are hand-tied to a lace or silk base to create a realistic part that flawlessly closes off any hairstyle.")}
           (category->seo "Closures"
                          (copy "Top off your look with the highest quality,"
                                "100% virgin hair closures that blend perfectly with"
@@ -144,6 +146,9 @@
            :copy/title                       "Lace Closures"
            :page/slug                        "lace-closures"
            :seo/title                        "Lace Closures"
+           :subcategory/image-id             "1ccd94c8-7e9b-4d92-bc74-908beb14e126"
+           :subcategory/description          (copy "Lace closures mimic the color of your scalp for a natural hairline,"
+                                                   "but are more transparent compared to silk bases.")
            :catalog/department               #{"hair"}
            :hair/family                      #{"closures"}
            :hair/base-material               #{"lace"}
@@ -155,7 +160,7 @@
            :subsections/subsection-selectors texture-subsection-selectors
            :header/title                     "Lace Virgin Hair Closures"
 
-           :contentful/faq-id     :category-virgin-closures}
+           :contentful/faq-id :category-virgin-closures}
           (category->seo "Lace Closures"
                          (copy "Get your dream hair with Mayvenn’s 100% human hair closures that blend seamlessly with"
                                "our bundles for a unique look that’s all your own.")
@@ -166,6 +171,9 @@
            :copy/title                       "Silk Closures"
            :page/slug                        "silk-closures"
            :seo/title                        "Silk Closures"
+           :subcategory/image-id             "36d00fa3-8491-4674-b2a5-7226192771d6"
+           :subcategory/description          (copy "Virgin silk closures conceal the knots in the base to give you a beautiful,"
+                                                   "natural-looking part without needing much customization.")
            :catalog/department               #{"hair"}
            :hair/family                      #{"closures"}
            :hair/base-material               #{"silk"}
@@ -177,7 +185,7 @@
            :subsections/subsection-selectors texture-subsection-selectors
            :header/title                     "Silk Virgin Hair Closures"
 
-           :contentful/faq-id     :category-virgin-closures}
+           :contentful/faq-id :category-virgin-closures}
           (category->seo "Silk Closures"
                          (copy "Get your dream hair with Mayvenn’s 100% human hair closures that blend seamlessly with"
                                "our bundles for a unique look that’s all your own.")
