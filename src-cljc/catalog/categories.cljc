@@ -134,11 +134,11 @@
                                                 "Our collection of closures blend seamlessly with our bundles"
                                                 "and can be customized to fit your unique look.")}
           (category->seo "Closures"
-                         (copy "Mayvenn’s hair closures allow you to close off"
-                               "any unit or install and come in a variety of different"
-                               "combinations. Shop now to create your look.")
+                         (copy "Top off your look with the highest quality,"
+                               "100% virgin hair closures that blend perfectly with"
+                               "Mayvenn hair bundles to customize your style.")
                          "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")
-          {:page/title "Hair Closures: Human Hair Closure Sew-Ins | Mayvenn"}
+          {:page/title "100% Virgin Hair Closures | Mayvenn"}
           closures-templates)
    (merge {:catalog/category-id              "38"
            :copy/title                       "Lace Closures"
