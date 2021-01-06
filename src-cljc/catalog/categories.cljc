@@ -110,6 +110,7 @@
 (def closures
   [(merge {:catalog/category-id              "0"
            :page/icp?                        true
+           :product-list/title               "Shop All Closures"
            :copy/title                       "Virgin Hair Closures"
            :page/slug                        "virgin-closures"
            :seo/title                        "Virgin Hair Closures"
@@ -123,7 +124,8 @@
            :subcategories/layout             :list
            :selector/essentials              [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives               [:hair/origin :hair/texture :hair/color :hair/base-material]
-           :subsections/subsection-selectors texture-subsection-selectors
+           :subsections/subsection-selectors [#:subsection{:title "Lace Closures" :selector #:hair{:base-material #{"lace"}}}
+                                              #:subsection{:title "Silk Closures" :selector #:hair{:base-material #{"silk"}}}]
            :header/title                     "Virgin Hair Closures"
 
            :contentful/faq-id             :category-virgin-closures
