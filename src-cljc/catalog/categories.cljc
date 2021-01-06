@@ -127,6 +127,21 @@
            :subsections/subsection-selectors [#:subsection{:title "Lace Closures" :selector #:hair{:base-material #{"lace"}}}
                                               #:subsection{:title "Silk Closures" :selector #:hair{:base-material #{"silk"}}}]
            :header/title                     "Virgin Hair Closures"
+           :content-block/title              "Closures 101:"
+           :content-block/header             "How to Choose Your Silk or Lace Closure"
+           :content-block/summary            "Installed on the crown or side of your head, our 4x4 inch virgin human hair closures blend perfectly with Mayvenn bundles for a seamless low maintenance style. Before selecting your closure, consider these factors to make the best decision:"
+           :content-block/type               :about-attributes
+           :content-block/sections           [{:title "Lace Closure vs. Lace Frontal?"
+                                               :body  "Both lace closures and lace frontals mimic natural hairlines and close off bundles. Deciding between closures vs. frontals really comes down to factors like budget, maintenance and which way you’re planning to style your hair."}
+                                              {:title "Origin"
+                                               :body  "The origin of your silk or lace closure determines the thickness and density of your look. From thick and smooth to light and bouncy, Mayvenn offers hair closures in Brazilian, Malaysian, Peruvian, and Indian origins."}
+                                              {:title "Texture"
+                                               :body  "With 8 different textures to choose from, Mayvenn’s closures give you the freedom to choose your dream look. From straight to curly and everything in between, select the perfect silk or lace closure to complement your bundles."}
+                                              {:title "Want a Free Closure Install?"
+                                               :body  "Get a Closure Install for free with one of Mayvenn’s certified stylists! Simply purchase a closure and 2 or more bundles and we’ll match you with a stylist near you."}
+                                              {:title "Want More Info on Silk and Lace Closures?"
+                                               :body  "Closure or frontal? Silk or lace? Brazilian or Peruvian? So many choices. Thankfully, Customer Service is here to help. Our team is ready to answer all your questions about closures so connect with us today for more information!"}]
+
 
            :contentful/faq-id             :category-virgin-closures
            :flyout-menu/title             "Closures"
