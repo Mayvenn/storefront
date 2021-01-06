@@ -149,8 +149,8 @@
            :hair/base-material               #{"lace"}
            :hair/color.process               #{"natural" "dyed"}
            :hair/source                      #{"virgin"}
-           :category/tags                    #{"closures-and-frontals"} ;; we need this to exclude virgin hair categories that include closures & frontals ; TODO: do we really?
-           :selector/essentials              [:catalog/department :hair/family :hair/color.process :hair/source]
+           :category/tags                    #{"closures-and-frontals"}
+           :selector/essentials              [:catalog/department :hair/family :hair/color.process :hair/source :hair/base-material]
            :selector/electives               [:hair/origin :hair/texture :hair/color]
            :subsections/subsection-selectors texture-subsection-selectors
            :header/title                     "Lace Virgin Hair Closures"
