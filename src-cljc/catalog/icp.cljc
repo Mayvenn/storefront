@@ -1,25 +1,21 @@
 (ns catalog.icp
   (:require [adventure.components.layered :as layered]
-            api.current
             catalog.keypaths
             [catalog.skuers :as skuers]
             [catalog.ui.category-filters :as category-filters]
             [catalog.ui.category-hero :as category-hero]
-            [catalog.ui.molecules :as molecules]
+            [catalog.ui.content-box :as content-box]
+            [catalog.ui.how-it-works :as how-it-works]
             [catalog.ui.product-card-listing :as product-card-listing]
             [catalog.ui.service-card-listing :as service-card-listing]
-            [catalog.ui.how-it-works :as how-it-works]
             [homepage.ui.faq :as faq]
-            spice.core
             [spice.maps :as maps]
             [spice.selector :as selector]
             [storefront.accessors.categories :as accessors.categories]
-            [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.config :as config]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
@@ -205,26 +201,7 @@
              :background-repeat   "repeat-x"
              :height              "24px"}}]))
 
-(defcomponent content-box-organism
-  [{:keys [title header summary sections]} _ _]
-  [:div.py8.px4.bg-cool-gray
-   [:div.max-960.mx-auto
-    [:div.pb2
-     [:div.proxima.title-2.bold.caps ^:inline (str title)]
-     [:div.canela.title-1.pb2 ^:inline (str header)]
-     [:div.canela.content-1 ^:inline (str summary)]]
 
-    (for [{:keys [title body]} sections]
-      [:div.py2 {:key title}
-       [:div.proxima.title-2.bold.caps.pb1 ^:inline (str title)]
-       [:div.canela.content-2 ^:inline (str body)]])
-
-    [:div.py2
-     [:div.proxima.title-2.bold.caps.pb1 "Still Have Questions?"]
-     [:div.canela.content-2
-      [:div "Customer Service can help!"]
-      [:div "Call " [:a.inherit-color {:href (ui/phone-url config/support-phone-number)} config/support-phone-number " "]]
-      [:div "Monday through Friday from 8am-5pm PST."]]]]])
 
 (defcomponent ^:private template
   "This lays out different ux pieces to form a cohesive ux experience"
@@ -258,7 +235,7 @@
       (component/build how-it-works/organism queried-data)])
    (when content-box
      [:div green-divider-atom
-      (component/build content-box-organism content-box)])
+      (component/build content-box/organism content-box)])
    (when expanding-content-box
      [:div green-divider-atom
       (component/build faq/organism expanding-content-box)])

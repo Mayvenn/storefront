@@ -1,37 +1,34 @@
 (ns catalog.category
   (:require
-   #?@(:cljs [[storefront.api :as api]
-              [storefront.accessors.auth :as auth]
-              [storefront.platform.messages :as messages]
+   #?@(:cljs [[storefront.accessors.auth :as auth]
+              [storefront.api :as api]
               [storefront.browser.scroll :as scroll]
-              [storefront.hooks.facebook-analytics :as facebook-analytics]])
+              [storefront.hooks.facebook-analytics :as facebook-analytics]
+              [storefront.platform.messages :as messages]])
    adventure.keypaths
    api.current
    [catalog.icp :as icp]
-   [catalog.skuers :as skuers]
    catalog.keypaths
+   [catalog.skuers :as skuers]
    [catalog.ui.category-filters :as category-filters]
    [catalog.ui.category-hero :as category-hero]
-   [catalog.ui.molecules :as molecules]
+   [catalog.ui.content-box :as content-box]
    [catalog.ui.how-it-works :as how-it-works]
    [catalog.ui.product-card-listing :as product-card-listing]
    [catalog.ui.service-card-listing :as service-card-listing]
    [homepage.ui.faq :as faq]
+   spice.core
+   [spice.selector :as selector]
    [storefront.accessors.categories :as accessors.categories]
    [storefront.assets :as assets]
    [storefront.component :as c]
-   [storefront.components.ui :as ui]
    [storefront.components.video :as video]
-   [storefront.config :as config]
    [storefront.effects :as effects]
    [storefront.events :as e]
    [storefront.keypaths :as k]
    [storefront.platform.component-utils :as utils]
    [storefront.trackings :as trackings]
-   [storefront.transitions :as transitions]
-   [spice.selector :as selector]
-   spice.core
-   [storefront.accessors.experiments :as experiments]))
+   [storefront.transitions :as transitions]))
 
 (def ^:private green-divider-atom
   (c/html
@@ -40,27 +37,6 @@
              :background-position "center center"
              :background-repeat   "repeat-x"
              :height              "24px"}}]))
-
-(c/defcomponent content-box-organism
-  [{:keys [title header summary sections]} _ _]
-  [:div.py8.px4.bg-cool-gray
-   [:div.max-960.mx-auto
-    [:div.pb2
-     [:div.proxima.title-2.bold.caps ^:inline (str title)]
-     [:div.canela.title-1.pb2 ^:inline (str header)]
-     [:div.canela.content-1 ^:inline (str summary)]]
-
-    (for [{:keys [title body]} sections]
-      [:div.py2 {:key title}
-       [:div.proxima.title-2.bold.caps.pb1 ^:inline (str title)]
-       [:div.canela.content-2 ^:inline (str body)]])
-
-    [:div.py2
-     [:div.proxima.title-2.bold.caps.pb1 "Still Have Questions?"]
-     [:div.canela.content-2
-      [:div "Customer Service can help!"]
-      [:div "Call " [:a.inherit-color {:href (ui/phone-url config/support-phone-number)} config/support-phone-number " "]]
-      [:div "Monday through Friday from 8am-5pm PST."]]]]])
 
 (c/defcomponent ^:private template
   [{:keys [category-hero
@@ -92,7 +68,7 @@
     (c/build product-card-listing/organism product-card-listing {})]
    (when content-box
      [:div green-divider-atom
-      (c/build content-box-organism content-box)])
+      (c/build content-box/organism content-box)])
    (when (:how-it-works queried-data)
      [:div.col-10.mx-auto.mt6
       (c/build how-it-works/organism queried-data)])
