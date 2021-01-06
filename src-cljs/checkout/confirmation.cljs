@@ -336,7 +336,7 @@
 
 (defn free-service-line-items-query
   [data
-   {:free-mayvenn-service/keys [service-item]}
+   {:free-mayvenn-service/keys [service-item discounted?]}
    addon-skus]
   (let [sku-catalog        (get-in data storefront.keypaths/v2-skus)
         sku-id             (:sku service-item)
@@ -351,9 +351,13 @@
                                                         :value (str "You're all set! " (:copy/whats-included service-sku))}
                                                        {:id    (str "line-item-quantity-" sku-id)
                                                         :value (str "qty. " (:quantity service-item))}]
-               :cart-item-floating-box/value          (some-> service-item
-                                                              line-items/service-line-item-price
-                                                              mf/as-money)
+               :cart-item-floating-box/value          (let [price (some-> service-item line-items/service-line-item-price mf/as-money)]
+                                                        (if discounted?
+                                                          ^:ignore-interpret-warning
+                                                          [:div
+                                                           [:div.strike price]
+                                                           [:div.s-color "FREE"]]
+                                                          price))
                :cart-item-service-thumbnail/id        "freeinstall"
                :cart-item-service-thumbnail/image-url (->> service-sku
                                                            (images/skuer->image images-catalog "cart")

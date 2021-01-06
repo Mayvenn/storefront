@@ -278,18 +278,25 @@
          :copy/keys                  [whats-included]
          :legacy/keys                [variant-id]}
 
-        (select ?discountable items)]
+        (select ?discountable items)
+        :let [required-hair-quantity-met? (not (pos? hair-missing-quantity))]]
     (cond-> {:react/key                               "freeinstall-line-item-freeinstall"
              :cart-item-title/id                      "line-item-title-upsell-free-service"
              :cart-item-title/primary                 variant-name
              :cart-item-copy/lines                    [{:id    (str "line-item-whats-included-" sku-id)
-                                                        :value (if (pos? hair-missing-quantity)
-                                                                 requirement-copy
-                                                                 (str "You're all set! " whats-included))}
+                                                        :value (if required-hair-quantity-met?
+                                                                 (str "You're all set! " whats-included)
+                                                                 requirement-copy)}
                                                        {:id    (str "line-item-quantity-" sku-id)
                                                         :value (str "qty. " quantity)}]
              :cart-item-floating-box/id               "line-item-freeinstall-price"
-             :cart-item-floating-box/value            (some-> (* quantity unit-price) mf/as-money)
+             :cart-item-floating-box/value            (let [price (some-> (* quantity unit-price) mf/as-money)]
+                                                        (if required-hair-quantity-met?
+                                                          ^:ignore-interpret-warning
+                                                          [:div
+                                                           [:div.strike price]
+                                                           [:div.s-color "FREE"]]
+                                                          price))
              :cart-item-remove-action/id              "line-item-remove-freeinstall"
              :cart-item-remove-action/spinning?       (boolean (get delete-line-item-requests id))
              :cart-item-remove-action/target          [events/control-cart-remove variant-id]
@@ -308,7 +315,7 @@
                                                       {:cart-item-sub-item/title  (:sku/title addon-sku)
                                                        :cart-item-sub-item/price  (some-> addon-sku :sku/price mf/as-money)
                                                        :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
-                                              addons)}))))
+                                                    addons)}))))
 
 (defn ^:private a-la-carte-services<-
   [items delete-line-item-requests]
