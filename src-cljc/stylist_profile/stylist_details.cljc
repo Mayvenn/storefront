@@ -289,22 +289,15 @@
           reverse)}))
 
 (defn ^:private experience<-
-  [hide-bookings?
-   {:stylist/keys [experience setting licensed?] :stylist.rating/keys [cardinality]}]
-  (merge
-   {:experience.title/id      "stylist-experience"
-    :experience.title/primary "Experience"
-    :experience.body/primary  (->> [(some-> experience
-                                            (ui/pluralize-with-amount "year"))
-                                    setting
-                                    (when licensed? "licensed")]
-                                   (remove nil?)
-                                   (join ", "))}
-   (when (and (not hide-bookings?)
-              (pos? cardinality))
-     {:experience.body/secondary (str "Booked "
-                                      (ui/pluralize-with-amount cardinality "time")
-                                      " with Mayvenn")})))
+  [{:stylist/keys [experience setting licensed?]}]
+  {:experience.title/id      "stylist-experience"
+   :experience.title/primary "Experience"
+   :experience.body/primary  (->> [(some-> experience
+                                           (ui/pluralize-with-amount "year"))
+                                   setting
+                                   (when licensed? "licensed")]
+                                  (remove nil?)
+                                  (join ", "))})
 
 (defn ^:private service-sku-query
   [service-items
@@ -390,7 +383,6 @@
         undo-history      (get-in state storefront.keypaths/navigation-undo-stack)
 
         ;; Feature flags
-        hide-bookings?                     (experiments/hide-bookings? state)
         hide-star-distribution?            (experiments/hide-star-distribution? state)
         newly-added-stylist-ui-experiment? (and (experiments/stylist-results-test? state)
                                                 (or (experiments/just-added-only? state)
@@ -416,8 +408,7 @@
                                                          detailed-stylist)
                        :ratings-bar-chart        (ratings-bar-chart<- hide-star-distribution?
                                                                       detailed-stylist)
-                       :experience               (experience<- hide-bookings?
-                                                               detailed-stylist)
+                       :experience               (experience<- detailed-stylist)
                        :google-maps              (maps/map-query state)
                        :sticky-select-stylist    (sticky-select-stylist<- current-stylist
                                                                           detailed-stylist)

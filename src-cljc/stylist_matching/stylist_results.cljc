@@ -158,16 +158,14 @@
 
 (defn stylist-results->stringer-event
   [stylist]
-  (let [{:analytics/keys [stylist-id bookings-count lat long rating just-added? years-of-experience]}
+  (let [{:analytics/keys [stylist-id lat long rating just-added? years-of-experience]}
         (select-keys stylist [:analytics/stylist-id
-                              :analytics/bookings-count
                               :analytics/lat
                               :analytics/long
                               :analytics/rating
                               :analytics/just-added?
                               :analytics/years-of-experience])]
     {:stylist_id                 stylist-id
-     :displayed_bookings_count   bookings-count
      :latitude                   (spice.core/parse-double lat)
      :longitude                  (spice.core/parse-double long)
      :displayed_rating           (spice.core/parse-double rating)
@@ -209,7 +207,7 @@
                 zipcode]))
 
 (defn stylist-card<-
-  [hide-bookings? just-added-only? just-added-experience? stylist-results-test? idx stylist]
+  [just-added-only? just-added-experience? stylist-results-test? idx stylist]
   (let [{:keys [rating-star-counts
                 salon
                 service-menu
@@ -239,19 +237,17 @@
      :stylist-card.thumbnail/id       (str "stylist-card-thumbnail-" store-slug)
      :stylist-card.thumbnail/ucare-id (-> stylist :portrait :resizable-url)
 
-     :stylist-card.title/id            "stylist-name"
-     :stylist-card.title/primary       (stylists/->display-name stylist)
-     :rating/value                     rating
-     :rating/count                     rating-count
-     :rating/id                        (when (not show-newly-added-stylist-ui?)
-                                         (str "rating-count-" store-slug))
-     :analytics/rating                 (when (not show-newly-added-stylist-ui?)
-                                         rating)
-     :analytics/lat                    latitude
-     :analytics/long                   longitude
-     :analytics/bookings-count         (when (not (or show-newly-added-stylist-ui?
-                                                      hide-bookings?))
-                                         rating-count)
+     :stylist-card.title/id      "stylist-name"
+     :stylist-card.title/primary (stylists/->display-name stylist)
+     :rating/value               rating
+     :rating/count               rating-count
+     :rating/id                  (when (not show-newly-added-stylist-ui?)
+                                   (str "rating-count-" store-slug))
+     :analytics/rating           (when (not show-newly-added-stylist-ui?)
+                                   rating)
+     :analytics/lat              latitude
+     :analytics/long             longitude
+
      :analytics/just-added?            (when newly-added-stylist
                                          show-newly-added-stylist-ui?)
      :analytics/years-of-experience    (when (and newly-added-stylist
@@ -260,10 +256,6 @@
                                                   years-of-experience)
                                          years-of-experience)
      :analytics/stylist-id             stylist-id
-     :stylist-bookings/id              (when (not (or show-newly-added-stylist-ui?
-                                                      hide-bookings?))
-                                         (str "booking-count-" store-slug))
-     :stylist-bookings/content         (str "Booked " (ui/pluralize-with-amount rating-count "time"))
      :stylist.just-added/id            (when show-newly-added-stylist-ui?
                                          (str "just-added-" store-slug))
      :stylist.just-added/content       "Just Added"
@@ -320,10 +312,9 @@
      :stylist-card.address-marker/value (address->display-string salon)}))
 
 (defn stylist-cards-query
-  [{:keys [hide-bookings? just-added-only? just-added-experience? stylist-results-test?]} stylists]
+  [{:keys [just-added-only? just-added-experience? stylist-results-test?]} stylists]
   (map-indexed
    (partial stylist-card<-
-            hide-bookings?
             just-added-only?
             just-added-experience?
             stylist-results-test?)
@@ -723,7 +714,6 @@
         skus-db       (get-in app-state storefront.keypaths/v2-skus)
 
         ;; Experiments
-        hide-bookings?         (experiments/hide-bookings? app-state)
         just-added-only?       (experiments/just-added-only? app-state)
         just-added-experience? (experiments/just-added-experience? app-state)
         just-added-control?    (experiments/just-added-control? app-state)
@@ -739,8 +729,7 @@
         {matching-stylists     true
          non-matching-stylists false} (group-by (partial matches-preferences? preferences)
                                                 stylist-search-results)
-        stylist-data                  {:hide-bookings?         hide-bookings?
-                                       :just-added-only?       just-added-only?
+        stylist-data                  {:just-added-only?       just-added-only?
                                        :just-added-experience? just-added-experience?
                                        :stylist-results-test?  stylist-results-test?}
         matching-stylist-cards        (stylist-data->stylist-cards (assoc stylist-data :stylists matching-stylists))

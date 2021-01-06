@@ -87,17 +87,6 @@
      {:data-test id}
      content]))
 
-(defn stylist-card-bookings-count-molecule
-  [{:stylist-bookings/keys [content id]}]
-  (when id
-    [:div.content-3.col-12.flex.items-center.flex
-     {:data-test id}
-     (svg/calendar {:class "mrp3 fill-p-color"
-                    :style {:margin-bottom "2px"}
-                    :width  "12px"
-                    :height "12px"})
-     [:span content]]))
-
 (defn stylist-just-added-molecule
   [{:stylist.just-added/keys [content id]}]
   (when id
@@ -133,7 +122,6 @@
        (stylist-just-added-molecule data)]
       (stylist-card-salon-name-molecule data)
       (stylist-card-address-marker-molecule data)
-      (stylist-card-bookings-count-molecule data)
       (stylist-card-experience-molecule data)]]))
 
 (defcomponent organism
