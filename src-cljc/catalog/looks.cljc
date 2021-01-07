@@ -1,6 +1,7 @@
 (ns catalog.looks
   "Shopping by Looks: index page of 'looks' for an 'album'"
   (:require [spice.maps :as maps]
+            [clojure.string :refer [split]]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.sites :as sites]
@@ -89,21 +90,68 @@
    (into [:p.col-10.col-6-on-tb-dt.mx-auto.proxima.content-2]
          (interpose [:br] secondary))])
 
+(defn looks-card-hero-molecule
+  [{:looks-card.hero/keys [image-url badge-url]}]
+  [:div.relative
+   {:style {:padding-right "3px"}}
+   (ui/img {:class    "container-size"
+            :style    {:object-position "50% 25%"
+                       :object-fit      "cover"}
+            :src      image-url
+            :max-size 749})
+   [:div.absolute.bottom-0.m1.justify-start
+    {:style {:height "22px"
+             :width  "22px"}}
+    badge-url]])
+
+(defn looks-card-title-molecule
+  [{:looks-card.title/keys [primary]}]
+  [:div.my2 primary])
+
+(defcomponent looks-card-hair-item-molecule
+  [{:looks-card.hair-item/keys [image-url]} _ {:keys [id]}]
+  [:img.block
+   {:key id
+    :src image-url}])
+
+(defcomponent looks-card-organism*
+  [{:as data :looks-card/keys [height-px]
+    target :looks-card.action/target} _ _]
+  [:a.col-12.col-3-on-tb-dt.border.border-cool-gray.p2.m2.black
+   (apply utils/route-to target)
+   [:div.flex
+    {:style {:height (str height-px "px")}}
+    (looks-card-hero-molecule data)
+    [:div.flex.flex-column.justify-between
+     (component/elements looks-card-hair-item-molecule
+                         data
+                         :looks-card/hair-items)]]
+   (looks-card-title-molecule data)])
+
+(defcomponent looks-card-organism
+  [data _ {:keys [id idx]}]
+  (ui/screen-aware
+   looks-card-organism*
+   (assoc data
+          :hack/above-the-fold? (zero? idx))
+   {:child-handles-ref? true
+    :key                id}))
+
+(defcomponent looks-cards-organism
+  [data _ _]
+  (when (seq data)
+    [:div.flex.flex-wrap.justify-center.justify-start-on-tb-dt.py2-on-tb-dt.px1-on-tb-dt
+     (component/elements looks-card-organism
+                         data
+                         :looks-cards/cards)]))
+
 (defcomponent looks-template
-  [{:keys [looks hero filtering-summary no-matches]} _ _]
+  [{:keys [hero filtering-summary no-matches looks-cards]} _ _]
   [:div
    (component/build looks-hero-organism hero)
    (component/build filtering-summary-organism filtering-summary)
    (component/build no-matches-organism no-matches)
-   (when (seq looks)
-     [:div.flex.flex-wrap.mbn2.justify-center.justify-start-on-tb-dt.bg-cool-gray.py2-on-tb-dt.px1-on-tb-dt
-      (map-indexed
-       (fn [idx look]
-         (ui/screen-aware component-ugc/social-image-card-component
-                          (assoc look :hack/above-the-fold? (zero? idx))
-                          {:child-handles-ref? true
-                           :key                (str (:id look))}))
-       looks)])])
+   (component/build looks-cards-organism looks-cards)])
 
 (defn looks-filtering-header-reset-molecule
   [{:header.reset/keys [primary id target]}]
@@ -343,16 +391,51 @@
      :no-matches.action/secondary " to see more looks."
      :no-matches.action/target    [e/flow|looks-filtering|reset]}))
 
+(defn ^:private looks-card<-
+  [images-db {:look/keys [title hero-imgs skus navigation-message]}]
+  ;; TODO(corey) filter catalog/department #{"hair"}
+  (let [height-px 240
+        gap-px    3]
+    {:looks-card.title/primary  title
+     :looks-card.hero/image-url (:url (first hero-imgs))
+     :looks-card.hero/badge-url (:platform-source (first hero-imgs))
+     :looks-card.action/target  navigation-message
+     :looks-card.hero/gap-px    gap-px
+     :looks-card/height-px      height-px
+     :looks-card/hair-items
+     (->> skus
+          (map (fn [{:selector/keys [image-cases]}]
+                 (let [img-count      (count skus)
+                       gap-count      (dec img-count)
+                       img-px         (-> height-px
+                                          ;; remove total gap space
+                                          (- (* gap-px gap-count))
+                                          ;; divided among images
+                                          (/ img-count)
+                                          ;; rounded up
+                                          #?(:clj  identity
+                                             :cljs Math/ceil))
+                       [_ _ image-id] (first
+                                       (filter
+                                        (fn [[use _ _]]
+                                          (= "cart" use))
+                                        image-cases))]
+                   {:looks-card.hair-item/image-url
+                    (str "https://ucarecdn.com/"
+                         (-> images-db
+                             (get image-id)
+                             :url
+                             ui/ucare-img-id)
+                         "/-/format/auto/-/scale_crop/"
+                         img-px "x" img-px
+                         "/center/")}))))}))
+
 (defn looks-cards<-
-  [state facets-db looks {:looks-filtering/keys [filters]}]
-  (->> (select filters looks)
-       (mapv (partial contentful/look->social-card
-                      (get-in state keypaths/selected-album-keyword)
-                      (:facet/options (:hair/color facets-db))))
-       (mapv #(assoc %
-                     ;; TODO(corey) tidy this up when the cards are worked on
-                     :button-copy           "Shop Look"
-                     :short-name            "look"))))
+  [images-db looks {:looks-filtering/keys [filters]}]
+  {:looks-cards/cards
+   (->> (select filters looks)
+        (mapv (partial looks-card<-
+                       images-db)))})
 
 (def ^:private looks-hero<-
   {:looks.hero.title/primary   "Shop by Look"
@@ -371,20 +454,77 @@
        (into {})))
 
 (defn ^:private looks<-
-  [state facets-db]
-  (let [name->slug (options|name->slug facets-db)]
-    (->> (get-in state keypaths/cms-ugc-collection)
-         ;; NOTE(corey) This is hardcoded because obstensibly
-         ;; filtering should replace albums
-         :aladdin-free-install
-         :looks
-         ;; Enrich contentful looks to be selectable
-         (mapv (fn [{:as look :keys [color origin texture]}]
-                 (assoc look
-                        :hair/color #{(get name->slug color)}
-                        :hair/origin #{(get name->slug (str origin
-                                                            " hair"))}
-                        :hair/texture #{(get name->slug texture)}))))))
+  "
+  What is a look?
+
+  A) a cart - selectable sku-items (sku x quantity)
+  A.1) images derived from those sku-items
+  A.2) a price derived from those sku-items
+  A.3) a title derived from those sku-items
+  B) image(s) of the finished look
+  C) social media links
+  D) promotions to apply
+
+  Usages
+
+  - *A* needs to be selected upon as represented as a unioned sku-items
+    e.g. (select criteria (attr-value-merge sku-items))
+    This is for filtering the grid-list view
+
+  - Displaying a card for the grid-list view
+
+  - Displaying the detailed view
+  "
+  [state skus-db facets-db album-keyword]
+  (let [lengths-re #",|\s+and\s+|\s?\+\s?|(?<=\")\s(?=\d)"
+        name->slug (options|name->slug facets-db)
+
+        contentful-looks
+        (->> (get-in state keypaths/cms-ugc-collection)
+             ;; NOTE(corey) This is hardcoded because obstensibly
+             ;; filtering should replace albums
+             :aladdin-free-install
+             :looks)]
+    (->> contentful-looks
+         (mapv (fn [{:as look :keys [description color origin texture]}]
+                 (let [tex-ori-col
+                       {:hair/color   #{(get name->slug color)}
+                        :hair/origin  #{(get name->slug (str origin
+                                                             " hair"))}
+                        :hair/texture #{(get name->slug texture)}}
+                       skus
+                       (->> (split description lengths-re)
+                            (map (fn [length]
+                                   (some-> (merge
+                                            tex-ori-col
+                                            {:hair/length #{(first (re-seq #"\d+" length))}}
+                                            (cond
+                                              (not-empty (re-seq #"Closure" length))
+                                              {:hair/family        #{"closures"}
+                                               :hair/base-material #{"lace"}}
+                                              (not-empty (re-seq #"Frontal" length))
+                                              {:hair/family        #{"frontals"}
+                                               :hair/base-material #{"lace"}}
+                                              :else
+                                              {:hair/family #{"bundles"}}))
+                                           (select (vals skus-db))
+                                           first))))]
+                   (merge tex-ori-col ;; TODO(corey) apply merge-with into
+                          {:look/title     (or (some->> [origin texture]
+                                                    (remove nil?)
+                                                    (interpose " ")
+                                                    not-empty
+                                                    (apply str))
+                                           "Check this out!")
+                           :look/hero-imgs [{:url             (:photo-url look)
+                                             :platform-source
+                                             ^:ignore-interpret-warning
+                                             (when-let [icon (svg/social-icon (:social-media-platform look))]
+                                               (icon {:class "fill-white"
+                                                      :style {:opacity 0.7}}))}]
+                           :look/navigation-message [e/navigate-shop-by-look-details {:album-keyword album-keyword
+                                                                                      :look-id       (:content/id look)}]
+                           :look/skus      skus})))))))
 
 ;; Visual Domain: Page
 
@@ -394,13 +534,16 @@
   Visually: Grid, Spinning, or Filtering
   "
   [state _]
-  (let [facets-db (->> (get-in state storefront.keypaths/v2-facets)
+  (let [skus-db   (get-in state storefront.keypaths/v2-skus)
+        images-db (get-in state storefront.keypaths/v2-images)
+        facets-db (->> (get-in state storefront.keypaths/v2-facets)
                        (maps/index-by (comp keyword :facet/slug))
                        (maps/map-values (fn [facet]
                                           (update facet :facet/options
                                                   (partial maps/index-by :option/slug)))))
 
-        looks           (looks<- state facets-db)
+        selected-album-keyword (get-in state keypaths/selected-album-keyword)
+        looks           (looks<- state skus-db facets-db selected-album-keyword)
         ;; Flow models
         looks-filtering (looks-filtering<- state)]
     (cond
@@ -421,8 +564,7 @@
       ;; Grid of Looks
       :else
       (->> {:hero              looks-hero<-
-            :looks             (looks-cards<- state
-                                              facets-db
+            :looks-cards       (looks-cards<- images-db
                                               looks
                                               looks-filtering)
             :no-matches        (no-matches<- looks
@@ -431,8 +573,7 @@
                                                     looks
                                                     looks-filtering)}
            (component/build looks-template)
-           (template/wrap-standard state
-                                   e/navigate-shop-by-look)))))
+           (template/wrap-standard state e/navigate-shop-by-look)))))
 
 ;; -- Original Views
 

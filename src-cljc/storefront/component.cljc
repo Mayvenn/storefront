@@ -347,7 +347,9 @@
    value also available to the component itself through opts"
   [& strs]
   (let [id (apply str strs)]
-    {:opts {:id id} :key id}))
+    {:opts {:id  id
+            :idx (last strs)}
+     :key  id}))
 
 (defn elements
   "Embed a list of organisms in another organism.

@@ -142,20 +142,26 @@
     [:svg.container-size (maps/deep-merge {:class "fill-black"} opts)
      ^:inline (svg-xlink "instagram")])))
 
-(defn facebook-f []
-  (component/html
-   [:svg.container-size
-    ^:inline (svg-xlink "facebook-f")]))
+(defn facebook-f
+  ([] (facebook-f {}))
+  ([opts]
+   (component/html
+    [:svg.container-size (maps/deep-merge {:class "fill-black"} opts)
+     ^:inline (svg-xlink "facebook-f")])))
 
-(defn pinterest []
-  (component/html
-   [:svg.container-size
-    ^:inline (svg-xlink "pinterest")]))
+(defn pinterest
+  ([] (pinterest {}))
+  ([opts]
+   (component/html
+    [:svg.container-size (maps/deep-merge {:class "fill-black"} opts)
+     ^:inline (svg-xlink "pinterest")])))
 
-(defn twitter []
-  (component/html
-   [:svg.container-size
-    ^:inline (svg-xlink "twitter")]))
+(defn twitter
+  ([] (twitter {}))
+  ([opts]
+   (component/html
+    [:svg.container-size (maps/deep-merge {:class "fill-black"} opts)
+     ^:inline (svg-xlink "twitter")])))
 
 (defn styleseat
   ([] (styleseat {}))
