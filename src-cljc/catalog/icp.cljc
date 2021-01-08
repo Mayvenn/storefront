@@ -21,26 +21,8 @@
             [storefront.platform.component-utils :as utils]))
 
 (def ^:private contact-query
-  {:layer/type         :shop-contact
-   :title/value        "Contact Us"
-   :sub-subtitle/value "We're here to help"
-   :subtitle/value     "Have Questions?"
-   :contact-us-blocks  [{:url   (ui/sms-url "346-49")
-                         :svg   (svg/icon-sms {:height 51
-                                               :width  56})
-                         :title "Live Chat"
-                         :copy  "Text: 346-49"}
-                        {:url   (ui/phone-url "1 (855) 287-6868")
-                         :svg   (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
-                                                :height 57
-                                                :width  57})
-                         :title "Call Us"
-                         :copy  "1 (855) 287-6868"}
-                        {:url   (ui/email-url "help@mayvenn.com")
-                         :svg   (svg/icon-email {:height 39
-                                                 :width  56})
-                         :title "Email Us"
-                         :copy  "help@mayvenn.com"}]})
+  (merge {:layer/type :shop-contact}
+         layered/shop-contact-query))
 
 (defn ^:private vertical-squiggle-atom
   [top]

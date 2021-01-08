@@ -11,7 +11,6 @@
             [storefront.accessors.contentful :as contentful]
             [storefront.component :as c]
             [storefront.components.homepage-hero :as homepage-hero]
-            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as e]))
 
@@ -23,8 +22,6 @@
            hashtag-mayvenn-hair
            hero
            mayvenn-install
-           quality-hair
-           quality-stylists
            shopping-categories
            a-la-carte-services]} _ _]
   [:div
@@ -125,27 +122,27 @@
                          {:faq/title   (:text question)
                           :faq/content answer})})
 
-;; TODO svg ns returns components full of undiffable data
 (def guarantees-query
   {:list/icons
-   [{:guarantees.icon/image (svg/heart {:class  "fill-p-color"
-                                        :width  "32px"
-                                        :height "29px"})
-     :guarantees.icon/title "Top-Notch Customer Service"
-     :guarantees.icon/body  "Our team is made up of hair experts ready to help you by phone, text, and email."}
-    {:guarantees.icon/image (svg/calendar {:class  "fill-p-color"
-                                           :width  "30px"
-                                           :height "33px"})
-     :guarantees.icon/title "30 Day Guarantee"
-     :guarantees.icon/body  "Wear it, dye it, even cut it! If you're not satisfied we'll exchange it within 30 days."}
-    {:guarantees.icon/image (svg/worry-free {:class  "fill-p-color"
-                                             :width  "35px"
-                                             :height "36px"})
+   [{:guarantees.icon/symbol [:svg/heart {:class  "fill-p-color"
+                                          :width  "32px"
+                                          :height "29px"}]
+     :guarantees.icon/title  "Top-Notch Customer Service"
+     :guarantees.icon/body   "Our team is made up of hair experts ready to help you by phone, text, and email."}
+    {:guarantees.icon/symbol [:svg/calendar {:class  "fill-p-color"
+                                             :width  "30px"
+                                             :height "33px"}]
+     :guarantees.icon/title  "30 Day Guarantee"
+     :guarantees.icon/body   "Wear it, dye it, even cut it! If you're not satisfied we'll exchange it within 30 days."}
+    {:guarantees.icon/symbol [:svg/worry-free {:class  "fill-p-color"
+                                               :width  "35px"
+                                               :height "36px"}]
      :guarantees.icon/title "100% Virgin Hair"
      :guarantees.icon/body  "Our hair is gently steam-processed and can last up to a year. Available in 8 textures and 5 shades."}
-    {:guarantees.icon/image (svg/mirror {:class  "fill-p-color"
-                                         :width  "30px"
-                                         :height "34px"})
+    {:guarantees.icon/symbol [:svg/mirror {:class  "fill-p-color"
+                                           :width  "30px"
+                                           :height "34px"}]
+
      :guarantees.icon/title "Certified Stylists"
      :guarantees.icon/body  "Our stylists are chosen because of their industry-leading standards. Both our hair and service are quality guaranteed."}]})
 
@@ -156,25 +153,24 @@
    :diishan.attribution/primary   "— Diishan Imira"
    :diishan.attribution/secondary "CEO of Mayvenn"})
 
-;; TODO svg ns returns components full of undiffable data
 (def contact-us-query
   {:contact-us.title/primary   "Contact Us"
    :contact-us.title/secondary "We're here to help"
    :contact-us.body/primary    "Have Questions?"
    :list/contact-methods
-   [{:contact-us.contact-method/uri   (ui/sms-url "346-49")
-     :contact-us.contact-method/svg   (svg/icon-sms {:height 51
-                                                     :width  56})
-     :contact-us.contact-method/title "Live Chat"
-     :contact-us.contact-method/copy  "Text: 346-49"}
-    {:contact-us.contact-method/uri   (ui/phone-url "1 (855) 287-6868")
-     :contact-us.contact-method/svg   (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
-                                                      :height 57
-                                                      :width  57})
-     :contact-us.contact-method/title "Call Us"
-     :contact-us.contact-method/copy  "1 (855) 287-6868"}
-    {:contact-us.contact-method/uri   (ui/email-url "help@mayvenn.com")
-     :contact-us.contact-method/svg   (svg/icon-email {:height 39
-                                                       :width  56})
-     :contact-us.contact-method/title "Email Us"
-     :contact-us.contact-method/copy  "help@mayvenn.com"}]})
+   [{:contact-us.contact-method/uri        (ui/sms-url "346-49")
+     :contact-us.contact-method/svg-symbol [:svg/icon-sms {:height 51
+                                                           :width  56}]
+     :contact-us.contact-method/title      "Live Chat"
+     :contact-us.contact-method/copy       "Text: 346-49"}
+    {:contact-us.contact-method/uri        (ui/phone-url "1 (855) 287-6868")
+     :contact-us.contact-method/svg-symbol [:svg/icon-call {:class  "bg-white fill-black stroke-black circle"
+                                                            :height 57
+                                                            :width  57}]
+     :contact-us.contact-method/title      "Call Us"
+     :contact-us.contact-method/copy       "1 (855) 287-6868"}
+    {:contact-us.contact-method/uri        (ui/email-url "help@mayvenn.com")
+     :contact-us.contact-method/svg-symbol [:svg/icon-email {:height 39
+                                                             :width  56}]
+     :contact-us.contact-method/title      "Email Us"
+     :contact-us.contact-method/copy       "help@mayvenn.com"}]})

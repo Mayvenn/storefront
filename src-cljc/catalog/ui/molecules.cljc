@@ -13,7 +13,7 @@
    [:div.content-3 secondary]])
 
 (defn price-block
-  [{:price-block/keys [primary primary-struck secondary]}]
+  [{:price-block/keys [primary primary-struck secondary secondary-classes]}]
   [:div.right-align
    (when (or primary primary-struck)
      [:div
@@ -21,7 +21,8 @@
         [:span.proxima.content-2 primary])
       (when primary-struck
         [:span.proxima.content-2.strike primary-struck])
-      [:div.proxima.content-3 secondary]])])
+      [:div.proxima.content-3 {:class secondary-classes}
+       secondary]])])
 
 (defn yotpo-reviews-summary
   [{:yotpo-reviews-summary/keys [product-title product-id data-url]}]

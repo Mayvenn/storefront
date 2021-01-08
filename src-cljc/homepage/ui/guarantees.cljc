@@ -1,12 +1,13 @@
 (ns homepage.ui.guarantees
-  (:require [storefront.component :as c]))
+  (:require [storefront.component :as c]
+            [storefront.components.svg :as svg]))
 
 (defn ^:private guarantees-icon-molecule
-  [{:guarantees.icon/keys [image title body]} id]
+  [{:guarantees.icon/keys [title body] :as data} id]
   (c/html
    [:div.pb1.pt6.col-6-on-tb-dt
     {:key id}
-    [:div image]
+    [:div (svg/symbolic->html (:guarantees.icon/symbol data))]
     [:div.title-2.proxima.py1.shout title]
     [:p.content-2.py1.col-9-on-tb-dt.mx-auto body]]))
 
@@ -24,7 +25,7 @@
    [:div.title-1.canela.shout "guarantees"]])
 
 (c/defcomponent organism
-  [{:as data :keys [icons]} _ _]
+  [data _ _]
   [:div.center.bg-cool-gray.p6-on-dt
    [:div.col-12.flex.flex-column.items-center.py6
     guarantees-title-molecule

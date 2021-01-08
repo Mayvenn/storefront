@@ -120,9 +120,8 @@
            requires-additional-payment?
            selected-quadpay?
            servicing-stylist
-           freeinstall-cart-item
            service-line-items]}
-   owner _]
+   _ _]
   [:div.container.p2
    (component/build promo-banner/sticky-organism promo-banner nil)
    (component/build checkout-steps/component checkout-steps nil)
@@ -279,7 +278,7 @@
       (cond-> {:cart-summary/id               "cart-summary"
                :cart-summary-total-line/id    "total"
                :cart-summary-total-line/label "Total"
-               :cart-summary-total-line/value ^:ignore-interpret-warning [:div (some-> total (- available-store-credit) (max 0) mf/as-money)]
+               :cart-summary-total-line/value (some-> total (- available-store-credit) (max 0) mf/as-money)
                :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
                                              :cart-summary-line/label "Subtotal"
                                              :cart-summary-line/value (mf/as-money subtotal)}]
@@ -343,20 +342,19 @@
         wig-customization? (= "SRV-WGC-000" sku-id)
         images-catalog     (get-in data storefront.keypaths/v2-images)]
     (when (:id service-item)
-      [(merge {:react/key                             "freeinstall-line-item-freeinstall"
-               :cart-item-title/id                    "linr-item-title-upsell-free-service"
-               :cart-item-floating-box/id             "line-item-freeinstall-price"
-               :cart-item-copy/lines                  [{:id    (str "line-item-whats-included-" sku-id)
-                                                        :value (str "You're all set! " (:copy/whats-included service-sku))}
-                                                       {:id    (str "line-item-quantity-" sku-id)
-                                                        :value (str "qty. " (:quantity service-item))}]
-               :cart-item-floating-box/value          (let [price (some-> service-item line-items/service-line-item-price mf/as-money)]
+      [(merge {:react/key                 "freeinstall-line-item-freeinstall"
+               :cart-item-title/id        "linr-item-title-upsell-free-service"
+               :cart-item-floating-box/id "line-item-freeinstall-price"
+               :cart-item-copy/lines      [{:id    (str "line-item-whats-included-" sku-id)
+                                            :value (str "You're all set! " (:copy/whats-included service-sku))}
+                                           {:id    (str "line-item-quantity-" sku-id)
+                                            :value (str "qty. " (:quantity service-item))}]
+
+               :cart-item-floating-box/contents       (let [price (some-> service-item line-items/service-line-item-price mf/as-money)]
                                                         (if discounted?
-                                                          ^:ignore-interpret-warning
-                                                          [:div
-                                                           [:div.strike price]
-                                                           [:div.s-color "FREE"]]
-                                                          price))
+                                                          [{:text price :attrs {:class "strike"}}
+                                                           {:text "FREE" :attrs {:class "s-color"}}]
+                                                          [{:text price}]))
                :cart-item-service-thumbnail/id        "freeinstall"
                :cart-item-service-thumbnail/image-url (->> service-sku
                                                            (images/skuer->image images-catalog "cart")
@@ -396,7 +394,7 @@
                                                {:id    (str "line-item-quantity-" sku-id)
                                                 :value (str "qty. " (:quantity service-line-item))}]
        :cart-item-floating-box/id             (str "line-item-" sku-id "-price")
-       :cart-item-floating-box/value          (some-> price mf/as-money)
+       :cart-item-floating-box/contents       [{:text (some-> price mf/as-money)}]
        :cart-item-service-thumbnail/id        sku-id
        :cart-item-service-thumbnail/image-url (->> sku (catalog-images/image images "cart") :ucare/id)})))
 
@@ -417,9 +415,9 @@
                                                        :value (str "qty. " (:quantity line-item))}]
            :cart-item-title/secondary                (:color-name line-item)
            :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku-id)
-           :cart-item-floating-box/value             ^:ignore-interpret-warning [:div {:data-test (str "line-item-price-ea-" sku-id)}
-                                                                                 (mf/as-money price)
-                                                                                 [:div.proxima.content-4 " each"]]
+           :cart-item-floating-box/contents          [{:text  (mf/as-money price)
+                                                       :attrs {:data-test (str "line-item-price-ea-" sku-id)}}
+                                                      {:text " each" :attrs {:class "proxima content-4"}}]
            :cart-item-square-thumbnail/id            sku-id
            :cart-item-square-thumbnail/sku-id        sku-id
            :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> sku :hair/length first)]
@@ -440,88 +438,44 @@
 
 (defn query
   [data]
-  (let [order                                           (get-in data keypaths/order)
-        selected-quadpay?                               (-> order :cart-payments :quadpay)
+  (let [order                                 (get-in data keypaths/order)
+        selected-quadpay?                     (-> order :cart-payments :quadpay)
         {service-items     :services/items
-         servicing-stylist :services/stylist}           (api.orders/services data order)
-        {:keys                    [service-item]
-         free-service-discounted? :free-mayvenn-service/discounted?
-         :as                      free-mayvenn-service} (api.orders/free-mayvenn-service servicing-stylist order)
-        services-on-order?                              (seq service-items)
-        wig-customization?                              (orders/wig-customization? (get-in data keypaths/order))
-        user                                            (get-in data keypaths/user)
-        skus                                            (get-in data keypaths/v2-skus)
-        images-catalog                                  (get-in data storefront.keypaths/v2-images)
-        products                                        (get-in data keypaths/v2-products)
-        facets                                          (get-in data keypaths/v2-facets)
-        physical-line-items                             (map (partial add-product-title-and-color-to-line-item products facets)
-                                                             (orders/product-items order))
-        addon-service-line-items                        (->> order
-                                                             orders/service-line-items
-                                                             (filter (comp boolean #{"addon"} :service/type :variant-attrs)))
-        addon-service-skus                              (map (fn [addon-service] (get skus (:sku addon-service))) addon-service-line-items)]
-    (cond->
-        {:order                        order
-         :store-slug                   (get-in data keypaths/store-slug)
-         :requires-additional-payment? (requires-additional-payment? data)
-         :promo-banner                 (promo-banner/query data)
-         :checkout-steps               (checkout-steps/query data)
-         :products                     (get-in data keypaths/v2-products)
-         :payment                      (checkout-credit-card/query data)
-         :delivery                     (checkout-delivery/query data)
-         :checkout-button-data         (checkout-button-query data)
-         :selected-quadpay?            selected-quadpay?
-         :loaded-quadpay?              (get-in data keypaths/loaded-quadpay)
-         :servicing-stylist            servicing-stylist
-         :cart-items                   (cart-items-query data physical-line-items skus)
-         :service-line-items           (concat
-                                        (free-service-line-items-query data free-mayvenn-service addon-service-skus)
-                                        (standalone-service-line-items-query data))
-         :cart-summary                 (cart-summary-query order
-                                                           free-mayvenn-service
-                                                           addon-service-skus
-                                                           (orders/available-store-credit order user))}
-      (seq addon-service-skus)
-      (maps/deep-merge
-       {:freeinstall-cart-item
-        {:cart-item
-         {:cart-item-sub-items/id    "addon-services"
-          :cart-item-sub-items/title "Add-On Services"
-          :cart-item-sub-items/items (map (fn [addon-sku]
-                                            {:cart-item-sub-item/title  (:sku/title addon-sku)
-                                             :cart-item-sub-item/price  (some-> addon-sku :sku/price mf/as-money)
-                                             :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
-                                          addon-service-skus)}}})
-
-      free-service-discounted?
-      (maps/deep-merge
-       {:freeinstall-cart-item
-        {:cart-item
-         {:react/key                             "freeinstall-line-item-freeinstall"
-          :cart-item-service-thumbnail/id        "freeinstall"
-          :cart-item-service-thumbnail/image-url (or (->> (get skus (:sku service-item))
-                                                          (images/skuer->image images-catalog "cart")
-                                                          :url) ; GROT: when cellar deploy is done with service image
-                                                     "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/")
-          :cart-item-floating-box/id             "line-item-freeinstall-price"
-          :cart-item-floating-box/value          ^:ignore-interpret-warning [:div.flex.flex-column.justify-end
-                                                                             {:style {:height "100%"}}
-                                                                             (some-> (line-items/service-line-item-price service-item)
-                                                                                     mf/as-money)]
-          :cart-item-title/id                    "line-item-title-applied-mayvenn-install"
-          :cart-item-title/primary               (:variant-name service-item)
-          :cart-item-title/secondary             [:div.line-height-3 "You’re all set! " (:copy/whats-included service-item)]}}})
-
-      (and free-service-discounted? wig-customization?)
-      (maps/deep-merge
-       {:freeinstall-cart-item
-        {:cart-item
-         {:cart-item-title/id        "line-item-title-applied-wig-customization"
-          :cart-item-title/primary   "Wig Customization"
-          :cart-item-title/secondary [:div.content-3 "You're all set! " (:copy/whats-included service-item)]}}})
-
-      (and services-on-order? servicing-stylist)
-      (merge
+         servicing-stylist :services/stylist} (api.orders/services data order)
+        free-mayvenn-service                  (api.orders/free-mayvenn-service servicing-stylist order)
+        services-on-order?                    (seq service-items)
+        user                                  (get-in data keypaths/user)
+        skus                                  (get-in data keypaths/v2-skus)
+        products                              (get-in data keypaths/v2-products)
+        facets                                (get-in data keypaths/v2-facets)
+        physical-line-items                   (map (partial add-product-title-and-color-to-line-item products facets)
+                                                   (orders/product-items order))
+        addon-service-line-items              (->> order
+                                                   orders/service-line-items
+                                                   (filter (comp boolean #{"addon"} :service/type :variant-attrs)))
+        addon-service-skus                    (map (fn [addon-service] (get skus (:sku addon-service))) addon-service-line-items)]
+    (merge
+     {:order                        order
+      :store-slug                   (get-in data keypaths/store-slug)
+      :requires-additional-payment? (requires-additional-payment? data)
+      :promo-banner                 (promo-banner/query data)
+      :checkout-steps               (checkout-steps/query data)
+      :products                     (get-in data keypaths/v2-products)
+      :payment                      (checkout-credit-card/query data)
+      :delivery                     (checkout-delivery/query data)
+      :checkout-button-data         (checkout-button-query data)
+      :selected-quadpay?            selected-quadpay?
+      :loaded-quadpay?              (get-in data keypaths/loaded-quadpay)
+      :servicing-stylist            servicing-stylist
+      :cart-items                   (cart-items-query data physical-line-items skus)
+      :service-line-items           (concat
+                                     (free-service-line-items-query data free-mayvenn-service addon-service-skus)
+                                     (standalone-service-line-items-query data))
+      :cart-summary                 (cart-summary-query order
+                                                        free-mayvenn-service
+                                                        addon-service-skus
+                                                        (orders/available-store-credit order user))}
+     (when (and services-on-order? servicing-stylist)
        {:servicing-stylist-banner/id        "servicing-stylist-banner"
         :servicing-stylist-banner/heading   "Your Mayvenn Certified Stylist"
         :servicing-stylist-banner/title     (stylists/->display-name servicing-stylist)

@@ -10,7 +10,8 @@
                        goog.dom
                        goog.style
                        goog.events])
-            [ui.molecules :as ui.M]))
+            [ui.molecules :as ui.M]
+            [storefront.config :as config]))
 
 (defn ^:private vertical-squiggle
   [top]
@@ -158,13 +159,35 @@
                         sections)}
     {:opts {:section-click-event events/faq-section-selected}})])
 
-(defn ^:private contact-us-block [idx {:keys [url svg title copy]}]
+(defn ^:private contact-us-block [idx {:as data :keys [url title copy]}]
   [:a.block.py3.col-12.col-4-on-tb-dt.black
    {:href url
     :key idx}
-   svg
+   (svg/symbolic->html (:svg/symbol data))
    [:div.proxima.title-2.mt1 title]
    [:div.col-8.mx-auto.p-color.content-2 copy]])
+
+(def shop-contact-query
+  {:title/value        "Contact Us"
+   :sub-subtitle/value "We're here to help"
+   :subtitle/value     "Have Questions?"
+   :contact-us-blocks
+   [{:url        (ui/sms-url "346-49")
+     :svg/symbol [:svg/icon-sms {:height 51
+                                 :width  56}]
+     :title      "Live Chat"
+     :copy       "Text: 346-49"}
+    {:url        (ui/phone-url config/support-phone-number)
+     :svg/symbol [:svg/icon-call {:class  "bg-white fill-black stroke-black circle"
+                                  :height 57
+                                  :width  57}]
+     :title      "Call Us"
+     :copy       config/support-phone-number}
+    {:url        (ui/email-url "help@mayvenn.com")
+     :svg/symbol [:svg/icon-email {:height 39
+                                   :width  56}]
+     :title      "Email Us"
+     :copy       "help@mayvenn.com"}]})
 
 (defcomponent shop-contact
   [{title-value        :title/value
@@ -284,6 +307,7 @@
 (defcomponent shop-text-block
   [{anchor-name :anchor/name
     title       :header/value
+    big-title   :big-header/content
     body        :body/value
     divider-img :divider-img
     button?     :cta/button?
@@ -294,6 +318,11 @@
    [:div.pt10.pb2.px6.center.col-6-on-dt.mx-auto
     (when anchor-name
       [:a {:name anchor-name}])
+    (when big-title
+      (let [[secondary primary] big-title]
+        [:div.py1.shout
+         [:div.title-1.proxima.my1 (:attrs secondary) (:text secondary)]
+         [:div.title-1.canela.mt2.mb4 (:attrs primary) (:text primary)]]))
     (when title
       [:div.title-1.canela
        title])
@@ -370,16 +399,16 @@
 (defn ^:private shop-icon-step
   [key-prefix
    idx
-   {title :header/value
-    body  :body/value
-    icon  :icon/body
-    width :icon/width}]
+   {title      :header/value
+    body       :body/value
+    svg-symbol :icon/symbol
+    width      :icon/width}]
   (component/html
    [:div.pb1.pt6.col-6-on-tb-dt
     {:key (str key-prefix idx)}
     [:div
      {:width width}
-     icon]
+     (svg/symbolic->html svg-symbol)]
     [:div.title-2.proxima.py1.shout
      title]
     [:p.content-2.py1.col-10-on-tb-dt.mx-auto
@@ -389,16 +418,14 @@
 (defcomponent shop-iconed-list
   [{:as            data
     :keys          [bullets]
-    title-value    :title/value
     subtitle-value :subtitle/value
     layer-id       :layer/id}
    owner
    opts]
   [:div.col-12.bg-cool-gray.center.flex.flex-column.items-center.py6
    [:div.mt5.mb3
-    (when title-value
-      [:h2.title-1.proxima.shout.pb1
-       (interpose [:br] title-value)])
+    [:h2.title-1.proxima.shout.pb1
+     [:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "29px"}}]]
     (when subtitle-value
       [:div.title-1.canela.shout
        (interpose [:br] subtitle-value)])]

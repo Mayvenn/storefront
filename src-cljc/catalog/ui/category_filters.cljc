@@ -87,12 +87,16 @@
               disabled?
               id
               target
+              new?
               label]} options]
          [:div.mr4.col-3-on-dt
           {:key       id
            :data-test id
            :disabled  disabled?}
-          (ui/check-box {:label     label
+          (ui/check-box {:label [:span
+                                 (when new?
+                                   [:span.mr1.p-color "NEW"])
+                                 label]
                          :value     selected?
                          :disabled  disabled?
                          :on-change #(apply messages/handle-message target)})])])]
@@ -147,10 +151,8 @@
                                  events/control-category-option-select)
                                {:facet  facet-slug
                                 :option facet-option-slug}]
-     :filter-option/label     ^:ignore-interpret-warning [:span
-                                                          (when (categories/new-facet? [facet-slug facet-option-slug])
-                                                            [:span.mr1.p-color "NEW"])
-                                                          facet-option-name]}))
+     :filter-option/new?      (categories/new-facet? [facet-slug facet-option-slug])
+     :filter-option/label     facet-option-name}))
 
 (defn filter-options-query
   [selections represented-options facet]

@@ -232,7 +232,7 @@
                                            {:id    (str "line-item-quantity-" sku-id)
                                             :value (str "qty. " (:item/quantity service-sku))}]
    :cart-item-floating-box/id             "line-item-service-price"
-   :cart-item-floating-box/value          (some-> service-sku :sku/price mf/as-money)
+   :cart-item-floating-box/contents       [{:text (some-> service-sku :sku/price mf/as-money)}]
    :cart-item-service-thumbnail/id        "service"
    :cart-item-service-thumbnail/image-url (->> service-sku
                                                (catalog-images/image (:selector/images service-product) "cart")
@@ -254,10 +254,8 @@
      :cart-item-copy/lines                     [{:id    (str "line-item-quantity-" sku-id)
                                                  :value (str "qty. " (:item/quantity line-item))}]
      :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku-id)
-     :cart-item-floating-box/value             ^:ignore-interpret-warning [:div {:data-test (str "line-item-price-ea-" sku-id)}
-                                                                           (mf/as-money price)
-                                                                           ^:ignore-interpret-warning
-                                                                           [:div.proxima.content-4 " each"]]
+     :cart-item-floating-box/contents          [{:text (mf/as-money price) :attrs {:data-test (str "line-item-price-ea-" sku-id)}}
+                                                {:text " each" :attrs {:class "proxima content-4"}}]
      :cart-item-square-thumbnail/id            sku-id
      :cart-item-square-thumbnail/sku-id        sku-id
      :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> line-item :hair/length first)]

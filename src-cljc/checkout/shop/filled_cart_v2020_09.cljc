@@ -290,13 +290,11 @@
                                                        {:id    (str "line-item-quantity-" sku-id)
                                                         :value (str "qty. " quantity)}]
              :cart-item-floating-box/id               "line-item-freeinstall-price"
-             :cart-item-floating-box/value            (let [price (some-> (* quantity unit-price) mf/as-money)]
-                                                        (if required-hair-quantity-met?
-                                                          ^:ignore-interpret-warning
-                                                          [:div
-                                                           [:div.strike price]
-                                                           [:div.s-color "FREE"]]
-                                                          price))
+             :cart-item-floating-box/contents         (let [price (some-> (* quantity unit-price) mf/as-money)]
+                                                        (if  required-hair-quantity-met?
+                                                          [{:text price :attrs {:class "strike"}}
+                                                           {:text "FREE" :attrs {:class "s-color"}}]
+                                                          [{:text price}]))
              :cart-item-remove-action/id              "line-item-remove-freeinstall"
              :cart-item-remove-action/spinning?       (boolean (get delete-line-item-requests id))
              :cart-item-remove-action/target          [events/control-cart-remove variant-id]
@@ -331,7 +329,7 @@
      :cart-item-title/primary               (or cart-title product-name)
      :cart-item-title/id                    (str "line-item-" sku-id)
      :cart-item-floating-box/id             (str "line-item-" sku-id "-price")
-     :cart-item-floating-box/value          (some-> (or price unit-price) mf/as-money)
+     :cart-item-floating-box/contents       [{:text (some-> (or price unit-price) mf/as-money)}]
      :cart-item-copy/lines                  [{:id    (str "line-item-whats-included-" sku-id)
                                               :value whats-included}
                                              {:id    (str "line-item-quantity-" sku-id)
@@ -391,10 +389,9 @@
      :cart-item-title/primary                        (or cart-title product-name)
      :cart-item-title/secondary                      (some-> facets :hair/color :option/name)
      :cart-item-floating-box/id                      (str "line-item-price-ea-with-label-" sku-id)
-     :cart-item-floating-box/value                   ^:ignore-interpret-warning [:div {:data-test (str "line-item-price-ea-" sku-id)}
-                                                                                 (mf/as-money (or price unit-price))
-                                                                                 ^:ignore-interpret-warning
-                                                                                 [:div.proxima.content-4 " each"]]
+     :cart-item-floating-box/contents                (let [price (mf/as-money (or price unit-price))]
+                                                       [{:text price :attrs {:data-test (str "line-item-price-ea-" sku-id)}}
+                                                        {:text " each" :attrs {:class "proxima content-4"}}])
      :cart-item-square-thumbnail/id                  sku-id
      :cart-item-square-thumbnail/sku-id              sku-id
      :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (some-> item :hair/length first)]
@@ -435,7 +432,7 @@
   (let [subtotal (orders/products-and-services-subtotal order)]
     {:cart-summary-total-line/id    "total"
      :cart-summary-total-line/label "Total"
-     :cart-summary-total-line/value ^:ignore-interpret-warning [:div (some-> total mf/as-money)]
+     :cart-summary-total-line/value (some-> total mf/as-money)
 
      :cart-summary/id    "cart-summary"
      :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
@@ -478,13 +475,12 @@
         service-discounted? (= (->> free-mayvenn-service :item/applied-promotions (map :amount) (reduce + 0))
                                service-item-price)]
     (cond->
-        {:cart-summary/id                 "cart-summary"
-         :cart-summary-total-line/id      "total"
-         :cart-summary-total-line/label   (if (and free-mayvenn-service
-                                                   (not wig-customization?))
-                                            "Hair + Install Total"
-                                            "Total")
-         :cart-summary-total-line/value   ^:ignore-interpret-warning [:div (some-> total mf/as-money)]
+        {:cart-summary/id               "cart-summary"
+         :cart-summary-total-line/id    "total"
+         :cart-summary-total-line/label (if (and free-mayvenn-service (not wig-customization?))
+                                          "Hair + Install Total"
+                                          "Total")
+         :cart-summary-total-line/value (some-> total mf/as-money)
          :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
                                        :cart-summary-line/label "Subtotal"
                                        :cart-summary-line/value (mf/as-money subtotal)}]

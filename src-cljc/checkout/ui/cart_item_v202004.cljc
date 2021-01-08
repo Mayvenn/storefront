@@ -1,22 +1,23 @@
 (ns checkout.ui.cart-item-v202004
   (:require [checkout.suggestions :as suggestions]
             [storefront.component :as component]
-            [storefront.events :as events]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
-            ui.molecules
             [storefront.platform.messages :as messages]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            ui.molecules))
 
 (defn cart-item-floating-box-molecule
-  [{:cart-item-floating-box/keys [id value]}]
+  [{:cart-item-floating-box/keys [id contents]}]
   (when id
     [:div.right.right-align.proxima.content-2
      {:key       id
       :data-test id
       :style     {:height "100%"}}
-     value]))
+     (for [[i {:keys [text attrs]}] (map-indexed vector contents)]
+       [:div (merge {:key (str i "-" text)} attrs) text])]))
 
 (defn cart-item-copy-molecule
   [{:cart-item-copy/keys [lines]}]

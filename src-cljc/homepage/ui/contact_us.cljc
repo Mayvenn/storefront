@@ -3,12 +3,11 @@
             [storefront.components.svg :as svg]))
 
 (defn ^:private contact-us-contact-method-molecule
-  [{:contact-us.contact-method/keys [uri svg title copy]} id]
+  [{:contact-us.contact-method/keys [uri title copy svg-symbol]} id]
   [:a.block.py3.col-12.col-4-on-tb-dt.black
    {:href uri
     :key  id}
-   [:div.mt6-on-dt.mb4-on-dt
-    svg]
+   [:div.mt6-on-dt.mb4-on-dt (svg/symbolic->html svg-symbol)]
    [:div.proxima.title-2.mt1
     title]
    [:div.col-8.mx-auto.p-color.content-2

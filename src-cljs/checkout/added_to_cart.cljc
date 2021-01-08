@@ -205,15 +205,15 @@
     :item/keys         [unit-price recent-quantity variant-name]
     :item.service/keys [addons]}]
   (when free-service-item
-    [(merge {:react/key                             (str "line-item-" sku-id)
-             :cart-item-copy/lines                  [{:id    (str "line-item-requirements-" sku-id)
-                                                      :value (:promo.mayvenn-install/requirement-copy free-service-item)}
-                                                     {:id    (str "line-item-quantity-" sku-id)
-                                                      :value (str "qty. " recent-quantity)}]
-             :cart-item-floating-box/id             (str "line-item-price-" sku-id)
-             :cart-item-floating-box/value          ^:ignore-interpret-warning [:span
-                                                                                [:div.strike (some-> unit-price (* recent-quantity) $/as-money)]
-                                                                                [:div.s-color "FREE"]]
+    [(merge {:react/key                 (str "line-item-" sku-id)
+             :cart-item-copy/lines      [{:id    (str "line-item-requirements-" sku-id)
+                                          :value (:promo.mayvenn-install/requirement-copy free-service-item)}
+                                         {:id    (str "line-item-quantity-" sku-id)
+                                          :value (str "qty. " recent-quantity)}]
+             :cart-item-floating-box/id (str "line-item-price-" sku-id)
+             :cart-item-floating-box/contents [{:text  (some-> unit-price (* recent-quantity) $/as-money)
+                                                :attrs {:class "strike"}}
+                                               {:text "FREE" :attrs {:class "s-color"}}]
              :cart-item-service-thumbnail/id        (str "line-item-thumbnail-" sku-id)
              :cart-item-service-thumbnail/image-url (hacky-cart-image free-service-item)
              :cart-item-title/id                    (str "line-item-title-" sku-id)
@@ -239,7 +239,7 @@
      :cart-item-copy/lines                  [{:id    (str "line-item-quantity-" sku-id)
                                               :value (str "qty. " recent-quantity)}]
      :cart-item-floating-box/id             (str "line-item-price-" sku-id)
-     :cart-item-floating-box/value          (some-> unit-price (* recent-quantity) $/as-money)
+     :cart-item-floating-box/contents       [{:text (some-> unit-price (* recent-quantity) $/as-money)}]
      :cart-item-service-thumbnail/id        (str "line-item-thumbnail-" sku-id)
      :cart-item-service-thumbnail/image-url (hacky-cart-image service-item)
      :cart-item-title/id                    (str "line-item-title-" sku-id)
@@ -257,9 +257,10 @@
      :cart-item-copy/lines                     [{:id    (str "line-item-quantity-" sku-id)
                                                  :value (str "qty. " recent-quantity)}]
      :cart-item-floating-box/id                (str "line-item-price-" sku-id)
-     :cart-item-floating-box/value             ^:ignore-interpret-warning [:div {:data-test (str "line-item-price-ea-" sku-id)}
-                                                                           (some-> unit-price (* recent-quantity) $/as-money)
-                                                                           [:div.proxima.content-4 " each"]]
+     :cart-item-floating-box/contents          [{:text  (some-> unit-price (* recent-quantity) $/as-money)
+                                                 :attrs {:data-test (str "line-item-price-ea-" sku-id)}}
+                                                {:text  " each"
+                                                 :attrs {:class "proxima content-4"}}]
      :cart-item-square-thumbnail/id            (str "line-item-thumbnail-" sku-id)
      :cart-item-square-thumbnail/sku-id        sku-id
      :cart-item-square-thumbnail/sticker-label (some-> item :hair/length first (str "”"))

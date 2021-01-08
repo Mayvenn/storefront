@@ -1,22 +1,23 @@
 (ns storefront.components.checkout-steps
-  (:require [storefront.platform.component-utils :refer [route-to]]
+  (:require [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.svg :as svg]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.svg :as svg]))
+            [storefront.platform.component-utils :refer [route-to]]))
 
 (def ^:private steps
   [{:step-index 1 :events [events/navigate-checkout-address events/navigate-checkout-returning-or-guest] :name "your details" :id "address"}
    {:step-index 2 :events [events/navigate-checkout-payment] :name "payment" :id "payment"}
    {:step-index 3 :events [events/navigate-checkout-confirmation] :name "review & pay" :id "confirm"}])
 
-(defcomponent component [{:keys [current-navigation-event checkout-title-content]} owner _]
+(defcomponent component [{:keys [current-navigation-event checkout-title-content checkout-title-classes]} _ _]
   (let [current-step  (->> steps
                            (filter #(contains? (set (:events %)) current-navigation-event))
                            first)
         current-index (:step-index current-step)]
     [:div
-     checkout-title-content
+     [:div.canela.center.pt5 {:class checkout-title-classes}
+      checkout-title-content]
      [:.flex.flex-column.items-center.col-12.my2
       {:data-test (str "checkout-step-" (:id current-step))}
       [:.relative.border-bottom.col-8 {:style {:top "6px"}}]

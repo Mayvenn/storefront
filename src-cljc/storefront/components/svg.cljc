@@ -482,10 +482,16 @@
   (component/html
    (if kind
      (case kind
-       :svg/close-x                         ^:inline (close-x attrs)
-       :svg/discount-tag                    ^:inline (discount-tag attrs)
+       :svg/calendar                        ^:inline (calendar attrs)
        :svg/check-mark                      ^:inline (check-mark attrs)
+       :svg/close-x                         ^:inline (close-x attrs)
+       :svg/customer-service-representative ^:inline (customer-service-representative attrs)
+       :svg/discount-tag                    ^:inline (discount-tag attrs)
        :svg/heart                           ^:inline (heart attrs)
+       :svg/icon-call                       ^:inline (icon-call attrs)
+       :svg/icon-email                      ^:inline (icon-email attrs)
+       :svg/icon-sms                        ^:inline (icon-sms attrs)
+       :svg/mirror                          ^:inline (mirror attrs)
        :svg/shaded-shipping-package         ^:inline (shaded-shipping-package attrs)
-       :svg/customer-service-representative ^:inline (customer-service-representative attrs))
+       :svg/worry-free                      ^:inline (worry-free attrs))
      [:div])))

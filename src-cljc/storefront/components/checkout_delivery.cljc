@@ -39,7 +39,10 @@
                     :data-test-id data-test-id
                     :on-click     (apply utils/send-event-callback target)}
                    (when selected? {:checked "checked"})))
-          [:div.right.ml1.medium (:detail/value option)]
+          [:div.right.ml1.medium
+           (when-let [classes (:detail/classes option)]
+             {:class classes})
+           (:detail/value option)]
           [:div.overflow-hidden
            [:div {:data-test (:primary/data-test option)} (:primary/copy option)]
            [:div.content-3 (:secondary/copy option)]
@@ -135,8 +138,8 @@
      :control/data-test-id sku
      :control/target       [events/control-checkout-shipping-method-select shipping-method]
      :control/selected?    selected?
-     :detail/value         ^:ignore-interpret-warning [:span {:class (if (pos? price) "black" "p-color")}
-                                                       (mf/as-money-or-free price)]}))
+     :detail/classes       (if (pos? price) "black" "p-color")
+     :detail/value         (mf/as-money-or-free price)}))
 
 
 (defn query [data]

@@ -1,6 +1,6 @@
 (ns checkout.returning-or-guest-v2020-05
-  (:require [checkout.ui.secure-checkout :as secure-checkout]
-            [checkout.ui.checkout-address-form :as checkout-address-form]
+  (:require [checkout.ui.checkout-address-form :as checkout-address-form]
+            [checkout.ui.secure-checkout :as secure-checkout]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.components.checkout-steps :as checkout-steps]
@@ -22,10 +22,8 @@
   [{:keys [promo-banner
            secure-checkout
            checkout-steps
-           shipping-address
-           billing-address
            checkout-address-form]}
-   owner _]
+   _ _]
   [:div.container
    (c/build promo-banner/sticky-organism promo-banner nil)
    (c/build secure-checkout/organism secure-checkout)
@@ -46,10 +44,12 @@
 ;; TODO(heather): refactor checkout_steps component so this query looks like the others
 (defn ^:private checkout-steps-query
   [nav-event guest?]
-  {:current-navigation-event nav-event
-   :checkout-title-content   (if guest?
-                               ^:ignore-interpret-warning [:div.title-2.canela.center.pt5 "Guest Checkout"]
-                               ^:ignore-interpret-warning [:div.title-1.canela.center.pt5 "Secure Checkout"])})
+  (merge {:current-navigation-event nav-event}
+         (if guest?
+           {:checkout-title-content "Guest Checkout"
+            :checkout-title-classes "title-2"}
+           {:checkout-title-content "Secure Checkout"
+            :checkout-title-classes "title-1"})))
 
 (defn ^:private checkout-address-form-query
   [shipping-address
@@ -308,7 +308,3 @@
                                                          focused
                                                          saving?
                                                          phone-marketing-opt-in-value)}))
-
-#_(defn ^:export page [app-state] ;pipedream
-  (c/build
-   template) )
