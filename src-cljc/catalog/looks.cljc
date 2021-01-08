@@ -476,55 +476,53 @@
   - Displaying the detailed view
   "
   [state skus-db facets-db album-keyword]
-  (let [lengths-re #",|\s+and\s+|\s?\+\s?|(?<=\")\s(?=\d)"
-        name->slug (options|name->slug facets-db)
-
-        contentful-looks
-        (->> (get-in state keypaths/cms-ugc-collection)
-             ;; NOTE(corey) This is hardcoded because obstensibly
-             ;; filtering should replace albums
-             :aladdin-free-install
-             :looks)]
+  (let [lengths-re       #",|\s+and\s+|\s?\+\s?|(?<=\")\s(?=\d)"
+        name->slug       (options|name->slug facets-db)
+        contentful-looks (->> (get-in state keypaths/cms-ugc-collection)
+                              ;; NOTE(corey) This is hardcoded because obstensibly
+                              ;; filtering should replace albums
+                              :aladdin-free-install
+                              :looks)]
     (->> contentful-looks
+         ;; TODO(jjh) This is the shim that determines the facets from the Look (which enables the filters).
+         ;; Once this page depends on SKUs being loaded in, those should be used instead.
          (mapv (fn [{:as look :keys [description color origin texture]}]
-                 (let [tex-ori-col
-                       {:hair/color   #{(get name->slug color)}
-                        :hair/origin  #{(get name->slug (str origin
-                                                             " hair"))}
-                        :hair/texture #{(get name->slug texture)}}
-                       skus
-                       (->> (split description lengths-re)
-                            (map (fn [length]
-                                   (some-> (merge
-                                            tex-ori-col
-                                            {:hair/length #{(first (re-seq #"\d+" length))}}
-                                            (cond
-                                              (not-empty (re-seq #"Closure" length))
-                                              {:hair/family        #{"closures"}
-                                               :hair/base-material #{"lace"}}
-                                              (not-empty (re-seq #"Frontal" length))
-                                              {:hair/family        #{"frontals"}
-                                               :hair/base-material #{"lace"}}
-                                              :else
-                                              {:hair/family #{"bundles"}}))
-                                           (select (vals skus-db))
-                                           first))))]
+                 (let [tex-ori-col {:hair/color   #{(get name->slug color)}
+                                    :hair/origin  #{(get name->slug (str origin
+                                                                         " hair"))}
+                                    :hair/texture #{(get name->slug texture)}}
+                       skus        (->> (split description lengths-re)
+                                        (map (fn [length]
+                                               (some-> (merge
+                                                        tex-ori-col
+                                                        {:hair/length #{(first (re-seq #"\d+" length))}}
+                                                        (cond
+                                                          (not-empty (re-seq #"Closure" length))
+                                                          {:hair/family        #{"closures"}
+                                                           :hair/base-material #{"lace"}}
+                                                          (not-empty (re-seq #"Frontal" length))
+                                                          {:hair/family        #{"frontals"}
+                                                           :hair/base-material #{"lace"}}
+                                                          :else
+                                                          {:hair/family #{"bundles"}}))
+                                                       (select (vals skus-db))
+                                                       first))))]
                    (merge tex-ori-col ;; TODO(corey) apply merge-with into
-                          {:look/title     (or (some->> [origin texture]
-                                                    (remove nil?)
-                                                    (interpose " ")
-                                                    not-empty
-                                                    (apply str))
-                                           "Check this out!")
-                           :look/hero-imgs [{:url             (:photo-url look)
-                                             :platform-source
-                                             ^:ignore-interpret-warning
-                                             (when-let [icon (svg/social-icon (:social-media-platform look))]
-                                               (icon {:class "fill-white"
-                                                      :style {:opacity 0.7}}))}]
+                          {:look/title              (or (some->> [origin texture]
+                                                                 (remove nil?)
+                                                                 (interpose " ")
+                                                                 not-empty
+                                                                 (apply str))
+                                                        "Check this out!")
+                           :look/hero-imgs          [{:url (:photo-url look)
+                                                      :platform-source
+                                                      ^:ignore-interpret-warning
+                                                      (when-let [icon (svg/social-icon (:social-media-platform (spice.core/spy look)))]
+                                                        (icon {:class "fill-white"
+                                                               :style {:opacity 0.7}}))}]
                            :look/navigation-message [e/navigate-shop-by-look-details {:album-keyword album-keyword
                                                                                       :look-id       (:content/id look)}]
-                           :look/skus      skus})))))))
+                           :look/skus               skus})))))))
 
 ;; Visual Domain: Page
 
