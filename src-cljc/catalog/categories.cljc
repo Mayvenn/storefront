@@ -190,10 +190,11 @@
 
            :contentful/faq-id :category-virgin-closures}
           (category->seo "Lace Closures"
-                         (copy "Get your dream hair with Mayvenn’s 100% human hair closures that blend seamlessly with"
-                               "our bundles for a unique look that’s all your own.")
+                         (copy "Get your dream hair with Mayvenn’s 100% human hair lace closures"
+                               "that blend seamlessly with our bundles for a unique look that’s"
+                               "all your own.")
                          "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")
-          {:page/title "Hair Closures: Human Hair Closure Sew-Ins | Mayvenn"}
+          {:page/title "Lace Closures: Human Hair Lace Closures | Mayvenn"}
           closures-templates)
    (merge {:catalog/category-id              "39"
            :copy/title                       "Silk Closures"
@@ -217,10 +218,10 @@
 
            :contentful/faq-id :category-virgin-closures}
           (category->seo "Silk Closures"
-                         (copy "Get your dream hair with Mayvenn’s 100% human hair closures that blend seamlessly with"
+                         (copy "Mayvenn’s 100% human hair silk closures blend in seamlessly with"
                                "our bundles for a unique look that’s all your own.")
                          "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")
-          {:page/title "Hair Closures: Human Hair Closure Sew-Ins | Mayvenn"}
+          {:page/title "Silk Closures: Human Hair Silk Closures | Mayvenn"}
           closures-templates)
    (merge {:catalog/category-id      "10"
            :copy/title               "360 Lace Frontals"
