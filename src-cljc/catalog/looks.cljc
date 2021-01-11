@@ -517,7 +517,7 @@
                            :look/hero-imgs          [{:url (:photo-url look)
                                                       :platform-source
                                                       ^:ignore-interpret-warning
-                                                      (when-let [icon (svg/social-icon (:social-media-platform (spice.core/spy look)))]
+                                                      (when-let [icon (svg/social-icon (:social-media-platform look))]
                                                         (icon {:class "fill-white"
                                                                :style {:opacity 0.7}}))}]
                            :look/navigation-message [e/navigate-shop-by-look-details {:album-keyword album-keyword
