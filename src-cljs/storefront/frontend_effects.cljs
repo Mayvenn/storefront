@@ -274,7 +274,7 @@
   (wistia/load))
 
 (defmethod effects/perform-effects events/navigate-shop-by-look
-  [dispatch event {:keys [album-keyword]} _ app-state]
+  [dispatch event {:keys [album-keyword navigate/caused-by]} previous-app-state app-state]
   (let [actual-album-kw (ugc/determine-look-album app-state album-keyword)]
     (cond
       (and (#{:wavy-curly-looks :straight-looks} album-keyword)
@@ -285,7 +285,13 @@
       (effects/page-not-found)
 
       :else
-      (effects/fetch-cms-keypath app-state [:ugc-collection actual-album-kw]))))
+      (do
+        (effects/fetch-cms-keypath app-state [:ugc-collection actual-album-kw])
+        (let [just-arrived? (or (= :first-nav caused-by)
+                                (not= events/navigate-shop-by-look
+                                      (get-in previous-app-state keypaths/navigation-event)))]
+          (when just-arrived?
+            (messages/handle-message events/flow|looks-filtering|initialize)))))))
 
 (defmethod effects/perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-keyword]} _ app-state]
   (let [actual-album-kw (ugc/determine-look-album app-state album-keyword)]

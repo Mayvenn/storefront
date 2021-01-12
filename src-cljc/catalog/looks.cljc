@@ -245,24 +245,12 @@
 
 ;; Flow Domain: Filtering Looks
 
-(defn ^:private looks-filtering<-
-  [state]
-  (let [initial-state #:looks-filtering{:panel    false
-                                        :sections #{}
-                                        :filters  {}}]
-    (-> initial-state
-        (merge (get-in state catalog.keypaths/k-models-looks-filtering))
-        (update :looks-filtering/filters
-                ;; Remove empty vals for selector
-                #(->> %
-                      (remove (comp empty? last))
-                      (into {}))))))
-
-(defmethod t/transition-state e/flow|looks-filtering|reset
-  [_ _ _ state]
-  (-> state
-      (assoc-in catalog.keypaths/k-models-looks-filtering-filters
-                {})))
+(defmethod t/transition-state e/flow|looks-filtering|initialize
+  [_ event args state]
+  (assoc-in state catalog.keypaths/k-models-looks-filtering
+            #:looks-filtering{:panel    false
+                              :sections #{}
+                              :filters  {}}))
 
 (defmethod effects/perform-effects  e/flow|looks-filtering|reset
   [_ event _ _ app-state]
@@ -288,8 +276,7 @@
      (let [existing-filters (get-in app-state catalog.keypaths/k-models-looks-filtering-filters)]
        (history/enqueue-navigate e/navigate-shop-by-look
                                  {:query-params  (->> existing-filters
-                                                      (filter (fn [[k v]]
-                                                                (seq v)))
+                                                      (filter (fn [[_ v]] (seq v)))
                                                       (reduce merge {})
                                                       categories/category-selections->query-params)
                                   :album-keyword (:album-keyword (get-in app-state keypaths/navigation-args))}))))
@@ -559,9 +546,9 @@
                                                   (partial maps/index-by :option/slug)))))
 
         selected-album-keyword (get-in state keypaths/selected-album-keyword)
-        looks           (looks<- state skus-db facets-db selected-album-keyword)
+        looks                  (looks<- state skus-db facets-db selected-album-keyword)
         ;; Flow models
-        looks-filtering (looks-filtering<- state)]
+        looks-filtering        (get-in state catalog.keypaths/k-models-looks-filtering)]
     (cond
       ;; Spinning
       (empty? looks)

@@ -589,6 +589,7 @@
 
 ;; Flow - Looks Filtering
 
+(defpath flow|looks-filtering|initialize)
 (defpath flow|looks-filtering|reset)
 (defpath flow|looks-filtering|panel-toggled)
 (defpath flow|looks-filtering|section-toggled)
