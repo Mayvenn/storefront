@@ -5,6 +5,7 @@
             catalog.keypaths
             clojure.string
             clojure.set
+            [catalog.ui.facet-filters :as facet-filters]
             [spice.maps :as maps]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
@@ -47,46 +48,6 @@
     [:div.col-12.my8.py4.center.bg-white
      (no-matches-title-molecule data)
      (no-matches-action-molecule data)]))
-
-(defn filtering-summary-status-molecule
-  [{:filtering-summary.status/keys [primary secondary]}]
-  [:div.flex.justify-between
-   [:div.bold.shout.content-4 primary]
-   [:div.content-3 secondary]])
-
-(defcomponent filtering-summary-pill-molecule
-  [{:filtering-summary.pill/keys [primary primary-icon id target action-icon]}
-   _
-   {:keys [id]}]
-  [:div.pb1
-   {:key id}
-   (ui/button-pill
-    (cond-> {:class     "p1 mr1 black content-3"
-             :data-test id}
-      (not-empty target)
-      (assoc :on-click
-             (apply utils/send-event-callback target)))
-    [:div.flex.items-center.px1
-     [:span.mr1
-      (when primary-icon
-        ^:inline (svg/funnel {:class  "mrp3"
-                              :height "9px"
-                              :width  "10px"}))
-      primary]
-     (when action-icon
-       ^:inline (svg/close-x
-                 {:class  "stroke-white fill-gray"
-                  :width  "13px"
-                  :height "13px"}))])])
-
-(defcomponent filtering-summary-organism
-  [data _ _]
-  (when (seq data)
-    [:div.bg-white.py2.px3
-     (filtering-summary-status-molecule data)
-     [:div.flex.flex-wrap.py1
-      (component/elements filtering-summary-pill-molecule data
-                          :filtering-summary/pills)]]))
 
 (defcomponent looks-hero-organism
   [{:looks.hero.title/keys [primary secondary]} _ _]
@@ -155,86 +116,9 @@
   [{:keys [hero filtering-summary no-matches looks-cards]} _ _]
   [:div
    (component/build looks-hero-organism hero)
-   (component/build filtering-summary-organism filtering-summary)
+   (component/build facet-filters/summary-organism filtering-summary)
    (component/build no-matches-organism no-matches)
    (component/build looks-cards-organism looks-cards)])
-
-(defn looks-filtering-header-reset-molecule
-  [{:header.reset/keys [primary id target]}]
-  (component/html
-   [:div (ui/button-medium-underline-black
-          (merge {:data-test id}
-                 (apply utils/fake-href target))
-          primary)]))
-
-(defn looks-filtering-header-done-molecule
-  [{:header.done/keys [primary id target]}]
-  (component/html
-   [:div (ui/button-medium-underline-primary
-          (merge {:data-test id}
-                 (apply utils/fake-href target))
-          primary)]))
-
-(defcomponent looks-filtering-header-organism
-  [data _ _]
-  (header/mobile-nav-header
-   {:class "border-bottom border-gray"}
-   (looks-filtering-header-reset-molecule data)
-   (component/html
-    [:div.center.proxima.content-1 "Filters"])
-   (looks-filtering-header-done-molecule data)))
-
-(defn looks-filtering-section-title-molecule
-  [{:looks-filtering.section.title/keys [primary target id rotated?]}]
-  [:a.block.flex.justify-between.inherit-color.items-center
-   (cond-> {:data-test id}
-     target
-     (merge (apply utils/fake-href target)))
-   [:div.shout.title-2.proxima
-    primary]
-   [:div.flex.items-center
-    (when rotated?
-      {:class "rotate-180 mrp2"})
-    ^:inline (svg/dropdown-arrow
-              {:class  "fill-black"
-               :height "20px"
-               :width  "20px"})]])
-
-(defcomponent looks-filtering-section-filter-molecule
-  [{:looks-filtering.section.filter/keys [primary target value url icon-url]} _ {:keys [id]}]
-  [:div.col-12.mb2.flex
-   {:on-click (apply utils/send-event-callback target)
-    :key      id}
-   [:div (ui/check-box {:value     value
-                        :id        id
-                        :data-test id})]
-   (when icon-url
-     [:img.block.pr2
-      {:style {:width  "50px"
-               :height "30px"}
-       :src   icon-url}])
-   [:div
-    primary]])
-
-(defcomponent looks-filtering-section-organism
-  [data _ {:keys [id]}]
-  [:div.flex.flex-column.bg-white.px5.myp1
-   {:key id}
-   [:div.pyj1
-    (looks-filtering-section-title-molecule data)]
-   (component/elements looks-filtering-section-filter-molecule
-                       data
-                       :looks-filtering.section/filters)])
-
-(defcomponent looks-filtering-panel-template
-  [{:keys [header sections]} _ _]
-  [:div.col-12.bg-white {:style {:min-height "100vh"}}
-   (component/build looks-filtering-header-organism
-                    header)
-   [:div.mynp1.bg-refresh-gray
-    (component/elements looks-filtering-section-organism
-                        sections
-                        :looks-filtering/sections)]])
 
 ;; Visual: Spinning
 
@@ -248,7 +132,7 @@
 (defmethod t/transition-state e/flow|looks-filtering|initialize
   [_ event args state]
   (assoc-in state catalog.keypaths/k-models-looks-filtering
-            #:looks-filtering{:panel    false
+            #:facet-filtering{:panel    false
                               :sections #{}
                               :filters  {}}))
 
@@ -264,7 +148,7 @@
       (assoc-in catalog.keypaths/k-models-looks-filtering-panel toggled?)))
 
 (defmethod t/transition-state e/flow|looks-filtering|section-toggled
-  [_ _ [facet-key toggled?] state]
+  [_ _ {:as args :keys [facet-key toggled?]} state]
   (-> state
       (update-in catalog.keypaths/k-models-looks-filtering-sections
                  (fnil (if toggled? conj disj) #{})
@@ -290,105 +174,8 @@
 
 ;; Biz domains -> Viz domains
 
-(defn ^:private filtering-summary<-
-  "Takes (Biz)
-   - Defined Facets
-   - Looks
-   - User's desired Filters
-
-   Produces (Viz)
-   - Filtering Summary
-     - Status (with Filtered Count)
-     - Pills"
-  [facets-db looks {:looks-filtering/keys [filters]}]
-  (let [filtering-options (->> filters
-                               (mapcat (fn selections->options
-                                         [[facet-slug option-slugs]]
-                                         (let [facet-options (-> facets-db
-                                                                 (get facet-slug)
-                                                                 :facet/options)]
-                                           (->> option-slugs
-                                                (map #(get facet-options %))
-                                                (map #(assoc % :facet/slug facet-slug))))))
-                               concat)
-        pills             (concat
-                           [{:filtering-summary.pill/primary-icon :funnel
-                             :filtering-summary.pill/primary      (if (empty? filtering-options)
-                                                                    "Filters"
-                                                                    (str "- " (count filtering-options)))
-                             :filtering-summary.pill/target       [e/flow|looks-filtering|panel-toggled
-                                                                   true]}]
-                           (mapv (fn options->pills
-                                   [option]
-                                   {:filtering-summary.pill/primary     (:option/name option)
-                                    :filtering-summary.pill/target      [e/flow|looks-filtering|filter-toggled
-                                                                         {:facet-key  (:facet/slug option)
-                                                                          :option-key (:option/slug option)
-                                                                          :toggled?   false}]
-                                    :filtering-summary.pill/action-icon :close-x})
-                                 filtering-options))]
-    {:filtering-summary.status/primary   "Filter By:"
-     :filtering-summary.status/secondary (str
-                                          (count (select filters looks))
-                                          " Looks")
-     :filtering-summary/pills            pills}))
-
-(defn filtering-sections<-
-  "Takes (Biz)
-   - Defined Facets
-   - User's desired Filters
-
-   Produces (Viz)
-   - Sections
-   - Filters"
-  [facets-db
-   represented-facets ;; {:facet/slug (Set :option/slug)}
-   {:looks-filtering/keys [sections filters]}]
-
-  (->> (vals (select-keys facets-db (keys represented-facets)))
-       (sort-by :filter/order)
-       (map
-        (fn facet->section [{facet-slug    :facet/slug
-                             facet-name    :facet/name
-                             facet-options :facet/options}]
-          (let [section-toggled?    (contains? sections facet-slug)
-                represented-options (get represented-facets facet-slug)]
-            (cond-> {:id                             facet-slug
-                     :looks-filtering.section.title/primary  (str "Hair " facet-name)
-                     :looks-filtering.section.title/target   [e/flow|looks-filtering|section-toggled
-                                                              [facet-slug (not section-toggled?)]] ;; TODO: not positional?
-                     :looks-filtering.section.title/id       (str "section-filter-" facet-slug)
-                     :looks-filtering.section.title/rotated? section-toggled?}
-              section-toggled?
-              (assoc :looks-filtering.section/filters
-                     (->> (vals facet-options)
-                          (sort-by :filter/order)
-                          (keep
-                           (fn option->filter [{option-slug   :option/slug
-                                                option-name   :option/name
-                                                option-swatch :option/rectangle-swatch}]
-                             (when (contains? represented-options option-slug)
-                               (let [filter-toggled? (contains?
-                                                      (get filters facet-slug)
-                                                      option-slug)]
-                                 (cond->
-                                     #:looks-filtering.section.filter
-                                     {:primary option-name
-                                      :target  [e/flow|looks-filtering|filter-toggled
-                                                {:facet-key  facet-slug
-                                                 :option-key option-slug
-                                                 :toggled?   (not filter-toggled?)}]
-                                      :value   filter-toggled?
-                                      :url     option-name}
-                                   option-swatch
-                                   (assoc :looks-filtering.section.filter/icon-url
-                                          (str "https://ucarecdn.com/"
-                                               (ui/ucare-img-id option-swatch)
-                                               "/-/format/auto/-/resize/50x/")))))))
-                          vec))))))))
-
 (defn no-matches<-
-  [looks {:looks-filtering/keys [filters]}]
+  [looks {:facet-filtering/keys [filters]}]
   (when (empty? (select filters looks))
     {:no-matches.title/primary    "😞"
      :no-matches.title/secondary  "Sorry, we couldn’t find any matches."
@@ -436,7 +223,7 @@
                          "/center/")}))))}))
 
 (defn looks-cards<-
-  [images-db looks {:looks-filtering/keys [filters]}]
+  [images-db looks {:facet-filtering/keys [filters]}]
   {:looks-cards/cards
    (->> (select filters looks)
         (mapv (partial looks-card<-
@@ -493,8 +280,7 @@
          ;; Once this page depends on SKUs being loaded in, those should be used instead.
          (mapv (fn [{:as look :keys [description color origin texture]}]
                  (let [tex-ori-col {:hair/color   #{(get name->slug color)}
-                                    :hair/origin  #{(get name->slug (str origin
-                                                                         " hair"))}
+                                    :hair/origin  #{(get name->slug (str origin " hair"))}
                                     :hair/texture #{(get name->slug texture)}}
                        skus        (->> (clojure.string/split description lengths-re)
                                         (map (fn [length]
@@ -548,7 +334,11 @@
         selected-album-keyword (get-in state keypaths/selected-album-keyword)
         looks                  (looks<- state skus-db facets-db selected-album-keyword)
         ;; Flow models
-        looks-filtering        (get-in state catalog.keypaths/k-models-looks-filtering)]
+        looks-filtering        (merge (get-in state catalog.keypaths/k-models-looks-filtering)
+                                      {:facet-filtering/panel-toggle-event   e/flow|looks-filtering|panel-toggled
+                                       :facet-filtering/section-toggle-event e/flow|looks-filtering|section-toggled
+                                       :facet-filtering/filter-toggle-event  e/flow|looks-filtering|filter-toggled
+                                       :facet-filtering/item-label           "Look"})]
     (cond
       ;; Spinning
       (empty? looks)
@@ -556,14 +346,14 @@
            (template/wrap-standard state
                                    e/navigate-shop-by-look))
       ;; Looks Filtering Panel
-      (:looks-filtering/panel looks-filtering)
-      (component/build looks-filtering-panel-template
+      (:facet-filtering/panel looks-filtering)
+      (component/build facet-filters/panel-template
                        {:header   {:header.reset/primary "RESET"
                                    :header.reset/target  [e/flow|looks-filtering|reset]
                                    :header.done/primary  "DONE"
                                    :header.done/target   [e/flow|looks-filtering|panel-toggled false]}
-                        :sections {:looks-filtering/sections
-                                   (filtering-sections<-
+                        :sections {:facet-filtering/sections
+                                   (facet-filters/sections<-
                                     facets-db
                                     (->> looks ;; Note: Facets that actually exist on the looks
                                          (map #(select-keys % [:hair/origin :hair/color :hair/texture]))
@@ -577,9 +367,9 @@
                                               looks-filtering)
             :no-matches        (no-matches<- looks
                                              looks-filtering)
-            :filtering-summary (filtering-summary<- facets-db
-                                                    looks
-                                                    looks-filtering)}
+            :filtering-summary (facet-filters/summary<- facets-db
+                                                        looks
+                                                        looks-filtering)}
            (component/build looks-template)
            (template/wrap-standard state e/navigate-shop-by-look)))))
 

@@ -34,10 +34,10 @@
   (conj keypaths/models-root :looks-filtering))
 
 (def k-models-looks-filtering-filters
-  (conj k-models-looks-filtering :looks-filtering/filters))
+  (conj k-models-looks-filtering :facet-filtering/filters))
 
 (def k-models-looks-filtering-panel
-  (conj k-models-looks-filtering :looks-filtering/panel))
+  (conj k-models-looks-filtering :facet-filtering/panel))
 
 (def k-models-looks-filtering-sections
-  (conj k-models-looks-filtering :looks-filtering/sections))
+  (conj k-models-looks-filtering :facet-filtering/sections))
