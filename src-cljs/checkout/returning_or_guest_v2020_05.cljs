@@ -43,13 +43,10 @@
 
 ;; TODO(heather): refactor checkout_steps component so this query looks like the others
 (defn ^:private checkout-steps-query
-  [nav-event guest?]
+  [nav-event]
   (merge {:current-navigation-event nav-event}
-         (if guest?
-           {:checkout-title-content "Guest Checkout"
-            :checkout-title-classes "title-2"}
-           {:checkout-title-content "Secure Checkout"
-            :checkout-title-classes "title-1"})))
+         {:checkout-title-content "Guest Checkout"
+          :checkout-title-classes "title-2"}))
 
 (defn ^:private checkout-address-form-query
   [shipping-address
@@ -284,7 +281,6 @@
 (defn query [app-state]
   (let [facebook-loaded?             (get-in app-state k/loaded-facebook)
         current-nav-event            (get-in app-state k/navigation-event)
-        guest?                       (= :guest (::auth/as (auth/signed-in app-state)))
         shipping-address             (get-in app-state k/checkout-shipping-address)
         billing-address              (get-in app-state k/checkout-billing-address)
         bill-to-shipping-address?    (get-in app-state k/checkout-bill-to-shipping-address)
@@ -297,7 +293,7 @@
         phone-marketing-opt-in-value (get-in app-state k/checkout-phone-marketing-opt-in)]
     {:promo-banner          (promo-banner/query app-state) ;; no app-states
      :secure-checkout       (secure-checkout-query facebook-loaded?)
-     :checkout-steps        (checkout-steps-query current-nav-event guest?)
+     :checkout-steps        (checkout-steps-query current-nav-event)
      :checkout-address-form (checkout-address-form-query shipping-address
                                                          billing-address
                                                          bill-to-shipping-address?

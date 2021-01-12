@@ -369,6 +369,8 @@
   (facebook/insert))
 
 (defmethod effects/perform-effects events/navigate-checkout-returning-or-guest [_ event args _ app-state]
+  (when (get-in app-state keypaths/user-id)
+    (effects/redirect events/navigate-checkout-address))
   (google-maps/remove-containers)
   (api/get-states (get-in app-state keypaths/api-cache))
   (facebook/insert))
