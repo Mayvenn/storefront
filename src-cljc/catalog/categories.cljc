@@ -330,8 +330,8 @@
 
 (def virgin-hair
   [(merge {:catalog/category-id           "2"
-           :copy/title                    "Virgin Straight"
-           :seo/title                     "Virgin Straight Hair Extensions"
+           :copy/title                    "Virgin Straight Bundles"
+           :seo/title                     "Virgin Straight Hair Bundles"
            :seo/self-referencing-texture? true
            :page/slug                     "virgin-straight"
            :legacy/named-search-slug      "straight"
@@ -355,7 +355,7 @@
            :selector/essentials           [:catalog/department :hair/texture :hair/color.process :hair/source :hair/family]
            :selector/electives            [:hair/origin :hair/color],
            :category/description          (copy "For those who want it given to them"
-                                                "straight, our collection of 100% virgin straight hair"
+                                                "straight, our collection of 100% virgin straight hair bundles"
                                                 "is your go-to for a sleek look with"
                                                 "minimal effort.")
            :icon                          "/images/categories/straight-icon.svg"
@@ -368,8 +368,8 @@
                          "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/")
           texture-templates)
    (merge {:catalog/category-id           "3"
-           :copy/title                    "Virgin Yaki Straight"
-           :seo/title                     "Virgin Yaki Straight Hair Extensions"
+           :copy/title                    "Virgin Yaki Straight Bundles"
+           :seo/title                     "Virgin Yaki Straight Hair Bundles"
            :seo/self-referencing-texture? true
            :page/slug                     "virgin-yaki-straight"
            :legacy/named-search-slug      "yaki-straight"
@@ -394,8 +394,8 @@
            :selector/electives            [:hair/origin]
            :category/description          (copy "Tired of having to break out the hot"
                                                 "tools for a textured straight look? Our Yaki"
-                                                "Straight hair collection is here to save your"
-                                                "strands! Yaki Straight hair matches the rhythm of"
+                                                "Straight hair buncdle collection is here to save your"
+                                                "strands! Yaki Straight hair bundles match the rhythm of"
                                                 "your natural hair that's been pressed straight or"
                                                 "freshly relaxed. Your flat iron has been officially"
                                                 "cancelled.")
@@ -403,14 +403,14 @@
            :subcategory/title             "Yaki Straight"
            :header/title                  "Virgin Yaki Straight"}
           (category->seo "Yaki Straight Hair: Virgin Yaki Straight Bundles"
-                         (copy "Looking for some top quality yaki straight hair?"
+                         (copy "Looking for some top quality yaki straight hair bundles?"
                                "Mayvenn has you covered."
                                "Browse our collection of yaki straight virgin hair bundles here.")
                          "//ucarecdn.com/98e8b217-73ee-475a-8f5e-2c3aaa56af42/")
           texture-templates)
    (merge {:catalog/category-id           "4"
-           :copy/title                    "Virgin Kinky Straight"
-           :seo/title                     "Virgin Kinky Straight Hair Extensions"
+           :copy/title                    "Virgin Kinky Straight Bundles"
+           :seo/title                     "Virgin Kinky Straight Hair Bundles"
            :seo/self-referencing-texture? true
            :page/slug                     "virgin-kinky-straight"
            :legacy/named-search-slug      "kinky-straight"
@@ -434,7 +434,7 @@
                                            {:title "Free Install"
                                             :body  [{:text "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]}]
            :category/description          (copy "Blending is a breeze with our Kinky Straight"
-                                                "hair collection! Like a fresh blow out, the"
+                                                "hair bundle collection! Like a fresh blow out, the"
                                                 "Kinky Straight hair texture moves freely and gives"
                                                 "a naturally flawless look that mimics your own"
                                                 "locks.")
@@ -448,8 +448,8 @@
                          "//ucarecdn.com/7fe5f90f-4dad-454a-aa4b-b453fc4da3c4/")
           texture-templates)
    (merge {:catalog/category-id           "5"
-           :copy/title                    "Virgin Body Wave"
-           :seo/title                     "Virgin Body Wave Hair Extensions"
+           :copy/title                    "Virgin Body Wave Bundles"
+           :seo/title                     "Virgin Body Wave Hair Bundles"
            :seo/self-referencing-texture? true
            :page/slug                     "virgin-body-wave"
            :legacy/named-search-slug      "body-wave"
@@ -472,19 +472,19 @@
                                             :body  [{:text "All hairpieces offer realistic, natural-looking styles. With multiple lengths and densities, our virgin hair bundles offer versatility in how to wear and style your hair."}]}
                                            {:title "Free Install"
                                             :body  [{:text "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]}]
-           :category/description          (copy "Step into the spotlight with our collection of luscious Body Wave hair."
+           :category/description          (copy "Step into the spotlight with our collection of luscious Body Wave hair bundles."
                                                 "Body Wave is unbelievably soft and goes from straight to wavy and back again with ease.")
            :icon                          "/images/categories/body-wave-icon.svg"
            :subcategory/title             "Body Wave"
            :header/title                  "Virgin Body Wave"}
           (category->seo "Body Wave Hair: Virgin Body Wave Bundles"
-                         (copy "Step into the spotlight with our collection of luscious virgin body wave hair."
+                         (copy "Step into the spotlight with our collection of luscious virgin body wave hair bundles."
                                "Shop Mayvenn's collection of top quality body wave hair bundles here.")
                          "//ucarecdn.com/445c53df-f369-4ca6-a554-c9668c8968f1/")
           texture-templates)
    (merge {:catalog/category-id           "6"
-           :copy/title                    "Virgin Loose Wave"
-           :seo/title                     "Virgin Loose Wave Hair Extensions"
+           :copy/title                    "Virgin Loose Wave Bundles"
+           :seo/title                     "Virgin Loose Wave Hair Bundles"
            :seo/self-referencing-texture? true
            :page/slug                     "virgin-loose-wave"
            :legacy/named-search-slug      "loose-wave"
@@ -508,7 +508,7 @@
                                            {:title "Free Install"
                                             :body  [{:text "When you buy at least three bundles, closures, or frontals with us, we offer a free install with a Mayvenn stylist located near you. The install includes a shampoo and condition, braid down, sew-in, and style entirely paid for by us."}]}]
            :category/description          (copy "For hair that holds a curl beautifully,"
-                                                "our collection of 100% virgin Loose Wave hair"
+                                                "our collection of 100% virgin Loose Wave hair bundles"
                                                 "is the perfect foundation for all your carefree,"
                                                 "flirty, wavy looks.")
            :icon                          "/images/categories/loose-wave-icon.svg"
@@ -521,8 +521,8 @@
                          "//ucarecdn.com/31be9341-a688-4f03-b754-a22a0a1f267e/")
           texture-templates)
    (merge {:catalog/category-id           "7"
-           :copy/title                    "Virgin Water Wave"
-           :seo/title                     "Virgin Water Wave Hair Extensions"
+           :copy/title                    "Virgin Water Wave Bundles"
+           :seo/title                     "Virgin Water Wave Hair Bundles"
            :seo/self-referencing-texture? true
            :page/slug                     "Virgin-water-wave"
            :legacy/named-search-slug      "water-wave"
@@ -533,8 +533,8 @@
            :hair/family                   #{"bundles"}
            :selector/essentials           [:catalog/department :hair/color.process :hair/family :hair/source :hair/texture]
            :selector/electives            [:hair/origin]
-           :category/description          (copy "Ride the lush, carefree waves of the bundles,"
-                                                "closures, and frontals in our Water Wave hair"
+           :category/description          (copy "Ride the lush, carefree waves of the bundles"
+                                                "in our Water Wave hair bundle"
                                                 "collection. For curls you can rock everywhere from"
                                                 "the office to your tropical vacation, make a"
                                                 "statement with Water Wave hair.")
@@ -560,8 +560,8 @@
                          "//ucarecdn.com/5f6c669f-8274-4bef-afa9-3c08813842f6/")
           texture-templates)
    (merge {:catalog/category-id           "8"
-           :copy/title                    "Virgin Deep Wave"
-           :seo/title                     "Virgin Deep Wave Hair Extensions"
+           :copy/title                    "Virgin Deep Wave Bundles"
+           :seo/title                     "Virgin Deep Wave Hair Bundles"
            :seo/self-referencing-texture? true
            :page/slug                     "virgin-deep-wave"
            :legacy/named-search-slug      "deep-wave"
@@ -572,7 +572,7 @@
            :hair/family                   #{"bundles"}
            :selector/essentials           [:catalog/department :hair/color.process :hair/family :hair/source :hair/texture]
            :selector/electives            [:hair/origin :hair/color]
-           :category/description          (copy "Reigning supreme in versatility, the Deep Wave hair collection features"
+           :category/description          (copy "Reigning supreme in versatility, the Deep Wave hair bundle collection features"
                                                 "a soft, spiral wave full of body and bounce. Our deep wave hair is perfect"
                                                 "for those who want big waves that make an even bigger splash.")
            :content-block/type            :about-attributes
@@ -598,8 +598,8 @@
                          "//ucarecdn.com/49cc5837-8321-4331-9cec-d299d0de1887/")
           texture-templates)
    (merge {:catalog/category-id           "9"
-           :copy/title                    "Virgin Curly"
-           :seo/title                     "Virgin Curly Hair Extensions"
+           :copy/title                    "Virgin Curly Bundles"
+           :seo/title                     "Virgin Curly Hair Bundles"
            :seo/self-referencing-texture? true
            :page/slug                     "virgin-curly"
            :legacy/named-search-slug      "curly"
@@ -610,7 +610,7 @@
            :hair/family                   #{"bundles"}
            :selector/essentials           [:catalog/department :hair/color.process :hair/family :hair/source :hair/texture]
            :selector/electives            [:hair/origin]
-           :category/description          (copy "Let your bold, beautiful curls take center stage! Our curly hair collection is a tight,"
+           :category/description          (copy "Let your bold, beautiful curls take center stage! Our curly hair bundle collection is a tight,"
                                                 "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")
            :content-block/type            :about-attributes
            :content-block/title           "Hair Bundles 101:"
