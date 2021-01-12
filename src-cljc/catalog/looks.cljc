@@ -84,16 +84,17 @@
 (defcomponent looks-card-organism*
   [{:as data :looks-card/keys [height-px]
     target :looks-card.action/target} _ _]
-  [:a.col-12.col-3-on-tb-dt.border.border-cool-gray.p2.m2.black
-   (apply utils/route-to target)
-   [:div.flex
-    {:style {:height (str height-px "px")}}
-    (looks-card-hero-molecule data)
-    [:div.flex.flex-column.justify-between
-     (component/elements looks-card-hair-item-molecule
-                         data
-                         :looks-card/hair-items)]]
-   (looks-card-title-molecule data)])
+  [:a.col-12.px1-on-tb-dt.col-4-on-tb-dt.black.pb2
+   [:div.border.border-cool-gray.p2
+    (apply utils/route-to target)
+    [:div.flex
+     {:style {:height (str height-px "px")}}
+     (looks-card-hero-molecule data)
+     [:div.flex.flex-column.justify-between
+      (component/elements looks-card-hair-item-molecule
+                          data
+                          :looks-card/hair-items)]]
+    (looks-card-title-molecule data)]])
 
 (defcomponent looks-card-organism
   [data _ {:keys [id idx]}]
@@ -107,7 +108,7 @@
 (defcomponent looks-cards-organism
   [data _ _]
   (when (seq data)
-    [:div.flex.flex-wrap.justify-center.justify-start-on-tb-dt.py2-on-tb-dt.px1-on-tb-dt
+    [:div.flex.flex-wrap.justify-center.justify-start-on-tb-dt.py2-on-tb-dt.px1-on-tb-dt.px3-on-mb
      (component/elements looks-card-organism
                          data
                          :looks-cards/cards)]))
