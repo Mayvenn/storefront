@@ -4,6 +4,7 @@
                        [storefront.history :as history]])
             catalog.keypaths
             clojure.string
+            clojure.set
             [spice.maps :as maps]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
@@ -353,49 +354,51 @@
    Produces (Viz)
    - Sections
    - Filters"
-  [facets-db {:looks-filtering/keys [sections filters]}]
-  (->> (vals facets-db)
+  [facets-db
+   represented-facets ;; {:facet/slug (Set :option/slug)}
+   {:looks-filtering/keys [sections filters]}]
+
+  (->> (vals (select-keys facets-db (keys represented-facets)))
        (sort-by :filter/order)
-       ;; NOTE sections to filter by
-       (filter (comp #{:hair/origin :hair/texture :hair/color} ;; TODO: these will end up being driven by the :selector/electives when used in the category page
-                     :facet/slug))
        (map
         (fn facet->section [{facet-slug    :facet/slug
                              facet-name    :facet/name
                              facet-options :facet/options}]
-          (let [section-toggled? (contains? sections facet-slug)]
+          (let [section-toggled?    (contains? sections facet-slug)
+                represented-options (get represented-facets facet-slug)]
             (cond-> {:id                             facet-slug
                      :looks-filtering.section.title/primary  (str "Hair " facet-name)
                      :looks-filtering.section.title/target   [e/flow|looks-filtering|section-toggled
-                                                      [facet-slug (not section-toggled?)]]
+                                                              [facet-slug (not section-toggled?)]] ;; TODO: not positional?
                      :looks-filtering.section.title/id       (str "section-filter-" facet-slug)
                      :looks-filtering.section.title/rotated? section-toggled?}
               section-toggled?
               (assoc :looks-filtering.section/filters
                      (->> (vals facet-options)
                           (sort-by :filter/order)
-                          (mapv
+                          (keep
                            (fn option->filter [{option-slug   :option/slug
                                                 option-name   :option/name
-                                                option-swatch :option/rectangle-swatch }]
-                             (let [filter-toggled? (contains?
-                                                    (get filters facet-slug)
-                                                    option-slug)]
-                               (cond->
-                                   #:looks-filtering.section.filter
-                                   {:primary option-name
-                                    :target  [e/flow|looks-filtering|filter-toggled
-                                              {:facet-key  facet-slug
-                                               :option-key option-slug
-                                               :toggled?   (not filter-toggled?)}]
-                                    :value   filter-toggled?
-                                    :url     option-name}
-                                 option-swatch
-                                 (assoc :looks-filtering.section.filter/icon-url
-                                        (str "https://ucarecdn.com/"
-                                             (ui/ucare-img-id option-swatch)
-                                             "/-/format/auto/-/resize/50x/")
-                                        option-swatch)))))))))))))
+                                                option-swatch :option/rectangle-swatch}]
+                             (when (contains? represented-options option-slug)
+                               (let [filter-toggled? (contains?
+                                                      (get filters facet-slug)
+                                                      option-slug)]
+                                 (cond->
+                                     #:looks-filtering.section.filter
+                                     {:primary option-name
+                                      :target  [e/flow|looks-filtering|filter-toggled
+                                                {:facet-key  facet-slug
+                                                 :option-key option-slug
+                                                 :toggled?   (not filter-toggled?)}]
+                                      :value   filter-toggled?
+                                      :url     option-name}
+                                   option-swatch
+                                   (assoc :looks-filtering.section.filter/icon-url
+                                          (str "https://ucarecdn.com/"
+                                               (ui/ucare-img-id option-swatch)
+                                               "/-/format/auto/-/resize/50x/")))))))
+                          vec))))))))
 
 (defn no-matches<-
   [looks {:looks-filtering/keys [filters]}]
@@ -573,7 +576,12 @@
                                    :header.done/primary  "DONE"
                                    :header.done/target   [e/flow|looks-filtering|panel-toggled false]}
                         :sections {:looks-filtering/sections
-                                   (filtering-sections<- facets-db looks-filtering)}})
+                                   (filtering-sections<-
+                                    facets-db
+                                    (->> looks ;; Note: Facets that actually exist on the looks
+                                         (map #(select-keys % [:hair/origin :hair/color :hair/texture]))
+                                         (apply merge-with clojure.set/union))
+                                    looks-filtering)}})
       ;; Grid of Looks
       :else
       (->> {:hero              looks-hero<-
