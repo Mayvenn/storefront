@@ -1,11 +1,14 @@
 (ns catalog.looks
   "Shopping by Looks: index page of 'looks' for an 'album'"
-  (:require [spice.maps :as maps]
+  (:require #?(:cljs [storefront.history :as history])
+            [spice.maps :as maps]
             [clojure.string :refer [split]]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.sites :as sites]
+            [storefront.effects :as effects]
             [storefront.events :as e]
+            [storefront.accessors.categories :as categories]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.header :as header]
             [storefront.components.svg :as svg]
@@ -16,7 +19,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.ugc :as ugc]
-            [spice.selector :as selector]))
+            [spice.selector :as selector]
+            [clojure.set :as set]))
 
 (def ^:private select
   (comp seq (partial selector/match-all {:selector/strict? true})))
@@ -261,6 +265,12 @@
                       :looks-filtering/filters)
                 {})))
 
+(defmethod effects/perform-effects  e/flow|looks-filtering|reset
+  [_ event _ _ app-state]
+  #?(:cljs
+     (history/enqueue-navigate e/navigate-shop-by-look
+                               {:album-keyword (:album-keyword (get-in app-state keypaths/navigation-args))})))
+
 (defmethod t/transition-state e/flow|looks-filtering|panel-toggled
   [_ _ toggled? state]
   (-> state
@@ -276,8 +286,21 @@
                  (fnil (if toggled? conj disj) #{})
                  facet-key)))
 
+(defmethod effects/perform-effects e/flow|looks-filtering|filter-toggled
+  [_ event {:keys [facet-key option-key toggled?]} _ app-state]
+  #?(:cljs
+     (let [existing-filters (get-in app-state (conj k-models-looks-filtering ;; TODO(jjh) Why no keypath?
+                                                    :looks-filtering/filters))]
+       (history/enqueue-navigate e/navigate-shop-by-look
+                                 {:query-params  (->> existing-filters
+                                                      (filter (fn [[k v]]
+                                                                (seq v)))
+                                                      (reduce merge {})
+                                                      categories/category-selections->query-params)
+                                  :album-keyword (:album-keyword (get-in app-state keypaths/navigation-args))}))))
+
 (defmethod t/transition-state e/flow|looks-filtering|filter-toggled
-  [_ _ [facet-key option-key toggled?] state]
+  [_ _ {:keys [facet-key option-key toggled?]} state]
   (-> state
       (update-in (conj k-models-looks-filtering
                        :looks-filtering/filters
@@ -319,9 +342,9 @@
                                    [option]
                                    {:filtering-summary.pill/primary     (:option/name option)
                                     :filtering-summary.pill/target      [e/flow|looks-filtering|filter-toggled
-                                                                         [(:facet/slug option)
-                                                                          (:option/slug option)
-                                                                          false]]
+                                                                         {:facet-key  (:facet/slug option)
+                                                                          :option-key (:option/slug option)
+                                                                          :toggled?   false}]
                                     :filtering-summary.pill/action-icon :close-x})
                                  filtering-options))]
     {:filtering-summary.status/primary   "Filter By:"
@@ -337,12 +360,12 @@
 
    Produces (Viz)
    - Sections
-     - Filters"
+   - Filters"
   [facets-db {:looks-filtering/keys [sections filters]}]
   (->> (vals facets-db)
        (sort-by :filter/order)
        ;; NOTE sections to filter by
-       (filter (comp #{:hair/origin :hair/texture :hair/color}
+       (filter (comp #{:hair/origin :hair/texture :hair/color} ;; TODO: these will end up being driven by the :selector/electives when used in the category page
                      :facet/slug))
        (map
         (fn facet->section [{facet-slug    :facet/slug
@@ -370,9 +393,9 @@
                                    #:looks-filtering.section.filter
                                    {:primary option-name
                                     :target  [e/flow|looks-filtering|filter-toggled
-                                              [facet-slug
-                                               option-slug
-                                               (not filter-toggled?)]]
+                                              {:facet-key  facet-slug
+                                               :option-key option-slug
+                                               :toggled?   (not filter-toggled?)}]
                                     :value   filter-toggled?
                                     :url     option-name}
                                  option-swatch
@@ -445,7 +468,7 @@
 ;; Biz Domain: Looks
 
 (defn ^:private options|name->slug
-  "Used to enrich contenful looks to be selectable"
+  "Used to enrich contentful looks to be selectable"
   [facets-db]
   (->> (vals facets-db)
        (mapcat :facet/options)
@@ -619,3 +642,11 @@
                             opts)
            (template/wrap-standard data
                                    e/navigate-shop-by-look)))))
+
+(defmethod t/transition-state e/navigate-shop-by-look
+  [_ event {:keys [album-keyword query-params] :as args} app-state]
+  (-> app-state
+      (assoc-in keypaths/selected-album-keyword album-keyword)
+      (assoc-in keypaths/selected-look-id nil)
+      (assoc-in (conj k-models-looks-filtering :looks-filtering/filters)
+                (categories/query-params->selector-electives query-params))))

@@ -13,11 +13,6 @@
   ;; (js/console.log "IGNORED transition" (clj->js event) (clj->js args)) ;; enable to see ignored transitions
   app-state)
 
-(defmethod transition-state events/navigate-shop-by-look [_ event {:keys [album-keyword] :as args} app-state]
-  (-> app-state
-      (assoc-in keypaths/selected-album-keyword album-keyword)
-      (assoc-in keypaths/selected-look-id nil)))
-
 (defmethod transition-state events/navigate-shop-by-look-details [_ event {:keys [look-id]} app-state]
   (let [shared-cart-id      (contentful/shared-cart-id (contentful/selected-look app-state))
         current-shared-cart (get-in app-state keypaths/shared-cart-current)]
