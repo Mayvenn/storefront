@@ -1,5 +1,7 @@
 (ns storefront.transitions
   (:require [spice.core :as spice]
+            catalog.keypaths
+            [storefront.accessors.categories :as categories]
             [storefront.accessors.contentful :as contentful]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
@@ -62,3 +64,11 @@
       clear-field-errors
       (assoc-in keypaths/flash-now-success nil)
       (assoc-in keypaths/flash-now-failure nil)))
+
+(defmethod transition-state events/navigate-shop-by-look
+  [_ event {:keys [album-keyword query-params] :as args} app-state]
+  (-> app-state
+      (assoc-in keypaths/selected-album-keyword album-keyword)
+      (assoc-in keypaths/selected-look-id nil)
+      (assoc-in catalog.keypaths/k-models-looks-filtering-filters
+                (categories/query-params->selector-electives query-params))))

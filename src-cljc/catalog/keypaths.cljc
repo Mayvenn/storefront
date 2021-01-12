@@ -28,3 +28,16 @@
 
 (def initial (-> {}
                  (assoc-in detailed-product {})))
+
+;; Shop by look detail
+(def k-models-looks-filtering
+  (conj keypaths/models-root :looks-filtering))
+
+(def k-models-looks-filtering-filters
+  (conj k-models-looks-filtering :looks-filtering/filters))
+
+(def k-models-looks-filtering-panel
+  (conj k-models-looks-filtering :looks-filtering/panel))
+
+(def k-models-looks-filtering-sections
+  (conj k-models-looks-filtering :looks-filtering/sections))

@@ -1,14 +1,15 @@
 (ns catalog.looks
   "Shopping by Looks: index page of 'looks' for an 'album'"
-  (:require #?(:cljs [storefront.history :as history])
+  (:require #?@(:cljs [[storefront.accessors.categories :as categories]
+                       [storefront.history :as history]])
+            catalog.keypaths
+            clojure.string
             [spice.maps :as maps]
-            [clojure.string :refer [split]]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.sites :as sites]
             [storefront.effects :as effects]
             [storefront.events :as e]
-            [storefront.accessors.categories :as categories]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.header :as header]
             [storefront.components.svg :as svg]
@@ -20,7 +21,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.ugc :as ugc]
             [spice.selector :as selector]
-            [clojure.set :as set]))
+            [catalog.keypaths :as catalog.keypaths]))
 
 (def ^:private select
   (comp seq (partial selector/match-all {:selector/strict? true})))
@@ -243,15 +244,13 @@
 
 ;; Flow Domain: Filtering Looks
 
-(def k-models-looks-filtering (conj keypaths/models-root :looks-filtering))
-
 (defn ^:private looks-filtering<-
   [state]
   (let [initial-state #:looks-filtering{:panel    false
                                         :sections #{}
                                         :filters  {}}]
     (-> initial-state
-        (merge (get-in state k-models-looks-filtering))
+        (merge (get-in state catalog.keypaths/k-models-looks-filtering))
         (update :looks-filtering/filters
                 ;; Remove empty vals for selector
                 #(->> %
@@ -261,8 +260,7 @@
 (defmethod t/transition-state e/flow|looks-filtering|reset
   [_ _ _ state]
   (-> state
-      (assoc-in (conj k-models-looks-filtering
-                      :looks-filtering/filters)
+      (assoc-in catalog.keypaths/k-models-looks-filtering-filters
                 {})))
 
 (defmethod effects/perform-effects  e/flow|looks-filtering|reset
@@ -274,23 +272,19 @@
 (defmethod t/transition-state e/flow|looks-filtering|panel-toggled
   [_ _ toggled? state]
   (-> state
-      (assoc-in (conj k-models-looks-filtering
-                      :looks-filtering/panel)
-                toggled?)))
+      (assoc-in catalog.keypaths/k-models-looks-filtering-panel toggled?)))
 
 (defmethod t/transition-state e/flow|looks-filtering|section-toggled
   [_ _ [facet-key toggled?] state]
   (-> state
-      (update-in (conj k-models-looks-filtering
-                       :looks-filtering/sections)
+      (update-in catalog.keypaths/k-models-looks-filtering-sections
                  (fnil (if toggled? conj disj) #{})
                  facet-key)))
 
 (defmethod effects/perform-effects e/flow|looks-filtering|filter-toggled
   [_ event {:keys [facet-key option-key toggled?]} _ app-state]
   #?(:cljs
-     (let [existing-filters (get-in app-state (conj k-models-looks-filtering ;; TODO(jjh) Why no keypath?
-                                                    :looks-filtering/filters))]
+     (let [existing-filters (get-in app-state catalog.keypaths/k-models-looks-filtering-filters)]
        (history/enqueue-navigate e/navigate-shop-by-look
                                  {:query-params  (->> existing-filters
                                                       (filter (fn [[k v]]
@@ -302,9 +296,7 @@
 (defmethod t/transition-state e/flow|looks-filtering|filter-toggled
   [_ _ {:keys [facet-key option-key toggled?]} state]
   (-> state
-      (update-in (conj k-models-looks-filtering
-                       :looks-filtering/filters
-                       facet-key)
+      (update-in (conj catalog.keypaths/k-models-looks-filtering-filters facet-key)
                  (fnil (if toggled? conj disj) #{})
                  option-key)))
 
@@ -514,7 +506,7 @@
                                     :hair/origin  #{(get name->slug (str origin
                                                                          " hair"))}
                                     :hair/texture #{(get name->slug texture)}}
-                       skus        (->> (split description lengths-re)
+                       skus        (->> (clojure.string/split description lengths-re)
                                         (map (fn [length]
                                                (some-> (merge
                                                         tex-ori-col
@@ -642,11 +634,3 @@
                             opts)
            (template/wrap-standard data
                                    e/navigate-shop-by-look)))))
-
-(defmethod t/transition-state e/navigate-shop-by-look
-  [_ event {:keys [album-keyword query-params] :as args} app-state]
-  (-> app-state
-      (assoc-in keypaths/selected-album-keyword album-keyword)
-      (assoc-in keypaths/selected-look-id nil)
-      (assoc-in (conj k-models-looks-filtering :looks-filtering/filters)
-                (categories/query-params->selector-electives query-params))))
