@@ -699,9 +699,9 @@
 (defn counter [{:keys [data-test spinning?]} value dec-fn inc-fn]
   (component/html
    [:div
-    (counter-button spinning? (str "quantity-dec-" data-test) dec-fn (svg/counter-dec {:title "Decrement cart item count"}))
+    (counter-button spinning? (str "quantity-dec-" data-test) dec-fn (svg/counter-dec {:title "Decrement bag item count"}))
     (counter-value spinning? value)
-    (counter-button spinning? (str "quantity-inc-" data-test) inc-fn (svg/counter-inc {:title "Increment cart item count"}))]))
+    (counter-button spinning? (str "quantity-inc-" data-test) inc-fn (svg/counter-inc {:title "Increment bag item count"}))]))
 
 ;; GROT: Will be rendered useless post consolidated-cart
 (defn auto-complete-counter [{:keys [data-test spinning?]} value dec-fn inc-fn]

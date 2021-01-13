@@ -47,7 +47,7 @@
       (merge {:horizontal-direct-to-cart-card/cta-id        (str "add-to-cart-" sku-id)
               :horizontal-direct-to-cart-card/cta-disabled? false
               :horizontal-direct-to-cart-card/cta-max-width "111px"
-              :horizontal-direct-to-cart-card/cta-label     "Add To Cart"
+              :horizontal-direct-to-cart-card/cta-label     "Add To Bag"
               :horizontal-direct-to-cart-card/cta-target    [events/control-add-sku-to-bag {:sku      service-sku
                                                                                             :quantity 1}]})
 
@@ -56,7 +56,7 @@
               :horizontal-direct-to-cart-card/cta-disabled? true
               :horizontal-direct-to-cart-card/cta-ready?    false
               :horizontal-direct-to-cart-card/cta-max-width "139px"
-              :horizontal-direct-to-cart-card/cta-label     "Already In Cart"}))))
+              :horizontal-direct-to-cart-card/cta-label     "Already In Bag"}))))
 
 (c/defcomponent card-image-molecule
   [{:keys [card-image/src card-image/alt screen/seen?]}

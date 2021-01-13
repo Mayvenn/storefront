@@ -232,7 +232,7 @@
 (component/defcomponent no-items
   [_ _ _]
   [:div.bg-white.dark-gray.title-2.canela.center.py3
-   "No Items in Your Cart"])
+   "No Items in Your Bag"])
 
 (component/defcomponent organism
   [{:keys [cart-item suggestions]} _ {:keys [id]}]

@@ -180,7 +180,7 @@
               {:suggested-bundles/id                   (str "suggestion-" (map :catalog/sku-id skus) "-" (name position))
                :suggested-bundles/disabled?            (and (not this-is-adding-to-bag?) any-adding-to-bag?)
                :suggested-bundles/spinning?            this-is-adding-to-bag?
-               :suggested-bundles/label                "add to cart"
+               :suggested-bundles/label                "add to bag"
                :suggested-bundles/target               [events/control-suggested-add-to-bag
                                                         {:skus        skus
                                                          :initial-sku initial-sku}]

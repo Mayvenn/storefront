@@ -37,7 +37,7 @@
            :disabled?        (or (not look) sold-out?)
            :disabled-content (when sold-out? "Sold Out")
            :spinning?        creating-order?})
-   "Add items to cart"))
+   "Add items to bag"))
 
 (defmethod effects/perform-effects events/control-create-order-from-shared-cart
   [_ event {:keys [look-id shared-cart-id] :as args} _ app-state]

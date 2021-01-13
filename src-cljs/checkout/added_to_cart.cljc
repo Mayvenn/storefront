@@ -295,12 +295,12 @@
 
 (def cta<-
   #:cta{:target [e/control-cart-interstitial-view-cart]
-        :label  "Go to Cart"
+        :label  "Go to Bag"
         :id     "go-to-cart-cta"})
 
 (def celebration-cta<-
   #:cta{:target  [e/control-cart-interstitial-view-cart]
-        :label   "Go to Cart"
+        :label   "Go to Bag"
         :id      "go-to-cart-cta-discounted-service"
         :primary "🎉 Great work! Free service unlocked!"})
 

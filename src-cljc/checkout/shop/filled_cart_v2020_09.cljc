@@ -429,7 +429,7 @@
                                         mf/as-money-or-free)})))
 
 (defn regular-cart-summary-query
-  "This is for cart's that haven't entered an upsell (free install, wig customization, etc)"
+  "This is for carts that haven't entered an upsell (free install, wig customization, etc)"
   [{:as order :keys [adjustments tax-total total]}]
   (let [subtotal (orders/products-and-services-subtotal order)]
     {:cart-summary-total-line/id    "total"
@@ -598,7 +598,7 @@
         (merge
          {:freeinstall-informational/button-id             "add-wig-customization"
           :freeinstall-informational/primary               "Don't miss out on free Wig Customization"
-          :freeinstall-informational/secondary             "Get a free customization by a licensed stylist when you add a Wig Customization to your cart below."
+          :freeinstall-informational/secondary             "Get a free customization by a licensed stylist when you add a Wig Customization to your bag below."
           :freeinstall-informational/cta-label             "Add Wig Customization"
           :freeinstall-informational/cta-target            [events/navigate-product-details {:catalog/product-id "223" :page/slug "wig-customization" :query-params {:SKU "SRV-WGC-000"}}]
           :freeinstall-informational/secondary-link-id     "Learn More"

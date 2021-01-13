@@ -319,7 +319,7 @@
         selected-addons                      (get-in app-state catalog.keypaths/detailed-product-selected-addon-items)]
     (cond->
         {:cta/id        "add-to-cart"
-         :cta/label     "Add to Cart"
+         :cta/label     "Add to Bag"
          :cta/target    [events/control-add-sku-to-bag
                          {:sku      selected-sku
                           :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
@@ -331,7 +331,7 @@
 
       base-service-already-in-cart?
       (merge {:cta/disabled? true
-              :cta/label     "Already In Cart"})
+              :cta/label     "Already In Bag"})
 
       (and shop?
            (not service?)

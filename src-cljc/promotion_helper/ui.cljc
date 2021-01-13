@@ -116,7 +116,7 @@
      (when (zero? failed-criteria-count)
        {:promotion-helper.ui.drawer-contents.footer/id         "promotion-helper-conditions-fulfilled-footer"
         :promotion-helper.ui.drawer-contents.footer/primary    "🎉 Great work! Free service unlocked!"
-        :promotion-helper.ui.drawer-contents.footer/cta-label  "View Cart"
+        :promotion-helper.ui.drawer-contents.footer/cta-label  "View Bag"
         :promotion-helper.ui.drawer-contents.footer/cta-target [behavior/followed {:target    [e/navigate-cart]
                                                                                    :condition "view-cart"}]}))))
 

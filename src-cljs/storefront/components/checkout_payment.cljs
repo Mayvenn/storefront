@@ -197,7 +197,7 @@
                                      "Your "
                                      (as-money credit-to-use)
                                      " in store credit cannot be used with Mayvenn Service orders."
-                                     " To use store credit, please remove any Mayvenn Services from your cart.")})
+                                     " To use store credit, please remove any Mayvenn Services from your bag.")})
 
        can-use-store-credit?
        (merge
