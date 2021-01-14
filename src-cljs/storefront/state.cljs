@@ -40,8 +40,7 @@
    :paypal-redirect         false})
 
 (def initial-stylist-state
-  {:sales-rep-email nil
-   :earnings {:rate nil
+  {:earnings {:rate nil
               :page 0
               :pages nil
               :history []}
