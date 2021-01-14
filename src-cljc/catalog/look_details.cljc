@@ -235,7 +235,7 @@
    :cart-item-floating-box/contents       [{:text (some-> service-sku :sku/price mf/as-money)}]
    :cart-item-service-thumbnail/id        "service"
    :cart-item-service-thumbnail/image-url (->> service-sku
-                                               (catalog-images/image (:selector/images service-product) "cart")
+                                               (catalog-images/image (maps/index-by :catalog/image-id (:selector/images service-product)) "cart")
                                                :ucare/id)})
 
 (defn cart-items-query
@@ -261,7 +261,7 @@
      :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> line-item :hair/length first)]
                                                  (str length-circle-value "”"))
      :cart-item-square-thumbnail/ucare-id      (->> line-item
-                                                    (catalog-images/image images "cart")
+                                                    (catalog-images/image (maps/index-by :catalog/image-id images) "cart")
                                                     :ucare/id)}))
 
 (defn query [data]

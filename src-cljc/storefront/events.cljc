@@ -315,6 +315,7 @@
 
 (defpath api-success-shared-cart-create)
 (defpath api-success-shared-cart-fetch)
+(defpath api-success-shared-carts-fetch)
 
 (defpath api-success-assign-servicing-stylist)
 
@@ -590,12 +591,15 @@
 ;; Flow - Looks Filtering
 
 (defpath flow|looks-filtering|initialize)
+;; TODO: worry about the name later
+(defpath populate-shop-by-look)
+
 (defpath flow|looks-filtering|reset)
 (defpath flow|looks-filtering|panel-toggled)
 (defpath flow|looks-filtering|section-toggled)
 (defpath flow|looks-filtering|filter-toggled)
 
-;; TODO more sepcific name
+;; TODO more specific name
 (defpath cancel-presearch-requests)
 ;; TODO(corey) think about general solutions to the api handlers problem
 (defpath api-success-presearch-name)

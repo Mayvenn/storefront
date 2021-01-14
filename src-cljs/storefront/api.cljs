@@ -152,11 +152,12 @@
   (api-request method (str api-base-url path) req-key request-opts))
 
 (defn fetch-cms-keypath
-  [keypath]
-  (let [uri-path (str "/cms/" (string/join "/" (map name keypath)))]
-    (api-request GET uri-path
-                 request-keys/fetch-cms-keypath
-                 {:handler #(messages/handle-message events/api-success-fetch-cms-keypath %)})))
+  ([keypath] (fetch-cms-keypath keypath #(messages/handle-message events/api-success-fetch-cms-keypath %)))
+  ([keypath handler]
+   (let [uri-path (str "/cms/" (string/join "/" (map name keypath)))]
+     (api-request GET uri-path
+                  request-keys/fetch-cms-keypath
+                  {:handler handler}))))
 
 (defn cache-req
   [cache method path req-key {:keys [handler params cache/bypass?] :as request-opts}]
@@ -927,6 +928,15 @@
    request-keys/fetch-shared-cart
    {:params  {:shared-cart-id shared-cart-id}
     :handler #(messages/handle-message events/api-success-shared-cart-fetch %)}))
+
+(defn fetch-shared-carts [cache cart-ids]
+  (cache-req
+   cache
+   GET
+   "/fetch-shared-carts"
+   request-keys/fetch-shared-cart
+   {:params  {:cart-ids cart-ids}
+    :handler #(messages/handle-message events/api-success-shared-carts-fetch %)}))
 
 (defn create-order-from-cart
   [session-id

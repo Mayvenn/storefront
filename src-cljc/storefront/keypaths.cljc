@@ -78,6 +78,10 @@
 (def v2-facets (conj catalog :facets))
 (def v2-images (conj catalog :images))
 
+;; TODO: have this become the singular shared carts db (including look details &
+;; the /c/:shared-cart-id/cart page)
+(def v1-looks-shared-carts (conj catalog :looks-shared-carts))
+
 (def db [:db])
 (def db-images (conj db :images))
 

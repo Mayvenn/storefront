@@ -284,14 +284,17 @@
       (= :ugc/unknown-album actual-album-kw)
       (effects/page-not-found)
 
-      :else
-      (do
-        (effects/fetch-cms-keypath app-state [:ugc-collection actual-album-kw])
-        (let [just-arrived? (or (= :first-nav caused-by)
-                                (not= events/navigate-shop-by-look
-                                      (get-in previous-app-state keypaths/navigation-event)))]
-          (when just-arrived?
-            (messages/handle-message events/flow|looks-filtering|initialize)))))))
+      (and (experiments/sbl-update? app-state)
+           (= :aladdin-free-install actual-album-kw))
+      (let [just-arrived? (or (= :first-nav caused-by)
+                              (not= events/navigate-shop-by-look
+                                    (get-in previous-app-state keypaths/navigation-event)))]
+        ;; Fetch the correct album from CMS & associated shared-carts
+        (messages/handle-message events/populate-shop-by-look)
+        (when just-arrived?
+          (messages/handle-message events/flow|looks-filtering|initialized)))
+
+      :else (effects/fetch-cms-keypath app-state [:ugc-collection actual-album-kw]))))
 
 (defmethod effects/perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-keyword]} _ app-state]
   (let [actual-album-kw (ugc/determine-look-album app-state album-keyword)]

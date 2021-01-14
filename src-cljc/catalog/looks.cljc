@@ -1,6 +1,7 @@
 (ns catalog.looks
   "Shopping by Looks: index page of 'looks' for an 'album'"
   (:require #?@(:cljs [[storefront.accessors.categories :as categories]
+                       [storefront.api :as api]
                        [storefront.history :as history]])
             catalog.keypaths
             clojure.string
@@ -23,7 +24,10 @@
             [storefront.platform.component-utils :as utils]
             [storefront.ugc :as ugc]
             [spice.selector :as selector]
-            [catalog.keypaths :as catalog.keypaths]))
+            [catalog.keypaths :as catalog.keypaths]
+            [storefront.keypaths :as storefront.keypaths]
+            [catalog.images :as catalog-images]
+            [storefront.platform.messages :as messages]))
 
 (def ^:private select
   (comp seq (partial selector/match-all {:selector/strict? true})))
@@ -128,6 +132,20 @@
   (ui/large-spinner
    {:style {:height "4em"}}))
 
+(defmethod effects/perform-effects e/populate-shop-by-look
+  [_ event _ _ app-state]
+  #?(:cljs
+     (let [keypath [:ugc-collection :aladdin-free-install]
+           cache   (get-in app-state keypaths/api-cache)]
+       (api/fetch-cms-keypath
+        keypath
+        (fn [result]
+          (messages/handle-message e/api-success-fetch-cms-keypath result)
+          (when-let [cart-ids (->> (get-in result (conj keypath :looks))
+                                   (mapv contentful/shared-cart-id)
+                                   not-empty)]
+            (api/fetch-shared-carts cache cart-ids)))))))
+
 ;; Flow Domain: Filtering Looks
 
 (defmethod t/transition-state e/flow|looks-filtering|initialize
@@ -186,7 +204,6 @@
 
 (defn ^:private looks-card<-
   [images-db {:look/keys [title hero-imgs skus navigation-message]}]
-  ;; TODO(corey) filter catalog/department #{"hair"}
   (let [height-px 240
         gap-px    3]
     {:looks-card.title/primary  title
@@ -195,40 +212,30 @@
      :looks-card.action/target  navigation-message
      :looks-card.hero/gap-px    gap-px
      :looks-card/height-px      height-px
-     :looks-card/hair-items
-     (->> skus
-          (map (fn [{:selector/keys [image-cases]}]
-                 (let [img-count      (count skus)
-                       gap-count      (dec img-count)
-                       img-px         (-> height-px
-                                          ;; remove total gap space
-                                          (- (* gap-px gap-count))
-                                          ;; divided among images
-                                          (/ img-count)
-                                          ;; rounded up
-                                          #?(:clj  identity
-                                             :cljs Math/ceil))
-                       [_ _ image-id] (first
-                                       (filter
-                                        (fn [[use _ _]]
-                                          (= "cart" use))
-                                        image-cases))]
-                   {:looks-card.hair-item/image-url
-                    (str "https://ucarecdn.com/"
-                         (-> images-db
-                             (get image-id)
-                             :url
-                             ui/ucare-img-id)
-                         "/-/format/auto/-/scale_crop/"
-                         img-px "x" img-px
-                         "/center/")}))))}))
+     :looks-card/hair-items     (->> skus
+                                     (map (fn [sku]
+                                            (let [img-count (count skus)
+                                                  gap-count (dec img-count)
+                                                  img-px    (-> height-px
+                                                                ;; remove total gap space
+                                                                (- (* gap-px gap-count))
+                                                                ;; divided among images
+                                                                (/ img-count)
+                                                                ;; rounded up
+                                                                #?(:clj  identity
+                                                                   :cljs Math/ceil))
+                                                  ucare-id  (:ucare/id (catalog-images/image images-db "cart" sku))]
+                                              {:looks-card.hair-item/image-url
+                                               (str "https://ucarecdn.com/"
+                                                    ucare-id
+                                                    "/-/format/auto/-/scale_crop/"
+                                                    img-px "x" img-px "/center/")}))))}))
 
 (defn looks-cards<-
   [images-db looks {:facet-filtering/keys [filters]}]
   {:looks-cards/cards
    (->> (select filters looks)
-        (mapv (partial looks-card<-
-                       images-db)))})
+        (mapv (partial looks-card<- images-db)))})
 
 (def ^:private looks-hero<-
   {:looks.hero.title/primary   "Shop by Look"
@@ -268,53 +275,45 @@
 
   - Displaying the detailed view
   "
-  [state skus-db facets-db album-keyword]
-  (let [lengths-re       #"," ;;; TEMP: remove to debug acceptance issue ;#",|\s+and\s+|\s?\+\s?|(?<=\")\s(?=\d)"
-        name->slug       (options|name->slug facets-db)
+  [state skus-db facets-db looks-shared-carts-db album-keyword]
+  (let [name->slug       (options|name->slug facets-db)
         contentful-looks (->> (get-in state keypaths/cms-ugc-collection)
                               ;; NOTE(corey) This is hardcoded because obstensibly
                               ;; filtering should replace albums
                               :aladdin-free-install
                               :looks)]
     (->> contentful-looks
-         ;; TODO(jjh) This is the shim that determines the facets from the Look (which enables the filters).
-         ;; Once this page depends on SKUs being loaded in, those should be used instead.
-         (mapv (fn [{:as look :keys [description color origin texture]}]
-                 (let [tex-ori-col {:hair/color   #{(get name->slug color)}
-                                    :hair/origin  #{(get name->slug (str origin " hair"))}
-                                    :hair/texture #{(get name->slug texture)}}
-                       skus        (->> (clojure.string/split description lengths-re)
-                                        (map (fn [length]
-                                               (some-> (merge
-                                                        tex-ori-col
-                                                        {:hair/length #{(first (re-seq #"\d+" length))}}
-                                                        (cond
-                                                          (not-empty (re-seq #"Closure" length))
-                                                          {:hair/family        #{"closures"}
-                                                           :hair/base-material #{"lace"}}
-                                                          (not-empty (re-seq #"Frontal" length))
-                                                          {:hair/family        #{"frontals"}
-                                                           :hair/base-material #{"lace"}}
-                                                          :else
-                                                          {:hair/family #{"bundles"}}))
-                                                       (select (vals skus-db))
-                                                       first))))]
-                   (merge tex-ori-col ;; TODO(corey) apply merge-with into
-                          {:look/title              (or (some->> [origin texture]
-                                                                 (remove nil?)
-                                                                 (interpose " ")
-                                                                 not-empty
-                                                                 (apply str))
-                                                        "Check this out!")
-                           :look/hero-imgs          [{:url (:photo-url look)
-                                                      :platform-source
-                                                      ^:ignore-interpret-warning
-                                                      (when-let [icon (svg/social-icon (:social-media-platform look))]
-                                                        (icon {:class "fill-white"
-                                                               :style {:opacity 0.7}}))}]
-                           :look/navigation-message [e/navigate-shop-by-look-details {:album-keyword album-keyword
-                                                                                      :look-id       (:content/id look)}]
-                           :look/skus               skus})))))))
+         (keep (fn [{:as look :keys [color origin texture]}]
+                 (when-let [shared-cart-id (contentful/shared-cart-id look)]
+                   (let [shared-cart              (get looks-shared-carts-db shared-cart-id)
+                         tex-ori-col              {:hair/color   #{(get name->slug color)}
+                                                   :hair/origin  #{(get name->slug (str origin " hair"))}
+                                                   :hair/texture #{(get name->slug texture)}}
+                         sku-ids-from-shared-cart (->> shared-cart  ;; TODO: ordering logic
+                                                       :line-items
+                                                       (mapv :catalog/sku-id)
+                                                       sort)
+                         skus                     (->> (select-keys skus-db sku-ids-from-shared-cart)
+                                                       vals
+                                                       (select {:catalog/department #{"hair"}})
+                                                       vec)]
+                     (merge tex-ori-col ;; TODO(corey) apply merge-with into
+                            {:look/title              (or (some->> [origin texture]
+                                                                   (remove nil?)
+                                                                   (interpose " ")
+                                                                   not-empty
+                                                                   (apply str))
+                                                          "Check this out!")
+                             :look/hero-imgs          [{:url (:photo-url look)
+                                                        :platform-source
+                                                        ^:ignore-interpret-warning
+                                                        (when-let [icon (svg/social-icon (:social-media-platform look))]
+                                                          (icon {:class "fill-white"
+                                                                 :style {:opacity 0.7}}))}]
+                             :look/navigation-message [e/navigate-shop-by-look-details {:album-keyword album-keyword
+                                                                                        :look-id       (:content/id look)}]
+                             :look/skus               skus})))))
+         vec)))
 
 ;; Visual Domain: Page
 
@@ -332,8 +331,12 @@
                                           (update facet :facet/options
                                                   (partial maps/index-by :option/slug)))))
 
+        looks-shared-carts-db (get-in state storefront.keypaths/v1-looks-shared-carts)
+
         selected-album-keyword (get-in state keypaths/selected-album-keyword)
-        looks                  (looks<- state skus-db facets-db selected-album-keyword)
+        looks                  (looks<- state skus-db facets-db
+                                        looks-shared-carts-db
+                                        selected-album-keyword)
         ;; Flow models
         looks-filtering        (merge (get-in state catalog.keypaths/k-models-looks-filtering)
                                       {:facet-filtering/panel-toggle-event   e/flow|looks-filtering|panel-toggled
@@ -342,7 +345,7 @@
                                        :facet-filtering/item-label           "Look"})]
     (cond
       ;; Spinning
-      (empty? looks)
+      (empty? looks) ;;TODO: Or awaiting  bulk fetch carts to appear
       (->> (component/build spinning-template)
            (template/wrap-standard state
                                    e/navigate-shop-by-look))

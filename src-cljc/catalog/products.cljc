@@ -95,8 +95,8 @@
   [_ event {:keys [products skus images] :as response} app-state]
   (-> app-state
       (update-in keypaths/v2-products merge (index-products products))
-      (update-in keypaths/v2-skus merge skus)
-      (update-in keypaths/v2-images merge images)))
+      (update-in keypaths/v2-skus merge skus) ;; TODO this should always be keyed by strings
+      (update-in keypaths/v2-images merge images))) ;;  this should always be keyed by strings
 
 (defn path-for-sku [product-id slug sku]
   (routes/path-for events/navigate-product-details

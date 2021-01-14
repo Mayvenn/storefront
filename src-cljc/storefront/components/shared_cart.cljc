@@ -1,6 +1,7 @@
 (ns storefront.components.shared-cart
   (:require #?(:cljs [storefront.api :as api])
             [catalog.products :as products]
+            [spice.maps :as maps]
             [storefront.accessors.promos :as promos]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
@@ -75,10 +76,17 @@
   (-> app-state
       (assoc-in keypaths/shared-cart-current shared-cart)
       (assoc-in keypaths/shared-cart-creator shared-cart-creator)
-      (update-in keypaths/v2-skus
-                 merge (products/index-skus skus))
-      (update-in keypaths/v2-products
-                 merge (products/index-products products))))
+      (update-in keypaths/v2-skus merge (products/index-skus skus))
+      (update-in keypaths/v2-products merge (products/index-products products))))
+
+;; TODO: make this work server side
+;; TODO: destructuring in the look detail page is throwing an exception (around gathering images?)
+(defmethod transitions/transition-state events/api-success-shared-carts-fetch
+  [_ event {:keys [carts skus images]} app-state]
+  (-> app-state
+      (update-in keypaths/v2-skus merge (catalog.products/index-skus (vals skus)))
+      (update-in keypaths/v2-images merge (maps/map-keys (fnil name "") images))
+      (update-in keypaths/v1-looks-shared-carts merge (maps/index-by :number carts))))
 
 (defmethod effects/perform-effects events/api-success-shared-cart-fetch
   [_ _ _ _ app-state]
