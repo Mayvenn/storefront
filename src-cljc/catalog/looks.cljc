@@ -269,7 +269,7 @@
   - Displaying the detailed view
   "
   [state skus-db facets-db album-keyword]
-  (let [lengths-re       #",|\s+and\s+|\s?\+\s?|(?<=\")\s(?=\d)"
+  (let [lengths-re       #"," ;;; TEMP: remove to debug acceptance issue ;#",|\s+and\s+|\s?\+\s?|(?<=\")\s(?=\d)"
         name->slug       (options|name->slug facets-db)
         contentful-looks (->> (get-in state keypaths/cms-ugc-collection)
                               ;; NOTE(corey) This is hardcoded because obstensibly
