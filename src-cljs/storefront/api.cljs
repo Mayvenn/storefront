@@ -935,7 +935,7 @@
    GET
    "/fetch-shared-carts"
    request-keys/fetch-shared-cart
-   {:params  {:cart-ids cart-ids}
+   {:params  {:cart-ids (string/join "," cart-ids)}
     :handler #(messages/handle-message events/api-success-shared-carts-fetch %)}))
 
 (defn create-order-from-cart
