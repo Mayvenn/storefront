@@ -140,6 +140,9 @@
                                   (get-in app-state keypaths/user-id)
                                   (get-in app-state keypaths/user-token))))
 
+(defmethod effects/perform-effects events/navigate-stylist-dashboard-cash-out-success [_ _ {:keys [balance-transfer-id]} _ app-state]
+  (assoc-in app-state keypaths/stylist-cash-out-balance-transfer-id balance-transfer-id))
+
 (defmethod effects/perform-effects events/control-stylist-dashboard-cash-out-commit [_ _ {:keys [friday?] :as params} _ app-state]
   (if (= friday? (friday-et? (spice.date/now)))
     (messages/handle-message events/stylist-dashboard-cash-out-commit params)
