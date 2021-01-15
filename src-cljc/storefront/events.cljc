@@ -590,7 +590,7 @@
 
 ;; Flow - Looks Filtering
 
-(defpath flow|looks-filtering|initialize)
+(defpath flow|looks-filtering|initialized)
 ;; TODO: worry about the name later
 (defpath populate-shop-by-look)
 
