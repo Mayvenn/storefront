@@ -15,6 +15,7 @@
             [storefront.events :as e]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.header :as header]
+            [storefront.request-keys :as request-keys]
             [storefront.components.svg :as svg]
             [storefront.components.ugc :as component-ugc]
             [storefront.components.template :as template]
@@ -132,20 +133,6 @@
   (ui/large-spinner
    {:style {:height "4em"}}))
 
-(defmethod effects/perform-effects e/populate-shop-by-look
-  [_ event _ _ app-state]
-  #?(:cljs
-     (let [keypath [:ugc-collection :aladdin-free-install]
-           cache   (get-in app-state keypaths/api-cache)]
-       (api/fetch-cms-keypath
-        keypath
-        (fn [result]
-          (messages/handle-message e/api-success-fetch-cms-keypath result)
-          (when-let [cart-ids (->> (get-in result (conj keypath :looks))
-                                   (mapv contentful/shared-cart-id)
-                                   not-empty)]
-            (api/fetch-shared-carts cache cart-ids)))))))
-
 ;; Flow Domain: Filtering Looks
 
 (defmethod t/transition-state e/flow|looks-filtering|initialized
@@ -189,13 +176,20 @@
   (-> state
       (update-in (conj catalog.keypaths/k-models-looks-filtering-filters facet-key)
                  (fnil (if toggled? conj disj) #{})
-                 option-key)))
+                 option-key)
+      (update-in catalog.keypaths/k-models-looks-filtering-filters
+                 (fn [filters]
+                   (cond-> filters
+                     (empty? (get filters facet-key))
+                     (dissoc facet-key))))))
 
 ;; Biz domains -> Viz domains
 
 (defn no-matches<-
   [looks {:facet-filtering/keys [filters]}]
-  (when (empty? (select filters looks))
+  (when (and
+         (seq filters)
+         (empty? (select filters looks)))
     {:no-matches.title/primary    "😞"
      :no-matches.title/secondary  "Sorry, we couldn’t find any matches."
      :no-matches.action/primary   "Clear all filters"
@@ -345,7 +339,8 @@
                                        :facet-filtering/item-label           "Look"})]
     (cond
       ;; Spinning
-      (empty? looks) ;;TODO: Or awaiting  bulk fetch carts to appear
+      (or (utils/requesting? state request-keys/fetch-shared-carts)
+          (empty? looks))
       (->> (component/build spinning-template)
            (template/wrap-standard state
                                    e/navigate-shop-by-look))

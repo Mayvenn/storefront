@@ -591,9 +591,6 @@
 ;; Flow - Looks Filtering
 
 (defpath flow|looks-filtering|initialized)
-;; TODO: worry about the name later
-(defpath populate-shop-by-look)
-
 (defpath flow|looks-filtering|reset)
 (defpath flow|looks-filtering|panel-toggled)
 (defpath flow|looks-filtering|section-toggled)
