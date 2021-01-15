@@ -54,6 +54,7 @@
 (def checkout [:checkout])
 (def create-shared-cart [:create-shared-cart])
 (def fetch-shared-cart [:fetch-shared-cart])
+(def fetch-shared-carts [:fetch-shared-carts])
 (def create-order-from-shared-cart [:create-order-from-shared-cart])
 (def assign-servicing-stylist [:assign-servicing-stylist])
 (def remove-servicing-stylist [:remove-servicing-stylist])
