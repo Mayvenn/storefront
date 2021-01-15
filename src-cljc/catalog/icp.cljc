@@ -213,7 +213,7 @@
     (component/build service-card-listing/organism service-card-listing {})
     (component/build product-card-listing/organism product-card-listing {})]
    (when (:how-it-works queried-data)
-     [:div.col-10.mx-auto.mt6
+     [:div.col-10.col-7-on-tb-dt.mx-auto.mt6
       (component/build how-it-works/organism queried-data)])
    (when content-box
      [:div green-divider-atom

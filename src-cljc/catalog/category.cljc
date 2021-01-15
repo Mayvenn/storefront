@@ -70,7 +70,7 @@
      [:div green-divider-atom
       (c/build content-box/organism content-box)])
    (when (:how-it-works queried-data)
-     [:div.col-10.mx-auto.mt6
+     [:div.col-10.col-7-on-tb-dt.mx-auto.mt6
       (c/build how-it-works/organism queried-data)])
    (when faq-section
      (c/build faq/organism faq-section))])
