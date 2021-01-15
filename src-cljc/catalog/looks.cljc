@@ -148,7 +148,7 @@
 
 ;; Flow Domain: Filtering Looks
 
-(defmethod t/transition-state e/flow|looks-filtering|initialize
+(defmethod t/transition-state e/flow|looks-filtering|initialized
   [_ event args state]
   (assoc-in state catalog.keypaths/k-models-looks-filtering
             #:facet-filtering{:panel    false
