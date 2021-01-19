@@ -101,9 +101,26 @@
   (browser-events/detach-click-away-handler)
   (browser-events/detach-esc-key-listener))
 
+(defn fetch-looks-and-shared-carts-for-sbl-update [cache]
+  (let [keypath       [:ugc-collection :aladdin-free-install]]
+    (api/fetch-cms-keypath
+     keypath
+     (fn [result]
+       (messages/handle-message events/api-success-fetch-cms-keypath result)
+       (when-let [cart-ids (->> (get-in result (conj keypath :looks))
+                                (mapv contentful/shared-cart-id)
+                                not-empty)]
+         (api/fetch-shared-carts cache cart-ids))))))
+
 (defmethod effects/perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
   (when (= feature "add-on-services") ;; Remove when experiments/add-on-services is removed
-    (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})))
+    (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)}))
+
+  (when (and
+         (= events/navigate-shop-by-look (get-in  app-state keypaths/navigation-event))
+         (= feature "sbl-update"))
+    ;; Fetch the correct album from CMS & associated shared-carts
+    (fetch-looks-and-shared-carts-for-sbl-update (get-in app-state keypaths/api-cache))))
 
 (defmethod effects/perform-effects events/ensure-sku-ids
   [_ _ {:keys [sku-ids]} _ app-state]
@@ -287,17 +304,9 @@
       (and (experiments/sbl-update? app-state)
            (= :aladdin-free-install actual-album-kw))
       (let [just-arrived? (not= events/navigate-shop-by-look
-                                (get-in previous-app-state keypaths/navigation-event))
-            keypath       [:ugc-collection :aladdin-free-install]]
+                                (get-in previous-app-state keypaths/navigation-event))]
         ;; Fetch the correct album from CMS & associated shared-carts
-        (api/fetch-cms-keypath
-         keypath
-         (fn [result]
-           (messages/handle-message events/api-success-fetch-cms-keypath result)
-           (when-let [cart-ids (->> (get-in result (conj keypath :looks))
-                                    (mapv contentful/shared-cart-id)
-                                    not-empty)]
-             (api/fetch-shared-carts (get-in app-state keypaths/api-cache) cart-ids))))
+        (fetch-looks-and-shared-carts-for-sbl-update (get-in app-state keypaths/api-cache))
         (when just-arrived?
           (messages/handle-message events/flow|looks-filtering|initialized)))
 
