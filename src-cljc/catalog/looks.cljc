@@ -4,6 +4,7 @@
                        [storefront.api :as api]
                        [storefront.history :as history]])
             catalog.keypaths
+            catalog.services
             clojure.string
             clojure.set
             [catalog.ui.facet-filters :as facet-filters]
@@ -270,34 +271,50 @@
   - Displaying the detailed view
   "
   [state skus-db facets-db looks-shared-carts-db album-keyword]
-  (let [name->slug       (options|name->slug facets-db)
-        contentful-looks (->> (get-in state keypaths/cms-ugc-collection)
+  (let [contentful-looks (->> (get-in state keypaths/cms-ugc-collection)
                               ;; NOTE(corey) This is hardcoded because obstensibly
                               ;; filtering should replace albums
                               :aladdin-free-install
                               :looks)]
     (->> contentful-looks
-         (keep (fn [{:as look :keys [color origin texture]}]
+         (keep (fn [look]
                  (when-let [shared-cart-id (contentful/shared-cart-id look)]
-                   (let [shared-cart              (get looks-shared-carts-db shared-cart-id)
-                         tex-ori-col              {:hair/color   #{(get name->slug color)}
-                                                   :hair/origin  #{(get name->slug (str origin " hair"))}
-                                                   :hair/texture #{(get name->slug texture)}}
-                         sku-ids-from-shared-cart (->> shared-cart  ;; TODO: ordering logic
-                                                       :line-items
-                                                       (mapv :catalog/sku-id)
-                                                       sort)
-                         skus                     (->> (select-keys skus-db sku-ids-from-shared-cart)
-                                                       vals
-                                                       (select {:catalog/department #{"hair"}})
-                                                       vec)]
+                   (let [shared-cart               (get looks-shared-carts-db shared-cart-id)
+                         sku-ids-from-shared-cart  (->> shared-cart  ;; TODO: ordering logic
+                                                        :line-items
+                                                        (mapv :catalog/sku-id)
+                                                        sort)
+                         all-skus                  (->> (select-keys skus-db sku-ids-from-shared-cart)
+                                                        vals
+                                                        vec)
+                         discountable-service-skus (->> all-skus
+                                                        (select catalog.services/discountable))
+                         product-skus              (->> all-skus
+                                                        (select {:catalog/department #{"hair"}})
+                                                        vec)
+                         tex-ori-col               (some->> product-skus
+                                                            (mapv #(select-keys % [:hair/color :hair/origin :hair/texture]))
+                                                            not-empty
+                                                            (apply merge-with clojure.set/union))
+
+                         origin-name                          (get-in facets-db [:hair/origin :facet/options (first (:hair/origin tex-ori-col)) :sku/name])
+                         texture-name                         (get-in facets-db [:hair/texture :facet/options (first (:hair/texture tex-ori-col)) :option/name])
+                         discountable-service-title-component (when-let [discountable-service-category
+                                                                         (some->> discountable-service-skus
+                                                                                  not-empty
+                                                                                  (mapv :service/category)
+                                                                                  first
+                                                                                  first)]
+                                                                (case discountable-service-category
+                                                                  "install"      "+ FREE Install Service"
+                                                                  "construction" "+ FREE Custom Wig"
+                                                                  nil))]
                      (merge tex-ori-col ;; TODO(corey) apply merge-with into
-                            {:look/title              (or (some->> [origin texture]
-                                                                   (remove nil?)
-                                                                   (interpose " ")
-                                                                   not-empty
-                                                                   (apply str))
-                                                          "Check this out!")
+                            {:look/title              (clojure.string/join " " [origin-name
+                                                                                texture-name
+                                                                                "Hair"
+                                                                                discountable-service-title-component])
+
                              :look/hero-imgs          [{:url (:photo-url look)
                                                         :platform-source
                                                         ^:ignore-interpret-warning
@@ -306,7 +323,7 @@
                                                                  :style {:opacity 0.7}}))}]
                              :look/navigation-message [e/navigate-shop-by-look-details {:album-keyword album-keyword
                                                                                         :look-id       (:content/id look)}]
-                             :look/skus               skus})))))
+                             :look/skus               product-skus})))))
          vec)))
 
 ;; Visual Domain: Page
