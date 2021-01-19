@@ -248,18 +248,6 @@
 
 ;; Biz Domain: Looks
 
-
-;;;; Looks (contentful model)
-;;;;; UGC content (images)
-;;;;; A Shared Cart Link
-
-
-;; -> Shared Carts
-
-
-;; Look
-;; A Shared cart
-
 (defn ^:private looks<-
   "
   What is a look?
