@@ -29,7 +29,8 @@
             [catalog.keypaths :as catalog.keypaths]
             [storefront.keypaths :as storefront.keypaths]
             [catalog.images :as catalog-images]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            [storefront.components.money-formatters :as mf]))
 
 (def ^:private select
   (comp seq (partial selector/match-all {:selector/strict? true})))
@@ -78,8 +79,12 @@
     badge-url]])
 
 (defn looks-card-title-molecule
-  [{:looks-card.title/keys [primary]}]
-  [:div.my2 primary])
+  [{:looks-card.title/keys [primary secondary struck]}]
+  [:div.my2
+   [:div primary]
+   [:div secondary
+    (when struck
+      [:span.content-4.strike.ml1 struck])]])
 
 (defcomponent looks-card-hair-item-molecule
   [{:looks-card.hair-item/keys [image-url]} _ {:keys [id]}]
@@ -198,33 +203,38 @@
      :no-matches.action/target    [e/flow|looks-filtering|reset]}))
 
 (defn ^:private looks-card<-
-  [images-db {:look/keys [title hero-imgs skus navigation-message]}]
+  [images-db {:look/keys [total-price discounted-price title hero-imgs skus navigation-message]}]
   (let [height-px 240
         gap-px    3]
-    {:looks-card.title/primary  title
-     :looks-card.hero/image-url (:url (first hero-imgs))
-     :looks-card.hero/badge-url (:platform-source (first hero-imgs))
-     :looks-card.action/target  navigation-message
-     :looks-card.hero/gap-px    gap-px
-     :looks-card/height-px      height-px
-     :looks-card/hair-items     (->> skus
-                                     (map (fn [sku]
-                                            (let [img-count (count skus)
-                                                  gap-count (dec img-count)
-                                                  img-px    (-> height-px
-                                                                ;; remove total gap space
-                                                                (- (* gap-px gap-count))
-                                                                ;; divided among images
-                                                                (/ img-count)
-                                                                ;; rounded up
-                                                                #?(:clj  identity
-                                                                   :cljs Math/ceil))
-                                                  ucare-id  (:ucare/id (catalog-images/image images-db "cart" sku))]
-                                              {:looks-card.hair-item/image-url
-                                               (str "https://ucarecdn.com/"
-                                                    ucare-id
-                                                    "/-/format/auto/-/scale_crop/"
-                                                    img-px "x" img-px "/center/")}))))}))
+    (merge
+     {:looks-card.title/primary  title
+      :looks-card.hero/image-url (:url (first hero-imgs))
+      :looks-card.hero/badge-url (:platform-source (first hero-imgs))
+      :looks-card.action/target  navigation-message
+      :looks-card.hero/gap-px    gap-px
+      :looks-card/height-px      height-px
+      :looks-card/hair-items     (->> skus
+                                      (map (fn [sku]
+                                             (let [img-count (count skus)
+                                                   gap-count (dec img-count)
+                                                   img-px    (-> height-px
+                                                                 ;; remove total gap space
+                                                                 (- (* gap-px gap-count))
+                                                                 ;; divided among images
+                                                                 (/ img-count)
+                                                                 ;; rounded up
+                                                                 #?(:clj  identity
+                                                                    :cljs Math/ceil))
+                                                   ucare-id  (:ucare/id (catalog-images/image images-db "cart" sku))]
+                                               {:looks-card.hair-item/image-url
+                                                (str "https://ucarecdn.com/"
+                                                     ucare-id
+                                                     "/-/format/auto/-/scale_crop/"
+                                                     img-px "x" img-px "/center/")}))))}
+     (if discounted-price
+       {:looks-card.title/secondary discounted-price
+        :looks-card.title/struck    total-price}
+       {:looks-card.title/secondary total-price}))))
 
 (defn looks-cards<-
   [images-db looks {:facet-filtering/keys [filters]}]
@@ -239,14 +249,17 @@
 
 ;; Biz Domain: Looks
 
-(defn ^:private options|name->slug
-  "Used to enrich contentful looks to be selectable"
-  [facets-db]
-  (->> (vals facets-db)
-       (mapcat :facet/options)
-       (mapv (fn [[slug option]]
-               [(:option/name option) slug]))
-       (into {})))
+
+;;;; Looks (contentful model)
+;;;;; UGC content (images)
+;;;;; A Shared Cart Link
+
+
+;; -> Shared Carts
+
+
+;; Look
+;; A Shared cart
 
 (defn ^:private looks<-
   "
@@ -284,11 +297,17 @@
                                                         :line-items
                                                         (mapv :catalog/sku-id)
                                                         sort)
+                         sku-id->quantity          (->> shared-cart
+                                                        :line-items
+                                                        (maps/index-by :catalog/sku-id)
+                                                        (maps/map-values :item/quantity))
                          all-skus                  (->> (select-keys skus-db sku-ids-from-shared-cart)
                                                         vals
                                                         vec)
-                         discountable-service-skus (->> all-skus
-                                                        (select catalog.services/discountable))
+                         ;; NOTE: assumes only one discountable service sku for the look
+                         discountable-service-sku (->> all-skus
+                                                       (select catalog.services/discountable)
+                                                       first)
                          product-skus              (->> all-skus
                                                         (select {:catalog/department #{"hair"}})
                                                         vec)
@@ -297,24 +316,34 @@
                                                             not-empty
                                                             (apply merge-with clojure.set/union))
 
-                         origin-name                          (get-in facets-db [:hair/origin :facet/options (first (:hair/origin tex-ori-col)) :sku/name])
-                         texture-name                         (get-in facets-db [:hair/texture :facet/options (first (:hair/texture tex-ori-col)) :option/name])
+                         origin-name  (get-in facets-db [:hair/origin :facet/options (first (:hair/origin tex-ori-col)) :sku/name])
+                         texture-name (get-in facets-db [:hair/texture :facet/options (first (:hair/texture tex-ori-col)) :option/name])
+
                          discountable-service-title-component (when-let [discountable-service-category
-                                                                         (some->> discountable-service-skus
-                                                                                  not-empty
-                                                                                  (mapv :service/category)
-                                                                                  first
+                                                                         (some->> discountable-service-sku
+                                                                                  :service/category
                                                                                   first)]
                                                                 (case discountable-service-category
                                                                   "install"      "+ FREE Install Service"
                                                                   "construction" "+ FREE Custom Wig"
-                                                                  nil))]
+                                                                  nil))
+                         total-price                          (some->> all-skus
+                                                                       (mapv (fn [{:keys [catalog/sku-id sku/price]}]
+                                                                               (* (get sku-id->quantity sku-id 0) price)))
+                                                                       (reduce + 0))
+                         discounted-price                     (when-let [discountable-service-price (:sku/price discountable-service-sku)]
+                                                                (- total-price discountable-service-price))]
                      (merge tex-ori-col ;; TODO(corey) apply merge-with into
-                            {:look/title              (clojure.string/join " " [origin-name
-                                                                                texture-name
-                                                                                "Hair"
-                                                                                discountable-service-title-component])
+                            {:look/title (clojure.string/join " " [origin-name
+                                                                   texture-name
+                                                                   "Hair"
+                                                                   discountable-service-title-component])
 
+                             ;; TODO: only handles the free service discount,
+                             ;; other promotions can be back ported here after
+                             ;; #176485395 is completed
+                             :look/total-price        (some-> total-price mf/as-money)
+                             :look/discounted-price   (some-> discounted-price mf/as-money)
                              :look/hero-imgs          [{:url (:photo-url look)
                                                         :platform-source
                                                         ^:ignore-interpret-warning
