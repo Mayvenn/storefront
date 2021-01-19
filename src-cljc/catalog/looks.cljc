@@ -143,10 +143,9 @@
 
 (defmethod t/transition-state e/flow|looks-filtering|initialized
   [_ event args state]
-  (assoc-in state catalog.keypaths/k-models-looks-filtering
-            #:facet-filtering{:panel    false
-                              :sections #{}
-                              :filters  {}}))
+  (update-in state catalog.keypaths/k-models-looks-filtering
+             merge #:facet-filtering{:panel    false
+                                     :sections #{}}))
 
 (defmethod effects/perform-effects  e/flow|looks-filtering|reset
   [_ event _ _ app-state]
