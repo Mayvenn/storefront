@@ -87,10 +87,13 @@
       [:span.content-4.strike.ml1 struck])]])
 
 (defcomponent looks-card-hair-item-molecule
-  [{:looks-card.hair-item/keys [image-url]} _ {:keys [id]}]
-  [:img.block
-   {:key id
-    :src image-url}])
+  [{:looks-card.hair-item/keys [image-url length]} _ {:keys [id]}]
+  [:div.relative
+   [:img.block
+    {:key id
+     :src image-url}]
+   [:div.absolute.top-0.right-0.content-4.m1
+    length]])
 
 (defcomponent looks-card-organism*
   [{:as data :looks-card/keys [height-px]
@@ -101,7 +104,7 @@
     [:div.flex
      {:style {:height (str height-px "px")}}
      (looks-card-hero-molecule data)
-     [:div.flex.flex-column.justify-between
+     [:div.flex.flex-column.justify-between.mlp2
       (component/elements looks-card-hair-item-molecule
                           data
                           :looks-card/hair-items)]]
@@ -202,9 +205,13 @@
      :no-matches.action/target    [e/flow|looks-filtering|reset]}))
 
 (defn ^:private looks-card<-
-  [images-db {:look/keys [total-price discounted-price title hero-imgs skus navigation-message]}]
+  [images-db {:look/keys [total-price discounted-price title hero-imgs items navigation-message]}]
   (let [height-px 240
-        gap-px    3]
+        gap-px    3
+        fanned-out-by-quantity-items (->> items
+                                          (mapcat (fn [s]
+                                                    (repeat (:item/quantity s) s)))
+                                          (take 4))]
     (merge
      {:looks-card.title/primary  title
       :looks-card.hero/image-url (:url (first hero-imgs))
@@ -212,9 +219,10 @@
       :looks-card.action/target  navigation-message
       :looks-card.hero/gap-px    gap-px
       :looks-card/height-px      height-px
-      :looks-card/hair-items     (->> skus
+      :looks-card/hair-items     (->> fanned-out-by-quantity-items
+                                      (sort-by :sku/price)
                                       (map (fn [sku]
-                                             (let [img-count (count skus)
+                                             (let [img-count (count fanned-out-by-quantity-items)
                                                    gap-count (dec img-count)
                                                    img-px    (-> height-px
                                                                  ;; remove total gap space
@@ -225,7 +233,8 @@
                                                                  #?(:clj  identity
                                                                     :cljs Math/ceil))
                                                    ucare-id  (:ucare/id (catalog-images/image images-db "cart" sku))]
-                                               {:looks-card.hair-item/image-url
+                                               {:looks-card.hair-item/length (str (first (:hair/length sku)) "\"")
+                                                :looks-card.hair-item/image-url
                                                 (str "https://ucarecdn.com/"
                                                      ucare-id
                                                      "/-/format/auto/-/scale_crop/"
@@ -279,29 +288,31 @@
     (->> contentful-looks
          (keep (fn [look]
                  (when-let [shared-cart-id (contentful/shared-cart-id look)]
-                   (let [shared-cart               (get looks-shared-carts-db shared-cart-id)
-                         sku-ids-from-shared-cart  (->> shared-cart  ;; TODO: ordering logic
-                                                        :line-items
-                                                        (mapv :catalog/sku-id)
-                                                        sort)
-                         sku-id->quantity          (->> shared-cart
-                                                        :line-items
-                                                        (maps/index-by :catalog/sku-id)
-                                                        (maps/map-values :item/quantity))
-                         all-skus                  (->> (select-keys skus-db sku-ids-from-shared-cart)
-                                                        vals
-                                                        vec)
-                         ;; NOTE: assumes only one discountable service sku for the look
+                   (let [shared-cart              (get looks-shared-carts-db shared-cart-id)
+                         sku-ids-from-shared-cart (->> shared-cart  ;; TODO: ordering logic
+                                                       :line-items
+                                                       (mapv :catalog/sku-id)
+                                                       sort)
+                         sku-id->quantity         (->> shared-cart
+                                                       :line-items
+                                                       (maps/index-by :catalog/sku-id)
+                                                       (maps/map-values :item/quantity))
+                         all-skus                 (->> (select-keys skus-db sku-ids-from-shared-cart)
+                                                       vals
+                                                       vec)
+                         ;; NOTE: assumes only one discountable service item for the look
                          discountable-service-sku (->> all-skus
                                                        (select catalog.services/discountable)
                                                        first)
-                         product-skus              (->> all-skus
-                                                        (select {:catalog/department #{"hair"}})
-                                                        vec)
-                         tex-ori-col               (some->> product-skus
-                                                            (mapv #(select-keys % [:hair/color :hair/origin :hair/texture]))
-                                                            not-empty
-                                                            (apply merge-with clojure.set/union))
+                         product-items            (->> all-skus
+                                                       (select {:catalog/department #{"hair"}})
+                                                       (mapv (fn [{:as sku :keys [catalog/sku-id]}]
+                                                               (assoc sku :item/quantity (get sku-id->quantity sku-id))))
+                                                       vec)
+                         tex-ori-col              (some->> product-items
+                                                           (mapv #(select-keys % [:hair/color :hair/origin :hair/texture]))
+                                                           not-empty
+                                                           (apply merge-with clojure.set/union))
 
                          origin-name  (get-in facets-db [:hair/origin :facet/options (first (:hair/origin tex-ori-col)) :sku/name])
                          texture-name (get-in facets-db [:hair/texture :facet/options (first (:hair/texture tex-ori-col)) :option/name])
@@ -339,7 +350,7 @@
                                                                  :style {:opacity 0.7}}))}]
                              :look/navigation-message [e/navigate-shop-by-look-details {:album-keyword album-keyword
                                                                                         :look-id       (:content/id look)}]
-                             :look/skus               product-skus})))))
+                             :look/items              product-items})))))
          vec)))
 
 ;; Visual Domain: Page
