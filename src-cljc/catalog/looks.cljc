@@ -153,7 +153,7 @@
 (defmethod effects/perform-effects  e/flow|looks-filtering|reset
   [_ event _ _ app-state]
   #?(:cljs
-     (history/enqueue-navigate e/navigate-shop-by-look
+     (history/enqueue-redirect e/navigate-shop-by-look
                                {:album-keyword (:album-keyword (get-in app-state keypaths/navigation-args))})))
 
 (defmethod t/transition-state e/flow|looks-filtering|panel-toggled
@@ -172,7 +172,7 @@
   [_ event {:keys [facet-key option-key toggled?]} _ app-state]
   #?(:cljs
      (let [existing-filters (get-in app-state catalog.keypaths/k-models-looks-filtering-filters)]
-       (history/enqueue-navigate e/navigate-shop-by-look
+       (history/enqueue-redirect e/navigate-shop-by-look
                                  {:query-params  (->> existing-filters
                                                       (filter (fn [[_ v]] (seq v)))
                                                       (reduce merge {})
