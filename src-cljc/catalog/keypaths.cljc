@@ -29,15 +29,14 @@
 (def initial (-> {}
                  (assoc-in detailed-product {})))
 
-;; Shop by look detail
-(def k-models-looks-filtering
-  (conj keypaths/models-root :looks-filtering))
+(def k-models-facet-filtering
+  (conj keypaths/models-root :facet-filtering))
 
-(def k-models-looks-filtering-filters
-  (conj k-models-looks-filtering :facet-filtering/filters))
+(def k-models-facet-filtering-filters
+  (conj k-models-facet-filtering :facet-filtering/filters))
 
-(def k-models-looks-filtering-panel
-  (conj k-models-looks-filtering :facet-filtering/panel))
+(def k-models-facet-filtering-panel
+  (conj k-models-facet-filtering :facet-filtering/panel))
 
-(def k-models-looks-filtering-sections
-  (conj k-models-looks-filtering :facet-filtering/sections))
+(def k-models-facet-filtering-sections
+  (conj k-models-facet-filtering :facet-filtering/sections))

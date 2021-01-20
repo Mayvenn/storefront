@@ -308,7 +308,7 @@
         ;; Fetch the correct album from CMS & associated shared-carts
         (fetch-looks-and-shared-carts-for-sbl-update (get-in app-state keypaths/api-cache))
         (when just-arrived?
-          (messages/handle-message events/flow|looks-filtering|initialized)))
+          (messages/handle-message events/flow|facet-filtering|initialized)))
 
       :else (effects/fetch-cms-keypath app-state [:ugc-collection actual-album-kw]))))
 

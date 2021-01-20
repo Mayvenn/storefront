@@ -590,11 +590,24 @@
 
 ;; Flow - Looks Filtering
 
-(defpath flow|looks-filtering|initialized)
-(defpath flow|looks-filtering|reset)
-(defpath flow|looks-filtering|panel-toggled)
-(defpath flow|looks-filtering|section-toggled)
-(defpath flow|looks-filtering|filter-toggled)
+;;; -> Any page with a facet filter (category & look pages)
+;;; Should `on-nav` ingest the filters from the query parameters and put them
+;;; into app state as the selected filters
+
+;;; -> Closing the panel and closing the subsections of the panel
+(defpath flow|facet-filtering|initialized)
+;;; -> Redirect to the page with the filter component on it and remove the filters from the query parameters
+(defpath flow|facet-filtering|reset)
+
+;;; -> Open & Close the panel
+(defpath flow|facet-filtering|panel-toggled)
+
+;;; -> Open & Close a subsection of the panel
+(defpath flow|facet-filtering|section-toggled)
+
+;;; -> --Check and uncheck the filters themselves--
+;;; -> Redirect to page with filter removing or adding the appropriate filter to the URL
+(defpath flow|facet-filtering|filter-toggled)
 
 ;; TODO more specific name
 (defpath cancel-presearch-requests)

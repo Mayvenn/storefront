@@ -70,5 +70,5 @@
   (-> app-state
       (assoc-in keypaths/selected-album-keyword album-keyword)
       (assoc-in keypaths/selected-look-id nil)
-      (assoc-in catalog.keypaths/k-models-looks-filtering-filters
+      (assoc-in catalog.keypaths/k-models-facet-filtering-filters
                 (categories/query-params->selector-electives query-params))))

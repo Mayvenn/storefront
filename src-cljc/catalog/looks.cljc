@@ -1,36 +1,27 @@
 (ns catalog.looks
   "Shopping by Looks: index page of 'looks' for an 'album'"
-  (:require #?@(:cljs [[storefront.accessors.categories :as categories]
-                       [storefront.api :as api]
-                       [storefront.history :as history]])
+  (:require [catalog.images :as catalog-images]
             catalog.keypaths
             catalog.services
-            clojure.string
-            clojure.set
             [catalog.ui.facet-filters :as facet-filters]
+            clojure.set
+            clojure.string
             [spice.maps :as maps]
+            [spice.selector :as selector]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.sites :as sites]
-            [storefront.effects :as effects]
-            [storefront.events :as e]
             [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.header :as header]
-            [storefront.request-keys :as request-keys]
+            [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
-            [storefront.components.ugc :as component-ugc]
             [storefront.components.template :as template]
+            [storefront.components.ugc :as component-ugc]
             [storefront.components.ui :as ui]
-            [storefront.transitions :as t]
-            [storefront.keypaths :as keypaths]
+            [storefront.events :as e]
+            storefront.keypaths
             [storefront.platform.component-utils :as utils]
-            [storefront.ugc :as ugc]
-            [spice.selector :as selector]
-            [catalog.keypaths :as catalog.keypaths]
-            [storefront.keypaths :as storefront.keypaths]
-            [catalog.images :as catalog-images]
-            [storefront.platform.messages :as messages]
-            [storefront.components.money-formatters :as mf]))
+            [storefront.request-keys :as request-keys]
+            [storefront.ugc :as ugc]))
 
 (def ^:private select
   (comp seq (partial selector/match-all {:selector/strict? true})))
@@ -142,55 +133,6 @@
   (ui/large-spinner
    {:style {:height "4em"}}))
 
-;; Flow Domain: Filtering Looks
-
-(defmethod t/transition-state e/flow|looks-filtering|initialized
-  [_ event args state]
-  (update-in state catalog.keypaths/k-models-looks-filtering
-             merge #:facet-filtering{:panel    false
-                                     :sections #{}}))
-
-(defmethod effects/perform-effects  e/flow|looks-filtering|reset
-  [_ event _ _ app-state]
-  #?(:cljs
-     (history/enqueue-redirect e/navigate-shop-by-look
-                               {:album-keyword (:album-keyword (get-in app-state keypaths/navigation-args))})))
-
-(defmethod t/transition-state e/flow|looks-filtering|panel-toggled
-  [_ _ toggled? state]
-  (-> state
-      (assoc-in catalog.keypaths/k-models-looks-filtering-panel toggled?)))
-
-(defmethod t/transition-state e/flow|looks-filtering|section-toggled
-  [_ _ {:as args :keys [facet-key toggled?]} state]
-  (-> state
-      (update-in catalog.keypaths/k-models-looks-filtering-sections
-                 (fnil (if toggled? conj disj) #{})
-                 facet-key)))
-
-(defmethod effects/perform-effects e/flow|looks-filtering|filter-toggled
-  [_ event {:keys [facet-key option-key toggled?]} _ app-state]
-  #?(:cljs
-     (let [existing-filters (get-in app-state catalog.keypaths/k-models-looks-filtering-filters)]
-       (history/enqueue-redirect e/navigate-shop-by-look
-                                 {:query-params  (->> existing-filters
-                                                      (filter (fn [[_ v]] (seq v)))
-                                                      (reduce merge {})
-                                                      categories/category-selections->query-params)
-                                  :album-keyword (:album-keyword (get-in app-state keypaths/navigation-args))}))))
-
-(defmethod t/transition-state e/flow|looks-filtering|filter-toggled
-  [_ _ {:keys [facet-key option-key toggled?]} state]
-  (-> state
-      (update-in (conj catalog.keypaths/k-models-looks-filtering-filters facet-key)
-                 (fnil (if toggled? conj disj) #{})
-                 option-key)
-      (update-in catalog.keypaths/k-models-looks-filtering-filters
-                 (fn [filters]
-                   (cond-> filters
-                     (empty? (get filters facet-key))
-                     (dissoc facet-key))))))
-
 ;; Biz domains -> Viz domains
 
 (defn no-matches<-
@@ -202,7 +144,9 @@
      :no-matches.title/secondary  "Sorry, we couldn’t find any matches."
      :no-matches.action/primary   "Clear all filters"
      :no-matches.action/secondary " to see more looks."
-     :no-matches.action/target    [e/flow|looks-filtering|reset]}))
+     :no-matches.action/target    [e/flow|facet-filtering|reset
+                                   {:navigation-event e/navigate-shop-by-look
+                                    :navigation-args  {:album-keyword :look}}]}))
 
 (defn ^:private looks-card<-
   [images-db {:look/keys [total-price discounted-price title hero-imgs items navigation-message]}]
@@ -280,7 +224,7 @@
   - Displaying the detailed view
   "
   [state skus-db facets-db looks-shared-carts-db album-keyword]
-  (let [contentful-looks (->> (get-in state keypaths/cms-ugc-collection)
+  (let [contentful-looks (->> (get-in state storefront.keypaths/cms-ugc-collection)
                               ;; NOTE(corey) This is hardcoded because obstensibly
                               ;; filtering should replace albums
                               :aladdin-free-install
@@ -371,16 +315,15 @@
 
         looks-shared-carts-db (get-in state storefront.keypaths/v1-looks-shared-carts)
 
-        selected-album-keyword (get-in state keypaths/selected-album-keyword)
+        selected-album-keyword (get-in state storefront.keypaths/selected-album-keyword)
         looks                  (looks<- state skus-db facets-db
                                         looks-shared-carts-db
                                         selected-album-keyword)
         ;; Flow models
-        looks-filtering        (merge (get-in state catalog.keypaths/k-models-looks-filtering)
-                                      {:facet-filtering/panel-toggle-event   e/flow|looks-filtering|panel-toggled
-                                       :facet-filtering/section-toggle-event e/flow|looks-filtering|section-toggled
-                                       :facet-filtering/filter-toggle-event  e/flow|looks-filtering|filter-toggled
-                                       :facet-filtering/item-label           "Look"})]
+        facet-filtering        (merge (get-in state catalog.keypaths/k-models-facet-filtering)
+                                      {:facet-filtering/navigation-event e/navigate-shop-by-look
+                                       :facet-filtering/navigation-args  {:album-keyword :look}
+                                       :facet-filtering/item-label       "Look"})]
     (cond
       ;; Spinning
       (or (utils/requesting? state request-keys/fetch-shared-carts)
@@ -389,30 +332,23 @@
            (template/wrap-standard state
                                    e/navigate-shop-by-look))
       ;; Looks Filtering Panel
-      (:facet-filtering/panel looks-filtering)
+      (:facet-filtering/panel facet-filtering)
       (component/build facet-filters/panel-template
-                       {:header   {:header.reset/primary "RESET"
-                                   :header.reset/target  [e/flow|looks-filtering|reset]
-                                   :header.done/primary  "DONE"
-                                   :header.done/target   [e/flow|looks-filtering|panel-toggled false]}
-                        :sections {:facet-filtering/sections
-                                   (facet-filters/sections<-
-                                    facets-db
-                                    (->> looks ;; Note: Facets that actually exist on the looks
-                                         (map #(select-keys % [:hair/origin :hair/color :hair/texture]))
-                                         (apply merge-with clojure.set/union))
-                                    looks-filtering)}})
+                       {:header   (facet-filters/header<- e/navigate-shop-by-look
+                                                          {:album-keyword :look})
+
+                        :sections (facet-filters/sections<-
+                                   facets-db
+                                   (->> looks ;; Note: Facets that actually exist on the looks
+                                        (map #(select-keys % [:hair/origin :hair/color :hair/texture]))
+                                        (apply merge-with clojure.set/union))
+                                   facet-filtering)})
       ;; Grid of Looks
       :else
       (->> {:hero              looks-hero<-
-            :looks-cards       (looks-cards<- images-db
-                                              looks
-                                              looks-filtering)
-            :no-matches        (no-matches<- looks
-                                             looks-filtering)
-            :filtering-summary (facet-filters/summary<- facets-db
-                                                        looks
-                                                        looks-filtering)}
+            :looks-cards       (looks-cards<- images-db looks facet-filtering)
+            :no-matches        (no-matches<- looks facet-filtering)
+            :filtering-summary (facet-filters/summary<- facets-db looks facet-filtering)}
            (component/build looks-template)
            (template/wrap-standard state e/navigate-shop-by-look)))))
 
@@ -436,10 +372,10 @@
        looks)]]))
 
 (defn query [data]
-  (let [selected-album-kw (get-in data keypaths/selected-album-keyword)
+  (let [selected-album-kw (get-in data storefront.keypaths/selected-album-keyword)
         actual-album-kw   (ugc/determine-look-album data selected-album-kw)
-        looks             (-> data (get-in keypaths/cms-ugc-collection) actual-album-kw :looks)
-        color-details     (->> (get-in data keypaths/v2-facets)
+        looks             (-> data (get-in storefront.keypaths/cms-ugc-collection) actual-album-kw :looks)
+        color-details     (->> (get-in data storefront.keypaths/v2-facets)
                                (filter #(= :hair/color (:facet/slug %)))
                                first
                                :facet/options
@@ -452,7 +388,7 @@
      :spinning? (empty? looks)}))
 
 (defn ^:export built-component [data opts]
-  (let [album-kw (ugc/determine-look-album data (get-in data keypaths/selected-album-keyword))]
+  (let [album-kw (ugc/determine-look-album data (get-in data storefront.keypaths/selected-album-keyword))]
     (if (and (experiments/sbl-update? data)        ;; featured
              (= :shop (sites/determine-site data)) ;; dtc, shop
              (= :aladdin-free-install album-kw))   ;; main look page
