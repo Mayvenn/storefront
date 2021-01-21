@@ -211,7 +211,7 @@
                                          {:id    (str "line-item-quantity-" sku-id)
                                           :value (str "qty. " recent-quantity)}]
              :cart-item-floating-box/id (str "line-item-price-" sku-id)
-             :cart-item-floating-box/contents [{:text  (some-> unit-price (* recent-quantity) $/as-money)
+             :cart-item-floating-box/contents [{:text  (some-> unit-price $/as-money)
                                                 :attrs {:class "strike"}}
                                                {:text "FREE" :attrs {:class "s-color"}}]
              :cart-item-service-thumbnail/id        (str "line-item-thumbnail-" sku-id)
@@ -228,6 +228,7 @@
                                                   :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
                                                addons)}))]))
 
+
 (defn ^:private a-la-carte-service-line-items-query
   [service-items]
   (for [service-item service-items
@@ -239,7 +240,7 @@
      :cart-item-copy/lines                  [{:id    (str "line-item-quantity-" sku-id)
                                               :value (str "qty. " recent-quantity)}]
      :cart-item-floating-box/id             (str "line-item-price-" sku-id)
-     :cart-item-floating-box/contents       [{:text (some-> unit-price (* recent-quantity) $/as-money)}]
+     :cart-item-floating-box/contents       [{:text (some-> unit-price $/as-money)}]
      :cart-item-service-thumbnail/id        (str "line-item-thumbnail-" sku-id)
      :cart-item-service-thumbnail/image-url (hacky-cart-image service-item)
      :cart-item-title/id                    (str "line-item-title-" sku-id)
@@ -257,7 +258,7 @@
      :cart-item-copy/lines                     [{:id    (str "line-item-quantity-" sku-id)
                                                  :value (str "qty. " recent-quantity)}]
      :cart-item-floating-box/id                (str "line-item-price-" sku-id)
-     :cart-item-floating-box/contents          [{:text  (some-> unit-price (* recent-quantity) $/as-money)
+     :cart-item-floating-box/contents          [{:text  (some-> unit-price $/as-money)
                                                  :attrs {:data-test (str "line-item-price-ea-" sku-id)}}
                                                 {:text  " each"
                                                  :attrs {:class "proxima content-4"}}]
