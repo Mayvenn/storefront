@@ -68,11 +68,12 @@
     length]])
 
 (defcomponent looks-card-organism*
-  [{:as data :looks-card/keys [height-px]
+  [{:as data :looks-card/keys [height-px id]
     target :looks-card.action/target} _ _]
   [:a.col-12.px1-on-tb-dt.col-4-on-tb-dt.black.pb2
+   (merge {:data-test id}
+          (apply utils/route-to target))
    [:div.border.border-cool-gray.p2
-    (apply utils/route-to target)
     [:div.flex
      {:style {:height (str height-px "px")}}
      (looks-card-hero-molecule data)
@@ -115,9 +116,9 @@
 ;; Biz domains -> Viz domains
 
 (defn ^:private looks-card<-
-  [images-db {:look/keys [total-price discounted-price title hero-imgs items navigation-message]}]
-  (let [height-px 240
-        gap-px    3
+  [images-db {:look/keys [id total-price discounted-price title hero-imgs items navigation-message]}]
+  (let [height-px                    240
+        gap-px                       3
         fanned-out-by-quantity-items (->> items
                                           (mapcat (fn [s]
                                                     (repeat (:item/quantity s) s)))
@@ -128,6 +129,7 @@
       :looks-card.hero/badge-url (:platform-source (first hero-imgs))
       :looks-card.action/target  navigation-message
       :looks-card.hero/gap-px    gap-px
+      :looks-card/id             (str "look-" id)
       :looks-card/height-px      height-px
       :looks-card/hair-items     (->> fanned-out-by-quantity-items
                                       (sort-by :sku/price)
@@ -240,7 +242,8 @@
                                                                                (* (get sku-id->quantity sku-id 0) price)))
                                                                        (reduce + 0))
                          discounted-price                     (when-let [discountable-service-price (:sku/price discountable-service-sku)]
-                                                                (- total-price discountable-service-price))]
+                                                                (- total-price discountable-service-price))
+                         look-id                              (:content/id look)]
                      (merge tex-ori-col ;; TODO(corey) apply merge-with into
                             {:look/title (clojure.string/join " " [origin-name
                                                                    texture-name
@@ -258,8 +261,9 @@
                                                         (when-let [icon (svg/social-icon (:social-media-platform look))]
                                                           (icon {:class "fill-white"
                                                                  :style {:opacity 0.7}}))}]
+                             :look/id                 look-id
                              :look/navigation-message [e/navigate-shop-by-look-details {:album-keyword album-keyword
-                                                                                        :look-id       (:content/id look)}]
+                                                                                        :look-id       look-id}]
                              :look/items              product-items})))))
          vec)))
 
