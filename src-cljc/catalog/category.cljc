@@ -3,14 +3,15 @@
    #?@(:cljs [[storefront.accessors.auth :as auth]
               [storefront.api :as api]
               [storefront.browser.scroll :as scroll]
+              [storefront.history :as history]
               [storefront.hooks.facebook-analytics :as facebook-analytics]
               [storefront.platform.messages :as messages]])
    adventure.keypaths
    api.current
    [catalog.icp :as icp]
    catalog.keypaths
+   clojure.set
    [catalog.skuers :as skuers]
-   [catalog.ui.category-filters :as category-filters]
    [catalog.ui.category-hero :as category-hero]
    [catalog.ui.content-box :as content-box]
    [catalog.ui.how-it-works :as how-it-works]
@@ -28,7 +29,8 @@
    [storefront.keypaths :as k]
    [storefront.platform.component-utils :as utils]
    [storefront.trackings :as trackings]
-   [storefront.transitions :as transitions]))
+   [storefront.transitions :as transitions]
+   [catalog.ui.facet-filters :as facet-filters]))
 
 (def ^:private green-divider-atom
   (c/html
@@ -38,13 +40,18 @@
              :background-repeat   "repeat-x"
              :height              "24px"}}]))
 
+(c/defcomponent ^:private product-list
+  [{:keys [service-card-listing
+           product-card-listing]} _ _]
+  [:div.plj3-on-dt
+   (c/build service-card-listing/organism service-card-listing)
+   (c/build product-card-listing/organism product-card-listing)])
+
 (c/defcomponent ^:private template
   [{:keys [category-hero
            content-box
-           category-filters
-           service-card-listing
-           product-card-listing
-           faq-section video] :as queried-data} _ _]
+           faq-section
+           video] :as queried-data} _ _]
   [:div
    (c/build category-hero/organism category-hero)
    (when video
@@ -59,13 +66,9 @@
                                         {:query-params        {:video "0"}
                                          :page/slug           "mayvenn-install"
                                          :catalog/category-id 23})}}))
-   [:div.max-960.mx-auto
-    [:div.pt4]
-    (when-let [title (:title category-filters)]
-      [:div.canela.title-1.center.mt3.py4 title])
-    (c/build category-filters/organism category-filters {})
-    (c/build service-card-listing/organism service-card-listing {})
-    (c/build product-card-listing/organism product-card-listing {})]
+
+   [:div.py5
+    (c/build facet-filters/organism queried-data {:opts {:child-component product-list}})]
    (when content-box
      [:div green-divider-atom
       (c/build content-box/organism content-box)])
@@ -95,9 +98,10 @@
     (merge {:category-hero.tag/primary "New"})))
 
 (defn page
-  [app-state opts]
+  [app-state _]
   (let [current                             (accessors.categories/current-category app-state)
-        selections                          (get-in app-state catalog.keypaths/category-selections)
+        facet-filtering-state               (merge (get-in app-state catalog.keypaths/k-models-facet-filtering)
+                                                   {:facet-filtering/item-label "item"})
         loaded-category-products            (selector/match-all
                                              {:selector/strict? true}
                                              (merge
@@ -108,37 +112,49 @@
         category-products-matching-criteria (selector/match-all {:selector/strict? true}
                                                                 (merge
                                                                  (skuers/essentials current)
-                                                                 selections)
+                                                                 (:facet-filtering/filters facet-filtering-state))
                                                                 loaded-category-products)
         service-category-page?              (contains? (:catalog/department current) "service")
         faq                                 (get-in app-state (conj storefront.keypaths/cms-faq (:contentful/faq-id current)))]
     (c/build template
-             (merge {:category-hero          (category-hero-query current)
-                     :category-filters       (category-filters/query app-state
-                                                                     current
-                                                                     loaded-category-products
-                                                                     category-products-matching-criteria
-                                                                     selections)
-                     :video                  (when-let [video (get-in app-state adventure.keypaths/adventure-home-video)] video)
-                     :how-it-works           (when (:how-it-works/title-primary current) current)
-                     :content-box            (when (and shop? (:content-block/type current))
-                                               {:title    (:content-block/title current)
-                                                :header   (:content-block/header current)
-                                                :summary  (:content-block/summary current)
-                                                :sections (:content-block/sections current)})
-                     :service-card-listing   (when service-category-page?
-                                               (service-card-listing/query app-state current category-products-matching-criteria))
-                     :product-card-listing   (when-not service-category-page?
-                                               (product-card-listing/query app-state current category-products-matching-criteria))
-                     :service-category-page? service-category-page?
-                     :faq-section            (when (and shop? faq)
-                                               (let [{:keys [question-answers]} faq]
-                                                 {:faq/expanded-index (get-in app-state storefront.keypaths/faq-expanded-section)
-                                                  :list/sections      (for [{:keys [question answer]} question-answers]
-                                                                        {:faq/title   (:text question)
-                                                                         :faq/content answer})}))})
-
-             opts)))
+             (merge
+              (when-let [filter-title (:product-list/title current)]
+                {:title filter-title})
+              {:category-hero          (category-hero-query current)
+               :video                  (when-let [video (get-in app-state adventure.keypaths/adventure-home-video)] video)
+               :how-it-works           (when (:how-it-works/title-primary current) current)
+               :content-box            (when (and shop? (:content-block/type current))
+                                         {:title    (:content-block/title current)
+                                          :header   (:content-block/header current)
+                                          :summary  (:content-block/summary current)
+                                          :sections (:content-block/sections current)})
+               :service-card-listing   (when service-category-page?
+                                         (service-card-listing/query app-state current category-products-matching-criteria))
+               :product-card-listing   (when-not service-category-page?
+                                         (product-card-listing/query app-state current category-products-matching-criteria))
+               :service-category-page? service-category-page?
+               :faq-section            (when (and shop? faq)
+                                         (let [{:keys [question-answers]} faq]
+                                           {:faq/expanded-index (get-in app-state storefront.keypaths/faq-expanded-section)
+                                            :list/sections      (for [{:keys [question answer]} question-answers]
+                                                                  {:faq/title   (:text question)
+                                                                   :faq/content answer})}))}
+              (facet-filters/filters<-
+               {:facets-db             (get-in app-state storefront.keypaths/v2-facets)
+                :faceted-models        loaded-category-products
+                :facet-filtering-state facet-filtering-state
+                :facets-to-filter-on   (:selector/electives current)
+                :navigation-event      e/navigate-category
+                :navigation-args       (select-keys current [:catalog/category-id :page/slug])
+                :child-component-data  (if service-category-page?
+                                         {:service-card-listing
+                                          (service-card-listing/query app-state
+                                                                      current
+                                                                      category-products-matching-criteria)}
+                                         {:product-card-listing
+                                          (product-card-listing/query app-state
+                                                                      current
+                                                                      category-products-matching-criteria)})})))))
 
 (defn ^:export built-component
   [app-state opts]
@@ -155,22 +171,24 @@
                                                         first
                                                         :navigation-message)]
     (cond-> app-state
-      true
-      (assoc-in catalog.keypaths/category-id category-id)
+      :always
+      (->
+       (assoc-in catalog.keypaths/category-id category-id)
 
-      true
-      (assoc-in catalog.keypaths/category-selections
-                (accessors.categories/query-params->selector-electives query-params))
+       (assoc-in catalog.keypaths/category-selections
+                 (accessors.categories/query-params->selector-electives query-params))
 
-      true
-      (assoc-in adventure.keypaths/adventure-home-video
-                (adventure-slug->video (:video query-params)))
+       (assoc-in catalog.keypaths/k-models-facet-filtering-filters
+                 (accessors.categories/query-params->selector-electives query-params))
+
+       (assoc-in adventure.keypaths/adventure-home-video
+                 (adventure-slug->video (:video query-params))))
 
       (not= prev-category-id category-id)
       (assoc-in catalog.keypaths/category-panel nil))))
 
 (defmethod effects/perform-effects e/navigate-category
-  [_ event {:keys [catalog/category-id slug query-params]} _ app-state]
+  [_ event {:keys [catalog/category-id slug query-params]} previous-app-state app-state]
   #?(:cljs
      (let [category   (accessors.categories/current-category app-state)
            success-fn #(messages/handle-message e/api-success-v3-products-for-browse
@@ -183,8 +201,7 @@
        (let [store-experience (get-in app-state k/store-experience)]
          (when (and (= "mayvenn-classic"
                        store-experience)
-                    (contains? (:experience/exclude category)
-                               "mayvenn-classic"))
+                    (contains? (:experience/exclude category) "mayvenn-classic"))
            (effects/redirect e/navigate-home)))
        (if (auth/permitted-category? app-state category)
          (api/get-products (get-in app-state k/api-cache)
@@ -192,7 +209,11 @@
                            success-fn)
          (effects/redirect e/navigate-home))
        (when-let [subsection-key (:subsection query-params)]
-         (js/setTimeout (partial scroll/scroll-selector-to-top (str "#subsection-" subsection-key)) 0)))))
+         (js/setTimeout (partial scroll/scroll-selector-to-top (str "#subsection-" subsection-key)) 0))
+       (let [just-arrived? (not= e/navigate-category
+                                 (get-in previous-app-state k/navigation-event))]
+         (when just-arrived?
+           (messages/handle-message e/flow|facet-filtering|initialized))))))
 
 (defmethod trackings/perform-track e/navigate-category
   [_ event {:keys [catalog/category-id]} app-state]

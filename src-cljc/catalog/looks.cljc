@@ -28,25 +28,6 @@
 
 ;; Visual: Looks (new version under experiment)
 
-(defn no-matches-title-molecule
-  [{:no-matches.title/keys [primary secondary]}]
-  [:div
-   [:p.h1.py4 primary]
-   [:p.h2.py6 secondary]])
-
-(defn no-matches-action-molecule
-  [{:no-matches.action/keys [primary secondary target]}]
-  [:p.h4.mb10.pb10
-   [:a.p-color (apply utils/fake-href target) primary]
-   secondary])
-
-(defcomponent no-matches-organism
-  [data _ _]
-  (when (seq data)
-    [:div.col-12.my8.py4.center.bg-white
-     (no-matches-title-molecule data)
-     (no-matches-action-molecule data)]))
-
 (defcomponent looks-hero-organism
   [{:looks.hero.title/keys [primary secondary]} _ _]
   [:div.center.py6.bg-warm-gray
@@ -114,17 +95,15 @@
   [data _ _]
   (when (seq data)
     [:div.flex.flex-wrap.justify-center.justify-start-on-tb-dt.py2-on-tb-dt.px1-on-tb-dt.px3-on-mb
-     (component/elements looks-card-organism
-                         data
-                         :looks-cards/cards)]))
+     (component/elements looks-card-organism data :looks-cards/cards)]))
 
 (defcomponent looks-template
-  [{:keys [hero filtering-summary no-matches looks-cards]} _ _]
+  [{:keys [hero]
+    :as queried-data} _ _]
   [:div
    (component/build looks-hero-organism hero)
-   (component/build facet-filters/summary-organism filtering-summary)
-   (component/build no-matches-organism no-matches)
-   (component/build looks-cards-organism looks-cards)])
+   (component/build facet-filters/organism queried-data
+                    {:opts {:child-component looks-cards-organism}})])
 
 ;; Visual: Spinning
 
@@ -134,19 +113,6 @@
    {:style {:height "4em"}}))
 
 ;; Biz domains -> Viz domains
-
-(defn no-matches<-
-  [looks {:facet-filtering/keys [filters]}]
-  (when (and
-         (seq filters)
-         (empty? (select filters looks)))
-    {:no-matches.title/primary    "😞"
-     :no-matches.title/secondary  "Sorry, we couldn’t find any matches."
-     :no-matches.action/primary   "Clear all filters"
-     :no-matches.action/secondary " to see more looks."
-     :no-matches.action/target    [e/flow|facet-filtering|reset
-                                   {:navigation-event e/navigate-shop-by-look
-                                    :navigation-args  {:album-keyword :look}}]}))
 
 (defn ^:private looks-card<-
   [images-db {:look/keys [total-price discounted-price title hero-imgs items navigation-message]}]
@@ -233,7 +199,7 @@
          (keep (fn [look]
                  (when-let [shared-cart-id (contentful/shared-cart-id look)]
                    (let [shared-cart              (get looks-shared-carts-db shared-cart-id)
-                         sku-ids-from-shared-cart (->> shared-cart  ;; TODO: ordering logic
+                         sku-ids-from-shared-cart (->> shared-cart
                                                        :line-items
                                                        (mapv :catalog/sku-id)
                                                        sort)
@@ -305,14 +271,13 @@
   Visually: Grid, Spinning, or Filtering
   "
   [state _]
-  (let [skus-db   (get-in state storefront.keypaths/v2-skus)
-        images-db (get-in state storefront.keypaths/v2-images)
-        facets-db (->> (get-in state storefront.keypaths/v2-facets)
-                       (maps/index-by (comp keyword :facet/slug))
-                       (maps/map-values (fn [facet]
-                                          (update facet :facet/options
-                                                  (partial maps/index-by :option/slug)))))
-
+  (let [skus-db               (get-in state storefront.keypaths/v2-skus)
+        images-db             (get-in state storefront.keypaths/v2-images)
+        facets-db             (->> (get-in state storefront.keypaths/v2-facets)
+                                   (maps/index-by (comp keyword :facet/slug))
+                                   (maps/map-values (fn [facet]
+                                                      (update facet :facet/options
+                                                              (partial maps/index-by :option/slug)))))
         looks-shared-carts-db (get-in state storefront.keypaths/v1-looks-shared-carts)
 
         selected-album-keyword (get-in state storefront.keypaths/selected-album-keyword)
@@ -320,35 +285,27 @@
                                         looks-shared-carts-db
                                         selected-album-keyword)
         ;; Flow models
-        facet-filtering        (merge (get-in state catalog.keypaths/k-models-facet-filtering)
-                                      {:facet-filtering/navigation-event e/navigate-shop-by-look
-                                       :facet-filtering/navigation-args  {:album-keyword :look}
-                                       :facet-filtering/item-label       "Look"})]
-    (cond
+        facet-filtering-state  (-> state
+                                   (get-in catalog.keypaths/k-models-facet-filtering)
+                                   (assoc :facet-filtering/item-label "Look"))]
+    (if
       ;; Spinning
       (or (utils/requesting? state request-keys/fetch-shared-carts)
           (empty? looks))
       (->> (component/build spinning-template)
            (template/wrap-standard state
                                    e/navigate-shop-by-look))
-      ;; Looks Filtering Panel
-      (:facet-filtering/panel facet-filtering)
-      (component/build facet-filters/panel-template
-                       {:header   (facet-filters/header<- e/navigate-shop-by-look
-                                                          {:album-keyword :look})
-
-                        :sections (facet-filters/sections<-
-                                   facets-db
-                                   (->> looks ;; Note: Facets that actually exist on the looks
-                                        (map #(select-keys % [:hair/origin :hair/color :hair/texture]))
-                                        (apply merge-with clojure.set/union))
-                                   facet-filtering)})
       ;; Grid of Looks
-      :else
-      (->> {:hero              looks-hero<-
-            :looks-cards       (looks-cards<- images-db looks facet-filtering)
-            :no-matches        (no-matches<- looks facet-filtering)
-            :filtering-summary (facet-filters/summary<- facets-db looks facet-filtering)}
+      (->> (merge
+            {:hero looks-hero<-}
+            (facet-filters/filters<-
+             {:facets-db             (get-in state storefront.keypaths/v2-facets)
+              :faceted-models        looks
+              :facet-filtering-state facet-filtering-state
+              :facets-to-filter-on   [:hair/origin :hair/color :hair/texture]
+              :navigation-event      e/navigate-shop-by-look
+              :navigation-args       {:album-keyword :look}
+              :child-component-data  (looks-cards<- images-db looks facet-filtering-state)}))
            (component/build looks-template)
            (template/wrap-standard state e/navigate-shop-by-look)))))
 

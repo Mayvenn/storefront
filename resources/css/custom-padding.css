@@ -114,6 +114,25 @@
     .prj1-on-tb-dt,.pxj1-on-tb-dt,.pj1-on-tb-dt { padding-right: 35px;  }
 }
 
+@media (--on-desktop) {
+    .ptj3-on-dt,.pyj3-on-dt,.pj3-on-dt { padding-top: 110px;   }
+    .ptj2-on-dt,.pyj2-on-dt,.pj2-on-dt { padding-top: 60px;    }
+    .ptj1-on-dt,.pyj1-on-dt,.pj1-on-dt { padding-top: 35px;    }
+
+    .pbj3-on-dt,.pyj3-on-dt,.pj3-on-dt { padding-bottom: 110px;}
+    .pbj2-on-dt,.pyj2-on-dt,.pj2-on-dt { padding-bottom: 60px; }
+    .pbj1-on-dt,.pyj1-on-dt,.pj1-on-dt { padding-bottom: 35px; }
+
+    .plj3-on-dt,.pxj3-on-dt,.pj3-on-dt { padding-left: 110px;  }
+    .plj2-on-dt,.pxj2-on-dt,.pj2-on-dt { padding-left: 60px;   }
+    .plj1-on-dt,.pxj1-on-dt,.pj1-on-dt { padding-left: 35px;   }
+
+    .prj3-on-dt,.pxj3-on-dt,.pj3-on-dt { padding-right: 110px; }
+    .prj2-on-dt,.pxj2-on-dt,.pj2-on-dt { padding-right: 60px;  }
+    .prj1-on-dt,.pxj1-on-dt,.pj1-on-dt { padding-right: 35px;  }
+}
+
+@custom-media --on-desktop            (min-width: 1000px);
 @custom-media --on-tablet-and-desktop (min-width: 750px);
 @custom-media --on-mobile             (max-width: 749px);
 @custom-media --on-mobile-and-tablet  (max-width: 999px);

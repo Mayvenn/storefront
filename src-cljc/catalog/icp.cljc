@@ -2,12 +2,13 @@
   (:require [adventure.components.layered :as layered]
             catalog.keypaths
             [catalog.skuers :as skuers]
-            [catalog.ui.category-filters :as category-filters]
             [catalog.ui.category-hero :as category-hero]
             [catalog.ui.content-box :as content-box]
+            [catalog.ui.facet-filters :as facet-filters]
             [catalog.ui.how-it-works :as how-it-works]
             [catalog.ui.product-card-listing :as product-card-listing]
             [catalog.ui.service-card-listing :as service-card-listing]
+            clojure.set
             [homepage.ui.faq :as faq]
             [spice.maps :as maps]
             [spice.selector :as selector]
@@ -184,17 +185,21 @@
              :height              "24px"}}]))
 
 
+(defcomponent ^:private product-list
+  [{:keys [service-card-listing
+           product-card-listing]} _ _]
+  [:div.plj3-on-dt
+   (component/build service-card-listing/organism service-card-listing)
+   (component/build product-card-listing/organism product-card-listing)])
 
 (defcomponent ^:private template
   "This lays out different ux pieces to form a cohesive ux experience"
-  [{:keys [category-filters
-           category-hero
+  [{:keys [category-hero
+           title
            content-box
            expanding-content-box
            drill-category-grid
-           drill-category-list
-           product-card-listing
-           service-card-listing] :as queried-data} _ _]
+           drill-category-list] :as queried-data} _ _]
   [:div
    (component/build category-hero/organism category-hero)
    (vertical-squiggle-atom "-36px")
@@ -202,16 +207,8 @@
     (component/build drill-category-list-organism drill-category-list)
     (component/build drill-category-grid-organism drill-category-grid)]
    [:div.mb10 purple-divider-atom]
-   [:div.max-960.mx-auto
-    (when-let [title (:title category-filters)]
-      [:div.canela.title-1.center.mb2 title])
-    (if (-> category-filters :tabs :tabs/elements empty?)
-      [:div.stroke-s-color.center
-       (svg/straight-line {:width  "1px"
-                           :height "42px"})]
-      (component/build category-filters/organism category-filters {}))
-    (component/build service-card-listing/organism service-card-listing {})
-    (component/build product-card-listing/organism product-card-listing {})]
+   (when title [:div.canela.title-1.center.mb2 title])
+   (component/build facet-filters/organism queried-data {:opts {:child-component product-list}})
    (when (:how-it-works queried-data)
      [:div.col-10.col-7-on-tb-dt.mx-auto.mt6
       (component/build how-it-works/organism queried-data)])
@@ -232,63 +229,77 @@
          vals
          (sort-by (comp category-order :catalog/category-id)))) )
 
-(defn query
-  [app-state]
-  (let [interstitial-category               (accessors.categories/current-category app-state)
-        subcategories                       (category->subcategories (get-in app-state keypaths/categories) interstitial-category)
-        selections                          (get-in app-state catalog.keypaths/category-selections)
+(defn page
+  [state _]
+  (let [interstitial-category               (accessors.categories/current-category state)
+        facet-filtering-state               (assoc (get-in state catalog.keypaths/k-models-facet-filtering)
+                                                   :facet-filtering/item-label "item")
         loaded-category-products            (selector/match-all
                                              {:selector/strict? true}
                                              (merge
                                               (skuers/electives interstitial-category)
                                               (skuers/essentials interstitial-category))
-                                             (vals (get-in app-state keypaths/v2-products)))
+                                             (vals (get-in state keypaths/v2-products)))
+        subcategories                       (category->subcategories (get-in state keypaths/categories) interstitial-category)
         category-products-matching-criteria (selector/match-all {:selector/strict? true}
                                                                 (merge
                                                                  (skuers/essentials interstitial-category)
-                                                                 selections)
+                                                                 (:facet-filtering/filters facet-filtering-state))
                                                                 loaded-category-products)
-        shop?                               (= "shop" (get-in app-state keypaths/store-slug))
+        shop?                               (= "shop" (get-in state keypaths/store-slug))
         service-category-page?              (contains? (:catalog/department interstitial-category) "service")
-        faq                                 (get-in app-state (conj keypaths/cms-faq (:contentful/faq-id interstitial-category)))]
-    (cond->
-        {:category-hero          (category-hero-query interstitial-category)
-         :content-box            (when (and shop? (:content-block/type interstitial-category))
-                                   {:title    (:content-block/title interstitial-category)
-                                    :header   (:content-block/header interstitial-category)
-                                    :summary  (:content-block/summary interstitial-category)
-                                    :sections (:content-block/sections interstitial-category)})
-         :expanding-content-box  (when (and shop? faq)
-                                   (let [{:keys [question-answers]} faq]
-                                     {:faq/expanded-index (get-in app-state keypaths/faq-expanded-section)
-                                      :list/sections (for [{:keys [question answer]} question-answers]
-                                                       {:faq/title (:text question)
-                                                        :faq/content answer})}))
-         :category-filters       (category-filters/query app-state
-                                                         interstitial-category
-                                                         loaded-category-products
-                                                         category-products-matching-criteria
-                                                         selections)
-         :how-it-works           (when (:how-it-works/title-primary interstitial-category) interstitial-category)
-         :product-card-listing   (when-not service-category-page?
-                                   (product-card-listing/query app-state
-                                                               interstitial-category
-                                                               category-products-matching-criteria))
-         :service-card-listing   (when service-category-page?
-                                   (service-card-listing/query app-state
-                                                               interstitial-category
-                                                               category-products-matching-criteria))}
+        faq                                 (get-in state (conj keypaths/cms-faq (:contentful/faq-id interstitial-category)))]
+    (component/build template
+                     (merge
+                      (when-let [filter-title (:product-list/title interstitial-category)]
+                        {:title filter-title})
+                      {:category-hero         (category-hero-query interstitial-category)
+                       :content-box           (when (and shop? (:content-block/type interstitial-category))
+                                                {:title    (:content-block/title interstitial-category)
+                                                 :header   (:content-block/header interstitial-category)
+                                                 :summary  (:content-block/summary interstitial-category)
+                                                 :sections (:content-block/sections interstitial-category)})
+                       :expanding-content-box (when (and shop? faq)
+                                                (let [{:keys [question-answers]} faq]
+                                                  {:faq/expanded-index (get-in state keypaths/faq-expanded-section)
+                                                   :list/sections      (for [{:keys [question answer]} question-answers]
+                                                                         {:faq/title   (:text question)
+                                                                          :faq/content answer})}))
+                       :how-it-works          (when (:how-it-works/title-primary interstitial-category) interstitial-category)
+                       :product-card-listing  (when-not service-category-page?
+                                                (product-card-listing/query state
+                                                                            interstitial-category
+                                                                            category-products-matching-criteria))
+                       :service-card-listing  (when service-category-page?
+                                                (service-card-listing/query state
+                                                                            interstitial-category
+                                                                            category-products-matching-criteria))}
 
-      (= :grid (:subcategories/layout interstitial-category))
-      (merge {:drill-category-grid {:drill-category-grid/values (mapv category->drill-category-grid-entry subcategories)
-                                    :drill-category-grid/title  (:subcategories/title interstitial-category)}})
 
-      (= :list (:subcategories/layout interstitial-category))
-      (merge (let [values (mapv category->drill-category-list-entry subcategories)]
-               {:drill-category-list {:drill-category-list/values                   values
-                                      :drill-category-list/use-three-column-layout? (>= (count values) 3)
-                                      :drill-category-list/tablet-desktop-columns   (max 1 (min 3 (count values)))}})))))
+                      (facet-filters/filters<-
+                       {:facets-db             (get-in state storefront.keypaths/v2-facets)
+                        :faceted-models        loaded-category-products
+                        :facet-filtering-state facet-filtering-state
+                        :facets-to-filter-on   (:selector/electives interstitial-category)
+                        :navigation-event      events/navigate-category
+                        :navigation-args       (select-keys interstitial-category [:catalog/category-id :page/slug])
+                        :child-component-data  (if service-category-page?
+                                                 {:service-card-listing
+                                                  (service-card-listing/query state
+                                                                              interstitial-category
+                                                                              category-products-matching-criteria)}
+                                                 {:product-card-listing
+                                                  (product-card-listing/query state
+                                                                              interstitial-category
+                                                                              category-products-matching-criteria)})})
 
-(defn page
-  [app-state opts]
-  (component/build template (query app-state) opts))
+                      (case (:subcategories/layout interstitial-category)
+                        :grid
+                        {:drill-category-grid {:drill-category-grid/values (mapv category->drill-category-grid-entry subcategories)
+                                               :drill-category-grid/title  (:subcategories/title interstitial-category)}}
+                        :list
+                        (let [values (mapv category->drill-category-list-entry subcategories)]
+                          {:drill-category-list {:drill-category-list/values                   values
+                                                 :drill-category-list/use-three-column-layout? (>= (count values) 3)
+                                                 :drill-category-list/tablet-desktop-columns   (max 1 (min 3 (count values)))}})
+                        nil)))))
