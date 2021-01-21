@@ -19,12 +19,7 @@
 (def detailed-product-selected-addon-items (conj detailed-product :selected-addon-items))
 
 (def category (conj ui :category))
-(def category-panel (conj ui :panel))
 (def category-id (conj ui :id))
-(def category-selections (conj category :selections))
-
-;; Contains the data used to render the category page (ICP)
-(def category-query (conj ui :category-query))
 
 (def initial (-> {}
                  (assoc-in detailed-product {})))

@@ -167,25 +167,14 @@
 
 (defmethod transitions/transition-state e/navigate-category
   [_ event {:keys [catalog/category-id query-params]} app-state]
-  (let [[_ {prev-category-id :catalog/category-id}] (-> (get-in app-state k/navigation-undo-stack)
-                                                        first
-                                                        :navigation-message)]
-    (cond-> app-state
-      :always
-      (->
-       (assoc-in catalog.keypaths/category-id category-id)
+  (-> app-state
+      (assoc-in catalog.keypaths/category-id category-id)
 
-       (assoc-in catalog.keypaths/category-selections
-                 (accessors.categories/query-params->selector-electives query-params))
+      (assoc-in catalog.keypaths/k-models-facet-filtering-filters
+                (accessors.categories/query-params->selector-electives query-params))
 
-       (assoc-in catalog.keypaths/k-models-facet-filtering-filters
-                 (accessors.categories/query-params->selector-electives query-params))
-
-       (assoc-in adventure.keypaths/adventure-home-video
-                 (adventure-slug->video (:video query-params))))
-
-      (not= prev-category-id category-id)
-      (assoc-in catalog.keypaths/category-panel nil))))
+      (assoc-in adventure.keypaths/adventure-home-video
+                (adventure-slug->video (:video query-params)))))
 
 (defmethod effects/perform-effects e/navigate-category
   [_ event {:keys [catalog/category-id slug query-params]} previous-app-state app-state]
@@ -210,8 +199,10 @@
          (effects/redirect e/navigate-home))
        (when-let [subsection-key (:subsection query-params)]
          (js/setTimeout (partial scroll/scroll-selector-to-top (str "#subsection-" subsection-key)) 0))
-       (let [just-arrived? (not= e/navigate-category
-                                 (get-in previous-app-state k/navigation-event))]
+       (let [previous-category-id (:catalog/category-id (get-in previous-app-state k/navigation-args))
+             just-arrived?        (or (not= e/navigate-category
+                                            (get-in previous-app-state k/navigation-event))
+                                      (not= category-id previous-category-id))]
          (when just-arrived?
            (messages/handle-message e/flow|facet-filtering|initialized))))))
 

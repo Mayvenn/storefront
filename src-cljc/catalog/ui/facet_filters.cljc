@@ -347,8 +347,7 @@
        (c/build panel-template
                 {:header header
                  :sections sections}))
-     [:div
-      {:key "filtering-component"}
+     [:div {:key "filtering-component"}
       [:div.hide-on-dt
        (c/build summary-organism summary)]
       [:div.hide-on-mb-tb.px5

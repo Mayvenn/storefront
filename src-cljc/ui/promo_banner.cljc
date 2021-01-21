@@ -67,7 +67,7 @@
         on-shop?          (= :shop (sites/determine-site data))
         nav-event         (get-in data keypaths/navigation-event)
         show?             (contains? (nav-whitelist-for no-applied-promo? on-shop?) nav-event)
-        hide-on-mb-tb?    (boolean (get-in data catalog.keypaths/category-panel))]
+        hide-on-mb-tb?    (boolean (get-in data catalog.keypaths/k-models-facet-filtering-panel))]
     (cond-> {:promo (promotion-to-advertise data)}
       show?          (assoc :promo/type :basic)
       hide-on-mb-tb? (assoc :hide-on-mb-tb? true))))
