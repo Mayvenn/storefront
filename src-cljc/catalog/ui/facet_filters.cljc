@@ -178,7 +178,7 @@
 (c/defcomponent desktop-header-organism
   [{:as                            data
     :filtering-summary.status/keys [primary secondary]} _ _]
-  [:div.col-12.flex.justify-between.pr2
+  [:div.col-12.flex.justify-between.pr2.pt6
    [:div.title-3.proxima.shout.pl5.flex.items-center.justify-between {:style {:width "250px"}}
     primary
     (header-reset-molecule data)]
