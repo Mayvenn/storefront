@@ -164,7 +164,7 @@
 
 (c/defcomponent panel-template
   [{:keys [header sections]} _ _]
-  [:div.fixed.overlay.col-12.bg-white.z6
+  [:div.fixed.overlay.col-12.bg-white.z6.overflow-scroll
    {:key "panel-template"}
    (c/build header-organism header)
    [:div.mynp1.bg-refresh-gray
