@@ -532,6 +532,6 @@
     (when (get-in data keypaths/hide-header?)
       {:class "hide-on-mb-tb"})
     (let [nav-event (get-in data keypaths/navigation-event)]
-      (if (nav/show-minimal-header? nav-event)
+      (if (nav/show-minimal-header? data nav-event)
         ^:inline (minimal-component events/navigate-home)
         ^:inline (c/build component (query data) nil)))]))

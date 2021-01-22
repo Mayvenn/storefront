@@ -1,5 +1,6 @@
 (ns storefront.accessors.nav
   (:require [storefront.events :as events]
+            [storefront.accessors.experiments :as experiments]
             [clojure.set :as set]))
 
 (def ^:private plain-auth-events
@@ -52,9 +53,11 @@
     events/navigate-stylist-account-profile
     events/navigate-stylist-account-social})
 
-(def ^:private sharing-events
-  #{events/navigate-shared-cart
-    events/navigate-stylist-share-your-store})
+(def ^:private share-cart-events
+  #{events/navigate-shared-cart})
+
+(def ^:private sharing-store-events
+  #{events/navigate-stylist-share-your-store})
 
 (def auth-events
   (set/union plain-auth-events checkout-auth-events))
@@ -74,7 +77,8 @@
              checkout-events
              order-complete-events
              payout-events
-             sharing-events
+             sharing-store-events
+             share-cart-events
              stylist-dashboard-events
              voucher-events))
 
@@ -93,7 +97,8 @@
                              checkout-events
                              order-complete-events
                              payout-events
-                             sharing-events
+                             sharing-store-events
+                             share-cart-events
                              stylist-dashboard-events
                              voucher-events
                              interstitial-page-events))
@@ -105,5 +110,8 @@
 (defn show-minimal-footer? [event]
   (contains? minimal-footer-events event))
 
-(defn show-minimal-header? [event]
-  (contains? minimal-header-events event))
+(defn show-minimal-header? [data event]
+  (contains?
+   (set/union (when (experiments/new-shared-cart? data)
+                share-cart-events)
+              minimal-header-events) event))

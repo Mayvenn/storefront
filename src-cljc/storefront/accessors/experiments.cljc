@@ -117,3 +117,7 @@
 (defn sbl-update?
   [data]
   (display-feature? data "sbl-update"))
+
+(defn new-shared-cart?
+  [data]
+  (display-feature? data "new-shared-cart"))

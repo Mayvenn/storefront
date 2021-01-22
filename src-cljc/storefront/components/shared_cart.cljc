@@ -2,6 +2,7 @@
   (:require #?(:cljs [storefront.api :as api])
             [catalog.products :as products]
             [spice.maps :as maps]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.promos :as promos]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
@@ -11,8 +12,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.transitions :as transitions]))
 
 (defcomponent component
   [{:keys [spinning? shared-cart-id shared-cart-promotion store fetching-products? creating-cart? advertised-promo]}
@@ -67,9 +67,27 @@
    :creating-cart?        (utils/requesting? data request-keys/create-order-from-shared-cart)
    :spinning?             (utils/requesting? data request-keys/fetch-shared-cart)})
 
+(defcomponent template
+  [{:hero/keys [title subtitle]} _ _]
+  [:div.center.my6
+   [:div.canela.title-1.mb3 title]
+   [:div.proxima.content-2.mx-auto
+    {:style {:width "270px"}}
+    subtitle]])
+
+
+(defn page [state _]
+  (let [stylist (or ;; If stylist fails to be fetched, then it falls back to current store
+                 (get-in state keypaths/shared-cart-creator)
+                 (get-in state keypaths/store))]
+    (component/build template {:hero/title "Your Cart"
+                               :hero/subtitle (str "Your " (:store-nickname stylist) " has created a cart for you!")})))
+
 (defn ^:export built-component
   [data opts]
-  (component/build component (query data) opts))
+  (if (experiments/new-shared-cart? data)
+    (page data opts)
+    (component/build component (query data) opts)))
 
 (defmethod transitions/transition-state events/api-success-shared-cart-fetch
   [_ event {:as args :keys [shared-cart skus products shared-cart-creator]} app-state]
