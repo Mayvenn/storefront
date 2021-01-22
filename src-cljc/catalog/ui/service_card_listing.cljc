@@ -10,7 +10,8 @@
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [stylist-matching.search.accessors.filters :as stylist-filters]))
+            [stylist-matching.search.accessors.filters :as stylist-filters]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn service->card
   [data
@@ -38,17 +39,29 @@
     (for [card service-cards]
       ^:inline (card->component card))]])
 
+(c/defcomponent ^:private service-cards-empty-state
+  [_ _ _]
+  [:div.col-12.my8.py4.center
+   [:p.h1.py4 "😞"]
+   [:p.h2.py6 "Sorry, we couldn’t find any matches."]
+   [:p.h4.mb10.pb10
+    [:a.p-color (utils/fake-href events/control-category-option-clear) "Clear all filters"]
+    " to see more hair."]])
+
 (c/defcomponent organism
-  [{:keys [id subsections loading-products?]} _ _]
+  [{:keys [id subsections no-cards? loading-products?]} _ _]
   (when id
     [:div.px2.pb4
-     (if loading-products?
-       [:div.col-12.my8.py4.center (ui/large-spinner {:style {:height "4em"}})]
-       (mapv (fn build [{:as subsection :keys [subsection-key]}]
-               (c/build service-list-subsection-component
-                        subsection
-                        (c/component-id (str "subsection-" subsection-key))))
-             subsections))]))
+     (cond
+       loading-products? [:div.col-12.my8.py4.center (ui/large-spinner {:style {:height "4em"}})]
+
+       no-cards?         (c/build service-cards-empty-state {} {})
+
+       :else             (mapv (fn build [{:as subsection :keys [subsection-key]}]
+                                 (c/build service-list-subsection-component
+                                          subsection
+                                          (c/component-id (str "subsection-" subsection-key))))
+                               subsections))]))
 
 (def ^:private select
   (partial selector/match-all {:selector/strict? true}))
@@ -78,8 +91,11 @@
                              (map #(assoc %
                                           :stylist-provides-service
                                           (stylist-filters/stylist-provides-service? current-stylist %)))
-                             (subsections-query app-state category))]
+                             (subsections-query app-state category))
+        no-cards?       (empty? subsections)]
     {:id                "service-card-listing"
+     :no-cards?         no-cards?
      :subsections       subsections
-     :loading-products? (utils/requesting? app-state (conj request-keys/get-products
-                                                           (skuers/essentials category)))}))
+     :loading-products? (and no-cards?
+                             (utils/requesting? app-state (conj request-keys/get-products
+                                                                (skuers/essentials category))))}))

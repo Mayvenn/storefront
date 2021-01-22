@@ -3,6 +3,7 @@
             catalog.keypaths
             [catalog.skuers :as skuers]
             [catalog.ui.category-hero :as category-hero]
+            [catalog.ui.category-filters :as category-filters]
             [catalog.ui.content-box :as content-box]
             [catalog.ui.facet-filters :as facet-filters]
             [catalog.ui.how-it-works :as how-it-works]
@@ -13,6 +14,7 @@
             [spice.maps :as maps]
             [spice.selector :as selector]
             [storefront.accessors.categories :as accessors.categories]
+            [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
@@ -197,6 +199,10 @@
   [{:keys [category-hero
            title
            content-box
+           hair-filters?
+           category-filters
+           service-card-listing
+           product-card-listing
            expanding-content-box
            drill-category-grid
            drill-category-list] :as queried-data} _ _]
@@ -206,9 +212,20 @@
    [:div.max-960.mx-auto
     (component/build drill-category-list-organism drill-category-list)
     (component/build drill-category-grid-organism drill-category-grid)]
+
    [:div.mb10 purple-divider-atom]
-   (when title [:div.canela.title-1.center.mb2 title])
-   (component/build facet-filters/organism queried-data {:opts {:child-component product-list}})
+   (if hair-filters?
+     [:div.py5
+      (when title [:div.canela.title-1.center.mb2 title])
+      (component/build facet-filters/organism queried-data {:opts {:child-component product-list}})]
+     [:div.max-960.mx-auto
+      [:div.pt4]
+      (when-let [title (:title category-filters)]
+        [:div.canela.title-1.center.mt3.py4 title])
+      (component/build category-filters/organism category-filters {})
+      (component/build service-card-listing/organism service-card-listing {})
+      (component/build product-card-listing/organism product-card-listing {})])
+
    (when (:how-it-works queried-data)
      [:div.col-10.col-7-on-tb-dt.mx-auto.mt6
       (component/build how-it-works/organism queried-data)])
@@ -232,8 +249,12 @@
 (defn page
   [state _]
   (let [interstitial-category               (accessors.categories/current-category state)
+        hair-filters?                       (experiments/hair-filters? state)
         facet-filtering-state               (assoc (get-in state catalog.keypaths/k-models-facet-filtering)
                                                    :facet-filtering/item-label "item")
+        selections                          (if hair-filters?
+                                              (:facet-filtering/filters facet-filtering-state)
+                                              (get-in state catalog.keypaths/category-selections))
         loaded-category-products            (selector/match-all
                                              {:selector/strict? true}
                                              (merge
@@ -244,7 +265,7 @@
         category-products-matching-criteria (selector/match-all {:selector/strict? true}
                                                                 (merge
                                                                  (skuers/essentials interstitial-category)
-                                                                 (:facet-filtering/filters facet-filtering-state))
+                                                                 selections)
                                                                 loaded-category-products)
         shop?                               (= "shop" (get-in state keypaths/store-slug))
         service-category-page?              (contains? (:catalog/department interstitial-category) "service")
@@ -254,6 +275,7 @@
                       (when-let [filter-title (:product-list/title interstitial-category)]
                         {:title filter-title})
                       {:category-hero         (category-hero-query interstitial-category)
+                       :hair-filters?         hair-filters?
                        :content-box           (when (and shop? (:content-block/type interstitial-category))
                                                 {:title    (:content-block/title interstitial-category)
                                                  :header   (:content-block/header interstitial-category)
@@ -276,22 +298,39 @@
                                                                             category-products-matching-criteria))}
 
 
-                      (facet-filters/filters<-
-                       {:facets-db             (get-in state storefront.keypaths/v2-facets)
-                        :faceted-models        loaded-category-products
-                        :facet-filtering-state facet-filtering-state
-                        :facets-to-filter-on   (:selector/electives interstitial-category)
-                        :navigation-event      events/navigate-category
-                        :navigation-args       (select-keys interstitial-category [:catalog/category-id :page/slug])
-                        :child-component-data  (if service-category-page?
-                                                 {:service-card-listing
-                                                  (service-card-listing/query state
-                                                                              interstitial-category
-                                                                              category-products-matching-criteria)}
-                                                 {:product-card-listing
-                                                  (product-card-listing/query state
-                                                                              interstitial-category
-                                                                              category-products-matching-criteria)})})
+                      (if hair-filters?
+                        (facet-filters/filters<-
+                         {:facets-db             (get-in state storefront.keypaths/v2-facets)
+                          :faceted-models        loaded-category-products
+                          :facet-filtering-state facet-filtering-state
+                          :facets-to-filter-on   (:selector/electives interstitial-category)
+                          :navigation-event      events/navigate-category
+                          :navigation-args       (select-keys interstitial-category [:catalog/category-id :page/slug])
+                          :child-component-data  (if service-category-page?
+                                                   {:service-card-listing
+                                                    (service-card-listing/query state
+                                                                                interstitial-category
+                                                                                category-products-matching-criteria)}
+                                                   {:product-card-listing
+                                                    (product-card-listing/query state
+                                                                                interstitial-category
+                                                                                category-products-matching-criteria)})})
+
+                        (merge
+                         {:category-filters (category-filters/query state
+                                                                    interstitial-category
+                                                                    loaded-category-products
+                                                                    category-products-matching-criteria
+                                                                    selections)}
+                         (if service-category-page?
+                           {:service-card-listing
+                            (service-card-listing/query state
+                                                        interstitial-category
+                                                        category-products-matching-criteria)}
+                           {:product-card-listing
+                            (product-card-listing/query state
+                                                        interstitial-category
+                                                        category-products-matching-criteria)})))
 
                       (case (:subcategories/layout interstitial-category)
                         :grid

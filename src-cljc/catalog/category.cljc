@@ -22,6 +22,7 @@
    spice.core
    [spice.selector :as selector]
    [storefront.accessors.categories :as accessors.categories]
+   [storefront.accessors.experiments :as experiments]
    [storefront.assets :as assets]
    [storefront.component :as c]
    [storefront.components.video :as video]
@@ -55,6 +56,7 @@
            service-card-listing
            product-card-listing
            faq-section
+           hair-filters?
            video] :as queried-data} _ _]
   [:div
    (c/build category-hero/organism category-hero)
@@ -112,7 +114,7 @@
 (defn page
   [app-state _]
   (let [current                             (accessors.categories/current-category app-state)
-        hair-filters?                       (experiments/hair-filters app-state)
+        hair-filters?                       (experiments/hair-filters? app-state)
         facet-filtering-state               (merge (get-in app-state catalog.keypaths/k-models-facet-filtering)
                                                    {:facet-filtering/item-label "item"})
         loaded-category-products            (selector/match-all
