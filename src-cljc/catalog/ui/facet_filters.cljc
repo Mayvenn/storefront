@@ -350,9 +350,9 @@
      [:div {:key "filtering-component"}
       [:div.hide-on-dt
        (c/build summary-organism summary)]
-      [:div.hide-on-mb-tb.px5
+      [:div.hide-on-mb-tb
        (c/build desktop-header-organism (merge summary header))]
-      [:div.flex.justify-between.px5
+      [:div.flex.justify-between
        [:div.hide-on-mb-tb
         (c/build desktop-sections-organism {:sections sections})]
        [:div.col-12
