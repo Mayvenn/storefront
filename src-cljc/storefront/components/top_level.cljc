@@ -166,6 +166,9 @@
       (routes/sub-page? [nav-event] [events/navigate-cart]) ; Cart pages
       ((ui/lazy-load-component :catalog 'checkout.classic-cart/layout events/navigate-cart) data nil)
 
+      (contains? #{events/navigate-shop-by-look} nav-event)
+      ((main-component nav-event) data nil)
+
       :else
       (main-layout data nav-event))))
 
