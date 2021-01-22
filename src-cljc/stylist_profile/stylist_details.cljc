@@ -399,7 +399,7 @@
                      :footer footer<-}
                     (when detailed-stylist
                       {:carousel                 (carousel<- detailed-stylist)
-                       :reviews                  (reviews<- fetching-reviews?
+                       :stylist-reviews          (reviews<- fetching-reviews?
                                                             detailed-stylist
                                                             paginated-reviews)
                        :card                     (card<- host-name
