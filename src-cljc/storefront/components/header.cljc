@@ -352,23 +352,27 @@
                                         "shop-a-la-carte-menu-expanded")})
 
 (defn shop-looks-query [data]
-  {:header-menu-item/flyout-menu-path keypaths/shop-looks-menu-expanded
-   :header-menu-item/id               "desktop-shop-by-look"
-   :header-menu-item/content          "Shop by look"
-   :flyout/items                      [{:key         "all"
-                                        :nav-message [events/navigate-shop-by-look {:album-keyword :look}]
-                                        :new?        false
-                                        :copy        "All Looks"}
-                                       {:key         "straight"
-                                        :nav-message [events/navigate-shop-by-look {:album-keyword :straight-looks}]
-                                        :new?        false
-                                        :copy        "Straight Looks"}
-                                       {:key         "curly"
-                                        :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-looks}]
-                                        :new?        false
-                                        :copy        "Wavy & Curly Looks"}]
-   :flyout/id                         (when (get-in data keypaths/shop-looks-menu-expanded)
-                                        "shop-looks-menu-expanded")})
+  (if (experiments/sbl-update? data)
+    {:header-menu-item/navigation-target [events/navigate-shop-by-look {:album-keyword :look}]
+     :header-menu-item/id                "desktop-shop-by-look"
+     :header-menu-item/content           "Shop by look"}
+    {:header-menu-item/flyout-menu-path keypaths/shop-looks-menu-expanded
+     :header-menu-item/id               "desktop-shop-by-look"
+     :header-menu-item/content          "Shop by look"
+     :flyout/items                      [{:key         "all"
+                                          :nav-message [events/navigate-shop-by-look {:album-keyword :look}]
+                                          :new?        false
+                                          :copy        "All Looks"}
+                                         {:key         "straight"
+                                          :nav-message [events/navigate-shop-by-look {:album-keyword :straight-looks}]
+                                          :new?        false
+                                          :copy        "Straight Looks"}
+                                         {:key         "curly"
+                                          :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-looks}]
+                                          :new?        false
+                                          :copy        "Wavy & Curly Looks"}]
+     :flyout/id                         (when (get-in data keypaths/shop-looks-menu-expanded)
+                                          "shop-looks-menu-expanded")}))
 
 (defn shop-bundle-sets-query [data]
   {:header-menu-item/flyout-menu-path keypaths/shop-bundle-sets-menu-expanded
@@ -394,7 +398,8 @@
         site      (sites/determine-site data)
         shop?     (= :shop site)
         classic?  (= :classic site)
-        signed-in (auth/signed-in data)]
+        signed-in (auth/signed-in data)
+        sbl-update? (experiments/sbl-update? data)]
     {:signed-in                   signed-in
      :on-taxon?                   (get-in data keypaths/current-traverse-nav)
      :promo-banner                (promo-banner/query data)
@@ -437,10 +442,16 @@
                                    {:slide-out-nav-menu-item/target  [events/navigate-adventure-find-your-stylist]
                                     :slide-out-nav-menu-item/id      "menu-shop-find-stylist"
                                     :slide-out-nav-menu-item/primary "Find a Stylist"}
-                                   {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :shop-looks}]
-                                    :slide-out-nav-menu-item/nested? true
-                                    :slide-out-nav-menu-item/id      "menu-shop-by-look"
-                                    :slide-out-nav-menu-item/primary "Shop By Look"}
+                                   (if sbl-update?
+                                     {:slide-out-nav-menu-item/target  [events/navigate-shop-by-look {:album-keyword :look}]
+                                      :slide-out-nav-menu-item/nested? false
+                                      :slide-out-nav-menu-item/id      "menu-shop-by-look"
+                                      :slide-out-nav-menu-item/primary "Shop By Look"}
+
+                                     {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :shop-looks}]
+                                      :slide-out-nav-menu-item/nested? true
+                                      :slide-out-nav-menu-item/id      "menu-shop-by-look"
+                                      :slide-out-nav-menu-item/primary "Shop By Look"})
                                    {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :shop-bundle-sets}]
                                     :slide-out-nav-menu-item/nested? true
                                     :slide-out-nav-menu-item/id      "menu-shop-by-bundle-sets"

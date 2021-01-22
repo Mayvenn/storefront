@@ -1,5 +1,6 @@
 (ns storefront.accessors.experiments
-  (:require [storefront.keypaths :as keypaths]))
+  (:require [storefront.keypaths :as keypaths]
+            [storefront.accessors.sites :as sites]))
 
 #_(defn bucketing-example
     [data]
@@ -116,7 +117,8 @@
 
 (defn sbl-update?
   [data]
-  (display-feature? data "sbl-update"))
+  (and (= :shop (sites/determine-site data))
+       (display-feature? data "sbl-update")))
 
 (defn new-shared-cart?
   [data]
