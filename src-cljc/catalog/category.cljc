@@ -12,6 +12,7 @@
    catalog.keypaths
    clojure.set
    [catalog.skuers :as skuers]
+   [catalog.ui.category-filters :as category-filters]
    [catalog.ui.category-hero :as category-hero]
    [catalog.ui.content-box :as content-box]
    [catalog.ui.how-it-works :as how-it-works]
@@ -50,6 +51,9 @@
 (c/defcomponent ^:private template
   [{:keys [category-hero
            content-box
+           category-filters
+           service-card-listing
+           product-card-listing
            faq-section
            video] :as queried-data} _ _]
   [:div
@@ -67,8 +71,16 @@
                                          :page/slug           "mayvenn-install"
                                          :catalog/category-id 23})}}))
 
-   [:div.py5
-    (c/build facet-filters/organism queried-data {:opts {:child-component product-list}})]
+   (if hair-filters?
+     [:div.py5
+      (c/build facet-filters/organism queried-data {:opts {:child-component product-list}})]
+     [:div.max-960.mx-auto
+      [:div.pt4]
+      (when-let [title (:title category-filters)]
+        [:div.canela.title-1.center.mt3.py4 title])
+      (c/build category-filters/organism category-filters {})
+      (c/build service-card-listing/organism service-card-listing {})
+      (c/build product-card-listing/organism product-card-listing {})])
    (when content-box
      [:div green-divider-atom
       (c/build content-box/organism content-box)])
@@ -100,6 +112,7 @@
 (defn page
   [app-state _]
   (let [current                             (accessors.categories/current-category app-state)
+        hair-filters?                       (experiments/hair-filters app-state)
         facet-filtering-state               (merge (get-in app-state catalog.keypaths/k-models-facet-filtering)
                                                    {:facet-filtering/item-label "item"})
         loaded-category-products            (selector/match-all
@@ -109,10 +122,13 @@
                                               (skuers/essentials current))
                                              (vals (get-in app-state k/v2-products)))
         shop?                               (= "shop" (get-in app-state k/store-slug))
+        selections                          (if hair-filters?
+                                              (:facet-filtering/filters facet-filtering-state)
+                                              (get-in app-state catalog.keypaths/category-selections))
         category-products-matching-criteria (selector/match-all {:selector/strict? true}
                                                                 (merge
                                                                  (skuers/essentials current)
-                                                                 (:facet-filtering/filters facet-filtering-state))
+                                                                 selections)
                                                                 loaded-category-products)
         service-category-page?              (contains? (:catalog/department current) "service")
         faq                                 (get-in app-state (conj storefront.keypaths/cms-faq (:contentful/faq-id current)))]
@@ -128,6 +144,7 @@
                                           :header   (:content-block/header current)
                                           :summary  (:content-block/summary current)
                                           :sections (:content-block/sections current)})
+               :hair-filters?          hair-filters?
                :service-card-listing   (when service-category-page?
                                          (service-card-listing/query app-state current category-products-matching-criteria))
                :product-card-listing   (when-not service-category-page?
@@ -139,22 +156,28 @@
                                             :list/sections      (for [{:keys [question answer]} question-answers]
                                                                   {:faq/title   (:text question)
                                                                    :faq/content answer})}))}
-              (facet-filters/filters<-
-               {:facets-db             (get-in app-state storefront.keypaths/v2-facets)
-                :faceted-models        loaded-category-products
-                :facet-filtering-state facet-filtering-state
-                :facets-to-filter-on   (:selector/electives current)
-                :navigation-event      e/navigate-category
-                :navigation-args       (select-keys current [:catalog/category-id :page/slug])
-                :child-component-data  (if service-category-page?
-                                         {:service-card-listing
-                                          (service-card-listing/query app-state
-                                                                      current
-                                                                      category-products-matching-criteria)}
-                                         {:product-card-listing
-                                          (product-card-listing/query app-state
-                                                                      current
-                                                                      category-products-matching-criteria)})})))))
+              (if hair-filters?
+                (facet-filters/filters<-
+                 {:facets-db             (get-in app-state storefront.keypaths/v2-facets)
+                  :faceted-models        loaded-category-products
+                  :facet-filtering-state facet-filtering-state
+                  :facets-to-filter-on   (:selector/electives current)
+                  :navigation-event      e/navigate-category
+                  :navigation-args       (select-keys current [:catalog/category-id :page/slug])
+                  :child-component-data  (if service-category-page?
+                                           {:service-card-listing
+                                            (service-card-listing/query app-state
+                                                                        current
+                                                                        category-products-matching-criteria)}
+                                           {:product-card-listing
+                                            (product-card-listing/query app-state
+                                                                        current
+                                                                        category-products-matching-criteria)})})
+                {:category-filters (category-filters/query app-state
+                                                           current
+                                                           loaded-category-products
+                                                           category-products-matching-criteria
+                                                           selections)})))))
 
 (defn ^:export built-component
   [app-state opts]

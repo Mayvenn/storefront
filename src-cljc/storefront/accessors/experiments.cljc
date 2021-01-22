@@ -120,6 +120,10 @@
   (and (= :shop (sites/determine-site data))
        (display-feature? data "sbl-update")))
 
+(defn hair-filters?
+  [data]
+  (display-feature? data "hair-filters"))
+
 (defn new-shared-cart?
   [data]
   (display-feature? data "new-shared-cart"))
