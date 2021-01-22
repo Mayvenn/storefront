@@ -42,15 +42,15 @@
 
 (defn query
   [data product]
-  (let [images-catalog             (get-in data keypaths/v2-images)
-        skus                       (vals (select-keys (get-in data keypaths/v2-skus)
+  (let [images-catalog      (get-in data keypaths/v2-images)
+        skus                (vals (select-keys (get-in data keypaths/v2-skus)
                                                (:selector/skus product)))
-        facets                     (get-in data keypaths/v2-facets)
-        category-filter-selections (get-in data catalog.keypaths/k-models-facet-filtering-filters)
+        facets              (get-in data keypaths/v2-facets)
+        category-selections (get-in data catalog.keypaths/category-selections)
 
         color-order-map           (facets/color-order-map facets)
         in-stock-skus             (selector/match-all {}
-                                                      (assoc category-filter-selections :inventory/in-stock? #{true})
+                                                      (assoc category-selections :inventory/in-stock? #{true})
                                                       skus)
         skus-to-search            (or (not-empty in-stock-skus) skus)
         product-detail-selections (get-in data catalog.keypaths/detailed-product-selections)
@@ -78,7 +78,7 @@
                                      :page/slug          product-slug
                                      :query-params       {:SKU (:catalog/sku-id
                                                                 (sku-best-matching-selections
-                                                                 (merge product-detail-selections category-filter-selections)
+                                                                 (merge product-detail-selections category-selections)
                                                                  skus
                                                                  color-order-map))}}]
      :product-card-details/id      (str "product-card-details-" product-slug)

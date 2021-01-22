@@ -232,6 +232,14 @@
 
 (defpath control-commission-order-expand)
 
+(defpath control-category-panel-open)
+(defpath control-category-panel-close)
+
+(defpath control-category-option)
+(defpath control-category-option-select)
+(defpath control-category-option-unselect)
+(defpath control-category-option-clear)
+
 (defpath control-product-detail-picker-open)
 (defpath control-product-detail-picker-close)
 (defpath control-product-detail-picker-option-select)

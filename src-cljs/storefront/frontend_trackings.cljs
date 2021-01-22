@@ -78,6 +78,17 @@
         (riskified/track-page path)
         (stringer/track-page (get-in app-state keypaths/store-experience))))))
 
+(defmethod perform-track events/control-category-panel-open
+  [_ event {:keys [selected]} app-state]
+  (stringer/track-event "category_page_filter-select"
+                        {:filter_name (pr-str selected)}))
+
+(defmethod perform-track events/control-category-option-select
+  [_ event {:keys [facet option]} app-state]
+  (stringer/track-event "category_page_option-select"
+                        {:filter_name     (pr-str facet)
+                         :selected_option option}))
+
 (defmethod perform-track events/viewed-sku [_ event {:keys [sku]} app-state]
   (when sku
     (facebook-analytics/track-event "ViewContent" {:content_type "product"

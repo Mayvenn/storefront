@@ -143,6 +143,17 @@
   (assoc-in app-state adventure.keypaths/adventure-home-video
             (adventure-slug->video (:video query-params))))
 
+(defn clean-up-open-category-panels
+  [app-state
+   [current-nav-event current-nav-event-args]
+   [_ previous-nav-event-args]]
+  (cond-> app-state
+    (or (not= current-nav-event events/navigate-category)
+        (not= (:catalog/category-id current-nav-event-args)
+              (:catalog/category-id previous-nav-event-args)))
+    (-> (assoc-in keypaths/hide-header? false)
+        (assoc-in catalog.keypaths/category-panel nil))))
+
 (defn clear-recently-added-skus
   [app-state [previous-nav-event _]]
   (cond-> app-state
@@ -173,6 +184,7 @@
     (-> app-state
         collapse-menus
         add-return-event
+        (clean-up-open-category-panels new-nav-message previous-nav-message)
         (clear-recently-added-skus previous-nav-message)
         (clear-detailed-product-related-addons previous-nav-message)
         (add-pending-promo-code args)
