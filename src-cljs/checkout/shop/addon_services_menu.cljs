@@ -2,10 +2,7 @@
   (:require
    api.current
    api.orders
-   [clojure.set :as set]
    [clojure.string :as string]
-   [spice.maps :as maps]
-   [storefront.accessors.orders :as orders]
    [storefront.api :as api]
    [storefront.component :as component]
    [storefront.components.header :as components.header]
@@ -21,32 +18,75 @@
    [storefront.request-keys :as request-keys]
    [storefront.trackings :as trackings]
    [storefront.transitions :as transitions]
-   spice.selector
-   storefront.utils))
+   spice.selector))
 
-(def addon-sku->addon-specialty
-  {"SRV-DPCU-000" :specialty-addon-hair-deep-conditioning
-   "SRV-3CU-000"  :specialty-addon-360-frontal-customization
-   "SRV-TKDU-000" :specialty-addon-weave-take-down
-   "SRV-CCU-000"  :specialty-addon-closure-customization
-   "SRV-FCU-000"  :specialty-addon-frontal-customization
-   "SRV-TRMU-000" :specialty-addon-natural-hair-trim})
+;; ----------------------
 
-(defn stylist-can-perform-addon-service?
-  [stylist-service-menu addon-service-sku]
-  (let [service-key (get addon-sku->addon-specialty addon-service-sku)]
-    (-> stylist-service-menu
-        service-key
-        boolean)))
+(def ^:private select
+  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
 
-(defn addon-service-sku->addon-service-menu-entry
-  [data {:keys    [catalog/sku-id sku/price legacy/variant-id copy/description addon-unavailable-reason]
-         sku-name :sku/name}]
-  (let [selected?    (contains? (set (map :sku (orders/service-line-items (get-in data keypaths/order)))) sku-id)
+(def ^:private ?discountable
+  {:catalog/department                 #{"service"}
+   :service/type                       #{"base"}
+   :promo.mayvenn-install/discountable #{true}})
+
+(def ^:private ?addons
+  {:catalog/department #{"service"}
+   :service/type       #{"addon"}})
+
+;; ----------------------
+
+(defn ^:private unavailability-reason
+  [other-services
+   offered-sku-ids
+   service-item
+   {:catalog/keys [sku-id] :as addon-service}]
+  (cond-> addon-service
+    (not (contains? offered-sku-ids sku-id))
+    (assoc :addon-unavailable-reason
+           "Your stylist does not yet offer this service on Mayvenn")
+
+    ;; TODO(corey) why are some of these :hair/family not sets, but vecs?
+    (not (contains? (set (:hair/family addon-service))
+                    (first (:hair/family service-item))))
+    (assoc :addon-unavailable-reason
+           (str "Only available with "
+                (->> other-services
+                     (select (select-keys addon-service [:hair/family]))
+                     (map :sku/name)
+                     (string/join " or "))))))
+
+(defn addons-by-availability|SRV
+  "GROT(SRV)"
+  [skus-db offered-sku-ids service-item]
+  (let [skus (->> skus-db vals (remove (comp (partial = "SV2") first :service/world)))
+
+        other-services (->> (select ?discountable skus)
+                              (sort-by :sku/price))]
+    (->> (select ?addons skus)
+         (map (partial unavailability-reason
+                       other-services
+                       offered-sku-ids
+                       service-item))
+         (sort-by (comp boolean :addon-unavailable-reason))
+         (partition-by (comp boolean :addon-unavailable-reason))
+         (map (partial sort-by :order.view/addon-sort)))))
+
+(defn addon-service-menu-entry<-
+  [data
+   {:item.service/keys [addons]}
+   {:keys    [catalog/sku-id
+              sku/price
+              legacy/variant-id
+              copy/description
+              addon-unavailable-reason]
+    sku-name :sku/name}]
+  (let [selected?    (boolean (select {:catalog/sku-id #{sku-id}} addons))
         any-updates? (or (utils/requesting-from-endpoint? data request-keys/add-to-bag)
                          (utils/requesting-from-endpoint? data request-keys/delete-line-item))]
     {:addon-service-entry/id                 (str "addon-service-" sku-id)
-     :addon-service-entry/disabled-classes   (when addon-unavailable-reason "bg-refresh-gray dark-gray")
+     :addon-service-entry/disabled-classes   (when addon-unavailable-reason
+                                               "bg-refresh-gray dark-gray")
      :addon-service-entry/warning            addon-unavailable-reason
      :addon-service-entry/primary            sku-name
      :addon-service-entry/secondary          description
@@ -56,70 +96,26 @@
                                                                              :previously-checked? selected?}]
      :addon-service-entry/checkbox-spinning? (or (utils/requesting? data (conj request-keys/add-to-bag sku-id))
                                                  (utils/requesting? data (conj request-keys/delete-line-item variant-id)))
-     :addon-service-entry/ready?             (not (or addon-unavailable-reason any-updates?))
+     :addon-service-entry/ready?             (not (or addon-unavailable-reason
+                                                      any-updates?))
      :addon-service-entry/checked?           selected?}))
 
-(defn ^:private determine-unavailability-reason
-  [all-base-skus
-   service-menu ;can be moved
-   base-service-line-item
-   {addon-service-hair-family :hair/family
-    addon-sku-id              :catalog/sku-id
-    :as                       addon-service}]
-  (storefront.utils/?assoc addon-service
-                           :addon-unavailable-reason
-                           (cond
-                             (and service-menu
-                                  (not (stylist-can-perform-addon-service? service-menu addon-sku-id)))
-                             "Your stylist does not yet offer this service on Mayvenn"
-
-                             (not (contains? (->> addon-service-hair-family
-                                                  (map api.orders/hair-family->service-sku-ids)
-                                                  (reduce set/union #{}))
-                                             (:sku base-service-line-item)))
-                             (str "Only available with " (->> all-base-skus
-                                                              (filter #(not-empty
-                                                                        (set/intersection (-> % :hair/family set)
-                                                                                          (-> addon-service-hair-family set))))
-                                                              (map :sku/name)
-                                                              (string/join " or ")))
-
-                             :else
-                             nil)))
-
-
-(defn addon-skus-for-stylist-grouped-by-availability
-  [{:keys [skus stylist-service-menu base-service-line-item]}]
-  (let [all-base-skus            (->> skus
-                                      vals
-                                      (spice.selector/match-all {} {:catalog/department "service" :service/type "base" :promo.mayvenn-install/discountable true})
-                                      (sort-by :sku/price))
-        [available-addon-skus
-         unavailable-addon-skus] (->> skus
-                                      vals
-                                      (spice.selector/match-all {} {:catalog/department "service" :service/type "addon"})
-                                      (map (partial determine-unavailability-reason all-base-skus stylist-service-menu base-service-line-item))
-                                      (sort-by (comp boolean :addon-unavailable-reason))
-                                      (partition-by (comp boolean :addon-unavailable-reason))
-                                      (map (partial sort-by :order.view/addon-sort)))]
-    {:available-addon-skus   available-addon-skus
-     :unavailable-addon-skus unavailable-addon-skus}))
-
+;; NOTE this is focused by the first discountable item, atm
+;; In the future there will likely need to be a set-focus for the service-item
+;; so we can support addons on more than one service
 (defmethod popup/query :addon-services-menu
   [data]
-  (let [{current-waiter-order :waiter/order} (api.orders/current data)
-        servicing-stylist                    (:services/stylist (api.orders/services data current-waiter-order))
-        discountable-service-line-item       (->> current-waiter-order
-                                                  (api.orders/free-mayvenn-service servicing-stylist)
-                                                  :free-mayvenn-service/service-item)
-        {:keys [available-addon-skus
-                unavailable-addon-skus]}     (addon-skus-for-stylist-grouped-by-availability
-                                              {:base-service-line-item discountable-service-line-item
-                                               :stylist-service-menu   (:service-menu (:diva/stylist (api.current/stylist data)))
-                                               :skus                   (get-in data keypaths/v2-skus)})]
+  (let [{:order/keys [items]}                      (api.orders/current data)
+        {:stylist.services/keys [offered-sku-ids]} (api.current/stylist data)
+        skus-db                                    (get-in data keypaths/v2-skus)
+
+        service-item (->> items (select ?discountable) first) ; <- focus of menu
+
+        [available unavailable]
+        (addons-by-availability|SRV skus-db offered-sku-ids service-item)]
     {:addon-services/spinning? (utils/requesting? data request-keys/get-skus)
-     :addon-services/services  (map (partial addon-service-sku->addon-service-menu-entry data)
-                                    (concat available-addon-skus unavailable-addon-skus))}))
+     :addon-services/services  (map (partial addon-service-menu-entry<- data service-item)
+                                    (concat available unavailable))}))
 
 (defmethod popup/component :addon-services-menu
   [{:addon-services/keys [spinning? services]} _ _]
@@ -158,15 +154,16 @@
            [:div tertiary]])
         services)]))))
 
-(defmethod transitions/transition-state events/control-show-addon-service-menu [_ event args app-state]
-  (-> app-state
-      (assoc-in keypaths/popup :addon-services-menu)))
+(defmethod transitions/transition-state events/control-show-addon-service-menu
+  [_ _ _ state]
+  (assoc-in state keypaths/popup :addon-services-menu))
 
-(defmethod transitions/transition-state events/control-addon-service-menu-dismiss [_ event args app-state]
-  (assoc-in app-state keypaths/popup nil))
+(defmethod transitions/transition-state events/control-addon-service-menu-dismiss
+  [_ _ _ state]
+  (assoc-in state keypaths/popup nil))
 
 (defmethod effects/perform-effects events/control-addon-checkbox
-  [_ event {:keys [sku-id variant-id previously-checked?] :as args} _ app-state]
+  [_ _ {:keys [sku-id variant-id previously-checked?]} _ app-state]
   (let [session-id (get-in app-state keypaths/session-id)
         order      (get-in app-state keypaths/order)
         sku        (get-in app-state (conj keypaths/v2-skus sku-id))
@@ -186,17 +183,26 @@
                                                      :quantity quantity
                                                      :sku      sku})))))
 
-(defmethod trackings/perform-track events/control-show-addon-service-menu [_ event args app-state]
-  (let [order                               (api.orders/current app-state)
-        discountable-service-line-item      (:service (api.orders/free-mayvenn-service app-state order))
-        {:keys [available-addon-sku-ids
-                unavailable-addon-sku-ids]} (set/rename-keys
-                                             (->> (addon-skus-for-stylist-grouped-by-availability
-                                                   {:facets                 (get-in app-state keypaths/v2-facets)
-                                                    :base-service-line-item discountable-service-line-item
-                                                    :skus                   (get-in app-state keypaths/v2-skus)})
-                                                  (maps/map-values #(string/join "," (mapv :catalog/sku-id %))))
-                                             {:available-addon-skus   :available-addon-sku-ids
-                                              :unavailable-addon-skus :unavailable-addon-sku-ids})]
-    (stringer/track-event "add_on_services_button_pressed" {:available_services   available-addon-sku-ids
-                                                            :unavailable_services unavailable-addon-sku-ids})))
+(defmethod trackings/perform-track events/control-show-addon-service-menu
+  [_ _ _ state]
+  ;; TODO(corey)
+  ;; I can't tell if this reporting should diverge from the view, that seems
+  ;; odd. But it did. I added the current stylist offerings as an input
+  ;; on availability.
+  (let [{:order/keys [items]}                      (api.orders/current state)
+        {:stylist.services/keys [offered-sku-ids]} (api.current/stylist state)
+        skus-db                                    (get-in state keypaths/v2-skus)
+
+        service-item (->> items (select ?discountable) first)
+
+        [available unavailable]
+        (addons-by-availability|SRV skus-db offered-sku-ids service-item)]
+    ;; GROT(SRV) we can back-map service addon facets to sku-ids
+    ;; but eventually, we won't have sku-ids form new addon facets
+    (stringer/track-event "add_on_services_button_pressed"
+                          {:available_services   (->> available
+                                                     (mapv :catalog/sku-id)
+                                                     (string/join ","))
+                           :unavailable_services (->> unavailable
+                                                     (mapv :catalog/sku-id)
+                                                     (string/join ","))})))
