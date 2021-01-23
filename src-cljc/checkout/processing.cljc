@@ -49,7 +49,7 @@
                        (do
                          (if (< times-attempted 5)
                            (cond
-                             (-> cart-payments :quadpay :setup-data)
+                             (not (-> cart-payments :quadpay :setup-data))
                              (do
                                (history/enqueue-navigate events/navigate-cart {:query-params {:error "restart-quadpay"}})
                                (messages/handle-later events/flash-show-failure {:message "An error that occurred. Please retry checking out."}))
