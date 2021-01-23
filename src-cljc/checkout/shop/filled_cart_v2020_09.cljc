@@ -268,52 +268,78 @@
 
 ;;; --------------
 
+(defn cart-items|addons|SRV<-
+  "GROT(SRV)"
+  [addons]
+  (when (seq addons)
+    {:cart-item-modify-button/content "Edit Add-Ons"
+     :cart-item-sub-items/id          "addon-services"
+     :cart-item-sub-items/title       "Add-On Services"
+     :cart-item-sub-items/items       (map (fn [addon-sku]
+                                             {:cart-item-sub-item/title  (:sku/title addon-sku)
+                                              :cart-item-sub-item/price  (some-> addon-sku :sku/price mf/as-money)
+                                              :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
+                                           addons)}))
+
+(defn cart-items|addons<-
+  [item-facets]
+  (when (seq item-facets)
+    {:cart-item-modify-button/content "Edit Add-Ons"
+     :cart-item.addons/id             "addon-services"
+     :cart-item.addons/title          "Add-On Services"
+     :cart-item.addons/elements
+     (->> item-facets
+          (mapv (fn [facet]
+                  {:cart-item.addon/title (:facet/name facet)
+                   :cart-item.addon/price (some-> facet :service/price mf/as-money)
+                   :cart-item.addon/id    (:service/sku-part facet)})))}))
+
 (defn free-services<-
   [items delete-line-item-requests]
   (for [{:as                         free-service
          :catalog/keys               [sku-id]
          :item/keys                  [id variant-name quantity unit-price]
          :item.service/keys          [addons]
+         :join/keys                  [addon-facets]
          :promo.mayvenn-install/keys [hair-missing-quantity requirement-copy]
+         :product/keys               [essential-title essential-price essential-inclusions]
          :copy/keys                  [whats-included]
          :legacy/keys                [variant-id]}
 
         (select ?discountable items)
-        :let [required-hair-quantity-met? (not (pos? hair-missing-quantity))]]
-    (cond-> {:react/key                               "freeinstall-line-item-freeinstall"
-             :cart-item-title/id                      "line-item-title-upsell-free-service"
-             :cart-item-title/primary                 variant-name
-             :cart-item-copy/lines                    [{:id    (str "line-item-whats-included-" sku-id)
-                                                        :value (if required-hair-quantity-met?
-                                                                 (str "You're all set! " whats-included)
-                                                                 requirement-copy)}
-                                                       {:id    (str "line-item-quantity-" sku-id)
-                                                        :value (str "qty. " quantity)}]
-             :cart-item-floating-box/id               "line-item-freeinstall-price"
-             :cart-item-floating-box/contents         (let [price (some-> (* quantity unit-price) mf/as-money)]
-                                                        (if  required-hair-quantity-met?
-                                                          [{:text price :attrs {:class "strike"}}
-                                                           {:text "FREE" :attrs {:class "s-color"}}]
-                                                          [{:text price}]))
-             :cart-item-remove-action/id              "line-item-remove-freeinstall"
-             :cart-item-remove-action/spinning?       (boolean (get delete-line-item-requests id))
-             :cart-item-remove-action/target          [events/control-cart-remove variant-id]
-             :cart-item-service-thumbnail/id          "freeinstall"
-             :cart-item-service-thumbnail/image-url   (hacky-cart-image free-service)
-             :cart-item-modify-button/id              "browse-addons"
-             :cart-item-modify-button/target          [events/control-show-addon-service-menu]
-             :cart-item-modify-button/tracking-target [events/browse-addon-service-menu-button-enabled]
-             :cart-item-modify-button/content         "+ Browse Add-Ons"}
-
-      (seq addons)
-      (merge {:cart-item-modify-button/content "Edit Add-Ons"
-              :cart-item-sub-items/id          "addon-services"
-              :cart-item-sub-items/title       "Add-On Services"
-              :cart-item-sub-items/items       (map (fn [addon-sku]
-                                                      {:cart-item-sub-item/title  (:sku/title addon-sku)
-                                                       :cart-item-sub-item/price  (some-> addon-sku :sku/price mf/as-money)
-                                                       :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
-                                                    addons)}))))
+        :let [required-hair-quantity-met? (not (pos? hair-missing-quantity))
+              ;; GROT(SRV) remove unit price here, deprecated key
+              price (some-> (or essential-price unit-price) (* quantity) mf/as-money)]]
+    (merge
+     {:react/key                               "freeinstall-line-item-freeinstall"
+      :cart-item-title/id                      "line-item-title-upsell-free-service"
+      :cart-item-title/primary                 (if essential-title
+                                                 essential-title
+                                                 variant-name) ;; GROT(SRV)
+      :cart-item-copy/lines                    [{:id    (str "line-item-whats-included-" sku-id)
+                                                 :value (if required-hair-quantity-met?
+                                                          (str "You're all set! "
+                                                               (or essential-inclusions
+                                                                   whats-included)) ;; GROT(SRV) deprecated key
+                                                          requirement-copy)}
+                                                {:id    (str "line-item-quantity-" sku-id)
+                                                 :value (str "qty. " quantity)}]
+      :cart-item-floating-box/id               "line-item-freeinstall-price"
+      :cart-item-floating-box/contents         (if required-hair-quantity-met?
+                                                 [{:text price :attrs {:class "strike"}}
+                                                  {:text "FREE" :attrs {:class "s-color"}}]
+                                                 [{:text price}])
+      :cart-item-remove-action/id              "line-item-remove-freeinstall"
+      :cart-item-remove-action/spinning?       (boolean (get delete-line-item-requests id))
+      :cart-item-remove-action/target          [events/control-cart-remove variant-id]
+      :cart-item-service-thumbnail/id          "freeinstall"
+      :cart-item-service-thumbnail/image-url   (hacky-cart-image free-service)
+      :cart-item-modify-button/id              "browse-addons"
+      :cart-item-modify-button/target          [events/control-show-addon-service-menu]
+      :cart-item-modify-button/tracking-target [events/browse-addon-service-menu-button-enabled]
+      :cart-item-modify-button/content         "+ Browse Add-Ons"}
+     (cart-items|addons|SRV<- addons)
+     (cart-items|addons<- addon-facets))))
 
 (defn ^:private a-la-carte-services<-
   [items delete-line-item-requests]
@@ -322,6 +348,7 @@
          :hacky/keys   [cart-title]
          :sku/keys     [price]
          :copy/keys    [whats-included]
+         :product/keys [essential-inclusions]
          :item/keys    [id quantity unit-price product-name]}
 
         (select ?a-la-carte items)]
@@ -331,7 +358,8 @@
      :cart-item-floating-box/id             (str "line-item-" sku-id "-price")
      :cart-item-floating-box/contents       [{:text (some-> (or price unit-price) mf/as-money)}]
      :cart-item-copy/lines                  [{:id    (str "line-item-whats-included-" sku-id)
-                                              :value whats-included}
+                                              :value (or essential-inclusions
+                                                         whats-included)} ;; GROT(SRV) deprecated key
                                              {:id    (str "line-item-quantity-" sku-id)
                                               :value (str "qty. " quantity)}]
      :cart-item-remove-action/id            (str "line-item-remove-" sku-id)

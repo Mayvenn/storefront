@@ -130,9 +130,8 @@
                                            (apply utils/route-to target))
                                     content)])))))
 
-
-
 (defn cart-item-sub-items-molecule
+  "GROT(SRV)"
   [{:cart-item-sub-items/keys [id title items]}]
   (when id
     [:div {:key id}
@@ -150,6 +149,29 @@
                                          :height "7px"}})]
                title]
               [:div {:data-test (str "line-item-price-ea-" sku-id)} price]]) items)]))
+
+(component/defcomponent cart-item-addon-molecule
+  [{:cart-item.addon/keys [id title price]} _ _]
+  [:div.flex.justify-between
+   [:div.content-3.flex.items-center
+    [:div.flex.justify-center.items-center.mr1.bg-s-color
+     {:style {:height        11
+              :width         11
+              :border-radius "50%"}}
+     (svg/check-mark {:class "fill-white"
+                      :style {:width  "7px"
+                              :height "7px"}})]
+    title]
+   [:div {:data-test (str "line-item-price-ea-" id)} price]])
+
+(defn cart-item-addons-molecule
+  [{:as data :cart-item.addons/keys [id title]}]
+  (when id
+    [:div {:key id}
+     [:div.shout.proxima.title-3 title]
+     (component/elements cart-item-addon-molecule
+                         data
+                         :cart-item.addons/elements)]))
 
 (component/defcomponent stylist-remove-molecule
   [{:servicing-stylist-banner.remove-icon/keys [spinning? target id]} _ _]
@@ -262,6 +284,7 @@
       (cart-item-floating-box-molecule cart-item)]]
 
     (cart-item-sub-items-molecule cart-item)
+    (cart-item-addons-molecule cart-item)
     (component/build cart-item-modify-button cart-item nil)
 
     (component/build suggestions/consolidated-component suggestions nil)]])

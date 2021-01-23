@@ -236,12 +236,27 @@
   (merge item
          (let [sku    (get skus-db sku-id)
                images (images/for-skuer images-db sku)]
-           (-> (assoc sku :join/facets (->> sku
-                                            :selector/essentials
-                                            (select-keys facets-db)
-                                            (map (fn [[essential-key facet]]
-                                                   [essential-key (get-in facet [:facet/options (first (get sku essential-key))])]))
-                                            (into {})))
+           (-> sku
+               (assoc :join/facets
+                      (->> sku
+                           :selector/essentials
+                           (select-keys facets-db)
+                           (map (fn [[essential-key facet]]
+                                  [essential-key (get-in facet [:facet/options (first (get sku essential-key))])]))
+                           (into {})))
+               ;; TODO(corey) I'm a bit skeptical of the specialness of addon-facets
+               ;; Trouble is that we can't easily select the addons in the above representation
+               (assoc :join/addon-facets
+                      (->> sku
+                           :selector/essentials
+                           (select-keys facets-db)
+                           (keep (fn addon-facet-and-true? [[essential-key facet]]
+                                   (let [addon? (= #{true} (get sku essential-key))]
+                                     (when (and (:service/addon? facet)
+                                                addon?)
+                                       facet))))
+                           (sort-by :filter/order)
+                           (into [])))
                (assoc :selector/images images)))))
 
 (defn ^:private extend-recency
@@ -277,11 +292,12 @@
                                        (:catalog/sku-id item))]
                {:item.service/stylist          stylist
                 :item.service/stylist-offered? #{offered?}}))
-           (when-let [addons (->> (select addons items)
-                                  (filter #(= (:item/line-item-group item)
-                                              (:item/line-item-group %)))
-                                  not-empty)]
-             {:item.service/addons addons}))))
+           (when-not (= #{"SV2"} (:service/world item)) ;; GROT(SRV)
+             (when-let [addons (->> (select addons items)
+                                    (filter #(= (:item/line-item-group item)
+                                                (:item/line-item-group %)))
+                                    not-empty)]
+               {:item.service/addons addons})))))
 
 (defn extend-free-servicing
   "
