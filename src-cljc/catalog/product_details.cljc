@@ -456,7 +456,10 @@
         hair?                      (accessors.products/hair? product)
         wig?                       (accessors.products/wig-product? product)
         tape-in-or-seamless-clips? (some #{"seamless-clip-ins" "tape-ins"} (:hair/family product))
-        maintenance-service?       (= #{"maintenance"} (:service/category product))
+        maintenance-service?       (or
+                                    ;; GROT(SRV) this was changed
+                                    (= #{"maintenance"} (:service/category product))
+                                    (= #{"wig-maintenance"} (:service/category product)))
         reinstall-service?         (= #{"reinstall"}   (:service/category product))
         wig-customization?         (= #{"SRV-WGC-000"} (:catalog/sku-id product))
         faq                        (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
