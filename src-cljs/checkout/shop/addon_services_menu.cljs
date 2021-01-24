@@ -4,20 +4,20 @@
    api.orders
    [clojure.string :as string]
    [storefront.api :as api]
-   [storefront.component :as component]
+   [storefront.component :as c]
    [storefront.components.header :as components.header]
    [storefront.components.money-formatters :as mf]
    [storefront.components.popup :as popup]
    [storefront.components.ui :as ui]
-   [storefront.effects :as effects]
-   [storefront.events :as events]
+   [storefront.effects :as fx]
+   [storefront.events :as e]
    [storefront.hooks.stringer :as stringer]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
-   [storefront.platform.messages :as messages]
+   [storefront.platform.messages :refer [handle-message]]
    [storefront.request-keys :as request-keys]
    [storefront.trackings :as trackings]
-   [storefront.transitions :as transitions]
+   [storefront.transitions :as t]
    spice.selector))
 
 ;; ----------------------
@@ -62,7 +62,7 @@
   (let [skus (->> skus-db vals (remove (comp (partial = "SV2") first :service/world)))
 
         other-services (->> (select ?discountable skus)
-                              (sort-by :sku/price))]
+                            (sort-by :sku/price))]
     (->> (select ?addons skus)
          (map (partial unavailability-reason
                        other-services
@@ -73,7 +73,7 @@
          (map (partial sort-by :order.view/addon-sort)))))
 
 (defn addon-service-menu-entry<-
-  [data
+  [state
    {:item.service/keys [addons]}
    {:keys    [catalog/sku-id
               sku/price
@@ -82,8 +82,8 @@
               addon-unavailable-reason]
     sku-name :sku/name}]
   (let [selected?    (boolean (select {:catalog/sku-id #{sku-id}} addons))
-        any-updates? (or (utils/requesting-from-endpoint? data request-keys/add-to-bag)
-                         (utils/requesting-from-endpoint? data request-keys/delete-line-item))]
+        any-updates? (or (utils/requesting-from-endpoint? state request-keys/add-to-bag)
+                         (utils/requesting-from-endpoint? state request-keys/delete-line-item))]
     {:addon-service-entry/id                 (str "addon-service-" sku-id)
      :addon-service-entry/disabled-classes   (when addon-unavailable-reason
                                                "bg-refresh-gray dark-gray")
@@ -91,11 +91,11 @@
      :addon-service-entry/primary            sku-name
      :addon-service-entry/secondary          description
      :addon-service-entry/tertiary           (mf/as-money price)
-     :addon-service-entry/target             [events/control-addon-checkbox {:sku-id              sku-id
-                                                                             :variant-id          variant-id
-                                                                             :previously-checked? selected?}]
-     :addon-service-entry/checkbox-spinning? (or (utils/requesting? data (conj request-keys/add-to-bag sku-id))
-                                                 (utils/requesting? data (conj request-keys/delete-line-item variant-id)))
+     :addon-service-entry/target             [e/control-addon-checkbox {:sku-id              sku-id
+                                                                        :variant-id          variant-id
+                                                                        :previously-checked? selected?}]
+     :addon-service-entry/checkbox-spinning? (or (utils/requesting? state (conj request-keys/add-to-bag sku-id))
+                                                 (utils/requesting? state (conj request-keys/delete-line-item variant-id)))
      :addon-service-entry/ready?             (not (or addon-unavailable-reason
                                                       any-updates?))
      :addon-service-entry/checked?           selected?}))
@@ -104,35 +104,35 @@
 ;; In the future there will likely need to be a set-focus for the service-item
 ;; so we can support addons on more than one service
 (defmethod popup/query :addon-services-menu
-  [data]
-  (let [{:order/keys [items]}                      (api.orders/current data)
-        {:stylist.services/keys [offered-sku-ids]} (api.current/stylist data)
-        skus-db                                    (get-in data keypaths/v2-skus)
+  [state]
+  (let [{:order/keys [items]}                      (api.orders/current state)
+        {:stylist.services/keys [offered-sku-ids]} (api.current/stylist state)
+        skus-db                                    (get-in state keypaths/v2-skus)
 
         service-item (->> items (select ?discountable) first) ; <- focus of menu
 
         [available unavailable]
         (addons-by-availability|SRV skus-db offered-sku-ids service-item)]
-    {:addon-services/spinning? (utils/requesting? data request-keys/get-skus)
-     :addon-services/services  (map (partial addon-service-menu-entry<- data service-item)
+    {:addon-services/spinning? (utils/requesting? state request-keys/get-skus)
+     :addon-services/services  (map (partial addon-service-menu-entry<- state service-item)
                                     (concat available unavailable))}))
 
 (defmethod popup/component :addon-services-menu
   [{:addon-services/keys [spinning? services]} _ _]
-  (component/html
+  (c/html
    (if spinning?
      [:div.py3.h2 ui/spinner]
      (ui/modal
       {:body-style  {:max-width "625px"}
-       :close-attrs (utils/fake-href events/control-addon-service-menu-dismiss)
+       :close-attrs (utils/fake-href e/control-addon-service-menu-dismiss)
        :col-class   "col-12"}
       [:div.bg-white
        (components.header/mobile-nav-header
         {:class "border-bottom border-gray" } nil
-        (component/html [:div.center.proxima.content-1 "Add-on Services"])
-        (component/html [:div (ui/button-medium-underline-primary
-                               (merge {:data-test "addon-services-popup-close"}
-                                      (utils/fake-href events/control-addon-service-menu-dismiss))
+        (c/html [:div.center.proxima.content-1 "Add-on Services"])
+        (c/html [:div (ui/button-medium-underline-primary
+                       (merge {:data-test "addon-services-popup-close"}
+                                      (utils/fake-href e/control-addon-service-menu-dismiss))
                                "DONE")]))
        (mapv
         (fn [{:addon-service-entry/keys [id ready? disabled-classes primary secondary tertiary warning target checked? checkbox-spinning?]}]
@@ -154,15 +154,15 @@
            [:div tertiary]])
         services)]))))
 
-(defmethod transitions/transition-state events/control-show-addon-service-menu
+(defmethod t/transition-state e/control-show-addon-service-menu
   [_ _ _ state]
   (assoc-in state keypaths/popup :addon-services-menu))
 
-(defmethod transitions/transition-state events/control-addon-service-menu-dismiss
+(defmethod t/transition-state e/control-addon-service-menu-dismiss
   [_ _ _ state]
   (assoc-in state keypaths/popup nil))
 
-(defmethod effects/perform-effects events/control-addon-checkbox
+(defmethod fx/perform-effects e/control-addon-checkbox
   [_ _ {:keys [sku-id variant-id previously-checked?]} _ app-state]
   (let [session-id (get-in app-state keypaths/session-id)
         order      (get-in app-state keypaths/order)
@@ -178,12 +178,12 @@
                            :heat-feature-flags (get-in app-state keypaths/features)
                            :sku                sku
                            :quantity           quantity}
-                          #(messages/handle-message events/api-success-add-sku-to-bag
-                                                    {:order    %
-                                                     :quantity quantity
-                                                     :sku      sku})))))
+                          #(handle-message e/api-success-add-sku-to-bag
+                                           {:order    %
+                                            :quantity quantity
+                                            :sku      sku})))))
 
-(defmethod trackings/perform-track events/control-show-addon-service-menu
+(defmethod trackings/perform-track e/control-show-addon-service-menu
   [_ _ _ state]
   ;; TODO(corey)
   ;; I can't tell if this reporting should diverge from the view, that seems
