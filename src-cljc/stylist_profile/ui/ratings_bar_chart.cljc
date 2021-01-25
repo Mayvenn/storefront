@@ -31,6 +31,6 @@
   [data _ _]
   (when (seq data)
     [:div.bg-cool-gray.flex-column.center.py5.mt3
-     [:div.shout.bold.proxima.title-3 "Ratings"]
+     [:div.shout.bold.proxima.title-3 {:name (:ratings-bar-chart/id data)} "Ratings"]
      (c/elements rating-bar-organism data
                  :ratings-bar-chart/bars)]))
