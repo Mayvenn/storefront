@@ -4,6 +4,7 @@
             [spice.maps :as maps]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.promos :as promos]
+            [storefront.accessors.stylists :as stylists]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -77,11 +78,14 @@
 
 
 (defn page [state _]
-  (let [stylist (or ;; If stylist fails to be fetched, then it falls back to current store
-                 (get-in state keypaths/shared-cart-creator)
-                 (get-in state keypaths/store))]
-    (component/build template {:hero/title "Your Cart"
-                               :hero/subtitle (str "Your " (:store-nickname stylist) " has created a cart for you!")})))
+  (let [stylist      (or ;; If stylist fails to be fetched, then it falls back to current store
+                      (get-in state keypaths/shared-cart-creator)
+                      (get-in state keypaths/store))
+        stylist-copy (if (= "salesteam"(:store-slug stylist))
+                       "Your Mayvenn Concierge"
+                       (stylists/->display-name stylist))]
+    (component/build template {:hero/title    "Your Bag"
+                               :hero/subtitle (str stylist-copy " has created a bag for you!")})))
 
 (defn ^:export built-component
   [data opts]
