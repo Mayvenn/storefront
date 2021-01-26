@@ -415,7 +415,12 @@
              merge #:facet-filtering{:panel    false
                                      :sections #{}}))
 
-(defmethod effects/perform-effects  e/flow|facet-filtering|reset
+#?(:cljs
+   (defmethod trackings/perform-track e/flow|facet-filtering|reset
+     [_ event _args app-state]
+     (stringer/track-event "reset_filters_clicked" {})))
+
+(defmethod effects/perform-effects e/flow|facet-filtering|reset
   [_ event {:keys [navigation-event navigation-args]} _ app-state]
   #?(:cljs (history/enqueue-redirect navigation-event navigation-args)))
 
