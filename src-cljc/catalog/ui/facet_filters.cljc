@@ -1,6 +1,8 @@
 (ns catalog.ui.facet-filters
   (:require #?@(:cljs [[storefront.accessors.categories :as categories]
-                       [storefront.history :as history]])
+                       [storefront.history :as history]
+                       [storefront.hooks.stringer :as stringer]
+                       [storefront.trackings :as trackings]])
             catalog.keypaths
             [storefront.component :as c]
             storefront.keypaths
@@ -420,6 +422,13 @@
 (defmethod t/transition-state e/flow|facet-filtering|panel-toggled
   [_ _ toggled? state]
   (assoc-in state catalog.keypaths/k-models-facet-filtering-panel toggled?))
+
+#?(:cljs
+   (defmethod trackings/perform-track e/flow|facet-filtering|section-toggled
+     [_ event {:keys [facet-key toggled?]} app-state]
+     (when toggled?
+       (stringer/track-event "category_page_filter-select"
+                                        {:filter_name (pr-str facet-key)}))))
 
 (defmethod t/transition-state e/flow|facet-filtering|section-toggled
   [_ _ {:keys [facet-key toggled?]} state]
