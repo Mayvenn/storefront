@@ -437,6 +437,14 @@
                  (fnil (if toggled? conj disj) #{})
                  facet-key)))
 
+#?(:cljs
+   (defmethod trackings/perform-track e/flow|facet-filtering|filter-toggled
+     [_ event {:keys [facet-key option-key toggled?]} app-state]
+     (when toggled?
+       (stringer/track-event "category_page_option-select"
+                             {:filter_name     (pr-str facet-key)
+                              :selected_option option-key}))))
+
 (defmethod effects/perform-effects e/flow|facet-filtering|filter-toggled
   [_ event args _ app-state]
   #?(:cljs
