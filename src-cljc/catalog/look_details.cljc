@@ -12,6 +12,7 @@
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.images :as images]
             [storefront.accessors.products :as products]
+            [storefront.accessors.shared-cart :as shared-cart]
             [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
@@ -126,32 +127,9 @@
                             nil))
         (component/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)]))])
 
-(defn ^:private sort-by-depart-and-price
-  [items]
-  (sort-by (fn [{:keys [catalog/department promo.mayvenn-install/discountable sku/price]}]
-             [(first department) (not (first discountable)) price])
-           items))
-
-(defn ^:private enrich-line-items-with-sku-data
-  [catalog-skus shared-cart-line-items]
-  (let [indexed-catalog-skus (maps/index-by :legacy/variant-id (vals catalog-skus))]
-    (map
-     (fn [line-item]
-       (merge line-item
-              (get indexed-catalog-skus (:legacy/variant-id line-item))))
-     shared-cart-line-items)))
-
 (defn ^:private service?
   [line-item]
   (-> line-item :catalog/department first #{"service"} boolean))
-
-(defn ^:private base-service?
-  [line-item]
-  (-> line-item :service/type first #{"base"} boolean))
-
-(defn ^:private discountable?
-  [line-item]
-  (-> line-item :promo.mayvenn-install/discountable first true?))
 
 (defn ^:private shared-cart->discount
   [{:keys [promotions base-price shared-cart-promo base-service]}]
@@ -167,10 +145,10 @@
                                (* 0.01)
                                (- 1.0))
         service-price (:sku/price base-service)]
-    {:discount-text    (if (discountable? base-service)
+    {:discount-text    (if (shared-cart/discountable? base-service)
                          "Hair + FREE Service"
                          (some-> promotion% (str "%")))
-     :discounted-price (if (discountable? base-service)
+     :discounted-price (if (shared-cart/discountable? base-service)
                          (-> base-price
                              (- service-price)
                              (* (if (= "gift" (:code promotion)) markdown-rate 1)))
@@ -214,7 +192,7 @@
              :src      (:url image)})))
 
 (defn ^:private imgs [images-catalog look skus]
-  (let [sorted-line-items (sort-by-depart-and-price skus)]
+  (let [sorted-line-items (shared-cart/sort-by-depart-and-price skus)]
     (list
      (ui/img {:class    "col-12"
               :max-size 749
@@ -271,7 +249,7 @@
         facets             (get-in data keypaths/v2-facets)
         line-items         (some->> shared-cart
                                     :line-items
-                                    (enrich-line-items-with-sku-data skus)
+                                    (shared-cart/enrich-line-items-with-sku-data skus)
                                     (map (partial add-product-title-and-color-to-line-item products facets)))
         album-keyword      (get-in data keypaths/selected-album-keyword)
         look               (contentful/look->look-detail-social-card album-keyword
@@ -297,12 +275,12 @@
           standalone-services
           addon-services]} (group-by #(cond
                                         ((every-pred service?
-                                                     base-service?
-                                                     discountable?) %)
+                                                     shared-cart/base-service?
+                                                     shared-cart/discountable?) %)
                                         :free-services
                                         (and (service? %)
-                                             (base-service? %)
-                                             (not (discountable? %)))
+                                             (shared-cart/base-service? %)
+                                             (not (shared-cart/discountable? %)))
                                         :standalone-services
                                         (and (service? %)
                                              (->> % :service/type first #{"addon"}))
@@ -322,16 +300,16 @@
             :cart-items            (->> line-items
                                         (remove service?)
                                         cart-items-query
-                                        sort-by-depart-and-price)
+                                        shared-cart/sort-by-depart-and-price)
             :service-line-items    (for [line-item (->> (concat free-services standalone-services)
-                                                        sort-by-depart-and-price)
+                                                        shared-cart/sort-by-depart-and-price)
                                          :let      [service-product (some->> line-item
                                                                              :selector/from-products
                                                                              first
                                                                              ;; TODO: not resilient to skus belonging to multiple products
                                                                              (get products))]]
                                      (cond-> (service-line-item-query line-item service-product)
-                                       (and (discountable? line-item)
+                                       (and (shared-cart/discountable? line-item)
                                             (seq addon-services))
                                        (merge {:cart-item-sub-items/id    "add-on-services"
                                                :cart-item-sub-items/title "Add-On Services"
