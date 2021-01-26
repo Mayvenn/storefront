@@ -609,6 +609,8 @@
 ;;; -> Redirect to page with filter removing or adding the appropriate filter to the URL
 (defpath flow|facet-filtering|filter-toggled)
 
+(defpath shop-by-look|look-selected)
+
 ;; TODO more specific name
 (defpath cancel-presearch-requests)
 ;; TODO(corey) think about general solutions to the api handlers problem
