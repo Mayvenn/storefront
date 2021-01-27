@@ -5,6 +5,7 @@
             [catalog.products :as products]
             [catalog.services :as catalog.services]
             [checkout.ui.cart-item-v202004 :as cart-item-v202004]
+            [checkout.ui.cart-summary-v202004 :as cart-summary]
             [spice.maps :as maps]
             [spice.selector :as selector]
             [storefront.accessors.experiments :as experiments]
@@ -91,6 +92,7 @@
    :cart-item-service-thumbnail/image-url (->> service-sku
                                                (catalog-images/image (maps/index-by :catalog/image-id (:selector/images service-product)) "cart")
                                                :ucare/id)})
+
 (defn service-items<-
   [stylist services products]
   (let [{:keys
@@ -148,6 +150,79 @@
               :no-services/cta-target [events/navigate-category {:catalog/category-id "31"
                                                                  :page/slug           "free-mayvenn-services"}]}))))
 
+(def shipping-method-summary-line-query
+  {:cart-summary-line/id       "shipping"
+   :cart-summary-line/label    "Shipping"
+   :cart-summary-line/sublabel "4-6 days" ;; NOTE: if only services, no shipping time?
+   :cart-summary-line/value    "FREE"})
+
+(defn cart-summary<-
+  "The cart has an upsell 'entered' because the customer has requested a service discount"
+  [line-items]
+  (let [
+        ;; wig-customization? (orders/wig-customization? order)
+        ;; service-item-price (- (* (:item/quantity free-mayvenn-service)
+        ;;                               (:item/unit-price free-mayvenn-service)))
+        subtotal (reduce (fn [rolling-total line-item]
+                           (-> line-item
+                               :sku/price
+                               (* (:item/quantity line-item))
+                               (+ rolling-total)))
+                         0 line-items)
+        ;; order-adjustment       (->> order :adjustments (map :price) (reduce + 0))
+        ;; service-discounted?    (= (->> free-mayvenn-service :item/applied-promotions (map :amount) (reduce + 0))
+        ;;                        service-item-price)
+        ]
+    (cond->
+        {:cart-summary/id               "shared-cart-summary"
+         :cart-summary-total-line/id    "total"
+         :cart-summary-total-line/label (if false #_(and free-mayvenn-service (not wig-customization?))
+                                          "Hair + Install Total"
+                                          "Total")
+         :cart-summary-total-line/value (some-> subtotal mf/as-money)
+         :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
+                                       :cart-summary-line/label "Subtotal"
+                                       :cart-summary-line/value (mf/as-money subtotal)}]
+
+                                     (when-let [shipping-method-summary-line
+                                                shipping-method-summary-line-query]
+                                       [shipping-method-summary-line])
+
+                                     ;; (for [{:keys [name price coupon-code] :as adjustment}
+                                     ;;       (filter adjustments/non-zero-adjustment? adjustments)
+                                     ;;       :let [install-summary-line? (orders/service-line-item-promotion? adjustment)]]
+                                     ;;   (cond-> {:cart-summary-line/id    (str (text->data-test-name name) "-adjustment")
+                                     ;;            :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
+                                     ;;                                                         :height "2em" :width "2em"}]
+                                     ;;            :cart-summary-line/label (adjustments/display-adjustment-name adjustment)
+                                     ;;            :cart-summary-line/value (mf/as-money-or-free price)}
+
+                                     ;;     install-summary-line?
+                                     ;;     (merge
+                                     ;;      {:cart-summary-line/id    "free-service-adjustment"
+                                     ;;       :cart-summary-line/value (mf/as-money-or-free service-item-price)
+                                     ;;       :cart-summary-line/label (str "Free " (:item/variant-name free-mayvenn-service))
+
+                                     ;;       :cart-summary-line/action-id     "cart-remove-promo"
+                                     ;;       :cart-summary-line/action-icon   [:svg/close-x {:class "stroke-white fill-gray"}]
+                                     ;;       :cart-summary-line/action-target [events/order-remove-freeinstall-line-item]})
+
+                                     ;;     coupon-code
+                                     ;;     (merge (coupon-code->remove-promo-action coupon-code))))
+                                    )}
+
+      ;; service-discounted?
+      ;; (merge {:cart-summary-total-incentive/id    "mayvenn-install"
+      ;;         :cart-summary-total-incentive/label "Includes Mayvenn Service"
+
+      ;;         :cart-summary-total-incentive/savings (when (pos? total-savings)
+      ;;                                                 (mf/as-money total-savings))})
+
+      ;; (and service-discounted? wig-customization?)
+      ;; (merge {:cart-summary-total-incentive/id    "wig-customization"
+      ;;         :cart-summary-total-incentive/label "Includes Wig Customization"})
+      )))
+
 (defn hero-component [{:hero/keys [title subtitle]}]
   [:div.center.my6
    [:div.canela.title-1.mb3 title]
@@ -178,7 +253,8 @@
   [:div
    (hero-component data)
    [:div.bg-refresh-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
-    (service-items-component data)]])
+    (service-items-component data)]
+   (component/build cart-summary/organism data nil)])
 
 (defn page [state _]
   (let [{:keys [line-items] :as shared-cart} (get-in state keypaths/shared-cart-current)
@@ -197,7 +273,8 @@
         services            (selector/match-all {:selector/strict? true} catalog.services/service enriched-line-items)]
     (component/build template (merge {:hero/title    "Your Bag"
                                       :hero/subtitle (str cart-creator-copy " has created a bag for you!")}
-                                     (service-items<- servicing-stylist services products)))))
+                                     (service-items<- servicing-stylist services products)
+                                     (cart-summary<- enriched-line-items)))))
 
 (defn ^:export built-component
   [data opts]
