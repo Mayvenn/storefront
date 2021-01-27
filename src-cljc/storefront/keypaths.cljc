@@ -329,3 +329,4 @@
 
 (def models-root [:models])
 (def models-stylists (conj models-root :stylists))
+(def models-products (conj models-root :products))

@@ -616,12 +616,23 @@
 ;; TODO(corey) think about general solutions to the api handlers problem
 (defpath api-success-presearch-name)
 
+;; Flow - Service Addon Selection in the Cart
+
+(defpath flow|cart-service-addons|toggled)
+
 ;; Business domains
 
 (defpath biz|current-stylist|selected)
 (defpath biz|current-stylist|deselected)
 
+(defpath biz|product|options-elected)
+
+(defpath biz|service-item|addons-replaced)
+
 ;; Cache domains
+
+(defpath cache|product|requested)
+(defpath cache|product|fetched)
 
 (defpath cache|stylist|requested)
 (defpath cache|stylist|fetched)

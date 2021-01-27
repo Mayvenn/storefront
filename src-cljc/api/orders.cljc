@@ -15,6 +15,30 @@
   [ns m]
   (->> m (mapv (fn [[k v]] [(keyword ns (name k)) v])) (into {})))
 
+(def ^:private select
+  (comp seq (partial match-all {:selector/strict? true})))
+
+(def ^:private ?recent
+  {:item/recent? #{true}})
+
+(def ^:private ?service
+  {:catalog/department #{"service"}})
+
+(def ^:private ?new-world-service
+  {:service/world #{"SV2"}})
+
+(def ^:private ?physical
+  {:catalog/department #{"hair" "stylist-exclusives"}})
+
+(def ^:private ?addons
+  {:catalog/department #{"service"}
+   :service/type       #{"addon"}})
+
+(def ^:private ?discountable
+  {:catalog/department                 #{"service"}
+   :service/type                       #{"base"}
+   :promo.mayvenn-install/discountable #{true}})
+
 ;;; Not quite sure why this is needed, its just reverse lookups :hair/family
 ;;; Why not query?
 
@@ -164,13 +188,18 @@
                                (get-in app-state)
                                (maps/index-by (comp keyword :facet/slug))
                                (maps/map-values (fn [facet]
-                                                  (update facet :facet/options (partial maps/index-by :option/slug)))))]
+                                                  (update facet :facet/options (partial maps/index-by :option/slug)))))
+        items             (items<- waiter-order recents products-db skus-db images-db facets-db servicing-stylist)]
     {:waiter/order         waiter-order
      :order/submitted?     (= "submitted" (:state waiter-order))
      :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
      :order.items/quantity (orders/displayed-cart-count waiter-order)
      :order.items/services (map (partial ->base-service waiter-order) base-services)
-     :order/items          (items<- waiter-order recents products-db skus-db images-db facets-db servicing-stylist)}))
+     :order/items          items
+     :service/world        (cond ; TODO depend on feature flag for :else
+                             (select ?new-world-service items) "SV2"
+                             (select ?service items)           "SRV"
+                             :else                            "SRV")}))
 
 (defn completed
   [app-state]
@@ -209,24 +238,6 @@
                     :offered-services-sku-ids (offered-services-sku-ids cached-stylist)})))))
 
 ;;; ---- API in progress; Please chat Corey
-
-(def ^:private select
-  (comp seq (partial match-all {:selector/strict? true})))
-
-(def ^:private recent
-  {:item/recent? #{true}})
-
-(def ^:private physical
-  {:catalog/department #{"hair" "stylist-exclusives"}})
-
-(def ^:private addons
-  {:catalog/department #{"service"}
-   :service/type       #{"addon"}})
-
-(def ^:private discountable
-  {:catalog/department                 #{"service"}
-   :service/type                       #{"base"}
-   :promo.mayvenn-install/discountable #{true}})
 
 (defn ^:private as-sku
   "
@@ -293,7 +304,7 @@
                {:item.service/stylist          stylist
                 :item.service/stylist-offered? #{offered?}}))
            (when-not (= #{"SV2"} (:service/world item)) ;; GROT(SRV)
-             (when-let [addons (->> (select addons items)
+             (when-let [addons (->> (select ?addons items)
                                     (filter #(= (:item/line-item-group item)
                                                 (:item/line-item-group %)))
                                     not-empty)]
@@ -310,9 +321,9 @@
   "
   [items {:catalog/keys [sku-id] :as item}]
   (merge item
-         (when (not-empty (select discountable [item]))
+         (when (select ?discountable [item])
            (let [rules-for-service (get rules sku-id)
-                 physical-items    (select physical items)
+                 physical-items    (select ?physical items)
 
                  failed-rules
                  (keep (fn [[word essentials rule-quantity]]
