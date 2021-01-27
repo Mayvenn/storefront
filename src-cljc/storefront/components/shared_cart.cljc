@@ -250,11 +250,14 @@
 
 (defcomponent template
   [data _ _]
-  [:div
-   (hero-component data)
-   [:div.bg-refresh-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
-    (service-items-component data)]
-   (component/build cart-summary/organism data nil)])
+  [:main.bg-white.flex-auto
+   [:div.col-7-on-dt.mx-auto
+    [:div
+     (hero-component data)
+     [:div.bg-refresh-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
+      (service-items-component data)]
+     [:div.col-on-tb-dt.col-6-on-tb-dt.bg-refresh-gray.bg-white-on-mb.mbj1
+      (component/build cart-summary/organism data nil)]]]])
 
 (defn page [state _]
   (let [{:keys [line-items] :as shared-cart} (get-in state keypaths/shared-cart-current)
