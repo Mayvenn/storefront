@@ -78,8 +78,7 @@
 
 ;; -- Behavior
 
-(defmethod fx/perform-effects
-  e/flow|post-cart-service-addons|toggled
+(defmethod fx/perform-effects e/flow|post-cart-service-addons|toggled
   [_ _ {:keys [elections product service-item]} _ _ _]
   (handle-message e/biz|product|options-elected
                   {:elections elections
@@ -91,8 +90,7 @@
                                      {:focus/line-item-id
                                       (:item/id service-item)}))}))
 
-(defmethod fx/perform-effects
-  e/flow|cart-service-addons|toggled
+(defmethod fx/perform-effects e/flow|cart-service-addons|toggled
   [_ _ {:keys [elections product service-item]} _ _ _]
   (handle-message e/biz|product|options-elected
                   {:elections elections
@@ -104,8 +102,7 @@
                                      {:focus/line-item-id
                                       (:item/id service-item)}))}))
 
-(defmethod fx/perform-effects
-  e/biz|product|options-elected
+(defmethod fx/perform-effects e/biz|product|options-elected
   [_ _ {:keys [elections product] :on/keys [success]} _ state]
   (when (fn? success)
     (let [elected-sku (->> (get-in state k/v2-skus)
@@ -118,8 +115,7 @@
 (def remove-item #?(:cljs api/remove-line-item :clj list))
 (def add-item #?(:cljs api/add-sku-to-bag :clj list))
 
-(defmethod fx/perform-effects
-  e/biz|service-item|addons-replaced
+(defmethod fx/perform-effects e/biz|service-item|addons-replaced
   [_ _ {:elected/keys [sku] :focus/keys [line-item-id]} _ state]
   (let [session-id  (get-in state k/session-id)
         order-creds (-> state
