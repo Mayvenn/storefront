@@ -15,29 +15,27 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages]))
 
-(defn ^:private current-order-has-addons
-  [app-state]
-  (some->> app-state
-           api.orders/current
-           :order.items/services
-           (mapcat :addons)
-           not-empty))
+(def ^:private select
+  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
 
-(defn ^:private current-order-does-not-have-services-that-can-have-addons
-  [app-state]
-  (some->> app-state
-           api.orders/current
-           :order/items
-           (selector/match-all {:selector/strict? true} catalog.services/discountable)
-           empty?))
+(def ^:private ?addons
+  {:catalog/department #{"service"}
+   :service/type       #{"addon"}})
 
 ;; == /checkout/add page ==
 
+(defn ^:private requires-addons-followup?
+  [{:order/keys [items]}]
+  (and
+   (select catalog.services/discountable items)
+   (empty? (select ?addons items))))
+
 (defmethod effects/perform-effects events/navigate-checkout-add
-  [_ event {:keys [navigate/caused-by]} previous-app-state app-state]
+  [_ _ {:keys [navigate/caused-by]} _ app-state]
   (when (and (#{:module-load :first-nav} caused-by)
-             (or (current-order-does-not-have-services-that-can-have-addons app-state)
-                 (current-order-has-addons app-state)))
+             (-> app-state
+                 api.orders/current
+                 requires-addons-followup?))
     (effects/redirect events/navigate-cart)))
 
 ;; == Cart controls ==
@@ -89,12 +87,13 @@
 ;; == dispatch checkout flows ==
 
 (defmethod effects/perform-effects events/checkout-order-cleared-for-mayvenn-checkout
-  [_ _ _ _ app-state]
-  #?(:cljs
-     (if (and (not (current-order-has-addons app-state))
-              (not (current-order-does-not-have-services-that-can-have-addons app-state)))
-       (history/enqueue-navigate events/navigate-checkout-add)
-       (history/enqueue-navigate events/navigate-checkout-address))))
+  [_ _ _ _ state]
+  (->> (if (-> state
+               api.orders/current
+               requires-addons-followup?)
+         events/navigate-checkout-add
+         events/navigate-checkout-address)
+       #?(:cljs history/enqueue-navigate)))
 
 ;; TODO: consider moving paypal query-building logic into its own namespace
 (defmethod effects/perform-effects events/checkout-order-cleared-for-paypal-checkout

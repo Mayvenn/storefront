@@ -19,6 +19,7 @@
    [storefront.request-keys :as request-keys]
    [storefront.trackings :as trackings]
    [storefront.transitions :as t]
+   [checkout.addons :as addons]
    spice.selector))
 
 ;; ----------------------
@@ -106,62 +107,6 @@
                                                       any-updates?))
      :addon-service-entry/checked?           selected?}))
 
-(defn addons-by-availability
-  [addon-facets offered-facet-slugs service-products focused-product]
-  (->> addon-facets
-       (map (fn stylist-offers? [{:as addon-facet :facet/keys [slug]}]
-              (cond-> addon-facet
-                (and (seq offered-facet-slugs) ; No stylist means all available
-                     (not (contains? offered-facet-slugs slug)))
-                (assoc :facet/unavailable-reason
-                       "Your stylist does not yet offer this service on Mayvenn"))))
-       (map (fn addon-possible? [{:as addon-facet :facet/keys [slug]}]
-              (cond-> addon-facet
-                (not (select {slug #{true}} (-> focused-product
-                                                :selector/product>sku
-                                                :selector/electives
-                                                vector)))
-                (assoc :facet/unavailable-reason
-                       (if-let [alternatives (->> service-products
-                                                  (filter (comp #(select {slug #{true}} %)
-                                                                vector
-                                                                :selector/electives
-                                                                :selector/product>sku))
-                                                  not-empty)]
-                         (str "Only available with "
-                              (->> (map :product/title alternatives)
-                                   (string/join " or ")))
-                         "Only available with other services")))))
-       (sort-by (comp boolean :facet/unavailable-reason))
-       (partition-by (comp boolean :facet/unavailable-reason))
-       (map (partial sort-by :filter/order))))
-
-(defn menu-entry<-
-  [state service-item {:facet/keys   [slug name description unavailable-reason]
-                       :service/keys [price]}]
-  (let [checked?     (contains? (get service-item slug) true)
-        any-updates? (or (utils/requesting-from-endpoint? state request-keys/add-to-bag)
-                         (utils/requesting-from-endpoint? state request-keys/delete-line-item))]
-    {:addon-service-entry/id                 (str "addon-service-" slug)
-     :addon-service-entry/disabled-classes   (when unavailable-reason
-                                               "bg-refresh-gray dark-gray")
-     :addon-service-entry/warning            unavailable-reason
-     :addon-service-entry/primary            name
-     :addon-service-entry/secondary          description
-     :addon-service-entry/tertiary           (mf/as-money price)
-     :addon-service-entry/target             [e/flow|cart-service-addons|toggled
-                                              {:service-item service-item
-                                               :elections
-                                               (let [essentials (:selector/essentials service-item)]
-                                                 (merge
-                                                  (select-keys service-item essentials)
-                                                  {slug #{(if checked? false true)}}))}]
-     ;; TODO broken?
-     :addon-service-entry/checkbox-spinning? any-updates?
-     :addon-service-entry/ready?             (not (or unavailable-reason
-                                                      any-updates?))
-     :addon-service-entry/checked?           checked?}))
-
 ;; NOTE this is focused by the first discountable item, atm
 ;; In the future there will likely need to be a set-focus for the service-item
 ;; so we can support addons on more than one service
@@ -182,16 +127,17 @@
             focused-product  (->> focused-item
                                   :selector/from-products
                                   first
-                                  (api.products/by-id state))
-
-            [available unavailable]
-            (addons-by-availability addon-facets
-                                    offered-facet-slugs
-                                    product-services
-                                    focused-product)]
+                                  (api.products/by-id state))]
         {:addon-services/spinning? (utils/requesting? state request-keys/get-skus)
-         :addon-services/services  (map (partial menu-entry<- state focused-item)
-                                        (concat available unavailable))})
+         :addon-services/services  (->> (addons/availability<- addon-facets
+                                                               offered-facet-slugs
+                                                               product-services
+                                                               focused-product)
+                                        (map (partial addons/menu-entry<-
+                                                      state
+                                                      e/flow|cart-service-addons|toggled
+                                                      focused-item)))})
+      ;; GROT(SRV)
       (let [skus-db         (get-in state keypaths/v2-skus)
             offered-sku-ids (->> (api.current/stylist state)
                                  :stylist.services/offered-sku-ids)
@@ -298,58 +244,3 @@
                                            {:order    %
                                             :quantity quantity
                                             :sku      sku})))))
-
-(defmethod fx/perform-effects
-  e/flow|cart-service-addons|toggled
-  [_ _ {:keys [elections product service-item]} _ _ _]
-  (handle-message e/biz|product|options-elected
-                  {:elections elections
-                   :product   product
-                   :on/success
-                   #(handle-message e/biz|service-item|addons-replaced
-                                    (merge
-                                     %
-                                     {:focus/line-item-id
-                                      (:item/id service-item)}))}))
-
-(defmethod fx/perform-effects
-  e/biz|product|options-elected
-  [_ _ {:keys [elections product] :on/keys [success]} _ state]
-  (when (fn? success)
-    (let [elected-sku (->> (get-in state keypaths/v2-skus)
-                           vals
-                           ;; TODO(corey) shouldn't this narrow to product first?
-                           (select elections)
-                           first)]
-      (success {:elected/sku elected-sku}))))
-
-(defmethod fx/perform-effects
-  e/biz|service-item|addons-replaced
-  [_ _ {:elected/keys [sku] :focus/keys [line-item-id]} _ state]
-  (let [session-id  (get-in state keypaths/session-id)
-        order-creds (-> state
-                        (get-in keypaths/order)
-                        (select-keys [:number :token]))]
-    (api/remove-line-item
-     session-id
-     (merge order-creds
-            {:variant-id line-item-id
-             :sku-code   (:catalog/sku-id sku)})
-     (fn removed [_]
-       (api/add-sku-to-bag
-        session-id
-        (merge order-creds
-               {:user-id            (get-in state keypaths/user-id)
-                :user-token         (get-in state keypaths/user-token)
-                :heat-feature-flags (get-in state keypaths/features)
-                :sku                sku
-                :quantity           1})
-        (fn added [order]
-          (handle-message e/api-success-add-sku-to-bag
-                          {:order    order
-                           :quantity 1
-                           :sku      sku})))))))
-
-
-
-

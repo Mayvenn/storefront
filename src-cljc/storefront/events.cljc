@@ -620,6 +620,10 @@
 
 (defpath flow|cart-service-addons|toggled)
 
+;; Flow - Service Addon Selection safety-net post-Cart
+
+(defpath flow|post-cart-service-addons|toggled)
+
 ;; Business domains
 
 (defpath biz|current-stylist|selected)
