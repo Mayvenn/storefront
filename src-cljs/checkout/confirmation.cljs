@@ -350,6 +350,30 @@
            :url
            ui/ucare-img-id))
 
+(defn cart-items|addons|SRV<-
+  "GROT(SRV)"
+  [addons]
+  (when (seq addons)
+    {:cart-item-sub-items/id          "addon-services"
+     :cart-item-sub-items/title       "Add-On Services"
+     :cart-item-sub-items/items       (map (fn [addon-sku]
+                                             {:cart-item-sub-item/title  (:sku/title addon-sku)
+                                              :cart-item-sub-item/price  (some-> addon-sku :sku/price mf/as-money)
+                                              :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
+                                           addons)}))
+
+(defn cart-items|addons<-
+  [item-facets]
+  (when (seq item-facets)
+    {:cart-item.addons/id             "addon-services"
+     :cart-item.addons/title          "Add-On Services"
+     :cart-item.addons/elements
+     (->> item-facets
+          (mapv (fn [facet]
+                  {:cart-item.addon/title (:facet/name facet)
+                   :cart-item.addon/price (some-> facet :service/price mf/as-money)
+                   :cart-item.addon/id    (:service/sku-part facet)})))}))
+
 (defn free-service-line-items-query
   [data _ _]
   (let [{:order/keys [items] :service/keys [world]} (api.orders/current data)]
@@ -385,15 +409,8 @@
                                            [{:text price}])
         :cart-item-service-thumbnail/id          "freeinstall"
         :cart-item-service-thumbnail/image-url   (hacky-cart-image free-service)}
-       (when (seq addons)
-         {:cart-item-sub-items/id    "addon-services"
-          :cart-item-sub-items/title "Add-On Services"
-          ;; think about sharing this function
-          :cart-item-sub-items/items (map (fn [addon-sku]
-                                            {:cart-item-sub-item/title  (:sku/title addon-sku)
-                                             :cart-item-sub-item/price  (some-> addon-sku :sku/price mf/as-money)
-                                             :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
-                                          addons)})))))
+       (cart-items|addons|SRV<- addons)
+       (cart-items|addons<- addon-facets)))))
 
 (defn ^:private standalone-service-line-items-query
   [app-state]
