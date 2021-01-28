@@ -39,8 +39,9 @@
 
 (defmethod effects/perform-effects  e/shop-by-look|look-selected
   [_ event {:keys [album-keyword look-id]} _ app-state]
-  #?(:cljs (history/enqueue-redirect e/navigate-shop-by-look-details {:album-keyword album-keyword
-                                                                        :look-id       look-id})))
+  #?(:cljs
+     (history/enqueue-navigate e/navigate-shop-by-look-details {:album-keyword album-keyword
+                                                                :look-id       look-id})))
 
 ;; Visual: Looks (new version under experiment)
 
