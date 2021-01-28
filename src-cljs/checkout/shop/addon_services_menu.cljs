@@ -53,8 +53,7 @@
     (assoc :addon-unavailable-reason
            "Your stylist does not yet offer this service on Mayvenn")
 
-    (not (contains? (set (:hair/family addon-service))
-                    (first (:hair/family service-item))))
+    (not-any? (set (:hair/family addon-service)) (:hair/family service-item))
     (assoc :addon-unavailable-reason
            (str "Only available with "
                 (->> other-services
