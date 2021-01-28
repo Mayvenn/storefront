@@ -45,20 +45,15 @@
   [{:keys [number token]} confirm-order-fn times-attempted]
   #?(:cljs
      (api/poll-order number token
-                     (fn [{:keys [state cart-payments] :as order'}]
+                     (fn [{:keys [state] :as order'}]
                        (do
                          (if (< times-attempted 5)
-                           (cond
-                             (not (-> cart-payments :quadpay :setup-data))
-                             (do
-                               (history/enqueue-navigate events/navigate-cart {:query-params {:error "restart-quadpay"}})
-                               (messages/handle-later events/flash-show-failure {:message "An error that occurred. Please retry checking out."}))
-
-                             (= "cart" state)
+                           (case state
+                             "cart"
                              (js/setTimeout #(get-order-status order' confirm-order-fn (inc times-attempted))
                                             3000)
 
-                             (= "submitted" state)
+                             "submitted"
                              (messages/handle-message events/api-success-update-order-place-order {:order order'}))
                            (confirm-order-fn)))))))
 
