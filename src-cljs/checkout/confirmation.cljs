@@ -7,6 +7,7 @@
             [clojure.string :as string]
             [spice.core :as spice]
             [spice.maps :as maps]
+            spice.selector
             [storefront.accessors.adjustments :as adjustments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.images :as images]
@@ -332,47 +333,67 @@
         (merge {:cart-summary-total-incentive/id    "wig-customization"
                 :cart-summary-total-incentive/label "Includes Wig Customization"})))))
 
-(defn free-service-line-items-query
-  [data
-   {:free-mayvenn-service/keys [service-item discounted?]}
-   addon-skus]
-  (let [sku-catalog        (get-in data storefront.keypaths/v2-skus)
-        sku-id             (:sku service-item)
-        service-sku        (get sku-catalog sku-id)
-        wig-customization? (= "SRV-WGC-000" sku-id)
-        images-catalog     (get-in data storefront.keypaths/v2-images)]
-    (when (:id service-item)
-      [(merge {:react/key                 "freeinstall-line-item-freeinstall"
-               :cart-item-title/id        "linr-item-title-upsell-free-service"
-               :cart-item-floating-box/id "line-item-freeinstall-price"
-               :cart-item-copy/lines      [{:id    (str "line-item-whats-included-" sku-id)
-                                            :value (str "You're all set! " (:copy/whats-included service-sku))}
-                                           {:id    (str "line-item-quantity-" sku-id)
-                                            :value (str "qty. " (:quantity service-item))}]
+(def ^:private select
+  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
 
-               :cart-item-floating-box/contents       (let [price (some-> service-item line-items/service-line-item-price mf/as-money)]
-                                                        (if discounted?
-                                                          [{:text price :attrs {:class "strike"}}
-                                                           {:text "FREE" :attrs {:class "s-color"}}]
-                                                          [{:text price}]))
-               :cart-item-service-thumbnail/id        "freeinstall"
-               :cart-item-service-thumbnail/image-url (->> service-sku
-                                                           (images/skuer->image images-catalog "cart")
-                                                           :url)}
-              (if wig-customization?
-                {:cart-item-title/id      "line-item-title-applied-wig-customization"
-                 :cart-item-title/primary "Wig Customization"}
-                {:cart-item-title/id      "line-item-title-applied-mayvenn-install"
-                 :cart-item-title/primary (:variant-name service-item)})
-              (when (seq addon-skus)
-                {:cart-item-sub-items/id    "addon-services"
-                 :cart-item-sub-items/title "Add-On Services"
-                 ;; think about sharing this function
-                 :cart-item-sub-items/items (map (fn [addon-sku]
-                                                   {:cart-item-sub-item/title  (:sku/title addon-sku)
-                                                    :cart-item-sub-item/price  (some-> addon-sku :sku/price mf/as-money)
-                                                    :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
-                                                 addon-skus)}))])))
+(def ^:private ?discountable
+  {:catalog/department                 #{"service"}
+   :service/type                       #{"base"}
+   :promo.mayvenn-install/discountable #{true}})
+
+(defn ^:private hacky-cart-image
+  [item]
+  (some->> item
+           :selector/images
+           (filter #(= "cart" (:use-case %)))
+           first
+           :url
+           ui/ucare-img-id))
+
+(defn free-service-line-items-query
+  [data _ _]
+  (let [{:order/keys [items] :service/keys [world]} (api.orders/current data)]
+    (for [{:as                         free-service
+           :catalog/keys               [sku-id]
+           :item/keys                  [id variant-name quantity unit-price]
+           :item.service/keys          [addons]
+           :join/keys                  [addon-facets]
+           :promo.mayvenn-install/keys [hair-missing-quantity]
+           :product/keys               [essential-title essential-price essential-inclusions]
+           :copy/keys                  [whats-included]}
+
+          (select ?discountable items)
+          :let [required-hair-quantity-met? (not (pos? hair-missing-quantity))
+                ;; GROT(SRV) remove unit price here, deprecated key
+                price (some-> (or essential-price unit-price) (* quantity) mf/as-money)]]
+      (merge
+       {:react/key                       "freeinstall-line-item-freeinstall"
+        :cart-item-title/id              "line-item-title-upsell-free-service"
+        :cart-item-title/primary         (if essential-title
+                                           essential-title
+                                           variant-name) ;; GROT(SRV)
+        :cart-item-copy/lines            [{:id    (str "line-item-whats-included-" sku-id)
+                                           :value (str "You're all set! "
+                                                       (or essential-inclusions
+                                                           whats-included))} ;; GROT(SRV) deprecated key
+                                          {:id    (str "line-item-quantity-" sku-id)
+                                           :value (str "qty. " quantity)}]
+        :cart-item-floating-box/id       "line-item-freeinstall-price"
+        :cart-item-floating-box/contents (if required-hair-quantity-met?
+                                           [{:text price :attrs {:class "strike"}}
+                                            {:text "FREE" :attrs {:class "s-color"}}]
+                                           [{:text price}])
+        :cart-item-service-thumbnail/id          "freeinstall"
+        :cart-item-service-thumbnail/image-url   (hacky-cart-image free-service)}
+       (when (seq addons)
+         {:cart-item-sub-items/id    "addon-services"
+          :cart-item-sub-items/title "Add-On Services"
+          ;; think about sharing this function
+          :cart-item-sub-items/items (map (fn [addon-sku]
+                                            {:cart-item-sub-item/title  (:sku/title addon-sku)
+                                             :cart-item-sub-item/price  (some-> addon-sku :sku/price mf/as-money)
+                                             :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
+                                          addons)})))))
 
 (defn ^:private standalone-service-line-items-query
   [app-state]
