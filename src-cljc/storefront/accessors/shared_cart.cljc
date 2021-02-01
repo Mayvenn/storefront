@@ -1,5 +1,8 @@
 (ns storefront.accessors.shared-cart
-  (:require [spice.maps :as maps]))
+  (:require [spice.maps :as maps]
+            [spice.selector :refer [match-all]]
+            [api.orders :as orders]
+            [clojure.set :as set]))
 
 (defn base-service?
   [line-item]
@@ -23,3 +26,47 @@
        (merge line-item
               (get indexed-catalog-skus (:legacy/variant-id line-item))))
      shared-cart-line-items)))
+
+(defn ^:private prepared-discountable-service [proto-line-items]
+  (let [discountable-service-proto-li      (first (filter
+                                                   (fn [li]
+                                                     (and
+                                                      (= "base" (first (:service/type li)))
+                                                      (first (:promo.mayvenn-install/discountable li))))
+                                                   proto-line-items))
+        rules-for-service                  (get orders/rules (:catalog/sku-id discountable-service-proto-li))
+        physical-proto-li                  (filter (fn [li]
+                                                   (contains? (:catalog/department li) "hair"))
+                                                 proto-line-items)
+        meets-freeinstall-discountability? (empty? (keep (fn [[word essentials rule-quantity]]
+                                                           (let [cart-quantity    (->> physical-proto-li
+                                                                                       (match-all
+                                                                                        {:selector/strict? true}
+                                                                                        essentials)
+                                                                                       (map :item/quantity)
+                                                                                       (apply +))
+                                                                 missing-quantity (- rule-quantity cart-quantity)]
+                                                             (when (pos? missing-quantity)
+                                                               {:word             word
+                                                                :cart-quantity    cart-quantity
+                                                                :missing-quantity missing-quantity
+                                                                :essentials       essentials})))
+                                                         rules-for-service))]
+
+    (if meets-freeinstall-discountability?
+      [(assoc discountable-service-proto-li :discounted-amount (:sku/price discountable-service-proto-li))]
+      [discountable-service-proto-li])))
+
+(defn apply-promos
+  [proto-line-items]
+  (let [addon-proto-li    (filter
+                           (fn [li]
+                             (= "addon" (first (:service/type li))))
+                           proto-line-items)
+        physical-proto-li (filter (fn [li]
+                                    (contains? (:catalog/department li) "hair"))
+                                  proto-line-items)]
+    ;; TODO: RENAME
+    (concat (prepared-discountable-service proto-line-items)
+            addon-proto-li
+            physical-proto-li)))
