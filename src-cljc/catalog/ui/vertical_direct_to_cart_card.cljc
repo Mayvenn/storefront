@@ -1,5 +1,7 @@
 (ns catalog.ui.vertical-direct-to-cart-card
   (:require api.current
+            api.orders
+            api.products
             [storefront.component :as c]
             [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
@@ -12,16 +14,29 @@
 
 (defn query
   [data product]
-  (let [sku-id            (first (:selector/skus product))
-        service-sku       (get-in data (conj keypaths/v2-skus sku-id))
-        image             (->> service-sku
-                               (images/for-skuer (get-in data keypaths/v2-images))
-                               (filter (comp #{"catalog"} :use-case))
-                               first)
-        product-slug      (:page/slug product)
-        cta-disabled?     (boolean (some #(= sku-id (:sku %))
-                                         (orders/service-line-items (get-in data keypaths/order))))
-        any-updates?      (utils/requesting-from-endpoint? data request-keys/add-to-bag)]
+  (let [{:service/keys [world]} (api.orders/current data)
+        {:as service-sku :catalog/keys [sku-id]}
+        ;; Find the base sku with no add-ons
+        (if (= "SV2" world)
+          (->> product
+               (api.products/product<- data)
+               :product?essential-service/result
+               first)
+          ;; GROT(SRV)
+          (->> product
+               :selector/skus
+               first
+               (conj keypaths/v2-skus)
+               (get-in data)))
+
+        image         (->> service-sku
+                           (images/for-skuer (get-in data keypaths/v2-images))
+                           (filter (comp #{"catalog"} :use-case))
+                           first)
+        product-slug  (:page/slug product)
+        cta-disabled? (boolean (some #(= sku-id (:sku %))
+                                     (orders/service-line-items (get-in data keypaths/order))))
+        any-updates?  (utils/requesting-from-endpoint? data request-keys/add-to-bag)]
     (cond-> {:card-image/src                             (str (:url image) "-/format/auto/" (:filename image))
              :card/type                                  :vertical-direct-to-cart-card
              :sort/value                                 [(:sku/price service-sku)]

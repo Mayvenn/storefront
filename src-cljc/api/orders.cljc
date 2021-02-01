@@ -1,6 +1,7 @@
 (ns api.orders
   (:require api.stylist
             [spice.selector :refer [match-all]]
+            [storefront.accessors.experiments :as ff]
             [storefront.accessors.images :as images]
             [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
@@ -196,10 +197,11 @@
      :order.items/quantity (orders/displayed-cart-count waiter-order)
      :order.items/services (map (partial ->base-service waiter-order) base-services)
      :order/items          items
-     :service/world        (cond ; TODO depend on feature flag for :else
-                             (select ?new-world-service items) "SV2"
-                             (select ?service items)           "SRV"
-                             :else                            "SRV")}))
+     :service/world        (cond ; Consider current order contents first, then ff, default old
+                             (select ?new-world-service items)        "SV2"
+                             (select ?service items)                  "SRV"
+                             (ff/service-skus-with-addons? app-state) "SV2"
+                             :else                                    "SRV")}))
 
 (defn completed
   [app-state]

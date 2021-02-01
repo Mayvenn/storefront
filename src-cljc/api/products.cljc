@@ -40,21 +40,45 @@
                                essentials)
       :electives  (->> cached-skus
                        (map #(select-keys % electives))
-                       (apply merge-with set-accumulate))}}))
+                       (apply merge-with set-accumulate))
+      :result     cached-skus}}))
+
+(defn ^:private extend-services
+  [{:as            product
+    :catalog/keys  [department]
+    :selector/keys [product>sku]}]
+  (merge
+   product
+   (when (= #{"service"} department)
+     ;; Special selector for essential service sku-id,
+     ;; a narrowing of the general product>sku selector.
+     (let [essentials (:selector/essentials product>sku)
+           no-addons  (->> (:selector/electives product>sku)
+                           keys
+                           (mapv (fn [k] [k #{false}]))
+                           (into {}))]
+       #:product?essential-service
+       {:essentials essentials
+        :electives  no-addons
+        :result     (->> (:selector/result product>sku)
+
+                         (select (merge essentials
+                                        no-addons)))}))))
 
 (defn product<-
   [state cellar-product]
-  (merge
-   {:catalog/product-id (:catalog/product-id cellar-product)
-    :catalog/department (set (:catalog/department cellar-product))
+  (-> (merge
+       {:catalog/product-id (:catalog/product-id cellar-product)
+        :catalog/department (set (:catalog/department cellar-product))
 
-    :service/type       (set (:service/type cellar-product))
+        :service/type       (set (:service/type cellar-product))
 
-    :product/title      (:legacy/product-name cellar-product)
+        :product/title      (:legacy/product-name cellar-product)
 
-    :cellar/product     cellar-product}
+        :cellar/product     cellar-product}
 
-   (product>sku state cellar-product)))
+       (product>sku state cellar-product))
+      extend-services))
 
 ;; - Read API
 

@@ -1,5 +1,7 @@
 (ns catalog.ui.horizontal-direct-to-cart-card
   (:require api.current
+            api.orders
+            api.products
             [storefront.accessors.images :as images]
             [storefront.component :as c]
             [storefront.components.money-formatters :as mf]
@@ -12,8 +14,21 @@
 
 (defn query
   [data product]
-  (let [sku-id        (first (:selector/skus product))
-        service-sku   (get-in data (conj keypaths/v2-skus sku-id))
+  (let [{:service/keys [world]} (api.orders/current data)
+        {:as service-sku :catalog/keys [sku-id]}
+        ;; Find the base sku with no add-ons
+        (if (= "SV2" world)
+          (->> product
+               (api.products/product<- data)
+               :product?essential-service/result
+               first)
+          ;; GROT(SRV)
+          (->> product
+               :selector/skus
+               first
+               (conj keypaths/v2-skus)
+               (get-in data)))
+
         image         (->> service-sku
                            (images/for-skuer (get-in data keypaths/v2-images))
                            (filter (comp #{"catalog"} :use-case))
