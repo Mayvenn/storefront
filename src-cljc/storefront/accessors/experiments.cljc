@@ -115,6 +115,10 @@
   [data]
   (display-feature? data "homepage-rebrand"))
 
+(defn homepage-revert?
+  [data]
+  (display-feature? data "homepage-revert"))
+
 (defn sbl-update?
   [data]
   (and (= :shop (sites/determine-site data))

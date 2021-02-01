@@ -2,9 +2,7 @@
   "Homepages are apt to change often; fork and use feature-flags."
   (:require #?(:cljs [storefront.loader :as loader])
             [homepage.classic-v2020-07 :as classic]
-            [homepage.shop-v2020-07 :as shop]
-            [homepage.shop-v2020-11 :as shop-new]
-            [storefront.accessors.experiments :as experiments]
+            [homepage.shop-v2020-11 :as shop]
             [storefront.accessors.sites :as sites]))
 
 (defn ^:export page
@@ -12,9 +10,6 @@
   (cond
     (not= :shop (sites/determine-site app-state))
     (classic/page app-state)
-
-    (experiments/homepage-rebrand? app-state)
-    (shop-new/page app-state)
 
     :else
     (shop/page app-state)))
