@@ -35,7 +35,7 @@
                       "Paid for by Mayvenn"]
        :divider-img  "url('//ucarecdn.com/2d3a98e3-b49a-4f0f-9340-828d12865315/-/resize/x24/')"}
       {:layer/type      :video-overlay
-       :close-nav-event events/navigate-home
+       :close-nav-event (get-in data storefront.keypaths/navigation-event)
        :video           (get-in data adventure.keypaths/adventure-home-video)}
       {:layer/type     :shop-bulleted-explainer
        :layer/id       "heres-how-it-works"
@@ -52,7 +52,8 @@
        :cta/value      "Watch Video"
        :cta/icon       (svg/play-video {:width  "30px"
                                         :height "30px"})
-       :cta/target     [events/navigate-home {:query-params {:video "free-install"}}]}
+       :cta/target     [(get-in data storefront.keypaths/navigation-event)
+                        {:query-params {:video "free-install"}}]}
       {:layer/type         :shop-text-block
        ;; NOTE: this is a design exception
        :big-header/content [{:text "Sit back and" :attrs {:style {:font-size "34px"}}}
