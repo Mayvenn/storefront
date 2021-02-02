@@ -63,8 +63,8 @@
        :cta/target         [events/navigate-info-certified-stylists]}
       {:layer/type :image-block
        :ucare?     true
-       :mob-uuid   "a6a607e6-aeb4-4b61-8bc7-60fd17d15abe"
-       :dsk-uuid   "f2d82c41-2051-47d8-86c5-1c82568e324d"
+       :mob-uuid   "bd8888d3-9d1a-4944-a840-2863b50ba5d6"
+       :dsk-uuid   "36bd1978-b3e2-457a-9c8d-303661f57924"
        :file-name  "who-shop-hair"}
       {:layer/type         :shop-text-block
        ;; NOTE: this is a design exception
