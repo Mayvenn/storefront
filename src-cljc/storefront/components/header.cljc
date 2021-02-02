@@ -394,12 +394,13 @@
                                         "shop-bundle-sets-menu-expanded")})
 
 (defn basic-query [data]
-  (let [store     (marquee/query data)
-        site      (sites/determine-site data)
-        shop?     (= :shop site)
-        classic?  (= :classic site)
-        signed-in (auth/signed-in data)
-        sbl-update? (experiments/sbl-update? data)]
+  (let [store            (marquee/query data)
+        site             (sites/determine-site data)
+        shop?            (= :shop site)
+        classic?         (= :classic site)
+        signed-in        (auth/signed-in data)
+        sbl-update?      (experiments/sbl-update? data)
+        homepage-revert? (experiments/homepage-revert? data)]
     {:signed-in                   signed-in
      :on-taxon?                   (get-in data keypaths/current-traverse-nav)
      :promo-banner                (promo-banner/query data)
@@ -433,21 +434,25 @@
      :slide-out-nav/menu-items (cond-> []
                                  shop?
                                  (concat
-                                  [{:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug           "salon-services"
-                                                                                                    :catalog/category-id "30"}]
-                                    :slide-out-nav-menu-item/nested?     false
-                                    :slide-out-nav-menu-item/id          "menu-shop-services"
-                                    :slide-out-nav-menu-item/new-primary "NEW"
-                                    :slide-out-nav-menu-item/primary     "Browse Services"}
-                                   {:slide-out-nav-menu-item/target  [events/navigate-adventure-find-your-stylist]
-                                    :slide-out-nav-menu-item/id      "menu-shop-find-stylist"
-                                    :slide-out-nav-menu-item/primary "Find a Stylist"}
-                                   (if sbl-update?
+                                  (if homepage-revert?
+                                    [{:slide-out-nav-menu-item/target      [events/navigate-adventure-find-your-stylist]
+                                      :slide-out-nav-menu-item/id          "menu-shop-find-stylist"
+                                      :slide-out-nav-menu-item/new-primary "NEW"
+                                      :slide-out-nav-menu-item/primary     "Get a Mayvenn Install"}]
+                                    [{:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug           "salon-services"
+                                                                                                      :catalog/category-id "30"}]
+                                      :slide-out-nav-menu-item/nested?     false
+                                      :slide-out-nav-menu-item/id          "menu-shop-services"
+                                      :slide-out-nav-menu-item/new-primary "NEW"
+                                      :slide-out-nav-menu-item/primary     "Browse Services"}
+                                     {:slide-out-nav-menu-item/target  [events/navigate-adventure-find-your-stylist]
+                                      :slide-out-nav-menu-item/id      "menu-shop-find-stylist"
+                                      :slide-out-nav-menu-item/primary "Find a Stylist"}])
+                                  [(if sbl-update?
                                      {:slide-out-nav-menu-item/target  [events/navigate-shop-by-look {:album-keyword :look}]
                                       :slide-out-nav-menu-item/nested? false
                                       :slide-out-nav-menu-item/id      "menu-shop-by-look"
                                       :slide-out-nav-menu-item/primary "Shop By Look"}
-
                                      {:slide-out-nav-menu-item/target  [events/menu-list {:menu-type :shop-looks}]
                                       :slide-out-nav-menu-item/nested? true
                                       :slide-out-nav-menu-item/id      "menu-shop-by-look"
@@ -501,13 +506,18 @@
 
                            shop?
                            (concat
-                            [(let [services-icp (->> (get-in data keypaths/categories)
-                                                     (filter (comp #{"30"} :catalog/category-id))
-                                                     first)]
-                               {:header-menu-item/navigation-target [events/navigate-category services-icp]
-                                :header-menu-item/id                "desktop-services-icp"
-                                :header-menu-item/new-label?        (:category/new? services-icp)
-                                :header-menu-item/content           (:flyout-menu/title services-icp)})
+                            [(if homepage-revert?
+                               {:header-menu-item/navigation-target [events/navigate-adventure-find-your-stylist]
+                                :header-menu-item/id                "desktop-shop-find-stylist"
+                                :header-menu-item/new-label?        true
+                                :header-menu-item/content           "Get a Mayvenn Install"}
+                               (let [services-icp (->> (get-in data keypaths/categories)
+                                                       (filter (comp #{"30"} :catalog/category-id))
+                                                       first)]
+                                 {:header-menu-item/navigation-target [events/navigate-category services-icp]
+                                  :header-menu-item/id                "desktop-services-icp"
+                                  :header-menu-item/new-label?        (:category/new? services-icp)
+                                  :header-menu-item/content           (:flyout-menu/title services-icp)}))
                              (shop-looks-query data)
                              (shop-bundle-sets-query data)])
 

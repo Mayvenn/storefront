@@ -137,26 +137,40 @@
       (split-at half-way-point coll))))
 
 (defn show-category?
-  [shop? category]
-  (or (-> category :catalog/category-id #{"35" "31"} not)
-      shop?))
+  [shop? homepage-revert? category]
+  (cond
+    (-> category :catalog/category-id #{"30"} (and homepage-revert?))
+    false
+
+    (-> category :catalog/category-id #{"35" "31"} not)
+    true
+
+    shop?
+    true))
 
 (defn query
   [data]
   (let [shop?              (= (get-in data keypaths/store-slug) "shop")
         classic?           (= "mayvenn-classic" (get-in data keypaths/store-experience))
+        homepage-revert?   (experiments/homepage-revert? data)
         sort-key           :footer/order
         categories         (->> (get-in data keypaths/categories)
                                 (into []
-                                      (comp (filter (partial show-category? shop?))
+                                      (comp (filter (partial show-category? shop? homepage-revert?))
                                             (filter sort-key)
                                             (filter (partial auth/permitted-category? data)))))
         non-category-links (concat (when shop?
-                                     [{:title       "Find a Stylist"
-                                       :sort-order  2
-                                       :id          "find-a-stylist"
-                                       :new-link?   false
-                                       :nav-message [events/navigate-adventure-find-your-stylist]}])
+                                     [(if homepage-revert?
+                                        {:title       "Get a Mayvenn Install"
+                                         :sort-order  2
+                                         :id          "find-a-stylist"
+                                         :new-link?   true
+                                         :nav-message [events/navigate-adventure-find-your-stylist]}
+                                        {:title       "Find a Stylist"
+                                         :sort-order  2
+                                         :id          "find-a-stylist"
+                                         :new-link?   false
+                                         :nav-message [events/navigate-adventure-find-your-stylist]})])
                                    (when (not classic?)
                                      [{:title       "Shop By Look"
                                        :sort-order  3
