@@ -155,6 +155,8 @@
            :contentful/faq-id             :category-virgin-closures
            :flyout-menu/title             "Closures"
            :flyout-menu/order             1
+           :homepage.ui-v2020-07/order    2
+           :homepage.ui-v2020-07/image-id "27e942b0-136c-4f7d-8b7b-ca98869fa272"
            :footer/order                  5
            :footer/title                  "Closures"
            :category/description          (copy "Protect your hair and complete your look with Mayvenn’s collection of 100% virgin hair closures."
@@ -264,6 +266,8 @@
            :hair/color.process            #{"natural" "dyed"}
            :flyout-menu/title             "Frontals"
            :flyout-menu/order             2
+           :homepage.ui-v2020-07/order    3
+           :homepage.ui-v2020-07/image-id "b6dc646c-039f-48a8-b932-bd03350a3beb"
            :footer/order                  6
            :footer/title                  "Frontals"
            :hair/source                   #{"virgin"}
@@ -632,6 +636,8 @@
 
 (def wigs
   [(merge {:catalog/category-id           "13"
+           :homepage.ui-v2020-07/order    0
+           :homepage.ui-v2020-07/image-id "5457be03-d25b-41d6-a5e3-ef28b4fda2f5"
            :footer/order                  7
            :footer/title                  "Wigs"
            :flyout-menu/order             3
@@ -806,6 +812,8 @@
            :category/new?                    false
            :flyout-menu/title                "Hair Bundles"
            :flyout-menu/order                0
+           :homepage.ui-v2020-07/order       1
+           :homepage.ui-v2020-07/image-id    "2013a836-9fc8-4530-8696-884400fad880"
            :footer/order                     4
            :footer/title                     "Hair Bundles"
            :category/description             (copy "Have a hairstyle in mind and want more volume, length, and texture? Add our 100% Virgin hair bundles."
@@ -989,6 +997,9 @@
 
      :flyout-menu/title "Hair Extensions"
      :flyout-menu/order 4
+
+     :homepage.ui-v2020-07/order    4
+     :homepage.ui-v2020-07/image-id "978c91a9-9931-40f3-abec-ca7ccefa8240"
 
      :footer/order 8
      :footer/title "Hair Extensions"
