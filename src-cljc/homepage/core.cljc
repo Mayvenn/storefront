@@ -14,9 +14,9 @@
     (classic/page app-state)
 
     (experiments/homepage-revert? app-state)
-    (about/built-component app-state {})
+    (shop/page app-state)
 
     :else
-    (shop/page app-state)))
+    (about/built-component app-state {})))
 
 #?(:cljs (loader/set-loaded! :homepage))

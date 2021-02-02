@@ -141,7 +141,7 @@
   (let [service-icp?      (#{"30"} category-id)
         service-category? (#{"30" "31" "35"} category-id )]
     (if shop?
-      (and service-icp? homepage-revert?)
+      (and service-icp? (not homepage-revert?))
       service-category?)))
 
 (defn query
@@ -157,15 +157,15 @@
                                             (filter (partial auth/permitted-category? data)))))
         non-category-links (concat (when shop?
                                      [(if homepage-revert?
-                                        {:title       "Get a Mayvenn Install"
-                                         :sort-order  2
-                                         :id          "find-a-stylist"
-                                         :new-link?   true
-                                         :nav-message [events/navigate-adventure-find-your-stylist]}
                                         {:title       "Find a Stylist"
                                          :sort-order  2
                                          :id          "find-a-stylist"
                                          :new-link?   false
+                                         :nav-message [events/navigate-adventure-find-your-stylist]}
+                                        {:title       "Get a Mayvenn Install"
+                                         :sort-order  2
+                                         :id          "find-a-stylist"
+                                         :new-link?   true
                                          :nav-message [events/navigate-adventure-find-your-stylist]})])
                                    (when (not classic?)
                                      [{:title       "Shop By Look"
