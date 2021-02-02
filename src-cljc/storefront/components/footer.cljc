@@ -136,17 +136,13 @@
           half-way-point (int (Math/ceil (float (/ coll-length 2))))]
       (split-at half-way-point coll))))
 
-(defn show-category?
-  [shop? homepage-revert? category]
-  (cond
-    (-> category :catalog/category-id #{"30"} (and homepage-revert?))
-    false
-
-    (-> category :catalog/category-id #{"35" "31"} not)
-    true
-
-    shop?
-    true))
+(defn hide-category?
+  [shop? homepage-revert? {:catalog/keys [category-id]}]
+  (let [service-icp?      (#{"30"} category-id)
+        service-category? (#{"30" "31" "35"} category-id )]
+    (if shop?
+      (and service-icp? homepage-revert?)
+      service-category?)))
 
 (defn query
   [data]
@@ -156,7 +152,7 @@
         sort-key           :footer/order
         categories         (->> (get-in data keypaths/categories)
                                 (into []
-                                      (comp (filter (partial show-category? shop? homepage-revert?))
+                                      (comp (remove (partial hide-category? shop? homepage-revert?))
                                             (filter sort-key)
                                             (filter (partial auth/permitted-category? data)))))
         non-category-links (concat (when shop?
