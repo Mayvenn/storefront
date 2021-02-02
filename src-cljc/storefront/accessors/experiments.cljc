@@ -111,10 +111,6 @@
   [data]
   (display-feature? data "upsell-addons-opened"))
 
-(defn homepage-rebrand?
-  [data]
-  (display-feature? data "homepage-rebrand"))
-
 (defn homepage-revert?
   [data]
   (display-feature? data "homepage-revert"))

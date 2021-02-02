@@ -138,6 +138,11 @@
   {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}
    "free-install"   {:youtube-id "oR1keQ-31yc"}})
 
+(defmethod transition-state events/navigate-home
+  [_ event {:keys [query-params]} app-state]
+  (assoc-in app-state adventure.keypaths/adventure-home-video
+            (adventure-slug->video (:video query-params))))
+
 (defmethod transition-state events/navigate-about-mayvenn-install
   [_ event {:keys [query-params]} app-state]
   (assoc-in app-state adventure.keypaths/adventure-home-video
