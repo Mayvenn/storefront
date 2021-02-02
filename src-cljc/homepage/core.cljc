@@ -2,7 +2,7 @@
   "Homepages are apt to change often; fork and use feature-flags."
   (:require #?(:cljs [storefront.loader :as loader])
             [homepage.classic-v2020-07 :as classic]
-            [homepage.shop-v2020-11 :as shop]
+            [homepage.shop-v2020-07 :as shop]
             [mayvenn-install.about :as about]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.sites :as sites]))
