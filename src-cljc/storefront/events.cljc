@@ -644,7 +644,5 @@
 (defpath cache|current-stylist|requested)
 
 ;; shared cart
-(defpath flow|shared-cart|no-stylist-selected|order-created)
-(defpath flow|shared-cart|no-stylist-selected|order-creation-failed)
 
 (defpath biz|shared-cart|hydrated)

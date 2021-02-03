@@ -766,7 +766,8 @@
                      (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
                      (stylists/retrieve-parsed-affiliate-id app-state))))
 
-(defmethod effects/perform-effects events/api-success-update-order [_ event {:keys [order navigate event]} _ app-state]
+(defmethod effects/perform-effects events/api-success-update-order
+  [_ _ {:keys [order navigate event]} _ _]
   (messages/handle-message events/save-order {:order order})
   (when event
     (messages/handle-message event {:order order}))

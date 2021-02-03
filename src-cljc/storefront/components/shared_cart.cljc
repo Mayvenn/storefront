@@ -362,16 +362,14 @@
 
 (defmethod effects/perform-effects events/biz|shared-cart|hydrated
   [_ _ {:shared-cart/keys [id] :target/keys [success]} _ state]
-  #?(:cljs (api/create-order-from-cart
-            (create-order-from-cart-params state id)
-            #(do
-               (when success
-                 (apply messages/handle-message success))
-               (messages/handle-message events/save-order {:order (orders/TEMP-pretend-service-items-do-not-exist %)})
-               (messages/handle-message events/flow|shared-cart|no-stylist-selected|order-created))
-            #(messages/handle-message events/flow|shared-cart|no-stylist-selected|order-creation-failed %))))
-
-(defmethod effects/perform-effects events/flow|shared-cart|no-stylist-selected|order-created
-  [_ _ _ _ app-state]
-  #?(:cljs (history/enqueue-navigate events/navigate-adventure-find-your-stylist)))
-
+  (-> (create-order-from-cart-params state id)
+      #?(:cljs
+         (api/create-order-from-cart
+          #(messages/handle-message
+            events/api-success-update-order-from-shared-cart
+            (cond-> {:order
+                     (orders/TEMP-pretend-service-items-do-not-exist %)}
+              success
+              (assoc :navigate (first success))))
+          #(messages/handle-message
+            events/api-failure-order-not-created-from-shared-cart)))))
