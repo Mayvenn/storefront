@@ -371,7 +371,7 @@
                (messages/handle-message events/flow|shared-cart|no-stylist-selected|order-created))
             #(messages/handle-message events/flow|shared-cart|no-stylist-selected|order-creation-failed %))))
 
-(defmethod effects/perform-effects events/shared-cart|no-stylist-selected|order-created
+(defmethod effects/perform-effects events/flow|shared-cart|no-stylist-selected|order-created
   [_ _ _ _ app-state]
   #?(:cljs (history/enqueue-navigate events/navigate-adventure-find-your-stylist)))
 
