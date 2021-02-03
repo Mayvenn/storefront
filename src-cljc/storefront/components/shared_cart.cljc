@@ -1,5 +1,6 @@
 (ns storefront.components.shared-cart
-  (:require #?(:cljs [storefront.api :as api])
+  (:require #?@(:cljs [[storefront.api :as api]
+                       [storefront.history :as history]])
             api.stylist
             [catalog.images :as catalog-images]
             [catalog.products :as products]
@@ -10,6 +11,7 @@
             [spice.core :as spice]
             [spice.maps :as maps]
             [spice.selector :as selector]
+            [storefront.accessors.orders :as orders]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.shared-cart :as shared-cart]
@@ -99,7 +101,7 @@
                                                :ucare/id)})
 
 (defn service-items<-
-  [stylist services products]
+  [stylist services products shared-cart-number]
   (let [{:keys
          [free-services
           standalone-services
@@ -127,7 +129,11 @@
                                                                                                                      :store-slug (:stylist/slug stylist)}]}})
 
       (nil? stylist)
-      (merge {:stylist {:stylist-organism/id "no-stylist"}})
+      (merge
+       {:stylist {:no-stylist-organism/id "no-stylist"
+                  :no-stylist-organism/target [events/biz|shared-cart|hydrated
+                                               {:shared-cart/id shared-cart-number
+                                                :target/success [events/navigate-adventure-find-your-stylist]}]}})
 
       (seq services)
       (merge {:service-line-items (for [line-item (->> (concat free-services standalone-services)
@@ -146,7 +152,7 @@
                                                                                 {:cart-item-sub-item/title  title
                                                                                  :cart-item-sub-item/price  (mf/as-money price)
                                                                                  :cart-item-sub-item/sku-id sku-id})
-                                                                              addon-services)})))} )
+                                                                              addon-services)})))})
 
       (and stylist (empty? services))
       (merge {:no-services/id         "select-your-service"
@@ -239,12 +245,24 @@
     {:style {:width "270px"}}
     subtitle]])
 
+(component/defcomponent no-stylist-organism
+  [{:no-stylist-organism/keys [id target]} _ _]
+  (when id
+    [:div.bg-white
+     [:div.pt3.pb4.px3.canela.title-2.dark-gray.items-center.flex.flex-column
+      [:div.mb1 "No Stylist Selected"]
+      [:div (ui/button-small-primary
+             (merge {:data-test "pick-a-stylist"}
+                    (apply utils/fake-href target))
+             "Pick Your Stylist")]]
+     [:div.mb1.border-bottom.border-cool-gray.hide-on-mb]]))
+
 (defn service-items-component
   [{:keys [service-line-items stylist] :as data}]
   [:div.mb3
    [:div.title-2.proxima.mb1.shout "Services"]
    (component/build cart-item-v202004/stylist-organism stylist nil)
-   (component/build cart-item-v202004/no-stylist-organism stylist nil) ;NOTE: button will need to make cart AND go to find your stylist flow
+   (component/build no-stylist-organism stylist nil)
 
    (if (seq service-line-items)
      (for [service-line-item service-line-items]
@@ -269,7 +287,7 @@
       (component/build cart-summary/organism data nil)]]]])
 
 (defn page [state _]
-  (let [{:keys [line-items promotion-codes] :as shared-cart} (get-in state keypaths/shared-cart-current)
+  (let [{:keys [line-items promotion-codes servicing-stylist-id number] :as shared-cart} (get-in state keypaths/shared-cart-current)
         sku-db                               (get-in state keypaths/v2-skus)
         products                             (get-in state keypaths/v2-products)
         enriched-line-items                  (shared-cart/enrich-line-items-with-sku-data sku-db line-items)
@@ -280,11 +298,11 @@
         cart-creator-copy                    (if (= "salesteam"(:store-slug cart-creator))
                                                "Your Mayvenn Concierge"
                                                (stylists/->display-name cart-creator))
-        servicing-stylist                    (api.stylist/by-id state (:servicing-stylist-id shared-cart))
+        servicing-stylist                    (api.stylist/by-id state servicing-stylist-id)
         services                             (selector/match-all {:selector/strict? true} catalog.services/service promo-enriched-line-items)]
     (component/build template (merge {:hero/title    "Your Bag"
                                       :hero/subtitle (str cart-creator-copy " has created a bag for you!")}
-                                     (service-items<- servicing-stylist services products)
+                                     (service-items<- servicing-stylist services products number)
                                      (cart-summary<- promo-enriched-line-items promotion-codes)))))
 
 (defn ^:export built-component
@@ -333,3 +351,27 @@
 (defmethod effects/perform-effects events/navigate-shared-cart
   [_ _ {:keys [shared-cart-id]} _ app-state]
   #?(:cljs (api/fetch-shared-cart shared-cart-id)))
+
+(defn ^:private create-order-from-cart-params [app-state shared-cart-number]
+  {:session-id           (get-in app-state keypaths/session-id)
+   :shared-cart-id       shared-cart-number
+   :user-id              (get-in app-state keypaths/user-id)
+   :user-token           (get-in app-state keypaths/user-token)
+   :stylist-id           (get-in app-state keypaths/store-stylist-id)
+   :servicing-stylist-id (get-in app-state keypaths/order-servicing-stylist-id)})
+
+(defmethod effects/perform-effects events/biz|shared-cart|hydrated
+  [_ _ {:shared-cart/keys [id] :target/keys [success]} _ state]
+  #?(:cljs (api/create-order-from-cart
+            (create-order-from-cart-params state id)
+            #(do
+               (when success
+                 (apply messages/handle-message success))
+               (messages/handle-message events/save-order {:order (orders/TEMP-pretend-service-items-do-not-exist %)})
+               (messages/handle-message events/flow|shared-cart|no-stylist-selected|order-created))
+            #(messages/handle-message events/flow|shared-cart|no-stylist-selected|order-creation-failed %))))
+
+(defmethod effects/perform-effects events/shared-cart|no-stylist-selected|order-created
+  [_ _ _ _ app-state]
+  #?(:cljs (history/enqueue-navigate events/navigate-adventure-find-your-stylist)))
+
