@@ -18,6 +18,9 @@
 (def ^:private select
   (comp seq (partial spice.selector/match-all {:selector/strict? true})))
 
+(def ^:private ?service
+  {:catalog/department #{"service"}})
+
 (def ^:private ?addons
   {:catalog/department #{"service"}
    :service/type       #{"addon"}})
@@ -32,6 +35,8 @@
 
 (defmethod effects/perform-effects events/navigate-checkout-add
   [_ _ {:keys [navigate/caused-by]} _ app-state]
+  (messages/handle-message events/cache|product|requested
+                           {:query ?service})
   (when (and (#{:module-load :first-nav} caused-by)
              (-> app-state
                  api.orders/current
