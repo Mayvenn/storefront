@@ -137,7 +137,7 @@
 (c/defcomponent desktop-section-title-molecule
   [{:facet-filtering.section.title/keys [primary target id]} _ _]
   [:a.block.flex.justify-between.inherit-color.items-center
-   (cond-> {:data-test id}
+   (cond-> {:data-test (str id "-desktop")}
      target
      (merge (apply utils/fake-href target)))
    [:div.shout.title-2.proxima primary]])
