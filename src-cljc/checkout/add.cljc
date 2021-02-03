@@ -140,7 +140,8 @@
                                   first
                                   (api.products/by-id state))
 
-            offered-facet-slugs (->> (api.current/stylist state)
+            offered-facet-slugs nil ;; This is a bug in the SRV version, uncomment for feature
+            #_                  (->> (api.current/stylist state)
                                      :stylist.services/offered-facet-slugs)
             addon-facets        (->> (get-in state keypaths/v2-facets)
                                      (filter :service/addon?)
