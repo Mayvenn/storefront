@@ -14,7 +14,7 @@
 
 (defn query
   [data product]
-  (let [{:service/keys [world]} (api.orders/current data)
+  (let [{:service/keys [world] :order/keys [items]} (api.orders/current data)
         {:as service-sku :catalog/keys [sku-id]}
         ;; Find the base sku with no add-ons
         (if (= "SV2" world)
@@ -34,8 +34,14 @@
                            (filter (comp #{"catalog"} :use-case))
                            first)
         product-slug  (:page/slug product)
-        cta-disabled? (boolean (some (comp #{sku-id} :sku)
-                                     (orders/service-line-items (get-in data keypaths/order))))
+        cta-disabled? (if (= "SV2" world)
+                        (->> items
+                             (some #(contains? (set (:selector/from-products %))
+                                               (:catalog/product-id product)))
+                             boolean)
+                        ;; GROT(SRV)
+                        (boolean (some (comp #{sku-id} :sku)
+                                       (orders/service-line-items (get-in data keypaths/order)))))
         any-updates?  (utils/requesting-from-endpoint? data request-keys/add-to-bag)]
     (cond-> {:card-image/src                                      (str (:url image) "-/format/auto/" (:filename image))
              :card/type                                           :horizontal-direct-to-cart-card
