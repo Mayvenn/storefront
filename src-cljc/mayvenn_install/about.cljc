@@ -16,8 +16,8 @@
      [{:layer/type :hero
        :opts       {:href      "/adv/match-stylist"
                     :data-test "home-banner"}
-       :dsk-url    "//images.ctfassets.net/76m8os65degn/6qzfvE4tjQApY5shHJU7gw/d946312226ad40efe3445c2f3e9ac91e/site-homepage-hero-020420-dsk-03.jpg"
-       :mob-url    "//images.ctfassets.net/76m8os65degn/49QbvcP6B3Ow3g08qM3u3g/1a4567b56ab380a70e8889cec983fef8/site-homepage-hero-020420-mob-03.jpg"
+       :dsk-url    "//images.ctfassets.net/76m8os65degn/2oCI3vpqCFoearpXVoUm9v/a32d7bdd907ce91128c8a54a2f4e681e/homepage_hero_012921_image_dsk-04.jpg"
+       :mob-url    "//images.ctfassets.net/76m8os65degn/3G0TE1RlgrcTA0rPEpkQJ1/faa7337aa049c535f78ab07f2f869198/homepage_hero_012921_image_mob-04.jpg"
        :alt        "Buy 3 bundles and we'll pay for your install! Choose any Mayvenn Stylist in your area. Browse Stylists."
        :file-name  "free-install-hero"}
       {:layer/type :free-standard-shipping-bar}
