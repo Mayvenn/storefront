@@ -136,37 +136,49 @@
           half-way-point (int (Math/ceil (float (/ coll-length 2))))]
       (split-at half-way-point coll))))
 
-(defn hide-category?
-  [shop? homepage-revert? {:catalog/keys [category-id]}]
-  (let [service-icp?      (#{"30"} category-id)
-        service-category? (#{"30" "31" "35"} category-id )]
-    (if shop?
-      (and service-icp? (not homepage-revert?))
-      service-category?)))
+;; We filter out ICP (instead of displaying it with other categories)
+;; and add it later by hand because
+;; it needs to be displayed with "NEW" sometimes.
+(defn not-services-icp?
+  [{:catalog/keys [category-id]}]
+  (not (#{"30"} category-id )))
 
 (defn query
   [data]
-  (let [shop?              (= (get-in data keypaths/store-slug) "shop")
-        classic?           (= "mayvenn-classic" (get-in data keypaths/store-experience))
-        homepage-revert?   (experiments/homepage-revert? data)
-        sort-key           :footer/order
-        categories         (->> (get-in data keypaths/categories)
+  (let [shop?                (= (get-in data keypaths/store-slug) "shop")
+        classic?             (= "mayvenn-classic" (get-in data keypaths/store-experience))
+        homepage-revert?     (experiments/homepage-revert? data)
+        sort-key             :footer/order
+        categories           (->> (get-in data keypaths/categories)
                                 (into []
-                                      (comp (remove (partial hide-category? shop? homepage-revert?))
+                                      (comp (filter not-services-icp?)
                                             (filter sort-key)
                                             (filter (partial auth/permitted-category? data)))))
-        non-category-links (concat (when shop?
-                                     [(if homepage-revert?
-                                        {:title       "Find a Stylist"
-                                         :sort-order  2
+        service-icp-category (->> (get-in data keypaths/categories)
+                                  (remove not-services-icp?)
+                                  first)
+        non-category-links   (concat (when shop?
+                                     (if homepage-revert?
+                                       [{:title       "Find a Stylist"
+                                         :sort-order  1
                                          :id          "find-a-stylist"
                                          :new-link?   false
                                          :nav-message [events/navigate-adventure-find-your-stylist]}
-                                        {:title       "Get a Mayvenn Install"
+                                        {:title       "Browse Services"
                                          :sort-order  2
+                                         :id          "browse-services"
+                                         :new-link?   true
+                                         :nav-message [events/navigate-category service-icp-category]}]
+                                       [{:title       "Get a Mayvenn Install"
+                                         :sort-order  1
                                          :id          "find-a-stylist"
                                          :new-link?   true
-                                         :nav-message [events/navigate-adventure-find-your-stylist]})])
+                                         :nav-message [events/navigate-adventure-find-your-stylist]}
+                                        {:title       "Browse Services"
+                                         :sort-order  2
+                                         :id          "browse-services"
+                                         :new-link?   false
+                                         :nav-message [events/navigate-category service-icp-category]}]))
                                    (when (not classic?)
                                      [{:title       "Shop By Look"
                                        :sort-order  3
@@ -178,13 +190,13 @@
                                        :id          "shop-bundle-sets"
                                        :new-link?   false
                                        :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]}]))
-        links              (->> categories
+        links                (->> categories
                                 (mapv (partial category->link))
                                 (concat non-category-links)
                                 (remove nil?)
                                 (sort-by :sort-order))]
-    {:contacts     (contacts-query data)
-     :link-columns (split-evenly links)
+    {:contacts          (contacts-query data)
+     :link-columns      (split-evenly links)
      ;; NOTE: necessary only when promo helper exists. Can remove if it goes away.
      :additional-margin (when (:promotion-helper/exists?
                                (promotion-helper.ui/promotion-helper-model<-
@@ -194,8 +206,8 @@
                                      (storefront.utils/select catalog.services/discountable)
                                      first)))
                           "79px")
-     :essence-copy (str "All orders include a one year subscription to ESSENCE Magazine - a $10 value! "
-                        "Offer and refund details will be included with your confirmation.")}))
+     :essence-copy      (str "All orders include a one year subscription to ESSENCE Magazine - a $10 value! "
+                             "Offer and refund details will be included with your confirmation.")}))
 
 (defn built-component
   [data _]
