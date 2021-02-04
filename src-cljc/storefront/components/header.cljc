@@ -448,11 +448,11 @@
                                       :slide-out-nav-menu-item/id          "menu-shop-find-stylist"
                                       :slide-out-nav-menu-item/new-primary "NEW"
                                       :slide-out-nav-menu-item/primary     "Get a Mayvenn Install"}
-                                     {:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug           "salon-services"
-                                                                                                      :catalog/category-id "30"}]
-                                      :slide-out-nav-menu-item/nested?     false
-                                      :slide-out-nav-menu-item/id          "menu-shop-services"
-                                      :slide-out-nav-menu-item/primary     "Browse Services"}])
+                                     {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug           "salon-services"
+                                                                                                  :catalog/category-id "30"}]
+                                      :slide-out-nav-menu-item/nested? false
+                                      :slide-out-nav-menu-item/id      "menu-shop-services"
+                                      :slide-out-nav-menu-item/primary "Browse Services"}])
                                   [(if sbl-update?
                                      {:slide-out-nav-menu-item/target  [events/navigate-shop-by-look {:album-keyword :look}]
                                       :slide-out-nav-menu-item/nested? false
@@ -476,7 +476,12 @@
 
                                  :always
                                  (concat
-                                  [{:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
+                                  [{:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
+                                    :slide-out-nav-menu-item/id          "menu-shop-wigs"
+                                    :slide-out-nav-menu-item/new-primary "NEW"
+                                    :slide-out-nav-menu-item/nested?     false
+                                    :slide-out-nav-menu-item/primary     "Wigs"}
+                                   {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug "human-hair-bundles" :catalog/category-id "27"}]
                                     :slide-out-nav-menu-item/nested? false
                                     :slide-out-nav-menu-item/id      "menu-shop-human-hair-bundles"
                                     :slide-out-nav-menu-item/primary "Hair Bundles"}
@@ -488,11 +493,6 @@
                                     :slide-out-nav-menu-item/id      "menu-shop-virgin-frontals"
                                     :slide-out-nav-menu-item/nested? false
                                     :slide-out-nav-menu-item/primary "Frontals"}
-                                   {:slide-out-nav-menu-item/target      [events/navigate-category {:page/slug "wigs" :catalog/category-id "13"}]
-                                    :slide-out-nav-menu-item/id          "menu-shop-wigs"
-                                    :slide-out-nav-menu-item/new-primary "NEW"
-                                    :slide-out-nav-menu-item/nested?     false
-                                    :slide-out-nav-menu-item/primary     "Wigs"}
                                    {:slide-out-nav-menu-item/target  [events/navigate-category {:page/slug "hair-extensions" :catalog/category-id "28"}]
                                     :slide-out-nav-menu-item/nested? false
                                     :slide-out-nav-menu-item/id      "menu-shop-hair-extensions"
