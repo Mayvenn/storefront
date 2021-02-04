@@ -1,5 +1,6 @@
 (ns catalog.selector.sku
   (:require [clojure.spec.alpha :as s]
+            clojure.set
             [storefront.accessors.images :as images]
             [spice.selector :as selector]
             [lambdaisland.uri :as uri]))
