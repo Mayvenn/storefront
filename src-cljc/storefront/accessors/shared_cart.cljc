@@ -59,14 +59,13 @@
 
 (defn apply-promos
   [proto-line-items]
-  (let [addon-proto-li    (filter
+  (let [other-proto-li    (filter
                            (fn [li]
-                             (= "addon" (first (:service/type li))))
-                           proto-line-items)
-        physical-proto-li (filter (fn [li]
-                                    (contains? (:catalog/department li) "hair"))
-                                  proto-line-items)]
+                             (not
+                              (and
+                               (= "base" (first (:service/type li)))
+                               (first (:promo.mayvenn-install/discountable li)))))
+                           proto-line-items)]
     ;; TODO: RENAME
     (concat (prepared-discountable-service proto-line-items)
-            addon-proto-li
-            physical-proto-li)))
+            other-proto-li)))
