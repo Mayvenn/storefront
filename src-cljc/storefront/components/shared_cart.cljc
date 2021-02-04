@@ -117,49 +117,41 @@
                                         :else :product-line-items)
                                      services)]
 
-    (cond-> {}
-      stylist
-      (merge {:stylist {:servicing-stylist-portrait-url                  (-> stylist :stylist/portrait :resizable-url)
-                        :servicing-stylist-banner/id                     "servicing-stylist-banner"
-                        :servicing-stylist-banner/title                  (:stylist/name stylist)
-                        :servicing-stylist-banner/rating                 {:rating/value (:stylist.rating/score stylist)
-                                                                          :rating/id    "stylist-rating-id"}
-                        :servicing-stylist-banner/image-url              (some-> stylist :stylist/portrait :resizable-url)
-                        :servicing-stylist-banner/title-and-image-target [events/navigate-adventure-stylist-profile {:stylist-id (:stylist/id stylist)
-                                                                                                                     :store-slug (:stylist/slug stylist)}]}})
+    (when (seq services)
+      (cond-> {:services-section/title "Services"
+               :service-line-items     (for [line-item (->> (concat free-services standalone-services)
+                                                            shared-cart/sort-by-depart-and-price)
+                                             :let      [service-product (some->> line-item
+                                                                                 :selector/from-products
+                                                                                 first
+                                                                                 ;; TODO: not resilient to skus belonging to multiple products
+                                                                                 (get products))]]
+                                     (cond-> (service-line-item-query line-item service-product) ;; need freeinstall-ness
+                                       (and (shared-cart/discountable? line-item)
+                                            (seq addon-services))
+                                       (merge {:cart-item-sub-items/id    "add-on-services"
+                                               :cart-item-sub-items/title "Add-On Services"
+                                               :cart-item-sub-items/items (map (fn [{:sku/keys [title price] sku-id :catalog/sku-id}]
+                                                                                 {:cart-item-sub-item/title  title
+                                                                                  :cart-item-sub-item/price  (mf/as-money price)
+                                                                                  :cart-item-sub-item/sku-id sku-id})
+                                                                               addon-services)})))}
+        stylist
+        (merge {:stylist {:servicing-stylist-portrait-url                  (-> stylist :stylist/portrait :resizable-url)
+                          :servicing-stylist-banner/id                     "servicing-stylist-banner"
+                          :servicing-stylist-banner/title                  (:stylist/name stylist)
+                          :servicing-stylist-banner/rating                 {:rating/value (:stylist.rating/score stylist)
+                                                                            :rating/id    "stylist-rating-id"}
+                          :servicing-stylist-banner/image-url              (some-> stylist :stylist/portrait :resizable-url)
+                          :servicing-stylist-banner/title-and-image-target [events/navigate-adventure-stylist-profile {:stylist-id (:stylist/id stylist)
+                                                                                                                       :store-slug (:stylist/slug stylist)}]}})
 
-      (nil? stylist)
-      (merge
-       {:stylist {:no-stylist-organism/id "no-stylist"
-                  :no-stylist-organism/target [events/biz|shared-cart|hydrated
-                                               {:shared-cart/id shared-cart-number
-                                                :target/success [events/navigate-adventure-find-your-stylist]}]}})
-
-      (seq services)
-      (merge {:service-line-items (for [line-item (->> (concat free-services standalone-services)
-                                                       shared-cart/sort-by-depart-and-price)
-                                        :let      [service-product (some->> line-item
-                                                                            :selector/from-products
-                                                                            first
-                                                                            ;; TODO: not resilient to skus belonging to multiple products
-                                                                            (get products))]]
-                                    (cond-> (service-line-item-query line-item service-product) ;; need freeinstall-ness
-                                      (and (shared-cart/discountable? line-item)
-                                           (seq addon-services))
-                                      (merge {:cart-item-sub-items/id    "add-on-services"
-                                              :cart-item-sub-items/title "Add-On Services"
-                                              :cart-item-sub-items/items (map (fn [{:sku/keys [title price] sku-id :catalog/sku-id}]
-                                                                                {:cart-item-sub-item/title  title
-                                                                                 :cart-item-sub-item/price  (mf/as-money price)
-                                                                                 :cart-item-sub-item/sku-id sku-id})
-                                                                              addon-services)})))})
-
-      (and stylist (empty? services))
-      (merge {:no-services/id         "select-your-service"
-              :no-services/title      "No Service Selected"
-              :no-services/cta-label  "Select Your Service"
-              :no-services/cta-target [events/navigate-category {:catalog/category-id "31"
-                                                                 :page/slug           "free-mayvenn-services"}]}))))
+        (nil? stylist)
+        (merge
+         {:stylist {:no-stylist-organism/id     "no-stylist"
+                    :no-stylist-organism/target [events/biz|shared-cart|hydrated
+                                                 {:shared-cart/id shared-cart-number
+                                                  :target/success [events/navigate-adventure-find-your-stylist]}]}})))))
 
 (def shipping-method-summary-line-query
   {:cart-summary-line/id       "shipping"
@@ -258,9 +250,9 @@
      [:div.mb1.border-bottom.border-cool-gray.hide-on-mb]]))
 
 (defn service-items-component
-  [{:keys [service-line-items stylist] :as data}]
+  [{:keys [service-line-items stylist services-section/title] :as data}]
   [:div.mb3
-   [:div.title-2.proxima.mb1.shout "Services"]
+   [:div.title-2.proxima.mb1.shout title]
    (component/build cart-item-v202004/stylist-organism stylist nil)
    (component/build no-stylist-organism stylist nil)
 
