@@ -302,12 +302,15 @@
          :item.service/keys          [addons]
          :join/keys                  [addon-facets]
          :promo.mayvenn-install/keys [hair-missing-quantity requirement-copy]
+         :hacky/keys                 [promo-mayvenn-install-requirement-copy]
          :product/keys               [essential-title essential-price essential-inclusions]
          :copy/keys                  [whats-included]
          :legacy/keys                [variant-id]}
 
         (select ?discountable items)
-        :let [required-hair-quantity-met? (not (pos? hair-missing-quantity))
+        :let [requirement-copy (or requirement-copy
+                                   promo-mayvenn-install-requirement-copy)
+              required-hair-quantity-met? (not (pos? hair-missing-quantity))
               ;; GROT(SRV) remove unit price here, deprecated key
               price (some-> (or essential-price unit-price) (* quantity) mf/as-money)]]
     (merge

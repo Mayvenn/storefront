@@ -84,6 +84,17 @@
    "SRV-3CW-000"  [["bundle" ?bundles 2] ["360 frontal" ?360-frontals 1]]
    "SRV-WGC-000"  [["Virgin Lace Front or a Virgin 360 Wig" ?wigs 1]]})
 
+(def SV2-rules
+  {"LBI"  [["bundle" ?bundles 3]]
+   "UPCW" [["bundle" ?bundles 3]]
+   "CBI"  [["bundle" ?bundles 2] ["closure" ?closures 1]]
+   "CLCW" [["bundle" ?bundles 2] ["closure" ?closures 1]]
+   "FBI"  [["bundle" ?bundles 2] ["frontal" ?frontals 1]]
+   "LFCW" [["bundle" ?bundles 2] ["frontal" ?frontals 1]]
+   "3BI"  [["bundle" ?bundles 2] ["360 frontal" ?360-frontals 1]]
+   "3CW"  [["bundle" ?bundles 2] ["360 frontal" ?360-frontals 1]]
+   "WGC"  [["Virgin Lace Front or a Virgin 360 Wig" ?wigs 1]]})
+
 (defn free-mayvenn-service
   "
   Free Mayvenn Services
@@ -102,7 +113,8 @@
   (let [service-line-item (first (filter
                                   (comp :promo.mayvenn-install/discountable :variant-attrs)
                                   (orders/service-line-items waiter-order)))
-        rules-for-service (get rules (:sku service-line-item))
+        rules-for-service (or (get rules (:sku service-line-item))
+                              (get SV2-rules (-> service-line-item :service-attrs :sku/base-part)))
         physical-items    (->> waiter-order :shipments (mapcat :line-items)
                                (filter (fn [item]
                                          (= "spree" (:source item))))
@@ -324,7 +336,9 @@
   [items {:catalog/keys [sku-id] :as item}]
   (merge item
          (when (select ?discountable [item])
-           (let [rules-for-service (get rules sku-id)
+           (let [rules-for-service (or
+                                    (get rules sku-id)
+                                    (get SV2-rules (-> item :item/service-attrs :product/sku-part)))
                  physical-items    (select ?physical items)
 
                  failed-rules
@@ -353,16 +367,14 @@
   ;; NOTE: HACK: The cart uses :copy/title from the product that the sku belongs
   ;; to This seems to be the long term name. We should canonicalize this name
   ;; (perhaps under :sku/cart-title) into cellar to prevent the need to enrich from the product
-  (let [product-title (some->> products-db
-                               (filter (fn [product]
-                                         (contains? (set (:selector/skus product))
-                                                    (:catalog/sku-id sku))))
-                               first
-                               :copy/title
-                               not-empty)]
+  (let [{product-title             :copy/title
+         product-requirements-copy :promo.mayvenn-install/requirement-copy}
+        (get products-db (-> sku :selector/from-products first))]
     (cond-> sku
       product-title
-      (assoc :hacky/cart-title product-title))))
+      (assoc :hacky/cart-title product-title)
+      product-requirements-copy
+      (assoc :hacky/promo-mayvenn-install-requirement-copy product-requirements-copy))))
 
 (defn items<-
   "
