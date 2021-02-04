@@ -31,7 +31,7 @@
   [{:order/keys [items]}]
   (and
    (select catalog.services/discountable items)
-   (empty? (select ?addons items))))
+   (empty? (mapcat :item.service/addons items))))
 
 (defmethod effects/perform-effects events/navigate-checkout-add
   [_ _ {:keys [navigate/caused-by]} _ app-state]
