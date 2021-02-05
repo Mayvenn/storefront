@@ -18,6 +18,15 @@
              [(first department) (not (first discountable)) price])
            items))
 
+(defn enrich-line-items-with-sku-data
+  [catalog-skus shared-cart-line-items]
+  (let [indexed-catalog-skus (maps/index-by :legacy/variant-id (vals catalog-skus))]
+    (map
+     (fn [line-item]
+       (merge line-item
+              (get indexed-catalog-skus (:legacy/variant-id line-item))))
+     shared-cart-line-items)))
+
 (defn ^:private prepared-discountable-service [proto-line-items]
   (let [discountable-service-proto-li      (first (filter
                                                    (fn [li]
