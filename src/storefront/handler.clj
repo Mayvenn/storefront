@@ -440,7 +440,13 @@
           pdp-product              (first pdp-products)
           related-addon-skus       (when (some #{"base"} (:service/type pdp-product))
                                      (selector/match-all {:selector/strict? true}
-                                                         {:hair/family (set (:hair/family (get pdp-skus (first (:selector/sku-ids pdp-product)))))}
+                                                         {:hair/family (->> pdp-product
+                                                                            :selector/sku-ids
+                                                                            (filter #(re-find #"000" %)) ; GROT(SRV) old "bases"
+                                                                            first
+                                                                            (get pdp-skus)
+                                                                            :hair/family
+                                                                            set)}
                                                          addon-skus))
           {:keys [facets]}         (when-not (get-in-req-state req keypaths/v2-facets)
                                      (api/fetch-v2-facets storeback-config))]
@@ -643,7 +649,7 @@
                                                    (html-response render-ctx))))))))
 
 (defn determine-sku-id [data product route-sku-id]
-  (let [valid-product-skus (product-details/get-valid-product-skus product (get-in data keypaths/v2-skus))
+  (let [valid-product-skus (products/extract-product-skus data product)
         valid-sku-ids      (set (map :catalog/sku-id valid-product-skus))]
     (or (when (seq route-sku-id) (valid-sku-ids route-sku-id)) ;; Find the sku that matches the one in the uri
         (:catalog/sku-id ;; Fallback to epitome

@@ -3,7 +3,6 @@
             [ajax.protocols :refer [-body]]
             [clojure.string :as string]
             [clojure.walk :as walk]
-            [catalog.products :refer [->skuer]]
             [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
             [storefront.routes :as routes]
@@ -12,6 +11,7 @@
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
+            [catalog.skuers :as skuers]
             [spice.maps :as maps]
             [clojure.set :as set]
             [storefront.accessors.promos :as promos]))
@@ -205,7 +205,7 @@
                            (update :skus (fn [skus]
                                            (into {}
                                                  (map (fn [[k v]]
-                                                        [(name k) (->skuer v)]))
+                                                        [(name k) (skuers/->skuer v)]))
                                                  skus)))
                            (update :images (fn [images]
                                              (into {}

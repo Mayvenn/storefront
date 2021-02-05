@@ -1,11 +1,12 @@
 (ns catalog.products
-  (:require [catalog.keypaths :as k]
-            [clojure.set :as set]
-            [spice.maps :as maps]
+  (:require api.orders
+            [catalog.keypaths :as k]
+            [storefront.accessors.experiments :as ff]
             [storefront.accessors.products :as accessors.products]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
+            [catalog.skuers :as skuers]
             [storefront.transitions :refer [transition-state]]))
 
 (defn product-by-id [app-state product-id]
@@ -40,39 +41,6 @@
   (product-by-id app-state
                  (get-in app-state k/detailed-product-id)))
 
-(defn normalize-image [image]
-  ;; PERF(jeff): this is called for every product in category pages, which can
-  ;; be many times.
-  (if (nil? (:criteria/attributes image))
-    image ;; assume cellar has done this work for us (technically, image = [use-case order catalog/image-id])
-    (let [img (-> (transient image)
-                  (assoc! :id (str (:use-case image) "-" (:url image))
-                          :order (or (:order image)
-                                     (case (:image/of (:criteria/attributes image))
-                                       "model"   1
-                                       "product" 2
-                                       "seo"     3
-                                       "catalog" 4
-                                       5))))]
-      (persistent!
-       (dissoc!
-        (reduce (fn [acc [k v]]
-                  (assoc! acc k v))
-                img
-                (:criteria/attributes image))
-        :criteria/attributes :filename)))))
-
-(defn ->skuer [value]
-  (let [value (-> value
-                  (update :selector/electives (partial mapv keyword))
-                  (update :selector/essentials (partial mapv keyword))
-                  (update :selector/images (partial mapv normalize-image)))
-        ks (into (:selector/essentials value)
-                 (:selector/electives value))]
-    (->> (select-keys value ks)
-         (maps/map-values set)
-         (merge value))))
-
 (defn index-by [f coll]
   (persistent!
    (reduce (fn [acc item]
@@ -83,12 +51,12 @@
 
 (defn index-skus [skus]
   (->> skus
-       (map ->skuer)
+       (map skuers/->skuer)
        (index-by :catalog/sku-id)))
 
 (defn index-products [products]
   (->> products
-       (map ->skuer)
+       (map skuers/->skuer)
        (index-by :catalog/product-id)))
 
 (defmethod transition-state events/api-success-v3-products
@@ -105,8 +73,16 @@
                           (when sku
                             {:query-params {:SKU sku}}))))
 
-(defn extract-product-skus [app-state product]
-  (->> (select-keys (get-in app-state keypaths/v2-skus)
-                    (:selector/skus product))
-       vals
-       (sort-by :sku/price)))
+(defn extract-product-skus
+  [state product]
+  (let [skus-db                 (get-in state keypaths/v2-skus)
+        {:service/keys [world]} (api.orders/current state)
+        world       (if (or (= "SV2" world)
+                                        (ff/service-skus-with-addons? state))
+                      #(re-find #"000" %)
+                      #(re-find #"SV2" %))]
+    (->> (:selector/skus product)
+         (remove world) ;; GROT(SRV)
+         (select-keys skus-db)
+         vals
+         (sort-by :sku/price))))

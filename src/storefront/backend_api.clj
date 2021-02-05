@@ -1,7 +1,7 @@
 (ns storefront.backend-api
   (:require [spice.maps :as maps]
             [storefront.accessors.orders :as orders]
-            [catalog.products :refer [->skuer]]
+            [catalog.skuers :as skuers]
             [tugboat.core :as tugboat]))
 
 (defn storeback-fetch [storeback-config path params]
@@ -71,7 +71,7 @@
           (update :skus (fn [skus]
                           (into {}
                                 (map (fn [[k v]]
-                                       [(name k) (->skuer v)]))
+                                       [(name k) (skuers/->skuer v)]))
                                 skus)))
           (update :images (fn [images]
                             (into {}
