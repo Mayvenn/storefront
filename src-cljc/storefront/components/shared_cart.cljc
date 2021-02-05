@@ -1,6 +1,7 @@
 (ns storefront.components.shared-cart
   (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.history :as history]])
+            api.orders
             api.stylist
             [catalog.images :as catalog-images]
             [catalog.products :as products]
@@ -153,6 +154,42 @@
                                                  {:shared-cart/id shared-cart-number
                                                   :target/success [events/navigate-adventure-find-your-stylist]}]}})))))
 
+(defn ^:private hacky-cart-image
+  [item]
+  (some->> item
+           :selector/images
+           (filter #(= "cart" (:use-case %)))
+           first
+           :url
+           ui/ucare-img-id))
+
+(defn physical-items<-
+  [items]
+  (when items
+    {:physical-items/id    "physical-items"
+     :physical-items/title "Items"
+     :physical-items/items (map-indexed
+                            (fn [i {:keys [catalog/sku-id item/quantity legacy/product-name sku/title
+                                           join/facets sku/price hair/length]
+                                    :as item}]
+                              {:cart-item/id                             (str i "-cart-item-" sku-id "-" quantity)
+                               :cart-item/index                          i
+                               :cart-item-title/id                       (str "line-item-title-" sku-id)
+                               :cart-item-title/primary                  (or product-name title)
+                               :cart-item-title/secondary                (some-> facets :hair/color :option/name)
+                               :cart-item-copy/lines                     [{:id    (str "line-item-quantity-" sku-id)
+                                                                           :value (str "qty. " quantity)}]
+                               :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku-id)
+                               :cart-item-floating-box/contents          (let [price (mf/as-money price)]
+                                                                           [{:text price :attrs {:data-test (str "line-item-price-ea-" sku-id)}}
+                                                                            {:text " each" :attrs {:class "proxima content-4"}}])
+                               :cart-item-square-thumbnail/id            sku-id
+                               :cart-item-square-thumbnail/sku-id        sku-id
+                               :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (some-> length first)]
+                                                                                 (str length-circle-value "”"))
+                               :cart-item-square-thumbnail/ucare-id      (hacky-cart-image item)})
+                            items)}))
+
 (def shipping-method-summary-line-query
   {:cart-summary-line/id       "shipping"
    :cart-summary-line/label    "Shipping"
@@ -267,6 +304,23 @@
 
    [:div.border-bottom.border-gray.hide-on-mb]])
 
+(defn physical-items-component
+  [{:physical-items/keys [items id]}]
+  (when id
+    [:div
+     {:key id}
+     [:div.title-2.proxima.mb1 "Items"]
+     (for [{:cart-item/keys [id index] :as cart-item} items
+           :when                                key]
+       [:div
+        {:key id}
+        (when (not (zero? index))
+          [:div.flex.bg-white
+           [:div.ml2 {:style {:width "75px"}}]
+           [:div.flex-grow-1.border-bottom.border-cool-gray.ml-auto.mr2]])
+        (component/build cart-item-v202004/organism {:cart-item cart-item}
+                         (component/component-id id))])]))
+
 (defcomponent template
   [data _ _]
   [:main.bg-white.flex-auto
@@ -274,27 +328,58 @@
     [:div
      (hero-component data)
      [:div.bg-refresh-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
-      (service-items-component data)]
+      (service-items-component data)
+      (physical-items-component data)]
      [:div.col-on-tb-dt.col-6-on-tb-dt.bg-refresh-gray.bg-white-on-mb.mbj1
       (component/build cart-summary/organism data nil)]]]])
 
+(defn shared-cart->waiter-order
+  [{:keys [line-items promotion-codes servicing-stylist-id number]}]
+  {:shipments [{:storefront/all-line-items (for [line-item line-items]
+                                             {:item/quantity (:item/quantity line-item)
+                                              :item/sku      (:catalog/sku-id line-item)})
+                :servicing-stylist-id      servicing-stylist-id
+                :promotion-codes           promotion-codes}]})
+
+(defn ^:private ensure-shared-cart-has-skus [sku-db shared-cart]
+  (if (-> shared-cart :line-items first :catalog/sku-id)
+    shared-cart
+    (let [indexed-sku-db (maps/index-by :legacy/variant-id (vals sku-db))]
+      (update shared-cart :line-items
+              #(for [item %]
+                 (->> item
+                      :legacy/variant-id
+                      (get indexed-sku-db)
+                      :catalog/sku-id
+                      (assoc item :catalog/sku-id)))))))
+
 (defn page [state _]
-  (let [{:keys [line-items promotion-codes servicing-stylist-id number] :as shared-cart} (get-in state keypaths/shared-cart-current)
-        sku-db                               (get-in state keypaths/v2-skus)
-        products                             (get-in state keypaths/v2-products)
-        enriched-line-items                  (shared-cart/enrich-line-items-with-sku-data sku-db line-items)
-        promo-enriched-line-items            (shared-cart/apply-promos enriched-line-items) ; maybe rename this? too bold
-        cart-creator                         (or ;; If stylist fails to be fetched, then it falls back to current store
-                                              (get-in state keypaths/shared-cart-creator)
-                                              (get-in state keypaths/store))
-        cart-creator-copy                    (if (= "salesteam"(:store-slug cart-creator))
-                                               "Your Mayvenn Concierge"
-                                               (stylists/->display-name cart-creator))
-        servicing-stylist                    (api.stylist/by-id state servicing-stylist-id)
-        services                             (selector/match-all {:selector/strict? true} catalog.services/service promo-enriched-line-items)]
+  (let [{:keys [line-items
+                promotion-codes
+                servicing-stylist-id
+                number]
+         :as   shared-cart}       (get-in state keypaths/shared-cart-current)
+        sku-db                    (get-in state keypaths/v2-skus)
+        products                  (get-in state keypaths/v2-products)
+        order                     (->> shared-cart
+                                       (ensure-shared-cart-has-skus sku-db)
+                                       shared-cart->waiter-order
+                                       (api.orders/->order state))
+        enriched-line-items       (shared-cart/enrich-line-items-with-sku-data sku-db line-items)
+        promo-enriched-line-items (shared-cart/apply-promos enriched-line-items) ; maybe rename this? too bold
+        cart-creator              (or ;; If stylist fails to be fetched, then it falls back to current store
+                                   (get-in state keypaths/shared-cart-creator)
+                                   (get-in state keypaths/store))
+        cart-creator-copy         (if (= "salesteam"(:store-slug cart-creator))
+                                    "Your Mayvenn Concierge"
+                                    (stylists/->display-name cart-creator))
+        servicing-stylist         (api.stylist/by-id state servicing-stylist-id)
+        services                  (selector/match-all {:selector/strict? true} catalog.services/service promo-enriched-line-items)
+        physical-items            (selector/match-all {:selector/strict? true} catalog.services/physical (:order/items order))]
     (component/build template (merge {:hero/title    "Your Bag"
                                       :hero/subtitle (str cart-creator-copy " has created a bag for you!")}
                                      (service-items<- servicing-stylist services products number)
+                                     (physical-items<- physical-items)
                                      (cart-summary<- promo-enriched-line-items promotion-codes)))))
 
 (defn ^:export built-component
