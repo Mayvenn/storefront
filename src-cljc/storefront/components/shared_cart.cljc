@@ -354,8 +354,7 @@
                       (assoc item :catalog/sku-id)))))))
 
 (defn page [state _]
-  (let [{:keys [line-items
-                promotion-codes
+  (let [{:keys [promotion-codes
                 servicing-stylist-id
                 number]
          :as   shared-cart}       (get-in state keypaths/shared-cart-current)
@@ -365,12 +364,11 @@
                                        (ensure-shared-cart-has-skus sku-db)
                                        shared-cart->waiter-order
                                        (api.orders/->order state))
-        enriched-line-items       (shared-cart/enrich-line-items-with-sku-data sku-db line-items)
-        promo-enriched-line-items (shared-cart/apply-promos enriched-line-items) ; maybe rename this? too bold
+        promo-enriched-line-items (shared-cart/apply-promos (:order/items order)) ; maybe rename this? too bold
         cart-creator              (or ;; If stylist fails to be fetched, then it falls back to current store
                                    (get-in state keypaths/shared-cart-creator)
                                    (get-in state keypaths/store))
-        cart-creator-copy         (if (= "salesteam"(:store-slug cart-creator))
+        cart-creator-copy         (if (= "salesteam" (:store-slug cart-creator))
                                     "Your Mayvenn Concierge"
                                     (stylists/->display-name cart-creator))
         servicing-stylist         (api.stylist/by-id state servicing-stylist-id)
