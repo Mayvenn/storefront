@@ -252,7 +252,7 @@
                                         {:cart-summary-line/id    (str (text->data-test-name promotion-code) "-adjustment")
                                          :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
                                                                                       :height "2em" :width "2em"}]
-                                         :cart-summary-line/label promotion-code
+                                         :cart-summary-line/label (string/upper-case promotion-code)
                                          :cart-summary-line/value (mf/as-money-or-free (- promo-discount-amount))})])}
 
       (pos? discounted-service-amount)
