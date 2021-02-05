@@ -157,17 +157,17 @@
 
 ;;; Some ad-hoc transforms?
 
-(defn ->service
+(defn ^:private ->service
   [waiter-line-item]
   {:title  (:variant-name waiter-line-item)
    :sku-id (:sku waiter-line-item)
    :price  (:unit-price waiter-line-item)})
 
-(defn ->addon-service
+(defn ^:private ->addon-service
   [waiter-addon-line-item]
   (->service waiter-addon-line-item))
 
-(defn ->base-service
+(defn ^:private ->base-service
   [waiter-order waiter-base-line-item]
   (let [addon-services (->> waiter-order
                             orders/service-line-items
