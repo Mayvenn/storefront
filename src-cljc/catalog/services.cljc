@@ -26,3 +26,6 @@
 
 (def physical
   {:catalog/department #{"hair" "stylist-exclusives"}})
+
+(def new-world
+  {:service/world #{"SV2"}})

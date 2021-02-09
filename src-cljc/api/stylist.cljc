@@ -42,69 +42,69 @@
   ;; Some of this will be necessarily refactored as service combos
   ;; become 1-1 to services. Then offerings will map to facets.
   [;; Original Discountable (Free Mayvenn)
-   [:specialty-sew-in-leave-out                "SRV-LBI-000"  nil]
-   [:specialty-sew-in-closure                  "SRV-CBI-000"  nil]
-   [:specialty-sew-in-frontal                  "SRV-FBI-000"  nil]
-   [:specialty-sew-in-360-frontal              "SRV-3BI-000"  nil]
-   [:specialty-wig-customization               "SRV-WGC-000"  nil]
+   [:specialty-sew-in-leave-out                "SRV-LBI-000"  nil "LBI"]
+   [:specialty-sew-in-closure                  "SRV-CBI-000"  nil "CBI"]
+   [:specialty-sew-in-frontal                  "SRV-FBI-000"  nil "FBI"]
+   [:specialty-sew-in-360-frontal              "SRV-3BI-000"  nil "3BI"]
+   [:specialty-wig-customization               "SRV-WGC-000"  nil "WGC"]
    ;; Add-ons
-   [:specialty-addon-natural-hair-trim         "SRV-TRMU-000" :service/natural-hair-trim]
-   [:specialty-addon-weave-take-down           "SRV-TKDU-000" :service/weave-take-down]
-   [:specialty-addon-hair-deep-conditioning    "SRV-DPCU-000" :service/hair-deep-conditioning]
-   [:specialty-addon-closure-customization     "SRV-CCU-000"  :service/closure-customization]
-   [:specialty-addon-frontal-customization     "SRV-FCU-000"  :service/frontal-customization]
-   [:specialty-addon-360-frontal-customization "SRV-3CU-000"  :service/three-sixty-frontal-customization]
+   [:specialty-addon-natural-hair-trim         "SRV-TRMU-000" :service/natural-hair-trim                 nil]
+   [:specialty-addon-weave-take-down           "SRV-TKDU-000" :service/weave-take-down                   nil]
+   [:specialty-addon-hair-deep-conditioning    "SRV-DPCU-000" :service/hair-deep-conditioning            nil]
+   [:specialty-addon-closure-customization     "SRV-CCU-000"  :service/closure-customization             nil]
+   [:specialty-addon-frontal-customization     "SRV-FCU-000"  :service/frontal-customization             nil]
+   [:specialty-addon-360-frontal-customization "SRV-3CU-000"  :service/three-sixty-frontal-customization nil]
    ;; Custom (constructed) Wigs
-   [:specialty-custom-unit-leave-out           "SRV-UPCW-000" nil]
-   [:specialty-custom-unit-closure             "SRV-CLCW-000" nil]
-   [:specialty-custom-unit-frontal             "SRV-LFCW-000" nil]
-   [:specialty-custom-unit-360-frontal         "SRV-3CW-000"  nil]
+   [:specialty-custom-unit-leave-out           "SRV-UPCW-000" nil "UPCW"]
+   [:specialty-custom-unit-closure             "SRV-CLCW-000" nil "CLCW"]
+   [:specialty-custom-unit-frontal             "SRV-LFCW-000" nil "LFCW"]
+   [:specialty-custom-unit-360-frontal         "SRV-3CW-000"  nil "3CW"]
    ;; A la Carte
-   [:specialty-wig-install                     "SRV-WIBI-000" nil]
-   [:specialty-silk-press                      "SRV-SPBI-000" nil]
-   [:specialty-weave-maintenance               "SRV-WMBI-000" nil]
-   [:specialty-wig-maintenance                 "SRV-WGM-000"  nil]
-   [:specialty-braid-down                      "SRV-BDBI-000" nil]
-   ;; Reinstalls
-   [:specialty-reinstall-leave-out             "SRV-LRI-000"  nil]
-   [:specialty-reinstall-closure               "SRV-CRI-000"  nil]
-   [:specialty-reinstall-frontal               "SRV-FRI-000"  nil]
-   [:specialty-reinstall-360-frontal           "SRV-3RI-000"  nil]])
+   [:specialty-wig-install                     "SRV-WIBI-000" nil "WIBI"]
+   [:specialty-silk-press                      "SRV-SPBI-000" nil "SPBI"]
+   [:specialty-weave-maintenance               "SRV-WMBI-000" nil "WMBI"]
+   [:specialty-wig-maintenance                 "SRV-WGM-000"  nil "WGM"]
+   [:specialty-braid-down                      "SRV-BDBI-000" nil "BDBI"]
+   ;; Reinstall
+   [:specialty-reinstall-leave-out             "SRV-LRI-000"  nil "LRI"]
+   [:specialty-reinstall-closure               "SRV-CRI-000"  nil "CRI"]
+   [:specialty-reinstall-frontal               "SRV-FRI-000"  nil "FRI"]
+   [:specialty-reinstall-360-frontal           "SRV-3RI-000"  nil "3RI"]])
 
-(def service-menu-slug #(nth % 0))
-(def legacy-sku-id     #(nth % 1))
-(def facet-slug        #(nth % 2))
+(def service-menu-slug  #(nth % 0))
+(def legacy-sku-id      #(nth % 1))
+(def facet-slug         #(nth % 2))
+(def essential-sku-part #(nth % 3))
 
+(defn filter-keys
+  [pred m]
+  (->> m
+       (filter (fn [[_ v]] (pred v)))
+       (into {})))
+
+;; TODO(corey) clarify/refine lexicon
+;; "Ordering" should probably be a sort value on the skus (eventually facets) themselves
 (defn ^:private extend-offered-services
   [{:keys [service-menu]}]
-  (let [offered-slugs (reduce-kv
-                       (fn [a k v]
-                         (if (true? v) (conj a k) a))
-                       #{}
-                       service-menu)]
-    {:stylist.services/offered-facet-slugs
-     (set
-      (remove nil?
-              (-> (hash-map)
-                  (into
-                   (->> service-menu-join
-                        (remove (comp nil?
-                                      facet-slug))
-                        (mapv (juxt service-menu-slug
-                                    facet-slug))))
-                  (mapv offered-slugs))))
-     :stylist.services/offered-sku-ids  (-> (hash-map)
-                                            (into (->> service-menu-join
-                                                       (mapv (juxt service-menu-slug
-                                                                   legacy-sku-id))))
-                                            (mapv offered-slugs)
-                                            set)
-     ;; This should probably be a sort value on the skus (eventually facets) themselves
-     ;; GROT(SRV) probably don't need this
-     :stylist.services/offered-ordering (->> service-menu-join
-                                             (map-indexed (fn [i row]
-                                                            [(legacy-sku-id row) i]))
-                                             (into (hash-map)))}))
+  (let [table (-> (filter-keys true? service-menu)
+                  keys
+                  set ; at this point we have the stylists' offered slugs
+                  (comp service-menu-slug)
+                  (filter service-menu-join))]
+    {:stylist.services/offered-facet-slugs (set (keep facet-slug table))
+     :stylist.services/offerings           (set (keep essential-sku-part table))
+     :stylist.services/ordering            (into {}
+                                                 (comp
+                                                  (keep essential-sku-part)
+                                                  (map-indexed (fn [i esp] [esp i])))
+                                                 table)
+     ;; GROT(SRV) These two below should be superfluous
+     :stylist.services/offered-sku-ids     (set (keep legacy-sku-id table))
+     :stylist.services/offered-ordering    (into {}
+                                                 (comp
+                                                  (keep legacy-sku-id)
+                                                  (map-indexed (fn [i lsi] [lsi i])))
+                                                 table)}))
 
 (defn ^:private extend-rating
   ;; NOTE rating-star-counts type is [{rating num}]

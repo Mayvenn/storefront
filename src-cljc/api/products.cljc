@@ -61,9 +61,20 @@
        {:essentials essentials
         :electives  no-addons
         :result     (->> (:selector/result product>sku)
-
                          (select (merge essentials
+                                        ;; GROT(SRV)
+                                        {:service/world #{"SV2"}}
                                         no-addons)))}))))
+
+(defn ^:private extend-promotions
+  [{:as           product
+    :catalog/keys [department]
+    cellar-product :cellar/product}]
+  (merge
+   product
+   (when (= #{"service"} department)
+     (select-keys cellar-product
+                  [:promo.mayvenn-install/requirement-copy]))))
 
 (defn product<-
   [state cellar-product]
@@ -78,7 +89,8 @@
         :cellar/product     cellar-product}
 
        (product>sku state cellar-product))
-      extend-services))
+      extend-services
+      extend-promotions))
 
 ;; - Read API
 
