@@ -1,5 +1,6 @@
 (ns storefront.components.shared-cart
   (:require #?@(:cljs [[storefront.api :as api]
+                       [storefront.hooks.quadpay :as quadpay]
                        [storefront.history :as history]])
             api.orders
             api.stylist
@@ -208,6 +209,16 @@
    "cash5"    (constantly 5)
    "welcome5" #(* % 0.05)})
 
+
+(defn promo-discount
+  [promotion-code line-item-price]
+  (case promotion-code
+    "heat"     15
+    "flash15"  (* 0.15 line-item-price)
+    "cash5"    5
+    "welcome5" (* 0.05 line-item-price)
+    0))
+
 (defn cart-summary<-
   "The cart has an upsell 'entered' because the customer has requested a service discount"
   [line-items promotion-codes]
@@ -267,6 +278,21 @@
       (merge {:cart-summary-total-incentive/id    "wig-customization"
               :cart-summary-total-incentive/label "Includes Wig Customization"}))))
 
+(defn quadpay<-
+  [data {:keys [waiter/order]}]
+  {:quadpay/order-total (:total order)
+   :quadpay/show?       (get-in data keypaths/loaded-quadpay)
+   :quadpay/directive   :just-select})
+
+(defn servicing-stylist-sms-info<-
+  [stylist]
+  (when stylist
+    {:servicing-stylist-sms-info/id        "servicing-stylist-sms-info"
+     :servicing-stylist-sms-info/title     (str "After your order ships, you'll be connected with "
+                                                (:stylist/name stylist)
+                                                " over SMS to make an appointment.")
+     :servicing-stylist-sms-info/image-url (some-> stylist :stylist/portrait :resizable-url)}))
+
 (defn hero-component [{:hero/keys [title subtitle]}]
   [:div.center.my6
    [:div.canela.title-1.mb3 title]
@@ -321,6 +347,14 @@
         (component/build cart-item-v202004/organism {:cart-item cart-item}
                          (component/component-id id))])]))
 
+(defn servicing-stylist-sms-info-component ; defcomponent?
+  [{:servicing-stylist-sms-info/keys [id title image-url]}]
+  (when id
+    [:div.py1.flex {:data-test id}
+     [:div.mr2
+      (ui/circle-picture {:width 40} (ui/square-image {:resizable-url image-url} 40))]
+     [:div.h7.left-align title]]))
+
 (defcomponent template
   [data _ _]
   [:main.bg-white.flex-auto
@@ -331,27 +365,93 @@
       (service-items-component data)
       (physical-items-component data)]
      [:div.col-on-tb-dt.col-6-on-tb-dt.bg-refresh-gray.bg-white-on-mb.mbj1
-      (component/build cart-summary/organism data nil)]]]])
+      (component/build cart-summary/organism data nil)]
+      [:div.px4.center.bg-white-on-mb ; Checkout buttons
+      #?@(:cljs
+          [(component/build quadpay/component data nil)])
+       (servicing-stylist-sms-info-component data)]]]])
 
-(defn shared-cart->waiter-order
-  [{:keys [line-items promotion-codes servicing-stylist-id number]}]
-  {:shipments [{:storefront/all-line-items (for [line-item line-items]
-                                             {:item/quantity (:item/quantity line-item)
-                                              :item/sku      (:catalog/sku-id line-item)})
-                :servicing-stylist-id      servicing-stylist-id
-                :promotion-codes           promotion-codes}]})
+(defn ->waiter-order
+  [{:keys [line-items promotion-codes servicing-stylist-id total-discounted-amount]}]
+  (let [subtotal (reduce (fn [rolling-total {:keys [sku item/quantity]}]
+                           (-> sku
+                               :sku/price
+                               (* quantity)
+                               (+ rolling-total)))
+                         0 line-items)]
+    {:shipments [{:storefront/all-line-items (for [line-item line-items]
+                                               {:quantity (:item/quantity line-item)
+                                                :sku      (-> line-item :sku :catalog/sku-id)})
+                  :servicing-stylist-id      servicing-stylist-id
+                  :promotion-codes           promotion-codes}]
+     :adjustments [{:coupon-code "code"
+                    :name        "Promo name"
+                    :price       "<negative amount>"}]
+     :line-items-total subtotal
+     :total (- subtotal total-discounted-amount)}))
 
-(defn ^:private ensure-shared-cart-has-skus [sku-db shared-cart]
-  (if (-> shared-cart :line-items first :catalog/sku-id)
-    shared-cart
-    (let [indexed-sku-db (maps/index-by :legacy/variant-id (vals sku-db))]
-      (update shared-cart :line-items
-              #(for [item %]
-                 (->> item
-                      :legacy/variant-id
-                      (get indexed-sku-db)
-                      :catalog/sku-id
-                      (assoc item :catalog/sku-id)))))))
+(defn ^:private enrich-line-items-with-sku-data
+  [sku-db shared-cart]
+  (let [indexed-sku-db (maps/index-by :legacy/variant-id (vals sku-db))]
+    (update shared-cart :line-items
+            #(for [item %]
+               (assoc item :sku (or (->> item :catalog/sku-id (get sku-db))
+                                         (->> item :legacy/variant-id (get indexed-sku-db))))))))
+
+(defn ^:private meets-discount-criterion?
+  [items [_word essentials rule-quantity]]
+  (->> items
+       (map #(merge (:sku %) %))
+       (selector/match-all {:selector/strict? true} essentials)
+       (map :item/quantity)
+       (apply +)
+       (<= rule-quantity)))
+
+(defn ^:private add-discounts-to-line-items
+  [promotion-code items]
+  (for [{:keys [sku item/quantity catalog/sku-id] :as item} items
+        :let
+        [freeinstall-rules-for-item (get api.orders/rules sku-id)
+         line-item-base-price       (-> sku :sku/price (* quantity))]]
+    (cond-> item
+      (and
+       freeinstall-rules-for-item ;; is a freeinstall discountable service line item
+       (every? (partial meets-discount-criterion? items) freeinstall-rules-for-item))
+      (update :discounts (fn [discounts] (conj discounts {:promotion       :freeinstall
+                                                          :discount-amount line-item-base-price})))
+
+      (and promotion-code
+           (not freeinstall-rules-for-item)) ;; is not a freeinstall discountable service line item
+      (update :discounts (fn [discounts] (conj discounts {:promotion       promotion-code
+                                                          :discount-amount (promo-discount promotion-code line-item-base-price)}))))))
+
+(defn ^:private add-discounts-roll-up
+  [{:keys [line-items]
+    :as shared-cart}]
+  (->> line-items
+       (mapcat :discounts)
+       (reduce (fn [acc {:keys [promotion discount-amount]}]
+                 (update acc promotion (partial + discount-amount))) {})
+       (map (fn [[k v]]
+              {:promotion k
+               :discount-amount v}))
+       (assoc shared-cart :discounts)))
+
+(defn ^:private add-total-discounted-amount
+  [{:keys [discounts]
+    :as shared-cart}]
+  (->> discounts
+       (reduce (fn [acc {:keys [discount-amount]}]
+                 (+ acc discount-amount)) 0)
+       (assoc shared-cart :total-discounted-amount)))
+
+(defn ^:private apply-promos
+  [shared-cart]
+  (let [promotion-code (first (:promotion-codes shared-cart))]
+    (-> shared-cart
+        (update :line-items (partial add-discounts-to-line-items promotion-code))
+        add-discounts-roll-up
+        add-total-discounted-amount)))
 
 (defn page [state _]
   (let [{:keys [promotion-codes
@@ -361,8 +461,9 @@
         sku-db                    (get-in state keypaths/v2-skus)
         products                  (get-in state keypaths/v2-products)
         order                     (->> shared-cart
-                                       (ensure-shared-cart-has-skus sku-db)
-                                       shared-cart->waiter-order
+                                       (enrich-line-items-with-sku-data sku-db)
+                                       apply-promos
+                                       ->waiter-order
                                        (api.orders/->order state))
         promo-enriched-line-items (shared-cart/apply-promos (:order/items order)) ; maybe rename this? too bold
         cart-creator              (or ;; If stylist fails to be fetched, then it falls back to current store
@@ -378,7 +479,9 @@
                                       :hero/subtitle (str cart-creator-copy " has created a bag for you!")}
                                      (service-items<- servicing-stylist services products number)
                                      (physical-items<- physical-items)
-                                     (cart-summary<- promo-enriched-line-items promotion-codes)))))
+                                     (quadpay<- state order)
+                                     (cart-summary<- promo-enriched-line-items promotion-codes)
+                                     (servicing-stylist-sms-info<- servicing-stylist)))))
 
 (defn ^:export built-component
   [data opts]
