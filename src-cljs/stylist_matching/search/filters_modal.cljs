@@ -1,7 +1,6 @@
 (ns stylist-matching.search.filters-modal
   (:require
    [spice.selector :as selector]
-   clojure.string
    [storefront.browser.tags :as tags]
    [storefront.component :as component]
    [storefront.components.header :as components.header]
