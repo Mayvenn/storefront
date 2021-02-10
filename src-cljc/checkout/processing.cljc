@@ -46,21 +46,16 @@
   #?(:cljs
      (api/poll-order number token
                      (fn [{:keys [state cart-payments] :as order'}]
-                       (do
-                         (if (< times-attempted 5)
-                           (cond
-                             (not (-> cart-payments :quadpay :setup-data))
-                             (do
-                               (history/enqueue-navigate events/navigate-cart {:query-params {:error "restart-quadpay"}})
-                               (messages/handle-later events/flash-show-failure {:message "An error that occurred. Please retry checking out."}))
+                       (if (< times-attempted 5)
+                         (cond
+                           (= "cart" state)
+                           (js/setTimeout #(get-order-status order' confirm-order-fn (inc times-attempted))
+                                          3000)
 
-                             (= "cart" state)
-                             (js/setTimeout #(get-order-status order' confirm-order-fn (inc times-attempted))
-                                            3000)
-
-                             (= "submitted" state)
-                             (messages/handle-message events/api-success-update-order-place-order {:order order'}))
-                           (confirm-order-fn)))))))
+                           (= "submitted" state)
+                           (messages/handle-message events/api-success-update-order-place-order {:order order'}))
+                         (do (history/enqueue-navigate events/navigate-cart {:query-params {:error "restart-quadpay"}})
+                             (messages/handle-later events/flash-show-failure {:message "An error that occurred. Please retry checking out."})))))))
 
 (defn quadpay-confirm-order
   "Tell waiter to hurry up, otherwise just poll for status (webhook should update us)"
