@@ -239,6 +239,7 @@
                                        (filter #(= :freeinstall (:name (:promotion %))))
                                        first
                                        :amount)
+        service-is-discounted?    (neg? discounted-service-amount)
         explicit-promotion        (->> order-adjustments (remove #(= :freeinstall (:coupon-code %))) first)
         total-savings             (->> order-adjustments (reduce (fn [acc adj] (+ acc (:price adj))) 0))]
     (cond->
@@ -256,7 +257,7 @@
                                                 shipping-method-summary-line-query]
                                        [shipping-method-summary-line])
 
-                                     [(when-not (zero? discounted-service-amount)
+                                     [(when service-is-discounted?
                                         {:cart-summary-line/id    "freeinstall-adjustment"
                                          :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
                                                                                       :height "2em" :width "2em"}]
@@ -269,17 +270,21 @@
                                          :cart-summary-line/label (string/upper-case (:coupon-code explicit-promotion))
                                          :cart-summary-line/value (mf/as-money-or-free (:price explicit-promotion))})])}
 
-      (pos? discounted-service-amount)
-      (merge {:cart-summary-total-incentive/savings (when (pos? total-savings)
-                                                      (mf/as-money total-savings))})
+      service-is-discounted?
+      (merge {:cart-summary-total-incentive/savings (when (neg? total-savings)
+                                                      (mf/as-money (- total-savings)))})
 
-      (and (pos? discounted-service-amount) (not wig-customization?))
+      (and service-is-discounted?
+           (not wig-customization?))
       (merge {:cart-summary-total-incentive/id    "mayvenn-install"
               :cart-summary-total-incentive/label "Includes Mayvenn Service"})
 
-      (and (pos? discounted-service-amount) wig-customization?)
+      (and service-is-discounted?
+           wig-customization?)
       (merge {:cart-summary-total-incentive/id    "wig-customization"
-              :cart-summary-total-incentive/label "Includes Wig Customization"}))))
+              :cart-summary-total-incentive/label "Includes Wig Customization"})
+      :true
+      spice.core/spy)))
 
 (defn quadpay<-
   [data {:keys [waiter/order]}]
@@ -353,10 +358,10 @@
 (defn servicing-stylist-sms-info-component ; defcomponent?
   [{:servicing-stylist-sms-info/keys [id title image-url]}]
   (when id
-    [:div.py1.flex {:data-test id}
+    [:div.flex.h6.items-center.mtj1 {:data-test id}
      [:div.mr2
       (ui/circle-picture {:width 40} (ui/square-image {:resizable-url image-url} 40))]
-     [:div.h7.left-align title]]))
+     [:div.left-align title]]))
 
 (defcomponent template
   [data _ _]
