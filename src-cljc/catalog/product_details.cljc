@@ -493,7 +493,7 @@
                       :addon-line/checked?
                       (-> (get service-item slug) (contains? true))}
 
-                     (and stylist (contains? offered-facet-slugs slug))
+                     (and stylist (not (contains? offered-facet-slugs slug)))
                      {:addon-line/disabled? true
                       :addon-line/disabled-reason
                       (str "Not available with " (:stylist/name stylist))}
