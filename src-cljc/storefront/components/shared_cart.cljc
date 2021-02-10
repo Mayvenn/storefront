@@ -13,6 +13,7 @@
             [spice.core :as spice]
             [spice.maps :as maps]
             [spice.selector :as selector]
+            [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.promos :as promos]
@@ -84,7 +85,7 @@
    :spinning?             (utils/requesting? data request-keys/fetch-shared-cart)})
 
 (defn service-line-item-query ;; will need to pass in freeinstall-ness
-  [{:keys [catalog/sku-id discounted-amount sku/price] :as service-sku} service-product]
+  [{:keys [catalog/sku-id item/applied-promotions sku/price] :as service-sku} service-product]
   {:react/key                             (str "service-line-item-" sku-id)
    :cart-item-title/id                    "line-item-title-upsell-service"
    :cart-item-title/primary               (or (:copy/title service-product) (:legacy/product-name service-sku))
@@ -93,7 +94,7 @@
                                            {:id    (str "line-item-quantity-" sku-id)
                                             :value (str "qty. " (:item/quantity service-sku))}]
    :cart-item-floating-box/id             "line-item-service-price"
-   :cart-item-floating-box/contents       (if discounted-amount
+   :cart-item-floating-box/contents       (if (not-empty applied-promotions) ;; TODO increase the resilience
                                             [{:text (mf/as-money price) :attrs {:class "strike"}}
                                              {:text "FREE" :attrs {:class "s-color"}}]
                                             [{:text (mf/as-money price)}])
@@ -221,33 +222,35 @@
 
 (defn cart-summary<-
   "The cart has an upsell 'entered' because the customer has requested a service discount"
-  [line-items promotion-codes]
-  (let [subtotal                  (reduce (fn [rolling-total line-item]
-                                            (-> line-item
-                                                :sku/price
-                                                (* (:item/quantity line-item))
-                                                (+ rolling-total)))
-                                          0 line-items)
-        discountable-proto-li     (first (filter :discounted-amount line-items))
-        wig-customization?        (and (contains? (:hair/family discountable-proto-li) "ready-wigs" )
-                                       (contains? (:hair/family discountable-proto-li) "lace-front-wigs")
-                                       (contains? (:hair/family discountable-proto-li) "360-wigs")
-                                       (contains? (:service/category discountable-proto-li) "customization"))
-        discounted-service-amount (or (:discounted-amount discountable-proto-li) 0)
-        promotion-code            (first promotion-codes)
-        promo-discount-amount     ((get promo-table promotion-code (constantly 0)) (- subtotal (or (:sku/price discountable-proto-li) 0)))
-        total-savings             (+ promo-discount-amount discounted-service-amount)
-        total                     (some-> (- subtotal (+ promo-discount-amount discounted-service-amount)) mf/as-money)]
+  [order]
+  (let [waiter-order              (:waiter/order order)
+        order-adjustments         (:adjustments waiter-order)
+        discountable-item         (->> order
+                                       :order/items
+                                       (filter #(and (contains? (:service/type %) "base")
+                                                     (first (:promo.mayvenn-install/discountable %))))
+                                       first)
+        wig-customization?        (and (contains? (:hair/family discountable-item) "ready-wigs" )
+                                       (contains? (:hair/family discountable-item) "lace-front-wigs")
+                                       (contains? (:hair/family discountable-item) "360-wigs")
+                                       (contains? (:service/category discountable-item) "customization"))
+        discounted-service-amount (->> discountable-item
+                                       :item/applied-promotions
+                                       (filter #(= :freeinstall (:name (:promotion %))))
+                                       first
+                                       :amount)
+        explicit-promotion        (->> order-adjustments (remove #(= :freeinstall (:coupon-code %))) first)
+        total-savings             (->> order-adjustments (reduce (fn [acc adj] (+ acc (:price adj))) 0))]
     (cond->
         {:cart-summary/id               "shared-cart-summary"
          :cart-summary-total-line/id    "total"
-         :cart-summary-total-line/label (if (and (not-empty discountable-proto-li) (not wig-customization?))
+         :cart-summary-total-line/label (if (and (not-empty discountable-item) (not wig-customization?))
                                           "Hair + Install Total"
                                           "Total")
-         :cart-summary-total-line/value total
+         :cart-summary-total-line/value (-> waiter-order :total mf/as-money)
          :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
                                        :cart-summary-line/label "Subtotal"
-                                       :cart-summary-line/value (mf/as-money subtotal)}]
+                                       :cart-summary-line/value (:line-items-total waiter-order)}]
 
                                      (when-let [shipping-method-summary-line
                                                 shipping-method-summary-line-query]
@@ -257,18 +260,18 @@
                                         {:cart-summary-line/id    "freeinstall-adjustment"
                                          :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
                                                                                       :height "2em" :width "2em"}]
-                                         :cart-summary-line/label (str "Free " (:sku/title discountable-proto-li))
-                                         :cart-summary-line/value (mf/as-money-or-free (- discounted-service-amount))})
-                                      (when promotion-code
-                                        {:cart-summary-line/id    (str (text->data-test-name promotion-code) "-adjustment")
+                                         :cart-summary-line/label (str "Free " (:sku/title discountable-item))
+                                         :cart-summary-line/value (mf/as-money-or-free discounted-service-amount)})
+                                      (when explicit-promotion
+                                        {:cart-summary-line/id    (str (text->data-test-name (:coupon-code explicit-promotion)) "-adjustment")
                                          :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
                                                                                       :height "2em" :width "2em"}]
-                                         :cart-summary-line/label (string/upper-case promotion-code)
-                                         :cart-summary-line/value (mf/as-money-or-free (- promo-discount-amount))})])}
+                                         :cart-summary-line/label (string/upper-case (:coupon-code explicit-promotion))
+                                         :cart-summary-line/value (mf/as-money-or-free (:price explicit-promotion))})])}
 
       (pos? discounted-service-amount)
-      (merge {  :cart-summary-total-incentive/savings (when (pos? total-savings)
-                                                        (mf/as-money total-savings))})
+      (merge {:cart-summary-total-incentive/savings (when (pos? total-savings)
+                                                      (mf/as-money total-savings))})
 
       (and (pos? discounted-service-amount) (not wig-customization?))
       (merge {:cart-summary-total-incentive/id    "mayvenn-install"
@@ -372,21 +375,33 @@
        (servicing-stylist-sms-info-component data)]]]])
 
 (defn ->waiter-order
-  [{:keys [line-items promotion-codes servicing-stylist-id total-discounted-amount]}]
+  [{:keys [line-items discounts promotion-codes servicing-stylist-id total-discounted-amount]}]
   (let [subtotal (reduce (fn [rolling-total {:keys [sku item/quantity]}]
                            (-> sku
                                :sku/price
                                (* quantity)
                                (+ rolling-total)))
                          0 line-items)]
-    {:shipments [{:storefront/all-line-items (for [line-item line-items]
-                                               {:quantity (:item/quantity line-item)
-                                                :sku      (-> line-item :sku :catalog/sku-id)})
+    {:shipments [{:storefront/all-line-items (for [{:keys [sku item/quantity discounts]} line-items]
+                                               {:applied-promotions (map (fn [{:keys [promotion discount-amount]}]
+                                                                           {:amount (- discount-amount)
+                                                                            :promotion {:name promotion}}) discounts)
+                                                :quantity quantity
+                                                :sku      (:catalog/sku-id sku)
+                                                :source  (if (contains? (:catalog/department sku) "service")
+                                                           "service"
+                                                           "spree")
+                                                :variant-attrs {:service/type (first (:service/type sku))}
+                                                :variant-name (:sku/name sku)
+                                                :unit-price  (:sku/price sku)
+                                                :line-item-group 1}) ;; TODO ???
                   :servicing-stylist-id      servicing-stylist-id
                   :promotion-codes           promotion-codes}]
-     :adjustments [{:coupon-code "code"
-                    :name        "Promo name"
-                    :price       "<negative amount>"}]
+     :adjustments (map (fn [{:keys [promotion discount-amount]}]
+                         {:coupon-code promotion
+                          :name        (if (= "freeinstall" promotion) "Free Install" promotion)
+                          :price       (- discount-amount)})
+                       discounts)
      :line-items-total subtotal
      :total (- subtotal total-discounted-amount)}))
 
@@ -465,7 +480,6 @@
                                        apply-promos
                                        ->waiter-order
                                        (api.orders/->order state))
-        promo-enriched-line-items (shared-cart/apply-promos (:order/items order)) ; maybe rename this? too bold
         cart-creator              (or ;; If stylist fails to be fetched, then it falls back to current store
                                    (get-in state keypaths/shared-cart-creator)
                                    (get-in state keypaths/store))
@@ -473,14 +487,14 @@
                                     "Your Mayvenn Concierge"
                                     (stylists/->display-name cart-creator))
         servicing-stylist         (api.stylist/by-id state servicing-stylist-id)
-        services                  (selector/match-all {:selector/strict? true} catalog.services/service promo-enriched-line-items)
+        services                  (selector/match-all {:selector/strict? true} catalog.services/service (:order/items order))
         physical-items            (selector/match-all {:selector/strict? true} catalog.services/physical (:order/items order))]
     (component/build template (merge {:hero/title    "Your Bag"
                                       :hero/subtitle (str cart-creator-copy " has created a bag for you!")}
                                      (service-items<- servicing-stylist services products number)
                                      (physical-items<- physical-items)
                                      (quadpay<- state order)
-                                     (cart-summary<- promo-enriched-line-items promotion-codes)
+                                     (cart-summary<- order)
                                      (servicing-stylist-sms-info<- servicing-stylist)))))
 
 (defn ^:export built-component
