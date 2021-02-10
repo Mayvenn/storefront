@@ -375,8 +375,7 @@
   [stylist items remove-in-progress? delete-line-item-requests]
   (let [services (select ?service items)]
     (merge
-     {:stylist (if stylist
-                 (let [stylist-id (:stylist/id stylist)]
+     {:stylist (if-let [stylist-id (:stylist/id stylist)]
                    {:servicing-stylist-portrait-url                  (-> stylist :stylist/portrait :resizable-url)
                     :servicing-stylist-banner/id                     "servicing-stylist-banner"
                     :servicing-stylist-banner/title                  (:stylist/name stylist)
@@ -389,7 +388,7 @@
                     :servicing-stylist-banner.swap-icon/id           "stylist-swap"
                     :servicing-stylist-banner.remove-icon/spinning?  remove-in-progress?
                     :servicing-stylist-banner.remove-icon/target     [events/control-remove-stylist {:stylist-id stylist-id}]
-                    :servicing-stylist-banner.remove-icon/id         "remove-stylist"})
+                    :servicing-stylist-banner.remove-icon/id         "remove-stylist"}
                  {:stylist-organism/id            "stylist-organism"
                   :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})}
      (if (seq services)
