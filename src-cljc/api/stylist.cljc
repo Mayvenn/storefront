@@ -155,7 +155,8 @@
 (defn by-id
   "Get a stylist by id"
   [state stylist-id]
-  (get-in state (conj storefront.k/models-stylists stylist-id)))
+  (when stylist-id
+    (get-in state (conj storefront.k/models-stylists stylist-id))))
 
 ;; - Behavior API
 
