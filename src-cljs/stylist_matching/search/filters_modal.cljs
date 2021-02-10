@@ -38,7 +38,8 @@
 (defn query
   [data]
   (let [selected-filters         (:param/services (stylist-matching<- data))
-        all-skus                 (vals (get-in data storefront.keypaths/v2-skus))
+        all-skus                 (->> (vals (get-in data storefront.keypaths/v2-skus))
+                                      (filter #(re-find #"SRV" (:catalog/sku-id %))))
         expanded-filter-sections (get-in data stylist-directory.keypaths/stylist-search-expanded-filter-sections)]
     {:stylist-search-filters/show? (get-in data stylist-directory.keypaths/stylist-search-show-filters?)
      :stylist-search-filters/sections
