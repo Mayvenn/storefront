@@ -103,58 +103,21 @@
                                                (catalog-images/image (maps/index-by :catalog/image-id (:selector/images service-product)) "cart")
                                                :ucare/id)})
 
-(defn service-items<-
-  [stylist services products shared-cart-number]
-  (let [{:keys
-         [free-services
-          standalone-services
-          addon-services]} (group-by #(cond
-                                        ((every-pred shared-cart/base-service?
-                                                     shared-cart/discountable?) %)
-                                        :free-services
-                                        (and (shared-cart/base-service? %)
-                                             (not (shared-cart/discountable? %)))
-                                        :standalone-services
-                                        (->> % :service/type first #{"addon"})
-                                        :addon-services
-                                        :else :product-line-items)
-                                     services)]
+(def ^:private select
+  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
 
-    (when (seq services)
-      (cond-> {:services-section/title "Services"
-               :service-line-items     (for [line-item (->> (concat free-services standalone-services)
-                                                            shared-cart/sort-by-depart-and-price)
-                                             :let      [service-product (some->> line-item
-                                                                                 :selector/from-products
-                                                                                 first
-                                                                                 ;; TODO: not resilient to skus belonging to multiple products
-                                                                                 (get products))]]
-                                     (cond-> (service-line-item-query line-item service-product) ;; need freeinstall-ness
-                                       (and (shared-cart/discountable? line-item)
-                                            (seq addon-services))
-                                       (merge {:cart-item-sub-items/id    "add-on-services"
-                                               :cart-item-sub-items/title "Add-On Services"
-                                               :cart-item-sub-items/items (map (fn [{:sku/keys [title price] sku-id :catalog/sku-id}]
-                                                                                 {:cart-item-sub-item/title  title
-                                                                                  :cart-item-sub-item/price  (mf/as-money price)
-                                                                                  :cart-item-sub-item/sku-id sku-id})
-                                                                               addon-services)})))}
-        stylist
-        (merge {:stylist {:servicing-stylist-portrait-url                  (-> stylist :stylist/portrait :resizable-url)
-                          :servicing-stylist-banner/id                     "servicing-stylist-banner"
-                          :servicing-stylist-banner/title                  (:stylist/name stylist)
-                          :servicing-stylist-banner/rating                 {:rating/value (:stylist.rating/score stylist)
-                                                                            :rating/id    "stylist-rating-id"}
-                          :servicing-stylist-banner/image-url              (some-> stylist :stylist/portrait :resizable-url)
-                          :servicing-stylist-banner/title-and-image-target [events/navigate-adventure-stylist-profile {:stylist-id (:stylist/id stylist)
-                                                                                                                       :store-slug (:stylist/slug stylist)}]}})
+(def ^:private ?service
+  {:catalog/department #{"service"}})
 
-        (nil? stylist)
-        (merge
-         {:stylist {:no-stylist-organism/id     "no-stylist"
-                    :no-stylist-organism/target [events/biz|shared-cart|hydrated
-                                                 {:shared-cart/id shared-cart-number
-                                                  :target/success [events/navigate-adventure-find-your-stylist]}]}})))))
+(def ^:private ?discountable
+  {:catalog/department                 #{"service"}
+   :service/type                       #{"base"}
+   :promo.mayvenn-install/discountable #{true}})
+
+(def ^:private ?a-la-carte
+  {:catalog/department                 #{"service"}
+   :service/type                       #{"base"}
+   :promo.mayvenn-install/discountable #{false}})
 
 (defn ^:private hacky-cart-image
   [item]
@@ -164,6 +127,125 @@
            first
            :url
            ui/ucare-img-id))
+
+(defn cart-items|addons|SRV<-
+  "GROT(SRV)"
+  [addons]
+  (when (seq addons)
+    {:cart-item-modify-button/content "Edit Add-Ons"
+     :cart-item-sub-items/id          "addon-services"
+     :cart-item-sub-items/title       "Add-On Services"
+     :cart-item-sub-items/items       (map (fn [addon-sku]
+                                             {:cart-item-sub-item/title  (:sku/title addon-sku)
+                                              :cart-item-sub-item/price  (some-> addon-sku :sku/price mf/as-money)
+                                              :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
+                                           addons)}))
+
+(defn cart-items|addons<-
+  [item-facets]
+  (when (seq item-facets)
+    {:cart-item-modify-button/content "Edit Add-Ons"
+     :cart-item.addons/id             "addon-services"
+     :cart-item.addons/title          "Add-On Services"
+     :cart-item.addons/elements
+     (->> item-facets
+          (mapv (fn [facet]
+                  {:cart-item.addon/title (:facet/name facet)
+                   :cart-item.addon/price (some-> facet :service/price mf/as-money)
+                   :cart-item.addon/id    (:service/sku-part facet)})))}))
+
+(defn free-services<-
+  [items]
+  (for [{:as                         free-service
+         :catalog/keys               [sku-id]
+         :item/keys                  [variant-name quantity unit-price]
+         :item.service/keys          [addons]
+         :join/keys                  [addon-facets]
+         :promo.mayvenn-install/keys [hair-missing-quantity requirement-copy]
+         :hacky/keys                 [promo-mayvenn-install-requirement-copy]
+         :product/keys               [essential-title essential-price essential-inclusions]
+         :copy/keys                  [whats-included]}
+
+        (select ?discountable items)
+        :let [requirement-copy (or requirement-copy
+                                   promo-mayvenn-install-requirement-copy)
+              required-hair-quantity-met? (not (pos? hair-missing-quantity))
+              ;; GROT(SRV) remove unit price here, deprecated key
+              price (some-> (or essential-price unit-price) (* quantity) mf/as-money)]]
+    (merge
+     {:react/key                               "freeinstall-line-item-freeinstall"
+      :cart-item-title/id                      "line-item-title-upsell-free-service"
+      :cart-item-title/primary                 (if essential-title
+                                                 essential-title
+                                                 variant-name) ;; GROT(SRV)
+      :cart-item-copy/lines                    [{:id    (str "line-item-whats-included-" sku-id)
+                                                 :value (if required-hair-quantity-met?
+                                                          (str "You're all set! "
+                                                               (or essential-inclusions
+                                                                   whats-included)) ;; GROT(SRV) deprecated key
+                                                          requirement-copy)}
+                                                {:id    (str "line-item-quantity-" sku-id)
+                                                 :value (str "qty. " quantity)}]
+      :cart-item-floating-box/id               "line-item-freeinstall-price"
+      :cart-item-floating-box/contents         (if required-hair-quantity-met?
+                                                 [{:text price :attrs {:class "strike"}}
+                                                  {:text "FREE" :attrs {:class "s-color"}}]
+                                                 [{:text price}])
+      :cart-item-service-thumbnail/id          "freeinstall"
+      :cart-item-service-thumbnail/image-url   (hacky-cart-image free-service)}
+     (cart-items|addons|SRV<- addons)
+     (cart-items|addons<- addon-facets))))
+
+(defn ^:private a-la-carte-services<-
+  [items]
+  (for [{:as           item
+         :catalog/keys [sku-id]
+         :hacky/keys   [cart-title]
+         :sku/keys     [price]
+         :copy/keys    [whats-included]
+         :product/keys [essential-inclusions]
+         :item/keys    [id quantity unit-price product-name]}
+
+        (select ?a-la-carte items)]
+    {:react/key                             sku-id
+     :cart-item-title/primary               (or cart-title product-name)
+     :cart-item-title/id                    (str "line-item-" sku-id)
+     :cart-item-floating-box/id             (str "line-item-" sku-id "-price")
+     :cart-item-floating-box/contents       [{:text (some-> (or price unit-price) mf/as-money)}]
+     :cart-item-copy/lines                  [{:id    (str "line-item-whats-included-" sku-id)
+                                              :value (or essential-inclusions
+                                                         whats-included)} ;; GROT(SRV) deprecated key
+                                             {:id    (str "line-item-quantity-" sku-id)
+                                              :value (str "qty. " quantity)}]
+     :cart-item-service-thumbnail/id        sku-id
+     :cart-item-service-thumbnail/image-url (hacky-cart-image item)}))
+
+(defn service-items<-
+  [stylist items]
+  (let [services (select ?service items)]
+    (merge
+     {:stylist (if stylist
+                 (let [stylist-id (:stylist/id stylist)]
+                   {:servicing-stylist-portrait-url                  (-> stylist :stylist/portrait :resizable-url)
+                    :servicing-stylist-banner/id                     "servicing-stylist-banner"
+                    :servicing-stylist-banner/title                  (:stylist/name stylist)
+                    :servicing-stylist-banner/rating                 {:rating/value (:stylist.rating/score stylist)
+                                                                      :rating/id    "stylist-rating-id"}
+                    :servicing-stylist-banner/image-url              (some-> stylist :stylist/portrait :resizable-url)
+                    :servicing-stylist-banner/title-and-image-target [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
+                                                                                                                 :store-slug (:stylist/slug stylist)}]})
+                 {:stylist-organism/id            "stylist-organism"
+                  :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})}
+     (if (seq services)
+       {:service-line-items (concat
+                             (free-services<- items)
+                             (a-la-carte-services<- items))}
+       (when stylist
+         {:no-services/id         "select-your-service"
+          :no-services/title      "No Service Selected"
+          :no-services/cta-label  "Select Your Service"
+          :no-services/cta-target [events/navigate-category {:catalog/category-id "31"
+                                                             :page/slug           "free-mayvenn-services"}]})))))
 
 (defn physical-items<-
   [items]
@@ -282,9 +364,7 @@
       (and service-is-discounted?
            wig-customization?)
       (merge {:cart-summary-total-incentive/id    "wig-customization"
-              :cart-summary-total-incentive/label "Includes Wig Customization"})
-      :true
-      spice.core/spy)))
+              :cart-summary-total-incentive/label "Includes Wig Customization"}))))
 
 (defn quadpay<-
   [data {:keys [waiter/order]}]
@@ -367,19 +447,19 @@
   [data _ _]
   [:main.bg-white.flex-auto
    [:div.col-7-on-dt.mx-auto
-    [:div
+    [:div.container
      (hero-component data)
      [:div.bg-refresh-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
       (service-items-component data)
       (physical-items-component data)]
      [:div.col-on-tb-dt.col-6-on-tb-dt.bg-refresh-gray.bg-white-on-mb.mbj1
-      (component/build cart-summary/organism data nil)]
+      (component/build cart-summary/organism data nil)
       [:div.px4.center.bg-white-on-mb ; Checkout buttons
-      #?@(:cljs
-          [(component/build quadpay/component data nil)])
-       (servicing-stylist-sms-info-component data)]]]])
+       #?@(:cljs
+           [(component/build quadpay/component data nil)])
+       (servicing-stylist-sms-info-component data)]]]]])
 
-(defn ->waiter-order
+(defn ^:private ->waiter-order
   [{:keys [line-items discounts promotion-codes servicing-stylist-id total-discounted-amount]}]
   (let [subtotal (reduce (fn [rolling-total {:keys [sku item/quantity]}]
                            (-> sku
@@ -492,11 +572,10 @@
                                     "Your Mayvenn Concierge"
                                     (stylists/->display-name cart-creator))
         servicing-stylist         (api.stylist/by-id state servicing-stylist-id)
-        services                  (selector/match-all {:selector/strict? true} catalog.services/service (:order/items order))
         physical-items            (selector/match-all {:selector/strict? true} catalog.services/physical (:order/items order))]
     (component/build template (merge {:hero/title    "Your Bag"
                                       :hero/subtitle (str cart-creator-copy " has created a bag for you!")}
-                                     (service-items<- servicing-stylist services products number)
+                                     (service-items<- servicing-stylist (:order/items order))
                                      (physical-items<- physical-items)
                                      (quadpay<- state order)
                                      (cart-summary<- order)
