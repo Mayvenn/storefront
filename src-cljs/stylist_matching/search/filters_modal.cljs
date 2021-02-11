@@ -28,12 +28,12 @@
                                         :stylist-filter-selection specialty}]
      :stylist-search-filter/checked?  checked?}))
 
-(defn select-sorted
-  [essentials sort-fn db]
-  (->> db
-       (selector/match-all {:selector/strict? true}
-                           essentials)
-       (sort-by sort-fn)))
+
+(def ^:private select (comp seq (partial selector/match-all {:selector/strict? true})))
+
+(defn ^:private select-sorted
+  [query sort-fn db]
+  (->> db (select query) (sort-by sort-fn) seq))
 
 (defn query
   [data]
@@ -144,8 +144,6 @@
   (messages/handle-message events/flow|stylist-matching|param-services-constrained
                            {:services nil})
   (messages/handle-message events/flow|stylist-matching|prepared))
-
-(def ^:private select (comp seq (partial selector/match-all {:selector/strict? true})))
 
 (defmethod transitions/transition-state events/control-show-stylist-search-filters
   [_ _ _ app-state]
