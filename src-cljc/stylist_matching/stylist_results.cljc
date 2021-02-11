@@ -734,9 +734,9 @@
                                        :stylist-results-test?  stylist-results-test?}
         matching-stylist-cards        (stylist-data->stylist-cards (assoc stylist-data :stylists matching-stylists))
         non-matching-stylist-cards    (stylist-data->stylist-cards (assoc stylist-data :stylists non-matching-stylists))
-        filter-menu                   #?(:cljs (filter-menu/query app-state) :clj  nil)
+        filter-menu                   #?(:cljs (filter-menu/query app-state) :clj nil)
         address-field-errors    (get-in app-state k/address-field-errors)]
-    (if (:stylist-search-filters/show? filter-menu)
+    (if filter-menu
       (component/build #?(:clj  (component/html [:div])
                           :cljs filter-menu/component) filter-menu nil)
       (component/build template

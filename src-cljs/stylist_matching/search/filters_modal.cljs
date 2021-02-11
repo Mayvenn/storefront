@@ -1,6 +1,8 @@
 (ns stylist-matching.search.filters-modal
   (:require
+   api.orders
    [spice.selector :as selector]
+   [storefront.accessors.experiments :as ff]
    [storefront.browser.tags :as tags]
    [storefront.component :as component]
    [storefront.components.header :as components.header]
@@ -18,7 +20,9 @@
    [stylist-matching.core :refer [stylist-matching<-]]
    [storefront.css-transitions :as css-transitions]))
 
-(defn specialty->filter [selected-filters [primary specialty price]]
+(defn specialty->filter
+  ;; Here, 'specialty' is in sku-id form
+  [selected-filters [primary specialty price]]
   (let [checked? (some #{specialty} selected-filters)]
     {:stylist-search-filter/primary   primary
      :stylist-search-filter/secondary (str "(" (mf/as-money-or-free price) ")")
@@ -37,51 +41,59 @@
 
 (defn query
   [data]
-  (let [selected-filters         (:param/services (stylist-matching<- data))
-        all-skus                 (->> (vals (get-in data storefront.keypaths/v2-skus))
-                                      (filter #(re-find #"SRV" (:catalog/sku-id %))))
-        expanded-filter-sections (get-in data stylist-directory.keypaths/stylist-search-expanded-filter-sections)]
-    {:stylist-search-filters/show? (get-in data stylist-directory.keypaths/stylist-search-show-filters?)
-     :stylist-search-filters/sections
-     [(let [section-id "free-mayvenn-services"
-            open?      (contains? expanded-filter-sections section-id)]
-        {:stylist-search-filter-section/id           (str section-id "-" (if open? "open" "closed"))
-         :stylist-search-filter-section/title        "Free Mayvenn Services"
-         :stylist-search-filter-section/title-action [events/control-toggle-stylist-search-filter-section
-                                                      {:previously-opened? open?
-                                                       :section-id         section-id}]
-         :stylist-search-filter-section/open?        open?
-         :stylist-search-filter-section/primary      (str
-                                                      "Get Mayvenn services (valued up to $200) for free when purchasing "
-                                                      "qualifying hair from Mayvenn. You buy the hair, we cover the service!")
-         :stylist-search-filter-section/filters      (->> all-skus
-                                                          (select-sorted services/discountable :legacy/variant-id)
-                                                          (mapv (juxt :sku/name :catalog/sku-id (constantly 0)))
-                                                          (mapv (partial specialty->filter selected-filters)))})
-      (let [section-id "a-la-carte-services"
-            open?      (contains? expanded-filter-sections section-id)]
-        {:stylist-search-filter-section/id           (str section-id "-" (if open? "open" "closed"))
-         :stylist-search-filter-section/title        "À la carte Services"
-         :stylist-search-filter-section/title-action [events/control-toggle-stylist-search-filter-section
-                                                      {:previously-opened? open?
-                                                       :section-id         section-id}]
-         :stylist-search-filter-section/open?        open?
-         :stylist-search-filter-section/filters      (->> all-skus
-                                                          (select-sorted services/a-la-carte :legacy/variant-id)
-                                                          (mapv (juxt :sku/name :catalog/sku-id :sku/price))
-                                                          (mapv (partial specialty->filter selected-filters)))})
-      (let [section-id "add-on-services"
-            open?      (contains? expanded-filter-sections section-id)]
-        {:stylist-search-filter-section/id           (str section-id "-" (if open? "open" "closed"))
-         :stylist-search-filter-section/title        "Add-on Services"
-         :stylist-search-filter-section/title-action [events/control-toggle-stylist-search-filter-section
-                                                      {:previously-opened? open?
-                                                       :section-id         section-id}]
-         :stylist-search-filter-section/open?        open?
-         :stylist-search-filter-section/filters      (->> all-skus
-                                                          (select-sorted services/addons :legacy/variant-id)
-                                                          (mapv (juxt :sku/name :catalog/sku-id :sku/price))
-                                                          (mapv (partial specialty->filter selected-filters)))})]}))
+  (when (get-in data stylist-directory.keypaths/stylist-search-show-filters?)
+    (let [new-world?                         (-> (api.orders/current data)
+                                                 :service/world
+                                                 (= "SV2")
+                                                 (or (ff/service-skus-with-addons? data)))
+
+          selected-filters         (:param/services (stylist-matching<- data))
+          all-skus                 (if new-world? ;; GROT(SRV)
+                                     (->> (vals (get-in data storefront.keypaths/v2-skus))
+                                          (filter #(re-find #"SRV" (:catalog/sku-id %))))
+                                     (->> (vals (get-in data storefront.keypaths/v2-skus))
+                                          (select-sorted {:service/world #{"SV2"}} identity)))
+          expanded-filter-sections (get-in data stylist-directory.keypaths/stylist-search-expanded-filter-sections)]
+      {:stylist-search-filters/sections
+       [(let [section-id "free-mayvenn-services"
+              open?      (contains? expanded-filter-sections section-id)]
+          {:stylist-search-filter-section/id           (str section-id "-" (if open? "open" "closed"))
+           :stylist-search-filter-section/title        "Free Mayvenn Services"
+           :stylist-search-filter-section/title-action [events/control-toggle-stylist-search-filter-section
+                                                        {:previously-opened? open?
+                                                         :section-id         section-id}]
+           :stylist-search-filter-section/open?        open?
+           :stylist-search-filter-section/primary      (str
+                                                        "Get Mayvenn services (valued up to $200) for free when purchasing "
+                                                        "qualifying hair from Mayvenn. You buy the hair, we cover the service!")
+           :stylist-search-filter-section/filters      (->> all-skus
+                                                            (select-sorted services/discountable :legacy/variant-id)
+                                                            (mapv (juxt :sku/name :catalog/sku-id (constantly 0)))
+                                                            (mapv (partial specialty->filter selected-filters)))})
+        (let [section-id "a-la-carte-services"
+              open?      (contains? expanded-filter-sections section-id)]
+          {:stylist-search-filter-section/id           (str section-id "-" (if open? "open" "closed"))
+           :stylist-search-filter-section/title        "À la carte Services"
+           :stylist-search-filter-section/title-action [events/control-toggle-stylist-search-filter-section
+                                                        {:previously-opened? open?
+                                                         :section-id         section-id}]
+           :stylist-search-filter-section/open?        open?
+           :stylist-search-filter-section/filters      (->> all-skus
+                                                            (select-sorted services/a-la-carte :legacy/variant-id)
+                                                            (mapv (juxt :sku/name :catalog/sku-id :sku/price))
+                                                            (mapv (partial specialty->filter selected-filters)))})
+        (let [section-id "add-on-services"
+              open?      (contains? expanded-filter-sections section-id)]
+          {:stylist-search-filter-section/id           (str section-id "-" (if open? "open" "closed"))
+           :stylist-search-filter-section/title        "Add-on Services"
+           :stylist-search-filter-section/title-action [events/control-toggle-stylist-search-filter-section
+                                                        {:previously-opened? open?
+                                                         :section-id         section-id}]
+           :stylist-search-filter-section/open?        open?
+           :stylist-search-filter-section/filters      (->> all-skus
+                                                            (select-sorted services/addons :legacy/variant-id)
+                                                            (mapv (juxt :sku/name :catalog/sku-id :sku/price))
+                                                            (mapv (partial specialty->filter selected-filters)))})]})))
 
 (component/defcomponent filter-section
   [{:stylist-search-filter-section/keys [id filters title primary open? title-action]} _ _]
