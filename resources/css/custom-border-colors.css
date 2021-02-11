@@ -1,6 +1,7 @@
 .border-white         { border-color: var(--white); }
 .border-gray          { border-color: var(--gray); }
 .border-black         { border-color: var(--black); }
+.border-quadpay       { border-color: var(--quadpay); }
 
 .border-p-color        { border-color: var(--p-color); }
 .border-s-color        { border-color: var(--s-color); }
@@ -21,4 +22,5 @@
   --refresh-gray:   #F5F5F5;
   --pale-purple:    #DEDBE5;
   --warning-yellow: #EDC203;
+  --quadpay:        #140ca3;
 }

@@ -46,17 +46,17 @@
                                 :just-select   [:span "Just select " qp-logo " at check out."]
                                 :continue-with [:span "Continue with " qp-logo " below."]}
                                directive)]
-       [:div.border.border-blue.my2.p2.center
+       [:div.border.border-quadpay.my2.p2.center
         (when order-total
           [:span.mb2
            "4 interest-free payments of $" [:span {:data-test "quadpay-payment-amount"}
                                             (calc-installment-amount order-total)]])
         [:div.block
          expanded-directive
-         [:a.blue.mx1 {:href      "#"
-                       :data-test "quadpay-learn-more"
-                       :on-click  (fn [e]
-                                    (.preventDefault e)
-                                    (show-modal))}
+         [:a.quadpay.mx1 {:href      "#"
+                          :data-test "quadpay-learn-more"
+                          :on-click  (fn [e]
+                                       (.preventDefault e)
+                                       (show-modal))}
           "Learn more."]]
         [:div.hide (component/build widget-component {:full-amount order-total} nil)]]))])
