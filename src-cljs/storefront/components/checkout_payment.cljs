@@ -127,10 +127,10 @@
        [:div.mt1 {:style {:width "85px" :height "17px"}}
         ^:inline (svg/quadpay-logo)]]
       [:div.h6 "4 interest-free payments with QuadPay. "
-       [:a.blue.block {:href     "#"
-                       :on-click (fn [e]
-                                   (.preventDefault e)
-                                   (quadpay/show-modal))}
+       [:a.quadpay.block {:href     "#"
+                          :on-click (fn [e]
+                                      (.preventDefault e)
+                                      (quadpay/show-modal))}
         "Learn more."]
        (when show-quadpay-component?
          [:div.hide (component/build quadpay/widget-component {} nil)])]])
