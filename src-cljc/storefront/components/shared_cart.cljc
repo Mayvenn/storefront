@@ -286,20 +286,18 @@
       string/lower-case
       (string/replace #"[^a-z]+" "-")))
 
-(def promo-table
-  {"heat"     (constantly 15)
-   "flash15"  #(* % 0.15)
-   "cash5"    (constantly 5)
-   "welcome5" #(* % 0.05)})
-
-
-(defn promo-discount
+(defn line-item-promo-discount
   [promotion-code line-item-price]
   (case promotion-code
-    "heat"     15
     "flash15"  (* 0.15 line-item-price)
-    "cash5"    5
     "welcome5" (* 0.05 line-item-price)
+    0))
+
+(defn order-promo-discount
+  [promotion-code]
+  (case promotion-code
+    "heat"     15
+    "cash5"    5
     0))
 
 (defn cart-summary<-
@@ -514,22 +512,24 @@
         [freeinstall-rules-for-item (get api.orders/rules sku-id)
          line-item-base-price       (-> sku :sku/price (* quantity))]]
     (cond-> item
-      (and
-       freeinstall-rules-for-item ;; is a freeinstall discountable service line item
-       (every? (partial meets-discount-criterion? items) freeinstall-rules-for-item))
+      (and freeinstall-rules-for-item ;; is a freeinstall discountable service line item
+           (every? (partial meets-discount-criterion? items) freeinstall-rules-for-item))
       (update :discounts (fn [discounts] (conj discounts {:promotion       :freeinstall
                                                           :discount-amount line-item-base-price})))
 
       (and promotion-code
            (not freeinstall-rules-for-item)) ;; is not a freeinstall discountable service line item
       (update :discounts (fn [discounts] (conj discounts {:promotion       promotion-code
-                                                          :discount-amount (promo-discount promotion-code line-item-base-price)}))))))
+                                                          :discount-amount (line-item-promo-discount promotion-code line-item-base-price)}))))))
 
 (defn ^:private add-discounts-roll-up
   [{:keys [line-items]
     :as shared-cart}]
   (->> line-items
        (mapcat :discounts)
+       (concat (for [code (:promotion-codes shared-cart)]
+                 {:promotion       code
+                  :discount-amount (order-promo-discount code)}))
        (reduce (fn [acc {:keys [promotion discount-amount]}]
                  (update acc promotion (partial + discount-amount))) {})
        (map (fn [[k v]]
