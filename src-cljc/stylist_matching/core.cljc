@@ -81,6 +81,9 @@
 (defmethod fx/perform-effects e/flow|stylist-matching|initialized
   [_ _ _ _ state]
   #?(:cljs
+     (messages/handle-message e/cache|product|requested
+                              {:query catalog.services/service}))
+  #?(:cljs
      (api/get-products (get-in state storefront.keypaths/api-cache)
                        catalog.services/base
                        (partial publish e/api-success-v3-products-for-stylist-filters))))

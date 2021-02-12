@@ -1,5 +1,6 @@
 (ns stylist-matching.search.filters-modal
   (:require
+   api.products
    api.orders
    [spice.selector :as selector]
    [storefront.accessors.experiments :as ff]
@@ -32,28 +33,41 @@
                                         :stylist-filter-selection specialty}]
      :stylist-search-filter/checked?  checked?}))
 
-
 (def ^:private select (comp seq (partial selector/match-all {:selector/strict? true})))
 
 (defn ^:private select-sorted
   [query sort-fn db]
   (->> db (select query) (sort-by sort-fn) seq))
 
+;; This is a mapping because diva speaks in (now legacy) sku-ids for service offerings
+(def ^:private facet<->sku-id
+  {:service/natural-hair-trim                  "SRV-TRMU-000"
+   :service/weave-take-down                    "SRV-TKDU-000"
+   :service/hair-deep-conditioning             "SRV-DPCU-000"
+   :service/closure-customization              "SRV-CCU-000"
+   :service/frontal-customization              "SRV-FCU-000"
+   :service/three-sixty-frontal-customization  "SRV-3CU-000"})
+
 (defn query
   [data]
   (when (get-in data stylist-directory.keypaths/stylist-search-show-filters?)
-    (let [new-world?                         (-> (api.orders/current data)
-                                                 :service/world
-                                                 (= "SV2")
-                                                 (or (ff/service-skus-with-addons? data)))
+    (let [new-world? (-> (api.orders/current data)
+                         :service/world
+                         (= "SV2")
+                         (or (ff/service-skus-with-addons? data)))
 
           selected-filters         (:param/services (stylist-matching<- data))
-          all-skus                 (if new-world? ;; GROT(SRV)
+          service-skus             (if new-world? ;; GROT(SRV)
+                                     (->> (api.products/by-query data services/service)
+                                          (mapv (comp first
+                                                      :product?essential-service/result)))
                                      (->> (vals (get-in data storefront.keypaths/v2-skus))
-                                          (filter #(re-find #"SRV" (:catalog/sku-id %))))
-                                     (->> (vals (get-in data storefront.keypaths/v2-skus))
-                                          (select-sorted {:service/world #{"SV2"}} identity)))
+                                          (select services/service)
+                                          (filter #(re-find #"SRV" (:catalog/sku-id %)))))
+          service-addon-facets     (->> (get-in data keypaths/v2-facets)
+                                        (filter :service/addon?))
           expanded-filter-sections (get-in data stylist-directory.keypaths/stylist-search-expanded-filter-sections)]
+      (prn (mapv (juxt :catalog/sku-id :ordering/service-menu) service-skus))
       {:stylist-search-filters/sections
        [(let [section-id "free-mayvenn-services"
               open?      (contains? expanded-filter-sections section-id)]
@@ -66,9 +80,14 @@
            :stylist-search-filter-section/primary      (str
                                                         "Get Mayvenn services (valued up to $200) for free when purchasing "
                                                         "qualifying hair from Mayvenn. You buy the hair, we cover the service!")
-           :stylist-search-filter-section/filters      (->> all-skus
-                                                            (select-sorted services/discountable :legacy/variant-id)
-                                                            (mapv (juxt :sku/name :catalog/sku-id (constantly 0)))
+           :stylist-search-filter-section/filters      (->> service-skus
+                                                            (select-sorted services/discountable
+                                                                           (some-fn :ordering/service-menu
+                                                                                    :legacy/variant-id)) ; GROT(SRV)
+                                                            (mapv (juxt :sku/title
+                                                                        (some-fn :legacy/derived-from-sku
+                                                                                 :catalog/sku-id) ; GROT(SRV)
+                                                                        (constantly 0)))
                                                             (mapv (partial specialty->filter selected-filters)))})
         (let [section-id "a-la-carte-services"
               open?      (contains? expanded-filter-sections section-id)]
@@ -78,9 +97,14 @@
                                                         {:previously-opened? open?
                                                          :section-id         section-id}]
            :stylist-search-filter-section/open?        open?
-           :stylist-search-filter-section/filters      (->> all-skus
-                                                            (select-sorted services/a-la-carte :legacy/variant-id)
-                                                            (mapv (juxt :sku/name :catalog/sku-id :sku/price))
+           :stylist-search-filter-section/filters      (->> service-skus
+                                                            (select-sorted services/a-la-carte
+                                                                           (some-fn :ordering/service-menu
+                                                                                    :legacy/variant-id)) ; GROT(SRV)
+                                                            (mapv (juxt :sku/title
+                                                                        (some-fn :legacy/derived-from-sku
+                                                                                 :catalog/sku-id) ; GROT(SRV)
+                                                                        :sku/price))
                                                             (mapv (partial specialty->filter selected-filters)))})
         (let [section-id "add-on-services"
               open?      (contains? expanded-filter-sections section-id)]
@@ -90,10 +114,19 @@
                                                         {:previously-opened? open?
                                                          :section-id         section-id}]
            :stylist-search-filter-section/open?        open?
-           :stylist-search-filter-section/filters      (->> all-skus
-                                                            (select-sorted services/addons :legacy/variant-id)
-                                                            (mapv (juxt :sku/name :catalog/sku-id :sku/price))
-                                                            (mapv (partial specialty->filter selected-filters)))})]})))
+           :stylist-search-filter-section/filters      (if new-world? ; GROT(SRV)
+                                                         (->> service-addon-facets
+                                                              (mapv (juxt :facet/name
+                                                                          (comp facet<->sku-id :facet/slug)
+                                                                          :service/price))
+                                                              (mapv (partial specialty->filter selected-filters)))
+                                                         (->> service-skus
+                                                              (select-sorted services/addons
+                                                                             :legacy/variant-id)
+                                                              (mapv (juxt :sku/name
+                                                                          :catalog/sku-id
+                                                                          :sku/price))
+                                                              (mapv (partial specialty->filter selected-filters))))})]})))
 
 (component/defcomponent filter-section
   [{:stylist-search-filter-section/keys [id filters title primary open? title-action]} _ _]

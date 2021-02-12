@@ -61,10 +61,11 @@
        {:essentials essentials
         :electives  no-addons
         :result     (->> (:selector/result product>sku)
-                         (select (merge essentials
-                                        ;; GROT(SRV)
-                                        {:service/world #{"SV2"}}
-                                        no-addons)))}))))
+                         (select
+                          (merge essentials
+                                 ;; GROT(SRV)
+                                 {:service/world #{"SV2"}}
+                                 no-addons)))}))))
 
 (defn ^:private extend-promotions
   [{:as           product
@@ -117,17 +118,18 @@
 
 (defmethod t/transition-state e/cache|product|fetched
   [_ _ {cellar-products :products cellar-skus :skus} state]
-  (-> state
-      ;; legacy skus-db
-      (update-in k/v2-skus #(merge % cellar-skus))
+  (let [state'
+        (-> state
+            ;; legacy skus-db
+            (update-in k/v2-skus #(merge % cellar-skus))
 
-      ;; Legacy products-db
-      (update-in k/v2-products
-                 #(merge % (->> cellar-products
-                                (maps/index-by :catalog/product-id))))
-
-      ;; Product baked for storefront
-      (update-in k/models-products
-                 #(merge % (->> cellar-products
-                                (mapv (partial product<- state))
-                                (maps/index-by :catalog/product-id))))))
+            ;; Legacy products-db
+            (update-in k/v2-products
+                       #(merge % (->> cellar-products
+                                      (maps/index-by :catalog/product-id)))))]
+    ;; Product baked for storefront
+    (update-in state'
+               k/models-products
+               #(merge % (->> cellar-products
+                              (mapv (partial product<- state'))
+                              (maps/index-by :catalog/product-id))))))
