@@ -331,7 +331,7 @@
          :cart-summary-total-line/value (-> waiter-order :total mf/as-money)
          :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
                                        :cart-summary-line/label "Subtotal"
-                                       :cart-summary-line/value (:line-items-total waiter-order)}]
+                                       :cart-summary-line/value (mf/as-money-or-free (:line-items-total waiter-order))}]
 
                                      (when-let [shipping-method-summary-line
                                                 shipping-method-summary-line-query]
