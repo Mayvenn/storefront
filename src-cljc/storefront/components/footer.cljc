@@ -154,31 +154,18 @@
                                       (comp (filter not-services-icp?)
                                             (filter sort-key)
                                             (filter (partial auth/permitted-category? data)))))
-        service-icp-category (->> (get-in data keypaths/categories)
-                                  (remove not-services-icp?)
-                                  first)
         non-category-links   (concat (when shop?
                                      (if homepage-revert?
                                        [{:title       "Find a Stylist"
                                          :sort-order  1
                                          :id          "find-a-stylist"
                                          :new-link?   false
-                                         :nav-message [events/navigate-adventure-find-your-stylist]}
-                                        {:title       "Browse Services"
-                                         :sort-order  2
-                                         :id          "browse-services"
-                                         :new-link?   true
-                                         :nav-message [events/navigate-category service-icp-category]}]
+                                         :nav-message [events/navigate-adventure-find-your-stylist]}]
                                        [{:title       "Get a Mayvenn Install"
                                          :sort-order  1
                                          :id          "find-a-stylist"
                                          :new-link?   true
-                                         :nav-message [events/navigate-adventure-find-your-stylist]}
-                                        {:title       "Browse Services"
-                                         :sort-order  2
-                                         :id          "browse-services"
-                                         :new-link?   false
-                                         :nav-message [events/navigate-category service-icp-category]}]))
+                                         :nav-message [events/navigate-adventure-find-your-stylist]}]))
                                    (when (not classic?)
                                      [{:title       "Shop By Look"
                                        :sort-order  3
