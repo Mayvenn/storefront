@@ -67,7 +67,6 @@
           service-addon-facets     (->> (get-in data keypaths/v2-facets)
                                         (filter :service/addon?))
           expanded-filter-sections (get-in data stylist-directory.keypaths/stylist-search-expanded-filter-sections)]
-      (prn (mapv (juxt :catalog/sku-id :ordering/service-menu) service-skus))
       {:stylist-search-filters/sections
        [(let [section-id "free-mayvenn-services"
               open?      (contains? expanded-filter-sections section-id)]

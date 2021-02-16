@@ -171,6 +171,7 @@
 (def shared-cart-creator (conj shared-cart :creator))
 (def shared-cart-url (conj shared-cart :url))
 (def shared-cart-id (conj shared-cart :id))
+(def shared-cart-redirect (conj shared-cart :redirect))
 
 (def selected-album-keyword (conj ui :selected-album-keyword))
 (def selected-look-id (conj ui :selected-look-id))

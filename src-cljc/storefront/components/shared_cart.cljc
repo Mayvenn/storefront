@@ -1,7 +1,8 @@
 (ns storefront.components.shared-cart
   (:require #?@(:cljs [[storefront.api :as api]
+                       [storefront.history :as history]
                        [storefront.hooks.quadpay :as quadpay]
-                       [storefront.history :as history]])
+                       [storefront.components.payment-request-button :as payment-request-button]])
             api.orders
             api.stylist
             [catalog.images :as catalog-images]
@@ -371,13 +372,15 @@
    :quadpay/directive   :just-select})
 
 (defn servicing-stylist-sms-info<-
-  [stylist]
-  (when stylist
-    {:servicing-stylist-sms-info/id        "servicing-stylist-sms-info"
-     :servicing-stylist-sms-info/title     (str "After your order ships, you'll be connected with "
-                                                (:stylist/name stylist)
-                                                " over SMS to make an appointment.")
-     :servicing-stylist-sms-info/image-url (some-> stylist :stylist/portrait :resizable-url)}))
+  [items servicing-stylist]
+  (when (select ?service items)
+    (if servicing-stylist
+      {:copy          (str "After your order ships, you'll be connected with "
+                           (stylists/->display-name servicing-stylist)
+                           " over SMS to make an appointment.")
+       :servicing-stylist-portrait-url (-> servicing-stylist :portrait :resizable-url)}
+      {:copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
+       :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})))
 
 (defn hero-component [{:hero/keys [title subtitle]}]
   [:div.center.my6
@@ -433,16 +436,12 @@
         (component/build cart-item-v202004/organism {:cart-item cart-item}
                          (component/component-id id))])]))
 
-(defn servicing-stylist-sms-info-component ; defcomponent?
-  [{:servicing-stylist-sms-info/keys [id title image-url]}]
-  (when id
-    [:div.flex.h6.items-center.mtj1 {:data-test id}
-     [:div.mr2
-      (ui/circle-picture {:width 40} (ui/square-image {:resizable-url image-url} 40))]
-     [:div.left-align title]]))
-
 (defcomponent template
-  [data _ _]
+  [{:keys [cta
+           paypal
+           quadpay
+           browser-pay?
+           servicing-stylist-sms-info] :as data} _ _]
   [:main.bg-white.flex-auto
    [:div.col-7-on-dt.mx-auto
     [:div.container
@@ -454,8 +453,60 @@
       (component/build cart-summary/organism data nil)
       [:div.px4.center.bg-white-on-mb ; Checkout buttons
        #?@(:cljs
-           [(component/build quadpay/component data nil)])
-       (servicing-stylist-sms-info-component data)]]]]])
+           [(component/build quadpay/component quadpay nil)])
+
+       ;; Service Caption
+       (when-let [{:keys [copy servicing-stylist-portrait-url]} servicing-stylist-sms-info]
+         [:div.flex.h6.items-center.mtj1
+          {:data-test "servicing-stylist-sms-info"}
+          [:div.pr2
+           (ui/circle-picture
+            {:width 50}
+            ;; Note: We are not using ucare-id because stylist portraits may have
+            ;; ucarecdn crop parameters saved into the url
+            (ui/square-image {:resizable-url servicing-stylist-portrait-url} 50))]
+          [:div.left-align
+           copy]])
+
+       ;; CTAs for checking out
+       [:div.py2
+        ;; cta button
+        (let [{:cta/keys [id content disabled? spinning? disabled-reason target]} cta]
+          (when id
+            [:div
+             (ui/button-large-primary {:data-test id
+                                       :disabled? disabled?
+                                       :spinning? spinning?
+                                       :on-click  (apply utils/send-event-callback target)}
+                                      content)
+             (when disabled-reason
+               [:div.red.content-3.mt2
+                {:data-test "checkout-disabled-reason"}
+                disabled-reason])]))
+
+        ;; paypal button
+        (let [{:cta/keys [id spinning? disabled? target]} paypal]
+          [:div
+           [:div.h5.black.py1.flex.items-center
+            [:div.flex-grow-1.border-bottom.border-gray]
+            [:div.mx2 "or"]
+            [:div.flex-grow-1.border-bottom.border-gray]]
+
+           [:div
+            (ui/button-large-paypal
+             {:on-click  (apply utils/send-event-callback target)
+              :disabled? disabled?
+              :spinning? spinning?
+              :data-test id}
+             (component/html
+              [:div
+               "Check out with "
+               [:span.medium.italic "PayPal™"]]))]])
+
+        ;; browser pay
+        #?(:cljs (when browser-pay?
+                   (payment-request-button/built-component nil
+                                                           {})))]]]]]])
 
 (defn ^:private ->waiter-order
   [{:keys [line-items discounts promotion-codes servicing-stylist-id total-discounted-amount]}]
@@ -554,32 +605,47 @@
         add-total-discounted-amount)))
 
 (defn page [state _]
-  (let [{:keys [promotion-codes
-                servicing-stylist-id
-                number]
-         :as   shared-cart}       (get-in state keypaths/shared-cart-current)
-        sku-db                    (get-in state keypaths/v2-skus)
-        products                  (get-in state keypaths/v2-products)
-        order                     (->> shared-cart
-                                       (enrich-line-items-with-sku-data sku-db)
-                                       apply-promos
-                                       ->waiter-order
-                                       (api.orders/->order state))
-        cart-creator              (or ;; If stylist fails to be fetched, then it falls back to current store
-                                   (get-in state keypaths/shared-cart-creator)
-                                   (get-in state keypaths/store))
-        cart-creator-copy         (if (= "salesteam" (:store-slug cart-creator))
-                                    "Your Mayvenn Concierge"
-                                    (stylists/->display-name cart-creator))
-        servicing-stylist         (api.stylist/by-id state servicing-stylist-id)
-        physical-items            (selector/match-all {:selector/strict? true} catalog.services/physical (:order/items order))]
+  (let [{:keys [servicing-stylist-id number]
+         :as   shared-cart} (get-in state keypaths/shared-cart-current)
+        sku-db              (get-in state keypaths/v2-skus)
+        order               (->> shared-cart
+                                 (enrich-line-items-with-sku-data sku-db)
+                                 apply-promos
+                                 ->waiter-order
+                                 (api.orders/->order state))
+        cart-creator        (or ;; If stylist fails to be fetched, then it falls back to current store
+                             (get-in state keypaths/shared-cart-creator)
+                             (get-in state keypaths/store))
+        cart-creator-copy   (if (= "salesteam" (:store-slug cart-creator))
+                              "Your Mayvenn Concierge"
+                              (stylists/->display-name cart-creator))
+        servicing-stylist   (api.stylist/by-id state servicing-stylist-id)
+        order-items         (:order/items order)
+        physical-items      (selector/match-all {:selector/strict? true} catalog.services/physical order-items)
+        pending-request?    (utils/requesting? state request-keys/create-order-from-shared-cart)
+        advertised-price    (-> order :waiter/order :total)]
     (component/build template (merge {:hero/title    "Your Bag"
                                       :hero/subtitle (str cart-creator-copy " has created a bag for you!")}
-                                     (service-items<- servicing-stylist (:order/items order))
+                                     (service-items<- servicing-stylist order-items)
                                      (physical-items<- physical-items)
                                      (quadpay<- state order)
                                      (cart-summary<- order)
-                                     (servicing-stylist-sms-info<- servicing-stylist)))))
+                                     {:servicing-stylist-sms-info (servicing-stylist-sms-info<- order-items (:diva/stylist servicing-stylist))
+                                      ;; TODO there are multiple CTAs!
+                                      ;; TODO consider spinning/disabled for alla these buttons
+                                      :cta                        {:cta/id        "start-checkout-button"
+                                                                   :cta/disabled? pending-request?
+                                                                   :cta/target    [events/control-shared-cart-checkout-clicked
+                                                                                   {:id               number
+                                                                                    :advertised-price advertised-price}]
+                                                                   :cta/spinning? (= :checkout (get-in state keypaths/shared-cart-redirect))
+                                                                   :cta/content   "Check out"}
+                                      :paypal                     {:cta/id        "paypal-checkout"
+                                                                   :cta/target    [events/control-shared-cart-paypal-checkout-clicked
+                                                                                   {:id               number
+                                                                                    :advertised-price advertised-price}]
+                                                                   :cta/spinning? (= :paypal (get-in state keypaths/shared-cart-redirect))
+                                                                   :cta/disabled? pending-request?}}))))
 
 (defn ^:export built-component
   [data opts]
@@ -628,24 +694,79 @@
   [_ _ {:keys [shared-cart-id]} _ app-state]
   #?(:cljs (api/fetch-shared-cart shared-cart-id)))
 
-(defn ^:private create-order-from-cart-params [app-state shared-cart-number]
-  {:session-id           (get-in app-state keypaths/session-id)
-   :shared-cart-id       shared-cart-number
-   :user-id              (get-in app-state keypaths/user-id)
-   :user-token           (get-in app-state keypaths/user-token)
-   :stylist-id           (get-in app-state keypaths/store-stylist-id)
-   :servicing-stylist-id (get-in app-state keypaths/order-servicing-stylist-id)})
 
-(defmethod effects/perform-effects events/biz|shared-cart|hydrated
-  [_ _ {:shared-cart/keys [id] :target/keys [success]} _ state]
-  (-> (create-order-from-cart-params state id)
-      #?(:cljs
-         (api/create-order-from-cart
-          #(messages/handle-message
-            events/api-success-update-order-from-shared-cart
-            (cond-> {:order
-                     (orders/TEMP-pretend-service-items-do-not-exist %)}
-              success
-              (assoc :navigate (first success))))
-          #(messages/handle-message
-            events/api-failure-order-not-created-from-shared-cart)))))
+#?(:cljs
+   (defmethod transitions/transition-state events/control-shared-cart-checkout-clicked
+     [_ _ _ state]
+     (assoc-in state keypaths/shared-cart-redirect :checkout)))
+
+#?(:cljs
+   (defmethod transitions/transition-state events/control-shared-cart-paypal-checkout-clicked
+     [_ _ _ state]
+     (assoc-in state keypaths/shared-cart-redirect :paypal)))
+
+;; #?(:cljs
+;;    (defmethod transitions/transition-state events/control-shared-cart-edit-clicked
+;;      [_ _ _ state]
+;;      (assoc-in state keypaths/shared-cart-redirect :edit)))
+
+;; TODO DRY these up
+#?(:cljs
+   (defmethod effects/perform-effects events/control-shared-cart-checkout-clicked
+     [_ _ {:keys [id advertised-price]} _ state]
+     (let [success-handler #(do
+                              (messages/handle-message events/save-order
+                                                       {:order (orders/TEMP-pretend-service-items-do-not-exist %)})
+                              (messages/handle-message events/biz|shared-cart|hydrated
+                                                       {:order            %
+                                                        :advertised-price advertised-price
+                                                        :on/success       (partial history/enqueue-navigate
+                                                                                   events/navigate-checkout-returning-or-guest)}))
+           error-handler   #(messages/handle-message events/api-failure-order-not-created-from-shared-cart)]
+       (api/create-order-from-cart {:session-id           (get-in state keypaths/session-id)
+                                    :shared-cart-id       id
+                                    :user-id              (get-in state keypaths/user-id)
+                                    :user-token           (get-in state keypaths/user-token)
+                                    :stylist-id           (get-in state keypaths/store-stylist-id)
+                                    :servicing-stylist-id (get-in state keypaths/order-servicing-stylist-id)}
+                                   success-handler
+                                   error-handler))))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/control-shared-cart-paypal-checkout-clicked
+     [_ _ {:keys [id advertised-price]} _ state]
+     (let [success-handler #(do
+                              (messages/handle-message events/save-order
+                                                       {:order (orders/TEMP-pretend-service-items-do-not-exist %)})
+                              (messages/handle-message events/biz|shared-cart|hydrated
+                                                       {:order            %
+                                                        :advertised-price advertised-price
+                                                        :on/success       (partial messages/handle-message
+                                                                                   events/checkout-initiated-paypal-checkout)}))
+           error-handler   #(messages/handle-message events/api-failure-order-not-created-from-shared-cart)]
+       (api/create-order-from-cart {:session-id           (get-in state keypaths/session-id)
+                                    :shared-cart-id       id
+                                    :user-id              (get-in state keypaths/user-id)
+                                    :user-token           (get-in state keypaths/user-token)
+                                    :stylist-id           (get-in state keypaths/store-stylist-id)
+                                    :servicing-stylist-id (get-in state keypaths/order-servicing-stylist-id)}
+                                   success-handler
+                                   error-handler))))
+
+#?(:cljs
+   (defmethod transitions/transition-state events/clear-shared-cart-redirect
+     [_ _ _ state]
+     (update-in state keypaths/shared-cart dissoc :redirect)))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/biz|shared-cart|hydrated
+     [_ _ {:keys [order advertised-price] on-success :on/success} _ state]
+     (if (= (-> advertised-price mf/as-money)
+            (-> order :total mf/as-money))
+       (on-success)
+       (do
+         (history/enqueue-navigate events/navigate-cart {:query-params {:error "discounts-changed"}})
+         (messages/handle-later events/clear-shared-cart-redirect)))))
+
+;; TODO paypal checkout
+;; unique react keys

@@ -190,6 +190,9 @@
 (defpath control-stylist-profile-add-service-to-bag)
 
 (defpath control-create-order-from-shared-cart)
+(defpath control-shared-cart-checkout-clicked)
+(defpath control-shared-cart-paypal-checkout-clicked)
+(defpath clear-shared-cart-redirect)
 
 (defpath control-cart-update-coupon)
 (defpath control-cart-line-item-inc)
