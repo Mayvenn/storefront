@@ -223,7 +223,7 @@
     :as data} _ _]
   [:div.inline.relative.flyout
    (merge
-    {:on-mouse-leave close-header-menus}  ;; TODO
+    {:on-mouse-leave close-header-menus}
     (when flyout-menu-path
       (->flyout-handlers flyout-menu-path)))
    [:a.h5.medium.inherit-color.py2
