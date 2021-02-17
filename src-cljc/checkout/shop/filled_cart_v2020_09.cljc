@@ -242,6 +242,18 @@
             :height "18px"})
           "Share your bag"])])]]])
 
+
+(defn clear-cart-link
+  [{:clear-cart-link/keys [id target primary]}]
+  (component/html
+   (when id
+     [:div.mx2-on-mb.my1
+      (ui/button-small-secondary
+       (merge
+        {:class "py0"}
+        (apply utils/fake-href target))
+       [:span.flex.items-center.px2.proxima.title-3.shout.black primary])])))
+
 (defcomponent template
   [{:keys [header footer popup flash cart nav-event]} _ _]
   [:div.flex.flex-column.stretch
@@ -257,10 +269,14 @@
      [:div
       [:div.hide-on-tb-dt
        [:div.border-bottom.border-gray.border-width-1.m-auto.col-7-on-dt
-        [:div.px2.my2 (ui-molecules/return-link (:return-link cart))]]]
-      [:div.hide-on-mb
+        [:div.flex.justify-between
+         [:div.px2.my2.flex.items-center (ui-molecules/return-link (:return-link cart))]
+         (clear-cart-link (:clear-cart-link cart))]]]
+      [:div.hide-on-mb.col-7-on-dt.mx-auto
        [:div.m-auto.container
-        [:div.px2.my2 (ui-molecules/return-link (:return-link cart))]]]
+        [:div.flex.justify-between
+         [:div.px2.my2 (ui-molecules/return-link (:return-link cart))]
+         (clear-cart-link (:clear-cart-link cart))]]]
       [:div.col-7-on-dt.mx-auto
        (component/build full-component cart)]]]
     [:footer
@@ -697,6 +713,12 @@
     (when (= :stylist signed-in-as)
       {:requesting-shared-cart? (utils/requesting? data request-keys/create-shared-cart)})))
 
+(defn clear-cart-link<- [app-state]
+  (when (auth/stylist? (auth/signed-in app-state))
+    {:clear-cart-link/target  [events/cart-cleared]
+     :clear-cart-link/id      "clear-cart"
+     :clear-cart-link/primary "Clear Cart"}))
+
 (defn ^:export page
   [app-state nav-event]
   (let [order                 (get-in app-state keypaths/order)
@@ -718,6 +740,7 @@
         no-items?   (empty? items)]
     (component/build template
                      {:cart      {:return-link      (return-link<- items)
+                                  :clear-cart-link  (clear-cart-link<- app-state)
                                   :promo-banner     (when (zero? (orders/product-quantity order))
                                                       (promo-banner/query app-state))
                                   :cta              (cta<- no-items? pending-requests?)

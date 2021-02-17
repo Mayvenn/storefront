@@ -680,6 +680,19 @@
 (defmethod effects/perform-effects events/clear-order [_ _ _ _ app-state]
   (cookie-jar/clear-order (get-in app-state keypaths/cookie)))
 
+(defmethod effects/perform-effects events/cart-cleared [_ _ _ _ app-state]
+  (api/add-sku-to-bag
+   (get-in app-state keypaths/session-id)
+   {:sku                {:catalog/sku-id "SRV-LBI-000"}
+    :quantity           1
+    :stylist-id         (get-in app-state keypaths/store-stylist-id)
+    :heat-feature-flags (get-in app-state keypaths/features)}
+   #(messages/handle-message events/api-success-add-sku-to-bag
+                             {:order    %
+                              :quantity 1
+                              ;; NOTE: Nil sku prevents the tracking behavior on this handler
+                              :sku      nil})))
+
 (defmethod effects/perform-effects events/api-success-auth [_ _ {:keys [order]} _ app-state]
   (messages/handle-message events/save-order {:order order})
   (cookie-jar/save-user (get-in app-state keypaths/cookie)
