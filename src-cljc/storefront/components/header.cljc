@@ -283,7 +283,7 @@
   [{:as   data
     :keys [store user cart signed-in vouchers?]} _ _]
   [:div
-   [:div.hide-on-mb.relative
+   [:div.hide-on-mb-tb.relative
     [:div.relative.border-bottom.border-gray
      [:div.flex.justify-between.px8
       [:div {:key "store-info"} ^:inline (store-info signed-in store)]
@@ -302,7 +302,7 @@
                                  :data-test "desktop-cart"}
                                 cart)]]]
    (mobile-nav-header
-    {:class "border-bottom border-gray hide-on-tb-dt"
+    {:class "border-bottom border-gray hide-on-dt"
      :style {:height "70px"}}
     hamburger
     (ui/clickable-logo {:event     events/navigate-home
