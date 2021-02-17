@@ -617,9 +617,18 @@
   {:catalog/category-id "30"
    :page/slug           "salon-services"})
 
+
+(def service-category-ids
+  #{"30" "31" "35" "36" "37"})
+
+(defn service-category-ids->redirect [category-id]
+  (when (contains? service-category-ids category-id)
+    [events/navigate-adventure-find-your-stylist]))
+
 (defn render-category
   [{:keys [environment] :as render-ctx} data {:keys [subdomains] :as req} {:keys [catalog/category-id page/slug]}]
-  (let [virgin-category (get dyed-virgin-category-id->virgin-category category-id)]
+  (let [virgin-category (get dyed-virgin-category-id->virgin-category category-id)
+        temporary-service-redirect  (service-category-ids->redirect category-id)]
     (cond
       (contains? discontinued-categories category-id)
       (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
@@ -630,6 +639,9 @@
       (and (= "35" category-id)
            (= "services" slug))
       (util.response/redirect (path-for req events/navigate-category salon-services-category) :moved-permanently)
+
+      temporary-service-redirect
+      (util.response/redirect (apply path-for req temporary-service-redirect) 302)
 
       :else
       (let [categories (get-in data keypaths/categories)]
@@ -681,15 +693,31 @@
    "116" [events/navigate-home            {}]
    "117" [events/navigate-home            {}]})
 
+(def service-product-ids
+  #{"131" "132" "135" "136" "219" "220" "221" "222" "223" "224" "225" "226"
+    "227" "228" "229" "230" "231" "232"})
+
+(defn service-product-id->redirect [catalog-product-id]
+  (when (contains? service-product-ids catalog-product-id)
+    [events/navigate-adventure-find-your-stylist {}]))
+
 (defn render-product-details [{:keys [environment] :as render-ctx}
                               data
                               {:keys [params subdomains] :as req}
                               {:keys [catalog/product-id
                                       page/slug]}]
-  (let [[redirect-nav-event redirect-nav-params] (get discontinued-product-id->redirect product-id)]
-    (if redirect-nav-event
-      (util.response/redirect (path-for req redirect-nav-event (merge params redirect-nav-params))
-                              :moved-permanently)
+  (let [permanent-redirect (get discontinued-product-id->redirect product-id)
+        temporary-service-redirect (service-product-id->redirect product-id)]
+    (cond
+      permanent-redirect
+      (let [[redirect-nav-event redirect-nav-params] permanent-redirect]
+           (util.response/redirect (path-for req redirect-nav-event (merge params redirect-nav-params))
+                                   :moved-permanently))
+
+      temporary-service-redirect
+      (util.response/redirect (apply path-for req temporary-service-redirect) 302)
+
+      :else
       (when-let [product (get-in data (conj keypaths/v2-products product-id))]
         (let [sku-id               (determine-sku-id data product (:SKU params))
               sku                  (get-in data (conj keypaths/v2-skus sku-id))

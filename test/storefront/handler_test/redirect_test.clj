@@ -6,6 +6,7 @@
             [standalone-test-server.core :refer [with-requests-chan txfm-request txfm-requests]]
             [storefront.handler-test :refer [set-cookies]]
             [ring.util.response :refer [content-type response status]]
+            storefront.handler
             [storefront.handler-test.common :as common
              :refer [with-services with-handler assert-request storeback-shop-response]]))
 
@@ -613,3 +614,17 @@
       (let [resp (handler (mock/request :get "https://shop.mayvenn.com/adv/match-stylist"))]
         (is (= 301 (:status resp)) (pr-str resp))
         (is (= "https://shop.mayvenn.com/adv/find-your-stylist" (get-in resp [:headers "Location"])))))))
+
+(deftest service-categories-and-pdp-pages-direct-to-find-your-stylist
+  (with-services {}
+    (with-handler handler
+      (doseq [category-id storefront.handler/service-category-ids]
+        (let [resp (handler (mock/request :get (format "https://shop.mayvenn.com/categories/%s-some-category-slug"
+                                                       category-id)))]
+          (is (= 302 (:status resp)) (pr-str resp))
+          (is (= "https://shop.mayvenn.com/adv/find-your-stylist" (get-in resp [:headers "Location"])))))
+
+      (doseq [product-id storefront.handler/service-product-ids]
+        (let [resp (handler (mock/request :get (format "https://shop.mayvenn.com/products/%s-some-product-detail-slug" product-id)))]
+          (is (= 302 (:status resp)) (pr-str resp))
+          (is (= "https://shop.mayvenn.com/adv/find-your-stylist" (get-in resp [:headers "Location"]))))))))
