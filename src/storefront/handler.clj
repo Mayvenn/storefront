@@ -636,12 +636,9 @@
       virgin-category
       (util.response/redirect (path-for req events/navigate-category virgin-category) :moved-permanently)
 
-      (and (= "35" category-id)
-           (= "services" slug))
-      (util.response/redirect (path-for req events/navigate-category salon-services-category) :moved-permanently)
-
       temporary-service-redirect
-      (util.response/redirect (apply path-for req temporary-service-redirect) 302)
+      (let [new-path (apply path-for req temporary-service-redirect)]
+        (util.response/redirect (store-url "shop" environment (assoc req :uri new-path)) 302))
 
       :else
       (let [categories (get-in data keypaths/categories)]
@@ -650,10 +647,6 @@
             (not= slug (:page/slug category)) (-> (path-for req events/navigate-category category)
                                                   (util.response/redirect :moved-permanently))
             (:page/redirect? category)        (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
-
-            (and (not= (first subdomains) "shop")
-                 (:page/shop-only? category))
-            (util.response/redirect (store-url "shop" environment req) :moved-permanently)
 
             :else                             (->> (assoc-in data
                                                              keypaths/current-category-id
@@ -715,7 +708,9 @@
                                    :moved-permanently))
 
       temporary-service-redirect
-      (util.response/redirect (apply path-for req temporary-service-redirect) 302)
+      (let [new-path (apply path-for req temporary-service-redirect)]
+        (util.response/redirect (store-url "shop" environment (assoc req :uri new-path))
+                                302))
 
       :else
       (when-let [product (get-in data (conj keypaths/v2-products product-id))]
@@ -725,10 +720,7 @@
               redirect-to-fix-url? (and canonical-slug
                                         (or (not= slug canonical-slug)
                                             (and sku-id (not sku))))
-              permitted?           (auth/permitted-product? data product)
-              redirect-to-shop?    (and (not= "shop" (first subdomains))
-                                        (= "service" (first (:catalog/department product)))
-                                        (some false? (:promo.mayvenn-install/discountable product)))]
+              permitted?           (auth/permitted-product? data product)]
           (cond
             (not permitted?)
             (redirect-to-home environment req)
@@ -736,9 +728,6 @@
             redirect-to-fix-url?
             (let [path (products/path-for-sku product-id canonical-slug sku-id)]
               (util.response/redirect path))
-
-            redirect-to-shop?
-            (util.response/redirect (store-url "shop" environment req) :moved-permanently)
 
             :else
             (html-response render-ctx
