@@ -44,7 +44,8 @@
   (when (get-in data stylist-directory.keypaths/stylist-search-show-filters?)
     (let [selected-filters         (:param/services (stylist-matching<- data))
           service-skus             (->> (vals (get-in data storefront.keypaths/v2-skus))
-                                        (select services/service))
+                                        (select services/service)
+                                        (filter (comp #(re-find #"SRV" %) :catalog/sku-id)))
           expanded-filter-sections (get-in data stylist-directory.keypaths/stylist-search-expanded-filter-sections)]
       {:stylist-search-filters/sections
        [(let [section-id "free-mayvenn-services"
@@ -59,7 +60,7 @@
                                                         "Get Mayvenn services (valued up to $200) for free when purchasing "
                                                         "qualifying hair from Mayvenn. You buy the hair, we cover the service!")
            :stylist-search-filter-section/filters      (->> service-skus
-                                                            (select-sorted services/discountable :legacy/variant-id)
+                                                            (select-sorted services/discountable-install :legacy/variant-id)
                                                             (mapv (juxt :sku/title :catalog/sku-id (constantly 0)))
                                                             (mapv (partial specialty->filter selected-filters)))})
         (let [section-id "add-on-services"
