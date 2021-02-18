@@ -131,7 +131,6 @@
     events/navigate-adventure-find-your-stylist
     events/navigate-adventure-stylist-results
     events/navigate-adventure-match-success
-    events/navigate-adventure-match-success-pick-service
     events/navigate-adventure-stylist-profile
     events/navigate-adventure-stylist-gallery})
 

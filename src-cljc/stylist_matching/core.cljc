@@ -262,16 +262,14 @@
   #?(:cljs
      (cookie-jar/save-adventure (get-in state storefront.keypaths/cookie)
                                 (get-in state adventure.keypaths/adventure)))
-  (let [features (get-in state storefront.keypaths/features)
-        {:order/keys [items] {:keys [number token]} :waiter/order}
-        (api.orders/current state)
-        success-event
-        (cond
-          (and (select ?service items)
-               (select ?physical items)) e/navigate-cart
-          (select ?service items)        e/navigate-adventure-match-success
-          :else                          e/navigate-adventure-match-success-pick-service)
-        navigate #?(:clj identity :cljs history/enqueue-navigate)]
+  (let [features                        (get-in state storefront.keypaths/features)
+        {:as order :order/keys [items]} (api.orders/current state)
+        {:keys [number token]}          (:waiter/order order)
+        success-event                   (if (and (select ?service items)
+                                                 (select ?physical items))
+                                          e/navigate-cart
+                                          e/navigate-adventure-match-success)
+        navigate                        #?(:clj identity :cljs history/enqueue-navigate)]
     #?(:cljs
        (api/assign-servicing-stylist
         (:stylist-id stylist) 1

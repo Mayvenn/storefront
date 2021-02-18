@@ -23,7 +23,6 @@
             stylist-profile.core
             stylist-matching.core
             stylist-matching.match-success
-            stylist-matching.match-success-pick-service-v2020-06
             adventure.stylist-matching.stylist-gallery
             [storefront.loader :as loader]))
 

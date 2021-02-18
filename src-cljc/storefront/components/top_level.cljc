@@ -112,9 +112,6 @@
    events/navigate-adventure-match-success              #(ui/lazy-load-component :catalog
                                                                                  'stylist-matching.match-success/page
                                                                                  events/navigate-adventure-match-success)
-   events/navigate-adventure-match-success-pick-service #(ui/lazy-load-component :catalog
-                                                                                 'stylist-matching.match-success-pick-service-v2020-06/page
-                                                                                 events/navigate-adventure-match-success-pick-service)
    events/navigate-adventure-stylist-profile            #(ui/lazy-load-component :catalog
                                                                                  'stylist-profile.stylist-details/page
                                                                                  events/navigate-adventure-stylist-profile)

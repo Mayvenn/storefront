@@ -491,7 +491,6 @@
 (defpath navigate-adventure-stylist-results)
 (defpath navigate-adventure-stylist-gallery)
 (defpath navigate-adventure-match-success)
-(defpath navigate-adventure-match-success-pick-service)
 (defpath navigate-adventure-stylist-profile)
 
 (defpath control-adventure-select-stylist)
