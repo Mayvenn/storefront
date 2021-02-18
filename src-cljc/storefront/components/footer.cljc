@@ -137,6 +137,8 @@
       (split-at half-way-point coll))))
 
 ;; We filter out ICP (instead of displaying it with other categories)
+;; and add it later by hand because
+;; it needs to be displayed with "NEW" sometimes.
 (defn not-services-icp?
   [{:catalog/keys [category-id]}]
   (not (#{"30"} category-id )))
@@ -145,6 +147,7 @@
   [data]
   (let [shop?                (= (get-in data keypaths/store-slug) "shop")
         classic?             (= "mayvenn-classic" (get-in data keypaths/store-experience))
+        homepage-revert?     (experiments/homepage-revert? data)
         sort-key             :footer/order
         categories           (->> (get-in data keypaths/categories)
                                 (into []
@@ -152,11 +155,17 @@
                                             (filter sort-key)
                                             (filter (partial auth/permitted-category? data)))))
         non-category-links   (concat (when shop?
+                                     (if homepage-revert?
                                        [{:title       "Find a Stylist"
                                          :sort-order  1
                                          :id          "find-a-stylist"
                                          :new-link?   false
-                                         :nav-message [events/navigate-adventure-find-your-stylist]}])
+                                         :nav-message [events/navigate-adventure-find-your-stylist]}]
+                                       [{:title       "Get a Mayvenn Install"
+                                         :sort-order  1
+                                         :id          "find-a-stylist"
+                                         :new-link?   true
+                                         :nav-message [events/navigate-adventure-find-your-stylist]}]))
                                    (when (not classic?)
                                      [{:title       "Shop By Look"
                                        :sort-order  3

@@ -347,6 +347,15 @@
                     :add-to-cart.incentive-block/callout     "✋Don't miss out on free Mayvenn Service"
                     :add-to-cart.incentive-block/message     (str "Get a free Mayvenn Service by a licensed "
                                                                   "stylist with qualifying purchases.* ")})
+      (and shop?
+           (not (= #{"service"} department))
+           (wig-customization-incentive-families sku-family))
+      (merge
+       {:add-to-cart.incentive-block/id       "add-to-cart-incentive-block"
+        :add-to-cart.incentive-block/callout  "✋Don't miss out on free Wig Customization"
+        :add-to-cart.incentive-block/footnote "*Wig Customization cannot be combined with other promotions"
+        :add-to-cart.incentive-block/message  (str "Get a free Wig Customization by a licensed stylist when "
+                                                   "you purchase a Virgin Lace Front Wig or Virgin 360 Wig.")})
 
       (and (experiments/add-on-services? app-state)
            (= #{"service"} department)

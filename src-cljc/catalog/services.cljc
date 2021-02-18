@@ -11,10 +11,6 @@
    :service/type                       #{"base"}
    :promo.mayvenn-install/discountable #{true}})
 
-(def discountable-install
-  (merge discountable
-         {:service/category #{"install"}}))
-
 (def a-la-carte
   {:catalog/department                 #{"service"}
    :service/type                       #{"base"}

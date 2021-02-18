@@ -187,6 +187,7 @@
 
 (defpath control-add-sku-to-bag)
 (defpath control-suggested-add-to-bag)
+(defpath control-stylist-profile-add-service-to-bag)
 
 (defpath control-create-order-from-shared-cart)
 (defpath control-shared-cart-checkout-clicked)
