@@ -95,6 +95,8 @@
 .btn-facebook-blue.btn-large { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--facebook-blue), stroke=none); }
 .btn-facebook-blue.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--facebook-blue), stroke=none); }
 
+.btn-ghost            { color: var(--s-color); text-decoration: underline }
+
 .btn-s-color { color: var(--white); background-color: var(--s-color); }
 
 /* Ordering matters here.  Gray has to beat the others. */

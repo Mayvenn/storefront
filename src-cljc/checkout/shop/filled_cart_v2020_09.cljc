@@ -157,6 +157,7 @@
            cta
            shared-cart
            paypal
+           checkout-wo-mayvenn-install
            quadpay
            browser-pay?
            checkout-caption]}
@@ -203,24 +204,34 @@
                {:data-test "checkout-disabled-reason"}
                disabled-reason])]))
 
-       ;; paypal button
-       (let [{:keys [spinning? disabled?]} paypal]
-         [:div
-          [:div.h5.black.py1.flex.items-center
-           [:div.flex-grow-1.border-bottom.border-gray]
-           [:div.mx2 "or"]
-           [:div.flex-grow-1.border-bottom.border-gray]]
+       [:div
+        [:div.h5.black.py1.flex.items-center
+         [:div.flex-grow-1.border-bottom.border-gray]
+         [:div.mx2 "or"]
+         [:div.flex-grow-1.border-bottom.border-gray]]
 
+        ;; paypal button
+        (when-let [{:keys [spinning? disabled? id]} paypal]
           [:div
            (ui/button-large-paypal
             {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
              :disabled? disabled?
              :spinning? spinning?
-             :data-test "paypal-checkout"}
+             :data-test id}
             (component/html
              [:div
               "Check out with "
-              [:span.medium.italic "PayPal™"]]))]])
+              [:span.medium.italic "PayPal™"]]))])
+
+        ;; "checkout without mayvenn install" button
+        (when-let [{:keys [id target disabled? spinning?]} checkout-wo-mayvenn-install]
+          [:div
+           (ui/button-large-ghost
+            {:on-click  (apply utils/send-event-callback target)
+             :disabled? disabled?
+             :spinning? spinning?
+             :data-test id}
+            "Checkout without Mayvenn Install")])]
 
        ;; browser pay
        #?(:cljs (when browser-pay?
@@ -658,14 +669,16 @@
     (regular-cart-summary-query order)))
 
 (defn cta<-
-  [no-items? pending-requests?]
-  (let [disabled? (or no-items? pending-requests?)]
-    {:cta/id              "start-checkout-button"
-     :cta/disabled?       disabled?
-     :cta/target          [events/control-checkout-cart-submit]
-     :cta/content         "Check out"
-     :cta/disabled-reason (when no-items?
-                            "Please add a product or service to check out")}))
+  [no-items? hair-missing-quantity pending-requests?]
+  {:cta/id              "start-checkout-button"
+   :cta/disabled?       (or no-items?
+                            pending-requests?
+                            (pos? hair-missing-quantity))
+   :cta/target          [events/control-checkout-cart-submit]
+   :cta/content         "Check out"
+   :cta/disabled-reason (cond
+                          no-items?                    "Please add a product or service to check out"
+                          (pos? hair-missing-quantity) (str "Add " hair-missing-quantity " more " (ui/pluralize hair-missing-quantity "item")))})
 
 (defn return-link<-
   [items]
@@ -688,11 +701,21 @@
    :quadpay/directive   :just-select})
 
 (defn paypal<-
-  [no-items? pending-requests? data]
-  (let [redirecting-to-paypal? (get-in data keypaths/cart-paypal-redirect)]
-    {:spinning? redirecting-to-paypal?
-     :disabled? (or no-items?
-                    pending-requests?)}))
+  [no-items? pending-requests? hair-missing-quantity data]
+  (when (zero? hair-missing-quantity)
+    (let [redirecting-to-paypal? (get-in data keypaths/cart-paypal-redirect)]
+      {:id        "paypal-checkout"
+       :spinning? redirecting-to-paypal?
+       :disabled? (or no-items?
+                      pending-requests?)})))
+
+(defn checkout-wo-mayvenn-install<-
+  [hair-missing-quantity pending-requests? delete-line-item-requests {:keys [id]}]
+  (when (pos? hair-missing-quantity)
+    {:id        "checkout-wo-mayvenn-install"
+     :disabled? pending-requests?
+     :spinning? (get delete-line-item-requests id)
+     :target    [events/control-cart-remove id]}))
 
 (defn checkout-caption<-
   ;; TODO(corey) This name seems confusing to me
@@ -721,8 +744,11 @@
 
 (defn ^:export page
   [app-state nav-event]
-  (let [order                 (get-in app-state keypaths/order)
-        {:order/keys [items]} (api.orders/current app-state)
+  (let [waiter-order                                         (get-in app-state keypaths/order)
+        {:keys [:services/stylist]}                          (api.orders/services app-state waiter-order)
+        {:free-mayvenn-service/keys [hair-missing-quantity
+                                     service-item]}          (api.orders/free-mayvenn-service stylist waiter-order)
+        {:order/keys [items]}                                (api.orders/current app-state)
 
         ;; TODO(corey) these are session
         pending-requests?         (update-pending? app-state)
@@ -740,35 +766,41 @@
         suggestions (suggestions/consolidated-query app-state)
         no-items?   (empty? items)]
     (component/build template
-                     {:cart      {:return-link      (return-link<- items)
-                                  :clear-cart-link  (clear-cart-link<- app-state)
-                                  :promo-banner     (when (zero? (orders/product-quantity order))
-                                                      (promo-banner/query app-state))
-                                  :cta              (cta<- no-items? pending-requests?)
-                                  :physical-items   (physical-items<- items
-                                                                      update-line-item-requests
-                                                                      delete-line-item-requests)
-                                  :service-items    (service-items<-
-                                                     (api.current/stylist app-state)
-                                                     items
-                                                     remove-in-progress?
-                                                     delete-line-item-requests)
-                                  :checkout-caption (checkout-caption<- items)
-                                  :cart-summary     (merge (cart-summary<- order items)
-                                                           (freeinstall-informational<- order adding-freeinstall?)
-                                                           (promo-input<- app-state
-                                                                          order
-                                                                          pending-requests?))
-                                  :shared-cart      (shared-cart<- app-state)
-                                  :quadpay          (quadpay<- app-state order)
-                                  :paypal           (paypal<- no-items?
-                                                              pending-requests?
-                                                              app-state)
-                                  :browser-pay?     (and (get-in app-state keypaths/loaded-stripe)
-                                                         (experiments/browser-pay? app-state)
-                                                         (seq (get-in app-state keypaths/shipping-methods))
-                                                         (seq (get-in app-state keypaths/states)))
-                                  :suggestions      suggestions}
+                     {:cart      {:return-link                 (return-link<- items)
+                                  :clear-cart-link             (clear-cart-link<- app-state)
+                                  :promo-banner                (when (zero? (orders/product-quantity waiter-order))
+                                                                 (promo-banner/query app-state))
+                                  :cta                         (cta<- no-items? hair-missing-quantity pending-requests?)
+                                  :physical-items              (physical-items<- items
+                                                                                 update-line-item-requests
+                                                                                 delete-line-item-requests)
+                                  :service-items               (service-items<-
+                                                                (api.current/stylist app-state)
+                                                                items
+                                                                remove-in-progress?
+                                                                delete-line-item-requests)
+                                  :checkout-caption            (checkout-caption<- items)
+                                  :cart-summary                (merge (cart-summary<- waiter-order items)
+                                                                      (freeinstall-informational<- waiter-order adding-freeinstall?)
+                                                                      (promo-input<- app-state
+                                                                                     waiter-order
+                                                                                     pending-requests?))
+                                  :shared-cart                 (shared-cart<- app-state)
+                                  :quadpay                     (quadpay<- app-state waiter-order)
+                                  :paypal                      (paypal<- no-items?
+                                                                         pending-requests?
+                                                                         hair-missing-quantity
+                                                                         app-state)
+                                  :checkout-wo-mayvenn-install (checkout-wo-mayvenn-install<-
+                                                                hair-missing-quantity
+                                                                pending-requests?
+                                                                delete-line-item-requests
+                                                                service-item)
+                                  :browser-pay?                (and (get-in app-state keypaths/loaded-stripe)
+                                                                    (experiments/browser-pay? app-state)
+                                                                    (seq (get-in app-state keypaths/shipping-methods))
+                                                                    (seq (get-in app-state keypaths/states)))
+                                  :suggestions                 suggestions}
                       :header    app-state
                       :footer    app-state
                       :popup     app-state

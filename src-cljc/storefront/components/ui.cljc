@@ -134,6 +134,7 @@
 (defn button-large-secondary            [attrs & content] (button "btn-large btn-outline button-font-1 shout" attrs content))
 (defn button-large-paypal               [attrs & content] (button "btn-large btn-paypal-color button-font-1 shout" attrs content))
 (defn button-large-facebook-blue        [attrs & content] (button "btn-large btn-facebook-blue button-font-1 shout" attrs content))
+(defn button-large-ghost                [attrs & content] (button "btn-large btn-ghost button-font-1 shout" attrs content))
 (defn button-medium-primary             [attrs & content] (button "btn-medium btn-p-color button-font-1 shout" attrs content))
 (defn button-medium-secondary           [attrs & content] (button "btn-medium btn-outline button-font-1 shout" attrs content))
 (defn button-medium-facebook-blue       [attrs & content] (button "btn-medium btn-facebook-blue button-font-1 shout" attrs content))
