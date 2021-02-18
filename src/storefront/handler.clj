@@ -860,7 +860,8 @@
                                       (filter :catalog/launched-at)
                                       (remove :catalog/discontinued-at)
                                       (remove :stylist-exclusives/experience)
-                                      (remove :stylist-exclusives/family))]
+                                      (remove :stylist-exclusives/family)
+                                      (remove :service/type))]
         (let [initial-categories (filter :seo/sitemap categories/initial-categories)]
           (letfn [(url-xml-elem [[location priority]]
                     {:tag :url :content (cond-> [{:tag :loc :content [(str location)]}]
