@@ -6,8 +6,8 @@
                  [storefront.hooks.facebook-analytics :as facebook-analytics]
                  [storefront.hooks.google-maps :as google-maps]
                  [storefront.hooks.seo :as seo]])
-            [adventure.stylist-matching.maps :as maps]
             adventure.keypaths
+            [adventure.stylist-matching.maps :as maps]
             api.current
             api.orders
             api.products
@@ -116,25 +116,6 @@
                                                  (or 0)
                                                  inc)})))
 
-(defmethod fx/perform-effects e/control-stylist-profile-add-service-to-bag
-  [_ _ {:keys [quantity] intended-service :sku} _ state]
-  (let [intended-stylist (api.stylist/by-id state
-                                            (get-in state
-                                                    adventure.keypaths/stylist-profile-id))
-        cart-swap        (->> (merge
-                               (when intended-service
-                                 {:service/intended intended-service})
-                               (when intended-stylist
-                                 {:stylist/intended intended-stylist}))
-                              (swap/cart-swap<- state))]
-    (if (or (:service/swap? cart-swap)
-            (:stylist/swap? cart-swap))
-      (handle-message e/cart-swap-popup-show cart-swap)
-      (handle-message e/add-servicing-stylist-and-sku
-                      {:sku               intended-service
-                       :servicing-stylist intended-stylist
-                       :quantity          1}))))
-
 ;; ---------------------------- display
 
 (def ^:private clear-float-atom [:div.clearfix])
@@ -148,7 +129,6 @@
            stylist-reviews
            experience
            specialties-discountable
-           specialties-a-la-carte
            sticky-select-stylist
            card]} _ _]
   [:div.bg-white.col-12.mb6.stretch {:style {:margin-bottom "-1px"}}
@@ -159,8 +139,7 @@
     [:div.my2.m1-on-tb-dt.mb2-on-tb-dt.px3
      (carousel/organism carousel)
      (c/build experience/organism experience)
-     (c/build specialties-shopping/organism specialties-discountable)
-     (c/build specialties-shopping/organism specialties-a-la-carte)]
+     (c/build specialties-shopping/organism specialties-discountable)]
     clear-float-atom
     (c/build ratings-bar-chart/organism ratings-bar-chart)
     (c/build stylist-reviews/organism stylist-reviews)]
@@ -303,132 +282,34 @@
                                   (join ", "))})
 
 (defn ^:private service-sku-query
-  [service-items
-   adding-a-service-sku-to-bag?
-   {:sku/keys                   [title price]
-    :promo.mayvenn-install/keys [discountable requirement-copy]
-    :product/keys               [sku-part]
-    :catalog/keys               [sku-id] :as sku}]
-  (cond-> {:id         sku-id
-           :title      title
-           :subtitle   (str "(" (mf/as-money price) ")")
-           :content    requirement-copy
-           :cta-label  "Add"
-           :cta-target [e/control-stylist-profile-add-service-to-bag
-                        {:sku      sku
-                         :quantity 1}]}
-    (true? (first discountable))
-    (merge {:subtitle "(Free)"})
-
-    (if sku-part
-     (some #(= sku-part (:product/sku-part %))
-           service-items)
-     (some #(= sku-id (:catalog/sku-id %))
-           service-items))
-    (merge {:disabled? true
-            :cta-label "Added"})
-
-    adding-a-service-sku-to-bag?
-    (merge {:disabled? true})))
+  [{:sku/keys                   [title price]
+    :promo.mayvenn-install/keys [requirement-copy]
+    :catalog/keys               [sku-id]}]
+  {:id         sku-id
+   :title      title
+   :subtitle   (str "(" (mf/as-money price) ")")
+   :content    requirement-copy})
 
 (defn ^:private shop-discountable-services<-
-  [services-products
-   skus-db
-   {:order/keys [items]}
-   adding-a-service-sku-to-bag?
-   {:stylist.services/keys [offered-sku-ids ;; GROT(SRV)
-                            offered-ordering
-                            offerings ; new world
-                            ordering]}
-   new-world?]
-  (if new-world? ;; GROT(SRV)
-    (when (seq offerings)
-      (let [services-items   (select services/discountable items)
-            offered-services (->> services-products
-                                  (mapv
-                                   (fn [{:product?essential-service/keys [result]
-                                         :promo.mayvenn-install/keys [requirement-copy]}]
-                                     ;; essential sku (base service) + enrich the promotion copy
-                                     (assoc (first result)
-                                            :promo.mayvenn-install/requirement-copy
-                                            requirement-copy)))
-                                  (select (merge services/discountable
-                                                 {:product/sku-part offerings}))
-                                  (sort-by (comp ordering :product/sku-part))
-                                  not-empty)]
-        (when offered-services
-          {:specialties-shopping.title/id      "free-mayvenn-services"
-           :specialties-shopping.title/primary "Free Mayvenn Services"
-           :specialties-shopping/specialties
-           (map (partial service-sku-query
-                         services-items
-                         adding-a-service-sku-to-bag?)
-                offered-services)})))
-    (when (seq offered-sku-ids)
-      (let [services-items   (select services/discountable items)
-            offered-services (->> (vals skus-db)
-                                  (select services/discountable)
-                                  (filter (comp offered-sku-ids :catalog/sku-id))
-                                  (sort-by (comp offered-ordering :catalog/sku-id))
-                                  not-empty)]
-        (when offered-services
-          {:specialties-shopping.title/id      "free-mayvenn-services"
-           :specialties-shopping.title/primary "Free Mayvenn Services"
-           :specialties-shopping/specialties
-           (map (partial service-sku-query
-                         services-items
-                         adding-a-service-sku-to-bag?)
-                offered-services)})))))
-
-(defn ^:private shop-a-la-carte-services<-
-  [services-products
-   skus-db
-   {:order/keys [items]}
-   adding-a-service-sku-to-bag?
-   {:stylist.services/keys [offered-sku-ids ;; GROT(SRV)
-                            offered-ordering
-                            offerings ; new world
-                            ordering]}
-   new-world?]
-  (if new-world? ;; GROT(SRV)
-    (when (seq offerings)
-      (let [services-items   (select services/a-la-carte items)
-            offered-services (->> services-products
-                                  (mapv (comp first :product?essential-service/result))
-                                  (select (merge services/a-la-carte
-                                                 {:product/sku-part offerings}))
-                                  (sort-by (comp ordering :product/sku-part))
-                                  not-empty)]
-        (when offered-services
-          {:specialties-shopping.title/id      "a-la-carte-services"
-           :specialties-shopping.title/primary "À La Carte Services"
-           :specialties-shopping/specialties
-           (map (partial service-sku-query
-                         services-items
-                         adding-a-service-sku-to-bag?)
-                offered-services)})))
-    (when offered-sku-ids
-      (let [services-items   (select services/a-la-carte items)
-            offered-services (->> (vals skus-db)
-                                  (select services/a-la-carte)
-                                  (filter (comp offered-sku-ids :catalog/sku-id))
-                                  (sort-by (comp offered-ordering :catalog/sku-id))
-                                  not-empty)]
-        (when offered-services
-          {:specialties-shopping.title/id      "a-la-carte-services"
-           :specialties-shopping.title/primary "À La Carte Services"
-           :specialties-shopping/specialties
-           (map (partial service-sku-query
-                         services-items
-                         adding-a-service-sku-to-bag?)
-                offered-services)})))))
+  [skus-db
+   {:stylist.services/keys [offered-sku-ids
+                            offered-ordering]}]
+  (when (seq offered-sku-ids)
+    (let [offered-services (->> (vals skus-db)
+                                (select services/discountable-install)
+                                (filter (comp offered-sku-ids :catalog/sku-id))
+                                (sort-by (comp offered-ordering :catalog/sku-id))
+                                not-empty)]
+      (when offered-services
+        {:specialties-shopping.title/id      "free-mayvenn-services"
+         :specialties-shopping.title/primary "Free Mayvenn Services"
+         :specialties-shopping/specialties
+         (map service-sku-query offered-services)}))))
 
 ;; TODO(corey) Stylist not found template? currently redirects to find-your-stylist
-
 (defn ^:export page
   [state _]
   (let [skus-db           (get-in state storefront.keypaths/v2-skus)
-        services          (api.products/by-query state services/service)
         current-order     (api.orders/current state)
         current-stylist   (api.current/stylist state)
         detailed-stylist  (api.stylist/by-id state
@@ -440,20 +321,13 @@
         {host-name :host} (get-in state storefront.keypaths/navigation-uri)
         undo-history      (get-in state storefront.keypaths/navigation-undo-stack)
 
-        ;; Feature flags
-        new-world?                         (or (= "SV2" (:service/world current-order))
-                                               (experiments/service-skus-with-addons? state))
         hide-star-distribution?            (experiments/hide-star-distribution? state)
         newly-added-stylist-ui-experiment? (and (experiments/stylist-results-test? state)
                                                 (or (experiments/just-added-only? state)
                                                     (experiments/just-added-experience? state)))
 
         ;; Requestings
-        fetching-reviews?            (utils/requesting? state request-keys/fetch-stylist-reviews)
-        adding-a-service-sku-to-bag? (utils/requesting? state
-                                                        (fn [req]
-                                                          (vec (first req)))
-                                                        request-keys/add-to-bag)]
+        fetching-reviews?            (utils/requesting? state request-keys/fetch-stylist-reviews)]
     (c/build template
              (merge {:header (header<- current-order undo-history)
                      :footer footer<-}
@@ -473,16 +347,5 @@
                        :sticky-select-stylist    (sticky-select-stylist<- current-stylist
                                                                           detailed-stylist)
                        :specialties-discountable (shop-discountable-services<-
-                                                  services
                                                   skus-db
-                                                  current-order
-                                                  adding-a-service-sku-to-bag?
-                                                  detailed-stylist
-                                                  new-world?)
-                       :specialties-a-la-carte   (shop-a-la-carte-services<-
-                                                  services
-                                                  skus-db
-                                                  current-order
-                                                  adding-a-service-sku-to-bag?
-                                                  detailed-stylist
-                                                  new-world?)})))))
+                                                  detailed-stylist)})))))

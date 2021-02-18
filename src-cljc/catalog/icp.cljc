@@ -38,13 +38,8 @@
 (defn ^:private category-hero-query
   [category]
   ;; TODO(corey) icp heroes use #:category not #:copy for :description
-  (cond-> {:category-hero.title/primary (:copy/title category)
-           :category-hero.body/primary  (:category/description category)}
-
-    ;; TODO(corey) why can't this be data?
-    (= "13" (:catalog/category-id category))
-    (update :category-hero.body/primary
-            str " Get free customization with qualifying purchases.")))
+  {:category-hero.title/primary (:copy/title category)
+   :category-hero.body/primary  (:category/description category)})
 
 (defn drill-category-image [image-id]
   [:picture

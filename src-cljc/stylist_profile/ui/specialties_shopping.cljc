@@ -1,23 +1,18 @@
+;; TODO: consider renaming now that it isn't used to add services
 (ns stylist-profile.ui.specialties-shopping
   (:require [storefront.component :as c]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]))
 
 (c/defcomponent specialties-shopping-specialty-organism
-  [{:keys [title subtitle content cta-label disabled? cta-target]} _ {:keys [id]}]
+  [{:keys [title content]} _ {:keys [id]}]
   [:div.flex.flex-auto.justify-between.border-bottom.border-cool-gray.py2
    {:key id}
    [:div
     [:div
      [:span title]
-     ui/nbsp
-     [:span.dark-gray.shout.content-3 subtitle]]
-    [:div.dark-gray.content-3.mr6 content]]
-   [:div.my1
-    (ui/button-small-secondary {:disabled? disabled?
-                                :on-click  (apply utils/send-event-callback cta-target)
-                                :data-test id}
-                               cta-label)]])
+     ui/nbsp]
+    [:div.dark-gray.content-3.mr6 content]]])
 
 (defn specialties-shopping-title-molecule
   [{:specialties-shopping.title/keys [id primary]}]

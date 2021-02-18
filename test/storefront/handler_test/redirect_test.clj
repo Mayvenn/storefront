@@ -6,6 +6,7 @@
             [standalone-test-server.core :refer [with-requests-chan txfm-request txfm-requests]]
             [storefront.handler-test :refer [set-cookies]]
             [ring.util.response :refer [content-type response status]]
+            storefront.handler
             [storefront.handler-test.common :as common
              :refer [with-services with-handler assert-request storeback-shop-response]]))
 
@@ -456,19 +457,6 @@
           (is (= 301 (:status resp)) (pr-str resp))
           (is (= "https://shop.mayvenn.com/categories/1-virgin-frontals" (get-in resp [:headers "Location"])))))) ))
 
-(deftest redirects-35-services-categories-to-30-salon-services-categories-but-not-35-a-la-carte-salon-services
-  (testing "When a request comes for the 35 services category, the user is redirected to the 30 salon services page"
-    (with-services {}
-      (with-handler handler
-        (let [resp (handler (mock/request :get "https://shop.mayvenn.com/categories/35-services"))]
-          (is (= 301 (:status resp)) (pr-str resp))
-          (is (= "https://shop.mayvenn.com/categories/30-salon-services" (get-in resp [:headers "Location"])))))))
-  (testing "When a request comes for the 35 a la carte salon services, the user is not redirected"
-    (with-services {}
-      (with-handler handler
-        (let [resp (handler (mock/request :get "https://shop.mayvenn.com/categories/35-a-la-carte-salon-services"))]
-          (is (= 200 (:status resp)) (pr-str resp)))))))
-
 (deftest redirects-discontinued-product-to-category
   (with-services {}
     (with-handler handler
@@ -498,7 +486,7 @@
         (is (= 302 (:status resp)) (pr-str resp))
         (is (= "https://shop.mayvenn.com/" (get-in resp [:headers "Location"])))))))
 
-(deftest classic-and-aladdin-standalone-service-pages-redirect-to-shop-service-pages
+(deftest classic-and-aladdin-standalone-service-pages-redirect-redirect-to-shop-adventure-flow
   (with-services {:storeback-handler (routes (GET "/v3/products" req {:status 200
                                                                       :body
                                                                       (generate-string
@@ -562,15 +550,15 @@
     (with-handler handler
       (testing "À la carte services category"
         (let [resp (handler (mock/request :get "https://classic.mayvenn.com/categories/35-a-la-carte-salon-services"))]
-          (is (= 301 (:status resp)) (pr-str resp))
-          (is (= "https://shop.mayvenn.com/categories/35-a-la-carte-salon-services" (get-in resp [:headers "Location"])))))
+          (is (= 302 (:status resp)) (pr-str resp))
+          (is (= "https://shop.mayvenn.com/adv/find-your-stylist" (get-in resp [:headers "Location"])))))
       (testing "À la carte service PDP"
         (let [resp (handler (mock/request :get "https://jasmine.mayvenn.com/products/132-weave-maintenance-service"))]
-          (is (= 301 (:status resp)) (pr-str resp))
-          (is (= "https://shop.mayvenn.com/products/132-weave-maintenance-service" (get-in resp [:headers "Location"])))))
+          (is (= 302 (:status resp)) (pr-str resp))
+          (is (= "https://shop.mayvenn.com/adv/find-your-stylist" (get-in resp [:headers "Location"])))))
       (testing "on shop, à la carte PDP"
         (let [resp (handler (mock/request :get "https://shop.mayvenn.com/products/132-weave-maintenance-service"))]
-          (is (= 200 (:status resp)) (pr-str resp)))))))
+          (is (= 302 (:status resp)) (pr-str resp)))))))
 
 (deftest redirects-cart-interstitial-to-cart
   (with-services {}
@@ -613,3 +601,17 @@
       (let [resp (handler (mock/request :get "https://shop.mayvenn.com/adv/match-stylist"))]
         (is (= 301 (:status resp)) (pr-str resp))
         (is (= "https://shop.mayvenn.com/adv/find-your-stylist" (get-in resp [:headers "Location"])))))))
+
+(deftest service-categories-and-pdp-pages-direct-to-find-your-stylist
+  (with-services {}
+    (with-handler handler
+      (doseq [category-id storefront.handler/service-category-ids]
+        (let [resp (handler (mock/request :get (format "https://shop.mayvenn.com/categories/%s-some-category-slug"
+                                                       category-id)))]
+          (is (= 302 (:status resp)) (pr-str resp))
+          (is (= "https://shop.mayvenn.com/adv/find-your-stylist" (get-in resp [:headers "Location"])))))
+
+      (doseq [product-id storefront.handler/service-product-ids]
+        (let [resp (handler (mock/request :get (format "https://shop.mayvenn.com/products/%s-some-product-detail-slug" product-id)))]
+          (is (= 302 (:status resp)) (pr-str resp))
+          (is (= "https://shop.mayvenn.com/adv/find-your-stylist" (get-in resp [:headers "Location"]))))))))

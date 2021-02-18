@@ -399,8 +399,7 @@
         shop?            (= :shop site)
         classic?         (= :classic site)
         signed-in        (auth/signed-in data)
-        sbl-update?      (experiments/sbl-update? data)
-        homepage-revert? (experiments/homepage-revert? data)]
+        sbl-update?      (experiments/sbl-update? data)]
     {:signed-in                   signed-in
      :on-taxon?                   (get-in data keypaths/current-traverse-nav)
      :promo-banner                (promo-banner/query data)
@@ -434,14 +433,10 @@
      :slide-out-nav/menu-items (cond-> []
                                  shop?
                                  (concat
-                                  (if homepage-revert?
-                                    [{:slide-out-nav-menu-item/target  [events/navigate-adventure-find-your-stylist]
-                                      :slide-out-nav-menu-item/id      "menu-shop-find-stylist"
-                                      :slide-out-nav-menu-item/primary "Find a Stylist"}]
-                                    [{:slide-out-nav-menu-item/target      [events/navigate-adventure-find-your-stylist]
-                                      :slide-out-nav-menu-item/id          "menu-shop-find-stylist"
-                                      :slide-out-nav-menu-item/new-primary "NEW"
-                                      :slide-out-nav-menu-item/primary     "Get a Mayvenn Install"}])
+                                  [{:slide-out-nav-menu-item/target      [events/navigate-adventure-find-your-stylist]
+                                    :slide-out-nav-menu-item/id          "menu-shop-find-stylist"
+                                    :slide-out-nav-menu-item/new-primary "NEW"
+                                    :slide-out-nav-menu-item/primary     "Get a Mayvenn Install"}]
                                   [(if sbl-update?
                                      {:slide-out-nav-menu-item/target  [events/navigate-shop-by-look {:album-keyword :look}]
                                       :slide-out-nav-menu-item/nested? false
@@ -500,11 +495,10 @@
 
                            shop?
                            (concat
-                            (when-not homepage-revert?
-                              [{:header-menu-item/navigation-target [events/navigate-adventure-find-your-stylist]
-                                :header-menu-item/id                "desktop-shop-find-stylist"
-                                :header-menu-item/new-label?        true
-                                :header-menu-item/content           "Get a Mayvenn Install"}])
+                            [{:header-menu-item/navigation-target [events/navigate-adventure-find-your-stylist]
+                              :header-menu-item/id                "desktop-shop-find-stylist"
+                              :header-menu-item/new-label?        true
+                              :header-menu-item/content           "Get a Mayvenn Install"}]
                             [(shop-looks-query data)
                              (shop-bundle-sets-query data)])
 
