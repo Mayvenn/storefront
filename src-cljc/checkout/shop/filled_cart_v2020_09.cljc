@@ -623,7 +623,7 @@
                                   "Add promo code")}))})))
 
 (defn freeinstall-informational<-
-  [order]
+  [order adding-freeinstall?]
   (when-not (orders/discountable-services-on-order? order)
     (let [any-wig? (orders/any-wig? order)]
       (cond->
@@ -631,10 +631,10 @@
            :freeinstall-informational/primary               "Don't miss out on a free Mayvenn Install!"
            :freeinstall-informational/secondary             "Get a free install by a licensed stylist when you purchase 3 or more qualifying items"
            :freeinstall-informational/cta-label             "Add Mayvenn Install"
-           :freeinstall-informational/cta-target            [events/navigate-category
-                                                             {:catalog/category-id "31"
-                                                              :page/slug           "free-mayvenn-services"}]
+           :freeinstall-informational/cta-target            [events/control-add-sku-to-bag {:sku      {:catalog/sku-id "SRV-LBI-000"}
+                                                                                            :quantity 1}]
            :freeinstall-informational/id                    "freeinstall-informational"
+           :freeinstall-informational/spinning?             adding-freeinstall?
            :freeinstall-informational/secondary-link-id     "cart-learn-more"
            :freeinstall-informational/secondary-link-target [events/popup-show-consolidated-cart-free-install]
            :freeinstall-informational/fine-print            "*Mayvenn Services cannot be combined with other promo codes."
@@ -727,6 +727,7 @@
         ;; TODO(corey) these are session
         pending-requests?         (update-pending? app-state)
         remove-in-progress?       (utils/requesting? app-state request-keys/remove-servicing-stylist)
+        adding-freeinstall?       (utils/requesting? app-state (conj request-keys/add-to-bag "SRV-LBI-000"))
         update-line-item-requests (merge-with #(or %1 %2)
                                               (->> (map :catalog/sku-id items)
                                                    (variants-requests app-state request-keys/add-to-bag))
@@ -754,7 +755,7 @@
                                                      delete-line-item-requests)
                                   :checkout-caption (checkout-caption<- items)
                                   :cart-summary     (merge (cart-summary<- order items)
-                                                           (freeinstall-informational<- order)
+                                                           (freeinstall-informational<- order adding-freeinstall?)
                                                            (promo-input<- app-state
                                                                           order
                                                                           pending-requests?))

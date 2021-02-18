@@ -78,19 +78,21 @@
   [{:freeinstall-informational/keys
     [id primary secondary cta-label cta-target fine-print
      secondary-link-id secondary-link-label secondary-link-target
-     button-id]}]
+     button-id spinning?]}]
   (component/html
    (when id
      [:div.flex.py2 {:data-test id}
       "✋"
       [:div.flex.flex-column.pl1
-       [:div.proxima.content-2.line-height-1.bold
-        primary]
-       [:div.content-3.proxima
-        secondary]
+       [:div.proxima.content-2.line-height-1.bold primary]
+       [:div.content-3.proxima secondary]
        [:div.flex.justify-left.py1
         (ui/button-small-primary
-         (assoc (apply utils/route-to cta-target) :data-test button-id)
+         (assoc (apply utils/route-to cta-target)
+                :data-test button-id
+                :disabled? spinning?
+                :spinning? spinning?
+                :style {:min-width "170px"})
          cta-label)
         (when secondary-link-id
           [:div.s-color.flex.items-center.px2.button-font-3.shout
@@ -100,5 +102,4 @@
                      {:class     "inherit-color border-bottom border-width-2"
                       :data-test secondary-link-id})
             secondary-link-label]])]
-       [:div.content-4.dark-gray
-        fine-print]]])))
+       [:div.content-4.dark-gray fine-print]]])))
