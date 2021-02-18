@@ -628,9 +628,9 @@
     (let [any-wig? (orders/any-wig? order)]
       (cond->
           {:freeinstall-informational/button-id             "add-free-mayvenn-service"
-           :freeinstall-informational/primary               "Don't miss out on free Mayvenn Services"
-           :freeinstall-informational/secondary             "Get a free service by a licensed stylist when you purchase qualifying items"
-           :freeinstall-informational/cta-label             "Add Mayvenn Service"
+           :freeinstall-informational/primary               "Don't miss out on a free Mayvenn Install!"
+           :freeinstall-informational/secondary             "Get a free install by a licensed stylist when you purchase 3 or more qualifying items"
+           :freeinstall-informational/cta-label             "Add Mayvenn Install"
            :freeinstall-informational/cta-target            [events/navigate-category
                                                              {:catalog/category-id "31"
                                                               :page/slug           "free-mayvenn-services"}]
