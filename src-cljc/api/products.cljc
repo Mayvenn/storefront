@@ -1,5 +1,6 @@
 (ns api.products
   (:require [clojure.set :as set]
+            [catalog.skuers :as skuers]
             [storefront.effects :as fx]
             [storefront.events :as e]
             [storefront.transitions :as t]
@@ -125,11 +126,14 @@
 
             ;; Legacy products-db
             (update-in k/v2-products
-                       #(merge % (->> cellar-products
-                                      (maps/index-by :catalog/product-id)))))]
+                       #(merge %
+                               (->> cellar-products
+                                    (map skuers/->skuer)
+                                    (maps/index-by :catalog/product-id)))))]
     ;; Product baked for storefront
     (update-in state'
                k/models-products
-               #(merge % (->> cellar-products
-                              (mapv (partial product<- state'))
-                              (maps/index-by :catalog/product-id))))))
+               #(merge %
+                       (->> cellar-products
+                            (mapv (partial product<- state'))
+                            (maps/index-by :catalog/product-id))))))
