@@ -296,11 +296,7 @@
                             offered-ordering]}]
   (when (seq offered-sku-ids)
     (let [offered-services (->> (vals skus-db)
-                                (select (merge services/discountable
-                                               ;; TODO: ^ consider redefining
-                                               ;; this to also constrain on
-                                               ;; service category
-                                               {:service/category #{"install"}}))
+                                (select services/discountable-install)
                                 (filter (comp offered-sku-ids :catalog/sku-id))
                                 (sort-by (comp offered-ordering :catalog/sku-id))
                                 not-empty)]
