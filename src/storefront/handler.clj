@@ -1009,7 +1009,8 @@
               (h (-> req
                      (assoc-in-req-state adventure.keypaths/stylist-profile-id (:stylist-id stylist))
                      (assoc-in-req-state (conj stylist-directory.keypaths/stylists (:stylist-id stylist)) stylist)
-                     (assoc-in-req-state keypaths/v2-products service-products)
+                     (assoc-in-req-state keypaths/v2-products
+                                         (products/index-products service-products))
                      (assoc-in-req-state keypaths/v2-skus service-skus)
                      (assoc-in-req-state keypaths/v2-images service-images)))))
           (-> req ; redirect to find your stylist
