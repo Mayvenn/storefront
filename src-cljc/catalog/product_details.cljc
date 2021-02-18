@@ -502,6 +502,12 @@
 (defn query [data selected-sku]
   (let [selections                 (get-in data catalog.keypaths/detailed-product-selections)
         product                    (products/current-product data)
+
+        ;; TODO(jjh) remove this after next cellar deploy (end of services-rollback track)
+        product-maybe-without-available-services (cond-> product
+                                                   (contains? #{"ready-wigs" "lace-front-wigs" "360-wigs"} (-> product :hair/family first))
+                                                   (dissoc :copy/available-services product))
+
         product-skus               (products/extract-product-skus data product)
         images-catalog             (get-in data keypaths/v2-images)
         facets                     (facets/by-slug data)
@@ -597,7 +603,8 @@
                                                     :id   "description"}
                                          :primary  (:copy/description product)
                                          :sections (keep (fn [[heading content-key]]
-                                                           (when-let [content (get product content-key)]
+                                                           ;; TODO(jjh) Change product-maybe-without-available-services back to `product` (see above)
+                                                           (when-let [content (get product-maybe-without-available-services content-key)]
                                                              {:heading heading
                                                               :content content}))
                                                          [["Hair Type" :copy/hair-type]
@@ -1187,4 +1194,3 @@
       (messages/handle-message events/bulk-add-sku-to-bag
                                {:items         items
                                 :service-swap? false}))))
-
