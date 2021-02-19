@@ -268,16 +268,11 @@
         item-count         (->> line-items (map :item/quantity) (reduce + 0))
         {:keys
          [free-services
-          standalone-services
           addon-services]} (group-by #(cond
                                         ((every-pred service?
                                                      shared-cart/base-service?
                                                      shared-cart/discountable?) %)
                                         :free-services
-                                        (and (service? %)
-                                             (shared-cart/base-service? %)
-                                             (not (shared-cart/discountable? %)))
-                                        :standalone-services
                                         (and (service? %)
                                              (->> % :service/type first #{"addon"}))
                                         :addon-services
@@ -297,8 +292,7 @@
                                         (remove service?)
                                         cart-items-query
                                         shared-cart/sort-by-depart-and-price)
-            :service-line-items    (for [line-item (->> (concat free-services standalone-services)
-                                                        shared-cart/sort-by-depart-and-price)
+            :service-line-items    (for [line-item (shared-cart/sort-by-depart-and-price free-services)
                                          :let      [service-product (some->> line-item
                                                                              :selector/from-products
                                                                              first
