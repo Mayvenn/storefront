@@ -3,7 +3,7 @@
                        [storefront.frontend-trackings :as frontend-trackings]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.history :as history]])
-            [api.catalog :refer [select ?a-la-carte ?discountable ?physical ?recent ?service]]
+            [api.catalog :refer [select ?discountable ?physical ?recent ?service]]
             api.orders
             [checkout.ui.cart-item-v202004 :as cart-item-v202004]
             promotion-helper.ui
@@ -213,24 +213,6 @@
                                                   :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
                                                addons)}))]))
 
-
-(defn ^:private a-la-carte-service-line-items-query
-  [service-items]
-  (for [service-item service-items
-        :let
-        [{:catalog/keys [sku-id]
-          :item/keys    [unit-price recent-quantity product-name product-title]}
-         service-item]]
-    {:react/key                             (str "line-item-" sku-id)
-     :cart-item-copy/lines                  [{:id    (str "line-item-quantity-" sku-id)
-                                              :value (str "qty. " recent-quantity)}]
-     :cart-item-floating-box/id             (str "line-item-price-" sku-id)
-     :cart-item-floating-box/contents       [{:text (some-> unit-price $/as-money)}]
-     :cart-item-service-thumbnail/id        (str "line-item-thumbnail-" sku-id)
-     :cart-item-service-thumbnail/image-url (hacky-cart-image service-item)
-     :cart-item-title/id                    (str "line-item-title-" sku-id)
-     :cart-item-title/primary               (or product-title product-name)}))
-
 (defn cart-items<-
   [items]
   (for [item (select (merge ?physical ?recent) items)
@@ -257,15 +239,35 @@
 
 (defn service-items<-
   [items]
-  (concat (free-service-line-item-query
-           (->> items
-                (select (merge ?recent
-                               ?discountable))
-                first))
-          (a-la-carte-service-line-items-query
-           (->> items
-                (merge ?recent
-                       ?a-la-carte)))))
+  (when-let [{:as                free-service-item
+              :catalog/keys      [sku-id]
+              :item/keys         [unit-price recent-quantity variant-name]
+              :item.service/keys [addons]}
+             (->> items
+                  (select (merge ?recent ?discountable))
+                  first)]
+    [(merge {:react/key                 (str "line-item-" sku-id)
+             :cart-item-copy/lines      [{:id    (str "line-item-requirements-" sku-id)
+                                          :value (:promo.mayvenn-install/requirement-copy free-service-item)}
+                                         {:id    (str "line-item-quantity-" sku-id)
+                                          :value (str "qty. " recent-quantity)}]
+             :cart-item-floating-box/id (str "line-item-price-" sku-id)
+             :cart-item-floating-box/contents [{:text  (some-> unit-price $/as-money)
+                                                :attrs {:class "strike"}}
+                                               {:text "FREE" :attrs {:class "s-color"}}]
+             :cart-item-service-thumbnail/id        (str "line-item-thumbnail-" sku-id)
+             :cart-item-service-thumbnail/image-url (hacky-cart-image free-service-item)
+             :cart-item-title/id                    (str "line-item-title-" sku-id)
+             :cart-item-title/primary               variant-name}
+            (when (seq addons)
+              {:cart-item-sub-items/id    (str "free-service-" sku-id "-addon-services")
+               :cart-item-sub-items/title "Add-On Services"
+               ;; think about sharing this function
+               :cart-item-sub-items/items (map (fn [addon-sku]
+                                                 {:cart-item-sub-item/title  (:sku/title addon-sku)
+                                                  :cart-item-sub-item/price  (some-> addon-sku :sku/price $/as-money)
+                                                  :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
+                                               addons)}))]))
 
 (defn header<-
   [items]
