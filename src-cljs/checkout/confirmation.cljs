@@ -1,5 +1,6 @@
 (ns checkout.confirmation
   (:require api.orders
+            [api.catalog :refer [select ?discountable]]
             [catalog.facets :as facets]
             [catalog.images :as catalog-images]
             [checkout.ui.cart-item-v202004 :as cart-item-v202004]
@@ -7,7 +8,6 @@
             [clojure.string :as string]
             [spice.core :as spice]
             [spice.maps :as maps]
-            spice.selector
             [storefront.accessors.adjustments :as adjustments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.images :as images]
@@ -332,14 +332,6 @@
         (and service-discounted? wig-customization?)
         (merge {:cart-summary-total-incentive/id    "wig-customization"
                 :cart-summary-total-incentive/label "Includes Wig Customization"})))))
-
-(def ^:private select
-  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
-
-(def ^:private ?discountable
-  {:catalog/department                 #{"service"}
-   :service/type                       #{"base"}
-   :promo.mayvenn-install/discountable #{true}})
 
 (defn ^:private hacky-cart-image
   [item]

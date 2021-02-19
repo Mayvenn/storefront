@@ -1,11 +1,11 @@
 (ns promotion-helper.ui
   (:require api.orders
+            [api.catalog :refer [select ?discountable]]
             [clojure.string :as string]
             [promotion-helper.behavior :as behavior]
             [promotion-helper.keypaths :as k]
             [promotion-helper.ui.drawer-contents :as drawer-contents]
             [promotion-helper.ui.drawer-face :as drawer-face]
-            [spice.selector :refer [match-all]]
             [storefront.accessors.categories :as categories]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.sites :as sites]
@@ -154,14 +154,6 @@
        :promotion-helper/opened?     (->> k/ui-promotion-helper-opened
                                           (get-in app-state)
                                           boolean)})))
-
-(def ^:private select
-  (partial match-all {:selector/strict? true}))
-
-(def ^:private ?discountable
-  {:catalog/department                 #{"service"}
-   :service/type                       #{"base"}
-   :promo.mayvenn-install/discountable #{true}})
 
 (defn promotion-helper
   [state]

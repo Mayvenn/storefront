@@ -3,17 +3,16 @@
                        [storefront.history :as history]
                        [storefront.hooks.quadpay :as quadpay]
                        [storefront.components.payment-request-button :as payment-request-button]])
+            [api.catalog :refer [select ?a-la-carte ?discountable ?physical ?service]]
             api.orders
             api.stylist
             [catalog.images :as catalog-images]
             [catalog.products :as products]
-            [catalog.services :as catalog.services]
             [checkout.ui.cart-item-v202004 :as cart-item-v202004]
             [checkout.ui.cart-summary-v202004 :as cart-summary]
             [clojure.string :as string]
             [spice.core :as spice]
             [spice.maps :as maps]
-            [spice.selector :as selector]
             [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.experiments :as experiments]
@@ -103,22 +102,6 @@
    :cart-item-service-thumbnail/image-url (->> service-sku
                                                (catalog-images/image (maps/index-by :catalog/image-id (:selector/images service-product)) "cart")
                                                :ucare/id)})
-
-(def ^:private select
-  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
-
-(def ^:private ?service
-  {:catalog/department #{"service"}})
-
-(def ^:private ?discountable
-  {:catalog/department                 #{"service"}
-   :service/type                       #{"base"}
-   :promo.mayvenn-install/discountable #{true}})
-
-(def ^:private ?a-la-carte
-  {:catalog/department                 #{"service"}
-   :service/type                       #{"base"}
-   :promo.mayvenn-install/discountable #{false}})
 
 (defn ^:private hacky-cart-image
   [item]
@@ -551,7 +534,7 @@
   [items [_word essentials rule-quantity]]
   (->> items
        (map #(merge (:sku %) %))
-       (selector/match-all {:selector/strict? true} essentials)
+       (select essentials)
        (map :item/quantity)
        (apply +)
        (<= rule-quantity)))
@@ -621,7 +604,7 @@
                               (stylists/->display-name cart-creator))
         servicing-stylist   (api.stylist/by-id state servicing-stylist-id)
         order-items         (:order/items order)
-        physical-items      (selector/match-all {:selector/strict? true} catalog.services/physical order-items)
+        physical-items      (select ?physical order-items)
         pending-request?    (utils/requesting? state request-keys/create-order-from-shared-cart)
         advertised-price    (-> order :waiter/order :total)]
     (component/build template (merge {:hero/title    "Your Bag"

@@ -10,6 +10,7 @@
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.trackings :as trackings]])
+            [api.catalog :refer [select ?addons ?discountable]]
             api.current
             api.orders
             api.products
@@ -19,7 +20,6 @@
             [catalog.product-details-ugc :as ugc]
             [catalog.products :as products]
             [catalog.selector.sku :as sku-selector]
-            catalog.services
             [catalog.ui.molecules :as catalog.M]
             [catalog.ui.how-it-works :as how-it-works]
             [checkout.cart.swap :as swap]
@@ -1176,14 +1176,11 @@
                                                           events/navigate-added-to-cart
                                                           events/navigate-cart)))))))
 
-(def ^:private select
-  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
-
 (defmethod effects/perform-effects events/control-bulk-add-to-bag
   [_ _ {:keys [items]} _ state]
   (let [skus           (mapv :sku items)
-        addon-services (select catalog.services/addons skus)
-        cart-swap      (some->> (select catalog.services/discountable skus)
+        addon-services (select ?addons skus)
+        cart-swap      (some->> (select ?discountable skus)
                                 first
                                 (assoc {:addons/intended addon-services}
                                        :service/intended)

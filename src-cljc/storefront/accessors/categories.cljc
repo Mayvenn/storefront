@@ -1,13 +1,10 @@
 (ns storefront.accessors.categories
   (:require [storefront.accessors.products :as products]
             [catalog.keypaths]
-            [catalog.skuers :as skuers]
             [cemerick.url :as cemerick-url]
-            [clojure.walk :refer [keywordize-keys]]
             [clojure.string :as string]
             clojure.set
             [spice.maps :as maps]
-            [spice.selector :as selector]
             [storefront.keypaths :as keypaths]))
 
 (def query-param-separator "~")

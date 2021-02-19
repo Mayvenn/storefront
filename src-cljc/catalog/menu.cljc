@@ -1,10 +1,9 @@
 (ns catalog.menu
   (:require #?@(:cljs [[storefront.browser.tags :as tags]])
+            [api.catalog :refer [select]]
             [catalog.categories :as categories]
-            [spice.selector :as selector]
             [storefront.accessors.categories :as accessors.categories]
             [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -47,8 +46,7 @@
      :return-link/id            "back-from-category"
      :menu/title                (:copy/title nav-root)
      :menu/options              (->> categories/menu-categories
-                                     (selector/match-all {:selector/strict? true}
-                                                         (select-keys nav-root essentials))
+                                     (select (select-keys nav-root essentials))
                                      (remove :menu/hide?)
                                      (map #(assoc %
                                                   :nav-message [events/navigate-category %]

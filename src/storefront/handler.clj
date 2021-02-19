@@ -1,10 +1,10 @@
 (ns storefront.handler
-  (:require [bidi.bidi :as bidi]
+  (:require [api.catalog :refer [?a-la-carte ?discountable]]
+            [bidi.bidi :as bidi]
             [catalog.categories :as categories]
             catalog.keypaths
             [catalog.facets :as facets]
             [catalog.product-details :as product-details]
-            [catalog.services :as services]
             [catalog.products :as products]
             [catalog.skuers :as skuers]
             [cheshire.core :as json]
@@ -1005,8 +1005,8 @@
                    service-products :products
                    service-images   :images} (api/fetch-v3-products storeback-config
                                                                     (merge-with clojure.set/union
-                                                                                 catalog.services/discountable
-                                                                                 catalog.services/a-la-carte))]
+                                                                                ?discountable
+                                                                                ?a-la-carte))]
               (h (-> req
                      (assoc-in-req-state adventure.keypaths/stylist-profile-id (:stylist-id stylist))
                      (assoc-in-req-state (conj stylist-directory.keypaths/stylists (:stylist-id stylist)) stylist)

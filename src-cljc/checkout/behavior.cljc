@@ -4,33 +4,21 @@
                        [storefront.accessors.stylist-urls :as stylist-urls]
                        [storefront.api :as api]
                        [storefront.config :as config]
-                       [storefront.history :as history]
-                       [storefront.accessors.experiments :as experiments]])
+                       [storefront.history :as history]])
+            [api.catalog :refer [select ?discountable ?service]]
             [api.orders :as api.orders]
-            catalog.services
-            [spice.selector :as selector]
             [storefront.accessors.orders :as orders]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages]))
 
-(def ^:private select
-  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
-
-(def ^:private ?service
-  {:catalog/department #{"service"}})
-
-(def ^:private ?addons
-  {:catalog/department #{"service"}
-   :service/type       #{"addon"}})
-
 ;; == /checkout/add page ==
 
 (defn ^:private requires-addons-followup?
   [{:order/keys [items]}]
   (and
-   (select catalog.services/discountable items)
+   (select ?discountable items)
    (empty? (mapcat :item.service/addons items))))
 
 (defmethod effects/perform-effects events/navigate-checkout-add

@@ -1,19 +1,14 @@
 (ns checkout.addons
   (:require
    #?(:cljs [storefront.api :as api])
+   [api.catalog :refer [select]]
    [storefront.components.money-formatters :as mf]
    [storefront.effects :as fx]
    [storefront.events :as e]
    [storefront.keypaths :as k]
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :refer [handle-message]]
-   [storefront.request-keys :as request-keys]
-   spice.selector))
-
-(def ^:private select
-  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
-
-;; ----------------------
+   [storefront.request-keys :as request-keys]))
 
 (defn included?
   [{:as _addon-facet :facet/keys [slug]} product]

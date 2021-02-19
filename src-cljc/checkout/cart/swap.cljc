@@ -11,10 +11,9 @@
   (:require #?@(:cljs [[storefront.components.popup :as popup]
                        [storefront.hooks.stringer :as stringer]
                        storefront.frontend-trackings])
+            [api.catalog :refer [select ?discountable]]
             api.current
             api.orders
-            catalog.services
-            spice.selector
             [storefront.component :as c]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -26,11 +25,6 @@
             [storefront.transitions :as t]
             [storefront.trackings :as trackings]))
 
-(def ^:private select
-  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
-
-;; --------------- model
-
 (def k-cart-swap [:models :cart-swap])
 
 (defn cart-swap<-
@@ -40,7 +34,7 @@
   (let [original-service (when intended-service
                            (->> (api.orders/current state)
                                 :order/items
-                                (select catalog.services/discountable)
+                                (select ?discountable)
                                 first))
         original-stylist (when intended-stylist
                            (api.current/stylist state))]
@@ -54,7 +48,7 @@
       ;; Swapping is for discountable services, only 1 allowed
       (and intended-service original-service)
       (merge {:service/original original-service ; already selected for discountable
-              :service/swap?    (and (select catalog.services/discountable
+              :service/swap?    (and (select ?discountable
                                              [intended-service])
                                      (not= (:catalog/sku-id original-service)
                                            (:catalog/sku-id intended-service)))})

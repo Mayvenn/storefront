@@ -2,13 +2,13 @@
   "Shopping by Looks: Detail page for an individual 'look'"
   (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.hooks.quadpay :as quadpay]])
+            [api.catalog :refer [select ?model-image ?cart-product-image]]
             [catalog.facets :as facets]
             [catalog.images :as catalog-images]
             [checkout.ui.cart-item-v202004 :as cart-item]
             [clojure.string :as str]
             [spice.core :as spice]
             [spice.maps :as maps]
-            [spice.selector :as selector]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.images :as images]
             [storefront.accessors.products :as products]
@@ -25,8 +25,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.reviews :as reviews]
             [storefront.request-keys :as request-keys]
-            [storefront.ugc :as ugc]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.ugc :as ugc]))
 
 (defn add-to-cart-button
   [sold-out? creating-order? look {:keys [number]}]
@@ -169,8 +168,7 @@
 (defn ^:private get-model-image
   [images-catalog {:keys [copy/title] :as skuer}]
   (when-let [image (->> (images/for-skuer images-catalog skuer)
-                        (selector/match-all {:selector/strict? true}
-                                            {:image/of #{"model"}})
+                        (select ?model-image)
                         (sort-by :order)
                         first)]
     (ui/img {:class    "col-12 mb4"
@@ -181,9 +179,7 @@
 (defn ^:private get-cart-product-image
   [images-catalog {:keys [copy/title] :as skuer}]
   (when-let [image (->> (images/for-skuer images-catalog skuer)
-                        (selector/match-all {:selector/strict? true}
-                                            {:use-case #{"cart"}
-                                             :image/of #{"product"}})
+                        (select ?cart-product-image)
                         (sort-by :order)
                         first)]
     (ui/img {:class    "col-12 mb4"

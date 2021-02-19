@@ -6,11 +6,11 @@
               [storefront.history :as history]
               [storefront.hooks.facebook-analytics :as facebook-analytics]
               [storefront.platform.messages :as messages]])
+   [api.catalog :refer [select]]
    adventure.keypaths
    api.current
    [catalog.icp :as icp]
    catalog.keypaths
-   clojure.set
    [catalog.skuers :as skuers]
    [catalog.ui.category-filters :as category-filters]
    [catalog.ui.category-hero :as category-hero]
@@ -19,8 +19,6 @@
    [catalog.ui.product-card-listing :as product-card-listing]
    [catalog.ui.service-card-listing :as service-card-listing]
    [homepage.ui.faq :as faq]
-   spice.core
-   [spice.selector :as selector]
    [storefront.accessors.categories :as accessors.categories]
    [storefront.accessors.experiments :as experiments]
    [storefront.assets :as assets]
@@ -117,21 +115,19 @@
         hair-filters?                       (experiments/hair-filters? app-state)
         facet-filtering-state               (merge (get-in app-state catalog.keypaths/k-models-facet-filtering)
                                                    {:facet-filtering/item-label "item"})
-        loaded-category-products            (selector/match-all
-                                             {:selector/strict? true}
-                                             (merge
-                                              (skuers/electives current)
-                                              (skuers/essentials current))
-                                             (vals (get-in app-state k/v2-products)))
+        loaded-category-products            (->> (get-in app-state k/v2-products)
+                                                 vals
+                                                 (select (merge
+                                                          (skuers/electives current)
+                                                          (skuers/essentials current))))
         shop?                               (= "shop" (get-in app-state k/store-slug))
         selections                          (if hair-filters?
                                               (:facet-filtering/filters facet-filtering-state)
                                               (get-in app-state catalog.keypaths/category-selections))
-        category-products-matching-criteria (selector/match-all {:selector/strict? true}
-                                                                (merge
-                                                                 (skuers/essentials current)
-                                                                 selections)
-                                                                loaded-category-products)
+        category-products-matching-criteria (->> loaded-category-products
+                                                 (select
+                                                  (merge (skuers/essentials current)
+                                                         selections)))
         service-category-page?              (contains? (:catalog/department current) "service")
         faq                                 (get-in app-state (conj storefront.keypaths/cms-faq (:contentful/faq-id current)))]
     (c/build template

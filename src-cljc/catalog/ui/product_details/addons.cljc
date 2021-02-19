@@ -13,8 +13,7 @@
             [adventure.keypaths :as adventure.keypaths]
             [stylist-matching.search.accessors.filters :as stylist-filters]
             [storefront.accessors.line-items :as line-items]
-            [storefront.accessors.orders :as orders]
-            [catalog.services :as services]))
+            [storefront.accessors.orders :as orders]))
 
 (defn addon-card
   [{:addon-line/keys [id target primary secondary tertiary checked? spinning? disabled? disabled-reason]}]

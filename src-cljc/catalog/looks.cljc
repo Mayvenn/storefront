@@ -3,15 +3,14 @@
   (:require #?@(:cljs [[storefront.hooks.stringer :as stringer]
                        [storefront.history :as history]
                        [storefront.trackings :as trackings]])
+            [api.catalog :refer [select ?discountable ?physical]]
             [catalog.images :as catalog-images]
             catalog.keypaths
-            catalog.services
             [catalog.ui.facet-filters :as facet-filters]
             clojure.set
             clojure.string
             [storefront.effects :as effects]
             [spice.maps :as maps]
-            [spice.selector :as selector]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.sites :as sites]
@@ -26,9 +25,6 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
             [storefront.ugc :as ugc]))
-
-(def ^:private select
-  (comp seq (partial selector/match-all {:selector/strict? true})))
 
 #?(:cljs
    (defmethod trackings/perform-track e/shop-by-look|look-selected
@@ -231,10 +227,10 @@
                                                                vec)
                                  ;; NOTE: assumes only one discountable service item for the look
                                  discountable-service-sku (->> all-skus
-                                                               (select catalog.services/discountable)
+                                                               (select ?discountable)
                                                                first)
                                  product-items            (->> all-skus
-                                                               (select {:catalog/department #{"hair"}})
+                                                               (select ?physical)
                                                                (mapv (fn [{:as sku :keys [catalog/sku-id]}]
                                                                        (assoc sku :item/quantity (get sku-id->quantity sku-id))))
                                                                vec)

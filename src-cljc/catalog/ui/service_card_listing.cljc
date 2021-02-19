@@ -1,17 +1,16 @@
 (ns catalog.ui.service-card-listing
-  (:require api.current
+  (:require [api.catalog :refer [select]]
+            api.current
             [catalog.skuers :as skuers]
             [catalog.ui.horizontal-direct-to-cart-card :as horizontal-direct-to-cart-card]
             [catalog.ui.vertical-direct-to-cart-card :as vertical-direct-to-cart-card]
             clojure.string
-            [spice.selector :as selector]
             [storefront.component :as c]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [stylist-matching.search.accessors.filters :as stylist-filters]
-            [storefront.accessors.experiments :as experiments]))
+            [stylist-matching.search.accessors.filters :as stylist-filters]))
 
 (defn service->card
   [data
@@ -62,9 +61,6 @@
                                           subsection
                                           (c/component-id (str "subsection-" subsection-key))))
                                subsections))]))
-
-(def ^:private select
-  (partial selector/match-all {:selector/strict? true}))
 
 (defn ^:private subsections-query
   [data {:subsections/keys [subsection-selectors]} services]

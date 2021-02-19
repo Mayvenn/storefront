@@ -1,22 +1,14 @@
 (ns api.products
-  (:require [clojure.set :as set]
+  (:require [api.catalog :refer [select]]
+            [clojure.set :as set]
             [catalog.skuers :as skuers]
             [storefront.effects :as fx]
             [storefront.events :as e]
             [storefront.transitions :as t]
             [storefront.keypaths :as k]
             [storefront.platform.messages :as m]
-            spice.selector
             [spice.maps :as maps]
             #?@(:cljs [[storefront.api :as api]])))
-
-;; -------
-
-(def ^:private select
-  (comp seq (partial spice.selector/match-all
-                     {:selector/strict? true})))
-
-;; -------
 
 (defn ^:private set-accumulate
   [x y]

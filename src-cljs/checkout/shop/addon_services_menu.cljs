@@ -3,6 +3,7 @@
    api.current
    api.orders
    api.products
+   [api.catalog :refer [select ?addons ?discountable ?service]]
    [clojure.string :as string]
    [storefront.api :as api]
    [storefront.component :as c]
@@ -19,27 +20,7 @@
    [storefront.request-keys :as request-keys]
    [storefront.trackings :as trackings]
    [storefront.transitions :as t]
-   [checkout.addons :as addons]
-   spice.selector))
-
-;; ----------------------
-
-(def ^:private select
-  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
-
-(def ^:private ?service
-  {:catalog/department #{"service"}})
-
-(def ^:private ?discountable
-  {:catalog/department                 #{"service"}
-   :service/type                       #{"base"}
-   :promo.mayvenn-install/discountable #{true}})
-
-(def ^:private ?addons
-  {:catalog/department #{"service"}
-   :service/type       #{"addon"}})
-
-;; ----------------------
+   [checkout.addons :as addons]))
 
 (defn ^:private unavailability-reason|SRV
   "GROT(SRV)"

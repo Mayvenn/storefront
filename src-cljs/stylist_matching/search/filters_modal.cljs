@@ -2,8 +2,7 @@
   (:require
    api.products
    api.orders
-   [spice.selector :as selector]
-   [storefront.accessors.experiments :as ff]
+   [api.catalog :refer [select select-sorted ?service ?discountable ?discountable-install ?a-la-carte ?addons]]
    [storefront.browser.tags :as tags]
    [storefront.component :as component]
    [storefront.components.header :as components.header]
@@ -15,7 +14,6 @@
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.transitions :as transitions]
-   [catalog.services :as services]
    [storefront.platform.messages :as messages]
    [stylist-directory.keypaths]
    [stylist-matching.core :refer [stylist-matching<-]]
@@ -33,18 +31,12 @@
                                         :stylist-filter-selection specialty}]
      :stylist-search-filter/checked?  checked?}))
 
-(def ^:private select (comp seq (partial selector/match-all {:selector/strict? true})))
-
-(defn ^:private select-sorted
-  [query sort-fn db]
-  (->> db (select query) (sort-by sort-fn) seq))
-
 (defn query
   [data]
   (when (get-in data stylist-directory.keypaths/stylist-search-show-filters?)
     (let [selected-filters         (:param/services (stylist-matching<- data))
           service-skus             (->> (vals (get-in data storefront.keypaths/v2-skus))
-                                        (select services/service)
+                                        (select ?service)
                                         (filter (comp #(re-find #"SRV" %) :catalog/sku-id)))
           expanded-filter-sections (get-in data stylist-directory.keypaths/stylist-search-expanded-filter-sections)]
       {:stylist-search-filters/sections
@@ -60,7 +52,7 @@
                                                         "Get Mayvenn services (valued up to $200) for free when purchasing "
                                                         "qualifying hair from Mayvenn. You buy the hair, we cover the service!")
            :stylist-search-filter-section/filters      (->> service-skus
-                                                            (select-sorted services/discountable-install :legacy/variant-id)
+                                                            (select-sorted ?discountable-install :legacy/variant-id)
                                                             (mapv (juxt :sku/title :catalog/sku-id (constantly 0)))
                                                             (mapv (partial specialty->filter selected-filters)))})
         (let [section-id "add-on-services"
@@ -72,7 +64,7 @@
                                                          :section-id         section-id}]
            :stylist-search-filter-section/open?        open?
            :stylist-search-filter-section/filters      (->> service-skus
-                                                            (select-sorted services/addons :legacy/variant-id)
+                                                            (select-sorted ?addons :legacy/variant-id)
                                                             (mapv (juxt :sku/name :catalog/sku-id :sku/price))
                                                             (mapv (partial specialty->filter selected-filters)))})]})))
 
@@ -142,17 +134,17 @@
   [_ _ _ app-state]
   (let [service-skus     (->> (get-in app-state storefront.keypaths/v2-skus)
                               vals
-                              (select services/service))
+                              (select ?service))
         selected-filters {:catalog/sku-id (:param/services (stylist-matching<- app-state))}]
     (-> app-state
         (assoc-in stylist-directory.keypaths/stylist-search-show-filters? true)
         (assoc-in stylist-directory.keypaths/stylist-search-expanded-filter-sections
                   (set (cond-> nil
-                         (select (merge services/discountable selected-filters) service-skus)
+                         (select (merge ?discountable selected-filters) service-skus)
                          (conj "free-mayvenn-services")
-                         (select (merge services/a-la-carte selected-filters) service-skus)
+                         (select (merge ?a-la-carte selected-filters) service-skus)
                          (conj "a-la-carte-services")
-                         (select (merge services/addons selected-filters) service-skus)
+                         (select (merge ?addons selected-filters) service-skus)
                          (conj "add-on-services")
                          :default
                          (or #{"free-mayvenn-services"})))))))

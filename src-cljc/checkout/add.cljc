@@ -3,12 +3,11 @@
    #?@(:cljs [[storefront.accessors.auth :as auth]
               [storefront.api :as api]
               [storefront.history :as history]])
+   [api.catalog :refer [select ?addons ?discountable]]
    api.orders
    api.current
    api.products
-   catalog.services
    clojure.set
-   spice.selector
    [storefront.component :as component :refer [defcomponent]]
    [storefront.components.money-formatters :as mf]
    [storefront.components.svg :as svg]
@@ -21,16 +20,6 @@
    [storefront.request-keys :as request-keys]
    [checkout.addons :as addons]
    storefront.utils))
-
-(def ^:private select
-  (partial spice.selector/match-all {:selector/strict? true}))
-
-(def ^:private ?discountable
-  {:catalog/department                 #{"service"}
-   :service/type                       #{"base"}
-   :promo.mayvenn-install/discountable #{true}})
-
-;; -----------
 
 (defcomponent component
   [{:checkout-add/keys        [services title free-service-name whats-included]
@@ -166,14 +155,14 @@
              :services/offered-services-sku-ids}             (api.orders/services state waiter-order)
             {existing-addons :item.service/addons
              :as             discountable-service-line-item} (->> items
-                                                                  (select catalog.services/discountable)
+                                                                  (select ?discountable)
                                                                   first)
 
             services (->> {:base-service-line-item           discountable-service-line-item
                            :stylist-offered-services-sku-ids stylist-offered-services-sku-ids
                            :addon-skus                       (->> (get-in state keypaths/v2-skus)
                                                                   vals
-                                                                  (select catalog.services/addons))}
+                                                                  (select ?addons))}
                           addon-skus-for-stylist-sorted-by-availability
                           (map #(assoc % :selected? (contains? (into #{} (map :catalog/sku-id existing-addons))
                                                                (:catalog/sku-id %))))

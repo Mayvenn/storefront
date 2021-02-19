@@ -1,8 +1,7 @@
 (ns storefront.accessors.shared-cart
-  (:require [spice.maps :as maps]
-            [spice.selector :refer [match-all]]
-            [api.orders :as orders]
-            [clojure.set :as set]))
+  (:require [api.catalog :refer [select]]
+            [spice.maps :as maps]
+            [api.orders :as orders]))
 
 (defn base-service?
   [line-item]
@@ -40,9 +39,7 @@
                                                  proto-line-items)
         meets-freeinstall-discountability? (empty? (keep (fn [[word essentials rule-quantity]]
                                                            (let [cart-quantity    (->> physical-proto-li
-                                                                                       (match-all
-                                                                                        {:selector/strict? true}
-                                                                                        essentials)
+                                                                                       (select essentials)
                                                                                        (map :item/quantity)
                                                                                        (apply +))
                                                                  missing-quantity (- rule-quantity cart-quantity)]

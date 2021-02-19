@@ -8,14 +8,13 @@
                  [storefront.hooks.seo :as seo]])
             adventure.keypaths
             [adventure.stylist-matching.maps :as maps]
+            [api.catalog :refer [select ?discountable-install ?service]]
             api.current
             api.orders
             api.products
             api.stylist
-            [catalog.services :as services]
             [clojure.string :refer [join]]
             spice.core
-            [spice.selector :as selector]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as c]
             [storefront.components.formatters :as f]
@@ -32,7 +31,6 @@
             [storefront.platform.messages :refer [handle-message]]
             [storefront.request-keys :as request-keys]
             stylist-directory.keypaths
-            [checkout.cart.swap :as swap]
             [stylist-profile.ui.card :as card]
             [stylist-profile.ui.carousel :as carousel]
             [stylist-profile.ui.experience :as experience]
@@ -41,9 +39,6 @@
             [stylist-profile.ui.specialties-shopping :as specialties-shopping]
             [stylist-profile.ui.sticky-select-stylist :as sticky-select-stylist]
             [stylist-profile.ui.stylist-reviews :as stylist-reviews]))
-
-(def ^:private select
-  (comp seq (partial selector/match-all {:selector/strict? true})))
 
 ;; ---------------------------- behavior
 
@@ -57,7 +52,7 @@
 (defmethod fx/perform-effects e/navigate-adventure-stylist-profile
   [_ _ {:keys [stylist-id]} _ state]
   (handle-message e/cache|product|requested
-                  {:query services/service})
+                  {:query ?service})
   (let [cache (get-in state storefront.keypaths/api-cache)]
     #?(:cljs
        (tags/add-classname ".kustomer-app-icon" "hide"))
@@ -296,7 +291,7 @@
                             offered-ordering]}]
   (when (seq offered-sku-ids)
     (let [offered-services (->> (vals skus-db)
-                                (select services/discountable-install)
+                                (select ?discountable-install)
                                 (filter (comp offered-sku-ids :catalog/sku-id))
                                 (sort-by (comp offered-ordering :catalog/sku-id))
                                 not-empty)]

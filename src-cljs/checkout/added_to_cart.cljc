@@ -3,12 +3,11 @@
                        [storefront.frontend-trackings :as frontend-trackings]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.history :as history]])
+            [api.catalog :refer [select ?a-la-carte ?discountable ?physical ?recent ?service]]
             api.orders
-            catalog.services
             [checkout.ui.cart-item-v202004 :as cart-item-v202004]
             promotion-helper.ui
             [promotion-helper.ui.drawer-contents :as drawer-contents]
-            spice.selector
             [storefront.component :as c]
             [storefront.components.money-formatters :as $]
             [storefront.components.ui :as ui]
@@ -185,20 +184,6 @@
            :url
            ui/ucare-img-id))
 
-(def ^:private select
-  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
-
-(def ^:private ?recent
-  {:item/recent? #{true}})
-
-(def ^:private ?physical
-  {:catalog/department #{"hair" "stylist-exclusives"}})
-
-(def ^:private ?discountable
-  {:catalog/department                 #{"service"}
-   :service/type                       #{"base"}
-   :promo.mayvenn-install/discountable #{true}})
-
 (defn free-service-line-item-query
   [{:as                free-service-item
     :catalog/keys      [sku-id]
@@ -272,10 +257,15 @@
 
 (defn service-items<-
   [items]
-  (let [?recent-free-mayvenn (merge ?recent catalog.services/discountable)
-        ?recent-a-la-carte   (merge ?recent catalog.services/a-la-carte)]
-    (concat (free-service-line-item-query (first (select ?recent-free-mayvenn items)))
-            (a-la-carte-service-line-items-query (select ?recent-a-la-carte items)))))
+  (concat (free-service-line-item-query
+           (->> items
+                (select (merge ?recent
+                               ?discountable))
+                first))
+          (a-la-carte-service-line-items-query
+           (->> items
+                (merge ?recent
+                       ?a-la-carte)))))
 
 (defn header<-
   [items]
@@ -319,14 +309,13 @@
                    :target [e/control-cart-interstitial-browse-stylist-cta]})
 
 (defn added-to-cart<-
-  "Model for which bottom panel to present to the user "
+  "Model for which bottom panel to present to the user"
   [items]
   (let [{:as                         free-mayvenn-service
          :promo.mayvenn-install/keys [failed-criteria-count]}
-        (first (select catalog.services/discountable items))
+        (first (select ?discountable items))
 
-        services
-        (not-empty (select catalog.services/service items))]
+        services (select ?service items)]
     (cond
       (and free-mayvenn-service (pos? failed-criteria-count))  :promotion-helper
       (and free-mayvenn-service (zero? failed-criteria-count)) :celebration-continue

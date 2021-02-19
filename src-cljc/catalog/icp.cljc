@@ -1,5 +1,6 @@
 (ns catalog.icp
-  (:require [adventure.components.layered :as layered]
+  (:require [api.catalog :refer [select]]
+            [adventure.components.layered :as layered]
             catalog.keypaths
             [catalog.skuers :as skuers]
             [catalog.ui.category-hero :as category-hero]
@@ -9,10 +10,8 @@
             [catalog.ui.how-it-works :as how-it-works]
             [catalog.ui.product-card-listing :as product-card-listing]
             [catalog.ui.service-card-listing :as service-card-listing]
-            clojure.set
             [homepage.ui.faq :as faq]
             [spice.maps :as maps]
-            [spice.selector :as selector]
             [storefront.accessors.categories :as accessors.categories]
             [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
@@ -250,18 +249,16 @@
         selections                          (if hair-filters?
                                               (:facet-filtering/filters facet-filtering-state)
                                               (get-in state catalog.keypaths/category-selections))
-        loaded-category-products            (selector/match-all
-                                             {:selector/strict? true}
-                                             (merge
-                                              (skuers/electives interstitial-category)
-                                              (skuers/essentials interstitial-category))
-                                             (vals (get-in state keypaths/v2-products)))
+        loaded-category-products            (->> (get-in state keypaths/v2-products)
+                                                 vals
+                                                 (select (merge
+                                                          (skuers/electives interstitial-category)
+                                                          (skuers/essentials interstitial-category))))
         subcategories                       (category->subcategories (get-in state keypaths/categories) interstitial-category)
-        category-products-matching-criteria (selector/match-all {:selector/strict? true}
-                                                                (merge
-                                                                 (skuers/essentials interstitial-category)
-                                                                 selections)
-                                                                loaded-category-products)
+        category-products-matching-criteria (->> loaded-category-products
+                                                 (select (merge
+                                                          (skuers/essentials interstitial-category)
+                                                          selections)))
         shop?                               (= "shop" (get-in state keypaths/store-slug))
         service-category-page?              (contains? (:catalog/department interstitial-category) "service")
         faq                                 (get-in state (conj keypaths/cms-faq (:contentful/faq-id interstitial-category)))]

@@ -1,7 +1,7 @@
 (ns stylist-matching.find-your-stylist
   (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]])
+            [api.catalog :refer [select ?service]]
             api.orders
-            spice.selector
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.flash :as flash]
             [storefront.components.header :as header]
@@ -12,14 +12,6 @@
             [stylist-matching.core :refer [google-place-autocomplete<-]]
             [stylist-matching.ui.spinner :as spinner]
             [stylist-matching.ui.stylist-search :as stylist-search]))
-
-(def ^:private select
-  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
-
-(def ^:private ?service
-  {:catalog/department #{"service"}})
-
-;; ------------------------
 
 (def find-your-stylist-error-codes
   {"stylist-not-found"

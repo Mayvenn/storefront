@@ -1,18 +1,14 @@
 (ns catalog.ui.product-card-listing
-  (:require [catalog.skuers :as skuers]
+  (:require [api.catalog :refer [select]]
+            [catalog.skuers :as skuers]
             [catalog.ui.product-card :as product-card]
-            clojure.set
             clojure.string
-            [spice.selector :as selector]
             [storefront.component :as c]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
             [storefront.accessors.experiments :as experiments]))
-
-(def ^:private select
-  (partial selector/match-all {:selector/strict? true}))
 
 (defn ^:private subsections-query
   [data

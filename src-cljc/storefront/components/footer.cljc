@@ -1,5 +1,5 @@
 (ns storefront.components.footer
-  (:require catalog.services
+  (:require [api.catalog :refer [select ?discountable]]
             promotion-helper.ui
             [storefront.accessors.auth :as auth]
             [storefront.accessors.nav :as nav]
@@ -12,9 +12,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            storefront.utils
             [storefront.platform.numbers :as numbers]
-            [storefront.accessors.experiments :as experiments]
             [api.orders :as api.orders]))
 
 (defn phone-uri [tel-num]
@@ -181,7 +179,7 @@
                                 data
                                 (->> (api.orders/current data)
                                      :order/items
-                                     (storefront.utils/select catalog.services/discountable)
+                                     (select ?discountable)
                                      first)))
                           "79px")
      :essence-copy      (str "All orders include a one year subscription to ESSENCE Magazine - a $10 value! "

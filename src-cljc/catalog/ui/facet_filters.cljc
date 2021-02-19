@@ -3,6 +3,7 @@
                        [storefront.history :as history]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.trackings :as trackings]])
+            [api.catalog :refer [select]]
             catalog.keypaths
             [storefront.component :as c]
             storefront.keypaths
@@ -12,7 +13,6 @@
             [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]
             [storefront.components.header :as header]
-            [spice.selector :as selector]
             [storefront.transitions :as t]
             [storefront.events :as e]
             [storefront.effects :as effects]
@@ -173,9 +173,6 @@
     (c/elements section-organism
                 sections
                 :facet-filtering/sections)]])
-
-(def ^:private select
-  (comp seq (partial selector/match-all {:selector/strict? true})))
 
 (c/defcomponent desktop-header-organism
   [{:as                            data

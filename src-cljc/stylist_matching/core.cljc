@@ -16,8 +16,8 @@
                        [storefront.frontend-effects :as ffx]
                        [storefront.history :as history]
                        [storefront.hooks.stringer :as stringer]
-                       [storefront.request-keys :as request-keys]
-                       catalog.services])
+                       [storefront.request-keys :as request-keys]])
+            [api.catalog :refer [select ?base ?service ?physical]]
             api.orders
             api.stylist
             storefront.keypaths
@@ -32,8 +32,7 @@
              :refer [handle-message] :rename {handle-message publish}]
             clojure.set
             [clojure.string :as string]
-            [storefront.transitions :as t]
-            spice.selector)
+            [storefront.transitions :as t])
   #?(:cljs (:import [goog.async Debouncer])))
 
 (def ^:private query-param-keys
@@ -82,10 +81,10 @@
   [_ _ _ _ state]
   #?(:cljs
      (messages/handle-message e/cache|product|requested
-                              {:query catalog.services/service}))
+                              {:query ?service}))
   #?(:cljs
      (api/get-products (get-in state storefront.keypaths/api-cache)
-                       catalog.services/base
+                       ?base
                        (partial publish e/api-success-v3-products-for-stylist-filters))))
 
 ;; Param 'location' constrained
@@ -245,15 +244,6 @@
   #?(:cljs
      (history/enqueue-navigate e/navigate-adventure-stylist-profile {:stylist-id stylist-id
                                                                      :store-slug store-slug})))
-
-(def ^:private select
-  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
-
-(def ^:private ?physical
-  {:catalog/department #{"hair" "stylist-exclusives"}})
-
-(def ^:private ?service
-  {:catalog/department #{"service"}})
 
 ;; ------------------- Matched
 ;; -> current stylist: selected

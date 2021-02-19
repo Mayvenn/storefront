@@ -3,9 +3,9 @@
    #?@(:cljs [[storefront.components.payment-request-button :as payment-request-button]
               [storefront.components.popup :as popup]
               [storefront.hooks.quadpay :as quadpay]])
+   [api.catalog :refer [select ?a-la-carte ?discountable ?physical ?recent ?service ?wig]]
    api.current
    api.orders
-   spice.selector
    [checkout.header :as header]
    [checkout.suggestions :as suggestions]
    [checkout.ui.cart-item-v202004 :as cart-item-v202004]
@@ -31,34 +31,6 @@
    [storefront.request-keys :as request-keys]
    [ui.molecules :as ui-molecules]
    [ui.promo-banner :as promo-banner]))
-
-;; selectors
-
-(def ^:private select
-  (comp seq (partial spice.selector/match-all {:selector/strict? true})))
-
-(def ^:private ?physical
-  {:catalog/department #{"hair" "stylist-exclusives"}})
-
-(def ^:private ?wig
-  {:catalog/department #{"hair"}
-   :hair/family        #{"ready-wigs" "360-wigs" "lace-front-wigs"}})
-
-(def ^:private ?service
-  {:catalog/department #{"service"}})
-
-(def ^:private ?discountable
-  {:catalog/department                 #{"service"}
-   :service/type                       #{"base"}
-   :promo.mayvenn-install/discountable #{true}})
-
-(def ^:private ?a-la-carte
-  {:catalog/department                 #{"service"}
-   :service/type                       #{"base"}
-   :promo.mayvenn-install/discountable #{false}})
-
-(def ^:private ?recent
-  {:item/recent? #{true}})
 
 ;; page selectors - maybe they can just be cats
 

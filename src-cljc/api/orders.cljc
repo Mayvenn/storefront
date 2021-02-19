@@ -1,6 +1,6 @@
 (ns api.orders
-  (:require api.stylist
-            [spice.selector :refer [match-all]]
+  (:require [api.catalog :refer [select ?addons ?discountable ?new-world-service ?physical ?service]]
+            api.stylist
             [storefront.accessors.experiments :as ff]
             [storefront.accessors.images :as images]
             [storefront.accessors.line-items :as line-items]
@@ -15,30 +15,6 @@
 (defn- ns!
   [ns m]
   (->> m (mapv (fn [[k v]] [(keyword ns (name k)) v])) (into {})))
-
-(def ^:private select
-  (comp seq (partial match-all {:selector/strict? true})))
-
-(def ^:private ?recent
-  {:item/recent? #{true}})
-
-(def ^:private ?service
-  {:catalog/department #{"service"}})
-
-(def ^:private ?new-world-service
-  {:service/world #{"SV2"}})
-
-(def ^:private ?physical
-  {:catalog/department #{"hair" "stylist-exclusives"}})
-
-(def ^:private ?addons
-  {:catalog/department #{"service"}
-   :service/type       #{"addon"}})
-
-(def ^:private ?discountable
-  {:catalog/department                 #{"service"}
-   :service/type                       #{"base"}
-   :promo.mayvenn-install/discountable #{true}})
 
 ;;; Not quite sure why this is needed, its just reverse lookups :hair/family
 ;;; Why not query?
@@ -55,7 +31,7 @@
 ;;; Discountable promotions
 (def ^:private ?bundles
   {:catalog/department #{"hair"}
-   :hair/family        #{"bundles"}} )
+   :hair/family        #{"bundles"}})
 
 (def ^:private ?closures
   {:catalog/department #{"hair"}
@@ -124,9 +100,7 @@
                                        (:variant-attrs item)))))
         failed-rules      (keep (fn [[word essentials rule-quantity]]
                                   (let [cart-quantity    (->> physical-items
-                                                              (match-all
-                                                               {:selector/strict? true}
-                                                               essentials)
+                                                              (select essentials)
                                                               (map :quantity)
                                                               (apply +))
                                         missing-quantity (- rule-quantity cart-quantity)]
