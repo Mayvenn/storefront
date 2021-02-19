@@ -522,7 +522,6 @@
         shop?                      (= "shop" (get-in data keypaths/store-slug))
         free-mayvenn-service?      (accessors.products/product-is-mayvenn-install-service? product)
         wig-construction-service?  (accessors.products/wig-construction-service? product)
-        standalone-service?        (accessors.products/standalone-service? product)
         service?                   (accessors.products/service? product)
         hair?                      (accessors.products/hair? product)
         wig?                       (accessors.products/wig-product? product)
@@ -643,12 +642,10 @@
                                 :whats-included       whats-included
                                 :weights              (when-not density
                                                         weights)
-                                :learn-more-nav-event (when-not (or (contains? (:stylist-exclusives/family product) "kits")
-                                                                    standalone-service?)
+                                :learn-more-nav-event (when-not (contains? (:stylist-exclusives/family product) "kits")
                                                         events/navigate-content-our-hair)}))
 
      (when (and shop?
-                (not standalone-service?)
                 (not tape-in-or-seamless-clips?))
        #:browse-stylists-banner {:title       "Buy 3 items and we'll pay for your hair install"
                                  :subtitle    "Choose any Mayvenn stylist in your area"
@@ -730,35 +727,6 @@
           {:how-it-works.step.title/primary   "05"
            :how-it-works.step.title/secondary "Go Get Your Wig"
            :how-it-works.step.body/primary    "You pick up your wig. Let us pick up the tab. Let us cover the cost of your customization—we insist."}]}})
-
-     (when standalone-service?
-       {:price-block/primary                   (mf/as-money sku-price)
-        :browse-stylists-banner/title          "Amazing Stylists"
-        :browse-stylists-banner/icon           [:svg/heart {:class  "fill-p-color"
-                                                            :width  "32px"
-                                                            :height "29px"}]
-        :browse-stylists-banner/subtitle       (str "We’ve rounded up the best stylists in the country so you can be "
-                                                    "sure your hair is in really, really good hands.")
-        :browse-stylists-banner/button-copy    "browse stylists"
-        :browse-stylists-banner/nav-event      [events/navigate-adventure-find-your-stylist]
-        :browse-stylists-banner/image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
-        :browse-stylists-banner/class          "bg-refresh-gray"
-        :browse-stylists-banner/id             "browse-stylists-banner-cta"
-        :how-it-works
-        {:how-it-works/title-secondary "Here’s how it works."
-         :how-it-works/step-elements
-         [{:how-it-works.step.title/primary   "01"
-           :how-it-works.step.title/secondary "Pick your service"
-           :how-it-works.step.body/primary    (str "Choose the service you’d like to book from our full list of à la carte service offerings. "
-                                                   "Next, you’ll see which stylists are nearby and decide who you want to book.")}
-          {:how-it-works.step.title/primary   "02"
-           :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
-           :how-it-works.step.body/primary    (str "We've hand-picked thousands of talented stylists around the country. "
-                                                   "Browse the stylists in your area to find your perfect match.") }
-          {:how-it-works.step.title/primary   "03"
-           :how-it-works.step.title/secondary "Schedule your appointment"
-           :how-it-works.step.body/primary    (str "We’ll connect you with your stylist to set up your service. "
-                                                   "Then, we’ll send you a prepaid voucher to cover the cost. ")}]}})
 
      (when reinstall-service?
        {:how-it-works
