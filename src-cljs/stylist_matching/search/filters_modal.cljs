@@ -2,7 +2,7 @@
   (:require
    api.products
    api.orders
-   [api.catalog :refer [select select-sorted ?service ?discountable ?discountable-install ?a-la-carte ?addons]]
+   [api.catalog :refer [select select-sorted ?service ?discountable ?discountable-install ?addons]]
    [storefront.browser.tags :as tags]
    [storefront.component :as component]
    [storefront.components.header :as components.header]
@@ -142,8 +142,6 @@
                   (set (cond-> nil
                          (select (merge ?discountable selected-filters) service-skus)
                          (conj "free-mayvenn-services")
-                         (select (merge ?a-la-carte selected-filters) service-skus)
-                         (conj "a-la-carte-services")
                          (select (merge ?addons selected-filters) service-skus)
                          (conj "add-on-services")
                          :default
