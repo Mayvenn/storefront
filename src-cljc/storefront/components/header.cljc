@@ -323,6 +323,7 @@
                  logo-nav-event
                  (merge {:event logo-nav-event})))]]))
 
+;; NOTE: This a-la-carte does not mean services, it refers to not using shared-carts/looks
 (defn shop-a-la-carte-flyout-query [data]
   {:header-menu-item/flyout-menu-path keypaths/shop-a-la-carte-menu-expanded
    :header-menu-item/content          "Shop hair"
