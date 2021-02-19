@@ -3,7 +3,7 @@
                        [storefront.history :as history]
                        [storefront.hooks.quadpay :as quadpay]
                        [storefront.components.payment-request-button :as payment-request-button]])
-            [api.catalog :refer [select ?a-la-carte ?discountable ?physical ?service]]
+            [api.catalog :refer [select ?discountable ?physical ?service]]
             api.orders
             api.stylist
             [catalog.images :as catalog-images]
@@ -180,30 +180,6 @@
      (cart-items|addons|SRV<- addons)
      (cart-items|addons<- addon-facets))))
 
-(defn ^:private a-la-carte-services<-
-  [items]
-  (for [{:as           item
-         :catalog/keys [sku-id]
-         :hacky/keys   [cart-title]
-         :sku/keys     [price]
-         :copy/keys    [whats-included]
-         :product/keys [essential-inclusions]
-         :item/keys    [id quantity unit-price product-name]}
-
-        (select ?a-la-carte items)]
-    {:react/key                             sku-id
-     :cart-item-title/primary               (or cart-title product-name)
-     :cart-item-title/id                    (str "line-item-" sku-id)
-     :cart-item-floating-box/id             (str "line-item-" sku-id "-price")
-     :cart-item-floating-box/contents       [{:text (some-> (or price unit-price) mf/as-money)}]
-     :cart-item-copy/lines                  [{:id    (str "line-item-whats-included-" sku-id)
-                                              :value (or essential-inclusions
-                                                         whats-included)} ;; GROT(SRV) deprecated key
-                                             {:id    (str "line-item-quantity-" sku-id)
-                                              :value (str "qty. " quantity)}]
-     :cart-item-service-thumbnail/id        sku-id
-     :cart-item-service-thumbnail/image-url (hacky-cart-image item)}))
-
 (defn service-items<-
   [stylist items]
   (let [services (select ?service items)]
@@ -221,9 +197,7 @@
                  {:stylist-organism/id            "stylist-organism"
                   :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})}
      (if (seq services)
-       {:service-line-items (concat
-                             (free-services<- items)
-                             (a-la-carte-services<- items))}
+       {:service-line-items (free-services<- items)}
        (when stylist
          {:no-services/id         "select-your-service"
           :no-services/title      "No Service Selected"
