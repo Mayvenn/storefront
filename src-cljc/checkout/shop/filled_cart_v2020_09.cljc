@@ -103,22 +103,21 @@
                        (component/component-id "no-items"))])])
 
 (defn service-items-component
-  [{:keys [service-line-items stylist] :as data}]
-  [:div.mb3
-   [:div.title-2.proxima.mb1 "Services"]
-   (component/build cart-item-v202004/stylist-organism stylist nil)
-   (component/build cart-item-v202004/no-stylist-organism stylist nil)
+  [{:keys [service-line-items stylist service-section-id] :as data}]
+  (when service-section-id
+    [:div.mb3
+     {:data-test service-section-id}
+     [:div.title-2.proxima.mb1 "Services"]
+     (component/build cart-item-v202004/stylist-organism stylist nil)
+     (component/build cart-item-v202004/no-stylist-organism stylist nil)
 
-   (if (seq service-line-items)
      (for [service-line-item service-line-items]
        [:div {:key (:react/key service-line-item)}
         [:div.mt2-on-mb
          (component/build cart-item-v202004/organism {:cart-item service-line-item}
                           (component/component-id (:react/key service-line-item)))]])
 
-     (component/build cart-item-v202004/no-services-organism data nil))
-
-   [:div.border-bottom.border-gray.hide-on-mb]])
+     [:div.border-bottom.border-gray.hide-on-mb]]))
 
 (defcomponent full-component
   [{:keys [promo-banner
@@ -372,24 +371,30 @@
 
 (defn service-items<-
   [stylist items remove-in-progress? delete-line-item-requests]
-  (let [services (select ?service items)]
+  (let [services   (select ?service items)
+        stylist-id (:stylist/id stylist)]
     (merge
-     {:stylist (if-let [stylist-id (:stylist/id stylist)]
-                   {:servicing-stylist-portrait-url                  (-> stylist :stylist/portrait :resizable-url)
-                    :servicing-stylist-banner/id                     "servicing-stylist-banner"
-                    :servicing-stylist-banner/title                  (:stylist/name stylist)
-                    :servicing-stylist-banner/rating                 {:rating/value (:stylist.rating/score stylist)
-                                                                      :rating/id    "stylist-rating-id"}
-                    :servicing-stylist-banner/image-url              (some-> stylist :stylist/portrait :resizable-url)
-                    :servicing-stylist-banner/title-and-image-target [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
-                                                                                                                 :store-slug (:stylist/slug stylist)}]
-                    :servicing-stylist-banner.swap-icon/target       [events/control-change-stylist {:stylist-id stylist-id}]
-                    :servicing-stylist-banner.swap-icon/id           "stylist-swap"
-                    :servicing-stylist-banner.remove-icon/spinning?  remove-in-progress?
-                    :servicing-stylist-banner.remove-icon/target     [events/control-remove-stylist {:stylist-id stylist-id}]
-                    :servicing-stylist-banner.remove-icon/id         "remove-stylist"}
+     (when (or stylist-id
+               (seq services))
+       {:service-section-id "service-section"})
+
+     {:stylist (if stylist-id
+                 {:servicing-stylist-portrait-url                  (-> stylist :stylist/portrait :resizable-url)
+                  :servicing-stylist-banner/id                     "servicing-stylist-banner"
+                  :servicing-stylist-banner/title                  (:stylist/name stylist)
+                  :servicing-stylist-banner/rating                 {:rating/value (:stylist.rating/score stylist)
+                                                                    :rating/id    "stylist-rating-id"}
+                  :servicing-stylist-banner/image-url              (some-> stylist :stylist/portrait :resizable-url)
+                  :servicing-stylist-banner/title-and-image-target [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
+                                                                                                               :store-slug (:stylist/slug stylist)}]
+                  :servicing-stylist-banner.swap-icon/target       [events/control-change-stylist {:stylist-id stylist-id}]
+                  :servicing-stylist-banner.swap-icon/id           "stylist-swap"
+                  :servicing-stylist-banner.remove-icon/spinning?  remove-in-progress?
+                  :servicing-stylist-banner.remove-icon/target     [events/control-remove-stylist {:stylist-id stylist-id}]
+                  :servicing-stylist-banner.remove-icon/id         "remove-stylist"}
                  {:stylist-organism/id            "stylist-organism"
                   :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})}
+
      (when (seq services)
        {:service-line-items (concat
                              (free-services<- items delete-line-item-requests)
