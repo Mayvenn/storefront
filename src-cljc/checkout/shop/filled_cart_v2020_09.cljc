@@ -607,31 +607,19 @@
 (defn freeinstall-informational<-
   [order adding-freeinstall?]
   (when-not (orders/discountable-services-on-order? order)
-    (let [any-wig? (orders/any-wig? order)]
-      (cond->
-          {:freeinstall-informational/button-id             "add-free-mayvenn-service"
-           :freeinstall-informational/primary               "Don't miss out on a free Mayvenn Install!"
-           :freeinstall-informational/secondary             "Get a free install by a licensed stylist when you purchase 3 or more qualifying items"
-           :freeinstall-informational/cta-label             "Add Mayvenn Install"
-           :freeinstall-informational/cta-target            [events/control-add-sku-to-bag {:sku      {:catalog/sku-id "SRV-LBI-000"}
-                                                                                            :quantity 1}]
-           :freeinstall-informational/id                    "freeinstall-informational"
-           :freeinstall-informational/spinning?             adding-freeinstall?
-           :freeinstall-informational/secondary-link-id     "cart-learn-more"
-           :freeinstall-informational/secondary-link-target [events/popup-show-consolidated-cart-free-install]
-           :freeinstall-informational/fine-print            "*Mayvenn Services cannot be combined with other promo codes."
-           :freeinstall-informational/secondary-link-label  "learn more"}
-
-        any-wig?
-        (merge
-         {:freeinstall-informational/button-id             "add-wig-customization"
-          :freeinstall-informational/primary               "Don't miss out on free Wig Customization"
-          :freeinstall-informational/secondary             "Get a free customization by a licensed stylist when you add a Wig Customization to your bag below."
-          :freeinstall-informational/cta-label             "Add Wig Customization"
-          :freeinstall-informational/cta-target            [events/navigate-product-details {:catalog/product-id "223" :page/slug "wig-customization" :query-params {:SKU "SRV-WGC-000"}}]
-          :freeinstall-informational/secondary-link-id     "Learn More"
-          :freeinstall-informational/secondary-link-target [events/popup-show-wigs-customization]
-          :freeinstall-informational/fine-print            "*Wig Customization cannot be combined with other promo codes, and excludes Ready to Wear Wigs"})))))
+    {:freeinstall-informational/button-id             "add-free-mayvenn-service"
+     :freeinstall-informational/primary               "Don't miss out on a free Mayvenn Install!"
+     :freeinstall-informational/secondary             "Get a free install by a licensed stylist when you purchase 3 or more qualifying items"
+     :freeinstall-informational/cta-label             "Add Mayvenn Install"
+     :freeinstall-informational/cta-target            [events/control-add-sku-to-bag
+                                                       {:sku                {:catalog/sku-id "SRV-LBI-000"}
+                                                        :quantity           1}]
+     :freeinstall-informational/id                    "freeinstall-informational"
+     :freeinstall-informational/spinning?             adding-freeinstall?
+     :freeinstall-informational/secondary-link-id     "cart-learn-more"
+     :freeinstall-informational/secondary-link-target [events/popup-show-consolidated-cart-free-install]
+     :freeinstall-informational/fine-print            "*Mayvenn Services cannot be combined with other promo codes."
+     :freeinstall-informational/secondary-link-label  "learn more"}))
 
 (defn cart-summary<-
   [order items]
