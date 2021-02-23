@@ -520,18 +520,10 @@
                                        (:sku/price selected-sku))
         review-data                (review-component/query data)
         shop?                      (= "shop" (get-in data keypaths/store-slug))
-        free-mayvenn-service?      (accessors.products/product-is-mayvenn-install-service? product)
-        wig-construction-service?  (accessors.products/wig-construction-service? product)
         service?                   (accessors.products/service? product)
         hair?                      (accessors.products/hair? product)
         wig?                       (accessors.products/wig-product? product)
         tape-in-or-seamless-clips? (some #{"seamless-clip-ins" "tape-ins"} (:hair/family product))
-        maintenance-service?       (or
-                                    ;; GROT(SRV) this was changed
-                                    (= #{"maintenance"} (:service/category product))
-                                    (= #{"wig-maintenance"} (:service/category product)))
-        reinstall-service?         (= #{"reinstall"}   (:service/category product))
-        wig-customization?         (= #{"SRV-WGC-000"} (:catalog/sku-id product))
         faq                        (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
                                      (get-in data (conj keypaths/cms-faq pdp-faq-id)))]
     (merge
@@ -566,7 +558,7 @@
        {:price-block/primary   (mf/as-money sku-price)
         :price-block/secondary "each"})
 
-     (when hair?
+     (if hair?
        (let [active-tab-name (get-in data keypaths/product-details-information-tab)]
          #:tabbed-information{:id      "product-description-tabs"
                               :keypath keypaths/product-details-information-tab
@@ -621,10 +613,8 @@
                                                              {:heading heading
                                                               :content content}))
                                                          [["Maintenance Level" :copy/maintenance-level]
-                                                          ["Can it be Dyed?" :copy/dyeable?]])}]}))
-
-     (when-not hair?
-       (let [{:keys [copy/description
+                                                          ["Can it be Dyed?" :copy/dyeable?]])}]})
+      (let [{:keys [copy/description
                      copy/colors
                      copy/weights
                      copy/density
@@ -646,126 +636,15 @@
                                                         events/navigate-content-our-hair)}))
 
      (when (and shop?
-                (not tape-in-or-seamless-clips?))
+                (not (or
+                      tape-in-or-seamless-clips?
+                      wig?)))
        #:browse-stylists-banner {:title       "Buy 3 items and we'll pay for your hair install"
                                  :subtitle    "Choose any Mayvenn stylist in your area"
                                  :button-copy "browse stylists"
                                  :nav-event   [events/navigate-adventure-find-your-stylist]
                                  :class       "bg-pale-purple"
-                                 :id          "browse-stylists-banner-cta"})
-
-     (when free-mayvenn-service?
-       {:price-block/primary-struck            (mf/as-money sku-price)
-        :price-block/secondary-classes         "s-color"
-        :price-block/secondary                 "FREE"
-        :title/secondary                       (:promo.mayvenn-install/requirement-copy product)
-        :browse-stylists-banner/title          "Amazing Stylists"
-        :browse-stylists-banner/icon           [:svg/heart {:class  "fill-p-color"
-                                                            :width  "32px"
-                                                            :height "29px"}]
-        :browse-stylists-banner/subtitle       (str "We’ve rounded up the best stylists in the country so you can be "
-                                                    "sure your hair is in really, really good hands.")
-        :browse-stylists-banner/button-copy    "browse stylists"
-        :browse-stylists-banner/nav-event      [events/navigate-adventure-find-your-stylist]
-        :browse-stylists-banner/image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
-        :browse-stylists-banner/class          "bg-refresh-gray"
-        :browse-stylists-banner/id             "browse-stylists-banner-cta"
-        :how-it-works
-        (if wig-construction-service?
-          {:how-it-works/title-secondary "Here’s how it works."
-           :how-it-works/step-elements
-           [{:how-it-works.step.title/primary   "01"
-             :how-it-works.step.title/secondary "Purchase Hair + Pick A Stylist"
-             :how-it-works.step.body/primary    (str "Buy the hair you’ll use to create your wig, then select a stylist. "
-                                                     "You’ll receive a payment voucher when your hair ships.")}
-
-            {:how-it-works.step.title/primary   "02"
-             :how-it-works.step.title/secondary "Schedule Your Wig Measuring Appointment"
-             :how-it-works.step.body/primary    (str "Our Concierge Team will assist you with scheduling your first appointment "
-                                                     "to have your head measured for your handmade custom wig.") }
-
-            {:how-it-works.step.title/primary   "03"
-             :how-it-works.step.title/secondary "Drop Off Your Hair"
-             :how-it-works.step.body/primary    (str "Leave the hair with your stylist, and give your stylist a week to work on your wig. "
-                                                     "Customization takes time!")}
-
-            {:how-it-works.step.title/primary   "04"
-             :how-it-works.step.title/secondary "Pick Up Your Wig"
-             :how-it-works.step.body/primary    (str "The last step is to go get your new, handmade Custom Wig from your stylist. "
-                                                     "Don’t forget to bring your voucher with you!")}]}
-          {:how-it-works/title-secondary "Here’s how it works."
-           :how-it-works/step-elements
-           [{:how-it-works.step.title/primary   "01"
-             :how-it-works.step.title/secondary "Pick your service"
-             :how-it-works.step.body/primary    "Choose the service you’d like to book from our full list of complimentary Mayvenn service offerings."}
-            {:how-it-works.step.title/primary   "02"
-             :how-it-works.step.title/secondary "Select a Mayvenn-Certified stylist"
-             :how-it-works.step.body/primary    (str "We've hand-picked thousands of talented stylists around the country. "
-                                                     "Browse the stylists in your area to find your perfect match.") }
-            {:how-it-works.step.title/primary   "03"
-             :how-it-works.step.title/secondary "Schedule your appointment"
-             :how-it-works.step.body/primary    (str "We’ll connect you with your stylist to set up your service. "
-                                                     "Then, we’ll send you a prepaid voucher to cover the cost. ")}]})})
-
-     (when wig-customization?
-       {:how-it-works
-        {:how-it-works/title-secondary "Here’s how it works."
-         :how-it-works/step-elements
-         [{:how-it-works.step.title/primary   "01"
-           :how-it-works.step.title/secondary "Select Your Wig"
-           :how-it-works.step.body/primary    "Decide which wig you want and buy it from Mayvenn. Shop Lace Front & 360 Lace Wigs."}
-          {:how-it-works.step.title/primary   "02"
-           :how-it-works.step.title/secondary "Choose a Mayvenn Certified Stylist"
-           :how-it-works.step.body/primary    "Browse our network of professional stylists in your area and make an appointment." }
-          {:how-it-works.step.title/primary   "03"
-           :how-it-works.step.title/secondary "Drop Off Your Wig"
-           :how-it-works.step.body/primary    (str "Leave the wig with your stylist and talk about what you want. "
-                                                   "Your stylist will bleach the knots, tint the lace, cut the lace, customize your hairline and make sure it fits perfectly.  ")}
-          {:how-it-works.step.title/primary   "04"
-           :how-it-works.step.title/secondary "Schedule Your Pickup"
-           :how-it-works.step.body/primary    "Make an appointment to pick up your wig with your stylist in a week."}
-          {:how-it-works.step.title/primary   "05"
-           :how-it-works.step.title/secondary "Go Get Your Wig"
-           :how-it-works.step.body/primary    "You pick up your wig. Let us pick up the tab. Let us cover the cost of your customization—we insist."}]}})
-
-     (when reinstall-service?
-       {:how-it-works
-        {:how-it-works/title-secondary "Here’s how it works."
-         :how-it-works/step-elements
-         [{:how-it-works.step.title/primary   "01"
-           :how-it-works.step.title/secondary "Pick your service"
-           :how-it-works.step.body/primary    "Choose the service you’d like to book from our full list of Reinstall service offerings."}
-          {:how-it-works.step.title/primary   "02"
-           :how-it-works.step.title/secondary "Book your Mayvenn-Certified stylist"
-           :how-it-works.step.body/primary    (str "Next, book a stylist. "
-                                                   "We suggest seeing the Mayvenn Stylist you saw for the initial install, or one of the many talented stylists near you.")}
-          {:how-it-works.step.title/primary   "03"
-           :how-it-works.step.title/secondary "Schedule your appointment"
-           :how-it-works.step.body/primary    (str
-                                               "We’ll connect you with your stylist to set up your service. "
-                                               "Then, we’ll send you a prepaid voucher to cover the cost. "
-                                               "Bring the hair you want reinstalled with you to the appointment. ")}]}})
-
-     (when maintenance-service?
-       {:how-it-works
-        {:how-it-works/title-secondary "Here’s how it works."
-         :how-it-works/step-elements
-         [{:how-it-works.step.title/primary   "01"
-           :how-it-works.step.title/secondary "Choose your service & stylist"
-           :how-it-works.step.body/primary    (str
-                                               "First, select the Wig Maintenance service and choose your stylist. "
-                                               "If you don’t have one yet, search for a talented stylist near you or contact our Concierge Team for support.")}
-          {:how-it-works.step.title/primary   "02"
-           :how-it-works.step.title/secondary "Drop off your wig"
-           :how-it-works.step.body/primary    "Now that you have your stylist, the next step is to drop off your wig with your Mayvenn Stylist."}
-          {:how-it-works.step.title/primary   "03"
-           :how-it-works.step.title/secondary "Wig pickup"
-           :how-it-works.step.body/primary    (str
-                                               "Once your stylist is finished with the wig maintenance service, they will contact you to pick up your wig. "
-                                               "Have your prepaid voucher ready for quick & easy payment!")}]}})
-
-     (when wig?
-       {:browse-stylists-banner/title "Buy any Lace Front or 360 Wig and we'll pay for your wig customization"}))))
+                                 :id          "browse-stylists-banner-cta"}))))
 
 (defn ^:export built-component
   [state opts]
