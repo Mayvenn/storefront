@@ -153,8 +153,7 @@
     :ucare-id              "045c8b5b-1230-41f1-8b4e-0a712b802ec9"
     :primary               "take a seat on your throne "
     :secondary             "We know that a woman’s hair is her crown - and the means to flaunt it, however she chooses, should be easily attainable.  "
-    :target                [e/navigate-category {:page/slug           "salon-services"
-                                                 :catalog/category-id "30"}]
+    :target                [e/navigate-adventure-find-your-stylist nil]
     :link-text             "View services"
     :pic-right-on-desktop? true}
    {:id                    "browse-stylists"

@@ -86,8 +86,7 @@
    :services-section/orientation          "image-last"
    :services-section.cta/id               "browse-mayvenn-services"
    :services-section.cta/value            "Browse Mayvenn Services"
-   :services-section.cta/target           [e/navigate-category {:page/slug           "free-mayvenn-services"
-                                                                :catalog/category-id "31"}]
+   :services-section.cta/target           [e/navigate-adventure-find-your-stylist]
    :services-section.secondary-cta/id     "browse-stylists"
    :services-section.secondary-cta/value  "Browse Stylists"
    :services-section.secondary-cta/target [e/navigate-adventure-find-your-stylist]})
@@ -99,8 +98,7 @@
    :services-section/orientation          "image-first"
    :services-section.cta/id               "browse-services-section"
    :services-section.cta/value            "Browse À la carte Services"
-   :services-section.cta/target           [e/navigate-category {:page/slug           "a-la-carte-salon-services"
-                                                                :catalog/category-id "35"}]
+   :services-section.cta/target           [e/navigate-adventure-find-your-stylist]
    :services-section.secondary-cta/id     "browse-stylists"
    :services-section.secondary-cta/value  "Browse Stylists"
    :services-section.secondary-cta/target [e/navigate-adventure-find-your-stylist]})

@@ -613,11 +613,6 @@
    "18" {:catalog/category-id "1"
          :page/slug           "virgin-frontals"}})
 
-(def salon-services-category
-  {:catalog/category-id "30"
-   :page/slug           "salon-services"})
-
-
 (def service-category-ids
   #{"30" "31" "35" "36" "37"})
 
