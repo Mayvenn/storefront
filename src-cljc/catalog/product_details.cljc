@@ -910,20 +910,21 @@
      (messages/handle-later events/added-to-bag)))
 
 (defmethod effects/perform-effects events/control-add-sku-to-bag
-  [_ _ {:keys [sku quantity]} _ state]
+  [_ _ {:keys [sku quantity suppress-tracking?]} _ state]
   (let [cart-swap (swap/cart-swap<- state {:service/intended sku})]
     (if (:service/swap? cart-swap)
       (messages/handle-message events/cart-swap-popup-show
                                cart-swap)
       (messages/handle-message events/add-sku-to-bag
-                               {:sku           sku
-                                :stay-on-page? false
-                                :service-swap? false
-                                :quantity      quantity}))))
+                               {:sku                sku
+                                :stay-on-page?      false
+                                :service-swap?      false
+                                :suppress-tracking? suppress-tracking?
+                                :quantity           quantity}))))
 
 ;; TODO(corey) Move this to cart
 (defmethod effects/perform-effects events/add-sku-to-bag
-  [dispatch event {:keys [sku quantity stay-on-page? service-swap?] :as args} _ app-state]
+  [dispatch event {:keys [sku quantity stay-on-page? service-swap? suppress-tracking?] :as args} _ app-state]
   #?(:cljs
      (let [nav-event          (get-in app-state keypaths/navigation-event)
            cart-interstitial? (and
@@ -941,9 +942,10 @@
          :heat-feature-flags (get-in app-state keypaths/features)}
         #(do
            (messages/handle-message events/api-success-add-sku-to-bag
-                                    {:order         %
-                                     :quantity      quantity
-                                     :sku           sku})
+                                    {:order              %
+                                     :quantity           quantity
+                                     :suppress-tracking? suppress-tracking?
+                                     :sku                sku})
            (when (not (or (= events/navigate-cart nav-event) stay-on-page?))
              (history/enqueue-navigate (if cart-interstitial?
                                          events/navigate-added-to-cart
