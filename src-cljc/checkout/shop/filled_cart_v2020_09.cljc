@@ -390,16 +390,10 @@
                     :servicing-stylist-banner.remove-icon/id         "remove-stylist"}
                  {:stylist-organism/id            "stylist-organism"
                   :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})}
-     (if (seq services)
+     (when (seq services)
        {:service-line-items (concat
                              (free-services<- items delete-line-item-requests)
-                             (a-la-carte-services<- items delete-line-item-requests))}
-       (when stylist
-         {:no-services/id         "select-your-service"
-          :no-services/title      "No Service Selected"
-          :no-services/cta-label  "Select Your Service"
-          :no-services/cta-target [events/navigate-category {:catalog/category-id "31"
-                                                             :page/slug           "free-mayvenn-services"}]})))))
+                             (a-la-carte-services<- items delete-line-item-requests))}))))
 
 (defn physical-items<-
   [items update-line-item-requests delete-line-item-requests]
