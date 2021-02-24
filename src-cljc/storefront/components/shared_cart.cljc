@@ -392,6 +392,7 @@
            paypal
            quadpay
            browser-pay?
+           edit
            servicing-stylist-sms-info] :as data} _ _]
   [:main.bg-white.flex-auto
    [:div.col-7-on-dt.mx-auto
@@ -457,7 +458,24 @@
         ;; browser pay
         #?(:cljs (when browser-pay?
                    (payment-request-button/built-component nil
-                                                           {})))]]]]]])
+                                                           {})))
+
+        (let [{:cta/keys [target disabled? spinning? id]} edit]
+          [:div
+           [:div.h5.black.py1.flex.items-center
+            [:div.flex-grow-1.border-bottom.border-gray]
+            [:div.mx2 "or"]
+            [:div.flex-grow-1.border-bottom.border-gray]]
+
+           [:div
+            (ui/button-small-underline-primary
+             {:on-click  (apply utils/send-event-callback target)
+              :disabled? disabled?
+              :spinning? spinning?
+              :data-test id}
+             (component/html
+              "edit cart"))]])
+        ]]]]]])
 
 (defn ^:private ->waiter-order
   [{:keys [line-items discounts promotion-codes servicing-stylist-id total-discounted-amount]}]
@@ -596,6 +614,12 @@
                                                                                    {:id               number
                                                                                     :advertised-price advertised-price}]
                                                                    :cta/spinning? (= :paypal (get-in state keypaths/shared-cart-redirect))
+                                                                   :cta/disabled? pending-request?}
+                                      :edit                       {:cta/id        "edit"
+                                                                   :cta/target    [events/control-shared-cart-edit-cart-clicked
+                                                                                   {:id               number
+                                                                                    :advertised-price advertised-price}]
+                                                                   :cta/spinning? (= :cart (get-in state keypaths/shared-cart-redirect))
                                                                    :cta/disabled? pending-request?}}))))
 
 (defn ^:export built-component
@@ -656,6 +680,12 @@
      [_ _ _ state]
      (assoc-in state keypaths/shared-cart-redirect :paypal)))
 
+#?(:cljs
+   (defmethod transitions/transition-state events/control-shared-cart-edit-cart-clicked
+     [_ _ _ state]
+     (assoc-in state keypaths/shared-cart-redirect :edit-cart)))
+
+
 ;; #?(:cljs
 ;;    (defmethod transitions/transition-state events/control-shared-cart-edit-clicked
 ;;      [_ _ _ state]
@@ -694,6 +724,26 @@
                                                         :advertised-price advertised-price
                                                         :on/success       (partial messages/handle-message
                                                                                    events/checkout-initiated-paypal-checkout)}))
+           error-handler   #(messages/handle-message events/api-failure-order-not-created-from-shared-cart)]
+       (api/create-order-from-cart {:session-id           (get-in state keypaths/session-id)
+                                    :shared-cart-id       id
+                                    :user-id              (get-in state keypaths/user-id)
+                                    :user-token           (get-in state keypaths/user-token)
+                                    :stylist-id           (get-in state keypaths/store-stylist-id)
+                                    :servicing-stylist-id (get-in state keypaths/order-servicing-stylist-id)}
+                                   success-handler
+                                   error-handler))))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/control-shared-cart-edit-cart-clicked
+     [_ _ {:keys [id advertised-price]} _ state]
+     (let [success-handler #(do
+                              (messages/handle-message events/save-order
+                                                       {:order (orders/TEMP-pretend-service-items-do-not-exist %)})
+                              (messages/handle-message events/biz|shared-cart|hydrated
+                                                       {:order            %
+                                                        :advertised-price advertised-price
+                                                        :on/success       (history/enqueue-navigate events/navigate-cart)}))
            error-handler   #(messages/handle-message events/api-failure-order-not-created-from-shared-cart)]
        (api/create-order-from-cart {:session-id           (get-in state keypaths/session-id)
                                     :shared-cart-id       id

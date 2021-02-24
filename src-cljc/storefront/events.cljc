@@ -191,6 +191,7 @@
 (defpath control-create-order-from-shared-cart)
 (defpath control-shared-cart-checkout-clicked)
 (defpath control-shared-cart-paypal-checkout-clicked)
+(defpath control-shared-cart-edit-cart-clicked)
 (defpath clear-shared-cart-redirect)
 
 (defpath control-cart-update-coupon)
