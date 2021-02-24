@@ -359,6 +359,7 @@
 (defpath api-failure-order-not-created-from-shared-cart)
 (defpath api-failure-shared-stylist)
 (defpath api-failure-voucher-redemption)
+(defpath api-failure-shared-cart)
 
 (defpath flash)
 (defpath flash-show)

@@ -20,6 +20,7 @@
             [storefront.accessors.shared-cart :as shared-cart]
             [storefront.accessors.stylists :as stylists]
             [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.flash :as flash]
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -393,10 +394,12 @@
            quadpay
            browser-pay?
            edit
-           servicing-stylist-sms-info] :as data} _ _]
+           servicing-stylist-sms-info
+           flash/error] :as data} _ _]
   [:main.bg-white.flex-auto
    [:div.col-7-on-dt.mx-auto
     [:div.container
+     (component/build flash/component data)
      (hero-component data)
      [:div.bg-refresh-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
       (service-items-component data)
@@ -703,7 +706,7 @@
                                                         :advertised-price advertised-price
                                                         :on/success       (partial history/enqueue-navigate
                                                                                    events/navigate-checkout-returning-or-guest)}))
-           error-handler   #(messages/handle-message events/api-failure-order-not-created-from-shared-cart)]
+           error-handler   #(messages/handle-message events/api-failure-shared-cart)]
        (api/create-order-from-cart {:session-id           (get-in state keypaths/session-id)
                                     :shared-cart-id       id
                                     :user-id              (get-in state keypaths/user-id)
@@ -724,7 +727,7 @@
                                                         :advertised-price advertised-price
                                                         :on/success       (partial messages/handle-message
                                                                                    events/checkout-initiated-paypal-checkout)}))
-           error-handler   #(messages/handle-message events/api-failure-order-not-created-from-shared-cart)]
+           error-handler   #(messages/handle-message events/api-failure-shared-cart)]
        (api/create-order-from-cart {:session-id           (get-in state keypaths/session-id)
                                     :shared-cart-id       id
                                     :user-id              (get-in state keypaths/user-id)
@@ -744,7 +747,7 @@
                                                        {:order            %
                                                         :advertised-price advertised-price
                                                         :on/success       (history/enqueue-navigate events/navigate-cart)}))
-           error-handler   #(messages/handle-message events/api-failure-order-not-created-from-shared-cart)]
+           error-handler   #(messages/handle-message events/api-failure-shared-cart)]
        (api/create-order-from-cart {:session-id           (get-in state keypaths/session-id)
                                     :shared-cart-id       id
                                     :user-id              (get-in state keypaths/user-id)
@@ -768,6 +771,12 @@
        (do
          (history/enqueue-navigate events/navigate-cart {:query-params {:error "discounts-changed"}})
          (messages/handle-later events/clear-shared-cart-redirect)))))
+
+(defmethod transitions/transition-state events/api-failure-shared-cart
+  [_ _ _ state]
+  (-> state
+      (assoc-in keypaths/errors {:error-message "Sorry, something went wrong. Please try again."})
+      (update-in keypaths/shared-cart dissoc :redirect)))
 
 ;; TODO paypal checkout
 ;; unique react keys
