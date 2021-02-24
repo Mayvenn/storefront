@@ -249,27 +249,26 @@
 ;; -> current stylist: selected
 (defmethod fx/perform-effects e/flow|stylist-matching|matched
   [_ _ {:keys [stylist result-index]} _ state]
-  #?(:cljs
-     (cookie-jar/save-adventure (get-in state storefront.keypaths/cookie)
-                                (get-in state adventure.keypaths/adventure)))
-  (let [features                        (get-in state storefront.keypaths/features)
-        {:as order :order/keys [items]} (api.orders/current state)
-        {:keys [number token]}          (:waiter/order order)
-        success-event                   (if (and (select ?service items)
-                                                 (select ?physical items))
-                                          e/navigate-cart
-                                          e/navigate-adventure-match-success)
-        navigate                        #?(:clj identity :cljs history/enqueue-navigate)]
-    #?(:cljs
-       (api/assign-servicing-stylist
-        (:stylist-id stylist) 1
-        number token features
-        (fn [order]
-          (publish e/biz|current-stylist|selected
-                   {:order        order
-                    :stylist      stylist
-                    :on/success   #(navigate success-event)
-                    :result-index result-index}))))))
+  #?@(:cljs
+      [(cookie-jar/save-adventure (get-in state storefront.keypaths/cookie)
+                                  (get-in state adventure.keypaths/adventure))
+       (let [features                        (get-in state storefront.keypaths/features)
+             order (api.orders/current state)
+             {:keys [number token]}          (:waiter/order order)]
+         (api/assign-servicing-stylist
+          (:stylist-id stylist) 1
+          number token features
+          (fn [order]
+            (let [success-event (if (->> order
+                                         (api.orders/free-mayvenn-service stylist)
+                                         :free-mayvenn-service/discounted?)
+                                  e/navigate-cart
+                                  e/navigate-adventure-match-success)]
+              (publish e/biz|current-stylist|selected
+                       {:order        order
+                        :stylist      stylist
+                        :on/success   #(history/enqueue-navigate success-event)
+                        :result-index result-index})))))]))
 
 (defmethod trackings/perform-track e/biz|current-stylist|selected
   [_ _ {:keys [order stylist result-index]} state]
