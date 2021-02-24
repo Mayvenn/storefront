@@ -8,10 +8,8 @@
 (defn ^:export page
   [app-state nav-event]
   (when (= :shop (sites/determine-site app-state))
-    (let [{:order.items/keys [quantity]} (api.orders/current app-state)
-          stylist                        (api.current/stylist app-state)]
-      (if (or (not (or (nil? quantity)
-                       (zero? quantity)))
-              stylist)
+    (let [{:order.items/keys [quantity]} (api.orders/current app-state)]
+      (if (not (or (nil? quantity)
+                   (zero? quantity)))
         (shop-filled/page app-state nav-event)
         (shop-empty/page app-state nav-event)))))
