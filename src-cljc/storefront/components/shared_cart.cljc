@@ -690,7 +690,9 @@
 
 (defmethod transitions/transition-state events/navigate-shared-cart
   [_ event {:keys [shared-cart-id]} app-state]
-  (assoc-in app-state keypaths/shared-cart-id shared-cart-id))
+  (-> app-state
+      (assoc-in keypaths/shared-cart-id shared-cart-id)
+      (assoc-in keypaths/shared-cart-redirect nil)))
 
 (defmethod effects/perform-effects events/navigate-shared-cart
   [_ _ {:keys [shared-cart-id]} _ app-state]
