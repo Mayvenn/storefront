@@ -316,9 +316,14 @@
 (defpath api-success-get-saved-cards)
 (defpath api-success-sms-number)
 
+(defpath api-success-fetch-shared-cart-matched-stylist)
 (defpath api-success-shared-cart-create)
 (defpath api-success-shared-cart-fetch)
 (defpath api-success-shared-carts-fetch)
+
+
+(defpath shared-cart-error-matched-stylist-not-eligible)
+(defpath flow|shared-cart-stylist|resulted)
 
 (defpath api-success-assign-servicing-stylist)
 

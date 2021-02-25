@@ -29,7 +29,9 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [storefront.platform.messages :as messages]
+            [storefront.platform.messages
+             :as messages
+             :refer [handle-message] :rename {handle-message publish}]
             [storefront.transitions :as transitions]))
 
 (defcomponent component
@@ -185,17 +187,17 @@
   [stylist items]
   (let [services (select ?service items)]
     (merge
-     {:stylist (if stylist
-                 (let [stylist-id (:stylist/id stylist)]
-                   {:servicing-stylist-portrait-url                  (-> stylist :stylist/portrait :resizable-url)
-                    :servicing-stylist-banner/id                     "servicing-stylist-banner"
-                    :servicing-stylist-banner/title                  (:stylist/name stylist)
-                    :servicing-stylist-banner/rating                 {:rating/value (:stylist.rating/score stylist)
-                                                                      :rating/id    "stylist-rating-id"}
-                    :servicing-stylist-banner/image-url              (some-> stylist :stylist/portrait :resizable-url)
-                    :servicing-stylist-banner/title-and-image-target [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
-                                                                                                                 :store-slug (:stylist/slug stylist)}]})
-                 {:stylist-organism/id            "stylist-organism"
+     {:stylist (if-let [stylist-id (:stylist/id stylist)]
+                 {:servicing-stylist-portrait-url                  (-> stylist :stylist/portrait :resizable-url)
+                  :servicing-stylist-banner/id                     "servicing-stylist-banner"
+                  :servicing-stylist-banner/title                  (:stylist/name stylist)
+                  :servicing-stylist-banner/rating                 {:rating/value (:stylist.rating/score stylist)
+                                                                    :rating/id    "stylist-rating-id"}
+                  :servicing-stylist-banner/image-url              (some-> stylist :stylist/portrait :resizable-url)
+                  :servicing-stylist-banner/title-and-image-target [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
+                                                                                                               :store-slug (:stylist/slug stylist)}]}
+                 {:no-stylist-organism/id         "stylist-organism"
+                  :no-stylist-organism/target     [events/navigate-adventure-find-your-stylist]
                   :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})}
      (when (seq services)
        {:service-line-items (free-services<- items)}))))
@@ -395,7 +397,7 @@
            browser-pay?
            edit
            servicing-stylist-sms-info
-           flash/error] :as data} _ _]
+           errors] :as data} _ _]
   [:main.bg-white.flex-auto
    [:div.col-7-on-dt.mx-auto
     [:div.container
@@ -653,7 +655,7 @@
   #?(:cljs
      (let [shared-cart  (get-in app-state keypaths/shared-cart-current)
            catalog-skus (get-in app-state keypaths/v2-skus)
-           api-cache (get-in app-state keypaths/api-cache)]
+           api-cache    (get-in app-state keypaths/api-cache)]
        (if (->> shared-cart
                 (enrich-line-items-with-sku-data catalog-skus)
                 :line-items
@@ -661,17 +663,30 @@
          (do (messages/handle-message events/flash-later-show-failure
                                       {:message "The bag that has been shared with you has items that are no longer available."})
              (history/enqueue-navigate events/navigate-home))
-         (do (api/get-promotions api-cache
-                                 (some-> promotion-codes
-                                         first))
-             (when (and servicing-stylist-id
-                        (experiments/new-shared-cart? app-state))
-               (api/fetch-matched-stylists
-                api-cache [servicing-stylist-id]
-                ;; TODO: may not be the appropriate success handler event because we
-                ;; pulled this from stylist matching (this is more of a fetch
-                ;; potential stylist for some new order the in future)
-                #(messages/handle-message events/api-success-fetch-matched-stylists %))))))))
+         (when (and servicing-stylist-id
+                    (experiments/new-shared-cart? app-state))
+           (api/fetch-matched-stylist
+            api-cache servicing-stylist-id
+            {:error-handler   #(publish events/shared-cart-error-matched-stylist-not-eligible %)
+             :success-handler #(publish events/api-success-fetch-shared-cart-matched-stylist %)}))))))
+
+(defmethod effects/perform-effects events/api-success-fetch-shared-cart-matched-stylist
+  [_ _ {:keys [stylist]} _ _]
+  (publish events/flow|shared-cart-stylist|resulted
+           {:method  :by-ids
+            :results [stylist]}))
+
+(defmethod transitions/transition-state events/shared-cart-error-matched-stylist-not-eligible
+  [_ _ _ state]
+  (assoc-in state keypaths/errors
+            {:error-message "The original servicing stylist is no longer available. Please pick a new stylist below"}))
+
+(defmethod transitions/transition-state events/flow|shared-cart-stylist|resulted
+  [_ _ {:keys [results]} state]
+  (let [shared-cart-stylist-model (->> results
+                                       (mapv #(api.stylist/stylist<- state %))
+                                       (maps/index-by :stylist/id))]
+    (update-in state storefront.keypaths/models-stylists merge shared-cart-stylist-model)))
 
 (defmethod transitions/transition-state events/navigate-shared-cart
   [_ event {:keys [shared-cart-id]} app-state]
