@@ -651,18 +651,27 @@
 (defmethod effects/perform-effects events/api-success-shared-cart-fetch
   [_ _ {{:keys [promotion-codes servicing-stylist-id]} :shared-cart} _ app-state]
   #?(:cljs
-     (let [api-cache (get-in app-state keypaths/api-cache)]
-       (api/get-promotions api-cache
-                           (some-> promotion-codes
-                                   first))
-       (when (and servicing-stylist-id
-                  (experiments/new-shared-cart? app-state))
-         (api/fetch-matched-stylists
-          api-cache [servicing-stylist-id]
-          ;; TODO: may not be the appropriate success handler event because we
-          ;; pulled this from stylist matching (this is more of a fetch
-          ;; potential stylist for some new order the in future)
-          #(messages/handle-message events/api-success-fetch-matched-stylists %))))))
+     (let [shared-cart  (get-in app-state keypaths/shared-cart-current)
+           catalog-skus (get-in app-state keypaths/v2-skus)
+           api-cache (get-in app-state keypaths/api-cache)]
+       (if (->> shared-cart
+                :line-items
+                (map (comp (partial get catalog-skus) :catalog/sku-id))
+                (not-every? :inventory/in-stock?))
+         (do (messages/handle-message events/flash-later-show-failure
+                                      {:message "The bag that has been shared with you has items that are no longer available."})
+             (history/enqueue-navigate events/navigate-home))
+         (do (api/get-promotions api-cache
+                                 (some-> promotion-codes
+                                         first))
+             (when (and servicing-stylist-id
+                        (experiments/new-shared-cart? app-state))
+               (api/fetch-matched-stylists
+                api-cache [servicing-stylist-id]
+                ;; TODO: may not be the appropriate success handler event because we
+                ;; pulled this from stylist matching (this is more of a fetch
+                ;; potential stylist for some new order the in future)
+                #(messages/handle-message events/api-success-fetch-matched-stylists %))))))))
 
 (defmethod transitions/transition-state events/navigate-shared-cart
   [_ event {:keys [shared-cart-id]} app-state]
