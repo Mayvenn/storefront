@@ -655,9 +655,9 @@
            catalog-skus (get-in app-state keypaths/v2-skus)
            api-cache (get-in app-state keypaths/api-cache)]
        (if (->> shared-cart
+                (enrich-line-items-with-sku-data catalog-skus)
                 :line-items
-                (map (comp (partial get catalog-skus) :catalog/sku-id))
-                (not-every? :inventory/in-stock?))
+                (not-every? (comp :inventory/in-stock? :sku)))
          (do (messages/handle-message events/flash-later-show-failure
                                       {:message "The bag that has been shared with you has items that are no longer available."})
              (history/enqueue-navigate events/navigate-home))
