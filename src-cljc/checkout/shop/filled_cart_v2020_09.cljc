@@ -613,7 +613,6 @@
      :freeinstall-informational/cta-label             "Add Mayvenn Install"
      :freeinstall-informational/cta-target            [events/control-add-sku-to-bag
                                                        {:sku                {:catalog/sku-id "SRV-LBI-000"}
-                                                        :suppress-tracking? true
                                                         :quantity           1}]
      :freeinstall-informational/id                    "freeinstall-informational"
      :freeinstall-informational/spinning?             adding-freeinstall?

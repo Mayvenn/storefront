@@ -118,8 +118,8 @@
                                                :num_items    quantity}))
 
 (defmethod perform-track events/api-success-add-sku-to-bag
-  [_ _ {:keys [quantity sku order suppress-tracking?] :as args} app-state]
-  (when (and sku (not suppress-tracking?))
+  [_ _ {:keys [quantity sku order] :as args} app-state]
+  (when sku
     (let [line-item-skuers (waiter-line-items->line-item-skuer
                             (get-in app-state keypaths/v2-skus)
                             (orders/product-and-service-items order))
