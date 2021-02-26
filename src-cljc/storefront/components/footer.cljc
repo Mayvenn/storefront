@@ -65,6 +65,24 @@
     [:span.content-1.proxima..bold.mx3 "|"]
     (ui/link :link/email :a.block.py1.inherit-color {} contact-email)]])
 
+(defn- social-link
+  ([uri icon] (social-link {:height "20px" :width "20px"} uri icon))
+  ([{:keys [height width]} uri icon]
+   (component/html
+    ;; https://web.dev/external-anchors-use-rel-noopener/
+    [:a.block.px1.mx1.flex.items-center {:href uri :rel "noopener" :target "_blank"}
+     [:div {:style {:width width :height height}}
+      ^:inline icon]])))
+
+(defn social-links
+  []
+  (component/html
+   [:div.flex.items-center.py3
+    ^:inline (social-link {:height "28px" :width "28px"} "https://twitter.com/MayvennHair" (svg/mayvenn-on-twitter))
+    ^:inline (social-link "http://instagram.com/mayvennhair" (svg/mayvenn-on-instagram))
+    ^:inline (social-link "https://www.facebook.com/MayvennHair" (svg/mayvenn-on-facebook))
+    ^:inline (social-link "http://www.pinterest.com/mayvennhair/" (svg/mayvenn-on-pinterest))]))
+
 (defcomponent full-component
   [{:keys [link-columns contacts essence-copy]} owner opts]
   [:div.bg-cool-gray
@@ -75,6 +93,8 @@
       (shop-section {:link-columns link-columns})]
      [:div.col-on-tb-dt.col-6-on-tb-dt.mt6
       (component/build contacts-section contacts)]
+     [:div.col-on-tb-dt.col-6-on-tb-dt
+      (social-links)]
      (when essence-copy
        [:div.col-on-tb-dt.col-6-on-tb-dt.pb2.content-4.dark-gray
         essence-copy])]]
@@ -107,15 +127,6 @@
        (for [link link-column]
          ^:inline (dtc-link link))])]])
 
-(defn- social-link
-  ([uri icon] (social-link {:height "20px" :width "20px"} uri icon))
-  ([{:keys [height width]} uri icon]
-   (component/html
-    ;; https://web.dev/external-anchors-use-rel-noopener/
-    [:a.block.px1.mx1.flex.items-center {:href uri :rel "noopener" :target "_blank"}
-     [:div {:style {:width width :height height}}
-      ^:inline icon]])))
-
 (defcomponent dtc-full-component
   [{:keys [additional-margin contacts link-columns essence-copy]} owner opts]
   [:div.bg-cool-gray
@@ -126,11 +137,8 @@
       (component/build dtc-shop-section {:link-columns link-columns})]
      [:div.col-on-tb-dt.col-6-on-tb-dt.mt6
       (component/build contacts-section contacts)]
-     [:div.flex.items-center.py3
-      ^:inline (social-link {:height "28px" :width "28px"} "https://twitter.com/MayvennHair" (svg/mayvenn-on-twitter))
-      ^:inline (social-link "http://instagram.com/mayvennhair" (svg/mayvenn-on-instagram))
-      ^:inline (social-link "https://www.facebook.com/MayvennHair" (svg/mayvenn-on-facebook))
-      ^:inline (social-link "http://www.pinterest.com/mayvennhair/" (svg/mayvenn-on-pinterest))]
+     [:div.col-on-tb-dt.col-6-on-tb-dt
+      (social-links)]
      (when essence-copy
        [:div.col-on-tb-dt.col-6-on-tb-dt.pb2.content-4.dark-gray
         essence-copy])]]
