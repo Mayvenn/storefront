@@ -7,6 +7,7 @@
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.footer-links :as footer-links]
             [storefront.components.footer-minimal :as footer-minimal]
+            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
             [storefront.events :as events]
@@ -106,6 +107,15 @@
        (for [link link-column]
          ^:inline (dtc-link link))])]])
 
+(defn- social-link
+  ([uri icon] (social-link {:height "20px" :width "20px"} uri icon))
+  ([{:keys [height width]} uri icon]
+   (component/html
+    ;; https://web.dev/external-anchors-use-rel-noopener/
+    [:a.block.px1.mx1.flex.items-center {:href uri :rel "noopener" :target "_blank"}
+     [:div {:style {:width width :height height}}
+      ^:inline icon]])))
+
 (defcomponent dtc-full-component
   [{:keys [additional-margin contacts link-columns essence-copy]} owner opts]
   [:div.bg-cool-gray
@@ -116,6 +126,11 @@
       (component/build dtc-shop-section {:link-columns link-columns})]
      [:div.col-on-tb-dt.col-6-on-tb-dt.mt6
       (component/build contacts-section contacts)]
+     [:div.flex.items-center.py3
+      ^:inline (social-link {:height "28px" :width "28px"} "https://twitter.com/MayvennHair" (svg/mayvenn-on-twitter))
+      ^:inline (social-link "http://instagram.com/mayvennhair" (svg/mayvenn-on-instagram))
+      ^:inline (social-link "https://www.facebook.com/MayvennHair" (svg/mayvenn-on-facebook))
+      ^:inline (social-link "http://www.pinterest.com/mayvennhair/" (svg/mayvenn-on-pinterest))]
      (when essence-copy
        [:div.col-on-tb-dt.col-6-on-tb-dt.pb2.content-4.dark-gray
         essence-copy])]]

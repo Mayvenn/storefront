@@ -12,15 +12,6 @@
 (defn- footer-link [opts label]
   (component/html [:a.block.inherit-color.my2 opts label]))
 
-(defn- social-link
-  ([uri icon] (social-link {:height "18px" :width "18px"} uri icon))
-  ([{:keys [height width]} uri icon]
-   (component/html
-    ;; https://web.dev/external-anchors-use-rel-noopener/
-    [:a.block.px1.mx1.flex.items-center {:href uri :rel "noopener" :target "_blank"}
-     [:div {:style {:width width :height height}}
-      ^:inline icon]])))
-
 (defn- minimal-footer-link [opts label]
   (component/html [:a.inherit-color ^:attrs opts ^:inline label]))
 
@@ -43,12 +34,7 @@
       [:div.flex.justify-between
        ^:inline (svg/mayvenn-text-logo {:height "29px"
                                         :width  "115px"
-                                        :class  "fill-white"})
-       [:div.flex.items-center
-        ^:inline (social-link {:height "24px" :width "24px"} "https://twitter.com/MayvennHair" (svg/mayvenn-on-twitter))
-        ^:inline (social-link "http://instagram.com/mayvennhair" (svg/mayvenn-on-instagram))
-        ^:inline (social-link "https://www.facebook.com/MayvennHair" (svg/mayvenn-on-facebook))
-        ^:inline (social-link "http://www.pinterest.com/mayvennhair/" (svg/mayvenn-on-pinterest))]]
+                                        :class  "fill-white"})]
       [:div.flex.mt4.mb3.col-5-on-dt
        [:div.col-4 {:key "full"}
         ^:inline (footer-link (utils/route-to events/navigate-content-about-us) "About")
