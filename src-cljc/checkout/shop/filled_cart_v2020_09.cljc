@@ -661,12 +661,15 @@
    :quadpay/directive   :just-select})
 
 (defn paypal<-
-  [no-items? pending-requests? hair-missing-quantity data]
-  (when (zero? hair-missing-quantity)
-    (let [redirecting-to-paypal? (get-in data keypaths/cart-paypal-redirect)]
+  [state items pending-requests?]
+  (let [{:as service
+         :promo.mayvenn-install/keys [hair-missing-quantity]}
+        (first (select ?service items))]
+    (when (or (empty? service)
+              (and service (zero? hair-missing-quantity)))
       {:id        "paypal-checkout"
-       :spinning? redirecting-to-paypal?
-       :disabled? (or no-items?
+       :spinning? (get-in state keypaths/cart-paypal-redirect)
+       :disabled? (or (zero? (count items))
                       pending-requests?)})))
 
 (defn checkout-wo-mayvenn-install<-
@@ -747,10 +750,9 @@
                                                                                      pending-requests?))
                                   :shared-cart                 (shared-cart<- app-state)
                                   :quadpay                     (quadpay<- app-state waiter-order)
-                                  :paypal                      (paypal<- no-items?
-                                                                         pending-requests?
-                                                                         hair-missing-quantity
-                                                                         app-state)
+                                  :paypal                      (paypal<- app-state
+                                                                         items
+                                                                         pending-requests?)
                                   :checkout-wo-mayvenn-install (checkout-wo-mayvenn-install<-
                                                                 hair-missing-quantity
                                                                 pending-requests?
