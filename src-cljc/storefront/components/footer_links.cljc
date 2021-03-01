@@ -105,15 +105,3 @@
 (defn built-component
   [data opts]
   (component/build component (query data) nil))
-
-(defmethod trackings/perform-track events/control-footer-signup-submit
-  [_ _ _ state]
-  nil
-  #?(:cljs
-     nil
-     #_(stringer/track-event "adventure_location_submitted"
-                                {:location_submitted address
-                                 :city               city
-                                 :state              state
-                                 :latitude           latitude
-                                 :longitude          longitude})))
