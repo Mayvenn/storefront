@@ -201,8 +201,11 @@
                                                    {:id shared-cart-id}]
                   :no-stylist-organism/disabled? pick-your-stylist-button-disabled?
                   :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})}
+
      (when (seq services)
-       {:service-line-items (free-services<- items)}))))
+       {:service-line-items (free-services<- items)
+        :services-section/id "services-section"
+        :services-section/title "Services"}))))
 
 (defn physical-items<-
   [items]
@@ -359,29 +362,30 @@
      [:div.mb1.border-bottom.border-cool-gray.hide-on-mb]]))
 
 (defn service-items-component
-  [{:keys [service-line-items stylist services-section/title] :as data}]
-  [:div.mb3
-   [:div.title-2.proxima.mb1.shout title]
-   (component/build cart-item-v202004/stylist-organism stylist nil)
-   (component/build no-stylist-organism stylist nil)
+  [{:services-section/keys [id title] :keys [service-line-items stylist] :as data}]
+  (when id
+    [:div.mb3
+     [:div.title-2.proxima.mb1.shout title]
+     (component/build cart-item-v202004/stylist-organism stylist nil)
+     (component/build no-stylist-organism stylist nil)
 
-   (if (seq service-line-items)
-     (for [service-line-item service-line-items]
-       [:div {:key (:react/key service-line-item)}
-        [:div.mt2-on-mb
-         (component/build cart-item-v202004/organism {:cart-item service-line-item}
-                          (component/component-id (:react/key service-line-item)))]])
+     (if (seq service-line-items)
+       (for [service-line-item service-line-items]
+         [:div {:key (:react/key service-line-item)}
+          [:div.mt2-on-mb
+           (component/build cart-item-v202004/organism {:cart-item service-line-item}
+                            (component/component-id (:react/key service-line-item)))]])
 
-     (component/build cart-item-v202004/no-services-organism data nil))
+       (component/build cart-item-v202004/no-services-organism data nil))
 
-   [:div.border-bottom.border-gray.hide-on-mb]])
+     [:div.border-bottom.border-gray.hide-on-mb]]))
 
 (defn physical-items-component
   [{:physical-items/keys [items id]}]
   (when id
     [:div
      {:key id}
-     [:div.title-2.proxima.mb1 "Items"]
+     [:div.shout.title-2.proxima.mb1 "Items"]
      (for [{:cart-item/keys [id index] :as cart-item} items
            :when                                key]
        [:div
