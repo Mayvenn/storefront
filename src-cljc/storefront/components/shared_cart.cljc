@@ -184,7 +184,7 @@
      (cart-items|addons<- addon-facets))))
 
 (defn service-items<-
-  [stylist items]
+  [stylist items shared-cart-id pick-your-stylist-button-disabled?]
   (let [services (select ?service items)]
     (merge
      {:stylist (if-let [stylist-id (:stylist/id stylist)]
@@ -197,7 +197,9 @@
                   :servicing-stylist-banner/title-and-image-target [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
                                                                                                                :store-slug (:stylist/slug stylist)}]}
                  {:no-stylist-organism/id         "stylist-organism"
-                  :no-stylist-organism/target     [events/navigate-adventure-find-your-stylist]
+                  :no-stylist-organism/target     [events/control-shared-cart-pick-your-stylist-clicked
+                                                   {:id shared-cart-id}]
+                  :no-stylist-organism/disabled? pick-your-stylist-button-disabled?
                   :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})}
      (when (seq services)
        {:service-line-items (free-services<- items)}))))
@@ -344,13 +346,14 @@
     subtitle]])
 
 (component/defcomponent no-stylist-organism
-  [{:no-stylist-organism/keys [id target]} _ _]
+  [{:no-stylist-organism/keys [id target disabled?]} _ _]
   (when id
     [:div.bg-white
      [:div.pt3.pb4.px3.canela.title-2.dark-gray.items-center.flex.flex-column
       [:div.mb1 "No Stylist Selected"]
       [:div (ui/button-small-primary
-             (merge {:data-test "pick-a-stylist"}
+             (merge {:data-test "pick-a-stylist"
+                     :disabled? disabled?}
                     (apply utils/fake-href target))
              "Pick Your Stylist")]]
      [:div.mb1.border-bottom.border-cool-gray.hide-on-mb]]))
@@ -597,10 +600,11 @@
         order-items         (:order/items order)
         physical-items      (select ?physical order-items)
         pending-request?    (utils/requesting? state request-keys/create-order-from-shared-cart)
-        advertised-price    (-> order :waiter/order :total)]
+        advertised-price    (-> order :waiter/order :total)
+        spinning-button     (get-in state keypaths/shared-cart-redirect)]
     (component/build template (merge {:hero/title    "Your Bag"
                                       :hero/subtitle (str cart-creator-copy " has created a bag for you!")}
-                                     (service-items<- servicing-stylist order-items)
+                                     (service-items<- servicing-stylist order-items number pending-request?)
                                      (physical-items<- physical-items)
                                      (quadpay<- state order)
                                      (cart-summary<- order)
@@ -611,20 +615,21 @@
                                                                    :cta/disabled? pending-request?
                                                                    :cta/target    [events/control-shared-cart-checkout-clicked
                                                                                    {:id               number
-                                                                                    :advertised-price advertised-price}]
-                                                                   :cta/spinning? (= :checkout (get-in state keypaths/shared-cart-redirect))
+                                                                                    :advertised-price advertised-price
+                                                                                    :validate-price?  true}]
+                                                                   :cta/spinning? (= :checkout spinning-button)
                                                                    :cta/content   "Check out"}
                                       :paypal                     {:cta/id        "paypal-checkout"
                                                                    :cta/target    [events/control-shared-cart-paypal-checkout-clicked
                                                                                    {:id               number
-                                                                                    :advertised-price advertised-price}]
-                                                                   :cta/spinning? (= :paypal (get-in state keypaths/shared-cart-redirect))
+                                                                                    :advertised-price advertised-price
+                                                                                    :validate-price?  true}]
+                                                                   :cta/spinning? (= :paypal spinning-button)
                                                                    :cta/disabled? pending-request?}
                                       :edit                       {:cta/id        "edit"
                                                                    :cta/target    [events/control-shared-cart-edit-cart-clicked
-                                                                                   {:id               number
-                                                                                    :advertised-price advertised-price}]
-                                                                   :cta/spinning? (= :cart (get-in state keypaths/shared-cart-redirect))
+                                                                                   {:id number}]
+                                                                   :cta/spinning? (= :cart spinning-button)
                                                                    :cta/disabled? pending-request?}}))))
 
 (defn ^:export built-component
@@ -714,24 +719,27 @@
      [_ _ _ state]
      (assoc-in state keypaths/shared-cart-redirect :edit-cart)))
 
+#?(:cljs
+   (defmethod transitions/transition-state events/control-shared-cart-pick-your-stylist-clicked
+     [_ _ _ state]
+     (assoc-in state keypaths/shared-cart-redirect :pick-your-stylist)))
+
 
 ;; #?(:cljs
 ;;    (defmethod transitions/transition-state events/control-shared-cart-edit-clicked
 ;;      [_ _ _ state]
 ;;      (assoc-in state keypaths/shared-cart-redirect :edit)))
 
-;; TODO DRY these up
 #?(:cljs
-   (defmethod effects/perform-effects events/control-shared-cart-checkout-clicked
-     [_ _ {:keys [id advertised-price]} _ state]
+   (defn control-fx
+     [state {:keys [id advertised-price]} on-success]
      (let [success-handler #(do
                               (messages/handle-message events/save-order
                                                        {:order (orders/TEMP-pretend-service-items-do-not-exist %)})
                               (messages/handle-message events/biz|shared-cart|hydrated
                                                        {:order            %
                                                         :advertised-price advertised-price
-                                                        :on/success       (partial history/enqueue-navigate
-                                                                                   events/navigate-checkout-returning-or-guest)}))
+                                                        :on/success       on-success}))
            error-handler   #(messages/handle-message events/api-failure-shared-cart)]
        (api/create-order-from-cart {:session-id           (get-in state keypaths/session-id)
                                     :shared-cart-id       id
@@ -741,47 +749,30 @@
                                     :servicing-stylist-id (get-in state keypaths/order-servicing-stylist-id)}
                                    success-handler
                                    error-handler))))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/control-shared-cart-checkout-clicked
+     [_ _ args _ state]
+     (control-fx state args (partial history/enqueue-navigate
+                                     events/navigate-checkout-returning-or-guest))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/control-shared-cart-paypal-checkout-clicked
-     [_ _ {:keys [id advertised-price]} _ state]
-     (let [success-handler #(do
-                              (messages/handle-message events/save-order
-                                                       {:order (orders/TEMP-pretend-service-items-do-not-exist %)})
-                              (messages/handle-message events/biz|shared-cart|hydrated
-                                                       {:order            %
-                                                        :advertised-price advertised-price
-                                                        :on/success       (partial messages/handle-message
-                                                                                   events/checkout-initiated-paypal-checkout)}))
-           error-handler   #(messages/handle-message events/api-failure-shared-cart)]
-       (api/create-order-from-cart {:session-id           (get-in state keypaths/session-id)
-                                    :shared-cart-id       id
-                                    :user-id              (get-in state keypaths/user-id)
-                                    :user-token           (get-in state keypaths/user-token)
-                                    :stylist-id           (get-in state keypaths/store-stylist-id)
-                                    :servicing-stylist-id (get-in state keypaths/order-servicing-stylist-id)}
-                                   success-handler
-                                   error-handler))))
+     [_ _ args _ state]
+     (control-fx state args (partial messages/handle-message
+                                     events/checkout-initiated-paypal-checkout))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/control-shared-cart-edit-cart-clicked
-     [_ _ {:keys [id advertised-price]} _ state]
-     (let [success-handler #(do
-                              (messages/handle-message events/save-order
-                                                       {:order (orders/TEMP-pretend-service-items-do-not-exist %)})
-                              (messages/handle-message events/biz|shared-cart|hydrated
-                                                       {:order            %
-                                                        :advertised-price advertised-price
-                                                        :on/success       (history/enqueue-navigate events/navigate-cart)}))
-           error-handler   #(messages/handle-message events/api-failure-shared-cart)]
-       (api/create-order-from-cart {:session-id           (get-in state keypaths/session-id)
-                                    :shared-cart-id       id
-                                    :user-id              (get-in state keypaths/user-id)
-                                    :user-token           (get-in state keypaths/user-token)
-                                    :stylist-id           (get-in state keypaths/store-stylist-id)
-                                    :servicing-stylist-id (get-in state keypaths/order-servicing-stylist-id)}
-                                   success-handler
-                                   error-handler))))
+     [_ _ args _ state]
+     (control-fx state args (partial history/enqueue-navigate
+                                     events/navigate-cart))))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/control-shared-cart-pick-your-stylist-clicked
+     [_ _ args _ state]
+     (control-fx state args (partial history/enqueue-navigate
+                                     events/navigate-adventure-find-your-stylist))))
 
 #?(:cljs
    (defmethod transitions/transition-state events/clear-shared-cart-redirect
@@ -790,13 +781,14 @@
 
 #?(:cljs
    (defmethod effects/perform-effects events/biz|shared-cart|hydrated
-     [_ _ {:keys [order advertised-price] on-success :on/success} _ state]
-     (if (= (-> advertised-price mf/as-money)
-            (-> order :total mf/as-money))
-       (on-success)
+     [_ _ {:keys [order advertised-price validate-price?] on-success :on/success} _ state]
+     (if (and validate-price?
+              (not= (-> advertised-price mf/as-money)
+                    (-> order :total mf/as-money)))
        (do
          (history/enqueue-navigate events/navigate-cart {:query-params {:error "discounts-changed"}})
-         (messages/handle-later events/clear-shared-cart-redirect)))))
+         (messages/handle-later events/clear-shared-cart-redirect))
+       (on-success))))
 
 (defmethod transitions/transition-state events/api-failure-shared-cart
   [_ _ _ state]

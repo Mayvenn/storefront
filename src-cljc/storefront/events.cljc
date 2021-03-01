@@ -192,6 +192,7 @@
 (defpath control-shared-cart-checkout-clicked)
 (defpath control-shared-cart-paypal-checkout-clicked)
 (defpath control-shared-cart-edit-cart-clicked)
+(defpath control-shared-cart-pick-your-stylist-clicked)
 (defpath clear-shared-cart-redirect)
 
 (defpath control-cart-update-coupon)
