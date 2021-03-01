@@ -1,6 +1,5 @@
 (ns storefront.components.footer-links
   (:require [spice.date :as date]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.nav :as nav]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
@@ -91,12 +90,12 @@
         "©" (date/year (date/now)) " " "Mayvenn"]]]]))
 
 (defn query
-  [data]
+  [{:keys [minimal-footer? footer-email-signup?]}]
   (merge
-   {:minimal?     (nav/show-minimal-footer? (get-in data keypaths/navigation-event))
+   {:minimal?     minimal-footer?
     :email        nil
     :field-errors nil}
-   {:footer.email-signup.title/id (when (experiments/footer-email-signup? data)"sign-up")
+   {:footer.email-signup.title/id (when footer-email-signup? "sign-up")
     :footer.email-signup.title/primary "Sign up to get the latest on sales, new releases and more..."
     :footer.email-signup.button/label "sign up"
     :footer.email-signup.button/target [events/navigate-home]

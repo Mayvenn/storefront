@@ -2,6 +2,7 @@
   (:require [api.catalog :refer [select ?discountable]]
             promotion-helper.ui
             [storefront.accessors.auth :as auth]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
@@ -84,7 +85,7 @@
     ^:inline (social-link "http://www.pinterest.com/mayvennhair/" (svg/mayvenn-on-pinterest))]))
 
 (defcomponent full-component
-  [{:keys [link-columns contacts essence-copy] :as data} owner opts]
+  [{:keys [link-columns contacts essence-copy footer-links]} owner opts]
   [:div.bg-cool-gray
    [:div.bg-p-color.pt1]
    [:div.container
@@ -100,7 +101,7 @@
         essence-copy])]]
 
    [:div.mt3
-    (footer-links/built-component data opts)]])
+    (footer-links/built-component footer-links opts)]])
 
 (defn contacts-query
   [data]
@@ -128,7 +129,7 @@
          ^:inline (dtc-link link))])]])
 
 (defcomponent dtc-full-component
-  [{:keys [additional-margin contacts link-columns essence-copy] :as data} owner opts]
+  [{:keys [additional-margin contacts link-columns essence-copy footer-links]} owner opts]
   [:div.bg-cool-gray
    [:div.bg-p-color.pt1]
    [:div.container
@@ -146,9 +147,9 @@
    [:div.hide-on-dt
     (when additional-margin
       {:style {:margin-bottom additional-margin}})
-    (footer-links/built-component data opts)]
+    (footer-links/built-component footer-links opts)]
    [:div.hide-on-mb-tb
-    (footer-links/built-component data opts)]])
+    (footer-links/built-component footer-links opts)]])
 
 (defn ^:private split-evenly
   [coll]
@@ -205,6 +206,8 @@
                                      (select ?discountable)
                                      first)))
                           "79px")
+     :footer-links      {:minimal-footer?      (nav/show-minimal-footer? (get-in data keypaths/navigation-event))
+                         :footer-email-signup? (experiments/footer-email-signup? data)}
      :essence-copy      (str "All orders include a one year subscription to ESSENCE Magazine - a $10 value! "
                              "Offer and refund details will be included with your confirmation.")}))
 
