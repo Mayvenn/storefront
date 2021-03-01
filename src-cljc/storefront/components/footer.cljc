@@ -84,7 +84,7 @@
     ^:inline (social-link "http://www.pinterest.com/mayvennhair/" (svg/mayvenn-on-pinterest))]))
 
 (defcomponent full-component
-  [{:keys [link-columns contacts essence-copy]} owner opts]
+  [{:keys [link-columns contacts essence-copy] :as data} owner opts]
   [:div.bg-cool-gray
    [:div.bg-p-color.pt1]
    [:div.container
@@ -100,7 +100,7 @@
         essence-copy])]]
 
    [:div.mt3
-    (component/build footer-links/component {:minimal? false} nil)]])
+    (footer-links/built-component data opts)]])
 
 (defn contacts-query
   [data]
@@ -128,7 +128,7 @@
          ^:inline (dtc-link link))])]])
 
 (defcomponent dtc-full-component
-  [{:keys [additional-margin contacts link-columns essence-copy]} owner opts]
+  [{:keys [additional-margin contacts link-columns essence-copy] :as data} owner opts]
   [:div.bg-cool-gray
    [:div.bg-p-color.pt1]
    [:div.container
@@ -146,9 +146,9 @@
    [:div.hide-on-dt
     (when additional-margin
       {:style {:margin-bottom additional-margin}})
-    (component/build footer-links/component {:minimal? false} nil)]
+    (footer-links/built-component data opts)]
    [:div.hide-on-mb-tb
-    (component/build footer-links/component {:minimal? false} nil)]])
+    (footer-links/built-component data opts)]])
 
 (defn ^:private split-evenly
   [coll]
