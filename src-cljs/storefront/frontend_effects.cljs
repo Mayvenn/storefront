@@ -359,6 +359,11 @@
   [_ event args _ app-state]
   (api/get-shipping-methods)
   (api/get-states (get-in app-state keypaths/api-cache))
+  ;; Fetch SKUS of services in case they aren't there- they are needed for add-to-bag stringer events
+  (api/get-products (get-in app-state keypaths/api-cache)
+                    {:service/type "base"}
+                    (fn [response]
+                      (messages/handle-message events/api-success-v3-products response)))
   (google-maps/insert) ;; for address screen on the next page
   (stripe/insert)
   (quadpay/insert)
@@ -683,7 +688,8 @@
 (defmethod effects/perform-effects events/cart-cleared [_ _ _ _ app-state]
   (api/add-sku-to-bag
    (get-in app-state keypaths/session-id)
-   {:sku                {:catalog/sku-id "SRV-LBI-000"}
+   {:sku                {:catalog/sku-id                     "SRV-LBI-000"
+                         :promo.mayvenn-install/discountable true}
     :quantity           1
     :stylist-id         (get-in app-state keypaths/store-stylist-id)
     :heat-feature-flags (get-in app-state keypaths/features)}

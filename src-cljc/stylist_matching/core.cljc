@@ -14,6 +14,7 @@
                        [storefront.api :as api]
                        [storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.frontend-effects :as ffx]
+                       [storefront.frontend-trackings :as ftx]
                        [storefront.history :as history]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.request-keys :as request-keys]])
@@ -22,10 +23,12 @@
             api.stylist
             storefront.keypaths
             [spice.maps :as maps]
+            [spice.selector :as selector]
             [storefront.effects :as fx]
             [storefront.events :as e]
             [stylist-matching.keypaths :as k]
             [stylist-matching.search.accessors.filters :as filters]
+            [storefront.accessors.orders :as accessors.orders]
             [storefront.trackings :as trackings]
             [storefront.platform.messages
              :as messages
@@ -252,9 +255,10 @@
   #?@(:cljs
       [(cookie-jar/save-adventure (get-in state storefront.keypaths/cookie)
                                   (get-in state adventure.keypaths/adventure))
-       (let [features                        (get-in state storefront.keypaths/features)
-             order (api.orders/current state)
-             {:keys [number token]}          (:waiter/order order)]
+       (let [features               (get-in state storefront.keypaths/features)
+             waiter-order           (:waiter/order (api.orders/current state))
+             {:keys [number token]} waiter-order
+             free-mayvenn-service   (api.orders/free-mayvenn-service nil waiter-order)]
          (api/assign-servicing-stylist
           (:stylist-id stylist) 1
           number token features
@@ -265,21 +269,42 @@
                                   e/navigate-cart
                                   e/navigate-adventure-match-success)]
               (publish e/biz|current-stylist|selected
-                       {:order        order
-                        :stylist      stylist
-                        :on/success   #(history/enqueue-navigate success-event)
-                        :result-index result-index})))))]))
+                       {:order                     order
+                        :prev-free-mayvenn-service free-mayvenn-service
+                        :stylist                   stylist
+                        :on/success                #(history/enqueue-navigate success-event)
+                        :result-index              result-index})))))]))
 
 (defmethod trackings/perform-track e/biz|current-stylist|selected
-  [_ _ {:keys [order stylist result-index]} state]
-  (let [{:keys [number]} order]
-    #?(:cljs
+  [_ _ {:keys [order stylist result-index prev-free-mayvenn-service]} state]
+  #?(:cljs
+     (let [{:keys [number total]} order]
        (stringer/track-event "stylist_selected"
                              {:stylist_id     (:stylist-id stylist)
                               :card_index     result-index
                               :current_step   2
                               :order_number   number
-                              :stylist_rating (:rating stylist)}))))
+                              :stylist_rating (:rating stylist)})
+       ;; Selecting a stylist means that the order must now necessarily have a free mayvenn service
+       (when-not prev-free-mayvenn-service ; But it might not have had a free mayvenn service before
+         (let [skus-db              (get-in state storefront.keypaths/v2-skus)
+               images-catalog       (get-in state storefront.keypaths/v2-images)
+               line-item-skuers     (ftx/waiter-line-items->line-item-skuer
+                                     skus-db
+                                     (accessors.orders/product-and-service-items order))
+               cart-items           (mapv (partial ftx/line-item-skuer->stringer-cart-item images-catalog) line-item-skuers)
+               free-mayvenn-service (->> line-item-skuers
+                                         (selector/match-all {:selector/strict? true} {:promo.mayvenn-install/discountable true})
+                                         first
+                                         (ftx/line-item-skuer->stringer-cart-item images-catalog))
+               order-quantity       (accessors.orders/product-and-service-quantity order)]
+           (stringer/track-event "add_to_cart" (merge free-mayvenn-service
+                                                      {:order_number     number
+                                                       :order_total      total
+                                                       :order_quantity   order-quantity
+                                                       :store_experience (get-in state storefront.keypaths/store-experience)
+                                                       :quantity         1
+                                                       :context          {:cart-items cart-items}})))))))
 
 ;; -------------------------- stylist search by ids
 

@@ -1,5 +1,6 @@
 (ns storefront.frontend-trackings
-  (:require [clojure.string :as string]
+  (:require [api.orders :as api.orders]
+            [clojure.string :as string]
             [clojure.set :as set]
             [spice.maps :as maps]
             [storefront.accessors.line-items :as line-items]
@@ -22,16 +23,19 @@
    :revenue        total
    :products-count (orders/product-quantity order)})
 
+(defn waiter-line-item->line-item-skuer
+  [skus-db waiter-line-item]
+  (merge (get skus-db (:sku waiter-line-item))
+         (maps/select-rename-keys waiter-line-item {:quantity        :item/quantity
+                                                    :line-item-group :line-item-group})) )
+
 (defn waiter-line-items->line-item-skuer
   "This is a stopgap measure to stand in for when waiter will one day return
   line items in skuer format. The domain around selling needs to be defined.
 
   Does not handle shipping line-items."
   [skus-db line-items]
-  (mapv #(merge (get skus-db (:sku %))
-                (maps/select-rename-keys % {:quantity        :item/quantity
-                                            :line-item-group :line-item-group}))
-        line-items))
+  (mapv (partial waiter-line-item->line-item-skuer skus-db) line-items))
 
 (defn sku-id->quantity-to-line-item-skuer
   [skus-db sku-id->quantity]
@@ -120,15 +124,27 @@
 (defmethod perform-track events/api-success-add-sku-to-bag
   [_ _ {:keys [quantity sku order] :as args} app-state]
   (when sku
-    (let [line-item-skuers (waiter-line-items->line-item-skuer
-                            (get-in app-state keypaths/v2-skus)
-                            (orders/product-and-service-items order))
-
-          images-catalog   (get-in app-state keypaths/v2-images)
-          cart-items     (mapv (partial line-item-skuer->stringer-cart-item images-catalog) line-item-skuers)
-          store-slug     (get-in app-state keypaths/store-slug)
-          order-quantity (orders/product-and-service-quantity order)]
-      (stringer/track-event "add_to_cart" (merge (line-item-skuer->stringer-cart-item images-catalog sku)
+    (let [images-catalog        (get-in app-state keypaths/v2-images)
+          skus-db               (get-in app-state keypaths/v2-skus)
+          ;; If we added a service, then the SKU we requested (LBI) might not be the one that came back;
+          ;; we should use the one that came back. But it might not be in the state catalog, so we shan't
+          ;; depend on it.
+          free-service-added?   (:promo.mayvenn-install/discountable sku)
+          cart-item-being-added (if free-service-added?
+                                  (->> order
+                                       (api.orders/free-mayvenn-service nil)
+                                       :free-mayvenn-service/service-item
+                                       :sku
+                                       (get skus-db)
+                                       (line-item-skuer->stringer-cart-item images-catalog))
+                                  (line-item-skuer->stringer-cart-item images-catalog sku))
+          cart-items            (->> (orders/product-and-service-items order)
+                                     (waiter-line-items->line-item-skuer skus-db)
+                                     (filter :catalog/sku-id)
+                                     (mapv (partial line-item-skuer->stringer-cart-item images-catalog)))
+          store-slug            (get-in app-state keypaths/store-slug)
+          order-quantity        (orders/product-and-service-quantity order)]
+      (stringer/track-event "add_to_cart" (merge cart-item-being-added
                                                  {:order_number     (:number order)
                                                   :order_total      (:total order)
                                                   :order_quantity   order-quantity
