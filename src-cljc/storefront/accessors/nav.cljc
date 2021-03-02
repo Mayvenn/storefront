@@ -112,6 +112,5 @@
 
 (defn show-minimal-header? [data event]
   (contains?
-   (set/union (when (experiments/new-shared-cart? data)
-                share-cart-events)
+   (set/union share-cart-events
               minimal-header-events) event))

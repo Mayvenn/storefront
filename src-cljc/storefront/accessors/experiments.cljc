@@ -124,10 +124,6 @@
   [data]
   (display-feature? data "hair-filters"))
 
-(defn new-shared-cart?
-  [data]
-  (display-feature? data "new-shared-cart"))
-
 (defn service-skus-with-addons?
   [data]
   (display-feature? data "service-skus-with-addons"))
