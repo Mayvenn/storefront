@@ -2,6 +2,7 @@
   (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]])
             [api.catalog :refer [select ?service]]
             api.orders
+            [clojure.string :as string]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.flash :as flash]
             [storefront.components.header :as header]
@@ -19,6 +20,29 @@
     "The stylist you are looking for is not available."
     " Please search for another stylist in your area below.")})
 
+(def ^:private sv2-codes->srvs
+  {"LBI" "SRV-LBI-000"
+   "CBI" "SRV-CBI-000"
+   "FBI" "SRV-FBI-000"
+   "3BI" "SRV-3BI-000"
+   \3    "SRV-3CU-000"
+   \C    "SRV-DPCU-000"
+   \D    "SRV-TKDU-000"
+   \F    "SRV-FCU-000"
+   \L    "SRV-CCU-000"
+   \T    "SRV-TRMU-000"})
+
+(defn ^:private services->srv-sku-ids
+  [srv-sku-ids {:keys [catalog/sku-id]}]
+  (concat srv-sku-ids
+          (if (string/starts-with? sku-id "SV2")
+            (let [[_ base addons] (re-find #"SV2-(\w+)-(\w+)" sku-id)]
+              (->> addons
+                   (concat [base])
+                   (map sv2-codes->srvs)
+                   (remove nil?)))
+            [sku-id])))
+
 (defmethod effects/perform-effects events/navigate-adventure-find-your-stylist
   [_ event {:keys [query-params] :as args} _ state]
   (if-let [error-message (some-> query-params :error find-your-stylist-error-codes)]
@@ -31,8 +55,9 @@
     (let [{:order/keys [items]} (api.orders/current state)]
       #?(:cljs (google-maps/insert))
       (messages/handle-message events/flow|stylist-matching|initialized)
-      (when-let [preferred-services (->> (select ?service items)
-                                         (mapv :catalog/sku-id)
+      (when-let [preferred-services (->> items
+                                         (select ?service)
+                                         (reduce services->srv-sku-ids [])
                                          not-empty)]
         (messages/handle-message events/flow|stylist-matching|param-services-constrained
                                  {:services preferred-services})))))
