@@ -22,7 +22,7 @@
        :file-name  "free-install-hero"}
       {:layer/type :free-standard-shipping-bar}
       {:layer/type   :shop-text-block
-       :header/value "Buy 3 bundles and we’ll pay for your service"
+       :header/value "Buy 3 bundles and we’ll pay for your install"
        :cta/value    "Browse Stylists"
        :cta/button?  true
        :cta/id       "browse-stylist"
