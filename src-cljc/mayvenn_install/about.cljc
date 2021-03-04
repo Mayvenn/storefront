@@ -40,7 +40,7 @@
       {:layer/type     :shop-bulleted-explainer
        :layer/id       "heres-how-it-works"
        :title/value    ["You buy the hair,"
-                        "we cover the service."]
+                        "we cover the install."]
        :subtitle/value ["Here's how it works."]
        :bullets        [{:title/value "Pick Your Dream Look"
                          :body/value  "Have a vision in mind? We’ve got the hair for it. Otherwise, peruse our site for inspiration to find your next look."}
