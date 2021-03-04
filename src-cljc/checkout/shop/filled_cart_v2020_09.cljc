@@ -607,8 +607,8 @@
 (defn freeinstall-informational<-
   [order items adding-freeinstall?]
   (when (and (not (orders/discountable-services-on-order? order))
-             (every? (comp #{"bundles" "closures" "frontals" "360-frontals"} first :hair/family)
-                     (filter (comp (partial = "spree") :item/source) items) ))
+             (some (comp #{"bundles" "closures" "frontals" "360-frontals"} first :hair/family)
+                   (filter (comp (partial = "spree") :item/source) items) ))
     {:freeinstall-informational/button-id             "add-free-mayvenn-service"
      :freeinstall-informational/primary               "Don't miss out on a free Mayvenn Install!"
      :freeinstall-informational/secondary             "Get a free install by a licensed stylist when you purchase 3 or more qualifying items"
