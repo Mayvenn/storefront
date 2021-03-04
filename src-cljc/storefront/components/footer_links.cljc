@@ -1,5 +1,6 @@
 (ns storefront.components.footer-links
-  (:require #?@(:cljs [[storefront.browser.scroll :as scroll]])
+  (:require #?@(:cljs [[storefront.browser.scroll :as scroll]
+                       [storefront.hooks.stringer :as stringer]])
             [clojure.string :as string]
             [spice.date :as date]
             [storefront.accessors.nav :as nav]
@@ -120,7 +121,7 @@
                                               "sign up"
                                               (svg/check-mark {:class "fill-white mx3"
                                                                :style {:height "18px" :width "18px"}}))
-    :footer.email-signup.button/target       [events/control-footer-email-submit]
+    :footer.email-signup.button/target       [events/control-footer-email-submit {:email footer-email-input-value}]
     :footer.email-signup.button/focus-target [events/control-footer-email-on-focus]
     :footer.email-signup.button/placeholder  "Email address"
     :footer.email-signup.button/disabled?    (and footer-email-input-value
@@ -133,17 +134,26 @@
   [data opts]
   (component/build component (query data) nil))
 
-(defmethod transitions/transition-state events/control-footer-email-submit
-  [_ event args app-state]
-  (-> app-state
-      (assoc-in keypaths/footer-email-ready false)
-      (assoc-in keypaths/footer-email-submitted true)))
-
 (defmethod transitions/transition-state events/control-footer-email-on-focus
   [_ event args app-state]
   (-> app-state
       (assoc-in keypaths/footer-email-ready true)
       (assoc-in keypaths/footer-email-value nil)))
+
+#?(:cljs
+   (defmethod trackings/perform-track events/control-footer-email-submit
+     [_ event {:keys [email]} app-state]
+     (stringer/track-event "footer_email_capture"
+                           {:email            email
+                            :store-slug       (get-in app-state keypaths/store-slug)
+                            :test-variations  (get-in app-state keypaths/features)
+                            :store-experience (get-in app-state keypaths/store-experience)})))
+
+(defmethod transitions/transition-state events/control-footer-email-submit
+  [_ event args app-state]
+  (-> app-state
+      (assoc-in keypaths/footer-email-ready false)
+      (assoc-in keypaths/footer-email-submitted true)))
 
 (defmethod effects/perform-effects events/control-footer-email-submit
   [_ event args app-state]
