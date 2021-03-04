@@ -280,6 +280,9 @@
 
 (def facebook-email-denied (conj ui :facebook-email-denied))
 
+(def footer-email-submitted [:footer :email :submitted])
+(def footer-email-ready [:footer :email :ready])
+
 (def experiments [:experiments])
 (def experiments-manual (conj experiments :manual))
 (def experiments-bucketed (conj experiments :bucketed))

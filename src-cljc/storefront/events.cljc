@@ -226,6 +226,9 @@
 (defpath control-checkout-add-checked)
 (defpath control-checkout-add-continued)
 
+(defpath control-footer-email-submit)
+(defpath control-footer-email-on-focus)
+
 (defpath control-stylist-account-profile-submit)
 (defpath control-stylist-account-password-submit)
 (defpath control-stylist-account-commission-submit)

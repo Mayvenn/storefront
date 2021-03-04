@@ -165,20 +165,20 @@
 
 (defn query
   [data]
-  (let [shop?                (= (get-in data keypaths/store-slug) "shop")
-        classic?             (= "mayvenn-classic" (get-in data keypaths/store-experience))
-        sort-key             :footer/order
-        categories           (->> (get-in data keypaths/categories)
+  (let [shop?              (= (get-in data keypaths/store-slug) "shop")
+        classic?           (= "mayvenn-classic" (get-in data keypaths/store-experience))
+        sort-key           :footer/order
+        categories         (->> (get-in data keypaths/categories)
                                 (into []
                                       (comp (filter not-services-icp?)
                                             (filter sort-key)
                                             (filter (partial auth/permitted-category? data)))))
-        non-category-links   (concat (when shop?
-                                       [{:title       "Find a Stylist"
-                                         :sort-order  1
-                                         :id          "find-a-stylist"
-                                         :new-link?   false
-                                         :nav-message [events/navigate-adventure-find-your-stylist]}])
+        non-category-links (concat (when shop?
+                                     [{:title       "Find a Stylist"
+                                       :sort-order  1
+                                       :id          "find-a-stylist"
+                                       :new-link?   false
+                                       :nav-message [events/navigate-adventure-find-your-stylist]}])
                                    (when (not classic?)
                                      [{:title       "Shop By Look"
                                        :sort-order  3
@@ -190,7 +190,7 @@
                                        :id          "shop-bundle-sets"
                                        :new-link?   false
                                        :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]}]))
-        links                (->> categories
+        links              (->> categories
                                 (mapv (partial category->link))
                                 (concat non-category-links)
                                 (remove nil?)
@@ -206,8 +206,11 @@
                                      (select ?discountable)
                                      first)))
                           "79px")
-     :footer-links      {:minimal-footer?      (nav/show-minimal-footer? (get-in data keypaths/navigation-event))
-                         :footer-email-signup? (experiments/footer-email-signup? data)}
+     :footer-links      {:minimal-footer?                (nav/show-minimal-footer? (get-in data keypaths/navigation-event))
+                         :footer-email-signup?           (experiments/footer-email-signup? data)
+                         :footer-email-submitted?        (get-in data keypaths/footer-email-submitted)
+                         :footer-ready-for-email-signup? (get-in data keypaths/footer-email-ready)
+                         }
      :essence-copy      (str "All orders include a one year subscription to ESSENCE Magazine - a $10 value! "
                              "Offer and refund details will be included with your confirmation.")}))
 

@@ -189,6 +189,7 @@
     (-> app-state
         collapse-menus
         add-return-event
+        (assoc-in keypaths/footer-email-submitted nil)
         (clean-up-open-category-panels new-nav-message previous-nav-message)
         (clear-recently-added-skus previous-nav-message)
         (clear-detailed-product-related-addons previous-nav-message)

@@ -1,14 +1,17 @@
 (ns storefront.components.footer-links
-  (:require [spice.date :as date]
+  (:require #?@(:cljs [[storefront.browser.scroll :as scroll]])
+            [spice.date :as date]
             [storefront.accessors.nav :as nav]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
+            [storefront.effects :as effects]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.routes :as routes]
-            [storefront.trackings :as trackings]))
+            [storefront.trackings :as trackings]
+            [storefront.transitions :as transitions]))
 
 (defn- footer-link [opts label]
   (component/html [:a.block.inherit-color.my2 opts label]))
@@ -17,30 +20,36 @@
   (component/html [:a.inherit-color ^:attrs opts ^:inline label]))
 
 (defn signup-molecule
-  [{:footer.email-signup.title/keys [id primary]
-    :footer.email-signup.input/keys [value errors]
-    :footer.email-signup.button/keys [placeholder target] :as data} view]
+  [{:footer.email-signup.title/keys     [id primary]
+    :footer.email-signup.submitted/keys [text]
+    :footer.email-signup.input/keys     [value errors]
+    :footer.email-signup.button/keys    [label placeholder target focus-target] :as data} view]
   (when id
-    (component/html [:div
-      [:div primary]
+    (component/html
+     [:div.mb5.dark-gray
+      [:div.content-2 primary]
       [:form
        {:on-submit (apply utils/send-event-callback target)}
        [:div.py2.dark-gray
         (ui/input-group
-         {:keypath       nil
-          :class         "dark-gray"
+         {:class         "dark-gray"
+          :type          "email"
+          :required      true
           :wrapper-class "flex-grow-1 bg-gray-mask border-none"
           :data-test     (str "email-address-" view)
+          :on-focus      (apply utils/send-event-callback focus-target)
           :focused       true
           :placeholder   placeholder
           :value         value
           :errors        (get errors ["email"])
           :data-ref      (str id "-" view)}
-         {:content "sign up"
+         {:content label
           :args    {:class     "bg-p-color border-none"
                     :on-click  (apply utils/send-event-callback target)
                     :spinning? nil
-                    :data-test (str "sign-up-" view)}})]]])))
+                    :data-test (str "sign-up-" view)}})]]
+      (when text
+        [:div.mb7.mtn2 text])])))
 
 (defcomponent component [{:keys [minimal?] :as data} owner opts]
   (if minimal?
@@ -90,17 +99,40 @@
         "©" (date/year (date/now)) " " "Mayvenn"]]]]))
 
 (defn query
-  [{:keys [minimal-footer? footer-email-signup?]}]
+  [{:keys [minimal-footer? footer-email-signup? footer-email-submitted? footer-field-errors footer-ready-for-email-signup?]}]
   (merge
    {:minimal?     minimal-footer?
     :email        nil
     :field-errors nil}
-   {:footer.email-signup.title/id (when footer-email-signup? "sign-up")
-    :footer.email-signup.title/primary "Sign up to get the latest on sales, new releases and more..."
-    :footer.email-signup.button/label "sign up"
-    :footer.email-signup.button/target [events/navigate-home]
-    :footer.email-signup.button/placeholder "Email address"}))
+   {:footer.email-signup.title/id            (when footer-email-signup? "sign-up")
+    :footer.email-signup.title/primary       "Sign up to get the latest on sales, new releases and more..."
+    :footer.email-signup.button/label        (if (or footer-ready-for-email-signup?
+                                                     (not footer-email-submitted?))
+                                              "sign up"
+                                              (svg/check-mark {:class "fill-white mx3"
+                                                               :style {:height "18px" :width "18px"}}))
+    :footer.email-signup.button/target       [events/control-footer-email-submit]
+    :footer.email-signup.button/focus-target [events/control-footer-email-on-focus]
+    :footer.email-signup.button/placeholder  "Email address"
+    :footer.email-signup.input/errors        footer-field-errors
+    :footer.email-signup.submitted/text      (when footer-email-submitted? "You have successfully subscribed to our mailing list.")}))
 
 (defn built-component
   [data opts]
   (component/build component (query data) nil))
+
+(defmethod transitions/transition-state events/control-footer-email-submit
+  [_ event args app-state]
+  (-> app-state
+      (assoc-in keypaths/footer-email-ready false)
+      (assoc-in keypaths/footer-email-submitted true)))
+
+(defmethod transitions/transition-state events/control-footer-email-on-focus
+  [_ event args app-state]
+  (-> app-state
+      (assoc-in keypaths/footer-email-ready true)))
+
+(defmethod effects/perform-effects events/control-footer-email-submit
+  [_ event args app-state]
+  #?(:cljs (scroll/scroll-selector-to-top "[data-ref=sign-up-on-mb]")
+      :clj nil))
