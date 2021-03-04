@@ -282,6 +282,7 @@
 
 (def footer-email-submitted [:footer :email :submitted])
 (def footer-email-ready [:footer :email :ready])
+(def footer-email-value [:footer :email :value])
 
 (def experiments [:experiments])
 (def experiments-manual (conj experiments :manual))

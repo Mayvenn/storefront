@@ -1,5 +1,6 @@
 (ns storefront.components.footer-links
   (:require #?@(:cljs [[storefront.browser.scroll :as scroll]])
+            [clojure.string :as string]
             [spice.date :as date]
             [storefront.accessors.nav :as nav]
             [storefront.component :as component :refer [defcomponent]]
@@ -23,7 +24,7 @@
   [{:footer.email-signup.title/keys     [id primary]
     :footer.email-signup.submitted/keys [text]
     :footer.email-signup.input/keys     [value errors]
-    :footer.email-signup.button/keys    [label placeholder target focus-target] :as data} view]
+    :footer.email-signup.button/keys    [label placeholder target focus-target disabled?]} view]
   (when id
     (component/html
      [:div.mb5.dark-gray
@@ -33,6 +34,7 @@
        [:div.py2.dark-gray
         (ui/input-group
          {:class         "dark-gray"
+          :keypath       keypaths/footer-email-value
           :type          "email"
           :required      true
           :wrapper-class "flex-grow-1 bg-gray-mask border-none"
@@ -45,8 +47,8 @@
           :data-ref      (str id "-" view)}
          {:content label
           :args    {:class     "bg-p-color border-none"
+                    :disabled? disabled?
                     :on-click  (apply utils/send-event-callback target)
-                    :spinning? nil
                     :data-test (str "sign-up-" view)}})]]
       (when text
         [:div.mb7.mtn2 text])])))
@@ -98,8 +100,15 @@
        [:span.py2.flex.items-center.gray {:key "minimal"}
         "©" (date/year (date/now)) " " "Mayvenn"]]]]))
 
+(defn ^:private invalid-email? [email]
+  (not (and (seq email)
+            (< 3 (count email))
+            (string/includes? email "@")
+            (not (string/ends-with? email "@")))))
+
 (defn query
-  [{:keys [minimal-footer? footer-email-signup? footer-email-submitted? footer-field-errors footer-ready-for-email-signup?]}]
+  [{:keys [minimal-footer? footer-email-signup? footer-email-input-value
+           footer-email-submitted? footer-field-errors footer-ready-for-email-signup?]}]
   (merge
    {:minimal?     minimal-footer?
     :email        nil
@@ -114,7 +123,10 @@
     :footer.email-signup.button/target       [events/control-footer-email-submit]
     :footer.email-signup.button/focus-target [events/control-footer-email-on-focus]
     :footer.email-signup.button/placeholder  "Email address"
+    :footer.email-signup.button/disabled?    (and footer-email-input-value
+                                                  (invalid-email? footer-email-input-value))
     :footer.email-signup.input/errors        footer-field-errors
+    :footer.email-signup.input/value         footer-email-input-value
     :footer.email-signup.submitted/text      (when footer-email-submitted? "You have successfully subscribed to our mailing list.")}))
 
 (defn built-component
@@ -130,7 +142,8 @@
 (defmethod transitions/transition-state events/control-footer-email-on-focus
   [_ event args app-state]
   (-> app-state
-      (assoc-in keypaths/footer-email-ready true)))
+      (assoc-in keypaths/footer-email-ready true)
+      (assoc-in keypaths/footer-email-value nil)))
 
 (defmethod effects/perform-effects events/control-footer-email-submit
   [_ event args app-state]
