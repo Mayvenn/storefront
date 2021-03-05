@@ -329,7 +329,7 @@
 (defmethod transition-state events/control-checkout-cart-paypal-setup [_ event args app-state]
   (assoc-in app-state keypaths/cart-paypal-redirect true))
 
-(defmethod transition-state events/control-create-order-from-shared-cart
+(defmethod transition-state events/control-create-order-from-look
   [_ event {:keys [look-id]} app-state]
   (assoc-in app-state keypaths/selected-look-id look-id))
 

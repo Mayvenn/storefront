@@ -249,13 +249,12 @@
                            :quantities     (->> line-item-skuers (map :item/quantity) (string/join ","))
                            :total_quantity (->> line-item-skuers (map :item/quantity) (reduce + 0))})))
 
-(defmethod perform-track events/api-success-update-order-from-shared-cart
-  [_ _ {:keys [look-id order shared-cart-id]} app-state]
+(defn track-bulk-add-to-cart
+  [{:keys [skus-db images-catalog store-experience order shared-cart-id look-id]}]
   (let [line-item-skuers       (waiter-line-items->line-item-skuer
-                                (get-in app-state keypaths/v2-skus)
+                                skus-db
                                 (orders/product-and-service-items order))
         line-item-quantity     (->> line-item-skuers (map :item/quantity) (reduce + 0))
-        images-catalog         (get-in app-state keypaths/v2-images)
         cart-items             (mapv (partial line-item-skuer->stringer-cart-item images-catalog) line-item-skuers)
         {non-upsell-skus false
          upsell-skus     true} (group-by
@@ -267,7 +266,7 @@
     (google-tag-manager/track-add-to-cart {:number           (:number order)
                                            :line-item-skuers line-item-skuers})
     (stringer/track-event "bulk_add_to_cart" (merge {:shared_cart_id       shared-cart-id
-                                                     :store_experience     (get-in app-state keypaths/store-experience)
+                                                     :store_experience     store-experience
                                                      :order_number         (:number order)
                                                      :order_total          (:total order)
                                                      :order_quantity       line-item-quantity
@@ -280,6 +279,15 @@
                                                      :context              {:cart-items cart-items}}
                                                     (when look-id
                                                       {:look_id look-id})))))
+(defmethod perform-track events/api-success-update-order-from-shared-cart
+  [_ _ {:keys [look-id order shared-cart-id]} app-state]
+  (track-bulk-add-to-cart
+   {:skus-db          (get-in app-state keypaths/v2-skus)
+    :images-catalog   (get-in app-state keypaths/v2-images)
+    :store-experience (get-in app-state keypaths/store-experience)
+    :order            order
+    :shared-cart-id   shared-cart-id
+    :look-id          look-id}))
 
 (def interesting-payment-methods
   #{"apple-pay" "paypal" "quadpay"})

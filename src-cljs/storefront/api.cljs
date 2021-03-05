@@ -939,41 +939,36 @@
    {:params  {:cart-ids (string/join "," cart-ids)}
     :handler #(messages/handle-message events/api-success-shared-carts-fetch %)}))
 
-(defn create-order-from-cart
-  ([params success-handler error-handler]
-   (storeback-api-req
-    POST
-    "/create-order-from-shared-cart"
-    request-keys/create-order-from-shared-cart
-    {:params        params
-     :handler       success-handler
-     :error-handler error-handler}))
-  ([session-id
-    shared-cart-id
-    look-id
-    user-id
-    user-token
-    stylist-id
-    servicing-stylist-id
-    cart-interstitial?]
-   (create-order-from-cart
-    {:session-id           session-id
-     :shared-cart-id       shared-cart-id
-     :user-id              user-id
-     :user-token           user-token
-     :stylist-id           stylist-id
-     :servicing-stylist-id servicing-stylist-id}
-    #(messages/handle-message events/api-success-update-order-from-shared-cart
-                              {:order          (orders/TEMP-pretend-service-items-do-not-exist %)
-                               :look-id        look-id
-                               :shared-cart-id shared-cart-id
-                               :navigate       (if cart-interstitial?
-                                                 events/navigate-added-to-cart
-                                                 events/navigate-cart)})
-    #(do
-       ;; Order is important here, for correct display of errors
-       (default-error-handler %)
-       (messages/handle-message events/api-failure-order-not-created-from-shared-cart)))))
+(defn create-order-from-shared-cart
+  [params success-handler error-handler]
+  (storeback-api-req
+   POST
+   "/create-order-from-shared-cart"
+   request-keys/create-order-from-shared-cart
+   {:params        params
+    :handler       success-handler
+    :error-handler error-handler}))
+
+(defn create-order-from-look
+  [session-id shared-cart-id look-id user-id user-token stylist-id servicing-stylist-id cart-interstitial?]
+  (create-order-from-shared-cart
+   {:session-id           session-id
+    :shared-cart-id       shared-cart-id
+    :user-id              user-id
+    :user-token           user-token
+    :stylist-id           stylist-id
+    :servicing-stylist-id servicing-stylist-id}
+   #(messages/handle-message events/api-success-update-order-from-shared-cart
+                             {:order          (orders/TEMP-pretend-service-items-do-not-exist %)
+                              :look-id        look-id
+                              :shared-cart-id shared-cart-id
+                              :navigate       (if cart-interstitial?
+                                                events/navigate-added-to-cart
+                                                events/navigate-cart)})
+   #(do
+      ;; NOTE: Order is important here, for correct display of errors
+      (default-error-handler %)
+      (messages/handle-message events/api-failure-order-not-created-from-shared-cart))))
 
 (defn assign-servicing-stylist
   "Assigns a servicing stylist to an order, or creates such an order if no order number given"

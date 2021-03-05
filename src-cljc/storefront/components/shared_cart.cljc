@@ -2,27 +2,23 @@
   (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.history :as history]
                        [storefront.hooks.quadpay :as quadpay]
+                       [storefront.accessors.orders :as orders]
+                       storefront.trackings
+                       [storefront.frontend-trackings :as trackings]
                        [storefront.components.payment-request-button :as payment-request-button]])
             [api.catalog :refer [select ?discountable ?physical ?service]]
             api.orders
             api.stylist
-            [catalog.images :as catalog-images]
             [catalog.products :as products]
             [checkout.ui.cart-item-v202004 :as cart-item-v202004]
             [checkout.ui.cart-summary-v202004 :as cart-summary]
             [clojure.string :as string]
             [spice.core :as spice]
             [spice.maps :as maps]
-            [storefront.accessors.line-items :as line-items]
-            [storefront.accessors.orders :as orders]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.promos :as promos]
-            [storefront.accessors.shared-cart :as shared-cart]
             [storefront.accessors.stylists :as stylists]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.flash :as flash]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -654,20 +650,21 @@
 #?(:cljs
    (defn control-fx
      [state {:keys [id advertised-price]} on-success]
-     (let [success-handler #(do
+     (let [success-handler #(let [new-order (orders/TEMP-pretend-service-items-do-not-exist %)]
                               (messages/handle-message events/save-order
-                                                       {:order (orders/TEMP-pretend-service-items-do-not-exist %)})
+                                                       {:order new-order})
                               (messages/handle-message events/biz|shared-cart|hydrated
-                                                       {:order            %
+                                                       {:order            new-order
                                                         :advertised-price advertised-price
+                                                        :shared-cart-id   id
                                                         :on/success       on-success}))
            error-handler   #(messages/handle-message events/api-failure-shared-cart)]
-       (api/create-order-from-cart {:session-id           (get-in state keypaths/session-id)
-                                    :shared-cart-id       id
-                                    :user-id              (get-in state keypaths/user-id)
-                                    :user-token           (get-in state keypaths/user-token)
-                                    :stylist-id           (get-in state keypaths/store-stylist-id)
-                                    :servicing-stylist-id (get-in state keypaths/order-servicing-stylist-id)}
+       (api/create-order-from-shared-cart {:session-id           (get-in state keypaths/session-id)
+                                           :shared-cart-id       id
+                                           :user-id              (get-in state keypaths/user-id)
+                                           :user-token           (get-in state keypaths/user-token)
+                                           :stylist-id           (get-in state keypaths/store-stylist-id)
+                                           :servicing-stylist-id (get-in state keypaths/order-servicing-stylist-id)}
                                    success-handler
                                    error-handler))))
 
@@ -710,6 +707,16 @@
          (history/enqueue-navigate events/navigate-cart {:query-params {:error "discounts-changed"}})
          (messages/handle-later events/clear-shared-cart-redirect))
        (on-success))))
+
+#?(:cljs
+   (defmethod storefront.trackings/perform-track events/biz|shared-cart|hydrated
+     [_ _ {:keys [order shared-cart-id]} state]
+     (trackings/track-bulk-add-to-cart
+      {:skus-db          (get-in state keypaths/v2-skus)
+       :images-catalog   (get-in state keypaths/v2-images)
+       :store-experience (get-in state keypaths/store-experience)
+       :order            order
+       :shared-cart-id   shared-cart-id})))
 
 (defmethod transitions/transition-state events/api-failure-shared-cart
   [_ _ _ state]

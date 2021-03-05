@@ -30,7 +30,7 @@
 (defn add-to-cart-button
   [sold-out? creating-order? look {:keys [number]}]
   (ui/button-large-primary
-   (merge (utils/fake-href events/control-create-order-from-shared-cart
+   (merge (utils/fake-href events/control-create-order-from-look
                            {:shared-cart-id number
                             :look-id        (:id look)})
           {:data-test        "add-to-cart-submit"
@@ -39,10 +39,10 @@
            :spinning?        creating-order?})
    "Add items to bag"))
 
-(defmethod effects/perform-effects events/control-create-order-from-shared-cart
+(defmethod effects/perform-effects events/control-create-order-from-look
   [_ event {:keys [look-id shared-cart-id] :as args} _ app-state]
   #?(:cljs
-     (api/create-order-from-cart (get-in app-state keypaths/session-id)
+     (api/create-order-from-look (get-in app-state keypaths/session-id)
                                  shared-cart-id
                                  look-id
                                  (get-in app-state keypaths/user-id)
