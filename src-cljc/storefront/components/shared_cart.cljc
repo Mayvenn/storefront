@@ -3,6 +3,7 @@
                        [storefront.history :as history]
                        [storefront.hooks.quadpay :as quadpay]
                        [storefront.accessors.orders :as orders]
+                       [storefront.accessors.auth :as auth]
                        storefront.trackings
                        [storefront.frontend-trackings :as trackings]
                        [storefront.components.payment-request-button :as payment-request-button]])
@@ -580,16 +581,23 @@
       (update-in keypaths/v2-images merge (maps/map-keys (fnil name "") images))
       (update-in keypaths/v1-looks-shared-carts merge (maps/index-by :number carts))))
 
+(defn ^:private invalid-line-item?
+  [stylist? {:keys [sku]}]
+  (or (not (-> sku :inventory/in-stock?))
+      (and (-> sku :catalog/department (= #{"stylist-exclusives"}))
+           (not stylist?))))
+
 (defmethod effects/perform-effects events/api-success-shared-cart-fetch
   [_ _ {{:keys [promotion-codes servicing-stylist-id]} :shared-cart} _ app-state]
   #?(:cljs
      (let [shared-cart  (get-in app-state keypaths/shared-cart-current)
            catalog-skus (get-in app-state keypaths/v2-skus)
-           api-cache    (get-in app-state keypaths/api-cache)]
+           api-cache    (get-in app-state keypaths/api-cache)
+           stylist?     (auth/stylist? (auth/signed-in app-state))]
        (if (->> shared-cart
                 (enrich-line-items-with-sku-data catalog-skus)
                 :line-items
-                (not-every? (comp :inventory/in-stock? :sku)))
+                (some (partial invalid-line-item? stylist?)))
          (do (messages/handle-message events/flash-later-show-failure
                                       {:message "The bag that has been shared with you has items that are no longer available."})
              (history/enqueue-navigate events/navigate-home))
