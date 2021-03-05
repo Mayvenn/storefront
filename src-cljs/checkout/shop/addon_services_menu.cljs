@@ -174,7 +174,8 @@
 (defmethod fx/perform-effects e/control-show-addon-service-menu
   [_ _ _ _ _]
   (handle-message e/cache|product|requested
-                  {:query ?service}))
+                  {:query (merge ?service
+                                 {:service/category ["preparation" "customization" "install"]})}))
 
 (defmethod trackings/perform-track e/control-show-addon-service-menu
   [_ _ _ state]

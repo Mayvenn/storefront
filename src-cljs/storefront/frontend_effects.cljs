@@ -361,7 +361,8 @@
   (api/get-states (get-in app-state keypaths/api-cache))
   ;; Fetch SKUS of services in case they aren't there- they are needed for add-to-bag stringer events
   (api/get-products (get-in app-state keypaths/api-cache)
-                    {:service/type "base"}
+                    {:service/type     "base"
+                     :service/category "install"}
                     (fn [response]
                       (messages/handle-message events/api-success-v3-products response)))
   (google-maps/insert) ;; for address screen on the next page
@@ -679,6 +680,7 @@
      (get-in state keypaths/api-cache)
      {:catalog/department                 "service"
       :service/type                       "base"
+      :service/category                   ["install"]
       :promo.mayvenn-install/discountable true}
      #(messages/handle-message events/api-success-get-skus %))))
 

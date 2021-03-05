@@ -18,7 +18,7 @@
                        [storefront.history :as history]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.request-keys :as request-keys]])
-            [api.catalog :refer [select ?base ?service ?physical]]
+            [api.catalog :refer [select ?base ?service ?physical ?discountable-install]]
             api.orders
             api.stylist
             storefront.keypaths
@@ -84,10 +84,10 @@
   [_ _ _ _ state]
   #?(:cljs
      (messages/handle-message e/cache|product|requested
-                              {:query ?service}))
+                              {:query ?discountable-install}))
   #?(:cljs
      (api/get-products (get-in state storefront.keypaths/api-cache)
-                       ?base
+                       ?discountable-install
                        (partial publish e/api-success-v3-products-for-stylist-filters))))
 
 ;; Param 'location' constrained

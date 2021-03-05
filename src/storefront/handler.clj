@@ -430,8 +430,9 @@
            order-products :products
            order-images   :images} (when (seq needed-skus) ;; NOTE: does not return addon services because they do not have associated products
                                      (api/fetch-v3-products storeback-config {:selector/sku-ids needed-skus}))
-          {addon-skus :skus}       (api/fetch-v2-skus storeback-config ;; NOTE: get all addon services
+          {addon-skus :skus}       (api/fetch-v2-skus storeback-config ;; NOTE: get all addon services, except for wig construction
                                                       {:catalog/department "service"
+                                                       :service/category   ["preparation" "customization"]
                                                        :service/type       "addon"})
           {pdp-skus     :skus
            pdp-products :products
