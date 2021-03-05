@@ -558,7 +558,7 @@
                                                                                     :validate-price?  true}]
                                                                    :cta/spinning? (= :paypal spinning-button)
                                                                    :cta/disabled? pending-request?}
-                                      :edit                       {:cta/id        "edit"
+                                      :edit                       {:cta/id        "shared-cart-edit"
                                                                    :cta/target    [events/control-shared-cart-edit-cart-clicked
                                                                                    {:id number}]
                                                                    :cta/spinning? (= :cart spinning-button)
@@ -576,8 +576,6 @@
       (update-in keypaths/v2-skus merge (products/index-skus skus))
       (update-in keypaths/v2-products merge (products/index-products products))))
 
-;; TODO: make this work server side
-;; TODO: destructuring in the look detail page is throwing an exception (around gathering images?)
 (defmethod transitions/transition-state events/api-success-shared-carts-fetch
   [_ event {:keys [carts skus images]} app-state]
   (-> app-state
@@ -653,12 +651,6 @@
      [_ _ _ state]
      (assoc-in state keypaths/shared-cart-redirect :pick-your-stylist)))
 
-
-;; #?(:cljs
-;;    (defmethod transitions/transition-state events/control-shared-cart-edit-clicked
-;;      [_ _ _ state]
-;;      (assoc-in state keypaths/shared-cart-redirect :edit)))
-
 #?(:cljs
    (defn control-fx
      [state {:keys [id advertised-price]} on-success]
@@ -724,6 +716,3 @@
   (-> state
       (assoc-in keypaths/errors {:error-message "Sorry, something went wrong. Please try again."})
       (update-in keypaths/shared-cart dissoc :redirect)))
-
-;; TODO paypal checkout
-;; unique react keys
