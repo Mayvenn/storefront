@@ -51,6 +51,7 @@
    Depending on experiments, this whitelist may be modified"
   [no-applied-promos? on-shop?]
   (cond-> #{events/navigate-about-mayvenn-install
+            events/navigate-home
             events/navigate-cart
             events/navigate-shop-by-look
             events/navigate-shop-by-look-details
