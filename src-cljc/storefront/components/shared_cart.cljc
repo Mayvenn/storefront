@@ -269,7 +269,8 @@
   [:div.center.my6
    [:div.canela.title-1.mb3 title]
    [:div.proxima.content-2.mx-auto
-    {:style {:width "270px"}}
+    {:data-test "cart-creator-nickname"
+     :style {:width "270px"}}
     subtitle]])
 
 (component/defcomponent no-stylist-organism
