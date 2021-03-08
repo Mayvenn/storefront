@@ -10,6 +10,7 @@
             [spice.core :as spice]
             [spice.maps :as maps]
             [storefront.accessors.contentful :as contentful]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.images :as images]
             [storefront.accessors.products :as products]
             [storefront.accessors.shared-cart :as shared-cart]
@@ -64,7 +65,7 @@
 (defn look-details-body
   [{:keys [creating-order? sold-out? look shared-cart skus fetching-shared-cart?
            base-price discounted-price quadpay-loaded? discount-text
-           yotpo-data-attributes cart-items service-line-items] :as queried-data}]
+           yotpo-data-attributes cart-items service-line-items look-customization] :as queried-data}]
   [:div.clearfix
    (when look
      [:div.bg-cool-gray.slides-middle.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
@@ -106,6 +107,9 @@
                 [:div.mt2-on-mb
                  (component/build cart-item/organism {:cart-item service-line-item}
                                   (component/component-id (:react/key service-line-item)))]])]])]
+        (when look-customization
+          [:div.center.my6
+           (ui/button-medium-underline-primary {} (:look-customization.button/title look-customization))])
         [:div.border-top.border-cool-gray.mxn2.mt3]
         [:div.center.pt4
          (when discount-text
@@ -308,6 +312,8 @@
                                                                                   :cart-item-sub-item/price  (mf/as-money price)
                                                                                   :cart-item-sub-item/sku-id sku-id})
                                                                                addon-services)})))
+            :look-customization    (when (experiments/look-customization? data)
+                                     {:look-customization.button/title "Customize the look"})
             :carousel/images       (imgs (get-in data keypaths/v2-images) look line-items)
             :items-title/id        "item-quantity-in-look"
             :items-title/primary   (str item-count " items in this " (:short-name album-copy))
