@@ -201,18 +201,19 @@
      (get-cart-product-image images-catalog (first sorted-line-items)))))
 
 (defn service-line-item-query
-  [{:keys [sku-id] :as service-sku} service-product]
+  [{:keys [sku-id] :as service-line-item} service-product]
   {:react/key                             "service-line-item"
    :cart-item-title/id                    "line-item-title-upsell-service"
-   :cart-item-title/primary               (or (:copy/title service-product) (:legacy/product-name service-sku))
+   :cart-item-title/primary               (or (:copy/title service-product) (:legacy/product-name service-line-item))
    :cart-item-copy/lines                  [{:id    (str "line-item-whats-included-" sku-id)
-                                            :value (:copy/whats-included service-sku)}
+                                            :value (:copy/whats-included service-line-item)}
                                            {:id    (str "line-item-quantity-" sku-id)
-                                            :value (str "qty. " (:item/quantity service-sku))}]
+                                            :value (str "qty. " (:item/quantity service-line-item))}]
    :cart-item-floating-box/id             "line-item-service-price"
-   :cart-item-floating-box/contents       [{:text (some-> service-sku :sku/price mf/as-money)}]
+   :cart-item-floating-box/contents       [{:text (some-> service-line-item :sku/price  mf/as-money) :attrs {:class "strike"}}
+                                           {:text "FREE" :attrs {:class "s-color"}}]
    :cart-item-service-thumbnail/id        "service"
-   :cart-item-service-thumbnail/image-url (->> service-sku
+   :cart-item-service-thumbnail/image-url (->> service-line-item
                                                (catalog-images/image (maps/index-by :catalog/image-id (:selector/images service-product)) "cart")
                                                :ucare/id)})
 
