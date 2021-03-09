@@ -12,6 +12,7 @@
    [storefront.hooks.stringer :as stringer]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
+   [storefront.platform.messages :refer [handle-message]]
    [storefront.trackings :as trackings]
    [storefront.transitions :as t]))
 
@@ -65,34 +66,40 @@
    ^:inline (ui/forward-caret {:width  17
                                :height 17})])
 
+(c/defdynamic-component look-customization-organism
+  (did-mount [_] (handle-message e/look-customization-modal-mounted))
+  (render [this]
+          (let [{:keys [title image-id] :as data} (c/get-props this)]
+            (c/html 
+             [:div.bg-white.p5.flex.flex-column
+              [:a.flex.self-end
+               (svg/x-sharp
+                (merge (apply utils/fake-href [e/control-look-customization-modal-dismiss])
+                       {:data-test "looks-customization-dismiss"
+                        :height    "18px"
+                        :width     "18px"}))]
+              [:div.flex.justify-center.my4 (ui/circle-ucare-img {:width "120px"} image-id )]
+              [:div.canela.title-2.center.mb6 title]
+              (c/elements option data :options)]))))
+
 (defmethod popup/component :looks-customization
-  [{:keys [title image-id] :as data} _ _]
+  [data _ _]
   (c/html
    (ui/modal
     {:body-style  {:max-width "625px"}
-     :close-attrs (utils/fake-href e/control-looks-customization-dismiss)
+     :close-attrs (utils/fake-href e/control-look-customization-modal-dismiss)
      :col-class   "col-12 p3"}
-    [:div.bg-white.p5.flex.flex-column
-     [:a.flex.self-end
-      (svg/x-sharp
-       (merge (apply utils/fake-href [e/control-looks-customization-dismiss])
-              {:data-test "looks-customization-dismiss"
-               :height    "18px"
-               :width     "18px"}))]
-     [:div.flex.justify-center.my4 (ui/circle-ucare-img {:width "120px"} image-id )]
-     [:div.canela.title-2.center.mb6 title]
+    (c/build look-customization-organism data))))
 
-     (c/elements option data :options)])))
-
-(defmethod t/transition-state e/control-show-looks-customization-modal
+(defmethod t/transition-state e/control-show-look-customization-modal
   [_ _ _ state]
   (assoc-in state keypaths/popup :looks-customization))
 
-(defmethod t/transition-state e/control-looks-customization-dismiss
+(defmethod t/transition-state e/control-look-customization-modal-dismiss
   [_ _ _ state]
   (assoc-in state keypaths/popup nil))
 
-(defmethod trackings/perform-track e/control-show-looks-customization-modal
+(defmethod trackings/perform-track e/control-show-look-customization-modal
   [_ _ _ state]
   (let [shared-cart (get-in state keypaths/shared-cart-current)
         skus        (get-in state keypaths/v2-skus)]
@@ -106,3 +113,7 @@
                                                                                        :item/quantity     :quantity
                                                                                        :legacy/variant-id :variant-id}))))
                            :shared-cart-id (:number shared-cart)})))
+
+(defmethod trackings/perform-track e/look-customization-modal-mounted
+  [_ _ _ _]
+  (stringer/track-event "customize_look_modal_deployed"))

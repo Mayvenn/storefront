@@ -213,9 +213,9 @@
 (defpath control-counter-inc)
 (defpath control-counter-dec)
 
-(defpath control-show-looks-customization-modal)
-(defpath popup-show-looks-customization-modal)
-(defpath control-looks-customization-dismiss)
+(defpath control-show-look-customization-modal)
+(defpath control-look-customization-modal-dismiss)
+(defpath look-customization-modal-mounted)
 
 (defpath control-checkout-cart-submit)
 (defpath control-checkout-cart-paypal-setup)

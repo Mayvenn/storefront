@@ -325,7 +325,7 @@
                                                                                   :cart-item-sub-item/sku-id sku-id})
                                                                                addon-services)})))
             :look-customization    (when (experiments/look-customization? data)
-                                     {:look-customization.button/target [events/control-show-looks-customization-modal]
+                                     {:look-customization.button/target [events/control-show-look-customization-modal]
                                       :look-customization.button/id     "customize-the-look"
                                       :look-customization.button/title  "Customize the look"})
             :carousel/images       (imgs (get-in data keypaths/v2-images) look line-items)
