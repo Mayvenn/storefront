@@ -213,6 +213,10 @@
 (defpath control-counter-inc)
 (defpath control-counter-dec)
 
+(defpath control-show-looks-customization-modal)
+(defpath popup-show-looks-customization-modal)
+(defpath control-looks-customization-dismiss)
+
 (defpath control-checkout-cart-submit)
 (defpath control-checkout-cart-paypal-setup)
 (defpath control-checkout-update-addresses-submit)

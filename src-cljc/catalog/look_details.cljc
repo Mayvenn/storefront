@@ -1,7 +1,9 @@
 (ns catalog.look-details
   "Shopping by Looks: Detail page for an individual 'look'"
   (:require #?@(:cljs [[storefront.api :as api]
-                       [storefront.hooks.quadpay :as quadpay]])
+                       [storefront.hooks.quadpay :as quadpay]
+                       ;; popups, must be required to load properly
+                       looks.customization-modal])
             [api.catalog :refer [select ?model-image ?cart-product-image]]
             [catalog.facets :as facets]
             [catalog.images :as catalog-images]
@@ -109,7 +111,9 @@
                                   (component/component-id (:react/key service-line-item)))]])]])]
         (when look-customization
           [:div.center.my6
-           (ui/button-medium-underline-primary {} (:look-customization.button/title look-customization))])
+           (ui/button-medium-underline-primary
+            (apply utils/fake-href (:look-customization.button/target look-customization))
+            (:look-customization.button/title look-customization))])
         [:div.border-top.border-cool-gray.mxn2.mt3]
         [:div.center.pt4
          (when discount-text
@@ -314,7 +318,8 @@
                                                                                   :cart-item-sub-item/sku-id sku-id})
                                                                                addon-services)})))
             :look-customization    (when (experiments/look-customization? data)
-                                     {:look-customization.button/title "Customize the look"})
+                                     {:look-customization.button/target [events/control-show-looks-customization-modal]
+                                      :look-customization.button/title "Customize the look"})
             :carousel/images       (imgs (get-in data keypaths/v2-images) look line-items)
             :items-title/id        "item-quantity-in-look"
             :items-title/primary   (str item-count " items in this " (:short-name album-copy))
