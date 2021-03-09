@@ -110,7 +110,6 @@
     [:svg (maps/deep-merge {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}} opts)
      ^:inline (svg-xlink "counter-dec")])))
 
-;; NOTE: This is our new "x" with sharp edges for the new branding. The "simple-x" is too round
 (defn x-sharp [opts]
   (component/html
    [:svg opts
@@ -120,11 +119,6 @@
   (component/html
    [:svg.rotate-45 {:class class :style {:width (or width "1.2em") :height (or height "1.2em")}}
     ^:inline (svg-xlink "counter-inc")]))
-
-;; NOTE (deprecated): Let's not use this rounded-cornered x. See x-sharp above ^^^.
-(defn simple-x [opts]
-  (component/html
-   [:svg opts ^:inline (svg-xlink "simple-x")]))
 
 (defn quadpay-logo
   ([] (quadpay-logo {}))
