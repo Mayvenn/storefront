@@ -101,6 +101,10 @@
   [_ _ _ state]
   (assoc-in state keypaths/popup nil))
 
+(defmethod trackings/perform-track e/control-look-customization-modal-dismiss
+  [_ _ _ _]
+  (stringer/track-event "customize_look_modal_closed"))
+
 (defmethod trackings/perform-track e/control-show-look-customization-modal
   [_ _ _ state]
   (let [shared-cart (get-in state keypaths/shared-cart-current)
