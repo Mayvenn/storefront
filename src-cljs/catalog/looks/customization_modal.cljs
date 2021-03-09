@@ -1,5 +1,7 @@
 (ns looks.customization-modal
   (:require
+   [clojure.set]
+   [spice.maps :as maps]
    [storefront.component :as c]
    [storefront.accessors.contentful :as contentful]
    [storefront.accessors.shared-cart :as shared-cart]
@@ -7,8 +9,10 @@
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
    [storefront.events :as e]
+   [storefront.hooks.stringer :as stringer]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
+   [storefront.trackings :as trackings]
    [storefront.transitions :as t]))
 
 (defmethod popup/query :looks-customization
@@ -87,3 +91,21 @@
 (defmethod t/transition-state e/control-looks-customization-dismiss
   [_ _ _ state]
   (assoc-in state keypaths/popup nil))
+
+(defmethod trackings/perform-track e/control-show-looks-customization-modal
+  [_ _ _ state]
+  (let [shared-cart  (get-in state keypaths/shared-cart-current)
+        skus         (get-in state keypaths/v2-skus)
+        li-with-skus (some->> shared-cart
+                              :line-items
+                              (shared-cart/enrich-line-items-with-sku-data skus))
+
+        line-items (map (fn [line-item]
+                            (clojure.set/rename-keys (select-keys line-item [:catalog/sku-id :item/quantity :legacy/variant-id])
+                                         {:catalog/sku-id    :sku-id
+                                          :item/quantity     :quantity
+                                          :legacy/variant-id :variant-id}))
+                          li-with-skus)]
+    (stringer/track-event "customize_look_link_pressed"
+                          {:items-in-look line-items
+                           :share-cart-id (:number shared-cart)})))
