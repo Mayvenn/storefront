@@ -8,7 +8,9 @@
    [storefront.components.popup :as popup]
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
+   [storefront.effects :as effects]
    [storefront.events :as e]
+   [storefront.history :as history]
    [storefront.hooks.stringer :as stringer]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
@@ -31,10 +33,10 @@
                                         shared-cart/sort-by-depart-and-price
                                         first)
         cheapest-product       (get-in state (conj keypaths/v2-products (first from-products)))
-        pdp-target             [e/navigate-product-details {:page/slug          (:page/slug cheapest-product)
+        pdp-nav-message        [e/navigate-product-details {:page/slug          (:page/slug cheapest-product)
                                                             :catalog/product-id (:catalog/product-id cheapest-product)
                                                             :query-params       {:SKU sku-id}}]
-        install-target         [e/navigate-category {:catalog/category-id "23"
+        install-nav-message    [e/navigate-category {:catalog/category-id "23"
                                                      :page/slug           "mayvenn-install"
                                                      :query-params        {:origin  (first origin)
                                                                            :color   (first color)
@@ -48,20 +50,20 @@
                       ui/ucare-img-id)
        :title    "What do you want to change from this look?"
        :options  [{:title  "Color"
-                   :target pdp-target
+                   :target [e/control-customize-look-button-selected {:selection "color" :nav-message pdp-nav-message}]
                    :id     "customize-color"}
                   {:title  "Length"
-                   :target pdp-target
+                   :target [e/control-customize-look-button-selected {:selection "length" :nav-message pdp-nav-message}]
                    :id     "customize-length"}
                   {:title  "Install Type"
-                   :target install-target
-                   :id     "customize-install-type"}]})))
+                   :target [e/control-customize-look-button-selected {:selection "install" :nav-message install-nav-message}]
+                   :id     "customize-install"}]})))
 
 (c/defcomponent option [{:keys [title target id]} _ {react-id :id}]
   [:a.flex.justify-between.items-center.border.border-cool-gray.p5.mb2.inherit-color
    (merge {:key       react-id
            :data-test id}
-          (apply utils/route-to target))
+          (apply utils/fake-href target))
    [:span.medium.flex-auto title]
    ^:inline (ui/forward-caret {:width  17
                                :height 17})])
@@ -117,3 +119,22 @@
 (defmethod trackings/perform-track e/look-customization-modal-mounted
   [_ _ _ _]
   (stringer/track-event "customize_look_modal_deployed"))
+
+(defmethod effects/perform-effects e/control-customize-look-button-selected
+  [_ _ {:keys [nav-message]} _ _]
+  (apply history/enqueue-navigate nav-message))
+
+(defmethod trackings/perform-track e/control-customize-look-button-selected
+  [_ _ {:keys [selection]} _]
+  (when-let [event-name (case selection
+                          "color"
+                          "customize_look_color_button_pressed"
+
+                          "length"
+                          "customize_look_length_button_pressed"
+
+                          "install"
+                          "customize_look_install_button_pressed"
+
+                          nil)]
+    (stringer/track-event event-name)))

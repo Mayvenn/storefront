@@ -216,6 +216,7 @@
 (defpath control-show-look-customization-modal)
 (defpath control-look-customization-modal-dismiss)
 (defpath look-customization-modal-mounted)
+(defpath control-customize-look-button-selected)
 
 (defpath control-checkout-cart-submit)
 (defpath control-checkout-cart-paypal-setup)
