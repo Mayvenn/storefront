@@ -64,8 +64,17 @@
                                       :items       1}
                            :slides   imgs}}))
 
+(component/defcomponent customize-the-look-cta
+  [{:look-customization.button/keys [target title id]} _ _]
+  (when id
+    [:div.center.my6
+     (ui/button-medium-underline-primary
+      (assoc (apply utils/fake-href target)
+             :data-test id)
+      title)]))
+
 (defn look-details-body
-  [{:keys [creating-order? sold-out? look shared-cart skus fetching-shared-cart?
+  [{:keys [creating-order? sold-out? look shared-cart fetching-shared-cart?
            base-price discounted-price quadpay-loaded? discount-text
            yotpo-data-attributes cart-items service-line-items look-customization] :as queried-data}]
   [:div.clearfix
@@ -109,11 +118,9 @@
                 [:div.mt2-on-mb
                  (component/build cart-item/organism {:cart-item service-line-item}
                                   (component/component-id (:react/key service-line-item)))]])]])]
-        (when look-customization
-          [:div.center.my6
-           (ui/button-medium-underline-primary
-            (apply utils/fake-href (:look-customization.button/target look-customization))
-            (:look-customization.button/title look-customization))])
+
+        (component/build customize-the-look-cta look-customization)
+
         [:div.border-top.border-cool-gray.mxn2.mt3]
         [:div.center.pt4
          (when discount-text
@@ -319,7 +326,8 @@
                                                                                addon-services)})))
             :look-customization    (when (experiments/look-customization? data)
                                      {:look-customization.button/target [events/control-show-looks-customization-modal]
-                                      :look-customization.button/title "Customize the look"})
+                                      :look-customization.button/id     "customize-the-look"
+                                      :look-customization.button/title  "Customize the look"})
             :carousel/images       (imgs (get-in data keypaths/v2-images) look line-items)
             :items-title/id        "item-quantity-in-look"
             :items-title/primary   (str item-count " items in this " (:short-name album-copy))

@@ -94,18 +94,15 @@
 
 (defmethod trackings/perform-track e/control-show-looks-customization-modal
   [_ _ _ state]
-  (let [shared-cart  (get-in state keypaths/shared-cart-current)
-        skus         (get-in state keypaths/v2-skus)
-        li-with-skus (some->> shared-cart
-                              :line-items
-                              (shared-cart/enrich-line-items-with-sku-data skus))
-
-        line-items (map (fn [line-item]
-                            (clojure.set/rename-keys (select-keys line-item [:catalog/sku-id :item/quantity :legacy/variant-id])
-                                         {:catalog/sku-id    :sku-id
-                                          :item/quantity     :quantity
-                                          :legacy/variant-id :variant-id}))
-                          li-with-skus)]
+  (let [shared-cart (get-in state keypaths/shared-cart-current)
+        skus        (get-in state keypaths/v2-skus)]
     (stringer/track-event "customize_look_link_pressed"
-                          {:items-in-look line-items
-                           :share-cart-id (:number shared-cart)})))
+                          {:items-in-look (some->> shared-cart
+                                                   :line-items
+                                                   (shared-cart/enrich-line-items-with-sku-data skus)
+                                                   (map #(-> %
+                                                             (select-keys [:catalog/sku-id :item/quantity :legacy/variant-id])
+                                                             (clojure.set/rename-keys {:catalog/sku-id    :sku-id
+                                                                                       :item/quantity     :quantity
+                                                                                       :legacy/variant-id :variant-id}))))
+                           :shared-cart-id (:number shared-cart)})))
