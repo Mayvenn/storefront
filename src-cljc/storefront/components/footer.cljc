@@ -208,7 +208,6 @@
                           "79px")
      :footer-links      {:minimal-footer?                (nav/show-minimal-footer? (get-in data keypaths/navigation-event))
                          :footer-email-input-value       (get-in data keypaths/footer-email-value)
-                         :footer-email-signup?           (experiments/footer-email-signup? data)
                          :footer-email-submitted?        (get-in data keypaths/footer-email-submitted)
                          :footer-ready-for-email-signup? (get-in data keypaths/footer-email-ready)}
      :essence-copy      (str "All orders include a one year subscription to ESSENCE Magazine - a $10 value! "

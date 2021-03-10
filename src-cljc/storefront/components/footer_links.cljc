@@ -108,13 +108,13 @@
             (not (string/ends-with? email "@")))))
 
 (defn query
-  [{:keys [minimal-footer? footer-email-signup? footer-email-input-value
+  [{:keys [minimal-footer? footer-email-input-value
            footer-email-submitted? footer-field-errors footer-ready-for-email-signup?]}]
   (merge
    {:minimal?     minimal-footer?
     :email        nil
     :field-errors nil}
-   {:footer.email-signup.title/id            (when footer-email-signup? "sign-up")
+   {:footer.email-signup.title/id            "sign-up"
     :footer.email-signup.title/primary       "Sign up to get the latest on sales, new releases and more..."
     :footer.email-signup.button/label        (if (or footer-ready-for-email-signup?
                                                      (not footer-email-submitted?))

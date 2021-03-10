@@ -119,10 +119,6 @@
   [data]
   (display-feature? data "service-skus-with-addons"))
 
-(defn footer-email-signup?
-  [data]
-  (display-feature? data "footer-email-signup"))
-
 (defn look-customization?
   [data]
   (display-feature? data "look-customization"))
