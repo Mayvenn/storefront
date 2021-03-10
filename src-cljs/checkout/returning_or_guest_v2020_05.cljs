@@ -58,6 +58,7 @@
    field-errors
    focused
    saving?
+   show-phone-marketing-opt-in?
    phone-marketing-opt-in-value]
   (cond->
       (merge
@@ -172,7 +173,8 @@
         :continue-to-pay-cta/data-test "address-form-submit"
         :continue-to-pay-cta/id        "address-form-submit"
         :become-guest?                 true}
-       (checkout-address/phone-marketing-opt-in-query phone-marketing-opt-in-value))
+       (when show-phone-marketing-opt-in?
+         (checkout-address/phone-marketing-opt-in-query phone-marketing-opt-in-value)))
 
     (not bill-to-shipping-address?)
     (merge
@@ -290,7 +292,8 @@
         field-errors                 (get-in app-state k/field-errors)
         focused                      (get-in app-state k/ui-focus)
         saving?                      (utils/requesting? app-state request-keys/update-addresses)
-        phone-marketing-opt-in-value (get-in app-state k/checkout-phone-marketing-opt-in)]
+        phone-marketing-opt-in-value (get-in app-state k/checkout-phone-marketing-opt-in)
+        show-phone-marketing-opt-in? (= "retail location" (get-in app-state k/store-experience))]
     {:promo-banner          (promo-banner/query app-state) ;; no app-states
      :secure-checkout       (secure-checkout-query facebook-loaded?)
      :checkout-steps        (checkout-steps-query current-nav-event)
@@ -303,4 +306,5 @@
                                                          field-errors
                                                          focused
                                                          saving?
+                                                         show-phone-marketing-opt-in?
                                                          phone-marketing-opt-in-value)}))
