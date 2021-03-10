@@ -120,7 +120,8 @@
                                                  (select (merge
                                                           (skuers/electives current)
                                                           (skuers/essentials current))))
-        shop?                               (= "shop" (get-in app-state k/store-slug))
+        shop?                               (or (= "shop" (get-in app-state k/store-slug))
+                                                (= "retail-location" (get-in app-state k/store-experience)))
         selections                          (if hair-filters?
                                               (:facet-filtering/filters facet-filtering-state)
                                               (get-in app-state catalog.keypaths/category-selections))

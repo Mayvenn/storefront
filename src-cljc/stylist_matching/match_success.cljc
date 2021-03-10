@@ -3,6 +3,7 @@
             api.current
             api.orders
             api.stylist
+            [storefront.accessors.sites :as sites]
             [storefront.accessors.stylists :as stylists]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.header :as header]
@@ -14,9 +15,11 @@
 
 (defmethod effects/perform-effects e/navigate-adventure-match-success
   [_ _ _ _ state]
-  (when-not (api.current/stylist state)
-    #?(:cljs
-       (history/enqueue-redirect e/navigate-adventure-find-your-stylist))))
+  (if (not= :shop (sites/determine-site state))
+    (effects/redirect e/navigate-home)
+    (when-not (api.current/stylist state)
+      #?(:cljs
+         (history/enqueue-redirect e/navigate-adventure-find-your-stylist)))))
 
 (defn header-query
   [{:order.items/keys [quantity]}

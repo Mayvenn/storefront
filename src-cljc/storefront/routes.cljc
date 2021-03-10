@@ -90,7 +90,7 @@
              design-system-routes
              catalog-routes
              {"/" (edn->bidi events/navigate-home)}
-             {{:subdomain shop?} stylist-matching-routes}
+             stylist-matching-routes
              sign-in-routes
              {"/password/recover"                                 (edn->bidi events/navigate-forgot-password)
               "/password/set"                                     (edn->bidi events/navigate-force-set-password)

@@ -303,7 +303,8 @@
 (defn wrap-set-cms-cache
   [h contentful]
   (fn [req]
-    (let [shop? (= "shop" (get-in-req-state req keypaths/store-slug))
+    (let [shop? (or (= "shop" (get-in-req-state req keypaths/store-slug))
+                    (= "retail-location" (get-in-req-state req keypaths/store-experience)))
           [nav-event
            {album-keyword :album-keyword
             product-id    :catalog/product-id

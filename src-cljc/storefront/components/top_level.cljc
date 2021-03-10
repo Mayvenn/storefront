@@ -210,6 +210,7 @@
 
 (defcomponent top-level-component
   [data owner opts]
-  (if (= "shop" (get-in data keypaths/store-slug))
+  (if (or (= "shop" (get-in data keypaths/store-slug))
+          (= "retail-location" (get-in data keypaths/store-experience)))
     (shop-site data owner opts)
     (classic-site data owner opts)))

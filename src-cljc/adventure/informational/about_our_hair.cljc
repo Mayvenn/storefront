@@ -2,6 +2,7 @@
   (:require [adventure.components.layered :as layered]
             [adventure.faq :as faq]
             [storefront.accessors.contentful :as contentful]
+            [storefront.accessors.sites :as sites]
             [storefront.component :as component]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -55,5 +56,7 @@
 
 (defmethod effects/perform-effects events/navigate-info-about-our-hair
   [_ event _ _ app-state]
-  #?(:cljs
-     (effects/fetch-cms-keypath app-state [:faq :free-mayvenn-services])))
+  (if (not= :shop (sites/determine-site app-state))
+    (effects/redirect events/navigate-home)
+    #?(:cljs
+       (effects/fetch-cms-keypath app-state [:faq :free-mayvenn-services]))))

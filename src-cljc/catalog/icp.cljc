@@ -259,7 +259,8 @@
                                                  (select (merge
                                                           (skuers/essentials interstitial-category)
                                                           selections)))
-        shop?                               (= "shop" (get-in state keypaths/store-slug))
+        shop?                               (or (= "shop" (get-in state keypaths/store-slug))
+                                                (= "retail-location" (get-in state keypaths/store-experience)))
         service-category-page?              (contains? (:catalog/department interstitial-category) "service")
         faq                                 (get-in state (conj keypaths/cms-faq (:contentful/faq-id interstitial-category)))]
     (component/build template

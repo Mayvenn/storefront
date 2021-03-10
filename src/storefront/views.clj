@@ -156,7 +156,8 @@
 
 (defn layout
   [{:keys [storeback-config environment client-version]} data initial-content]
-  (let [shop?   (= "shop" (get-in data keypaths/store-slug))
+  (let [shop?   (or (= "shop" (get-in data keypaths/store-slug))
+                    (= "retail-location" (get-in data keypaths/store-experience)))
         follow? (and (not= "acceptance" environment)
                      shop?)
         index?  (and (not= "acceptance" environment)

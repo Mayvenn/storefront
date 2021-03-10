@@ -133,7 +133,8 @@
                        (not= target-album-keyword :look)
                        target-album-keyword
 
-                       (= "shop" (get-in data keypaths/store-slug))
+                       (or (= "shop" (get-in data keypaths/store-slug))
+                           (= "retail-location" (get-in data keypaths/store-experience)))
                        :aladdin-free-install
 
                        :elsewise target-album-keyword)]

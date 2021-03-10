@@ -273,8 +273,8 @@
 (defn add-to-cart-query
   [app-state
    selected-sku]
-  (let [shop?                              (= "shop"
-                                              (get-in app-state keypaths/store-slug))
+  (let [shop?                              (or (= "shop" (get-in app-state keypaths/store-slug))
+                                               (= "retail-location" (get-in app-state keypaths/store-experience)))
         sku-price                          (:sku/price selected-sku)
         quadpay-loaded?                    (get-in app-state keypaths/loaded-quadpay)
         sku-family                         (-> selected-sku :hair/family first)
@@ -315,7 +315,8 @@
         sku-price                  (or (:product/essential-price selected-sku)
                                        (:sku/price selected-sku))
         review-data                (review-component/query data)
-        shop?                      (= "shop" (get-in data keypaths/store-slug))
+        shop?                      (or (= "shop" (get-in data keypaths/store-slug))
+                                       (= "retail-location" (get-in data keypaths/store-experience)))
         hair?                      (accessors.products/hair? product)
         wig?                       (accessors.products/wig-product? product)
         tape-in-or-seamless-clips? (some #{"seamless-clip-ins" "tape-ins"} (:hair/family product))

@@ -3,6 +3,7 @@
             [api.catalog :refer [select ?service]]
             api.orders
             [clojure.string :as string]
+            [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.flash :as flash]
             [storefront.components.header :as header]
@@ -45,22 +46,24 @@
 
 (defmethod effects/perform-effects events/navigate-adventure-find-your-stylist
   [_ event {:keys [query-params] :as args} _ state]
-  (if-let [error-message (some-> query-params :error find-your-stylist-error-codes)]
-    (do
-      (let [args-sans-error (update-in args [:query-params] dissoc :error)]
-        (messages/handle-message events/redirect
-                                 {:nav-message [event args-sans-error]}))
-      (messages/handle-message events/flash-later-show-failure
-                               {:message error-message}))
-    (let [{:order/keys [items]} (api.orders/current state)]
-      #?(:cljs (google-maps/insert))
-      (messages/handle-message events/flow|stylist-matching|initialized)
-      (when-let [preferred-services (->> items
-                                         (select ?service)
-                                         (reduce services->srv-sku-ids [])
-                                         not-empty)]
-        (messages/handle-message events/flow|stylist-matching|param-services-constrained
-                                 {:services preferred-services})))))
+  (if (not= :shop (sites/determine-site state))
+    (effects/redirect events/navigate-home)
+    (if-let [error-message (some-> query-params :error find-your-stylist-error-codes)]
+      (do
+        (let [args-sans-error (update-in args [:query-params] dissoc :error)]
+          (messages/handle-message events/redirect
+                                   {:nav-message [event args-sans-error]}))
+        (messages/handle-message events/flash-later-show-failure
+                                 {:message error-message}))
+      (let [{:order/keys [items]} (api.orders/current state)]
+        #?(:cljs (google-maps/insert))
+        (messages/handle-message events/flow|stylist-matching|initialized)
+        (when-let [preferred-services (->> items
+                                           (select ?service)
+                                           (reduce services->srv-sku-ids [])
+                                           not-empty)]
+          (messages/handle-message events/flow|stylist-matching|param-services-constrained
+                                   {:services preferred-services}))))))
 
 ;; ------------------------
 

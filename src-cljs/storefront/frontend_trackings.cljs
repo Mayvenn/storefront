@@ -154,7 +154,8 @@
                                                   :context          {:cart-items cart-items}}))
       (google-tag-manager/track-add-to-cart {:number           (:number order)
                                              :store-slug       store-slug
-                                             :store-is-stylist (not (#{"store" "shop" "internal"} store-slug))
+                                             :store-is-stylist (not (or (#{"store" "shop" "internal"} store-slug)
+                                                                        (= "retail-location" (get-in app-state keypaths/store-experience))))
                                              :order-quantity   order-quantity
                                              :line-item-skuers [(assoc sku :item/quantity quantity)]}))))
 
@@ -307,7 +308,8 @@
                                                 :else              "guest_user")
                        :currency              "USD"
                        :discount_total        (js/Math.abs (or (:promotion-discount order) 0))
-                       :is_stylist_store      (boolean (not (#{"shop" "store"} store-slug)))
+                       :is_stylist_store      (boolean (not (or (#{"store" "shop"} store-slug)
+                                                                (= "retail-location" (get-in app-state keypaths/store-experience)))))
                        :shipping_method_name  (:product-name shipping)
                        :shipping_method_price (:unit-price shipping)
                        :shipping_method_sku   (:sku shipping)

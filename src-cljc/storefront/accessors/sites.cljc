@@ -3,6 +3,7 @@
 
 (defn determine-site
   [app-state]
-  (if (= "shop" (get-in app-state keypaths/store-slug))
+  (if (or (= "shop" (get-in app-state keypaths/store-slug))
+          (= "retail-location" (get-in app-state keypaths/store-experience)))
     :shop
     :classic))

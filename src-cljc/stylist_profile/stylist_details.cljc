@@ -16,6 +16,7 @@
             [clojure.string :refer [join]]
             spice.core
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.sites :as sites]
             [storefront.component :as c]
             [storefront.components.formatters :as f]
             [storefront.components.header :as header]
@@ -51,26 +52,29 @@
 
 (defmethod fx/perform-effects e/navigate-adventure-stylist-profile
   [_ _ {:keys [stylist-id]} _ state]
-  (handle-message e/cache|product|requested
-                  {:query ?service})
-  (let [cache (get-in state storefront.keypaths/api-cache)]
-    #?(:cljs
-       (tags/add-classname ".kustomer-app-icon" "hide"))
-    #?(:cljs
-       (handle-message e/cache|stylist|requested
-                       {:stylist/id stylist-id
-                        :on/success #(seo/set-tags state)
-                        :on/failure (fn [] (handle-message e/flash-later-show-failure
-                                                           {:message
-                                                            (str "The stylist you are looking for is not available. "
-                                                                 "Please search for another stylist in your area below. ")})
-                                      (fx/redirect e/navigate-adventure-find-your-stylist))}))
-    #?(:cljs
-       (api/fetch-stylist-reviews cache
-                                  {:stylist-id stylist-id
-                                   :page       1}))
-    #?(:cljs
-       (google-maps/insert))))
+  (if (not= :shop (sites/determine-site state))
+    (fx/redirect e/navigate-home)
+    (do
+      (handle-message e/cache|product|requested
+                      {:query ?service})
+      (let [cache (get-in state storefront.keypaths/api-cache)]
+        #?(:cljs
+           (tags/add-classname ".kustomer-app-icon" "hide"))
+        #?(:cljs
+           (handle-message e/cache|stylist|requested
+                           {:stylist/id stylist-id
+                            :on/success #(seo/set-tags state)
+                            :on/failure (fn [] (handle-message e/flash-later-show-failure
+                                                               {:message
+                                                                (str "The stylist you are looking for is not available. "
+                                                                     "Please search for another stylist in your area below. ")})
+                                          (fx/redirect e/navigate-adventure-find-your-stylist))}))
+        #?(:cljs
+           (api/fetch-stylist-reviews cache
+                                      {:stylist-id stylist-id
+                                       :page       1}))
+        #?(:cljs
+           (google-maps/insert))))))
 
 (defmethod trackings/perform-track e/navigate-adventure-stylist-profile
   [_ event {:keys [stylist-id]} app-state]

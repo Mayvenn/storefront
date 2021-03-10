@@ -8,6 +8,7 @@
                  [storefront.browser.scroll :as scroll]
                  [storefront.platform.messages :refer [handle-message]]])
             api.stylist
+            [storefront.accessors.sites :as sites]
             [storefront.components.header :as header]
             [adventure.keypaths :as keypaths]
             [spice.core :as spice]
@@ -94,22 +95,24 @@
   (assoc-in state keypaths/stylist-profile-id (spice/parse-int stylist-id)))
 
 (defmethod fx/perform-effects e/navigate-adventure-stylist-gallery
-  [_ _ {:keys [stylist-id query-params] :as args} _ _]
-  #?(:cljs
-     (handle-message e/cache|stylist|requested
-                     {:stylist/id stylist-id
-                      :on/success
-                      #(when-let [offset (:offset query-params)]
-                         ;; We wait a moment for the images to at least start to load so that we know where to scroll to.
-                         (js/setTimeout
-                          (fn [] (scroll/scroll-to-selector (str "[data-ref=offset-" offset "]")))
-                          500))
-                      :on/failure
-                      (fn [] (handle-message e/flash-later-show-failure
-                                             {:message
-                                              (str "The stylist you are looking for is not available. "
-                                                   "Please search for another stylist in your area below. ")})
-                        (fx/redirect e/navigate-adventure-find-your-stylist))})))
+  [_ _ {:keys [stylist-id query-params] :as args} _ state]
+  (if (not= :shop (sites/determine-site state))
+    (fx/redirect e/navigate-home)
+    #?(:cljs
+       (handle-message e/cache|stylist|requested
+                       {:stylist/id stylist-id
+                        :on/success
+                        #(when-let [offset (:offset query-params)]
+                           ;; We wait a moment for the images to at least start to load so that we know where to scroll to.
+                           (js/setTimeout
+                            (fn [] (scroll/scroll-to-selector (str "[data-ref=offset-" offset "]")))
+                            500))
+                        :on/failure
+                        (fn [] (handle-message e/flash-later-show-failure
+                                               {:message
+                                                (str "The stylist you are looking for is not available. "
+                                                     "Please search for another stylist in your area below. ")})
+                          (fx/redirect e/navigate-adventure-find-your-stylist))}))))
 
 (defn ^:export built-component
   [data _]

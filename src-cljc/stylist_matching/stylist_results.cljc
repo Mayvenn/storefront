@@ -8,6 +8,7 @@
             [stylist-matching.keypaths :as k]
             api.orders
             [clojure.string :as string]
+            [storefront.accessors.sites :as sites]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.categories :as categories]
@@ -44,42 +45,45 @@
          latitude           :lat
          longitude          :long
          address            :address} :query-params} prev-state state]
-  #?(:cljs (google-maps/insert))
+  (if (not= :shop (sites/determine-site state))
+    (effects/redirect e/navigate-home)
+    (do
+      #?(:cljs (google-maps/insert))
 
-  ;; Init the model if there isn't one, e.g. Direct load
-  (when-not (stylist-matching<- state)
-    (messages/handle-message e/flow|stylist-matching|initialized))
+      ;; Init the model if there isn't one, e.g. Direct load
+      (when-not (stylist-matching<- state)
+        (messages/handle-message e/flow|stylist-matching|initialized))
 
-  ;; Pull stylist-ids (s) from URI; predetermined search results
-  (when (seq stylist-ids)
-    (messages/handle-message e/flow|stylist-matching|param-ids-constrained
-                             {:ids stylist-ids}))
-  ;; Pull name search from URI
-  (messages/handle-message e/flow|stylist-matching|set-presearch-field {:name moniker})
-  (messages/handle-message e/flow|stylist-matching|param-name-constrained {:name moniker})
+      ;; Pull stylist-ids (s) from URI; predetermined search results
+      (when (seq stylist-ids)
+        (messages/handle-message e/flow|stylist-matching|param-ids-constrained
+                                 {:ids stylist-ids}))
+      ;; Pull name search from URI
+      (messages/handle-message e/flow|stylist-matching|set-presearch-field {:name moniker})
+      (messages/handle-message e/flow|stylist-matching|param-name-constrained {:name moniker})
 
-  ;; Address from URI
-  (messages/handle-message e/flow|stylist-matching|set-address-field {:address address})
+      ;; Address from URI
+      (messages/handle-message e/flow|stylist-matching|set-address-field {:address address})
 
-  ;; Pull preferred services from URI; filters for service types
-  (when-let [services (some-> preferred-services
-                              not-empty
-                              (string/split (re-pattern service-delimiter))
-                              set)]
-    (messages/handle-message e/flow|stylist-matching|param-services-constrained
-                             {:services services}))
-  ;; Pull lat/long from URI; search by proximity
-  (when (and (not-empty latitude)
-             (not-empty longitude))
-    (messages/handle-message e/flow|stylist-matching|param-location-constrained
-                             {:latitude  (spice/parse-double latitude)
-                              :longitude (spice/parse-double longitude)}))
-  ;; FIXME(matching)
-  (when-not (= (get-in prev-state storefront.keypaths/navigation-event)
-               (get-in state storefront.keypaths/navigation-event))
-    (messages/handle-message e/initialize-stylist-search-filters))
+      ;; Pull preferred services from URI; filters for service types
+      (when-let [services (some-> preferred-services
+                                  not-empty
+                                  (string/split (re-pattern service-delimiter))
+                                  set)]
+        (messages/handle-message e/flow|stylist-matching|param-services-constrained
+                                 {:services services}))
+      ;; Pull lat/long from URI; search by proximity
+      (when (and (not-empty latitude)
+                 (not-empty longitude))
+        (messages/handle-message e/flow|stylist-matching|param-location-constrained
+                                 {:latitude  (spice/parse-double latitude)
+                                  :longitude (spice/parse-double longitude)}))
+      ;; FIXME(matching)
+      (when-not (= (get-in prev-state storefront.keypaths/navigation-event)
+                   (get-in state storefront.keypaths/navigation-event))
+        (messages/handle-message e/initialize-stylist-search-filters))
 
-  (messages/handle-message e/flow|stylist-matching|searched))
+      (messages/handle-message e/flow|stylist-matching|searched))))
 
 ;; --------------- gallery modal
 
