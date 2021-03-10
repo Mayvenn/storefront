@@ -698,7 +698,8 @@
 (defn shared-cart<-
   [data]
   (let [{signed-in-as ::auth/as} (auth/signed-in data)]
-    (when (= :stylist signed-in-as)
+    (when (or (= :stylist signed-in-as)
+              (= "retail-location" (get-in data keypaths/store-experience)))
       {:requesting-shared-cart? (utils/requesting? data request-keys/create-shared-cart)})))
 
 (defn clear-cart-link<- [app-state]
