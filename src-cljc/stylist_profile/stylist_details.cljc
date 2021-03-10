@@ -123,7 +123,8 @@
   [{:keys [carousel
            footer
            google-maps
-           header
+           adv-header
+           mayvenn-header
            ratings-bar-chart
            stylist-reviews
            experience
@@ -132,7 +133,10 @@
            card]} _ _]
   [:div.bg-white.col-12.mb6.stretch {:style {:margin-bottom "-1px"}}
    [:main
-    (header/adventure-header header)
+    (when mayvenn-header
+      (c/build header/mobile-nav-header-component mayvenn-header))
+    (when adv-header
+      (header/adventure-header adv-header))
     (c/build card/organism card)
     (c/build maps/component google-maps)
     [:div.my2.m1-on-tb-dt.mb2-on-tb-dt.px3
@@ -317,8 +321,10 @@
         paginated-reviews (get-in state stylist-directory.keypaths/paginated-reviews)
 
         ;; Navigation
-        {host-name :host} (get-in state storefront.keypaths/navigation-uri)
-        undo-history      (get-in state storefront.keypaths/navigation-undo-stack)
+        {host-name :host}         (get-in state storefront.keypaths/navigation-uri)
+        undo-history              (get-in state storefront.keypaths/navigation-undo-stack)
+        from-cart-or-direct-load? (or (= (first (:navigation-message (first undo-history))) e/navigate-cart)
+                                      (nil? (first undo-history)))
 
         hide-star-distribution?            (experiments/hide-star-distribution? state)
         newly-added-stylist-ui-experiment? (and (experiments/stylist-results-test? state)
@@ -326,10 +332,13 @@
                                                     (experiments/just-added-experience? state)))
 
         ;; Requestings
-        fetching-reviews?            (utils/requesting? state request-keys/fetch-stylist-reviews)]
+        fetching-reviews? (utils/requesting? state request-keys/fetch-stylist-reviews)]
     (c/build template
-             (merge {:header (header<- current-order undo-history)
-                     :footer footer<-}
+             (merge {:footer footer<-}
+                    (if from-cart-or-direct-load?
+                      {:mayvenn-header {:forced-mobile-layout? true
+                                        :quantity              (or (:order.items/quantity current-order) 0)}}
+                      {:adv-header (header<- current-order undo-history)})
                     (when detailed-stylist
                       {:carousel                 (carousel<- detailed-stylist)
                        :stylist-reviews          (reviews<- fetching-reviews?

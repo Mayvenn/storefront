@@ -279,6 +279,21 @@
    (ui/shopping-bag {:data-test "mobile-cart"}
                     {:quantity value})))
 
+(c/defcomponent mobile-nav-header-component
+  [{:keys [forced-mobile-layout?] :as data} _ _]
+  (mobile-nav-header
+   {:class (str "border-bottom border-gray "
+                (when-not forced-mobile-layout?
+                  "hide-on-dt"))
+    :style {:height "70px"}}
+   hamburger
+   (ui/clickable-logo {:event     events/navigate-home
+                       :data-test "header-logo"
+                       :height    "29px"})
+   (ui/shopping-bag {:style     {:height "70px" :width "80px"}
+                     :data-test "mobile-cart"}
+                    data)))
+
 (c/defcomponent component
   [{:as   data
     :keys [store user cart signed-in vouchers?]} _ _]
@@ -301,16 +316,7 @@
                                              :width  "33px"}
                                  :data-test "desktop-cart"}
                                 cart)]]]
-   (mobile-nav-header
-    {:class "border-bottom border-gray hide-on-dt"
-     :style {:height "70px"}}
-    hamburger
-    (ui/clickable-logo {:event     events/navigate-home
-                        :data-test "header-logo"
-                        :height    "29px"})
-    (ui/shopping-bag {:style     {:height "70px" :width "80px"}
-                      :data-test "mobile-cart"}
-                     cart))])
+   (c/build mobile-nav-header-component cart)])
 
 (defn minimal-component
   [logo-nav-event]
