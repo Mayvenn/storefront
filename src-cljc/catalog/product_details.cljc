@@ -23,11 +23,8 @@
             [catalog.ui.molecules :as catalog.M]
             [catalog.ui.how-it-works :as how-it-works]
             [checkout.cart.swap :as swap]
-            checkout.addons
             [spice.selector :as selector]
             [storefront.accessors.contentful :as contentful]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as accessors.products]
             [storefront.accessors.skus :as skus]
             [storefront.accessors.images :as images]
@@ -47,9 +44,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             storefront.ugc
-            [stylist-matching.search.accessors.filters :as stylist-filters]
             [catalog.ui.add-to-cart :as add-to-cart]
-            [catalog.ui.product-details.addons :as addons]
             [catalog.ui.browse-stylists-banner :as browse-stylists-banner]))
 
 (defn page [wide-left wide-right-and-narrow]
@@ -155,7 +150,6 @@
            how-it-works
            picker-data
            ugc
-           addons
            faq-section
            add-to-cart] :as data} owner opts]
   (let [unavailable? (not (seq selected-sku))
@@ -189,8 +183,6 @@
             [:div.px2
              (component/build picker/component picker-data opts)]
 
-            (when (seq addons)
-              (component/build addons/organism addons opts))
             [:div
              (cond
                unavailable? unavailable-button
@@ -198,7 +190,6 @@
                :else        (component/build add-to-cart/organism add-to-cart))]
             (when (products/stylist-only? product)
               shipping-and-guarantee)
-            (component/build catalog.M/service-description data opts)
             (component/build tabbed-information/component data)
             (component/build catalog.M/non-hair-product-description data opts)
             [:div.hide-on-tb-dt
@@ -279,234 +270,39 @@
      {}
      (keys options))))
 
-(defn addon->catalog-addon-query
-  [{:keys [addon selected-addons spinning? disabled?]}]
-  (let [sku-id (:catalog/sku-id addon)]
-    (cond-> {:addon-line/id        sku-id
-             :addon-line/target    [events/control-product-detail-toggle-related-addon-items {:sku-id sku-id}]
-             :addon-line/checked?  (some #{sku-id} selected-addons)
-             :addon-line/spinning? spinning?
-             :addon-line/primary   (:sku/title addon)
-             :addon-line/secondary (:copy/description addon)
-             :addon-line/tertiary  (mf/as-money (:sku/price addon))
-             :addon-line/disabled? disabled?}
-
-      disabled?
-      (merge {:addon-line/checked?  (some #{sku-id} selected-addons)}))))
-
 (defn add-to-cart-query
   [app-state
-   {:catalog/keys [department product-id]}
-   {:as selected-sku :catalog/keys [sku-id]}
-   items
-   sv2?]
-  (let [servicing-stylist                    (:diva/stylist (api.current/stylist app-state))
-        addon-list-open?                     (get-in app-state catalog.keypaths/detailed-product-addon-list-open?)
-        base-service-already-in-cart?        (and (= #{"service"} department)
-                                                  (if sv2?
-                                                    (->> items
-                                                         (some #(contains?
-                                                                 (set (:selector/from-products %))
-                                                                 product-id)))
-                                                    (some #(= sku-id (:item/sku %)) items)))
-        shop?                                (= "shop"
-                                                (get-in app-state keypaths/store-slug))
-        sku-price                            (:sku/price selected-sku)
-        quadpay-loaded?                      (get-in app-state keypaths/loaded-quadpay)
-        sku-family                           (-> selected-sku :hair/family first)
-        related-addons                       (->> (get-in app-state catalog.keypaths/detailed-product-related-addons)
-                                                  (map #(assoc %
-                                                               :stylist-provides?
-                                                               (stylist-filters/stylist-provides-service-by-sku-id? servicing-stylist (:catalog/sku-id %))))
-                                                  (sort-by (juxt (comp not :stylist-provides?) :addon/sort))
-                                                  ((if addon-list-open? identity (partial take 1))))
-        mayvenn-install-incentive-families   #{"bundles" "closures" "frontals" "360-frontals"}
-        wig-customization-incentive-families #{"360-wigs" "lace-front-wigs"}
-        selected-addons                      (get-in app-state catalog.keypaths/detailed-product-selected-addon-items)]
-    (cond->
-        {:cta/id        "add-to-cart"
-         :cta/label     "Add to Bag"
-         :cta/target    [events/control-add-sku-to-bag
-                         {:sku      selected-sku
-                          :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
-         :cta/spinning? (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-         :cta/disabled? (not (:inventory/in-stock? selected-sku))}
-
-      base-service-already-in-cart?
-      (merge {:cta/disabled? true
-              :cta/label     "Already In Bag"})
-
-      (and shop?
-           (not (= #{"service"} department))
-           (mayvenn-install-incentive-families sku-family))
-      (merge       {:add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
-                    :add-to-cart.incentive-block/footnote    "*Mayvenn Services cannot be combined with other promotions"
-                    :add-to-cart.incentive-block/link-id     "learn-more-mayvenn-install"
-                    :add-to-cart.incentive-block/link-label  "Learn more"
-                    :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
-                    :add-to-cart.incentive-block/callout     "✋Don't miss out on free Mayvenn Service"
-                    :add-to-cart.incentive-block/message     (str "Get a free Mayvenn Service by a licensed "
-                                                                  "stylist with qualifying purchases.* ")})
-
-      (and (experiments/add-on-services? app-state)
-           (= #{"service"} department)
-           (seq related-addons))
-      (merge {:cta/target [events/control-bulk-add-to-bag
-                           {:items (concat
-                                    [{:sku      selected-sku
-                                      :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
-                                    (->> related-addons
-                                         (filter (comp (set selected-addons) :catalog/sku-id))
-                                         (mapv (fn [addon]
-                                                 {:sku      addon
-                                                  :quantity 1}))))}]
-
-              :cta/spinning? (utils/requesting-from-endpoint? app-state request-keys/add-to-bag)})
-
-      (not (accessors.products/product-is-mayvenn-install-service? selected-sku))
-      (merge
-       {:add-to-cart.quadpay/loaded? quadpay-loaded?
-        :add-to-cart.quadpay/price   sku-price}))))
-
-;; GROT(SRV)
-(defn addons-query|SRV
-  [app-state]
-  (let [selected-sku                                                  (get-in app-state catalog.keypaths/detailed-product-selected-sku)
-        {waiter-order :waiter/order}                                  (api.orders/current app-state)
-        {servicing-stylist        :services/stylist
-         offered-services-sku-ids :services/offered-services-sku-ids} (api.orders/services app-state waiter-order)
-
-        product                       (products/current-product app-state)
-        service?                      (accessors.products/service? product)
-        addon-list-open?              (get-in app-state catalog.keypaths/detailed-product-addon-list-open?)
-        related-addons                (when (accessors.products/product-is-mayvenn-install-service? product)
-                                        (->> (get-in app-state catalog.keypaths/detailed-product-related-addons)
-                                             (map #(assoc %
-                                                          :stylist-provides?
-                                                          (or (nil? servicing-stylist)
-                                                              (contains? offered-services-sku-ids (:catalog/sku-id %)))))
-                                             (sort-by (juxt (comp not :stylist-provides?) :order.view/addon-sort))
-                                             ((if addon-list-open? identity (partial take 1)))))
-        selected-addons               (get-in app-state catalog.keypaths/detailed-product-selected-addon-items)
-        base-service-already-in-cart? (boolean (some #(= (:catalog/sku-id selected-sku) (:sku %))
-                                                     (orders/service-line-items (get-in app-state keypaths/order))))]
-    (when (and (experiments/add-on-services? app-state)
-               service?
-               (seq related-addons))
-      (merge
-       (let [cart-addon-sku-ids (->> (api.orders/current app-state)
-                                     :order.items/services
-                                     (filter #(= (:catalog/sku-id selected-sku) (:sku-id %)))
-                                     first
-                                     :addons
-                                     (map :sku-id))]
-         {:cta-related-addon/label  (if addon-list-open? "hide add-ons" "see all add-ons")
-          :cta-related-addon/id     "addon-cta"
-          :cta-related-addon/target [events/control-product-detail-toggle-related-addon-list]
-          :related-addons           (mapv (fn [{:keys [:catalog/sku-id :sku/title :copy/description :sku/price stylist-provides?]}]
-                                            (merge {:addon-line/id        sku-id
-                                                    :addon-line/target    [events/control-product-detail-toggle-related-addon-items {:sku-id sku-id}]
-                                                    :addon-line/spinning? (utils/requesting-from-endpoint? app-state request-keys/add-to-bag)
-                                                    :addon-line/primary   title
-                                                    :addon-line/secondary description
-                                                    :addon-line/tertiary  (mf/as-money price)}
-
-                                                   (when base-service-already-in-cart?
-                                                     {:addon-line/disabled? true
-                                                      :addon-line/checked?  (some #{sku-id} cart-addon-sku-ids)})
-
-                                                   (when-not base-service-already-in-cart?
-                                                     {:addon-line/disabled? false
-                                                      :addon-line/checked?  (some #{sku-id} selected-addons)})
-
-                                                   (when (and servicing-stylist
-                                                              (not stylist-provides?))
-                                                     {:addon-line/disabled?       true
-                                                      :addon-line/disabled-reason (str "Not available with " (:store-nickname servicing-stylist))})))
-                                          related-addons)})
-       (when base-service-already-in-cart?
-         {:offshoot-action/id     "update-addons-link"
-          :offshoot-action/label  "Update add-ons"
-          :offshoot-action/target [events/control-show-addon-service-menu]})))))
-
-(defn addon-selections<-
-  [state
-   {:as product :catalog/keys [department product-id]}
-   selected-sku
-   items]
-  (when (and (experiments/add-on-services? state)
-             (= #{"service"} department))
-    (let [;; TODO(corey) Ideally, product electives would key this
-          addon-facets (->> (get-in state keypaths/v2-facets)
-                            (filter :service/addon?)
-                            (filter #(checkout.addons/included? % product))
-                            not-empty)
-
-          ;; cart state
-          service-item (some->> items
-                                (filter #(contains?
-                                          (-> %
-                                              :selector/from-products
-                                              set)
-                                          product-id))
-                                first)
-
-          ;; stylist state
-          {:as stylist :stylist.services/keys [offered-facet-slugs]}
-          (api.current/stylist state)
-
-          addon-list-open? (get-in state catalog.keypaths/detailed-product-addon-list-open?)
-          spinning?        (utils/requesting-from-endpoint? state request-keys/add-to-bag)]
-      (when addon-facets
-        (merge
-         {:cta-related-addon/label  (if addon-list-open? "hide add-ons" "see all add-ons")
-          :cta-related-addon/id     "addon-cta"
-          :cta-related-addon/target [events/control-product-detail-toggle-related-addon-list]
-          :related-addons
-          (->> addon-facets
-               (mapv
-                (fn [{:facet/keys [slug name description] :service/keys [price]}]
-                  (merge
-                   {:addon-line/id        slug
-                    :addon-line/target    [events/control-product-detail-picker-option-select
-                                           {:selection        slug
-                                            :value            (-> (get selected-sku slug)
-                                                                  (contains? true)
-                                                                  not)
-                                            :navigation-event events/navigate-product-details}]
-                    :addon-line/spinning? spinning?
-                    :addon-line/primary   name
-                    :addon-line/secondary description
-                    :addon-line/tertiary  (mf/as-money price)}
-                   (cond
-                     service-item
-                     {:addon-line/disabled? true
-                      :addon-line/checked?
-                      (-> (get service-item slug) (contains? true))}
-
-                     (and stylist (not (contains? offered-facet-slugs slug)))
-                     {:addon-line/disabled? true
-                      :addon-line/disabled-reason
-                      (str "Not available with " (:stylist/name stylist))}
-
-                     :else
-                     {:addon-line/disabled? false
-                      :addon-line/checked?
-                      (-> (get selected-sku slug) (contains? true))}))))
-               ((if addon-list-open? identity (partial take 1))))}
-         (when service-item
-           {:offshoot-action/id     "update-addons-link"
-            :offshoot-action/label  "Update add-ons"
-            :offshoot-action/target [events/control-show-addon-service-menu]}))))))
+   selected-sku]
+  (let [shop?                              (= "shop"
+                                              (get-in app-state keypaths/store-slug))
+        sku-price                          (:sku/price selected-sku)
+        quadpay-loaded?                    (get-in app-state keypaths/loaded-quadpay)
+        sku-family                         (-> selected-sku :hair/family first)
+        mayvenn-install-incentive-families #{"bundles" "closures" "frontals" "360-frontals"}]
+    (merge
+     {:cta/id                      "add-to-cart"
+      :cta/label                   "Add to Bag"
+      :cta/target                  [events/control-add-sku-to-bag
+                                    {:sku      selected-sku
+                                     :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
+      :cta/spinning?               (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+      :cta/disabled?               (not (:inventory/in-stock? selected-sku))
+      :add-to-cart.quadpay/price   sku-price
+      :add-to-cart.quadpay/loaded? quadpay-loaded?}
+     (when shop?
+       (mayvenn-install-incentive-families sku-family)
+       {:add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
+        :add-to-cart.incentive-block/footnote    "*Mayvenn Services cannot be combined with other promotions"
+        :add-to-cart.incentive-block/link-id     "learn-more-mayvenn-install"
+        :add-to-cart.incentive-block/link-label  "Learn more"
+        :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
+        :add-to-cart.incentive-block/callout     "✋Don't miss out on free Mayvenn Service"
+        :add-to-cart.incentive-block/message     (str "Get a free Mayvenn Service by a licensed "
+                                                      "stylist with qualifying purchases.* ")}))))
 
 (defn query [data selected-sku]
   (let [selections                 (get-in data catalog.keypaths/detailed-product-selections)
         product                    (products/current-product data)
-
-        ;; TODO(jjh) remove this after next cellar deploy (end of services-rollback track)
-        product-maybe-without-available-services (cond-> product
-                                                   (contains? #{"ready-wigs" "lace-front-wigs" "360-wigs"} (-> product :hair/family first))
-                                                   (dissoc :copy/available-services product))
 
         product-skus               (products/extract-product-skus data product)
         images-catalog             (get-in data keypaths/v2-images)
@@ -520,7 +316,6 @@
                                        (:sku/price selected-sku))
         review-data                (review-component/query data)
         shop?                      (= "shop" (get-in data keypaths/store-slug))
-        service?                   (accessors.products/service? product)
         hair?                      (accessors.products/hair? product)
         wig?                       (accessors.products/wig-product? product)
         tape-in-or-seamless-clips? (some #{"seamless-clip-ins" "tape-ins"} (:hair/family product))
@@ -554,7 +349,7 @@
                                                                       :faq/content answer})}))
       :carousel-images                    carousel-images}
 
-     (when (and (not service?) sku-price)
+     (when sku-price
        {:price-block/primary   (mf/as-money sku-price)
         :price-block/secondary "each"})
 
@@ -594,8 +389,7 @@
                                                     :id   "description"}
                                          :primary  (:copy/description product)
                                          :sections (keep (fn [[heading content-key]]
-                                                           ;; TODO(jjh) Change product-maybe-without-available-services back to `product` (see above)
-                                                           (when-let [content (get product-maybe-without-available-services content-key)]
+                                                           (when-let [content (get product content-key)]
                                                              {:heading heading
                                                               :content content}))
                                                          [["Hair Type" :copy/hair-type]
@@ -622,18 +416,17 @@
                      copy/whats-included
                      copy/summary
                      copy/duration]} product]
-         #:product-description {:service?             (accessors.products/service? product)
-                                :duration             duration
-                                :summary              summary
-                                :description          description
-                                :materials            materials
-                                :colors               colors
-                                :density              density
-                                :whats-included       whats-included
-                                :weights              (when-not density
-                                                        weights)
-                                :learn-more-nav-event (when-not (contains? (:stylist-exclusives/family product) "kits")
-                                                        events/navigate-content-our-hair)}))
+        #:product-description {:duration             duration
+                               :summary              summary
+                               :description          description
+                               :materials            materials
+                               :colors               colors
+                               :density              density
+                               :whats-included       whats-included
+                               :weights              (when-not density
+                                                       weights)
+                               :learn-more-nav-event (when-not (contains? (:stylist-exclusives/family product) "kits")
+                                                       events/navigate-content-our-hair)}))
 
      (when (and shop?
                 (not (or
@@ -648,28 +441,12 @@
 
 (defn ^:export built-component
   [state opts]
-  (let [product                 (->> (products/current-product state) ;; TODO(corey)
-                                     (api.products/product<- state))
-        selected-sku            (get-in state catalog.keypaths/detailed-product-selected-sku)
-        {:service/keys [world]
-         :order/keys   [items]} (api.orders/current state)]
+  (let [selected-sku (get-in state catalog.keypaths/detailed-product-selected-sku)]
     (component/build component
                      (merge (query state selected-sku)
-                            {:addons      (if (or (= "SV2" world)
-                                                  (experiments/service-skus-with-addons? state))
-                                            (addon-selections<- state
-                                                                product
-                                                                selected-sku
-                                                                items)
-                                            (addons-query|SRV state))
-                             :add-to-cart (add-to-cart-query state
-                                                             product
-                                                             selected-sku
-                                                             items
-                                                             (or (= "SV2" world)
-                                                                 (experiments/service-skus-with-addons? state)))})
+                            {:add-to-cart (add-to-cart-query state
+                                                             selected-sku)})
                      opts)))
-
 
 
 (defn determine-sku-id
@@ -715,15 +492,6 @@
        (if (auth/permitted-product? app-state current-product)
          (review-hooks/insert-reviews)
          (effects/redirect events/navigate-home)))))
-
-#?(:cljs
-   (defn fetch-sku-related-addons [app-state sku]
-     (api/get-skus (get-in app-state keypaths/api-cache)
-                   {:catalog/department "service"
-                    :service/type       "addon"
-                    :hair/family        (:hair/family sku)}
-                    (fn [response]
-                         (messages/handle-message events/api-success-v2-skus-for-related-addons response)))))
 
 (defn first-when-only [coll]
   (when (= 1 (count coll))
@@ -862,8 +630,7 @@
              (effects/fetch-cms-keypath app-state [:ugc-collection album-keyword]))
            (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
              (effects/fetch-cms-keypath app-state [:faq pdp-faq-id]))
-           (fetch-product-details app-state product-id)
-           (fetch-sku-related-addons app-state selected-sku))))))
+           (fetch-product-details app-state product-id))))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
@@ -902,12 +669,6 @@
      ;; "Setting seo tags for the product detail page relies on the product
      ;; being available"
      (seo/set-tags app-state)))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/api-success-bulk-add-to-bag
-     [_ event {:keys [order]} _ app-state]
-     (messages/handle-message events/save-order {:order order})
-     (messages/handle-later events/added-to-bag)))
 
 (defmethod effects/perform-effects events/control-add-sku-to-bag
   [_ _ {:keys [sku quantity]} _ state]
@@ -972,69 +733,7 @@
                                    :sku      sku})))))
 
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
-  [_ event {:keys [quantity sku]} app-state]
+  [_ event {:keys [quantity sku]} app-state] ;; TODO: why does this have a quantity always set as 1?
   (assoc-in app-state keypaths/browse-sku-quantity 1))
 
-(defmethod transitions/transition-state events/navigate-product-details
-  [_ _ _ app-state]
-  (-> app-state
-      (assoc-in catalog.keypaths/detailed-product-addon-list-open? (experiments/upsell-addons-opened? app-state))
-      ;; GROT(SRV)
-      (assoc-in catalog.keypaths/detailed-product-selected-addon-items #{})))
 
-(defmethod transitions/transition-state events/control-product-detail-toggle-related-addon-list
-  [_ _ _ app-state]
-  (update-in app-state catalog.keypaths/detailed-product-addon-list-open? not))
-
-(defmethod transitions/transition-state events/api-success-v2-skus-for-related-addons
-  [_ _ {:keys [skus]} app-state]
-  (-> app-state
-      (update-in keypaths/v2-skus #(merge (products/index-skus skus) %))
-      (assoc-in catalog.keypaths/detailed-product-related-addons skus)))
-
-(defmethod transitions/transition-state events/control-product-detail-toggle-related-addon-items
-  [_ _ {:keys [sku-id] :as response} app-state]
-  (if (contains? (get-in app-state catalog.keypaths/detailed-product-selected-addon-items) sku-id)
-    (update-in app-state catalog.keypaths/detailed-product-selected-addon-items disj sku-id)
-    (update-in app-state catalog.keypaths/detailed-product-selected-addon-items conj sku-id)))
-
-(defmethod transitions/transition-state events/control-bulk-add-to-bag
-  [_ _ _ app-state]
-  (assoc-in app-state catalog.keypaths/detailed-product-selected-addon-items #{}))
-
-(defmethod effects/perform-effects events/bulk-add-sku-to-bag
-  [dispatch event {:keys [items service-swap?] :as args} _ app-state]
-  #?(:cljs
-     (let [cart-interstitial? (and (= :shop (sites/determine-site app-state))
-                                   (not service-swap?))]
-       (api/add-skus-to-bag (get-in app-state keypaths/session-id)
-                            {:number           (get-in app-state keypaths/order-number)
-                             :token            (get-in app-state keypaths/order-token)
-                             :stylist-id       (get-in app-state keypaths/store-stylist-id)
-                             :sku-id->quantity (into {}
-                                                     (mapv
-                                                      (fn [item]
-                                                        [(:catalog/sku-id (:sku item)) (:quantity item)])
-                                                      items))}
-                            (fn handler [{:keys [order]}]
-                              (messages/handle-message events/api-success-bulk-add-to-bag {:order order
-                                                                                           :items items})
-                              (history/enqueue-navigate (if cart-interstitial?
-                                                          events/navigate-added-to-cart
-                                                          events/navigate-cart)))))))
-
-(defmethod effects/perform-effects events/control-bulk-add-to-bag
-  [_ _ {:keys [items]} _ state]
-  (let [skus           (mapv :sku items)
-        addon-services (select ?addons skus)
-        cart-swap      (some->> (select ?discountable skus)
-                                first
-                                (assoc {:addons/intended addon-services}
-                                       :service/intended)
-                                (swap/cart-swap<- state))]
-    (if (:service/swap? cart-swap)
-      (messages/handle-message events/cart-swap-popup-show
-                               cart-swap)
-      (messages/handle-message events/bulk-add-sku-to-bag
-                               {:items         items
-                                :service-swap? false}))))

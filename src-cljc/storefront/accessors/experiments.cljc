@@ -98,18 +98,9 @@
   [data]
   (display-feature? data "just-added-only"))
 
-(defn add-on-services?
-  [data]
-  (or (display-feature? data "upsell-addons-opened")
-      (display-feature? data "upsell-addons-closed")))
-
 (defn reinstall-services?
   [data]
   (display-feature? data "reinstall-services"))
-
-(defn upsell-addons-opened?
-  [data]
-  (display-feature? data "upsell-addons-opened"))
 
 (defn homepage-revert?
   [data]
