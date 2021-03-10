@@ -56,15 +56,17 @@
                    :target [e/control-customize-look-button-selected {:selection "length" :nav-message pdp-nav-message}]
                    :id     "customize-length"}
                   {:title  "Install Type"
+                   :subtitle "Leave out, closure, frontal, or 360"
                    :target [e/control-customize-look-button-selected {:selection "install" :nav-message install-nav-message}]
                    :id     "customize-install"}]})))
 
-(c/defcomponent option [{:keys [title target id]} _ {react-id :id}]
+(c/defcomponent option [{:keys [title subtitle target id]} _ {react-id :id}]
   [:a.flex.justify-between.items-center.border.border-cool-gray.p5.mb2.inherit-color
    (merge {:key       react-id
            :data-test id}
           (apply utils/fake-href target))
-   [:span.medium.flex-auto title]
+   [:div.medium.flex-auto title
+    [:div.content-4 subtitle]]
    ^:inline (ui/forward-caret {:width  17
                                :height 17})])
 
@@ -73,7 +75,7 @@
   (render [this]
           (let [{:keys [title image-id] :as data} (c/get-props this)]
             (c/html 
-             [:div.bg-white.p5.flex.flex-column
+             [:div.bg-white.p5.flex.flex-column.pb8
               [:a.flex.self-end
                (svg/x-sharp
                 (merge (apply utils/fake-href [e/control-look-customization-modal-dismiss])
