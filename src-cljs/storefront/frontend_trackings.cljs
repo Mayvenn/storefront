@@ -217,7 +217,8 @@
                            :skus           (->> line-item-skuers (map :catalog/sku-id) (string/join ","))
                            :variant_ids    (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
                            :quantities     (->> line-item-skuers (map :item/quantity) (string/join ","))
-                           :total_quantity (->> line-item-skuers (map :item/quantity) (reduce + 0))})))
+                           :total_quantity (->> line-item-skuers (map :item/quantity) (reduce + 0))
+                           :store_id       (get-in app-state keypaths/store-stylist-id)})))
 
 (defn track-bulk-add-to-cart
   [{:keys [skus-db images-catalog store-experience order shared-cart-id look-id]}]
