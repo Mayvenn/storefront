@@ -702,7 +702,8 @@
       {:requesting-shared-cart? (utils/requesting? data request-keys/create-shared-cart)})))
 
 (defn clear-cart-link<- [app-state]
-  (when (auth/stylist? (auth/signed-in app-state))
+  (when (or (auth/stylist? (auth/signed-in app-state))
+            (= "retail-location" (get-in app-state keypaths/store-experience)))
     {:clear-cart-link/target  [events/cart-cleared]
      :clear-cart-link/id      "clear-cart"
      :clear-cart-link/primary "Clear Cart"}))
