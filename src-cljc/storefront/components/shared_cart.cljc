@@ -523,9 +523,11 @@
         cart-creator        (or ;; If stylist fails to be fetched, then it falls back to current store
                              (get-in state keypaths/shared-cart-creator)
                              (get-in state keypaths/store))
-        cart-creator-copy   (if (= "salesteam" (:store-slug cart-creator))
-                              "Your Mayvenn Concierge"
-                              (stylists/->display-name cart-creator))
+        cart-creator-copy   (->> [(when (not= "salesteam" (:store-slug cart-creator))
+                                    (stylists/->display-name cart-creator))
+                                  "Your Mayvenn Concierge"]
+                                 (remove string/blank?)
+                                 first)
         servicing-stylist   (api.stylist/by-id state servicing-stylist-id)
         order-items         (:order/items order)
         physical-items      (select ?physical order-items)

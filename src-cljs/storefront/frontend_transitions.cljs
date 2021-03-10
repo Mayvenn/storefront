@@ -402,9 +402,12 @@
   (assoc-in app-state keypaths/browse-variant-quantity 1))
 
 (defmethod transition-state events/api-success-shared-cart-create [_ event {:keys [cart]} app-state]
-  (-> app-state
-      (assoc-in keypaths/shared-cart-url (str (.-protocol js/location) "//" (.-host js/location) "/c/" (:number cart)))
-      (assoc-in keypaths/popup :share-cart)))
+  (let [domain (cond-> (.-host js/location)
+                 (= "retail-location" (get-in app-state keypaths/store-experience))
+                 (clojure.string/replace-first #"^.*?\." "shop."))]
+    (-> app-state
+        (assoc-in keypaths/shared-cart-url (str (.-protocol js/location) "//" domain "/c/" (:number cart)))
+        (assoc-in keypaths/popup :share-cart))))
 
 (defn derive-all-looks
   [cms-data]
