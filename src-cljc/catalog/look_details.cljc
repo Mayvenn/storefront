@@ -67,10 +67,12 @@
 (component/defcomponent customize-the-look-cta
   [{:look-customization.button/keys [target title id]} _ _]
   (when id
-    [:div.center.my6
+    [:div.my6.mt0-on-tb-dt.flex
+     [:div.hide-on-mb {:style {:height "0px" :width "80px"}}]
      (ui/button-medium-underline-primary
       (assoc (apply utils/fake-href target)
-             :data-test id)
+             :data-test id
+             :class "mx-auto-on-mb")
       title)]))
 
 (defn look-details-body
