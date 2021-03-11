@@ -16,10 +16,11 @@
                  ;; setting this to true causes some of our event listeners to
                  ;; get dropped by tiny-slider.
                  :loop     false}}
-     {:opts {:mode   :multi
-             :slides (map (fn [{:keys [target-message
-                                       key
-                                       ucare-img-url]}]
+     {:opts {:mode     :multi
+             :settings {:nav false}
+             :slides   (map (fn [{:keys [target-message
+                                         key
+                                         ucare-img-url]}]
                             (c/html
                              [:a.px1.block
                               (merge (apply utils/route-to target-message)
