@@ -872,6 +872,7 @@
                         (when (and (waiter-style? response-body)
                                    (#{"ineligible-with-free-install-promotion"
                                       "promotion-not-found"
+                                      "stylist-wrong-store-promotion"
                                       "stylist-only-promotion"} error-code))
                           (messages/handle-message events/api-failure-errors-invalid-promo-code
                                                    (assoc (waiter-style->std-error response-body) :promo-code promo-code)))))}))

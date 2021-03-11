@@ -823,27 +823,28 @@
 
 (defmethod effects/perform-effects events/api-failure-errors [_ event {:keys [error-code scroll-selector] :as errors} _ app-state]
   (condp = error-code
-    "stripe-card-failure"         (when (= (get-in app-state keypaths/navigation-event)
-                                           events/navigate-checkout-confirmation)
-                                    (effects/redirect events/navigate-checkout-payment)
-                                    (messages/handle-later events/api-failure-errors errors)
-                                    (scroll/snap-to-top))
-    "promotion-not-found"         (scroll-promo-field-to-top)
-    "ineligible-for-promotion"    (scroll-promo-field-to-top)
-    "invalid-input"               (if scroll-selector
-                                    (scroll/scroll-selector-to-top scroll-selector)
-                                    (scroll/snap-to-top))
-    "ineligible-for-free-install" (when (= (get-in app-state keypaths/navigation-event)
-                                           events/navigate-checkout-confirmation)
-                                    (api/remove-promotion-code (get-in app-state keypaths/session-id)
-                                                               (get-in app-state keypaths/order)
-                                                               "freeinstall"
-                                                               #(messages/handle-message events/api-success-update-order
-                                                                                         {:order      %
-                                                                                          :promo-code "freeinstall"}))
-                                    (effects/redirect events/navigate-cart)
-                                    (messages/handle-later events/api-failure-errors errors)
-                                    (scroll/snap-to-top))
+    "stripe-card-failure"           (when (= (get-in app-state keypaths/navigation-event)
+                                             events/navigate-checkout-confirmation)
+                                      (effects/redirect events/navigate-checkout-payment)
+                                      (messages/handle-later events/api-failure-errors errors)
+                                      (scroll/snap-to-top))
+    "promotion-not-found"           (scroll-promo-field-to-top)
+    "stylist-wrong-store-promotion" (scroll-promo-field-to-top)
+    "ineligible-for-promotion"      (scroll-promo-field-to-top)
+    "invalid-input"                 (if scroll-selector
+                                      (scroll/scroll-selector-to-top scroll-selector)
+                                      (scroll/snap-to-top))
+    "ineligible-for-free-install"   (when (= (get-in app-state keypaths/navigation-event)
+                                             events/navigate-checkout-confirmation)
+                                      (api/remove-promotion-code (get-in app-state keypaths/session-id)
+                                                                 (get-in app-state keypaths/order)
+                                                                 "freeinstall"
+                                                                 #(messages/handle-message events/api-success-update-order
+                                                                                           {:order      %
+                                                                                            :promo-code "freeinstall"}))
+                                      (effects/redirect events/navigate-cart)
+                                      (messages/handle-later events/api-failure-errors errors)
+                                      (scroll/snap-to-top))
     (scroll/snap-to-top)))
 
 (defmethod effects/perform-effects events/api-success-decrease-quantity [dispatch event {:keys [order]} _ app-state]
