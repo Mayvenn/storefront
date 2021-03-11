@@ -41,12 +41,10 @@
             [promotion-helper.behavior :as promotion-helper]
             promotion-helper.keypaths
             [storefront.platform.messages :as messages]
-            [storefront.request-keys :as request-keys]
             [storefront.routes :as routes]
             [storefront.components.share-links :as share-links]
             [storefront.components.popup :as popup]
             [spice.core :as spice]
-            [storefront.platform.component-utils :as utils]
             [storefront.accessors.sites :as sites]
             [storefront.accessors.promos :as promos]))
 
@@ -188,14 +186,12 @@
     (history/enqueue-redirect event args)))
 
 (defn apply-pending-promo-code [app-state {:keys [number token]}]
-  (let [pending-promo-code (get-in app-state keypaths/pending-promo-code)
-        requesting? (utils/requesting? app-state request-keys/add-promotion-code)]
-    (when (and pending-promo-code (not requesting?))
-      (api/add-promotion-code {:session-id     (get-in app-state keypaths/session-id)
-                               :number         number
-                               :token          token
-                               :promo-code     pending-promo-code
-                               :allow-dormant? true}))))
+  (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
+    (api/add-promotion-code {:session-id     (get-in app-state keypaths/session-id)
+                             :number         number
+                             :token          token
+                             :promo-code     pending-promo-code
+                             :allow-dormant? true})))
 
 (defmethod effects/perform-effects events/navigate
   [_ event {:keys [navigate/caused-by query-params nav-stack-item]} prev-app-state app-state]
@@ -852,7 +848,7 @@
 
 (defmethod effects/perform-effects events/api-success-decrease-quantity [dispatch event {:keys [order]} _ app-state]
   (messages/handle-message events/save-order {:order order})
-  (apply-pending-promo-code app-state order)
+  (apply-pending-promo-code app-state order) ; GROT since it happens in save-order?
   (messages/handle-later events/added-to-bag))
 
 (defmethod effects/perform-effects events/api-success-remove-from-bag [dispatch event {:keys [order]} _ app-state]
@@ -860,6 +856,7 @@
 
 (defmethod effects/perform-effects events/api-success-add-sku-to-bag [dispatch event {:keys [order]} _ app-state]
   (messages/handle-message events/save-order {:order order})
+  (apply-pending-promo-code app-state order) ; GROT since it happens in save-order?
   (messages/handle-later events/added-to-bag))
 
 (defmethod effects/perform-effects events/added-to-bag [_ _ _ _ app-state]
