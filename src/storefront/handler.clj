@@ -513,12 +513,27 @@
                                              :store-slug store-slug})))) 301)
         (h req)))))
 
+(defn wrap-redirect-shop-only-routes
+  [h environment]
+  (fn [req]
+    (if (and (not (or (= "shop" (get-in-req-state req keypaths/store-slug))
+                      (= "retail-location" (get-in-req-state req keypaths/store-experience))))
+             (some #(re-find % (:uri req))
+                   #{#"^\/adv\/.*"
+                     #"^\/stylist\/.*"
+                     #"^\/certified-stylists$"
+                     #"^\/about-our-hair$"
+                     #"^\/about-mayvenn-install$"}))
+      (redirect-to-home environment req :found)
+      (h req))))
+
 (defn wrap-site-routes
   [routes {:keys [storeback-config environment]}]
   (-> routes
       (wrap-set-preferred-store environment)
       (wrap-redirect-affiliates environment)
       (wrap-redirect-aladdin environment)
+      (wrap-redirect-shop-only-routes environment)
       (wrap-stylist-not-found-redirect environment)
       (wrap-defaults (dissoc (storefront-site-defaults environment) :cookies))
       (wrap-remove-superfluous-www-redirect environment)
