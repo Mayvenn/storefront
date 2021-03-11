@@ -20,27 +20,30 @@
    (when id
      [:div.mx3.my6
       {:key id
-       :id "reviews"}
+       :id  "reviews"}
       [:div.flex.justify-between
        [:div.flex.items-center
         [:div.h6.title-3.proxima.shout "REVIEWS"]
         [:div.content-3.proxima.ml1
          (str "(" review-count ")")]]]
 
-      (for [{:keys [review-id stars install-type review-content reviewer-name review-date]} reviews]
-        [:div.py2.border-bottom.border-cool-gray
-         {:key review-id}
-         [:div
-          (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "13px")]
-            [:div.flex
-             whole-stars
-             partial-star
-             empty-stars
-             [:div.ml2.content-3.proxima (get install-type->display-name install-type)]])]
-         [:div.py1 review-content]
-         [:div.flex
-          [:div "— " reviewer-name]
-          [:div.ml1.dark-gray review-date]]])
+      (map-indexed
+       (fn[index {:keys [review-id stars install-type review-content reviewer-name review-date]}]
+         [:div.py2.border-bottom.border-cool-gray
+          {:key       review-id
+           :data-test (str "review-" index)}
+          [:div
+           (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars stars "13px")]
+             [:div.flex
+              whole-stars
+              partial-star
+              empty-stars
+              [:div.ml2.content-3.proxima (get install-type->display-name install-type)]])]
+          [:div.py1 review-content]
+          [:div.flex
+           [:div "— " reviewer-name]
+           [:div.ml1.dark-gray review-date]]])
+       reviews)
       (when cta-id
         [:div.p5.center
          {:data-test cta-id}
