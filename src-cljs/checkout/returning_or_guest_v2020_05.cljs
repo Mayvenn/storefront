@@ -293,7 +293,7 @@
         focused                      (get-in app-state k/ui-focus)
         saving?                      (utils/requesting? app-state request-keys/update-addresses)
         phone-marketing-opt-in-value (get-in app-state k/checkout-phone-marketing-opt-in)
-        show-phone-marketing-opt-in? (= "retail location" (get-in app-state k/store-experience))]
+        show-phone-marketing-opt-in? (not= "retail-location" (get-in app-state k/store-experience))]
     {:promo-banner          (promo-banner/query app-state) ;; no app-states
      :secure-checkout       (secure-checkout-query facebook-loaded?)
      :checkout-steps        (checkout-steps-query current-nav-event)
