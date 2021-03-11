@@ -185,7 +185,7 @@
   (let [[event args] nav-message]
     (history/enqueue-redirect event args)))
 
-(defn add-pending-promo-code [app-state {:keys [number token]}]
+(defn apply-pending-promo-code [app-state {:keys [number token]}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
     (api/add-promotion-code {:session-id     (get-in app-state keypaths/session-id)
                              :number         number
@@ -672,7 +672,7 @@
       (messages/handle-message events/cache|current-stylist|requested)
       (cookie-jar/save-order (get-in state keypaths/cookie)
                              order)
-      (add-pending-promo-code state
+      (apply-pending-promo-code state
                               order))
     (messages/handle-message events/clear-order))
 
@@ -848,7 +848,7 @@
 
 (defmethod effects/perform-effects events/api-success-decrease-quantity [dispatch event {:keys [order]} _ app-state]
   (messages/handle-message events/save-order {:order order})
-  (add-pending-promo-code app-state order)
+  (apply-pending-promo-code app-state order) ; GROT since it happens in save-order?
   (messages/handle-later events/added-to-bag))
 
 (defmethod effects/perform-effects events/api-success-remove-from-bag [dispatch event {:keys [order]} _ app-state]
@@ -856,7 +856,7 @@
 
 (defmethod effects/perform-effects events/api-success-add-sku-to-bag [dispatch event {:keys [order]} _ app-state]
   (messages/handle-message events/save-order {:order order})
-  (add-pending-promo-code app-state order)
+  (apply-pending-promo-code app-state order) ; GROT since it happens in save-order?
   (messages/handle-later events/added-to-bag))
 
 (defmethod effects/perform-effects events/added-to-bag [_ _ _ _ app-state]
