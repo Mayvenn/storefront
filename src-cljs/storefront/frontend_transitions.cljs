@@ -365,6 +365,11 @@
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
   (assoc-in app-state keypaths/states states))
 
+(defn line-items-same? [prev-order order]
+  (and (= (:number prev-order) (:number order))
+       (= (->> prev-order orders/all-line-items (map (juxt :sku :quantity)))
+          (->> order orders/all-line-items (map (juxt :sku :quantity))))))
+
 (defmethod transition-state events/save-order
   [_ event {:keys [order]} app-state]
   (if (orders/incomplete? order)
@@ -377,8 +382,7 @@
                             (merge (first (get-in app-state keypaths/shipping-methods))
                                    (orders/shipping-item order)))
                   prefill-guest-email-address)
-
-        (not= previous-order order)
+        (not (line-items-same? previous-order order))
         (assoc-in keypaths/cart-recently-added-skus (orders/recently-added-sku-ids->quantities previous-order order))))
     (assoc-in app-state keypaths/order nil)))
 
