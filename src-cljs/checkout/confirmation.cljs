@@ -184,11 +184,12 @@
              "Please enter an additional payment method below for the remaining total on your order."])
            (component/build checkout-credit-card/component payment nil)])
         (component/build cart-summary/organism cart-summary nil)
-        (component/build quadpay/component
-                         {:quadpay/show?       (and selected-quadpay? loaded-quadpay?)
-                          :quadpay/order-total (:total order)
-                          :quadpay/directive   :continue-with}
-                         nil)
+        [:div.px2
+         (component/build quadpay/component
+                          {:quadpay/show?       (and selected-quadpay? loaded-quadpay?)
+                           :quadpay/order-total (:total order)
+                           :quadpay/directive   :continue-with}
+                          nil)]
 
         [:div.mx3
          [:div.col-12.mx-auto.mt4
