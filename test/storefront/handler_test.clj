@@ -370,7 +370,8 @@
                              "https://shop.mayvenn.com/categories/6-virgin-loose-wave"
                              "https://shop.mayvenn.com/categories/7-Virgin-water-wave"
                              "https://shop.mayvenn.com/categories/8-virgin-deep-wave"
-                             "https://shop.mayvenn.com/categories/9-virgin-curly"}]
+                             "https://shop.mayvenn.com/categories/9-virgin-curly"
+                             "https://shop.mayvenn.com/certified-stylists"}]
         (is (not-empty urls))
         (doseq [url   urls
                 :when (not (contains? excluded-urls url))]
