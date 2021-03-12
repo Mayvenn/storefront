@@ -591,7 +591,7 @@
                                                                  :style {:width  "14px"
                                                                          :height "14px"}})}}]
       {:promo-field-data
-       (cond-> {}
+       (cond-> {:submit-target [events/control-cart-update-coupon]}
 
          show-promo-code-field?
          (merge input-group-attrs)

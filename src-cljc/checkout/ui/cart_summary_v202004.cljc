@@ -8,8 +8,8 @@
 
 (defcomponent organism
   [{:cart-summary/keys [id lines]
-    :as query
-    :keys [promo-field-data]} owner _]
+    :as                query
+    :keys              [promo-field-data]} owner _]
   [:div {:data-test id}
    [:div.py1.bg-refresh-gray.px4
     [:div.title-2.proxima.my2.hide-on-mb "Order Summary"]
@@ -18,8 +18,9 @@
       (for [line lines]
         ^:inline (checkout.M/cart-summary-line-molecule line))]]
 
-    (when-let [{:keys [text-input-attrs button-attrs]} promo-field-data]
-      [:div.my2
+    (when-let [{:keys [text-input-attrs button-attrs submit-target]} promo-field-data]
+      [:form.my2
+       {:on-submit (apply utils/send-event-callback submit-target)}
        ^:inline (ui.M/field-reveal-molecule promo-field-data)
        (when (and text-input-attrs button-attrs)
          ^:inline (ui/input-group text-input-attrs
