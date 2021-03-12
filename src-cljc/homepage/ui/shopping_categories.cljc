@@ -60,7 +60,8 @@
 
 (c/defcomponent organism
   [data _ _]
-  [:div.px2.myj3
-   (shopping-categories-title-molecule data)
-   [:div.col-8-on-dt.container
-    (boxes-list-molecule data)]])
+  (when (seq data)
+    [:div.px2.myj3
+     (shopping-categories-title-molecule data)
+     [:div.col-8-on-dt.container
+      (boxes-list-molecule data)]]))

@@ -1,18 +1,38 @@
 (ns homepage.ui-v2020-07
-  (:require [homepage.ui.atoms :as A]
+  (:require adventure.keypaths
+            [storefront.keypaths :as k]
+            [adventure.components.layered :as layered]
+            [homepage.ui.atoms :as A]
             [homepage.ui.contact-us :as contact-us]
             [homepage.ui.diishan :as diishan]
             [homepage.ui.faq :as faq]
             [homepage.ui.guarantees :as guarantees]
             [homepage.ui.hashtag-mayvenn-hair :as hashtag-mayvenn-hair]
             [homepage.ui.hero :as hero]
-            [homepage.ui.services-section :as services-section]
             [homepage.ui.shopping-categories :as shopping-categories]
             [storefront.accessors.contentful :as contentful]
             [storefront.component :as c]
             [storefront.components.homepage-hero :as homepage-hero]
             [storefront.components.ui :as ui]
             [storefront.events :as e]))
+
+(c/defcomponent install-specific-organism
+  [{:keys [buy-three-bundles
+           shop-framed-checklist
+           video-overlay
+           how-it-works
+           sit-back-and-relax
+           who-shop-hair
+           hold-hair-high] :as data} _ _]
+  (when data
+    [:div
+     (c/build layered/shop-text-block buy-three-bundles)
+     (c/build layered/shop-framed-checklist shop-framed-checklist)
+     (c/build layered/video-overlay video-overlay)
+     (c/build layered/shop-bulleted-explainer how-it-works)
+     (c/build layered/shop-text-block sit-back-and-relax)
+     (c/build layered/image-block who-shop-hair)
+     (c/build layered/shop-text-block hold-hair-high)]))
 
 (c/defcomponent template
   [{:keys [contact-us
@@ -21,17 +41,14 @@
            guarantees
            hashtag-mayvenn-hair
            hero
-           mayvenn-install
            shopping-categories
-           a-la-carte-services]} _ _]
+           install-specific-query]} _ _]
   [:div
    (c/build hero/organism hero)
+
    (c/build shopping-categories/organism shopping-categories)
-
+   (c/build install-specific-organism install-specific-query )
    A/horizontal-rule-atom
-
-   (c/build services-section/organism a-la-carte-services)
-   (c/build services-section/organism mayvenn-install)
 
    (A/divider-atom "7e91271e-874c-4303-bc8a-00c8babb0d77")
 
@@ -78,30 +95,6 @@
     {:shopping-categories.box/id        "need-inspiration"
      :shopping-categories.box/target    [e/navigate-shop-by-look {:album-keyword :look}]
      :shopping-categories.box/alt-label ["Need Inspiration?" "Try shop by look."]})})
-
-(def mayvenn-install-query
-  {:services-section.title/primary        "Free Mayvenn Services"
-   :services-section.title/secondary      "Purchase qualifying Mayvenn hair and receive service for free!"
-   :services-section.image/ucare-id       "625b63a0-5724-4a57-ad79-c9e7a72a7f5b"
-   :services-section/orientation          "image-last"
-   :services-section.cta/id               "browse-mayvenn-services"
-   :services-section.cta/value            "Browse Mayvenn Services"
-   :services-section.cta/target           [e/navigate-adventure-find-your-stylist]
-   :services-section.secondary-cta/id     "browse-stylists"
-   :services-section.secondary-cta/value  "Browse Stylists"
-   :services-section.secondary-cta/target [e/navigate-adventure-find-your-stylist]})
-
-(def a-la-carte-query
-  {:services-section.title/primary        "À la carte Services"
-   :services-section.title/secondary      "No hair purchase needed! Now you can book à la carte salon services with your favorite Mayvenn Stylists!"
-   :services-section.image/ucare-id       "8f14c17b-ffef-4178-8915-640573a8bf3a"
-   :services-section/orientation          "image-first"
-   :services-section.cta/id               "browse-services-section"
-   :services-section.cta/value            "Browse À la carte Services"
-   :services-section.cta/target           [e/navigate-adventure-find-your-stylist]
-   :services-section.secondary-cta/id     "browse-stylists"
-   :services-section.secondary-cta/value  "Browse Stylists"
-   :services-section.secondary-cta/target [e/navigate-adventure-find-your-stylist]})
 
 (defn hashtag-mayvenn-hair-query
   [ugc]
@@ -172,3 +165,63 @@
                                                              :width  56}]
      :contact-us.contact-method/title      "Email Us"
      :contact-us.contact-method/copy       "help@mayvenn.com"}]})
+
+(defn install-specific-query [app-state]
+  {:buy-three-bundles     {:layer/type   :shop-text-block
+                           :header/value "Buy 3 bundles and we’ll pay for your install"
+                           :cta/value    "Browse Stylists"
+                           :cta/button?  true
+                           :cta/id       "browse-stylist"
+                           :cta/target   [e/navigate-adventure-find-your-stylist]}
+   :shop-framed-checklist {:layer/type   :shop-framed-checklist
+                           :header/value "What's included?"
+                           :bullets      ["Shampoo"
+                                          "Braid down"
+                                          "Sew-in and style"
+                                          "Paid for by Mayvenn"]
+                           :divider-img  "url('//ucarecdn.com/2d3a98e3-b49a-4f0f-9340-828d12865315/-/resize/x24/')"}
+   :video-overlay         {:layer/type      :video-overlay
+                           :close-nav-event (get-in app-state k/navigation-event)
+                           :video           (get-in app-state adventure.keypaths/adventure-home-video)}
+
+   :how-it-works       {:layer/type     :shop-bulleted-explainer
+                        :layer/id       "heres-how-it-works"
+                        :title/value    ["You buy the hair,"
+                                         "we cover the install."]
+                        :subtitle/value ["Here's how it works."]
+                        :bullets        [{:title/value "Pick Your Dream Look"
+                                          :body/value  "Have a vision in mind? We’ve got the hair for it. Otherwise, peruse our site for inspiration to find your next look."}
+                                         {:title/value ["Select A Mayvenn" ui/hyphen "Certified Stylist"]
+                                          :body/value  "We’ve hand-picked thousands of talented stylists around the country. We’ll cover the cost of your salon appointment with them when you buy 3 or more bundles."}
+                                         {:title/value "Schedule Your Appointment"
+                                          :body/value  "We’ll connect you with your stylist to set up your install. Then, we’ll send you a prepaid voucher to cover the cost of service."}]
+                        :cta/id         "watch-video"
+                        :cta/value      "Watch Video"
+                        :cta/icon       [:svg/play-video {:width  "30px"
+                                                          :height "30px"}]
+                        :cta/target     [(get-in app-state k/navigation-event)
+                                         {:query-params {:video "free-install"}}]}
+   :sit-back-and-relax {:layer/type         :shop-text-block
+                        ;; NOTE: this is a design exception
+                        :big-header/content [{:text "Sit back and" :attrs {:style {:font-size "34px"}}}
+                                             {:text "relax" :attrs {:style {:font-size "54px"}}}]
+                        :body/value         "We’ve rounded up the best stylists in the country so you can be sure your hair is in really, really good hands."
+                        :cta/value          "Learn more"
+                        :cta/id             "info-certified-stylists"
+                        :cta/target         [e/navigate-info-certified-stylists]}
+   :who-shop-hair      {:layer/type :image-block
+                        :ucare?     true
+                        :mob-uuid   "bd8888d3-9d1a-4944-a840-2863b50ba5d6"
+                        :dsk-uuid   "36bd1978-b3e2-457a-9c8d-303661f57924"
+                        :file-name  "who-shop-hair"}
+
+
+   :hold-hair-high {:layer/type         :shop-text-block
+                    ;; NOTE: this is a design exception
+                    :big-header/content [{:text "Hold your hair" :attrs {:style {:font-size "19px"}}}
+                                         {:text "high" :attrs {:style {:font-size "72px"}}}]
+                    :body/value         "With the highest industry standards in mind, we have curated a wide variety of textures and colors for you to choose from."
+                    :cta/id             "info-about-our-hair"
+                    :cta/value          "shop hair"
+                    :cta/target         [e/navigate-category {:page/slug           "mayvenn-install"
+                                                              :catalog/category-id "23"}]}})

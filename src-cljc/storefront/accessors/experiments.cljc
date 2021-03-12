@@ -102,10 +102,6 @@
   [data]
   (display-feature? data "reinstall-services"))
 
-(defn homepage-revert?
-  [data]
-  (display-feature? data "homepage-revert"))
-
 (defn sbl-update?
   [data]
   (and (= :shop (sites/determine-site data))

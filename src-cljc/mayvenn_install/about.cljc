@@ -4,7 +4,6 @@
             adventure.keypaths
             [storefront.accessors.contentful :as contentful]
             [storefront.component :as component]
-            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as storefront.keypaths]))
@@ -50,8 +49,8 @@
                          :body/value  "We’ll connect you with your stylist to set up your install. Then, we’ll send you a prepaid voucher to cover the cost of service."}]
        :cta/id         "watch-video"
        :cta/value      "Watch Video"
-       :cta/icon       (svg/play-video {:width  "30px"
-                                        :height "30px"})
+       :cta/icon       [:svg/play-video {:width  "30px"
+                                         :height "30px"} ]
        :cta/target     [(get-in data storefront.keypaths/navigation-event)
                         {:query-params {:video "free-install"}}]}
       {:layer/type         :shop-text-block

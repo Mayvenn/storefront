@@ -74,7 +74,7 @@
              :data-test id
              :data-ref id)
       (when icon
-        icon)
+        (svg/symbolic->html icon))
       [:div.underline.block.content-3.bold.p-color.shout.pb6
        value]]
      [:span])))

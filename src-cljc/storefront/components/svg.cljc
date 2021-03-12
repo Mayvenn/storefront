@@ -476,6 +476,7 @@
   (component/html
    (if kind
      (case kind
+       :svg/play-video                      ^:inline (play-video attrs)
        :svg/calendar                        ^:inline (calendar attrs)
        :svg/check-mark                      ^:inline (check-mark attrs)
        :svg/close-x                         ^:inline (close-x attrs)

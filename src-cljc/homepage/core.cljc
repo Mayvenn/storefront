@@ -2,21 +2,13 @@
   "Homepages are apt to change often; fork and use feature-flags."
   (:require #?(:cljs [storefront.loader :as loader])
             [homepage.classic-v2020-07 :as classic]
-            [homepage.shop-v2020-07 :as shop]
-            [mayvenn-install.about :as about]
-            [storefront.accessors.experiments :as experiments]
+            [homepage.shop-v2021-03 :as shop]
             [storefront.accessors.sites :as sites]))
 
 (defn ^:export page
   [app-state _]
-  (cond
-    (not= :shop (sites/determine-site app-state))
+  (if (not= :shop (sites/determine-site app-state))
     (classic/page app-state)
-
-    (experiments/homepage-revert? app-state)
-    (shop/page app-state)
-
-    :else
-    (about/built-component app-state {})))
+    (shop/page app-state)))
 
 #?(:cljs (loader/set-loaded! :homepage))
