@@ -25,7 +25,17 @@
                          :scheme :http
                          :request-method :get})
 
-(def storeback-stylist-response
+(def storeback-shop-stylist-response
+  (-> (generate-string {:store_slug        "shop"
+                        :store_name        "Shop Mayvenn"
+                        :instagram_account nil
+                        :experience        "influencer"
+                        :stylist_id        1})
+      (response)
+      (status 200)
+      (content-type "application/json")))
+
+(def storeback-bob-stylist-response
   (-> (generate-string {:store_slug        "bob"
                         :store_name        "Bob's Hair Emporium"
                         :instagram_account nil
@@ -34,6 +44,8 @@
       (response)
       (status 200)
       (content-type "application/json")))
+
+(def storeback-stylist-response storeback-bob-stylist-response)
 
 (def storeback-aladdin-stylist-response
   (-> (generate-string {:store_slug        "jasmine"
@@ -976,7 +988,10 @@
 
 (def default-storeback-handler
   (routes
-   (GET "/store"       req storeback-stylist-response)
+   (GET "/store"       {:keys [query-string]}
+        (case (->> query-string (re-find #"store_slug=(.*)") last)
+          "shop" storeback-shop-stylist-response
+          storeback-bob-stylist-response))
    (GET "/promotions"  req {:status 200 :body "{}"})
    (GET "/v3/products" req {:status 200 :body "{}"})
    (GET "/v2/skus"     req {:status 200 :body "{}"})
