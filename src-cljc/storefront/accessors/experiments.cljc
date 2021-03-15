@@ -118,3 +118,7 @@
 (defn look-customization?
   [data]
   (display-feature? data "look-customization"))
+
+(defn new-galleries?
+  [data]
+  (display-feature? data "new-galleries"))

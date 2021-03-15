@@ -2,8 +2,10 @@
   (:require #?@(:cljs [[storefront.accessors.auth :as auth]
                        [storefront.api :as api]])
             [storefront.accessors.auth :as auth]
+            [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
             [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.new-gallery-edit :as new-gallery-edit]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -65,7 +67,10 @@
    :adding-photo? (utils/requesting? data request-keys/append-gallery)})
 
 (defn built-component [data opts]
-  (component/build component (query data) nil))
+  (let [new-galleries? (experiments/new-galleries? data)]
+    (if new-galleries?
+      (new-gallery-edit/built-component data nil)
+      (component/build component (query data) nil))))
 
 (defmethod effects/perform-effects events/control-delete-gallery-image [_ event args _ app-state]
   #?(:cljs (let [{:keys [image-url]} args]
