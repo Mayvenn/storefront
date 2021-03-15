@@ -576,11 +576,10 @@
   ;; TODO(jeff): remove picture-classes (using img tag natively now)
   ;; NOTE(jeff): picture-classes is deprecated, please do not use
   [{:as   img-attrs
-    :keys [width retina-quality default-quality picture-classes retina? square? size max-size]
+    :keys [width retina-quality default-quality picture-classes retina? square-size max-size]
     :or   {retina-quality  "lightest"
            default-quality "normal"
            retina?         true
-           square?         false
            max-size        nil}}
    image-id]
   (component/html
@@ -591,8 +590,8 @@
          compute-url    (fn [image-id retina? width]
                           (let [quality (if retina? retina-quality default-quality)]
                             (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" quality "/")
-                              square? (str "-/scale_crop/" size "x" size "/center/")
-                              width   (str "-/resize/" width "x/"))))
+                              square-size (str "-/scale_crop/" square-size "x" square-size "/center/")
+                              width       (str "-/resize/" width "x/"))))
          default-url    (compute-url image-id false (when px? width))
          compute-srcset (fn []
                           (->> (for [multiplier (if retina?
@@ -615,7 +614,7 @@
                                (string/join ", ")))]
      [:img ^:attrs
       (-> img-attrs
-          (dissoc :retina-quality :default-quality :picture-classes :retina? :square? :size :src :max-size)
+          (dissoc :retina-quality :default-quality :picture-classes :retina? :square-size :src :max-size)
           (assoc :class (str picture-classes " " (:class img-attrs)))
           (cond-> image-id (assoc :src default-url
                                   :src-set (compute-srcset)
@@ -629,25 +628,23 @@
   "
   ;; WARN(jeff): it is strongly recommended to specify max-size to minimize srcSet sizes!!
   [{:as   img-attrs
-    :keys [width retina-quality default-quality retina? square? size max-size src]
+    :keys [width retina-quality default-quality retina? square-size max-size src]
     :or   {retina-quality  "lightest"
            default-quality "normal"
            retina?         true
-           square?         false
            max-size        nil}}]
   (if (is-ucare-img-url? src)
     (-ucare-img img-attrs src)
     (component/html
-     [:img ^:attrs (dissoc img-attrs :retina-quality :default-quality :picture-classes :retina? :square? :size)])))
+     [:img ^:attrs (dissoc img-attrs :retina-quality :default-quality :picture-classes :retina? :square-size)])))
 
 (defn ucare-img ;; TODO(jeff): for legacy callers, we should remove this call and use img function instead
   ;; WARN(jeff): it is strongly recommended to specify max-size to minimize srcSet sizes!!
   [{:as   img-attrs
-    :keys [width retina-quality default-quality retina? square? size max-size]
+    :keys [width retina-quality default-quality retina? square-size max-size]
     :or   {retina-quality  "lightest"
            default-quality "normal"
            retina?         true
-           square?         false
            max-size        nil}}
    image-id]
   (img (assoc img-attrs :src image-id)))
