@@ -151,7 +151,8 @@
   #?(:cljs
      (when (and (not (utils/requesting? app-state request-keys/voucher-redemption))
                 (not= (get-in app-state voucher-keypaths/scanned-code)
-                      (get-in prev-app-state voucher-keypaths/scanned-code)))
+                      (get-in prev-app-state voucher-keypaths/scanned-code))
+                (re-find #"^\w{8}$" (get-in app-state voucher-keypaths/scanned-code)))
        (api/voucher-redemption code (get-in app-state keypaths/user-store-id)))))
 
 (defmethod effects/perform-effects events/api-failure-voucher-redemption
