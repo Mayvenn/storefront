@@ -54,7 +54,6 @@
                    :pages nil}
    :manage-account {:email nil
                     :id nil
-                    :birth-date nil
                     :address {:firstname nil
                               :lastname nil
                               :address-1 nil

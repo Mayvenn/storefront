@@ -443,9 +443,7 @@
 (defn select-stylist-account-keys [args]
   (let [args    (get args :stylist args)
         stylist (select-keys args
-                             [:birth-date-1i :birth-date-2i :birth-date-3i
-                              :birth-date
-                              :portrait
+                             [:portrait
                               :chosen-payout-method
                               :venmo-payout-attributes
                               :paypal-payout-attributes

@@ -10,8 +10,7 @@
                                  saving?
                                  address
                                  user
-                                 field-errors
-                                 birth-date]} owner opts]
+                                 field-errors]} owner opts]
   [:form {:on-submit
           (utils/send-event-callback events/control-stylist-account-profile-submit)}
    [:div.col-12
@@ -63,19 +62,7 @@
                      :name      "account-email"
                      :required  true
                      :type      "email"
-                     :value     (:email user)})
-
-     [:div.flex.flex-column.items-center.col-12
-      (ui/text-field {:data-test "account-birth-date"
-                      :errors    (get field-errors ["birth-date"])
-                      :id        "account-birth-date"
-                      :keypath   (conj keypaths/stylist-manage-account :birth-date)
-                      :focused   focused
-                      :label     "Birthday"
-                      :name      "account-birth-date"
-                      :required  true
-                      :type      "date"
-                      :value     birth-date})]]
+                     :value     (:email user)})]
 
     [:div.my2.col-12.clearfix
      ui/nbsp
@@ -87,7 +74,6 @@
 (defn query [data]
   {:saving?      (utils/requesting? data request-keys/update-stylist-account)
    :address      (get-in data (conj keypaths/stylist-manage-account :address))
-   :birth-date   (get-in data (conj keypaths/stylist-manage-account :birth-date))
    :user         (get-in data (conj keypaths/stylist-manage-account :user))
    :field-errors (get-in data keypaths/field-errors)
    :focused      (get-in data keypaths/ui-focus)})
