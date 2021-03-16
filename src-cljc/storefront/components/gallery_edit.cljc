@@ -67,10 +67,9 @@
    :adding-photo? (utils/requesting? data request-keys/append-gallery)})
 
 (defn built-component [data opts]
-  (let [new-galleries? (experiments/new-galleries? data)]
-    (if new-galleries?
-      (new-gallery-edit/built-component data nil)
-      (component/build component (query data) nil))))
+  (if (experiments/edit-gallery? data)
+    (new-gallery-edit/built-component data nil)
+    (component/build component (query data) nil)))
 
 (defmethod effects/perform-effects events/control-delete-gallery-image [_ event args _ app-state]
   #?(:cljs (let [{:keys [image-url]} args]

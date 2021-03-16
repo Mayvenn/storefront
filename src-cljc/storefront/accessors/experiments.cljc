@@ -119,6 +119,6 @@
   [data]
   (display-feature? data "look-customization"))
 
-(defn new-galleries?
+(defn edit-gallery?
   [data]
-  (display-feature? data "new-galleries"))
+  (display-feature? data "edit-gallery"))
