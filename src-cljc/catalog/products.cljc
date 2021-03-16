@@ -74,14 +74,8 @@
 
 (defn extract-product-skus
   [state product]
-  (let [skus-db                 (get-in state keypaths/v2-skus)
-        {:service/keys [world]} (api.orders/current state)
-        world       (if (or (= "SV2" world)
-                                        (ff/service-skus-with-addons? state))
-                      #(re-find #"000" %)
-                      #(re-find #"SV2" %))]
+  (let [skus-db (get-in state keypaths/v2-skus)]
     (->> (:selector/skus product)
-         (remove world) ;; GROT(SRV)
          (select-keys skus-db)
          vals
          (sort-by :sku/price))))
