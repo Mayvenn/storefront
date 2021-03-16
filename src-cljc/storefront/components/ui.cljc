@@ -711,7 +711,8 @@
     (counter-value spinning? value)
     (counter-button spinning? (str "quantity-inc-" data-test) inc-fn
                     (svg/plus-sign {:height "18px"
-                                    :width  "18px"}))]))
+                                    :width  "18px"
+                                    :class "fill-black stroke-black"}))]))
 
 (defn ^:private consolidated-cart-counter-button [spinning? data-test f content]
   (component/html
@@ -733,7 +734,8 @@
     [:div.border.border-pale-purple
      (consolidated-cart-counter-button spinning? (str "quantity-inc-" data-test) inc-fn
                                        (svg/plus-sign {:height "18px"
-                                                       :width  "18px"}))]]))
+                                                       :width  "18px"
+                                                       :class "fill-black stroke-black"}))]]))
 
 (defn note-box [{:keys [color data-test]} contents]
   (component/html
