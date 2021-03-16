@@ -2,7 +2,21 @@
   (:require #?@(:cljs [[storefront.api :as api]])
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
-            [storefront.keypaths :as keypaths]))
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]))
+
+(def add-photo-square
+  [:a.block.col-4.pp1.bg-pale-purple.white
+   (merge (utils/route-to events/navigate-gallery-image-picker)
+          {:data-test "add-to-gallery-link"})
+   (ui/aspect-ratio 1 1
+                    [:div.flex.flex-column.justify-evenly.container-size
+                     [:div ui/nbsp]
+                     [:div.center.bold
+                      {:style {:font-size "60px"}}
+                      "+"]
+                     [:div.center.shout.title-3.proxima "Add Photo"]])])
 
 (def pending-approval
   (component/html
@@ -11,9 +25,10 @@
 
 (defcomponent component [{:keys [gallery]} owner opts]
   [:div.container
-   (into [:div.clearfix.mxn1.flex.flex-wrap]
+   (into [:div.clearfix.mxn1.flex.flex-wrap
+          add-photo-square]
          (for [{:keys [status resizable-url]} gallery]
-           [:div.col.col-4.pp1
+           [:div.col-4.pp1
             {:key resizable-url}
             (ui/aspect-ratio 1 1
                              (if (= "approved" status)
