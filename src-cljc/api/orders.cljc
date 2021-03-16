@@ -90,7 +90,7 @@
                                   (comp :promo.mayvenn-install/discountable :variant-attrs)
                                   (orders/service-line-items waiter-order)))
         rules-for-service (or (get rules (:sku service-line-item))
-                              (get SV2-rules (-> service-line-item :service-attrs :sku/base-part)))
+                              (get SV2-rules (-> service-line-item :service-attrs :product/sku-part)))
         physical-items    (->> waiter-order :shipments (mapcat :line-items)
                                (filter (fn [item]
                                          (= "spree" (:source item))))
