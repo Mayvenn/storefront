@@ -11,14 +11,14 @@
 
 (defcomponent component [{:keys [photo back-link]} owner opts]
   (let [{:keys [id status resizable-url]} photo]
-    [:div
+    [:div.max-580.mx-auto.center
      [:div.p2
       (ui.molecules/return-link
        {:return-link/id            "back to gallery"
         :return-link/copy          "Back to Gallery"
         :return-link/event-message [(:navigation-event back-link)]})]
      [:div.container.bg-warm-gray.p3
-      [:div.bg-white.p3.container.center
+      [:div.bg-white.p3.container
        (ui/img {:src resizable-url :class "col-12" :square-size "400"})
        (ui/button-small-underline-red {} "Delete")]]]))
 
