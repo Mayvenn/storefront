@@ -158,6 +158,8 @@
 
 (defpath poll-stylist-portrait)
 (defpath poll-gallery)
+
+(defpath control-show-gallery-photo-delete-modal)
 (defpath control-cancel-editing-gallery)
 (defpath control-edit-gallery)
 (defpath control-delete-gallery-image)

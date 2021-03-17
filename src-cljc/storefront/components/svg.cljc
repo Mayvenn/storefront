@@ -442,6 +442,11 @@
    [:svg opts
     ^:inline (svg-xlink "white-diamond")]))
 
+(defn pink-bang [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "pink-bang")]))
+
 (defn shipping [opts]
   (component/html
    [:svg opts
