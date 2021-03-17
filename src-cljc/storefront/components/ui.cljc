@@ -148,6 +148,7 @@
 (defn button-small-underline-primary    [attrs & content] (button "p-color button-font-3 shout" attrs [:span.border-bottom.border-width-2.border-p-color content]))
 (defn button-small-underline-secondary  [attrs & content] (button "s-color button-font-3 shout" attrs [:span.border-bottom.border-width-2.border-s-color content]))
 (defn button-small-underline-black      [attrs & content] (button "black button-font-3 shout" attrs   [:span.border-bottom.border-width-2.border-black content]))
+(defn button-small-underline-red        [attrs & content] (button "red button-font-3 shout" attrs     [:span.border-bottom.border-width-2.border-red content]))
 
 (defn submit-button
   ([title] (submit-button title {}))

@@ -27,9 +27,10 @@
   [:div.container
    (into [:div.clearfix.mxn1.flex.flex-wrap
           add-photo-square]
-         (for [{:keys [status resizable-url]} gallery]
-           [:div.col-4.pp1
-            {:key resizable-url}
+         (for [{:keys [status resizable-url id]} gallery]
+           [:a.col-4.pp1.inherit-color
+            (merge (utils/route-to events/navigate-gallery-photo {:photo-id id})
+                   {:key resizable-url})
             (ui/aspect-ratio 1 1
                              (if (= "approved" status)
                                (ui/img {:class    "container-size"
@@ -39,9 +40,8 @@
                                         :max-size 749})
                                pending-approval))]))])
 
-
-(defn query [data]
-  {:gallery (get-in data keypaths/user-stylist-gallery-images)})
+(defn query [state]
+  {:gallery (get-in state keypaths/user-stylist-gallery-images)})
 
 (defn built-component [data opts]
   (component/build component (query data) nil))

@@ -125,6 +125,7 @@
               "/gallery"                                  (edn->bidi events/navigate-store-gallery)
               "/gallery/edit"                             (edn->bidi events/navigate-gallery-edit)
               "/gallery/add"                              (edn->bidi events/navigate-gallery-image-picker)
+              ["/gallery/edit/photo/" :photo-id]          (edn->bidi events/navigate-gallery-photo)
               "/checkout/returning_or_guest"              (edn->bidi events/navigate-checkout-returning-or-guest)
               "/checkout/login"                           (edn->bidi events/navigate-checkout-sign-in)
               "/checkout/address"                         (edn->bidi events/navigate-checkout-address)

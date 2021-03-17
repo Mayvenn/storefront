@@ -1,6 +1,7 @@
 .border-white         { border-color: var(--white); }
 .border-gray          { border-color: var(--gray); }
 .border-black         { border-color: var(--black); }
+.border-red           { border-color: var(--red); }
 .border-quadpay       { border-color: var(--quadpay); }
 
 .border-p-color        { border-color: var(--p-color); }
@@ -13,14 +14,15 @@
 .debug * { outline: 1px solid gold; }
 
 :root {
-  --white:          #FFFFFF;
-  --gray:           #CCCCCC;
-  --black:          #000000;
-  --p-color:        #4427C1;
-  --s-color:        #6BC8AD;
-  --cool-gray:      #EEEFEF;
-  --refresh-gray:   #F5F5F5;
-  --pale-purple:    #DEDBE5;
-  --warning-yellow: #EDC203;
-  --quadpay:        #140ca3;
+    --white:          #FFFFFF;
+    --gray:           #CCCCCC;
+    --black:          #000000;
+    --p-color:        #4427C1;
+    --s-color:        #6BC8AD;
+    --cool-gray:      #EEEFEF;
+    --refresh-gray:   #F5F5F5;
+    --pale-purple:    #DEDBE5;
+    --warning-yellow: #EDC203;
+    --quadpay:        #140ca3;
+    --red:            #f94941;
 }

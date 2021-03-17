@@ -50,6 +50,7 @@
 (defpath navigate-store-gallery)
 (defpath navigate-gallery-edit)
 (defpath navigate-gallery-image-picker)
+(defpath navigate-gallery-photo)
 
 (defpath navigate-content)
 (defpath navigate-content-help)
