@@ -265,7 +265,8 @@
 
 (defn ^:private cart-summary-query
   [{:as order :keys [adjustments]}
-   {:free-mayvenn-service/keys [service-item discounted] :as free-mayvenn-service}
+   {:free-mayvenn-service/keys [service-item discounted]}
+   free-service-sku
    addon-skus
    available-store-credit]
   (when (seq order)
@@ -303,9 +304,8 @@
                                                install-summary-line?
                                                (merge {:cart-summary-line/id    "free-service-adjustment"
                                                        :cart-summary-line/value (mf/as-money-or-free price)
-                                                       :cart-summary-line/label (if (= "SV2" (-> service-item :variant-attrs :service/world))
-                                                                                  "Free Mayvenn Install"
-                                                                                  (str "Free " service-name))})))
+                                                       :cart-summary-line/label (str "Free " (or (:product/essential-title free-service-sku)
+                                                                                                 service-name))})))
                                            (when (pos? tax)
                                              [{:cart-summary-line/id       "tax"
                                                :cart-summary-line/label    "Tax"
@@ -506,6 +506,7 @@
                                      (standalone-service-line-items-query data))
       :cart-summary                 (cart-summary-query order
                                                         free-mayvenn-service
+                                                        (get skus (get-in free-mayvenn-service [:free-mayvenn-service/service-item :sku]))
                                                         addon-service-skus
                                                         (orders/available-store-credit order user))}
      (when (and services-on-order? servicing-stylist)

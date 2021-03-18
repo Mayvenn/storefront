@@ -29,7 +29,8 @@
             [storefront.platform.messages
              :as messages
              :refer [handle-message] :rename {handle-message publish}]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [api.orders :as api.orders]))
 
 (defn ^:private hacky-cart-image
   [item]
@@ -171,20 +172,6 @@
       string/lower-case
       (string/replace #"[^a-z]+" "-")))
 
-(defn line-item-promo-discount
-  [promotion-code line-item-price]
-  (case promotion-code
-    "flash15"  (* 0.15 line-item-price)
-    "welcome5" (* 0.05 line-item-price)
-    0))
-
-(defn order-promo-discount
-  [promotion-code]
-  (case promotion-code
-    "heat"     15
-    "cash5"    5
-    0))
-
 (defn cart-summary<-
   "The cart has an upsell 'entered' because the customer has requested a service discount"
   [order]
@@ -195,10 +182,6 @@
                                        (filter #(and (contains? (:service/type %) "base")
                                                      (first (:promo.mayvenn-install/discountable %))))
                                        first)
-        wig-customization?        (and (contains? (:hair/family discountable-item) "ready-wigs" )
-                                       (contains? (:hair/family discountable-item) "lace-front-wigs")
-                                       (contains? (:hair/family discountable-item) "360-wigs")
-                                       (contains? (:service/category discountable-item) "customization"))
         discounted-service-amount (->> discountable-item
                                        :item/applied-promotions
                                        (filter #(= :freeinstall (:name (:promotion %))))
@@ -210,13 +193,13 @@
     (cond->
         {:cart-summary/id               "shared-cart-summary"
          :cart-summary-total-line/id    "total"
-         :cart-summary-total-line/label (if (and (not-empty discountable-item) (not wig-customization?))
+         :cart-summary-total-line/label (if (not-empty discountable-item)
                                           "Hair + Install Total"
                                           "Total")
-         :cart-summary-total-line/value (-> waiter-order :total mf/as-money)
+         :cart-summary-total-line/value (some-> waiter-order :total mf/as-money)
          :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
                                        :cart-summary-line/label "Subtotal"
-                                       :cart-summary-line/value (mf/as-money-or-free (:line-items-total waiter-order))}]
+                                       :cart-summary-line/value (some-> waiter-order :line-items-total mf/as-money-or-free)}]
 
                                      (when-let [shipping-method-summary-line
                                                 shipping-method-summary-line-query]
@@ -226,28 +209,21 @@
                                         {:cart-summary-line/id    "freeinstall-adjustment"
                                          :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
                                                                                       :height "2em" :width "2em"}]
-                                         :cart-summary-line/label (str "Free " (:sku/title discountable-item))
-                                         :cart-summary-line/value (mf/as-money-or-free discounted-service-amount)})
+                                         :cart-summary-line/label (str "Free " (or (:product/essential-title discountable-item)
+                                                                                   (:sku/title discountable-item)))
+                                         :cart-summary-line/value (some-> discounted-service-amount mf/as-money-or-free)})
                                       (when explicit-promotion
                                         {:cart-summary-line/id    (str (text->data-test-name (:coupon-code explicit-promotion)) "-adjustment")
                                          :cart-summary-line/icon  [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
                                                                                       :height "2em" :width "2em"}]
                                          :cart-summary-line/label (string/upper-case (:coupon-code explicit-promotion))
-                                         :cart-summary-line/value (mf/as-money-or-free (:price explicit-promotion))})])}
+                                         :cart-summary-line/value (some-> explicit-promotion :price mf/as-money-or-free)})])}
 
       service-is-discounted?
-      (merge {:cart-summary-total-incentive/savings (when (neg? total-savings)
-                                                      (mf/as-money (- total-savings)))})
-
-      (and service-is-discounted?
-           (not wig-customization?))
       (merge {:cart-summary-total-incentive/id    "mayvenn-install"
-              :cart-summary-total-incentive/label "Includes Mayvenn Install"})
-
-      (and service-is-discounted?
-           wig-customization?)
-      (merge {:cart-summary-total-incentive/id    "wig-customization"
-              :cart-summary-total-incentive/label "Includes Wig Customization"}))))
+              :cart-summary-total-incentive/label "Includes Mayvenn Install"
+              :cart-summary-total-incentive/savings (when (neg? total-savings)
+                                                      (mf/as-money (- total-savings)))}))))
 
 (defn quadpay<-
   [data {:keys [waiter/order]}]
@@ -412,114 +388,13 @@
               :spinning? spinning?
               :data-test id}
              (component/html
-              "edit cart"))]])
-        ]]]]]])
-
-(defn ^:private ->waiter-order
-  [{:keys [line-items discounts promotion-codes servicing-stylist-id total-discounted-amount]}]
-  (let [subtotal (reduce (fn [rolling-total {:keys [sku item/quantity]}]
-                           (-> sku
-                               :sku/price
-                               (* quantity)
-                               (+ rolling-total)))
-                         0 line-items)]
-    {:shipments [{:storefront/all-line-items (for [{:keys [sku item/quantity discounts]} line-items]
-                                               {:applied-promotions (map (fn [{:keys [promotion discount-amount]}]
-                                                                           {:amount (- discount-amount)
-                                                                            :promotion {:name promotion}}) discounts)
-                                                :quantity quantity
-                                                :sku      (:catalog/sku-id sku)
-                                                :source  (if (contains? (:catalog/department sku) "service")
-                                                           "service"
-                                                           "spree")
-                                                :variant-attrs {:service/type (first (:service/type sku))}
-                                                :variant-name (:sku/name sku)
-                                                :unit-price  (:sku/price sku)
-                                                :line-item-group 1}) ;; TODO ???
-                  :servicing-stylist-id      servicing-stylist-id
-                  :promotion-codes           promotion-codes}]
-     :adjustments (map (fn [{:keys [promotion discount-amount]}]
-                         {:coupon-code promotion
-                          :name        (if (= "freeinstall" promotion) "Free Install" promotion)
-                          :price       (- discount-amount)})
-                       discounts)
-     :line-items-total subtotal
-     :total (- subtotal total-discounted-amount)}))
-
-(defn ^:private enrich-line-items-with-sku-data
-  [sku-db shared-cart]
-  (let [indexed-sku-db (maps/index-by :legacy/variant-id (vals sku-db))]
-    (update shared-cart :line-items
-            #(for [item %]
-               (assoc item :sku (or (->> item :catalog/sku-id (get sku-db))
-                                         (->> item :legacy/variant-id (get indexed-sku-db))))))))
-
-(defn ^:private meets-discount-criterion?
-  [items [_word essentials rule-quantity]]
-  (->> items
-       (map #(merge (:sku %) %))
-       (select essentials)
-       (map :item/quantity)
-       (apply +)
-       (<= rule-quantity)))
-
-(defn ^:private add-discounts-to-line-items
-  [promotion-code items]
-  (for [{:keys [sku item/quantity catalog/sku-id] :as item} items
-        :let
-        [freeinstall-rules-for-item (get api.orders/rules sku-id)
-         line-item-base-price       (-> sku :sku/price (* quantity))]]
-    (cond-> item
-      (and freeinstall-rules-for-item ;; is a freeinstall discountable service line item
-           (every? (partial meets-discount-criterion? items) freeinstall-rules-for-item))
-      (update :discounts (fn [discounts] (conj discounts {:promotion       :freeinstall
-                                                          :discount-amount line-item-base-price})))
-
-      (and promotion-code
-           (not freeinstall-rules-for-item)) ;; is not a freeinstall discountable service line item
-      (update :discounts (fn [discounts] (conj discounts {:promotion       promotion-code
-                                                          :discount-amount (line-item-promo-discount promotion-code line-item-base-price)}))))))
-
-(defn ^:private add-discounts-roll-up
-  [{:keys [line-items]
-    :as shared-cart}]
-  (->> line-items
-       (mapcat :discounts)
-       (concat (for [code (:promotion-codes shared-cart)]
-                 {:promotion       code
-                  :discount-amount (order-promo-discount code)}))
-       (reduce (fn [acc {:keys [promotion discount-amount]}]
-                 (update acc promotion (partial + discount-amount))) {})
-       (map (fn [[k v]]
-              {:promotion k
-               :discount-amount v}))
-       (assoc shared-cart :discounts)))
-
-(defn ^:private add-total-discounted-amount
-  [{:keys [discounts]
-    :as shared-cart}]
-  (->> discounts
-       (reduce (fn [acc {:keys [discount-amount]}]
-                 (+ acc discount-amount)) 0)
-       (assoc shared-cart :total-discounted-amount)))
-
-(defn ^:private apply-promos
-  [shared-cart]
-  (let [promotion-code (first (:promotion-codes shared-cart))]
-    (-> shared-cart
-        (update :line-items (partial add-discounts-to-line-items promotion-code))
-        add-discounts-roll-up
-        add-total-discounted-amount)))
+              "edit cart"))]])]]]]]])
 
 (defn page [state _]
   (let [{:keys [servicing-stylist-id number]
          :as   shared-cart} (get-in state keypaths/shared-cart-current)
         sku-db              (get-in state keypaths/v2-skus)
-        order               (->> shared-cart
-                                 (enrich-line-items-with-sku-data sku-db)
-                                 apply-promos
-                                 ->waiter-order
-                                 (api.orders/->order state))
+        order               (api.orders/shared-cart->order state sku-db shared-cart)
         cart-creator        (or ;; If stylist fails to be fetched, then it falls back to current store
                              (get-in state keypaths/shared-cart-creator)
                              (get-in state keypaths/store))
@@ -597,7 +472,7 @@
            api-cache    (get-in app-state keypaths/api-cache)
            stylist?     (auth/stylist? (auth/signed-in app-state))]
        (if (->> shared-cart
-                (enrich-line-items-with-sku-data catalog-skus)
+                (api.orders/enrich-line-items-with-sku-data catalog-skus)
                 :line-items
                 (some (partial invalid-line-item? stylist?)))
          (do (messages/handle-message events/flash-later-show-failure

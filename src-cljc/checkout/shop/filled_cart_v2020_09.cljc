@@ -536,9 +536,8 @@
                                          (merge
                                           {:cart-summary-line/id    "free-service-adjustment"
                                            :cart-summary-line/value (mf/as-money-or-free price)
-                                           :cart-summary-line/label (if (= ["SV2"] (:service/world free-mayvenn-service))
-                                                                      "Free Mayvenn Install"
-                                                                      (str "Free " (:item/variant-name free-mayvenn-service)))
+                                           :cart-summary-line/label (str "Free " (or (:product/essential-title free-mayvenn-service)
+                                                                                     (:item/variant-name free-mayvenn-service)))
 
                                            :cart-summary-line/action-id     "cart-remove-promo"
                                            :cart-summary-line/action-icon   [:svg/close-x {:class "stroke-white fill-gray"}]
@@ -555,7 +554,6 @@
       service-discounted?
       (merge {:cart-summary-total-incentive/id    "mayvenn-install"
               :cart-summary-total-incentive/label "Includes Mayvenn Install"
-
               :cart-summary-total-incentive/savings (when (pos? total-savings)
                                                       (mf/as-money total-savings))})
 

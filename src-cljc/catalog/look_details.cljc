@@ -4,7 +4,8 @@
                        [storefront.hooks.quadpay :as quadpay]
                        ;; popups, must be required to load properly
                        looks.customization-modal])
-            [api.catalog :refer [select ?model-image ?cart-product-image]]
+            [api.catalog :refer [select  ?discountable ?physical ?service ?model-image ?cart-product-image]]
+            api.orders
             [catalog.facets :as facets]
             [catalog.images :as catalog-images]
             [checkout.ui.cart-item-v202004 :as cart-item]
@@ -28,7 +29,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.reviews :as reviews]
             [storefront.request-keys :as request-keys]
-            [storefront.ugc :as ugc]))
+            [storefront.ugc :as ugc]
+            [api.orders :as api.orders]))
 
 (defn add-to-cart-button
   [sold-out? creating-order? look {:keys [number]}]
@@ -143,34 +145,6 @@
                             nil))
         (component/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)]))])
 
-(defn ^:private service?
-  [line-item]
-  (-> line-item :catalog/department first #{"service"} boolean))
-
-(defn ^:private shared-cart->discount
-  [{:keys [promotions base-price shared-cart-promo base-service]}]
-  (let [promotion     (some->> promotions
-                               (filter (comp #{shared-cart-promo} str/lower-case :code))
-                               first)
-        promotion%    (some->> promotion
-                               :description
-                               (re-find #"\b(\d\d?\d?)%")
-                               second)
-        markdown-rate (some->> promotion%
-                               spice/parse-int
-                               (* 0.01)
-                               (- 1.0))
-        service-price (:sku/price base-service)]
-    {:discount-text    (if (shared-cart/discountable? base-service)
-                         "Hair + FREE Service"
-                         (some-> promotion% (str "%")))
-     :discounted-price (if (shared-cart/discountable? base-service)
-                         (-> base-price
-                             (- service-price)
-                             (* (if (= "gift" (:code promotion)) markdown-rate 1)))
-                         (-> base-price
-                             (* (or markdown-rate 1))))}))
-
 (defn ^:private add-product-title-and-color-to-line-item [products facets line-item]
   (merge line-item {:product-title (->> line-item
                                         :catalog/sku-id
@@ -213,126 +187,127 @@
      (get-model-image images-catalog (first sorted-line-items))
      (get-cart-product-image images-catalog (first sorted-line-items)))))
 
+(defn ^:private hacky-cart-image
+  [item]
+  (some->> item
+           :selector/images
+           (filter #(= "cart" (:use-case %)))
+           first
+           :url
+           ui/ucare-img-id))
+
 (defn service-line-item-query
-  [{:keys [sku-id] :as service-line-item} service-product]
-  {:react/key                             "service-line-item"
-   :cart-item-title/id                    "line-item-title-upsell-service"
-   :cart-item-title/primary               (or (:copy/title service-product) (:legacy/product-name service-line-item))
-   :cart-item-copy/lines                  [{:id    (str "line-item-whats-included-" sku-id)
-                                            :value (:copy/whats-included service-line-item)}
-                                           {:id    (str "line-item-quantity-" sku-id)
-                                            :value (str "qty. " (:item/quantity service-line-item))}]
-   :cart-item-floating-box/id             "line-item-service-price"
-   :cart-item-floating-box/contents       [{:text (some-> service-line-item :sku/price  mf/as-money) :attrs {:class "strike"}}
-                                           {:text "FREE" :attrs {:class "s-color"}}]
-   :cart-item-service-thumbnail/id        "service"
-   :cart-item-service-thumbnail/image-url (->> service-line-item
-                                               (catalog-images/image (maps/index-by :catalog/image-id (:selector/images service-product)) "cart")
-                                               :ucare/id)})
+  [{:keys [catalog/sku-id join/addon-facets] :as service-line-item}]
+  (merge
+   {:react/key                             "service-line-item"
+    :cart-item-title/id                    "line-item-title-upsell-service"
+    :cart-item-title/primary               (or
+                                            (:product/essential-title service-line-item)
+                                            (:legacy/product-name service-line-item))
+    :cart-item-copy/lines                  [{:id    (str "line-item-whats-included-" sku-id)
+                                             :value (:copy/whats-included service-line-item)}
+                                            {:id    (str "line-item-quantity-" sku-id)
+                                             :value (str "qty. " (:item/quantity service-line-item))}]
+    :cart-item-floating-box/id             "line-item-service-price"
+    :cart-item-floating-box/contents       [{:text (some-> service-line-item
+                                                           ((some-fn
+                                                             :product/essential-price
+                                                             :sku/price))
+                                                           mf/as-money) :attrs {:class "strike"}}
+                                            {:text "FREE" :attrs {:class "s-color"}}]
+    :cart-item-service-thumbnail/id        "service"
+    :cart-item-service-thumbnail/image-url (hacky-cart-image service-line-item)}
+   (merge  (when-let [addon-services (-> service-line-item :item.service/addons seq)]
+            {:cart-item-sub-items/id    "add-on-services"
+             :cart-item-sub-items/title "Add-On Services"
+             :cart-item-sub-items/items (map (fn [{:sku/keys [title price] sku-id :catalog/sku-id}]
+                                               {:cart-item-sub-item/title  title
+                                                :cart-item-sub-item/price  (mf/as-money price)
+                                                :cart-item-sub-item/sku-id sku-id})
+                                             addon-services)})
+           (when (seq addon-facets)
+             {:cart-item.addons/id    "addon-services"
+              :cart-item.addons/title "Add-On Services"
+              :cart-item.addons/elements
+              (->> addon-facets
+                   (mapv (fn [facet]
+                           {:cart-item.addon/title (:facet/name facet)
+                            :cart-item.addon/price (some-> facet :service/price mf/as-money)
+                            :cart-item.addon/id    (:service/sku-part facet)})))}))))
 
 (defn cart-items-query
-  [line-items]
+  [items]
   (for [{sku-id :catalog/sku-id
          images :selector/images
-         :as    line-item} line-items
-
-        :let [price (or (:sku/price line-item)
-                        (:unit-price line-item))]]
-    {:react/key                                (str sku-id "-" (:quantity line-item))
+         :as    item} items
+        :let [image-id (->> item
+                            (catalog-images/image (maps/index-by :catalog/image-id images) "cart")
+                            :ucare/id)]]
+    {:react/key                                (str sku-id "-" (:item/quantity item))
      :cart-item-title/id                       (str "line-item-title-" sku-id)
-     :cart-item-title/primary                  (or (:product-title line-item)
-                                                   (:product-name line-item))
-     :cart-item-title/secondary                (:color-name line-item)
+     :cart-item-title/primary                  (:hacky/cart-title item)
+     :cart-item-title/secondary                (-> item :join/facets :hair/color :sku/name)
      :cart-item-copy/lines                     [{:id    (str "line-item-quantity-" sku-id)
-                                                 :value (str "qty. " (:item/quantity line-item))}]
+                                                 :value (str "qty. " (:item/quantity item))}]
      :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku-id)
-     :cart-item-floating-box/contents          [{:text (mf/as-money price) :attrs {:data-test (str "line-item-price-ea-" sku-id)}}
+     :cart-item-floating-box/contents          [{:text  (-> item :sku/price mf/as-money)
+                                                 :attrs {:data-test (str "line-item-price-ea-" sku-id)}}
                                                 {:text " each" :attrs {:class "proxima content-4"}}]
      :cart-item-square-thumbnail/id            sku-id
      :cart-item-square-thumbnail/sku-id        sku-id
-     :cart-item-square-thumbnail/sticker-label (when-let [length-circle-value (-> line-item :hair/length first)]
-                                                 (str length-circle-value "”"))
-     :cart-item-square-thumbnail/ucare-id      (->> line-item
-                                                    (catalog-images/image (maps/index-by :catalog/image-id images) "cart")
-                                                    :ucare/id)}))
+     :cart-item-square-thumbnail/sticker-label (-> item :join/facets :hair/length :option/name)
+     :cart-item-square-thumbnail/ucare-id      image-id}))
 
 (defn query [data]
-  (let [skus               (get-in data keypaths/v2-skus)
-        shared-cart        (get-in data keypaths/shared-cart-current)
-        products           (get-in data keypaths/v2-products)
-        facets             (get-in data keypaths/v2-facets)
-        line-items         (some->> shared-cart
-                                    :line-items
-                                    (shared-cart/enrich-line-items-with-sku-data skus)
-                                    (map (partial add-product-title-and-color-to-line-item products facets)))
-        album-keyword      (get-in data keypaths/selected-album-keyword)
-        look               (contentful/look->look-detail-social-card album-keyword
-                                                                     (contentful/selected-look data))
-        album-copy         (get ugc/album-copy album-keyword)
-        base-price         (->> line-items
-                                (map (fn [line-item]
-                                       (* (:item/quantity line-item)
-                                          (:sku/price line-item))))
-                                (apply + 0))
-        discount           (shared-cart->discount
-                            {:promotions        (get-in data keypaths/promotions)
-                             :shared-cart-promo (some-> shared-cart :promotion-codes first str/lower-case)
-                             :base-price        base-price
-                             :base-service      (->> line-items
-                                                     (filter (comp #(contains? % "base") :service/type))
-                                                     first)})
-        back               (first (get-in data keypaths/navigation-undo-stack))
-        back-event         (:default-back-event album-copy)
-        item-count         (->> line-items (map :item/quantity) (reduce + 0))
-        {:keys
-         [free-services
-          addon-services]} (group-by #(cond
-                                        ((every-pred service?
-                                                     shared-cart/base-service?
-                                                     shared-cart/discountable?) %)
-                                        :free-services
-                                        (and (service? %)
-                                             (->> % :service/type first #{"addon"}))
-                                        :addon-services
-                                        :else :product-line-items)
-                                     line-items)]
+  (let [skus          (get-in data keypaths/v2-skus)
+        skus-db       skus
+        shared-cart   (get-in data keypaths/shared-cart-current)
+        products      (get-in data keypaths/v2-products)
+        facets        (get-in data keypaths/v2-facets)
+        line-items    (some->> shared-cart
+                               :line-items
+                               (shared-cart/enrich-line-items-with-sku-data skus)
+                               (map (partial add-product-title-and-color-to-line-item products facets)))
+        album-keyword (get-in data keypaths/selected-album-keyword)
+        look          (contentful/look->look-detail-social-card album-keyword
+                                                                (contentful/selected-look data))
+        album-copy    (get ugc/album-copy album-keyword)
+        back          (first (get-in data keypaths/navigation-undo-stack))
+        back-event    (:default-back-event album-copy)
+        {:order/keys                                  [items]
+         item-quantity                                :order.items/quantity
+         {:keys [adjustments line-items-total total]} :waiter/order}
+        (api.orders/shared-cart->order data skus-db shared-cart)
+
+        discountable-services (select ?discountable items)]
     (merge {:shared-cart           shared-cart
             :look                  look
             :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
             :skus                  skus
             :sold-out?             (not-every? :inventory/in-stock? line-items)
             :fetching-shared-cart? (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
-            :base-price            base-price
-            :discounted-price      (:discounted-price discount)
+            :base-price            line-items-total
+            :discounted-price      total
             :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
-            :discount-text         (:discount-text discount)
-            :cart-items            (->> line-items
-                                        (remove service?)
+            :discount-text         (if (some (comp (partial = 0) :promo.mayvenn-install/hair-missing-quantity) discountable-services)
+                                     "Hair + FREE Service"
+                                     (->> adjustments
+                                          (filter (comp not (partial contains? "freeinstall") :name))
+                                          first
+                                          :name))
+            :cart-items            (->> items
+                                        (select ?physical)
                                         cart-items-query
                                         shared-cart/sort-by-depart-and-price)
-            :service-line-items    (for [line-item (shared-cart/sort-by-depart-and-price free-services)
-                                         :let      [service-product (some->> line-item
-                                                                             :selector/from-products
-                                                                             first
-                                                                             ;; TODO: not resilient to skus belonging to multiple products
-                                                                             (get products))]]
-                                     (cond-> (service-line-item-query line-item service-product)
-                                       (and (shared-cart/discountable? line-item)
-                                            (seq addon-services))
-                                       (merge {:cart-item-sub-items/id    "add-on-services"
-                                               :cart-item-sub-items/title "Add-On Services"
-                                               :cart-item-sub-items/items (map (fn [{:sku/keys [title price] sku-id :catalog/sku-id}]
-                                                                                 {:cart-item-sub-item/title  title
-                                                                                  :cart-item-sub-item/price  (mf/as-money price)
-                                                                                  :cart-item-sub-item/sku-id sku-id})
-                                                                               addon-services)})))
-            :look-customization    (when (experiments/look-customization? data)
-                                     {:look-customization.button/target [events/control-show-look-customization-modal]
-                                      :look-customization.button/id     "customize-the-look"
-                                      :look-customization.button/title  "Customize the look"})
-            :carousel/images       (imgs (get-in data keypaths/v2-images) look line-items)
-            :items-title/id        "item-quantity-in-look"
-            :items-title/primary   (str item-count " items in this " (:short-name album-copy))
+            :service-line-items    (mapv (partial service-line-item-query) discountable-services)
+
+            :look-customization  (when (experiments/look-customization? data)
+                                   {:look-customization.button/target [events/control-show-look-customization-modal]
+                                    :look-customization.button/id     "customize-the-look"
+                                    :look-customization.button/title  "Customize the look"})
+            :carousel/images     (imgs (get-in data keypaths/v2-images) look items)
+            :items-title/id      "item-quantity-in-look"
+            :items-title/primary (str item-quantity " items in this " (:short-name album-copy))
 
             :return-link/event-message (if (and (not back) back-event)
                                          [back-event]
