@@ -90,6 +90,11 @@
 (def interstitial-page-events
   #{events/navigate-added-to-cart})
 
+(def gallery-page-events
+  #{events/navigate-gallery-edit
+    events/navigate-gallery-image-picker
+    events/navigate-gallery-photo})
+
 (defn promotion-helper-can-exist-on-page? [event]
   (->> event
        (contains? (set/union account-events
@@ -105,7 +110,9 @@
        not))
 
 (defn hide-footer? [event]
-  (contains? interstitial-page-events event))
+  (contains? (set/union gallery-page-events
+                        interstitial-page-events)
+             event))
 
 (defn show-minimal-footer? [event]
   (contains? minimal-footer-events event))
