@@ -1,75 +1,55 @@
 (ns storefront.components.gallery-edit
-  (:require #?@(:cljs [[storefront.accessors.auth :as auth]
-                       [storefront.api :as api]])
+  (:require #?@(:cljs [[storefront.api :as api]])
             [storefront.accessors.auth :as auth]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.assets :as assets]
             [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.new-gallery-edit :as new-gallery-edit]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [storefront.request-keys :as request-keys]
             [storefront.routes :as routes]
             [storefront.transitions :as transitions]))
 
-(defn manage-section [gallery-images editing? adding-photo?]
-  [:div.p2.center.bg-warm-gray
-   [:h1.mt6.mb3.title-1.canela "Your Gallery"]
-   [:p.mb2.content-2.proxima "Show off your best work to your clients by uploading images of your #MayvennMade hairstyles."]
-   (ui/narrow-container
-    [:div
-     [:div.p1.shout.col-9.mx-auto
-      (ui/button-medium-primary
-       (merge (utils/route-to events/navigate-gallery-image-picker)
-              {:data-test "add-to-gallery-link"
-               :spinning? adding-photo?})
-                                "Upload Photos")]
-     (when (seq gallery-images)
-       [:div.p1.mb4
-        (if editing?
-          (ui/button-small-underline-primary (utils/fake-href events/control-cancel-editing-gallery) "Finish editing")
-          (ui/button-small-underline-primary (utils/fake-href events/control-edit-gallery) "Edit Gallery"))])])])
+(def add-photo-square
+  [:a.block.col-4.pp1.bg-pale-purple.white
+   (merge (utils/route-to events/navigate-gallery-image-picker)
+          {:data-test "add-to-gallery-link"})
+   (ui/aspect-ratio 1 1
+                    [:div.flex.flex-column.justify-evenly.container-size
+                     [:div ui/nbsp]
+                     [:div.center.bold
+                      {:style {:font-size "60px"}}
+                      "+"]
+                     [:div.center.shout.title-3.proxima "Add Photo"]])])
 
 (def pending-approval
   (component/html
    [:div.container-size.bg-gray.flex.items-center.center.p2.proxima.content-2
     "Your image has been successfully submitted and is pending approval. Check back here to be updated on its status."]))
 
-(defn images [editing? gallery-images]
-  (into [:div.clearfix.mxn1]
-        (for [{:keys [status resizable-url]} gallery-images]
-          [:div.col.col-12.col-4-on-tb-dt.px1
-           {:key resizable-url}
-           [:div
-            (when editing?
-              [:div.bg-black.white.p2.flex.proxima.content-3.items-center
-               [:span.flex-auto.right-align.mr2 "Delete this post"]
-               (ui/modal-close {:close-attrs (merge
-                                              (utils/fake-href events/control-delete-gallery-image {:image-url resizable-url})
-                                              {:class "line-height-1"})})])
+(defcomponent component [{:keys [gallery]} owner opts]
+  [:div.container
+   (into [:div.clearfix.mxn1.flex.flex-wrap
+          add-photo-square]
+         (for [{:keys [status resizable-url id]} gallery]
+           [:a.col-4.pp1.inherit-color
+            (merge (utils/route-to events/navigate-gallery-photo {:photo-id id})
+                   {:key resizable-url})
             (ui/aspect-ratio 1 1
                              (if (= "approved" status)
-                               [:img.col-12 {:src resizable-url}]
-                               pending-approval))]])))
+                               (ui/img {:class    "container-size"
+                                        :style    {:object-position "50% 25%"
+                                                   :object-fit      "cover"}
+                                        :src      resizable-url
+                                        :max-size 749})
+                               pending-approval))]))])
 
-(defcomponent component [{:keys [editing? adding-photo? gallery]} owner opts]
-  [:div.container
-   (manage-section gallery editing? adding-photo?)
-   (images editing? gallery)])
-
-(defn query [data]
-  {:editing?      (get-in data keypaths/editing-gallery?)
-   :gallery       (get-in data keypaths/user-stylist-gallery-images)
-   :adding-photo? (utils/requesting? data request-keys/append-gallery)})
+(defn query [state]
+  {:gallery (get-in state keypaths/user-stylist-gallery-images)})
 
 (defn built-component [data opts]
-  (if (experiments/edit-gallery? data)
-    (new-gallery-edit/built-component data nil)
-    (component/build component (query data) nil)))
+  (component/build component (query data) nil))
 
 (defmethod effects/perform-effects events/navigate-gallery-edit [_ event args _ app-state]
   #?(:cljs (if (auth/stylist? (auth/signed-in app-state))

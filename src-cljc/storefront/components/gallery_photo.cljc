@@ -75,8 +75,7 @@
 (defmethod fx/perform-effects e/api-success-stylist-gallery-delete
   [_ event args _ app-state]
   #?(:cljs
-     (when (experiments/edit-gallery? app-state)
-       (history/enqueue-navigate e/navigate-gallery-edit))))
+     (history/enqueue-navigate e/navigate-gallery-edit)))
 
 (defmethod t/transition-state e/control-show-gallery-photo-delete-modal
   [_ _ _ state]
