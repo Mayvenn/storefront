@@ -1,8 +1,11 @@
 (ns storefront.components.gallery-photo
-  (:require #?@(:cljs [[storefront.api :as api]])
+  (:require #?@(:cljs [[storefront.accessors.experiments :as experiments]
+                       [storefront.api :as api]
+                       [storefront.history :as history]])
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.effects :as fx]
             [storefront.events :as e]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
@@ -10,7 +13,8 @@
             [storefront.transitions :as t]
             ui.molecules))
 
-(defn delete-modal [{:delete-modal/keys [close-event title subtitle id]}]
+(defn delete-modal [{:delete-modal/keys [close-event title subtitle id]
+                     :keys              [photo]}]
   [:div.bg-white.p3
    {:data-test id}
    [:div.right-align [:a (merge (utils/fake-href close-event)
@@ -28,9 +32,11 @@
                                               {:class     "container-size btn-medium"
                                                :data-test "delete-photo-cancel"}) "Cancel")
      [:div.mx2]
-     (ui/button-medium-red {:class     "container-size"
-                            :data-test "delete-photo-confirm"}
-                           "delete")]]])
+     (ui/button-medium-red
+      (merge (utils/fake-href e/control-delete-gallery-image {:image-url (:resizable-url photo)})
+             {:class     "container-size"
+              :data-test "delete-photo-confirm"})
+      "delete")]]])
 
 (defcomponent component [{:keys [photo back-link] :as data} owner opts]
   (let [{:keys [id status resizable-url]} photo]
@@ -40,15 +46,14 @@
        {:return-link/id            "back to gallery"
         :return-link/copy          "Back to Gallery"
         :return-link/event-message [(:navigation-event back-link)]})]
-
      (when (:delete-modal/id data)
-       (ui/modal {:close-attrs (utils/fake-href e/control-popup-hide)} (delete-modal data)))
+       (ui/modal {:close-attrs (utils/fake-href e/control-popup-hide)}
+                 (delete-modal data)))
      [:div.container.bg-warm-gray.p3
       [:div.bg-white.p3.container
        (ui/img {:src resizable-url :class "col-12" :square-size "400"})
-       (ui/button-small-underline-red
-        {:on-click  (utils/send-event-callback e/control-show-gallery-photo-delete-modal)
-         :data-test "delete-photo"} "Delete")]]]))
+       (ui/button-small-underline-red {:on-click  (utils/send-event-callback e/control-show-gallery-photo-delete-modal)
+                                       :data-test "delete-photo"} "Delete")]]]))
 
 (defn query [state]
   (let [photo-id           (numbers/parse-int (get-in state (conj keypaths/navigation-message 1 :photo-id)))
@@ -60,6 +65,18 @@
      :delete-modal/title       "Are you sure?"
      :delete-modal/subtitle    "You are about to delete this photo permanently."
      :delete-modal/id          (when show-delete-modal? "delete-photo-modal")}))
+
+(defmethod fx/perform-effects e/control-delete-gallery-image
+  [_ event {:keys [image-url]} _ app-state]
+  #?(:cljs (api/delete-gallery-image (get-in app-state keypaths/user-id)
+                                     (get-in app-state keypaths/user-token)
+                                     image-url)))
+
+(defmethod fx/perform-effects e/api-success-stylist-gallery-delete
+  [_ event args _ app-state]
+  #?(:cljs
+     (when (experiments/edit-gallery? app-state)
+       (history/enqueue-navigate e/navigate-gallery-edit))))
 
 (defmethod t/transition-state e/control-show-gallery-photo-delete-modal
   [_ _ _ state]

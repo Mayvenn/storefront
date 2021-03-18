@@ -71,12 +71,6 @@
     (new-gallery-edit/built-component data nil)
     (component/build component (query data) nil)))
 
-(defmethod effects/perform-effects events/control-delete-gallery-image [_ event args _ app-state]
-  #?(:cljs (let [{:keys [image-url]} args]
-             (api/delete-gallery-image (get-in app-state keypaths/user-id)
-                                       (get-in app-state keypaths/user-token)
-                                       image-url))))
-
 (defmethod effects/perform-effects events/navigate-gallery-edit [_ event args _ app-state]
   #?(:cljs (if (auth/stylist? (auth/signed-in app-state))
              (api/get-stylist-gallery {:user-id    (get-in app-state keypaths/user-id)
