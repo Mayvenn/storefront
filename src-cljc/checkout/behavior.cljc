@@ -19,7 +19,8 @@
   [{:order/keys [items]}]
   (and
    (select ?discountable items)
-   (empty? (mapcat :item.service/addons items))))
+   (empty? (mapcat :item.service/addons items))
+   (empty? (mapcat :join/addon-facets items))))
 
 (defmethod effects/perform-effects events/navigate-checkout-add
   [_ _ {:keys [navigate/caused-by]} _ app-state]
