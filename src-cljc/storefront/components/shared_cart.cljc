@@ -242,7 +242,7 @@
       (and service-is-discounted?
            (not wig-customization?))
       (merge {:cart-summary-total-incentive/id    "mayvenn-install"
-              :cart-summary-total-incentive/label "Includes Mayvenn Service"})
+              :cart-summary-total-incentive/label "Includes Mayvenn Install"})
 
       (and service-is-discounted?
            wig-customization?)
