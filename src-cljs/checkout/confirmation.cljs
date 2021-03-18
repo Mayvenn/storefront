@@ -265,7 +265,7 @@
 
 (defn ^:private cart-summary-query
   [{:as order :keys [adjustments]}
-   {:free-mayvenn-service/keys [service-item discounted]}
+   {:free-mayvenn-service/keys [service-item discounted] :as free-mayvenn-service}
    addon-skus
    available-store-credit]
   (when (seq order)
@@ -303,7 +303,9 @@
                                                install-summary-line?
                                                (merge {:cart-summary-line/id    "free-service-adjustment"
                                                        :cart-summary-line/value (mf/as-money-or-free (- (line-items/service-line-item-price service-item)))
-                                                       :cart-summary-line/label (str "Free " service-name)})))
+                                                       :cart-summary-line/label (if (= "SV2" (-> service-item :variant-attrs :service/world))
+                                                                                  "Free Mayvenn Install"
+                                                                                  (str "Free " service-name))})))
                                            (when (pos? tax)
                                              [{:cart-summary-line/id       "tax"
                                                :cart-summary-line/label    "Tax"

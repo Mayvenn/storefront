@@ -535,7 +535,9 @@
                                          (merge
                                           {:cart-summary-line/id    "free-service-adjustment"
                                            :cart-summary-line/value (mf/as-money-or-free service-item-price)
-                                           :cart-summary-line/label (str "Free " (:item/variant-name free-mayvenn-service))
+                                           :cart-summary-line/label (if (= ["SV2"] (:service/world free-mayvenn-service))
+                                                                      "Free Mayvenn Install"
+                                                                      (str "Free " (:item/variant-name free-mayvenn-service)))
 
                                            :cart-summary-line/action-id     "cart-remove-promo"
                                            :cart-summary-line/action-icon   [:svg/close-x {:class "stroke-white fill-gray"}]
@@ -605,7 +607,7 @@
                                   "Add promo code")}))})))
 
 (defn freeinstall-informational<-
-  [order items adding-freeinstall?]
+  [order items adding-freeinstall? service-skus-with-addons?]
   (when (and (not (orders/discountable-services-on-order? order))
              (some (comp #{"bundles" "closures" "frontals" "360-frontals"} first :hair/family)
                    (filter (comp (partial = "spree") :item/source) items) ))
@@ -614,7 +616,9 @@
      :freeinstall-informational/secondary             "Get a free install by a licensed stylist when you purchase 3 or more qualifying items"
      :freeinstall-informational/cta-label             "Add Mayvenn Install"
      :freeinstall-informational/cta-target            [events/control-add-sku-to-bag
-                                                       {:sku                {:catalog/sku-id                     "SRV-LBI-000"
+                                                       {:sku                {:catalog/sku-id                     (if service-skus-with-addons?
+                                                                                                                   "SV2-LBI-X"
+                                                                                                                   "SRV-LBI-000")
                                                                              :promo.mayvenn-install/discountable true}
                                                         :quantity           1}]
      :freeinstall-informational/id                    "freeinstall-informational"
@@ -719,8 +723,11 @@
 
         ;; TODO(corey) these are session
         pending-requests?         (update-pending? app-state)
+        service-skus-with-addons? (experiments/service-skus-with-addons? app-state)
         remove-in-progress?       (utils/requesting? app-state request-keys/remove-servicing-stylist)
-        adding-freeinstall?       (utils/requesting? app-state (conj request-keys/add-to-bag "SRV-LBI-000"))
+        adding-freeinstall?       (utils/requesting? app-state (conj request-keys/add-to-bag (if service-skus-with-addons?
+                                                                                               "SV2-LBI-X"
+                                                                                               "SRV-LBI-000")))
         update-line-item-requests (merge-with #(or %1 %2)
                                               (->> (map :catalog/sku-id items)
                                                    (variants-requests app-state request-keys/add-to-bag))
@@ -748,7 +755,7 @@
                                                                 delete-line-item-requests)
                                   :checkout-caption            (checkout-caption<- items)
                                   :cart-summary                (merge (cart-summary<- waiter-order items)
-                                                                      (freeinstall-informational<- waiter-order items adding-freeinstall?)
+                                                                      (freeinstall-informational<- waiter-order items adding-freeinstall? service-skus-with-addons?)
                                                                       (promo-input<- app-state
                                                                                      waiter-order
                                                                                      pending-requests?))

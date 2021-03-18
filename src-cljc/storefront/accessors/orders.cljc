@@ -138,7 +138,8 @@
 (defn service-line-item-promotion?
   [{:keys [name]}]
   (boolean
-   (#{"FREEINSTALL"
+   (#{"Free Mayvenn Service"
+      "FREEINSTALL"
       "Wig Customization"
       "Leave Out Install"
       "Closure Install"
