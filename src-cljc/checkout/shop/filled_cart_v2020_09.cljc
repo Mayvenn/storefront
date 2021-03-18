@@ -496,7 +496,9 @@
   [{:as order :keys [adjustments]} free-mayvenn-service]
   (let [wig-customization?  (orders/wig-customization? order)
         service-item-price  (- (* (:item/quantity free-mayvenn-service)
-                                  (:item/unit-price free-mayvenn-service)))
+                                  (or
+                                   (:product/essential-price free-mayvenn-service)
+                                   (:item/unit-price free-mayvenn-service))))
         total               (:total order)
         tax                 (:tax-total order)
         subtotal            (orders/products-and-services-subtotal order)
@@ -514,7 +516,6 @@
          :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
                                        :cart-summary-line/label "Subtotal"
                                        :cart-summary-line/value (mf/as-money subtotal)}]
-
 
                                      (when-let [shipping-method-summary-line
                                                 (shipping-method-summary-line-query
@@ -534,7 +535,7 @@
                                          install-summary-line?
                                          (merge
                                           {:cart-summary-line/id    "free-service-adjustment"
-                                           :cart-summary-line/value (mf/as-money-or-free service-item-price)
+                                           :cart-summary-line/value (mf/as-money-or-free price)
                                            :cart-summary-line/label (if (= ["SV2"] (:service/world free-mayvenn-service))
                                                                       "Free Mayvenn Install"
                                                                       (str "Free " (:item/variant-name free-mayvenn-service)))

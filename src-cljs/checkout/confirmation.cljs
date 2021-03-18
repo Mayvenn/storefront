@@ -302,7 +302,7 @@
 
                                                install-summary-line?
                                                (merge {:cart-summary-line/id    "free-service-adjustment"
-                                                       :cart-summary-line/value (mf/as-money-or-free (- (line-items/service-line-item-price service-item)))
+                                                       :cart-summary-line/value (mf/as-money-or-free price)
                                                        :cart-summary-line/label (if (= "SV2" (-> service-item :variant-attrs :service/world))
                                                                                   "Free Mayvenn Install"
                                                                                   (str "Free " service-name))})))

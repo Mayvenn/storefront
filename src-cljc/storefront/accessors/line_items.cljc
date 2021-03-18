@@ -50,12 +50,6 @@
 (defn sew-in-eligible? [sku-catalog line-item]
   (->> line-item :sku (get sku-catalog) :promo.mayvenn-install/eligible first))
 
-(defn service-line-item-price
-  "Might be nil"
-  [{:keys [quantity unit-price] :as service-line-item}]
-  (when (and service-line-item (pos? unit-price))
-    (* quantity unit-price)))
-
 (defn discounted-unit-price
   [{:keys [applied-promotions unit-price quantity]}]
   (let [total-amount-off  (->> applied-promotions
