@@ -292,7 +292,7 @@
             :discount-text         (if (some (comp (partial = 0) :promo.mayvenn-install/hair-missing-quantity) discountable-services)
                                      "Hair + FREE Service"
                                      (->> adjustments
-                                          (filter (comp not (partial contains? "freeinstall") :name))
+                                          (filter (comp not (partial contains? #{"freeinstall"}) :name))
                                           first
                                           :name))
             :cart-items            (->> items
