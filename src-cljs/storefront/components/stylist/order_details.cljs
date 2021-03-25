@@ -321,7 +321,8 @@
 
 (defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-sale
   [_ _ single-sale-map app-state]
-  (update-in app-state keypaths/v2-dashboard-sales-elements merge single-sale-map))
+  (update-in app-state keypaths/v2-dashboard-sales-elements merge
+             (maps/map-keys (comp spice/parse-int name) single-sale-map)))
 
 (defmethod effects/perform-effects events/api-success-v2-stylist-dashboard-sale
   [_ _ single-sale-map _ _]
