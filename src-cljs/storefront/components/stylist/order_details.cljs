@@ -1,29 +1,27 @@
 (ns storefront.components.stylist.order-details
   (:require checkout.classic-cart
+            [clojure.string :as string]
+            [spice.core :as spice]
+            [spice.maps :as maps]
+            [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.line-items :as line-items-accessors]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.sales :as sales]
             [storefront.accessors.shipping :as shipping]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.line-items :as line-items-accessors]
+            [storefront.api :as api]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.formatters :as f]
-            [storefront.components.stylist.line-items :as line-items]
+            [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [storefront.transitions :as transitions]
-            [storefront.effects :as effects]
             [storefront.request-keys :as request-keys]
-            [storefront.api :as api]
-            [clojure.string :as string]
-            [spice.core :as spice]
-            [spice.maps :as maps]
+            [storefront.transitions :as transitions]
             [ui.molecules :as ui-molecules]))
-
-;; TODO Remove handling of underscored keys after storeback has been deployed.
 
 (defn ^:private info-block [header content]
   [:div.align-top.pt2.mb2.h6
@@ -52,22 +50,17 @@
      [:span " (" (:name shipping-details) ")"]]
     [:span {:data-test (str "shipment-" shipment-count "-status")} "Processing"]))
 
-(defn ^:private shipment-details [{:as shipment :keys [line-items state shipping-details]} shipment-count]
-  [:div
-   (info-columns
-    ["shipped date" (some-> shipment :shipped-at f/long-date)]
-    ["delivery status" (shipment-status-field shipping-details shipment-count)])
-   [:div.align-top.mb2
-    [:span.shout "order details"]
-    (component/build line-items/component
-                     {:line-items     line-items
-                      :shipment-count shipment-count
-                      :show-price?    false}
-                     {})]])
+(defcomponent ^:private line-item-molecule
+  [{:line-item/keys [id primary secondary-information quantity-information]} _ _]
+  [:div.h6.pb2 {:key id}
+   [:div.medium {:data-test id} primary]
 
-(defn ^:private get-user-info [app-state]
-  {:user-id    (get-in app-state keypaths/user-id)
-   :user-token (get-in app-state keypaths/user-token)})
+   (for [{:line-item.secondary-information/keys [id value]} secondary-information]
+     [:div {:key id :data-test id} value])
+
+   [:div
+    (for [{:quantity-information/keys [id value attrs]} quantity-information]
+      [:span (merge {:key id :data-test id} attrs) value])]])
 
 (defn popup [text]
   [:div.tooltip-popup
@@ -105,15 +98,78 @@
          (when popup-visible?
            (popup tooltip-text))]])]))
 
+
+(defn line-item<-
+  [shipment-count
+   show-price?
+   {:keys [product-title color-name unit-price quantity returned-quantity product-name sku variant-attrs]}]
+  (let [base-dt (str "shipment-" shipment-count "-line-item-" sku)]
+    {:line-item/id      (str base-dt "-title")
+     :line-item/primary (or product-title product-name)
+     :line-item/secondary-information
+     (keep identity
+           [(when color-name
+              {:line-item.secondary-information/id    (str base-dt "-color")
+               :line-item.secondary-information/value color-name})
+
+            (when show-price?
+              {:line-item.secondary-information/id    (str base-dt "-price-ea")
+               :line-item.secondary-information/value (str "Price:" (mf/as-money unit-price) " ea")})
+
+            (when-let [length (:length variant-attrs)]
+              {:line-item.secondary-information/id    (str base-dt "-length")
+               :line-item.secondary-information/value (str length "” ")})])
+
+     :line-item/quantity-information
+     (keep identity
+           [{:quantity-information/id    (str base-dt "-open-bracket")
+             :quantity-information/value "(Qty: "}
+
+            {:quantity-information/id    (str base-dt "-struck-out-quantity")
+             :quantity-information/value quantity
+             :quantity-information/attrs (when returned-quantity {:class "strike"})}
+
+            (when returned-quantity
+              {:quantity-information/id    (str base-dt "-remaining-quantity")
+               :quantity-information/value (str " " (- quantity (or returned-quantity 0)))})
+
+            {:quantity-information/id    (str base-dt "-close-bracket")
+             :quantity-information/value ") "}
+
+            (when returned-quantity
+              {:quantity-information/id    (str base-dt "-returned-message")
+               :quantity-information/value (str returned-quantity (ui/pluralize returned-quantity " Item") " Returned")
+               :quantity-information/attrs {:class "error"}})])}))
+
+(defn fanout-addons
+  [addon-facets {:keys [addon-facet-ids sku] :as line-item}]
+  (if addon-facet-ids
+    (into [line-item]
+          (->> addon-facet-ids
+               (map (fnil keyword str))
+               (keep (partial get addon-facets))
+               (map (fn [facet]
+                      {:quantity      1
+                       :unit-price    (:service/price facet)
+                       :product-title (:facet/name facet)
+                       :sku           (-> facet
+                                          :facet/name
+                                          (string/replace #" " "-")
+                                          string/lower-case)}))))
+    [line-item]))
+
+(defcomponent line-item-display-component [{:keys [line-items]} _ _]
+  [:div (for [line-item line-items]
+          (component/build line-item-molecule line-item))])
+
 (defcomponent component
-  [{:keys [sale loading? popup-visible? back]
-    :as queried-data} owner opts]
+  [{:keys [sale loading? popup-visible?] :as queried-data} _ _]
   (let [{:keys [order-number
                 placed-at
                 order
                 voucher
                 balance-transfer-id]} sale
-        shipments                     (-> sale :order :shipments reverse)
+        shipments                     (-> order :shipments reverse)
         shipment-count                (-> shipments count fmt-with-leading-zero)]
     (if (or (not order-number) loading?)
       [:div.my6.h2 ui/spinner]
@@ -151,7 +207,18 @@
               [:span nth-shipment
                " of "
                shipment-count]
-              (shipment-details shipment nth-shipment)]))]]])))
+              (let [{:keys [addon-facets line-items shipping-details]} shipment]
+                [:div
+                 (info-columns
+                  ["shipped date" (some-> shipment :shipped-at f/long-date)]
+                  ["delivery status" (shipment-status-field shipping-details shipment-count)])
+                 [:div.align-top.mb2
+                  [:span.shout "order details"]
+                  (component/build line-item-display-component
+                                   {:line-items (->> line-items
+                                                     (mapcat (partial fanout-addons addon-facets))
+                                                     (mapv (partial line-item<- shipment-count false)))}
+                                   {})]])]))]]])))
 
 (defn initialize-shipments-for-returns [shipments]
   (for [shipment shipments]
@@ -207,21 +274,21 @@
        first))
 
 (defn query [app-state]
-  (let [order-number                   (:order-number (get-in app-state keypaths/navigation-args))
-        sale                           (cond-> (sale-by-order-number app-state order-number)
-                                         (no-vouchers? app-state)
-                                         (dissoc :voucher))
-        shipments-enriched             (for [shipment (-> sale :order :shipments)]
-                                         (let [product-line-items          (remove (comp #{"waiter"} :source) (:line-items shipment))
-                                               enriched-product-line-items (mapv (partial checkout.classic-cart/add-product-title-and-color-to-line-item
-                                                                                          (get-in app-state keypaths/v2-products)
-                                                                                          (get-in app-state keypaths/v2-facets))
-                                                                                 product-line-items)]
-                                           (assoc shipment
-                                                  :line-items enriched-product-line-items
-                                                  :shipping-details (shipping/shipping-details shipment))))
-        returned-quantities            (orders/returned-quantities (:order sale))
-        shipments-with-returns         (add-returns (vec shipments-enriched) returned-quantities)]
+  (let [order-number           (:order-number (get-in app-state keypaths/navigation-args))
+        sale                   (cond-> (sale-by-order-number app-state order-number)
+                                 (no-vouchers? app-state)
+                                 (dissoc :voucher))
+        shipments-enriched     (for [shipment (-> sale :order :shipments)]
+                                 (let [product-line-items          (remove (comp #{"waiter"} :source) (:line-items shipment))
+                                       enriched-product-line-items (mapv (partial checkout.classic-cart/add-product-title-and-color-to-line-item
+                                                                                  (get-in app-state keypaths/v2-products)
+                                                                                  (get-in app-state keypaths/v2-facets))
+                                                                         product-line-items)]
+                                   (assoc shipment
+                                          :line-items enriched-product-line-items
+                                          :shipping-details (shipping/shipping-details shipment))))
+        returned-quantities    (orders/returned-quantities (:order sale))
+        shipments-with-returns (add-returns (vec shipments-enriched) returned-quantities)]
     {:sale                      (assoc-in sale [:order :shipments] shipments-with-returns)
      :loading?                  (utils/requesting? app-state request-keys/get-stylist-dashboard-sale)
      :popup-visible?            (get-in app-state keypaths/v2-dashboard-balance-transfers-voucher-popup-visible?)
@@ -236,6 +303,10 @@
 (defmethod transitions/transition-state events/control-v2-stylist-dashboard-balance-transfers-voucher-popup-set-visible
   [_ event {:keys [value]} app-state]
   (assoc-in app-state keypaths/v2-dashboard-balance-transfers-voucher-popup-visible? value))
+
+(defn ^:private get-user-info [app-state]
+  {:user-id    (get-in app-state keypaths/user-id)
+   :user-token (get-in app-state keypaths/user-token)})
 
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-order-details
   [_ event {:keys [order-number] :as args} _ app-state]
