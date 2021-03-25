@@ -129,29 +129,6 @@
 
         :else (fn? f)))
 
-(defn ^:private has-html?
-  [problems path f]
-  (cond
-    (and (or (vector? f) (map-entry? f)) (pos? (count f)))
-    (let [first-v (first f)]
-      (if (and (keyword? first-v)
-               (first (filter #(str/starts-with? (name first-v) %)
-                              ["div" "img" "div" "h1" "h2" "h3" "h4" "h5" "h6" "span"])))
-        (when (not (:ignore-interpret-warning (meta f)))
-          (swap! problems conj {:keypath path :value f :offending-element first-v})
-          true)
-        (some true? (doall (map-indexed #(has-html? problems (conj (vec path) %1) %2) f)))))
-
-    (map? f)
-    (some true?
-          (doall
-           (for [[k v] f]
-             (has-html? problems (conj (vec path) k) v))))
-    (sequential? f)
-    (some true? (doall (map-indexed #(has-html? problems (conj (vec path) %1) %2) f)))
-
-    :else false))
-
 (defn build* [component data opts debug-data]
   #?(:clj (component data nil (:opts opts))
      :cljs (do
@@ -166,34 +143,7 @@
                (let [problems (atom nil)]
                  (assert (not (has-fn? problems [] data))
                          (str "building " (:file debug-data) ":" (:line debug-data)
-                              " includes a function which is not recommended because it reforces constant rerenders (" @problems ")")))
-
-               ;; assert that there's no sablono-looking html inside data since
-               ;; interpretation creates a subtle performance cost.
-               ;;
-               ;; this is an inaccurate heuristic: this looks for vectors whose
-               ;; first element is a keyword that looks like an html tag.
-               ;;
-               ;; If you wish to ignore this warning, the offending vector that
-               ;; be annotated with the metadata ^:ignore-interpret-warning like:
-               ;;
-               ;;   {:contents ^:ignore-interpret-warning [:h1 "ok"]}
-               ;;
-               ;; This makes it explicit where we opt into sablono
-               ;; interpretation inside queries, although it's best to avoid
-               ;; interpretation all together
-               (let [problems (atom nil)]
-                 (when (has-html? problems [] data)
-                   (js/console.warn
-                    (str "A component includes sablono html in its query data which is not recommended because"
-                         " forces sablono interpretation which is slower for render.\n"
-                         "Component is at: " (:file debug-data) ":" (:line debug-data)
-                         "\n Details: ")
-                    (clj->js (map (fn [f]
-                                    #js {:keypath           (:keypath f)
-                                         :value             (:value f)
-                                         :offending-element (:offending-element f)})
-                                  @problems))))))
+                              " includes a function which is not recommended because it reforces constant rerenders (" @problems ")"))))
              (cond
                (gobj/get component "isNewStyleComponent" false)
                (react/createElement component

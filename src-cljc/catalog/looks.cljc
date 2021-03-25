@@ -270,7 +270,6 @@
                                      :look/discounted-price (some-> discounted-price mf/as-money)
                                      :look/hero-imgs        [{:url (:photo-url look)
                                                               :platform-source
-                                                              ^:ignore-interpret-warning
                                                               (when-let [icon (svg/social-icon (:social-media-platform look))]
                                                                 (icon {:class "fill-white"
                                                                        :style {:opacity 0.7}}))}]
