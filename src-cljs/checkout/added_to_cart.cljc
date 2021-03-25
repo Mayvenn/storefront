@@ -1,8 +1,8 @@
 (ns checkout.added-to-cart
   (:require #?@(:cljs [[storefront.browser.tags :as tags]
                        [storefront.frontend-trackings :as frontend-trackings]
-                       [storefront.hooks.stringer :as stringer]
-                       [storefront.history :as history]])
+                       [storefront.history :as history]
+                       [storefront.hooks.stringer :as stringer]])
             [api.catalog :refer [select ?discountable ?physical ?recent ?service]]
             api.orders
             [checkout.ui.cart-item-v202004 :as cart-item-v202004]
@@ -184,35 +184,6 @@
            :url
            ui/ucare-img-id))
 
-(defn free-service-line-item-query
-  [{:as                free-service-item
-    :catalog/keys      [sku-id]
-    :item/keys         [unit-price recent-quantity variant-name]
-    :item.service/keys [addons]}]
-  (when free-service-item
-    [(merge {:react/key                 (str "line-item-" sku-id)
-             :cart-item-copy/lines      [{:id    (str "line-item-requirements-" sku-id)
-                                          :value (:promo.mayvenn-install/requirement-copy free-service-item)}
-                                         {:id    (str "line-item-quantity-" sku-id)
-                                          :value (str "qty. " recent-quantity)}]
-             :cart-item-floating-box/id (str "line-item-price-" sku-id)
-             :cart-item-floating-box/contents [{:text  (some-> unit-price $/as-money)
-                                                :attrs {:class "strike"}}
-                                               {:text "FREE" :attrs {:class "s-color"}}]
-             :cart-item-service-thumbnail/id        (str "line-item-thumbnail-" sku-id)
-             :cart-item-service-thumbnail/image-url (hacky-cart-image free-service-item)
-             :cart-item-title/id                    (str "line-item-title-" sku-id)
-             :cart-item-title/primary               variant-name}
-            (when (seq addons)
-              {:cart-item-sub-items/id    (str "free-service-" sku-id "-addon-services")
-               :cart-item-sub-items/title "Add-On Services"
-               ;; think about sharing this function
-               :cart-item-sub-items/items (map (fn [addon-sku]
-                                                 {:cart-item-sub-item/title  (:sku/title addon-sku)
-                                                  :cart-item-sub-item/price  (some-> addon-sku :sku/price $/as-money)
-                                                  :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
-                                               addons)}))]))
-
 (defn cart-items<-
   [items]
   (for [item (select (merge ?physical ?recent) items)
@@ -242,23 +213,32 @@
   (when-let [{:as                free-service-item
               :catalog/keys      [sku-id]
               :item/keys         [unit-price recent-quantity variant-name]
+              :join/keys         [addon-facets]
+              :hacky/keys        [promo-mayvenn-install-requirement-copy]
+              :product/keys      [essential-title essential-price]
               :item.service/keys [addons]}
              (->> items
                   (select (merge ?recent ?discountable))
                   first)]
-    [(merge {:react/key                 (str "line-item-" sku-id)
-             :cart-item-copy/lines      [{:id    (str "line-item-requirements-" sku-id)
-                                          :value (:promo.mayvenn-install/requirement-copy free-service-item)}
-                                         {:id    (str "line-item-quantity-" sku-id)
-                                          :value (str "qty. " recent-quantity)}]
-             :cart-item-floating-box/id (str "line-item-price-" sku-id)
-             :cart-item-floating-box/contents [{:text  (some-> unit-price $/as-money)
-                                                :attrs {:class "strike"}}
-                                               {:text "FREE" :attrs {:class "s-color"}}]
+    [(merge {:react/key                             (str "line-item-" sku-id)
+             :cart-item-copy/lines                  [{:id    (str "line-item-requirements-" sku-id)
+                                                      :value (or
+                                                              (:promo.mayvenn-install/requirement-copy free-service-item)
+                                                              promo-mayvenn-install-requirement-copy)}
+                                                     {:id    (str "line-item-quantity-" sku-id)
+                                                      :value (str "qty. " recent-quantity)}]
+             :cart-item-floating-box/id             (str "line-item-price-" sku-id)
+             :cart-item-floating-box/contents       [{:text  (some-> (or
+                                                                      essential-price
+                                                                      unit-price) $/as-money)
+                                                      :attrs {:class "strike"}}
+                                                     {:text "FREE" :attrs {:class "s-color"}}]
              :cart-item-service-thumbnail/id        (str "line-item-thumbnail-" sku-id)
              :cart-item-service-thumbnail/image-url (hacky-cart-image free-service-item)
              :cart-item-title/id                    (str "line-item-title-" sku-id)
-             :cart-item-title/primary               variant-name}
+             :cart-item-title/primary               (or
+                                                     essential-title
+                                                     variant-name)}
             (when (seq addons)
               {:cart-item-sub-items/id    (str "free-service-" sku-id "-addon-services")
                :cart-item-sub-items/title "Add-On Services"
@@ -267,7 +247,16 @@
                                                  {:cart-item-sub-item/title  (:sku/title addon-sku)
                                                   :cart-item-sub-item/price  (some-> addon-sku :sku/price $/as-money)
                                                   :cart-item-sub-item/sku-id (:catalog/sku-id addon-sku)})
-                                               addons)}))]))
+                                               addons)})
+            (when (seq addon-facets)
+              {:cart-item.addons/id    "addon-services"
+               :cart-item.addons/title "Add-On Services"
+               :cart-item.addons/elements
+               (->> addon-facets
+                    (mapv (fn [facet]
+                            {:cart-item.addon/title (:facet/name facet)
+                             :cart-item.addon/price (some-> facet :service/price $/as-money)
+                             :cart-item.addon/id    (:service/sku-part facet)})))}))]))
 
 (defn header<-
   [items]
