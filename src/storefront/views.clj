@@ -156,16 +156,20 @@
 
 (defn layout
   [{:keys [storeback-config environment client-version]} data initial-content]
-  (let [shop?   (or (= "shop" (get-in data keypaths/store-slug))
+  (let [home?    (= events/navigate-home (get-in data keypaths/navigation-event))
+        shop?    (or (= "shop" (get-in data keypaths/store-slug))
                     (= "retail-location" (get-in data keypaths/store-experience)))
-        follow? (and (not= "acceptance" environment)
+        follow?  (and (not= "acceptance" environment)
                      shop?)
-        index?  (and (not= "acceptance" environment)
-                     (or shop?
-                         (= events/navigate-home (get-in data keypaths/navigation-event))))
+        index?   (and (not= "acceptance" environment)
+                      (or shop? home?))
         js-files (js-modules (get-in data keypaths/navigation-event))]
     (html5 {:lang "en"}
            [:head
+            (when home?
+              [:link {:rel  "preload"
+                      :as   "image"
+                      :href "https://images.ctfassets.net/76m8os65degn/3G0TE1RlgrcTA0rPEpkQJ1/faa7337aa049c535f78ab07f2f869198/homepage_hero_012921_image_mob-04.jpg?fm=webp&q=75&w=1600"}])
             [:meta {:name "fragment" :content "!"}]
             [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
             [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
