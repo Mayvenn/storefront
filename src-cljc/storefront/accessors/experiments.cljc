@@ -102,11 +102,6 @@
   [data]
   (display-feature? data "reinstall-services"))
 
-(defn sbl-update?
-  [data]
-  (and (= :shop (sites/determine-site data))
-       (display-feature? data "sbl-update")))
-
 (defn hair-filters?
   [data]
   (display-feature? data "hair-filters"))

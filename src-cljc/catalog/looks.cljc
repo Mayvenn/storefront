@@ -364,8 +364,7 @@
 
 (defn ^:export built-component [data opts]
   (let [album-kw (ugc/determine-look-album data (get-in data storefront.keypaths/selected-album-keyword))]
-    (if (and (experiments/sbl-update? data)        ;; featured
-             (= :shop (sites/determine-site data)) ;; dtc, shop
+    (if (and (= :shop (sites/determine-site data)) ;; dtc, shop
              (= :aladdin-free-install album-kw))   ;; main look page
       (page data opts)
       (->> (component/build original-component

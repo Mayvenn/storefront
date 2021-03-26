@@ -35,7 +35,10 @@
        empty?))
 
 (defn fetch-cms-keypath
-  [app-state keypath]
-  #?(:cljs
-     (when (need-cms-keypath? app-state keypath)
-       (api/fetch-cms-keypath keypath))))
+  ([app-state keypath]
+   (fetch-cms-keypath app-state keypath identity))
+  ([app-state keypath handler]
+   #?(:cljs
+      (if (need-cms-keypath? app-state keypath)
+        (api/fetch-cms-keypath keypath handler)
+        (handler (get-in app-state keypaths/cms))))))
