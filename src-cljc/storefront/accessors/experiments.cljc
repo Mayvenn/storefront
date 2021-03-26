@@ -102,10 +102,6 @@
   [data]
   (display-feature? data "reinstall-services"))
 
-(defn hair-filters?
-  [data]
-  (display-feature? data "hair-filters"))
-
 (defn service-skus-with-addons?
   [data]
   (display-feature? data "service-skus-with-addons"))

@@ -7,8 +7,7 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.request-keys :as request-keys]))
 
 (defn ^:private subsections-query
   [data
@@ -71,9 +70,7 @@
                      app-state
                      category
                      products-matching-filter-selections)
-        no-product-cards? (and
-                           (not (experiments/hair-filters? app-state))
-                           (empty? (mapcat :product-cards subsections)))]
+        no-product-cards? (empty? (mapcat :product-cards subsections))]
     {:id                "product-card-listing"
      :subsections       subsections
      :no-product-cards? no-product-cards?
