@@ -100,10 +100,10 @@
 
 
 (defn line-item<-
-  [shipment-count
+  [shipment-number
    show-price?
    {:keys [product-title color-name unit-price quantity returned-quantity product-name sku variant-attrs]}]
-  (let [base-dt (str "shipment-" shipment-count "-line-item-" sku)]
+  (let [base-dt (str "shipment-" shipment-number "-line-item-" sku)]
     {:line-item/id      (str base-dt "-title")
      :line-item/primary (or product-title product-name)
      :line-item/secondary-information
@@ -211,13 +211,13 @@
                 [:div
                  (info-columns
                   ["shipped date" (some-> shipment :shipped-at f/long-date)]
-                  ["delivery status" (shipment-status-field shipping-details shipment-count)])
+                  ["delivery status" (shipment-status-field shipping-details nth-shipment)])
                  [:div.align-top.mb2
                   [:span.shout "order details"]
                   (component/build line-item-display-component
                                    {:line-items (->> line-items
                                                      (mapcat (partial fanout-addons addon-facets))
-                                                     (mapv (partial line-item<- shipment-count false)))}
+                                                     (mapv (partial line-item<- nth-shipment false)))}
                                    {})]])]))]]])))
 
 (defn initialize-shipments-for-returns [shipments]
