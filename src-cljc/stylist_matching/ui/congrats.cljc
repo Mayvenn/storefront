@@ -33,5 +33,5 @@
    [:div.ptj3.pbj2 congrats-heart-atom]
    [:div.col-9
     (congrats-title-molecule data)]
-   [:div.col-8.pt3
+   [:div.col-8.pt3.ptj3
     (congrats-cta-molecule data)]])
