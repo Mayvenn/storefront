@@ -110,7 +110,8 @@
     events/navigate-stylist-account-social
     events/navigate-v2-stylist-dashboard-payments
     events/navigate-v2-stylist-dashboard-orders
-    events/navigate-gallery-image-picker})
+    events/navigate-gallery-image-picker
+    events/navigate-gallery-edit})
 
 (def ^:private checkout-events
   #{events/navigate-checkout-returning-or-guest

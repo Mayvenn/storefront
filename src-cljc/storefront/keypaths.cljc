@@ -30,6 +30,10 @@
 (def user-stylist-service-menu (conj user :service-menu))
 (def user-stylist-portrait (conj user :stylist-portrait))
 (def user-stylist-gallery-images (conj user :stylist-gallery-images))
+(def user-stylist-gallery-posts (conj user :stylist-gallery-posts))
+(def user-stylist-gallery-initial-posts-ordering (conj user :stylist-gallery-initial-posts-ordering))
+(def user-stylist-gallery-new-posts-ordering (conj user :stylist-gallery-new-posts-ordering))
+
 (def user-id (conj user :id))
 (def user-must-set-password (conj user :must-set-password))
 (def user-total-available-store-credit (conj user :total-available-store-credit))
@@ -228,6 +232,10 @@
 (def flash-later-failure (conj flash-later :failure))
 (def flash-later-failure-message (conj flash-later-failure :message))
 
+(def stylist-gallery (conj ui :gallery))
+(def stylist-gallery-reorder-mode (conj stylist-gallery :reorder-mode))
+(def stylist-gallery-currently-dragging-post (conj stylist-gallery :currently-dragging-post))
+
 (def billing-address [:billing-address])
 
 (def shipping-address [:shipping-address])
@@ -282,6 +290,9 @@
 (def loaded-kustomer (conj loaded :kustomer))
 ;; Kustomer integration requires to be called and completed after tag insertion
 (def started-kustomer (conj ui :started :kustomer))
+
+(def loaded-muuri (conj loaded :muuri))
+(def initialize-muuri (conj loaded :initialize-muuri))
 
 (def facebook-email-denied (conj ui :facebook-email-denied))
 

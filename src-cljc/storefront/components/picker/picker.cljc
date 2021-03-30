@@ -4,6 +4,7 @@
             [catalog.products :as products]
             [clojure.string :as string]
             [spice.core :as spice]
+            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -11,8 +12,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.platform.messages :as messages]))
 
 (def checkmark-circle
   [:div.circle.bg-s-color.flex.items-center.justify-center

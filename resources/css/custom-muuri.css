@@ -1,0 +1,16 @@
+.muuri-item-shown {
+  cursor: pointer;
+}
+
+.muuri-item-releasing {
+  z-index: 5;
+}
+
+.muuri-item-dragging {
+  z-index: 5;
+  cursor: move;
+}
+
+.muuri-item-dragging > div.relative {
+  transform: scale(1.1);
+}

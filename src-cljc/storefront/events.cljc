@@ -262,6 +262,9 @@
 
 (defpath snap)
 
+(defpath debounced-event-initialized)
+(defpath debounced-event-enqueued)
+
 (defpath api)
 (defpath api-start)
 (defpath api-end)
@@ -348,11 +351,15 @@
 (defpath api-success-promotions)
 
 (defpath api-success-store-gallery-fetch)
+(defpath api-success-store-gallery-reorder)
 
 (defpath api-success-stylist-gallery)
 (defpath api-success-stylist-gallery-fetch)
 (defpath api-success-stylist-gallery-append)
 (defpath api-success-stylist-gallery-delete)
+(defpath api-success-stylist-gallery-fetch-v2)
+(defpath api-success-stylist-gallery-delete-v2)
+(defpath api-success-stylist-gallery-reorder-v2)
 
 (defpath api-success-shipping-methods)
 
@@ -687,3 +694,12 @@
 ;; flow - sequence of user interactions, visual in nature (ui state machine)
 ;; biz - conceptual, independent of a particular user interface, builds a 'model'
 ;; cache - data handling from remotes, no conceptualization
+
+;; Stylist Gallery
+(defpath control-stylist-gallery-posts-drag-predicate-loop)
+(defpath control-stylist-gallery-posts-drag-began)
+(defpath control-stylist-gallery-posts-drag-ended)
+(defpath control-stylist-gallery-delete-v2)
+(defpath control-stylist-gallery-posts-drag-predicate-initialized)
+(defpath stylist-gallery-posts-drag-predicate-loop)
+(defpath stylist-gallery-posts-reordered)

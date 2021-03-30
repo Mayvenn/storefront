@@ -285,9 +285,6 @@
   (when-not (get-in app-state keypaths/user-id)
     (add-return-event app-state)))
 
-(defmethod transition-state events/navigate-gallery-edit [_ event args app-state]
-  (assoc-in app-state keypaths/editing-gallery? false))
-
 (defmethod transition-state events/control-menu-expand
   [_ event {keypath :keypath} app-state]
   (reduce (fn [state menu] (assoc-in state menu (= menu keypath)))

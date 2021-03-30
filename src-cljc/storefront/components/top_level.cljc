@@ -25,7 +25,6 @@
             [storefront.components.footer :as footer]
             [storefront.components.forgot-password :as forgot-password]
             [storefront.components.gallery :as gallery]
-            [storefront.components.gallery-edit :as gallery-edit]
             [storefront.components.gallery-photo :as gallery-photo]
             [storefront.components.header :as header]
             [ui.promo-banner :as promo-banner]
@@ -98,7 +97,7 @@
    events/navigate-sign-up                 (constantly sign-up/built-component)
    events/navigate-forgot-password         (constantly forgot-password/built-component)
    events/navigate-store-gallery           (constantly gallery/built-component)
-   events/navigate-gallery-edit            (constantly gallery-edit/built-component)
+   events/navigate-gallery-edit            #(ui/lazy-load-component :dashboard 'storefront.components.gallery-edit/built-component events/navigate-gallery-edit)
    events/navigate-gallery-photo           (constantly gallery-photo/built-component)
 
    events/navigate-info-certified-stylists (constantly adventure.informational.certified-stylists/built-component)

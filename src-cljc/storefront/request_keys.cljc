@@ -33,6 +33,7 @@
 (def cash-out-commit [:cash-out-commit])
 (def cash-out-status [:cash-out-status])
 (def get-store-gallery [:get-store-gallery])
+(def reorder-store-gallery [:reorder-store-gallery])
 (def get-stylist-gallery [:get-stylist-gallery])
 (def delete-gallery-image [:delete-gallery-image])
 
