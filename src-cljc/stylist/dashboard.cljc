@@ -2,6 +2,7 @@
   (:require #?@(:cljs [[storefront.loader :as loader]
                        ;; The following a part of this module, but we need set-loaded! to be called last,
                        ;; which is at the bottom of this page
+                       storefront.components.gallery-edit ; For module loading purposes only
                        storefront.components.stylist.account
                        storefront.components.stylist.balance-transfer-details
                        storefront.components.stylist.cash-out

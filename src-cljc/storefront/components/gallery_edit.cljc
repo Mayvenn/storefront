@@ -48,7 +48,7 @@
 (defn query [state]
   {:gallery (get-in state keypaths/user-stylist-gallery-images)})
 
-(defn built-component [data opts]
+(defn ^:export built-component [data opts]
   (component/build component (query data) nil))
 
 (defmethod effects/perform-effects events/navigate-gallery-edit [_ event args _ app-state]
