@@ -1,6 +1,8 @@
 (ns storefront.components.gallery-edit
-  (:require #?@(:cljs [[storefront.api :as api]])
+  (:require #?@(:cljs [[storefront.api :as api]
+                       muuri])
             [storefront.accessors.auth :as auth]
+            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -28,7 +30,7 @@
    [:div.container-size.bg-gray.flex.items-center.center.p2.proxima.content-2
     "Your image has been successfully submitted and is pending approval. Check back here to be updated on its status."]))
 
-(defcomponent component [{:keys [gallery]} owner opts]
+(defcomponent static-component [{:keys [gallery]} owner opts]
   [:div.container
    (into [:div.clearfix.mxn1.flex.flex-wrap
           add-photo-square]
@@ -45,11 +47,31 @@
                                         :max-size 749})
                                pending-approval))]))])
 
+(defcomponent reorderable-component [{:keys [gallery]} owner opts]
+  #?(:cljs
+     [:div.container
+      (muuri/Muuri. (into [:div.clearfix.mxn1.flex.flex-wrap.board
+                           add-photo-square]
+                          (for [{:keys [status resizable-url id]} gallery]
+                            [:a.col-4.pp1.inherit-color.board-item
+                             (merge (utils/route-to events/navigate-gallery-photo {:photo-id id})
+                                    {:key resizable-url})
+                             (ui/aspect-ratio 1 1
+                                              (if (= "approved" status)
+                                                (ui/img {:class    "container-size"
+                                                         :style    {:object-position "50% 25%"
+                                                                    :object-fit      "cover"}
+                                                         :src      resizable-url
+                                                         :max-size 749})
+                                                pending-approval))])))]))
+
 (defn query [state]
   {:gallery (get-in state keypaths/user-stylist-gallery-images)})
 
 (defn ^:export built-component [data opts]
-  (component/build component (query data) nil))
+  (if (experiments/edit-gallery? data)
+    (component/build reorderable-component (query data) nil)
+    (component/build static-component (query data) nil)))
 
 (defmethod effects/perform-effects events/navigate-gallery-edit [_ event args _ app-state]
   #?(:cljs (if (auth/stylist? (auth/signed-in app-state))
