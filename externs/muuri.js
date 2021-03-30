@@ -1,0 +1,1 @@
+var muuri = function () {};
