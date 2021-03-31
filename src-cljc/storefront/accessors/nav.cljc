@@ -95,6 +95,9 @@
     events/navigate-gallery-image-picker
     events/navigate-gallery-photo})
 
+(def adventures-quiz-events
+  #{events/navigate-adventures-quiz})
+
 (defn promotion-helper-can-exist-on-page? [event]
   (->> event
        (contains? (set/union account-events
@@ -111,7 +114,8 @@
 
 (defn hide-footer? [event]
   (contains? (set/union gallery-page-events
-                        interstitial-page-events)
+                        interstitial-page-events
+                        adventures-quiz-events)
              event))
 
 (defn show-minimal-footer? [event]

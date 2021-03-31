@@ -104,22 +104,25 @@
    events/navigate-info-about-our-hair     (constantly adventure.informational.about-our-hair/built-component)
 
 
+   events/navigate-adventure-find-your-stylist #(ui/lazy-load-component :catalog
+                                                                        'stylist-matching.find-your-stylist/page
+                                                                        events/navigate-adventure-find-your-stylist)
+   events/navigate-adventure-stylist-results   #(ui/lazy-load-component :catalog
+                                                                        'stylist-matching.stylist-results/page
+                                                                        events/navigate-adventure-stylist-results)
+   events/navigate-adventure-match-success     #(ui/lazy-load-component :catalog
+                                                                        'stylist-matching.match-success/page
+                                                                        events/navigate-adventure-match-success)
+   events/navigate-adventure-stylist-profile   #(ui/lazy-load-component :catalog
+                                                                        'stylist-profile.stylist-details/page
+                                                                        events/navigate-adventure-stylist-profile)
+   events/navigate-adventure-stylist-gallery   #(ui/lazy-load-component :catalog
+                                                                        'adventure.stylist-matching.stylist-gallery/built-component
+                                                                        events/navigate-adventure-stylist-gallery)
 
-   events/navigate-adventure-find-your-stylist          #(ui/lazy-load-component :catalog
-                                                                                 'stylist-matching.find-your-stylist/page
-                                                                                 events/navigate-adventure-find-your-stylist)
-   events/navigate-adventure-stylist-results            #(ui/lazy-load-component :catalog
-                                                                                 'stylist-matching.stylist-results/page
-                                                                                 events/navigate-adventure-stylist-results)
-   events/navigate-adventure-match-success              #(ui/lazy-load-component :catalog
-                                                                                 'stylist-matching.match-success/page
-                                                                                 events/navigate-adventure-match-success)
-   events/navigate-adventure-stylist-profile            #(ui/lazy-load-component :catalog
-                                                                                 'stylist-profile.stylist-details/page
-                                                                                 events/navigate-adventure-stylist-profile)
-   events/navigate-adventure-stylist-gallery            #(ui/lazy-load-component :catalog
-                                                                                 'adventure.stylist-matching.stylist-gallery/built-component
-                                                                                 events/navigate-adventure-stylist-gallery)})
+   events/navigate-adventures-quiz #(ui/lazy-load-component :catalog ; TODO: COME BACK AND FIGURE OUT WHAT MODULE WE WANT
+                                                                        'mayvenn.adventures.quiz/page
+                                                                        events/navigate-adventures-quiz)})
 
 (defn main-component
   [nav-event]

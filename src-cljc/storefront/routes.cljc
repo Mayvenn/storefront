@@ -52,6 +52,9 @@
    "/about-our-hair"                                                   (edn->bidi events/navigate-info-about-our-hair)
    "/about-mayvenn-install"                                            (edn->bidi events/navigate-about-mayvenn-install)})
 
+(def adventure-quiz-routes
+  {"/adv/quiz" (edn->bidi events/navigate-adventures-quiz)})
+
 (def catalog-routes
   ;; NOTE: if you update category url, don't forget to update the fast-inverse-catalog-routes below
   {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug]
@@ -91,6 +94,7 @@
              catalog-routes
              {"/" (edn->bidi events/navigate-home)}
              stylist-matching-routes
+             adventure-quiz-routes
              sign-in-routes
              {"/password/recover"                                 (edn->bidi events/navigate-forgot-password)
               "/password/set"                                     (edn->bidi events/navigate-force-set-password)

@@ -13,4 +13,3 @@
 (def horizontal-rule-atom
   [:div.border-bottom.border-width-1
    {:style {:border-color "#EEEEEE"}}])
-

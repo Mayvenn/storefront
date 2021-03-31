@@ -662,3 +662,5 @@
 
 (defpath biz|shared-cart|hydrated)
 (defpath cart-cleared)
+
+(defpath navigate-adventures-quiz)
