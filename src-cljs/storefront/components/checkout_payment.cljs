@@ -110,7 +110,7 @@
      [:div.ml5
       (credit-card-entry data)])
 
-   (list
+   #_(list
     (ui/radio-section
      (merge {:name         "payment-method"
              :id           "payment-method-quadpay"
