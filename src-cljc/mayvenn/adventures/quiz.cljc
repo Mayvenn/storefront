@@ -6,7 +6,6 @@
             [storefront.components.ui :as ui]
             [storefront.events :as e]
             [storefront.keypaths :as k]
-            [storefront.transitions :as [t]]
             [storefront.effects :as fx]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
