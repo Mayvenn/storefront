@@ -57,7 +57,6 @@
                  :priority 0}])}
      :clj nil))
 
-;; TODO: Remove onClick event when dragging is released
 ;; TODO: Fix gallery not showing on hard load. "Works" once a change has been saved
 ;; NOTE: Don't forget the experiment
 
@@ -81,36 +80,39 @@
              #?(:cljs (some-> (component/get-ref this "gallery")
                               (js/Muuri.
                                #js
-                               {:items          ".board-item"
-                                :dragEnabled    true
+                               {:items              ".board-item"
+                                :dragEnabled        true
                                 ;; TODO: Set sort to the current state :gallery_posts_ordering
-                                :dragSort       true
-                                :dragAutoScroll drag-auto-scroll
-                                :dragStartPredicate (fn [item event] (when (-> item
-                                                                               .getGrid
-                                                                               .getItems
-                                                                               (.indexOf item)
-                                                                               (not= 0))
-                                                                       (-> js/Muuri
-                                                                           .-ItemDrag
-                                                                           (.defaultStartPredicate item event))))
-                                :dragSortPredicate (fn [item] (some-> js/Muuri
-                                                                      .-ItemDrag
-                                                                      (.defaultSortPredicate item)
-                                                                      (#(when (not= 0 (.-index %)) %))))})
+                                :dragSort           true
+                                :dragAutoScroll     drag-auto-scroll
+                                :dragStartPredicate (fn [item event]
+                                                      (when (and (-> item
+                                                                     .getGrid
+                                                                     .getItems
+                                                                     (.indexOf item)
+                                                                     (not= 0))
+                                                                 (-> event
+                                                                     .-deltaTime
+                                                                     (> 50)))
+                                                        true))
+                                :dragSortPredicate  (fn [item]
+                                                     (some-> js/Muuri
+                                                             .-ItemDrag
+                                                             (.defaultSortPredicate item)
+                                                             (#(when (not= 0 (.-index %)) %))))})
                               ;; Usefull to see what's going on in the object
                               spice.core/spy)))
   (render [this]
    (let [gallery (:gallery (component/get-props this))]
-     ;; TODO: Remove spacing between posts. Turning overflow:hidden off reveals
-     ;; the rest of the photos. Could add stretch but it extends the vertical
-     ;; height past the bottom
      (component/html (into [:div
                             {:ref (component/use-ref this "gallery")}
                             add-reorderable-photo-square]
                            (for [{:keys [status resizable-url id]} gallery]
                              [:div.col-4.board-item.absolute
-                              (merge (utils/route-to events/navigate-gallery-photo {:photo-id id})
+                              (merge (update (utils/route-to events/navigate-gallery-photo {:photo-id id})
+                                             :on-click (fn [routing-fn] (fn [e]
+                                                                          (when (-> e .-target (.closest ".muuri-item-releasing") not)
+                                                                            (routing-fn e)))))
                                      {:key resizable-url})
                               (ui/aspect-ratio 1 1
                                                (if (= "approved" status)
