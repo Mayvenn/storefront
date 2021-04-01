@@ -335,3 +335,5 @@
 (def models-root [:models])
 (def models-stylists (conj models-root :stylists))
 (def models-products (conj models-root :products))
+(def models-progressions (conj models-root :progressions))
+(def models-quizzes (conj models-root :quizzes))

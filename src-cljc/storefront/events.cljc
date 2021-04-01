@@ -664,3 +664,14 @@
 (defpath cart-cleared)
 
 (defpath navigate-adventures-quiz)
+
+(defpath flow|quiz|reset)
+(defpath flow|quiz|answered)
+
+(defpath flow|progression|reset)
+(defpath flow|progression|progressed)
+
+;; NOTE(corey) Generally...
+;; flow - sequence of user interactions, visual in nature (ui state machine)
+;; biz - conceptual, independent of a particular user interface, builds a 'model'
+;; cache - data handling from remotes, no conceptualization
