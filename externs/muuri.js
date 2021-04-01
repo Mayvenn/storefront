@@ -1,1 +1,1 @@
-var muuri = function () {};
+var Muuri = function () {};

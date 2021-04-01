@@ -125,7 +125,7 @@
                                             :provides ["jsQR"]}
                                            {:file     "src-cljs/storefront/muuri.js"
                                             :file-min "target/min-js/muuri.js"
-                                            :provides ["muuri"]}
+                                            :provides ["Muuri"]}
                                            {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
                                             :file-min "target/min-js/bugsnag-2.5.0.js"
                                             :provides ["bugsnag"]}]

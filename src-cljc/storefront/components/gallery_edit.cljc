@@ -1,9 +1,9 @@
 (ns storefront.components.gallery-edit
   (:require #?@(:cljs [[storefront.api :as api]
-                       muuri])
+                       Muuri])
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
-            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defdynamic-component defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -47,23 +47,60 @@
                                         :max-size 749})
                                pending-approval))]))])
 
-(defcomponent reorderable-component [{:keys [gallery]} owner opts]
-  #?(:cljs
-     [:div.container
-      (muuri/Muuri. (into [:div.clearfix.mxn1.flex.flex-wrap.board
-                           add-photo-square]
-                          (for [{:keys [status resizable-url id]} gallery]
-                            [:a.col-4.pp1.inherit-color.board-item
-                             (merge (utils/route-to events/navigate-gallery-photo {:photo-id id})
-                                    {:key resizable-url})
-                             (ui/aspect-ratio 1 1
-                                              (if (= "approved" status)
-                                                (ui/img {:class    "container-size"
-                                                         :style    {:object-position "50% 25%"
-                                                                    :object-fit      "cover"}
-                                                         :src      resizable-url
-                                                         :max-size 749})
-                                                pending-approval))])))]))
+;; TODO: Check if this is necessary
+(defn drag-auto-scroll
+  []
+  #?(:cljs #js {:targets (fn [item]
+               [#js {:element js/window
+                 :priority 0}
+                #js {:element (.-parentNode (.getElement (.getGrid item)))
+                 :priority 0}])}
+     :clj nil))
+
+;; TODO: Remove onClick event when dragging is released
+;; TODO: Fix gallery not showing on hard load. "Works" once a change has been saved
+;; NOTE: Don't forget the experiment
+
+(defdynamic-component reorderable-component
+  (constructor
+   [this props]
+   (component/create-ref! this "gallery"))
+  (did-mount
+   [this]
+   #?(:cljs (some-> (js/Muuri.
+                     (component/get-ref this "gallery")
+                     #js
+                     {:items          ".board-item"
+                      :dragEnabled    true
+                      ;; TODO: Set sort to the current state :gallery_posts_ordering
+                      :dragSort       true
+                      :dragAutoScroll drag-auto-scroll})
+                    ;; Usefull to see what's going on in the object
+                    spice.core/spy)
+      :clj identity))
+
+  (render
+   [this]
+   (let [gallery (:gallery (component/get-props this))]
+     ;; TODO: Remove spacing between posts. Turning overflow:hidden off reveals
+     ;; the rest of the photos. Could add stretch but it extends the vertical
+     ;; height past the bottom
+     (component/html [:div.container
+                      (into [:div.clearfix.mxn1.flex.flex-wrap
+                             {:ref (component/use-ref this "gallery")}
+                             add-photo-square]
+                            (for [{:keys [status resizable-url id]} gallery]
+                              [:div.col-4.pp1.inherit-color.board-item
+                               (merge (utils/route-to events/navigate-gallery-photo {:photo-id id})
+                                      {:key resizable-url})
+                               (ui/aspect-ratio 1 1
+                                                (if (= "approved" status)
+                                                  (ui/img {:class    "container-size"
+                                                           :style    {:object-position "50% 25%"
+                                                                      :object-fit      "cover"}
+                                                           :src      resizable-url
+                                                           :max-size 749})
+                                                  pending-approval))]))]))))
 
 (defn query [state]
   {:gallery (get-in state keypaths/user-stylist-gallery-images)})

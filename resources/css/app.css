@@ -76,6 +76,10 @@
 @import 'tinyslider.css';
 @import 'custom-carousel.css';
 
+/* Muuri */
+
+@import 'custom-muuri.css';
+
 /* Third-party Overrides */
 
 @import 'custom-uploadcare.css';
@@ -193,4 +197,3 @@
     --floating-label--input-padding-y: 10px;
     --floating-label--input-label-padding-y: 3px;
 }
-
