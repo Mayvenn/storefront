@@ -61,46 +61,65 @@
 ;; TODO: Fix gallery not showing on hard load. "Works" once a change has been saved
 ;; NOTE: Don't forget the experiment
 
-(defdynamic-component reorderable-component
-  (constructor
-   [this props]
-   (component/create-ref! this "gallery"))
-  (did-mount
-   [this]
-   #?(:cljs (some-> (js/Muuri.
-                     (component/get-ref this "gallery")
-                     #js
-                     {:items          ".board-item"
-                      :dragEnabled    true
-                      ;; TODO: Set sort to the current state :gallery_posts_ordering
-                      :dragSort       true
-                      :dragAutoScroll drag-auto-scroll})
-                    ;; Usefull to see what's going on in the object
-                    spice.core/spy)
-      :clj identity))
+(def add-reorderable-photo-square
+  [:a.block.col-4.pp1.bg-pale-purple.white.board-item
+   (merge (utils/route-to events/navigate-gallery-image-picker)
+          {:data-test "add-to-gallery-link"})
+   (ui/aspect-ratio 1 1
+                    [:div.flex.flex-column.justify-evenly.container-size
+                     [:div ui/nbsp]
+                     [:div.center.bold
+                      {:style {:font-size "60px"}}
+                      "+"]
+                     [:div.center.shout.title-3.proxima "Add Photo"]])])
 
-  (render
-   [this]
+(defdynamic-component reorderable-component
+  (constructor [this props]
+               (component/create-ref! this "gallery")
+               {})
+  (did-mount [this]
+             #?(:cljs (some-> (component/get-ref this "gallery")
+                              (js/Muuri.
+                               #js
+                               {:items          ".board-item"
+                                :dragEnabled    true
+                                ;; TODO: Set sort to the current state :gallery_posts_ordering
+                                :dragSort       true
+                                :dragAutoScroll drag-auto-scroll
+                                :dragStartPredicate (fn [item event] (when (-> item
+                                                                               .getGrid
+                                                                               .getItems
+                                                                               (.indexOf item)
+                                                                               (not= 0))
+                                                                       (-> js/Muuri
+                                                                           .-ItemDrag
+                                                                           (.defaultStartPredicate item event))))
+                                :dragSortPredicate (fn [item] (some-> js/Muuri
+                                                                      .-ItemDrag
+                                                                      (.defaultSortPredicate item)
+                                                                      (#(when (not= 0 (.-index %)) %))))})
+                              ;; Usefull to see what's going on in the object
+                              spice.core/spy)))
+  (render [this]
    (let [gallery (:gallery (component/get-props this))]
      ;; TODO: Remove spacing between posts. Turning overflow:hidden off reveals
      ;; the rest of the photos. Could add stretch but it extends the vertical
      ;; height past the bottom
-     (component/html [:div.container
-                      (into [:div.clearfix.mxn1.flex.flex-wrap
-                             {:ref (component/use-ref this "gallery")}
-                             add-photo-square]
-                            (for [{:keys [status resizable-url id]} gallery]
-                              [:div.col-4.pp1.inherit-color.board-item
-                               (merge (utils/route-to events/navigate-gallery-photo {:photo-id id})
-                                      {:key resizable-url})
-                               (ui/aspect-ratio 1 1
-                                                (if (= "approved" status)
-                                                  (ui/img {:class    "container-size"
-                                                           :style    {:object-position "50% 25%"
-                                                                      :object-fit      "cover"}
-                                                           :src      resizable-url
-                                                           :max-size 749})
-                                                  pending-approval))]))]))))
+     (component/html (into [:div
+                            {:ref (component/use-ref this "gallery")}
+                            add-reorderable-photo-square]
+                           (for [{:keys [status resizable-url id]} gallery]
+                             [:div.col-4.board-item.absolute
+                              (merge (utils/route-to events/navigate-gallery-photo {:photo-id id})
+                                     {:key resizable-url})
+                              (ui/aspect-ratio 1 1
+                                               (if (= "approved" status)
+                                                 (ui/img {:class    "container-size"
+                                                          :style    {:object-position "50% 25%"
+                                                                     :object-fit      "cover"}
+                                                          :src      resizable-url
+                                                          :max-size 749})
+                                                 pending-approval))]))))))
 
 (defn query [state]
   {:gallery (get-in state keypaths/user-stylist-gallery-images)})

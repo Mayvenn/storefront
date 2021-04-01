@@ -1,6 +1,4 @@
 .board-item {
-  position: relative;
-  display: block;
   cursor: pointer;
 }
 .board-item.muuri-item-releasing {
