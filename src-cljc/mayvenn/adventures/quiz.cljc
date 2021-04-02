@@ -1,6 +1,8 @@
 (ns mayvenn.adventures.quiz
   "Visual Layer: Quiz in an adventure setting"
-  (:require [storefront.assets :as assets]
+  (:require #?@(:cljs
+                [[storefront.browser.scroll :as scroll]])
+            [storefront.assets :as assets]
             [storefront.component :as c]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -8,7 +10,9 @@
             [storefront.keypaths :as k]
             [storefront.effects :as fx]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]
+            [storefront.platform.messages
+             :refer [handle-message]
+             :rename {handle-message publish}]
             [storefront.transitions :as t]))
 
 ;; TODO(corey) parameterize for color
@@ -35,10 +39,17 @@
                data
                :progress/portions)])
 
-(defn quiz-question-title-molecule
-  [{:quiz.question.title/keys [primary]}]
-  [:div.canela.title-2
-   (interpose [:br] primary)])
+(c/defdynamic-component quiz-question-title-molecule
+  (did-mount [this]
+             #?(:cljs
+                (let [idx (c/get-opts this)]
+                  (scroll/scroll-selector-to-top (str "[data-ref=question-" idx "]")))))
+  (render [this]
+          (let [{:quiz.question.title/keys [primary id]} (c/get-props this)]
+            (c/html
+             [:div.canela.title-2
+              {:data-ref (str "question-" id)}
+              (interpose [:br] primary)]))))
 
 (c/defcomponent quiz-question-choice-button-molecule
   [{:quiz.question.choice.button/keys [primary icon-url target selected?]} _ _]
@@ -62,20 +73,22 @@
 
 (c/defcomponent quiz-question-organism
   [data _ _]
-  [:div.mtj3.mx6
-   (quiz-question-title-molecule data)
-   [:div.py2
-    (c/elements quiz-question-choice-button-molecule
-                data
-                :quiz.question/choices)]])
+  (c/html
+   [:div.mtj3.mx6
+    (c/build quiz-question-title-molecule data {:opts (:quiz.question.title/id data)})
+    [:div.py2
+     (c/elements quiz-question-choice-button-molecule
+                 data
+                 :quiz.question/choices)]]))
 
 (c/defcomponent template
   [{:keys [progress quiz-questions]} _ _]
   [:div
    (c/build progress-organism progress)
-   (c/elements quiz-question-organism
-               quiz-questions
-               :quiz/questions)])
+   (c/html [:div.absolute.top-0
+            (c/elements quiz-question-organism
+                        quiz-questions
+                        :quiz/questions)])])
 
 (def questions
   {[1 :q/texture ["Let's talk about texture."
@@ -98,6 +111,7 @@
    (for [[[idx key question-title] choices] questions
          :when                              (<= idx progression)]
      {:quiz.question.title/primary question-title
+      :quiz.question.title/id      idx
       :quiz.question/choices
       (for [[value choice-title img-url] choices
             :let                         [answered? (= value (get quiz-answers key))]]
@@ -124,8 +138,6 @@
          (c/build template))))
 
 ;;---------- -behavior
-
-(def publish messages/handle-message)
 
 (defmethod fx/perform-effects e/navigate-adventures-quiz
   [_ _ _ _ _]
