@@ -77,33 +77,38 @@
                (component/create-ref! this "gallery")
                {})
   (did-mount [this]
-             #?(:cljs (some-> (component/get-ref this "gallery")
-                              (js/Muuri.
-                               #js
-                               {:items              ".board-item"
-                                :dragEnabled        true
-                                ;; TODO: Set sort to the current state :gallery_posts_ordering
-                                :dragSort           true
-                                :dragAutoScroll     drag-auto-scroll
-                                :dragStartPredicate (fn [item event]
-                                                      (when (and (-> item
-                                                                     .getGrid
-                                                                     .getItems
-                                                                     (.indexOf item)
-                                                                     (not= 0))
-                                                                 (-> event
-                                                                     .-deltaTime
-                                                                     (> 50)))
-                                                        true))
-                                :dragSortPredicate  (fn [item]
-                                                     (some-> js/Muuri
-                                                             .-ItemDrag
-                                                             (.defaultSortPredicate item)
-                                                             (#(when (not= 0 (.-index %)) %))))})
-                              ;; Usefull to see what's going on in the object
-                              spice.core/spy)))
+             #?(:cljs (-> (component/get-ref this "gallery")
+                          (js/Muuri.
+                           #js
+                           {:items              ".board-item"
+                            :dragEnabled        true
+                            ;; TODO: Set sort to the current state :gallery_posts_ordering
+                            :dragSort           true
+                            :dragAutoScroll     drag-auto-scroll
+                            :dragStartPredicate (fn [item event]
+                                                  (when (and (-> item
+                                                                 .getGrid
+                                                                 .getItems
+                                                                 (.indexOf item)
+                                                                 (not= 0))
+                                                             (-> event
+                                                                 .-deltaTime
+                                                                 (> 50)))
+                                                    true))
+                            :dragSortPredicate  (fn [item]
+                                                  (some-> js/Muuri
+                                                          .-ItemDrag
+                                                          (.defaultSortPredicate item)
+                                                          (#(when (not= 0 (.-index %)) %))))})
+                          (.on "dragEnd" (fn [item _event]
+                                           (->> item
+                                               .getGrid
+                                               .getItems
+                                               (keep #(some-> % .getElement .-dataset .-photoId js/parseInt))
+                                               ((fn [photo-order] {:photo-order photo-order}))
+                                               (messages/handle-message events/control-stylist-gallery-reordered)))))))
   (render [this]
-   (let [gallery (:gallery (component/get-props this))]
+          (let [gallery (:gallery (component/get-props this))]
      (component/html (into [:div
                             {:ref (component/use-ref this "gallery")}
                             add-reorderable-photo-square]
@@ -113,7 +118,8 @@
                                              :on-click (fn [routing-fn] (fn [e]
                                                                           (when (-> e .-target (.closest ".muuri-item-releasing") not)
                                                                             (routing-fn e)))))
-                                     {:key resizable-url})
+                                     {:key           resizable-url
+                                      :data-photo-id id})
                               (ui/aspect-ratio 1 1
                                                (if (= "approved" status)
                                                  (ui/img {:class    "container-size"
@@ -122,6 +128,10 @@
                                                           :src      resizable-url
                                                           :max-size 749})
                                                  pending-approval))]))))))
+
+(defmethod transitions/transition-state events/control-stylist-gallery-reordered [_ _ {:keys [photo-order]} app-state]
+  (update-in app-state keypaths/user-stylist-gallery-images #(sort-by (fn [image]
+                                                                        (.indexOf photo-order (:id image))) %)))
 
 (defn query [state]
   {:gallery (get-in state keypaths/user-stylist-gallery-images)})
