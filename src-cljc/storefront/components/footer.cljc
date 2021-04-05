@@ -85,7 +85,7 @@
     ^:inline (social-link "http://www.pinterest.com/mayvennhair/" (svg/mayvenn-on-pinterest))]))
 
 (defcomponent full-component
-  [{:keys [link-columns contacts essence-copy footer-links]} owner opts]
+  [{:keys [link-columns contacts footer-links]} owner opts]
   [:div.bg-cool-gray
    [:div.bg-p-color.pt1]
    [:div.container
@@ -95,10 +95,7 @@
      [:div.col-on-tb-dt.col-6-on-tb-dt.mt6
       (component/build contacts-section contacts)]
      [:div.col-on-tb-dt.col-6-on-tb-dt
-      (social-links)]
-     (when essence-copy
-       [:div.col-on-tb-dt.col-6-on-tb-dt.pb2.content-4.dark-gray
-        essence-copy])]]
+      (social-links)]]]
 
    [:div.mt3
     (footer-links/built-component footer-links opts)]])
@@ -129,7 +126,7 @@
          ^:inline (dtc-link link))])]])
 
 (defcomponent dtc-full-component
-  [{:keys [additional-margin contacts link-columns essence-copy footer-links]} owner opts]
+  [{:keys [additional-margin contacts link-columns footer-links]} _ opts]
   [:div.bg-cool-gray
    [:div.bg-p-color.pt1]
    [:div.container
@@ -139,10 +136,7 @@
      [:div.col-on-tb-dt.col-6-on-tb-dt.mt6
       (component/build contacts-section contacts)]
      [:div.col-on-tb-dt.col-6-on-tb-dt
-      (social-links)]
-     (when essence-copy
-       [:div.col-on-tb-dt.col-6-on-tb-dt.pb2.content-4.dark-gray
-        essence-copy])]]
+      (social-links)]]]
 
    [:div.hide-on-dt
     (when additional-margin
@@ -210,9 +204,7 @@
      :footer-links      {:minimal-footer?                (nav/show-minimal-footer? (get-in data keypaths/navigation-event))
                          :footer-email-input-value       (get-in data keypaths/footer-email-value)
                          :footer-email-submitted?        (get-in data keypaths/footer-email-submitted)
-                         :footer-ready-for-email-signup? (get-in data keypaths/footer-email-ready)}
-     :essence-copy      (str "All orders include a one year subscription to ESSENCE Magazine - a $10 value! "
-                             "Offer and refund details will be included with your confirmation.")}))
+                         :footer-ready-for-email-signup? (get-in data keypaths/footer-email-ready)}}))
 
 (defn built-component
   [data _]
