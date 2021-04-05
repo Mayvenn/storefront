@@ -108,11 +108,15 @@
                                                ((fn [photo-order] {:photo-order photo-order}))
                                                (messages/handle-message events/control-stylist-gallery-reordered)))))))
   (render [this]
-          (let [gallery (:gallery (component/get-props this))]
+          (let [posts  (:posts (component/get-props this))
+                images (:images (component/get-props this))]
      (component/html (into [:div
                             {:ref (component/use-ref this "gallery")}
                             add-reorderable-photo-square]
-                           (for [{:keys [status resizable-url id]} gallery]
+                           (for [{:keys [image-ordering]} posts
+                                 :let [{:keys [status resizable-url id]} (->> images
+                                                                              (filter #(= (:id %) (first image-ordering)))
+                                                                              first)]]
                              [:div.col-4.board-item.absolute
                               (merge (update (utils/route-to events/navigate-gallery-photo {:photo-id id})
                                              :on-click (fn [routing-fn] (fn [e]
@@ -129,12 +133,15 @@
                                                           :max-size 749})
                                                  pending-approval))]))))))
 
-(defmethod transitions/transition-state events/control-stylist-gallery-reordered [_ _ {:keys [photo-order]} app-state]
-  (update-in app-state keypaths/user-stylist-gallery-images #(sort-by (fn [image]
-                                                                        (.indexOf photo-order (:id image))) %)))
+(defmethod transitions/transition-state events/control-stylist-gallery-reordered
+  [_ _ {:keys [photo-order]} app-state]
+  #?(:cljs (update-in app-state keypaths/user-stylist-gallery-images
+                      #(sort-by (fn [image]
+                                  (.indexOf photo-order (:id image))) %))))
 
 (defn query [state]
-  {:gallery (get-in state keypaths/user-stylist-gallery-images)})
+  {:images (get-in state keypaths/user-stylist-gallery-images)
+   :posts (get-in state keypaths/user-stylist-gallery-posts)})
 
 (defn ^:export built-component [data opts]
   (if (experiments/edit-gallery? data)
@@ -148,8 +155,10 @@
              (effects/redirect events/navigate-store-gallery))))
 
 (defmethod transitions/transition-state events/api-success-stylist-gallery
-  [_ event {:keys [images]} app-state]
-  (assoc-in app-state keypaths/user-stylist-gallery-images images))
+  [_ event {:keys [images posts]} app-state]
+  (-> app-state
+      (assoc-in keypaths/user-stylist-gallery-images images)
+      (assoc-in keypaths/user-stylist-gallery-posts posts)))
 
 (defmethod effects/perform-effects events/poll-gallery [_ event args _ app-state]
   #?(:cljs (when (auth/stylist? (auth/signed-in app-state))

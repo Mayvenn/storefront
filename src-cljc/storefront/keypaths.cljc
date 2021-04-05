@@ -30,6 +30,8 @@
 (def user-stylist-service-menu (conj user :service-menu))
 (def user-stylist-portrait (conj user :stylist-portrait))
 (def user-stylist-gallery-images (conj user :stylist-gallery-images))
+(def user-stylist-gallery-posts (conj user :stylist-gallery-posts))
+
 (def user-id (conj user :id))
 (def user-must-set-password (conj user :must-set-password))
 (def user-total-available-store-credit (conj user :total-available-store-credit))
