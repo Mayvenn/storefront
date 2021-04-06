@@ -11,13 +11,14 @@
                        storefront.components.share-your-cart
                        storefront.components.wig-customization-popup
                        checkout.cart.swap])
-            #?@(:clj
-                [[design-system.home :as design-system]])
+
+            #?@(:clj [[design-system.home :as design-system]])
+
             adventure.informational.about-our-hair
             adventure.informational.certified-stylists
 
             mayvenn-install.about
-
+            mayvenn.adventures.quiz
             [storefront.components.ui :as ui]
             [storefront.components.content :as content]
             [storefront.components.flash :as flash]
@@ -120,9 +121,7 @@
                                                                         'adventure.stylist-matching.stylist-gallery/built-component
                                                                         events/navigate-adventure-stylist-gallery)
 
-   events/navigate-adventures-quiz #(ui/lazy-load-component :catalog ; TODO: COME BACK AND FIGURE OUT WHAT MODULE WE WANT
-                                                                        'mayvenn.adventures.quiz/page
-                                                                        events/navigate-adventures-quiz)})
+   events/navigate-adventures-quiz (constantly mayvenn.adventures.quiz/page)})
 
 (defn main-component
   [nav-event]
