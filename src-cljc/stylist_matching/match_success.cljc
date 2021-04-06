@@ -46,7 +46,7 @@
                                                     "There's no end to what your hair can do."]
      :stylist-matching.ui.congrats.cta/id          "hair-quiz"
      :stylist-matching.ui.congrats.cta/label       "Take Our Hair Quiz"
-     :stylist-matching.ui.congrats.cta/target      [e/navigate-adventures-quiz]}
+     :stylist-matching.ui.congrats.cta/target      [e/navigate-adventure-quiz]}
     {:stylist-matching.ui.congrats.title/primary   (str
                                                     "Congratulations on matching with "
                                                     (stylists/->display-name stylist) "!")

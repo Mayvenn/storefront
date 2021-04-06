@@ -96,7 +96,7 @@
     events/navigate-gallery-photo})
 
 (def adventures-quiz-events
-  #{events/navigate-adventures-quiz})
+  #{events/navigate-adventure-quiz})
 
 (defn promotion-helper-can-exist-on-page? [event]
   (->> event

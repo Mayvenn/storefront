@@ -2,8 +2,10 @@
   "Visual Layer: Quiz in an adventure setting"
   (:require #?@(:cljs
                 [[storefront.browser.scroll :as scroll]])
+            api.orders
             [storefront.assets :as assets]
             [storefront.component :as c]
+            [storefront.components.header :as header]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as e]
@@ -40,16 +42,23 @@
                :progress/portions)])
 
 (c/defdynamic-component quiz-question-title-molecule
-  (did-mount [this]
-             #?(:cljs
-                (let [idx (c/get-opts this)]
-                  (scroll/scroll-selector-to-top (str "[data-ref=question-" idx "]")))))
-  (render [this]
-          (let [{:quiz.question.title/keys [primary id]} (c/get-props this)]
-            (c/html
-             [:div.canela.title-2
-              {:data-ref (str "question-" id)}
-              (interpose [:br] primary)]))))
+  (did-mount
+   [this]
+   #?(:cljs
+      (some->> (c/get-props this)
+               :quiz.question.title/scroll-to
+               (#(str "[data-scroll=" % "]"))
+               scroll/scroll-selector-to-top)))
+  (render
+   [this]
+   (let [{:quiz.question.title/keys [id primary scroll-to]} (c/get-props this)]
+     (c/html
+      [:div.canela.title-2.mtj3.ptj3
+       (merge
+        {:key id}
+        (when scroll-to
+          {:data-scroll scroll-to}))
+       (interpose [:br] primary)]))))
 
 (c/defcomponent quiz-question-choice-button-molecule
   [{:quiz.question.choice.button/keys [primary icon-url target selected?]} _ _]
@@ -74,21 +83,23 @@
 (c/defcomponent quiz-question-organism
   [data _ _]
   (c/html
-   [:div.myj3.mx6
-    (c/build quiz-question-title-molecule data {:opts (:quiz.question.title/id data)})
+   [:div.mx6.stretch
+    (c/build quiz-question-title-molecule data)
     [:div.py2
      (c/elements quiz-question-choice-button-molecule
                  data
                  :quiz.question/choices)]]))
 
 (c/defcomponent template
-  [{:keys [progress quiz-questions]} _ _]
-  [:div
-   (c/build progress-organism progress)
-   (c/html [:div.absolute.top-0
-            (c/elements quiz-question-organism
-                        quiz-questions
-                        :quiz/questions)])])
+  [{:keys [header progress quiz-questions]} _ _]
+  [:div.col-12
+   [:div.max-580.top-0.fixed.col-12.bg-white
+    (c/build header/mobile-nav-header-component header)
+    (c/build progress-organism progress)]
+   [:div.flex.flex-column.mbj3
+    (c/elements quiz-question-organism
+                quiz-questions
+                :quiz/questions)]])
 
 (def questions
   {[1 :q/texture ["Let's talk about texture."
@@ -110,8 +121,9 @@
   {:quiz/questions
    (for [[[idx key question-title] choices] questions
          :when                              (<= idx progression)]
-     {:quiz.question.title/primary question-title
-      :quiz.question.title/id      idx
+     {:quiz.question.title/primary   question-title
+      :quiz.question.title/scroll-to (when (> idx 1)
+                                       (str "q-" idx))
       :quiz.question/choices
       (for [[value choice-title img-url] choices
             :let                         [answered? (= value (get quiz-answers key))]]
@@ -130,16 +142,20 @@
 
 (defn ^:export page
   [state]
-  (let [quiz-id      :quiz/shopping
+  (let [{:order.items/keys [quantity]} (api.orders/current state)
+
+        quiz-id      :quiz/shopping
         progression  (get-in state (conj k/models-progressions quiz-id))
         quiz-answers (get-in state (conj k/models-quizzes quiz-id))]
-    (->> {:quiz-questions (quiz-questions< quiz-answers progression)
+    (->> {:header         {:forced-mobile-layout? true
+                           :quantity              (or quantity 0)}
+          :quiz-questions (quiz-questions< quiz-answers progression)
           :progress       (progress< progression)}
          (c/build template))))
 
 ;;---------- -behavior
 
-(defmethod fx/perform-effects e/navigate-adventures-quiz
+(defmethod fx/perform-effects e/navigate-adventure-quiz
   [_ _ _ _ _]
   (publish e/flow|progression|reset [:quiz/shopping]))
 

@@ -121,7 +121,7 @@
                                                                         'adventure.stylist-matching.stylist-gallery/built-component
                                                                         events/navigate-adventure-stylist-gallery)
 
-   events/navigate-adventures-quiz (constantly mayvenn.adventures.quiz/page)})
+   events/navigate-adventure-quiz (constantly mayvenn.adventures.quiz/page)})
 
 (defn main-component
   [nav-event]
