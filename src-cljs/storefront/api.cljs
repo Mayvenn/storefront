@@ -546,6 +546,16 @@
     :handler
     #(messages/handle-message events/api-success-store-gallery-fetch %)}))
 
+(defn reorder-store-gallery [params]
+  (storeback-api-req
+   POST
+   "/gallery/reorder"
+   request-keys/reorder-store-gallery
+   {:params
+    (select-keys params [:user-id :user-token :posts-ordering])
+    :handler
+    #(messages/handle-message events/api-success-store-gallery-reorder %)}))
+
 (defn delete-gallery-image [user-id user-token image-url]
   (storeback-api-req
    POST

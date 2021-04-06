@@ -348,6 +348,7 @@
 (defpath api-success-promotions)
 
 (defpath api-success-store-gallery-fetch)
+(defpath api-success-store-gallery-reorder)
 
 (defpath api-success-stylist-gallery)
 (defpath api-success-stylist-gallery-fetch)

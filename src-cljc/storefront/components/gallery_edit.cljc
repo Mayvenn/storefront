@@ -36,7 +36,7 @@
           add-photo-square]
          (for [{:keys [status resizable-url id]} gallery]
            [:a.col-4.pp1.inherit-color
-            (merge (utils/route-to events/navigate-gallery-photo {:photo-id id})
+            (merge (utils/route-to events/navigate-gallery-photo {:post-id id})
                    {:key resizable-url})
             (ui/aspect-ratio 1 1
                              (if (= "approved" status)
@@ -104,9 +104,10 @@
                                            (->> item
                                                .getGrid
                                                .getItems
-                                               (keep #(some-> % .getElement .-dataset .-photoId js/parseInt))
-                                               ((fn [photo-order] {:photo-order photo-order}))
+                                               (keep #(some-> % .getElement .-dataset .-postId js/parseInt))
+                                               ((fn [posts-order] {:posts-ordering posts-order}))
                                                (messages/handle-message events/control-stylist-gallery-reordered)))))))
+  ;; TODO:: Fix errors to push gallery down
   (render [this]
           (let [posts  (:posts (component/get-props this))
                 images (:images (component/get-props this))]
@@ -114,7 +115,7 @@
                             {:ref (component/use-ref this "gallery")}
                             add-reorderable-photo-square]
                            (for [{:keys [image-ordering]} posts
-                                 :let [{:keys [status resizable-url id]} (->> images
+                                 :let [{:keys [status resizable-url id post-id]} (->> images
                                                                               (filter #(= (:id %) (first image-ordering)))
                                                                               first)]]
                              [:div.col-4.board-item.absolute
@@ -123,7 +124,7 @@
                                                                           (when (-> e .-target (.closest ".muuri-item-releasing") not)
                                                                             (routing-fn e)))))
                                      {:key           resizable-url
-                                      :data-photo-id id})
+                                      :data-post-id post-id})
                               (ui/aspect-ratio 1 1
                                                (if (= "approved" status)
                                                  (ui/img {:class    "container-size"
@@ -134,10 +135,16 @@
                                                  pending-approval))]))))))
 
 (defmethod transitions/transition-state events/control-stylist-gallery-reordered
-  [_ _ {:keys [photo-order]} app-state]
+  [_ _ {:keys [posts-ordering]} app-state]
   #?(:cljs (update-in app-state keypaths/user-stylist-gallery-images
                       #(sort-by (fn [image]
-                                  (.indexOf photo-order (:id image))) %))))
+                                  (.indexOf posts-ordering (:id image))) %))))
+
+(defmethod effects/perform-effects events/control-stylist-gallery-reordered
+  [_ _ {:keys [posts-ordering]} app-state]
+  #?(:cljs (api/reorder-store-gallery {:user-id        (get-in app-state keypaths/user-id)
+                                       :user-token     (get-in app-state keypaths/user-token)
+                                       :posts-ordering posts-ordering})))
 
 (defn query [state]
   {:images (get-in state keypaths/user-stylist-gallery-images)
