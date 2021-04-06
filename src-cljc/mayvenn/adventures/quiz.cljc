@@ -74,7 +74,7 @@
 (c/defcomponent quiz-question-organism
   [data _ _]
   (c/html
-   [:div.mtj3.mx6
+   [:div.myj3.mx6
     (c/build quiz-question-title-molecule data {:opts (:quiz.question.title/id data)})
     [:div.py2
      (c/elements quiz-question-choice-button-molecule
