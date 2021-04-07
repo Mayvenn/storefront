@@ -1,5 +1,6 @@
 (ns storefront.handler
   (:require [api.catalog :refer [?a-la-carte ?discountable]]
+            api.stylist
             [bidi.bidi :as bidi]
             [catalog.categories :as categories]
             catalog.keypaths
@@ -1021,7 +1022,9 @@
                                                                                 ?a-la-carte))]
               (h (-> req
                      (assoc-in-req-state adventure.keypaths/stylist-profile-id (:stylist-id stylist))
-                     (assoc-in-req-state (conj stylist-directory.keypaths/stylists (:stylist-id stylist)) stylist)
+                     (assoc-in-req-state (conj stylist-directory.keypaths/stylists (:stylist-id stylist)) stylist) ;; Original diva format, get rid of soon
+                     (assoc-in-req-state (conj keypaths/models-stylists
+                                               (:stylist-id stylist)) (api.stylist/stylist<- {} stylist))
                      (assoc-in-req-state keypaths/v2-products
                                          (products/index-products service-products))
                      (assoc-in-req-state keypaths/v2-skus service-skus)
