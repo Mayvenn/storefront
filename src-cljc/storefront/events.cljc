@@ -354,6 +354,7 @@
 (defpath api-success-stylist-gallery-fetch)
 (defpath api-success-stylist-gallery-append)
 (defpath api-success-stylist-gallery-delete)
+(defpath api-success-v2-stylist-gallery)
 
 (defpath api-success-shipping-methods)
 

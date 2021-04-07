@@ -536,10 +536,29 @@
     :handler
     #(messages/handle-message events/api-success-stylist-gallery-fetch %)}))
 
+(defn get-v2-stylist-gallery [params]
+  (storeback-api-req
+   GET
+   "/v2/gallery"
+   request-keys/get-stylist-gallery
+   {:params (select-keys params [:user-id :user-token])
+    :handler
+    #(messages/handle-message events/api-success-stylist-gallery-fetch %)}))
+
 (defn get-store-gallery [params]
   (storeback-api-req
    GET
    "/gallery"
+   request-keys/get-store-gallery
+   {:params
+    (select-keys params [:stylist-id])
+    :handler
+    #(messages/handle-message events/api-success-store-gallery-fetch %)}))
+
+(defn get-v2-store-gallery [params]
+  (storeback-api-req
+   GET
+   "/v2/gallery"
    request-keys/get-store-gallery
    {:params
     (select-keys params [:stylist-id])

@@ -36,7 +36,7 @@
           add-photo-square]
          (for [{:keys [status resizable-url id]} gallery]
            [:a.col-4.pp1.inherit-color
-            (merge (utils/route-to events/navigate-gallery-photo {:post-id id})
+            (merge (utils/route-to events/navigate-gallery-photo {:photo-id id})
                    {:key resizable-url})
             (ui/aspect-ratio 1 1
                              (if (= "approved" status)
@@ -147,18 +147,24 @@
                                        :posts-ordering posts-ordering})))
 
 (defn query [state]
+  {:gallery (get-in state keypaths/user-stylist-gallery-images)})
+
+(defn query-v2 [state]
   {:images (get-in state keypaths/user-stylist-gallery-images)
    :posts (get-in state keypaths/user-stylist-gallery-posts)})
 
 (defn ^:export built-component [data opts]
   (if (experiments/edit-gallery? data)
-    (component/build reorderable-component (query data) nil)
+    (component/build reorderable-component (query-v2 data) nil)
     (component/build static-component (query data) nil)))
 
 (defmethod effects/perform-effects events/navigate-gallery-edit [_ event args _ app-state]
   #?(:cljs (if (auth/stylist? (auth/signed-in app-state))
-             (api/get-stylist-gallery {:user-id    (get-in app-state keypaths/user-id)
-                                       :user-token (get-in app-state keypaths/user-token)})
+             ((if (experiments/edit-gallery? app-state)
+                api/get-v2-stylist-gallery
+                api/get-stylist-gallery)
+              {:user-id    (get-in app-state keypaths/user-id)
+               :user-token (get-in app-state keypaths/user-token)})
              (effects/redirect events/navigate-store-gallery))))
 
 (defmethod transitions/transition-state events/api-success-stylist-gallery
@@ -169,8 +175,11 @@
 
 (defmethod effects/perform-effects events/poll-gallery [_ event args _ app-state]
   #?(:cljs (when (auth/stylist? (auth/signed-in app-state))
-             (api/get-stylist-gallery {:user-id    (get-in app-state keypaths/user-id)
-                                       :user-token (get-in app-state keypaths/user-token)}))))
+             ((if (experiments/edit-gallery? app-state)
+                api/get-v2-stylist-gallery
+                api/get-stylist-gallery)
+              {:user-id    (get-in app-state keypaths/user-id)
+               :user-token (get-in app-state keypaths/user-token)}))))
 
 (defmethod effects/perform-effects events/api-success-stylist-gallery [_ event args _ app-state]
   (let [signed-in-as-stylist? (auth/stylist? (auth/signed-in app-state))
