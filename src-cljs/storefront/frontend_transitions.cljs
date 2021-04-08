@@ -618,6 +618,7 @@
   (assoc-in app-state keypaths/stringer-browser-id id))
 
 (defmethod transition-state events/module-loaded [_ _ {:keys [module-name]} app-state]
+  (prn "module loaded " module-name)
   (when module-name
     (update app-state :modules (fnil conj #{}) module-name)))
 

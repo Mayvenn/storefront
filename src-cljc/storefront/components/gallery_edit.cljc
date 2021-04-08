@@ -1,5 +1,6 @@
 (ns storefront.components.gallery-edit
   (:require #?@(:cljs [[storefront.api :as api]
+                       [storefront.loader :as loader]
                        Muuri])
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
@@ -74,65 +75,78 @@
 
 (defdynamic-component reorderable-component
   (constructor [this props]
+               (prn "CONSTRUCTOR")
                (component/create-ref! this "gallery")
                {})
   (did-mount [this]
-             #?(:cljs (-> (component/get-ref this "gallery")
-                          (js/Muuri.
-                           #js
-                           {:items              ".board-item"
-                            :dragEnabled        true
-                            ;; TODO: Set sort to the current state :gallery_posts_ordering
-                            :dragSort           true
-                            :dragAutoScroll     drag-auto-scroll
-                            :dragStartPredicate (fn [item event]
-                                                  (when (and (-> item
-                                                                 .getGrid
-                                                                 .getItems
-                                                                 (.indexOf item)
-                                                                 (not= 0))
-                                                             (-> event
-                                                                 .-deltaTime
-                                                                 (> 50)))
-                                                    true))
-                            :dragSortPredicate  (fn [item]
-                                                  (some-> js/Muuri
-                                                          .-ItemDrag
-                                                          (.defaultSortPredicate item)
-                                                          (#(when (not= 0 (.-index %)) %))))})
-                          (.on "dragEnd" (fn [item _event]
-                                           (->> item
-                                               .getGrid
-                                               .getItems
-                                               (keep #(some-> % .getElement .-dataset .-postId js/parseInt))
-                                               ((fn [posts-order] {:posts-ordering posts-order}))
-                                               (messages/handle-message events/control-stylist-gallery-reordered-v2)))))))
+             #?(:cljs  (do (-> (component/get-ref this "gallery")
+                            (js/Muuri.
+                             #js
+                             {:items              ".board-item"
+                              :dragEnabled        true
+                              :dragSort           true
+                              :dragAutoScroll     drag-auto-scroll
+                              :dragStartPredicate (fn [item event]
+                                                    (when (and (-> item
+                                                                   .getGrid
+                                                                   .getItems
+                                                                   (.indexOf item)
+                                                                   (not= 0))
+                                                               (-> event
+                                                                   .-deltaTime
+                                                                   (> 50)))
+                                                      true))
+                              :dragSortPredicate  (fn [item]
+                                                    (some-> js/Muuri
+                                                            .-ItemDrag
+                                                            (.defaultSortPredicate item)
+                                                            (#(when (not= 0 (.-index %)) %))))})
+                            (.on "dragEnd" (fn [item _event]
+                                             (->> item
+                                                  .getGrid
+                                                  .getItems
+                                                  (keep #(some-> % .getElement .-dataset .-postId js/parseInt))
+                                                  ((fn [posts-order] {:posts-ordering posts-order}))
+                                                  (messages/handle-message events/control-stylist-gallery-reordered-v2)))))
+                           (messages/handle-message events/loaded-muuri))))
   ;; TODO:: Fix errors to push gallery down
   (render [this]
-          (let [posts  (:posts (component/get-props this))
-                images (:images (component/get-props this))]
-     (component/html (into [:div
-                            {:ref (component/use-ref this "gallery")}
-                            add-reorderable-photo-square]
-                           (for [{:keys [image-ordering]} posts
-                                 :let [{:keys [status resizable-url id post-id]} (->> images
-                                                                              (filter #(= (:id %) (first image-ordering)))
-                                                                              first)]]
-                             [:div.col-4.board-item.absolute
-                              (merge (update (utils/route-to events/navigate-gallery-photo {:photo-id id})
-                                             :on-click (fn [routing-fn] (fn [e]
-                                                                          (when (-> e .-target (.closest ".muuri-item-releasing") not)
-                                                                            (routing-fn e)))))
-                                     {:key           resizable-url
-                                      :data-post-id post-id})
-                              (ui/aspect-ratio 1 1
-                                               (if (= "approved" status)
-                                                 (ui/img {:class    "container-size"
-                                                          :style    {:object-position "50% 25%"
-                                                                     :object-fit      "cover"}
-                                                          :src      resizable-url
-                                                          :max-size 749})
-                                                 pending-approval))]))))))
+          (prn "RENDEREREr")
+          (let [{:keys [posts images muuri-loaded?]}  (component/get-props this)]
+            (component/html (into [:div
+                                   {:ref (component/use-ref this "gallery")}
+                                   add-reorderable-photo-square]
+                                  (for [{:keys [image-ordering]} posts
+                                        :let                     [{:keys [status resizable-url id post-id]} (->> images
+                                                                                                                 (filter #(= (:id %) (first image-ordering)))
+                                                                                                                 first)]]
+                                    [:div.col-4.board-item.absolute
+                                     (merge (update (utils/route-to events/navigate-gallery-photo {:photo-id id})
+                                                    :on-click (fn [routing-fn] (fn [e]
+                                                                                 (when (-> e .-target (.closest ".muuri-item-releasing") not)
+                                                                                   (routing-fn e)))))
+                                            {:key          resizable-url
+                                             :data-post-id post-id})
+                                     (ui/aspect-ratio 1 1
+                                                      (if (= "approved" status)
+                                                        (ui/img {:class    "container-size"
+                                                                 :style    {:object-position "50% 25%"
+                                                                            :object-fit      "cover"}
+                                                                 :src      resizable-url
+                                                                 :max-size 749})
+                                                        pending-approval))]))))))
+
+(defcomponent reorderable-wrapper
+  [data _ _]
+  (do (prn "rendered wrapper")
+      [:div
+       (if (seq (:posts data))
+         (component/build reorderable-component data)
+         (ui/large-spinner {:style {:height "6em"}}))]))
+
+(defmethod transitions/transition-state events/loaded-muuri
+  [_ _ _ app-state]
+  (assoc-in app-state keypaths/loaded-muuri true))
 
 (defmethod transitions/transition-state events/control-stylist-gallery-reordered-v2
   [_ _ {:keys [posts-ordering]} app-state]
@@ -156,12 +170,13 @@
   {:gallery (get-in state keypaths/user-stylist-gallery-images)})
 
 (defn query-v2 [state]
-  {:images (get-in state keypaths/user-stylist-gallery-images)
-   :posts (get-in state keypaths/user-stylist-gallery-posts)})
+  {:images        (get-in state keypaths/user-stylist-gallery-images)
+   :posts         (get-in state keypaths/user-stylist-gallery-posts)
+   :muuri-loaded? (get-in state keypaths/loaded-muuri)})
 
 (defn ^:export built-component [data opts]
   (if (experiments/edit-gallery? data)
-    (component/build reorderable-component (query-v2 data) nil)
+    (component/build reorderable-wrapper (query-v2 data))
     (component/build static-component (query data) nil)))
 
 (defmethod effects/perform-effects events/navigate-gallery-edit [_ event args _ app-state]

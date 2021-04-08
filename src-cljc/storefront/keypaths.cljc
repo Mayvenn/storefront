@@ -280,6 +280,8 @@
 (def loaded-quadpay (conj loaded :quadpay))
 (def loaded-uploadcare (conj loaded :uploadcare))
 (def loaded-kustomer (conj loaded :kustomer))
+(def loaded-muuri (conj loaded :muuri))
+(def initialize-muuri (conj loaded :initialize-muuri))
 
 (def facebook-email-denied (conj ui :facebook-email-denied))
 
