@@ -106,7 +106,7 @@
                                                .getItems
                                                (keep #(some-> % .getElement .-dataset .-postId js/parseInt))
                                                ((fn [posts-order] {:posts-ordering posts-order}))
-                                               (messages/handle-message events/control-stylist-gallery-reordered)))))))
+                                               (messages/handle-message events/control-stylist-gallery-reordered-v2)))))))
   ;; TODO:: Fix errors to push gallery down
   (render [this]
           (let [posts  (:posts (component/get-props this))
@@ -134,17 +134,23 @@
                                                           :max-size 749})
                                                  pending-approval))]))))))
 
-(defmethod transitions/transition-state events/control-stylist-gallery-reordered
+(defmethod transitions/transition-state events/control-stylist-gallery-reordered-v2
   [_ _ {:keys [posts-ordering]} app-state]
   #?(:cljs (update-in app-state keypaths/user-stylist-gallery-images
                       #(sort-by (fn [image]
                                   (.indexOf posts-ordering (:id image))) %))))
 
-(defmethod effects/perform-effects events/control-stylist-gallery-reordered
+(defmethod effects/perform-effects events/control-stylist-gallery-reordered-v2
   [_ _ {:keys [posts-ordering]} app-state]
   #?(:cljs (api/reorder-store-gallery {:user-id        (get-in app-state keypaths/user-id)
                                        :user-token     (get-in app-state keypaths/user-token)
                                        :posts-ordering posts-ordering})))
+
+(defmethod effects/perform-effects events/control-stylist-gallery-delete-v2
+  [_ _ {:keys [post-id]} app-state]
+  #?(:cljs (api/delete-v2-gallery-post {:user-id    (get-in app-state keypaths/user-id)
+                                        :user-token (get-in app-state keypaths/user-token)
+                                        :post-id    post-id})))
 
 (defn query [state]
   {:gallery (get-in state keypaths/user-stylist-gallery-images)})

@@ -354,7 +354,9 @@
 (defpath api-success-stylist-gallery-fetch)
 (defpath api-success-stylist-gallery-append)
 (defpath api-success-stylist-gallery-delete)
-(defpath api-success-v2-stylist-gallery)
+(defpath api-success-stylist-gallery-fetch-v2)
+(defpath api-success-stylist-gallery-delete-v2)
+(defpath api-success-stylist-gallery-reorder-v2)
 
 (defpath api-success-shipping-methods)
 
@@ -692,4 +694,5 @@
 ;; cache - data handling from remotes, no conceptualization
 
 ;; Stylist Gallery
-(defpath control-stylist-gallery-reordered)
+(defpath control-stylist-gallery-reordered-v2)
+(defpath control-stylist-gallery-delete-v2)

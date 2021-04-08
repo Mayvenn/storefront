@@ -543,7 +543,7 @@
    request-keys/get-stylist-gallery
    {:params (select-keys params [:user-id :user-token])
     :handler
-    #(messages/handle-message events/api-success-stylist-gallery-fetch %)}))
+    #(messages/handle-message events/api-success-stylist-gallery-fetch-v2 %)}))
 
 (defn get-store-gallery [params]
   (storeback-api-req
@@ -568,12 +568,22 @@
 (defn reorder-store-gallery [params]
   (storeback-api-req
    POST
-   "/gallery/reorder"
+   "/v2/gallery/reorder"
    request-keys/reorder-store-gallery
    {:params
     (select-keys params [:user-id :user-token :posts-ordering])
     :handler
-    #(messages/handle-message events/api-success-store-gallery-reorder %)}))
+    #(messages/handle-message events/api-success-stylist-gallery-reorder-v2 %)}))
+
+(defn delete-v2-gallery-post [params]
+  (storeback-api-req
+   POST
+   "/v2/gallery/post/delete"
+   request-keys/reorder-store-gallery
+   {:params
+    (select-keys params [:user-id :user-token :post-id])
+    :handler
+    #(messages/handle-message events/api-success-stylist-gallery-delete-v2 %)}))
 
 (defn delete-gallery-image [user-id user-token image-url]
   (storeback-api-req

@@ -1,7 +1,7 @@
 (ns storefront.components.gallery-photo
-  (:require #?@(:cljs [[storefront.accessors.experiments :as experiments]
-                       [storefront.api :as api]
+  (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.history :as history]])
+            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -13,7 +13,7 @@
             [storefront.transitions :as t]
             ui.molecules))
 
-(defn delete-modal [{:delete-modal/keys [close-event title subtitle id]
+(defn delete-modal [{:delete-modal/keys [close-event title subtitle id target]
                      :keys              [photo]}]
   [:div.bg-white.p3
    {:data-test id}
@@ -33,7 +33,7 @@
                                                :data-test "delete-photo-cancel"}) "Cancel")
      [:div.mx2]
      (ui/button-medium-red
-      (merge (utils/fake-href e/control-delete-gallery-image {:image-url (:resizable-url photo)})
+      (merge (apply utils/fake-href target)
              {:class     "container-size"
               :data-test "delete-photo-confirm"})
       "delete")]]])
@@ -58,13 +58,17 @@
 (defn query [state]
   (let [photo-id           (numbers/parse-int (get-in state (conj keypaths/navigation-message 1 :photo-id)))
         gallery            (get-in state keypaths/user-stylist-gallery-images)
-        show-delete-modal? (= :gallery-photo-delete (get-in state keypaths/popup))]
-    {:photo                    (some #(when (= photo-id (:id %)) %) gallery)
+        show-delete-modal? (= :gallery-photo-delete (get-in state keypaths/popup))
+        image              (some #(when (= photo-id (:id %)) %) gallery)]
+    {:photo                    image
      :back-link                {:navigation-event e/navigate-gallery-edit}
      :delete-modal/close-event e/control-popup-hide
      :delete-modal/title       "Are you sure?"
      :delete-modal/subtitle    "You are about to delete this photo permanently."
-     :delete-modal/id          (when show-delete-modal? "delete-photo-modal")}))
+     :delete-modal/id          (when show-delete-modal? "delete-photo-modal")
+     :delete-modal/target      (if (experiments/edit-gallery? state)
+                                 [e/control-stylist-gallery-delete-v2 {:post-id (:post-id image)}]
+                                 [e/control-delete-gallery-image {:image-url (:resizable-url image)}])}))
 
 (defmethod fx/perform-effects e/control-delete-gallery-image
   [_ event {:keys [image-url]} _ app-state]
