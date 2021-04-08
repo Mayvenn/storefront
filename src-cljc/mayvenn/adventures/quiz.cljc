@@ -48,7 +48,7 @@
       :quiz/choice-answer "I'm not sure yet"}]}
    {:quiz/question-id     :leave-out
     :quiz/question-prompt ["Would you like to leave any of your natural hair out?"]
-    :quiz/question-info   ["Leave-out covers the tracks of a sew-in and blends your natural hair with the extensions."] 
+    :quiz/question-info   ["Leave-out covers the tracks of a sew-in and blends your natural hair with the extensions."]
     :quiz/choices
     [{:quiz/choice-id     :yes
       :quiz/choice-answer "Yes"}
@@ -100,11 +100,10 @@
    (let [{:quiz.question.title/keys [id primary secondary scroll-to]} (c/get-props this)]
      (c/html
       [:div
+       {:key id}
        [:div.canela.title-2.mtj3.ptj3
-        (merge
-         {:key id}
-         (when scroll-to
-           {:data-scroll scroll-to}))
+        (when scroll-to
+          {:data-scroll scroll-to})
         (interpose [:br] primary)]
        [:div.content-2.dark-gray.my3
         secondary]]))))
@@ -132,7 +131,7 @@
 
 (c/defcomponent quiz-question-organism
   [data _ _]
-  [:div.mx6.stretch
+  [:div.mx6.pbj3
    (c/build quiz-question-title-molecule data)
    [:div.my2
     (c/elements quiz-question-choice-button-molecule
@@ -156,7 +155,7 @@
    [:div.max-580.top-0.fixed.col-12.bg-white
     (c/build header/mobile-nav-header-component header)
     (c/build progress-organism progress)]
-   [:div.flex.flex-column.mbj3
+   [:div.flex.flex-column.mbj3.pbj3
     (c/elements quiz-question-organism
                 quiz-questions
                 :quiz/questions)
@@ -198,7 +197,7 @@
 
 (defn progress<
   [progression]
-  (let [extent (count progression)]
+  (let [extent (inc (count progression))]
     {:progress/portions
      [{:progress.portion.bar/units   (* extent 3)
        :progress.portion.bar/img-url "//ucarecdn.com/92611996-290e-47ae-bffa-e6daba5dd60b/"}
