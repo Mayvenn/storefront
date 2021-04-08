@@ -3,6 +3,7 @@
   (:require #?@(:cljs
                 [[storefront.browser.scroll :as scroll]])
             api.orders
+            [spice.core :refer [parse-int]]
             [storefront.assets :as assets]
             [storefront.component :as c]
             [storefront.components.header :as header]
@@ -149,6 +150,16 @@
                :disabled? disabled?})
        label)])])
 
+(c/defcomponent spinner-template
+  [{:keys [header progress quiz-questions quiz-see-results]} _ _]
+  [:div.max-580.bg-pale-purple.absolute.overlay
+   [:div.absolute.overlay.border.border-white.border-framed-white.m4.p5.flex.flex-column.items-center.justify-center
+    [:div (svg/mayvenn-logo {:style {:width "54px"}})]
+    [:div {:style {:height "50%"}}
+     [:div.title-2.canela.center
+      [:div "Sit back and relax."]
+      [:div "There’s no end to what your hair can do."]]]]])
+
 (c/defcomponent template
   [{:keys [header progress quiz-questions quiz-see-results]} _ _]
   [:div.col-12
@@ -215,7 +226,7 @@
           :progress         (progress< progression)
           :quiz-questions   (quiz-questions< quiz-answers progression)
           :quiz-see-results (quiz-see-results< progression)}
-         (c/build template))))
+         (c/build spinner-template))))
 
 ;;---------- -behavior
 

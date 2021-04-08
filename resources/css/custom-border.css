@@ -80,6 +80,13 @@
     border-image-source: svg-load(var(--frame-svg));
 }
 
+.border-framed-white {
+	  border-image-slice: 25%;
+    border-image-width: 25px;
+    border-image-source: svg-load(var(--white-frame-svg));
+    stroke-color: #fff;
+}
+
 .capped { border-radius: 1000px; }
 .rounded-0            { border-radius: var(--border-radius-0); }
 .rounded-top-left     { border-top-left-radius:     var(--border-radius); }
@@ -93,6 +100,7 @@
 .rounded-bottom-1, .rounded-right-1, .rounded-bottom-right-1 { border-bottom-right-radius: var(--border-radius-1); }
 
 :root {
+  --white-frame-svg:   '../public/images/white-frame.svg';
   --frame-svg:         '../public/images/frame.svg';
   --border-width:      1px;
   --border-width-1:    1px;
