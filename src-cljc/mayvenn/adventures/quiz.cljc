@@ -17,6 +17,52 @@
              :rename {handle-message publish}]
             [storefront.transitions :as t]))
 
+;; state
+
+(def questions
+  [{:quiz/question-id     :texture
+    :quiz/question-prompt ["Let's talk about texture."
+                           "Do you want your final look to be:"]
+    :quiz/choices
+    [{:quiz/choice-id     :straight
+      :quiz/choice-answer "Straight"
+      :quiz/img-url       "/images/categories/straight-icon.svg"}
+     {:quiz/choice-id     :wavy
+      :quiz/choice-answer "Wavy"
+      :quiz/img-url       "/images/categories/water-wave-icon.svg"}
+     {:quiz/choice-id     :unsure
+      :quiz/choice-answer "I'm not sure yet" }]}
+   {:quiz/question-id     :length
+    :quiz/question-prompt ["What about length?"
+                           "Do you want your final look to be:"]
+    :quiz/choices
+    [{:quiz/choice-id     :short
+      :quiz/choice-answer "Short 10\" to 14\""}
+     {:quiz/choice-id     :medium
+      :quiz/choice-answer "Medium 14\" to 18\""}
+     {:quiz/choice-id     :long
+      :quiz/choice-answer "Long 18\" to 22\""}
+     {:quiz/choice-id     :extra-long
+      :quiz/choice-answer "Extra Long 22\" to 26\""}
+     {:quiz/choice-id     :unsure
+      :quiz/choice-answer "I'm not sure yet"}]}
+   {:quiz/question-id     :leave-out
+    :quiz/question-prompt ["Would you like to leave any of your natural hair out?"]
+    :quiz/question-info   ["Leave-out covers the tracks of a sew-in and blends your natural hair with the extensions."] 
+    :quiz/choices
+    [{:quiz/choice-id     :yes
+      :quiz/choice-answer "Yes"}
+     {:quiz/choice-id     :no
+      :quiz/choice-answer "No"}
+     {:quiz/choice-id     :unsure
+      :quiz/choice-answer "I'm not sure yet"}]}])
+
+(def initial-answers nil)
+
+(def initial-progression #{}) ;; progression is a specialized rollup useful for extent
+
+;; visual
+
 ;; TODO(corey) parameterize for color
 (def checkmark-circle-atom
   [:div.circle.bg-p-color.flex.items-center.justify-center
@@ -66,6 +112,7 @@
 (c/defcomponent quiz-question-choice-button-molecule
   [{:quiz.question.choice.button/keys [primary icon-url target selected?]} _ _]
   [:div
+   ;; TODO(corey) rationale for if
    ((if selected?
       ui/button-choice-selected
       ui/button-choice-unselected)
@@ -85,16 +132,26 @@
 
 (c/defcomponent quiz-question-organism
   [data _ _]
-  (c/html
-   [:div.mx6.stretch
-    (c/build quiz-question-title-molecule data)
-    [:div.my2
-     (c/elements quiz-question-choice-button-molecule
-                 data
-                 :quiz.question/choices)]]))
+  [:div.mx6.stretch
+   (c/build quiz-question-title-molecule data)
+   [:div.my2
+    (c/elements quiz-question-choice-button-molecule
+                data
+                :quiz.question/choices)]])
+
+(c/defcomponent quiz-see-results-organism
+  [{:quiz.see-results.button/keys [id target label disabled?]} _ _]
+  [:div
+   (when id
+     [:div.col-10.my2.mx-auto
+      (ui/button-large-primary
+       (merge (apply utils/route-to target)
+              {:data-test id
+               :disabled? disabled?})
+       label)])])
 
 (c/defcomponent template
-  [{:keys [header progress quiz-questions]} _ _]
+  [{:keys [header progress quiz-questions quiz-see-results]} _ _]
   [:div.col-12
    [:div.max-580.top-0.fixed.col-12.bg-white
     (c/build header/mobile-nav-header-component header)
@@ -102,45 +159,17 @@
    [:div.flex.flex-column.mbj3
     (c/elements quiz-question-organism
                 quiz-questions
-                :quiz/questions)]])
+                :quiz/questions)
+    (c/build quiz-see-results-organism quiz-see-results)]])
 
-(def questions
-  [{:quiz/question-id     :texture
-    :quiz/question-prompt ["Let's talk about texture."
-                           "Do you want your final look to be:"]
-    :quiz/choices
-    [{:quiz/choice-id     :straight
-      :quiz/choice-answer "Straight"
-      :quiz/img-url       "/images/categories/straight-icon.svg"}
-     {:quiz/choice-id     :wavy
-      :quiz/choice-answer "Wavy"
-      :quiz/img-url       "/images/categories/water-wave-icon.svg"}
-     {:quiz/choice-id     :unsure
-      :quiz/choice-answer "I'm not sure yet" }]}
-   {:quiz/question-id     :length
-    :quiz/question-prompt ["What about length?"
-                           "Do you want your final look to be:"]
-    :quiz/choices
-    [{:quiz/choice-id     :short
-      :quiz/choice-answer "Short 10\" to 14\""}
-     {:quiz/choice-id     :medium
-      :quiz/choice-answer "Medium 14\" to 18\""}
-     {:quiz/choice-id     :long
-      :quiz/choice-answer "Long 18\" to 22\""}
-     {:quiz/choice-id     :extra-long
-      :quiz/choice-answer "Extra Long 22\" to 26\""}
-     {:quiz/choice-id     :unsure
-      :quiz/choice-answer "I'm not sure yet"}]}
-   {:quiz/question-id     :leave-out
-    :quiz/question-prompt ["Would you like to leave any of your natural hair out?"]
-    :quiz/question-info   ["Leave-out covers the tracks of a sew-in and blends your natural hair with the extensions."] 
-    :quiz/choices
-    [{:quiz/choice-id     :yes
-      :quiz/choice-answer "Yes"}
-     {:quiz/choice-id     :no
-      :quiz/choice-answer "No"}
-     {:quiz/choice-id     :unsure
-      :quiz/choice-answer "I'm not sure yet"}]}])
+(defn quiz-see-results<
+  [progression]
+  (when (>= (count progression) (dec (count questions)))
+    {:quiz.see-results.button/id        "quiz.see-results"
+     :quiz.see-results.button/disabled? (not= (count questions)
+                                              (count progression))
+     :quiz.see-results.button/target    []
+     :quiz.see-results.button/label     "See Results"}))
 
 (defn quiz-questions<
   [quiz-answers progression]
@@ -182,10 +211,11 @@
         quiz-id      :quiz/shopping
         progression  (get-in state (conj k/models-progressions quiz-id))
         quiz-answers (get-in state (conj k/models-quizzes quiz-id))]
-    (->> {:header         {:forced-mobile-layout? true
-                           :quantity              (or quantity 0)}
-          :quiz-questions (quiz-questions< quiz-answers progression)
-          :progress       (progress< progression)}
+    (->> {:header           {:forced-mobile-layout? true
+                             :quantity              (or quantity 0)}
+          :progress         (progress< progression)
+          :quiz-questions   (quiz-questions< quiz-answers progression)
+          :quiz-see-results (quiz-see-results< progression)}
          (c/build template))))
 
 ;;---------- -behavior
@@ -196,9 +226,6 @@
 
 ;; TODO(corey) should be biz
 ;; flow|quiz
-
-(def initial-answers nil)
-(def initial-progression #{}) ;; progression is a specialized rollup useful for extent
 
 (defmethod t/transition-state e/flow|quiz|reset
   [_ _ {quiz-id :quiz/id} state]
@@ -235,7 +262,6 @@
 
 (defmethod t/transition-state e/flow|progression|progressed
   [_ _ {:progression/keys [id value]} state]
-  (prn "progression" id value)
   (update-in state (conj k/models-progressions id) conj value))
 
 (comment
