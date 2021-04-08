@@ -577,10 +577,6 @@
 
 (defpath escape-key-pressed)
 
-;; Muuri
-(defpath loaded-muuri)
-(defpath initialize-muuri)
-
 ;; data team only
 
 (defpath visual-add-on-services-displayed)

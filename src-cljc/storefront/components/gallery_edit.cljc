@@ -75,44 +75,41 @@
 
 (defdynamic-component reorderable-component
   (constructor [this props]
-               (prn "CONSTRUCTOR")
                (component/create-ref! this "gallery")
                {})
   (did-mount [this]
-             #?(:cljs  (do (-> (component/get-ref this "gallery")
-                            (js/Muuri.
-                             #js
-                             {:items              ".board-item"
-                              :dragEnabled        true
-                              :dragSort           true
-                              :dragAutoScroll     drag-auto-scroll
-                              :dragStartPredicate (fn [item event]
-                                                    (when (and (-> item
-                                                                   .getGrid
-                                                                   .getItems
-                                                                   (.indexOf item)
-                                                                   (not= 0))
-                                                               (-> event
-                                                                   .-deltaTime
-                                                                   (> 50)))
-                                                      true))
-                              :dragSortPredicate  (fn [item]
-                                                    (some-> js/Muuri
-                                                            .-ItemDrag
-                                                            (.defaultSortPredicate item)
-                                                            (#(when (not= 0 (.-index %)) %))))})
-                            (.on "dragEnd" (fn [item _event]
-                                             (->> item
-                                                  .getGrid
-                                                  .getItems
-                                                  (keep #(some-> % .getElement .-dataset .-postId js/parseInt))
-                                                  ((fn [posts-order] {:posts-ordering posts-order}))
-                                                  (messages/handle-message events/control-stylist-gallery-reordered-v2)))))
-                           (messages/handle-message events/loaded-muuri))))
+             #?(:cljs  (-> (component/get-ref this "gallery")
+                           (js/Muuri.
+                            #js
+                            {:items              ".board-item"
+                             :dragEnabled        true
+                             :dragSort           true
+                             :dragAutoScroll     drag-auto-scroll
+                             :dragStartPredicate (fn [item event]
+                                                   (when (and (-> item
+                                                                  .getGrid
+                                                                  .getItems
+                                                                  (.indexOf item)
+                                                                  (not= 0))
+                                                              (-> event
+                                                                  .-deltaTime
+                                                                  (> 50)))
+                                                     true))
+                             :dragSortPredicate  (fn [item]
+                                                   (some-> js/Muuri
+                                                           .-ItemDrag
+                                                           (.defaultSortPredicate item)
+                                                           (#(when (not= 0 (.-index %)) %))))})
+                           (.on "dragEnd" (fn [item _event]
+                                            (->> item
+                                                 .getGrid
+                                                 .getItems
+                                                 (keep #(some-> % .getElement .-dataset .-postId js/parseInt))
+                                                 ((fn [posts-order] {:posts-ordering posts-order}))
+                                                 (messages/handle-message events/control-stylist-gallery-reordered-v2)))))))
   ;; TODO:: Fix errors to push gallery down
   (render [this]
-          (prn "RENDEREREr")
-          (let [{:keys [posts images muuri-loaded?]}  (component/get-props this)]
+          (let [{:keys [posts images]}  (component/get-props this)]
             (component/html (into [:div
                                    {:ref (component/use-ref this "gallery")}
                                    add-reorderable-photo-square]
@@ -138,15 +135,10 @@
 
 (defcomponent reorderable-wrapper
   [data _ _]
-  (do (prn "rendered wrapper")
-      [:div
-       (if (seq (:posts data))
-         (component/build reorderable-component data)
-         (ui/large-spinner {:style {:height "6em"}}))]))
-
-(defmethod transitions/transition-state events/loaded-muuri
-  [_ _ _ app-state]
-  (assoc-in app-state keypaths/loaded-muuri true))
+  [:div
+   (if (seq (:posts data))
+     (component/build reorderable-component data)
+     (ui/large-spinner {:style {:height "6em"}}))])
 
 (defmethod transitions/transition-state events/control-stylist-gallery-reordered-v2
   [_ _ {:keys [posts-ordering]} app-state]
@@ -171,8 +163,7 @@
 
 (defn query-v2 [state]
   {:images        (get-in state keypaths/user-stylist-gallery-images)
-   :posts         (get-in state keypaths/user-stylist-gallery-posts)
-   :muuri-loaded? (get-in state keypaths/loaded-muuri)})
+   :posts         (get-in state keypaths/user-stylist-gallery-posts)})
 
 (defn ^:export built-component [data opts]
   (if (experiments/edit-gallery? data)
