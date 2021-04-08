@@ -51,14 +51,17 @@
                scroll/scroll-selector-to-top)))
   (render
    [this]
-   (let [{:quiz.question.title/keys [id primary scroll-to]} (c/get-props this)]
+   (let [{:quiz.question.title/keys [id primary secondary scroll-to]} (c/get-props this)]
      (c/html
-      [:div.canela.title-2.mtj3.ptj3
-       (merge
-        {:key id}
-        (when scroll-to
-          {:data-scroll scroll-to}))
-       (interpose [:br] primary)]))))
+      [:div
+       [:div.canela.title-2.mtj3.ptj3
+        (merge
+         {:key id}
+         (when scroll-to
+           {:data-scroll scroll-to}))
+        (interpose [:br] primary)]
+       [:div.content-2.dark-gray.my3
+        secondary]]))))
 
 (c/defcomponent quiz-question-choice-button-molecule
   [{:quiz.question.choice.button/keys [primary icon-url target selected?]} _ _]
@@ -85,7 +88,7 @@
   (c/html
    [:div.mx6.stretch
     (c/build quiz-question-title-molecule data)
-    [:div.py2
+    [:div.my2
      (c/elements quiz-question-choice-button-molecule
                  data
                  :quiz.question/choices)]]))
@@ -102,43 +105,75 @@
                 :quiz/questions)]])
 
 (def questions
-  {[1 :q/texture ["Let's talk about texture."
-                  "Do you want your final look to be:"]]
-   [[:q/straight "Straight" "/images/categories/straight-icon.svg"]
-    [:q/wavy "Wavy" "/images/categories/water-wave-icon.svg"]
-    [:q/unsure "I'm not sure yet"]]
-
-   [2 :q/length ["What about length?"
-                 "Do you want your final look to be:"]]
-   [[:q/short "Short 10\" to 14\""]
-    [:q/medium "Medium 14\" to 18\""]
-    [:q/long "Long 18\" to 22\""]
-    [:q/extra-long "Extra Long 22\" to 26\""]
-    [:q/unsure "I'm not sure yet"]]})
+  [{:quiz/question-id     :texture
+    :quiz/question-prompt ["Let's talk about texture."
+                           "Do you want your final look to be:"]
+    :quiz/choices
+    [{:quiz/choice-id     :straight
+      :quiz/choice-answer "Straight"
+      :quiz/img-url       "/images/categories/straight-icon.svg"}
+     {:quiz/choice-id     :wavy
+      :quiz/choice-answer "Wavy"
+      :quiz/img-url       "/images/categories/water-wave-icon.svg"}
+     {:quiz/choice-id     :unsure
+      :quiz/choice-answer "I'm not sure yet" }]}
+   {:quiz/question-id     :length
+    :quiz/question-prompt ["What about length?"
+                           "Do you want your final look to be:"]
+    :quiz/choices
+    [{:quiz/choice-id     :short
+      :quiz/choice-answer "Short 10\" to 14\""}
+     {:quiz/choice-id     :medium
+      :quiz/choice-answer "Medium 14\" to 18\""}
+     {:quiz/choice-id     :long
+      :quiz/choice-answer "Long 18\" to 22\""}
+     {:quiz/choice-id     :extra-long
+      :quiz/choice-answer "Extra Long 22\" to 26\""}
+     {:quiz/choice-id     :unsure
+      :quiz/choice-answer "I'm not sure yet"}]}
+   {:quiz/question-id     :leave-out
+    :quiz/question-prompt ["Would you like to leave any of your natural hair out?"]
+    :quiz/question-info   ["Leave-out covers the tracks of a sew-in and blends your natural hair with the extensions."] 
+    :quiz/choices
+    [{:quiz/choice-id     :yes
+      :quiz/choice-answer "Yes"}
+     {:quiz/choice-id     :no
+      :quiz/choice-answer "No"}
+     {:quiz/choice-id     :unsure
+      :quiz/choice-answer "I'm not sure yet"}]}])
 
 (defn quiz-questions<
   [quiz-answers progression]
   {:quiz/questions
-   (for [[[idx key question-title] choices] questions
-         :when                              (<= idx progression)]
-     {:quiz.question.title/primary   question-title
-      :quiz.question.title/scroll-to (when (> idx 1)
-                                       (str "q-" idx))
+   (for [[idx {:quiz/keys [question-id question-prompt question-info choices]}]
+         (map-indexed vector questions)
+         :let [question-idx (inc idx)] ;; question-idx is indexed from 1
+         :when (<= idx (count progression))]
+     {:quiz.question.title/primary   question-prompt
+      :quiz.question.title/secondary question-info
+      :quiz.question.title/scroll-to (when (> question-idx 1)
+                                       (str "q-" question-idx))
       :quiz.question/choices
-      (for [[value choice-title img-url] choices
-            :let                         [answered? (= value (get quiz-answers key))]]
+      (for [{:quiz/keys [choice-id choice-answer img-url]} choices
+            :let                                           [answered? (= choice-id
+                                                                         (get quiz-answers question-id))]]
         #:quiz.question.choice.button
         {:icon-url  img-url
-         :primary   (str choice-title)
-         :target    [e/flow|quiz|answered [:quiz/shopping idx key value]]
+         :primary   choice-answer
+         :target    [e/flow|quiz|answered
+                     {:quiz/id           :quiz/shopping
+                      :quiz/question-idx question-idx
+                      :quiz/question-id  question-id
+                      :quiz/choice-id    choice-id}]
          :selected? answered?})})})
 
 (defn progress<
   [progression]
-  {:progress/portions
-   [{:progress.portion.bar/units   (* progression 3)
-     :progress.portion.bar/img-url "//ucarecdn.com/92611996-290e-47ae-bffa-e6daba5dd60b/"}
-    {:progress.portion.bar/units (- 12 (* progression 3))}]})
+  (let [extent (count progression)]
+    {:progress/portions
+     [{:progress.portion.bar/units   (* extent 3)
+       :progress.portion.bar/img-url "//ucarecdn.com/92611996-290e-47ae-bffa-e6daba5dd60b/"}
+      {:progress.portion.bar/units (- 12 (* extent 3))}]}))
 
 (defn ^:export page
   [state]
@@ -157,29 +192,51 @@
 
 (defmethod fx/perform-effects e/navigate-adventure-quiz
   [_ _ _ _ _]
-  (publish e/flow|progression|reset [:quiz/shopping]))
+  (publish e/flow|quiz|reset {:quiz/id :quiz/shopping}))
+
+;; TODO(corey) should be biz
+;; flow|quiz
+
+(def initial-answers nil)
+(def initial-progression #{}) ;; progression is a specialized rollup useful for extent
+
+(defmethod t/transition-state e/flow|quiz|reset
+  [_ _ {quiz-id :quiz/id} state]
+  (-> state
+      (assoc-in (conj k/models-quizzes quiz-id)
+                initial-answers)))
+
+(defmethod fx/perform-effects e/flow|quiz|reset
+  [_ _ {quiz-id :quiz/id} _ _]
+  (publish e/flow|progression|reset
+           {:progression/id    quiz-id
+            :progression/value initial-progression}))
 
 (defmethod t/transition-state e/flow|quiz|answered
-  [_ _ [quiz-id _ question answer] state]
-  (cond-> state
-    (every? some? [quiz-id question answer])
-    (assoc-in (conj k/models-quizzes quiz-id question) answer)))
+  [_ _ {quiz-id     :quiz/id
+        question-id :quiz/question-id
+        choice-id   :quiz/choice-id} state]
+  (assoc-in state
+            (conj k/models-quizzes quiz-id question-id)
+            choice-id))
 
 (defmethod fx/perform-effects e/flow|quiz|answered
-  [_ _ [quiz-id idx _ _] _ _]
-  (publish e/flow|progression|progressed [quiz-id (inc idx)]))
+  [_ _ {quiz-id      :quiz/id
+        question-idx :quiz/question-idx} _ _]
+  (publish e/flow|progression|progressed
+           {:progression/id    quiz-id
+            :progression/value (inc question-idx)}))
+
+;; flow|progression
 
 (defmethod t/transition-state e/flow|progression|reset
-  [_ _ [quiz-id] state]
-  (cond-> state
-    (some? quiz-id)
-    (assoc-in (conj k/models-progressions quiz-id) 1)))
+  [_ _ {:progression/keys [id value]} state]
+  (assoc-in state (conj k/models-progressions id) value))
 
 (defmethod t/transition-state e/flow|progression|progressed
-  [_ _ [quiz-id idx] state]
-  (cond-> state
-    (every? some? [quiz-id idx])
-    (assoc-in (conj k/models-progressions quiz-id) idx)))
+  [_ _ {:progression/keys [id value]} state]
+  (prn "progression" id value)
+  (update-in state (conj k/models-progressions id) conj value))
 
 (comment
   {:visual/quiz ["init" "answered"]
