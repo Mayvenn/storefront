@@ -16,7 +16,8 @@
             [storefront.platform.messages
              :refer [handle-message]
              :rename {handle-message publish}]
-            [storefront.transitions :as t]))
+            [storefront.transitions :as t]
+            [storefront.platform.messages :as messages]))
 
 ;; state
 
@@ -151,14 +152,15 @@
        label)])])
 
 (c/defcomponent spinner-template
-  [{:keys [header progress quiz-questions quiz-see-results]} _ _]
-  [:div.max-580.bg-pale-purple.absolute.overlay
-   [:div.absolute.overlay.border.border-white.border-framed-white.m4.p5.flex.flex-column.items-center.justify-center
-    [:div (svg/mayvenn-logo {:style {:width "54px"}})]
-    [:div {:style {:height "50%"}}
-     [:div.title-2.canela.center
-      [:div "Sit back and relax."]
-      [:div "There’s no end to what your hair can do."]]]]])
+  [{:spinning/keys [id]} _ _]
+  (when id
+    [:div.max-580.bg-pale-purple.absolute.overlay
+     [:div.absolute.overlay.border.border-white.border-framed-white.m4.p5.flex.flex-column.items-center.justify-center
+      [:div (svg/mayvenn-logo {:style {:width "54px"}})]
+      [:div {:style {:height "50%"}}
+       [:div.title-2.canela.center
+        [:div "Sit back and relax."]
+        [:div "There’s no end to what your hair can do."]]]]]))
 
 (c/defcomponent template
   [{:keys [header progress quiz-questions quiz-see-results]} _ _]
@@ -178,7 +180,7 @@
     {:quiz.see-results.button/id        "quiz.see-results"
      :quiz.see-results.button/disabled? (not= (count questions)
                                               (count progression))
-     :quiz.see-results.button/target    []
+     :quiz.see-results.button/target    [e/flow|quiz|submitted {:quiz/id :quiz/shopping}]
      :quiz.see-results.button/label     "See Results"}))
 
 (defn quiz-questions<
@@ -220,13 +222,16 @@
 
         quiz-id      :quiz/shopping
         progression  (get-in state (conj k/models-progressions quiz-id))
-        quiz-answers (get-in state (conj k/models-quizzes quiz-id))]
+        quiz-answers (get-in state (conj k/models-quizzes quiz-id))
+        ;; TODO: spinning state does not belong with quiz answers
+        spinning?    (:spinning? quiz-answers)]
     (->> {:header           {:forced-mobile-layout? true
                              :quantity              (or quantity 0)}
           :progress         (progress< progression)
           :quiz-questions   (quiz-questions< quiz-answers progression)
-          :quiz-see-results (quiz-see-results< progression)}
-         (c/build spinner-template))))
+          :quiz-see-results (quiz-see-results< progression)
+          :spinning/id      (when spinning? "spinning")}
+         (c/build (if spinning? spinner-template template)))))
 
 ;;---------- -behavior
 
@@ -242,6 +247,23 @@
   (-> state
       (assoc-in (conj k/models-quizzes quiz-id)
                 initial-answers)))
+
+(defmethod fx/perform-effects e/flow|quiz|submitted
+  [_ _ {quiz-id :quiz/id} _ _]
+  (publish e/flow|wait|begun {:quiz/id quiz-id}))
+
+(defmethod t/transition-state e/flow|wait|begun
+  [_ _ {quiz-id :quiz/id} state]
+  (assoc-in state (conj k/models-quizzes quiz-id :spinning?) true))
+
+(defmethod fx/perform-effects e/flow|wait|begun
+  [_ _ {quiz-id :quiz/id} _ _]
+  (messages/handle-later e/flow|wait|elapsed {:quiz/id quiz-id} 3000))
+
+(defmethod t/transition-state e/flow|wait|elapsed
+  [_ _ {quiz-id :quiz/id} state]
+  (assoc-in state (conj k/models-quizzes quiz-id :spinning?) false))
+
 
 (defmethod fx/perform-effects e/flow|quiz|reset
   [_ _ {quiz-id :quiz/id} _ _]

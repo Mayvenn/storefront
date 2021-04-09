@@ -663,13 +663,18 @@
 (defpath biz|shared-cart|hydrated)
 (defpath cart-cleared)
 
+;; Adventure Quiz
 (defpath navigate-adventure-quiz)
 
 (defpath flow|quiz|reset)
 (defpath flow|quiz|answered)
+(defpath flow|quiz|submitted)
 
 (defpath flow|progression|reset)
 (defpath flow|progression|progressed)
+
+(defpath flow|wait|begun)
+(defpath flow|wait|elapsed)
 
 ;; NOTE(corey) Generally...
 ;; flow - sequence of user interactions, visual in nature (ui state machine)
