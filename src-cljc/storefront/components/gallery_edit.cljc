@@ -48,16 +48,6 @@
                                         :max-size 749})
                                pending-approval))]))])
 
-;; TODO: Check if this is necessary
-(defn drag-auto-scroll
-  []
-  #?(:cljs #js {:targets (fn [item]
-               [#js {:element js/window
-                 :priority 0}
-                #js {:element (.-parentNode (.getElement (.getGrid item)))
-                 :priority 0}])}
-     :clj nil))
-
 ;; TODO: Fix gallery not showing on hard load. "Works" once a change has been saved
 ;; NOTE: Don't forget the experiment
 
@@ -76,6 +66,7 @@
 (defdynamic-component reorderable-component
   (constructor [this props]
                (component/create-ref! this "gallery")
+               (component/create-ref! this "gallery-container")
                {})
   (did-mount [this]
              #?(:cljs  (-> (component/get-ref this "gallery")
@@ -84,7 +75,13 @@
                             {:items              ".board-item"
                              :dragEnabled        true
                              :dragSort           true
-                             :dragAutoScroll     drag-auto-scroll
+                             :layout             #js {:fillGaps true}
+                             :dragContainer      (component/get-ref this "gallery")
+                             :dragAutoScroll     #js {:targets #js [#js {:element  js/window
+                                                                         :priority 0}
+                                                                    #js {:element  (component/get-ref this "gallery")
+                                                                         :priority 1
+                                                                         :axis     js/Muuri.AutoScroller.AXIS_X}]}
                              :dragStartPredicate (fn [item event]
                                                    (when (and (-> item
                                                                   .getGrid
@@ -93,7 +90,7 @@
                                                                   (not= 0))
                                                               (-> event
                                                                   .-deltaTime
-                                                                  (> 50)))
+                                                                  (> 500)))
                                                      true))
                              :dragSortPredicate  (fn [item]
                                                    (some-> js/Muuri
@@ -110,7 +107,10 @@
   ;; TODO:: Fix errors to push gallery down
   (render [this]
           (let [{:keys [posts images]}  (component/get-props this)]
-            (component/html (into [:div
+            (component/html [:div
+                             [:div.fixed
+                              {:ref (component/use-ref this "gallery-container")}]
+                             (into [:div
                                    {:ref (component/use-ref this "gallery")}
                                    add-reorderable-photo-square]
                                   (for [{:keys [image-ordering]} posts
@@ -131,7 +131,7 @@
                                                                             :object-fit      "cover"}
                                                                  :src      resizable-url
                                                                  :max-size 749})
-                                                        pending-approval))]))))))
+                                                        pending-approval))]))]))))
 
 (defcomponent reorderable-wrapper
   [data _ _]
