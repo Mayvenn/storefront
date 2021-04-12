@@ -152,6 +152,9 @@
 (defn ^:export current-order []
   (clj->js (get-in @app-state keypaths/order)))
 
+(defn ^:export current-features []
+  (clj->js (get-in @app-state keypaths/features)))
+
 (defn ^:before-load before-load []
   (handle-message app-state events/app-stop))
 
