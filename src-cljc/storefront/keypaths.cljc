@@ -337,3 +337,5 @@
 (def models-products (conj models-root :products))
 (def models-progressions (conj models-root :progressions))
 (def models-quizzes (conj models-root :quizzes))
+(def models-quizzes-results (conj models-root :quizzes-results))
+(def models-wait (conj models-root :wait))

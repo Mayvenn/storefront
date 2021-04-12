@@ -3,21 +3,21 @@
   (:require #?@(:cljs
                 [[storefront.browser.scroll :as scroll]])
             api.orders
-            [spice.core :refer [parse-int]]
+
             [storefront.assets :as assets]
             [storefront.component :as c]
             [storefront.components.header :as header]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.effects :as fx]
             [storefront.events :as e]
             [storefront.keypaths :as k]
-            [storefront.effects :as fx]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages
+             :as messages
              :refer [handle-message]
              :rename {handle-message publish}]
-            [storefront.transitions :as t]
-            [storefront.platform.messages :as messages]))
+            [storefront.transitions :as t]))
 
 ;; state
 
@@ -151,17 +151,16 @@
                :disabled? disabled?})
        label)])])
 
-(c/defcomponent spinner-template
-  [{:spinning/keys [id]} _ _]
-  (when id
-    [:div.max-580.bg-pale-purple.absolute.overlay
-     [:div.absolute.overlay.border.border-white.border-framed-white.m4.p5.flex.flex-column.items-center.justify-center
-      [:div (svg/mayvenn-logo {:class "spin-y"
-                               :style {:width "140px"}})]
-      [:div {:style {:height "50%"}}
-       [:div.title-2.canela.center
-        [:div "Sit back and relax."]
-        [:div "There’s no end to what your hair can do."]]]]]))
+(def spinner-template
+  (c/html
+   [:div.max-580.bg-pale-purple.absolute.overlay
+    [:div.absolute.overlay.border.border-white.border-framed-white.m4.p5.flex.flex-column.items-center.justify-center
+     [:div (svg/mayvenn-logo {:class "spin-y"
+                              :style {:width "54px"}})]
+     [:div {:style {:height "50%"}}
+      [:div.title-2.canela.center
+       [:div "Sit back and relax."]
+       [:div "There’s no end to what your hair can do."]]]]]))
 
 (c/defcomponent template
   [{:keys [header progress quiz-questions quiz-see-results]} _ _]
@@ -217,6 +216,65 @@
        :progress.portion.bar/img-url "//ucarecdn.com/92611996-290e-47ae-bffa-e6daba5dd60b/"}
       {:progress.portion.bar/units (- 12 (* extent 3))}]}))
 
+(c/defcomponent quiz-results-organism
+  [{:quiz.result/keys [id index-label ucare-id primary secondary tertiary tertiary-note cta-label _cta-target]} _ _]
+  [:div.left-align.px3
+   [:div.shout.proxima.title-3.mb1 index-label]
+   [:div.bg-white
+    [:div.flex.p3
+     [:div.mr4
+      (ui/img {:src ucare-id :width "80px"})]
+     [:div.flex.flex-column
+      [:div primary]
+      [:div secondary]
+      [:div.content-1 tertiary [:span.ml2.s-color.content-2 tertiary-note]]
+      (ui/button-small-primary {:data-test id
+                                :class     "mt2 col-8"} cta-label)]]]])
+
+(def ^:private green-divider-atom
+  (c/html
+   [:div
+    {:style {:background-image  "url('//ucarecdn.com/7e91271e-874c-4303-bc8a-00c8babb0d77/-/resize/x24/')"
+             :background-position "center center"
+             :background-repeat   "repeat-x"
+             :height              "24px"}}]))
+
+(c/defcomponent results-template
+  [{:keys [header quiz-results]} _ _]
+  [:div.bg-cool-gray
+   [:div.max-580.col-12.bg-white
+    (c/build header/mobile-nav-header-component header)]
+
+   [:div.center.pyj2
+    [:div.flex.flex-column.px2
+     [:div.shout.proxima.title-2 (:quiz.results/primary quiz-results)]
+     [:div.m3.canela.title-1 (:quiz.results/secondary quiz-results)]]
+    (c/elements quiz-results-organism quiz-results :quiz/results)]
+   green-divider-atom
+   (let [{:quiz.alternative/keys [primary cta-label cta-target id]} quiz-results]
+     [:div.bg-white.py5.flex.flex-column.center.items-center
+      primary
+      (ui/button-small-secondary (merge {:data-test id :class "mt2 mx-auto"}
+                                        (apply utils/route-to cta-target)) cta-label)])])
+
+(def quiz-results<
+  [{:quiz.result/id            "result-option-0"
+    :quiz.result/index-label   "Option 1"
+    :quiz.result/ucare-id      "f7568a58-d240-4856-9d7d-21096bafda1c"
+    :quiz.result/primary       "Brazilian Wavy"
+    :quiz.result/secondary     "20”, 22” + 24” Frontal"
+    :quiz.result/tertiary      "$400.99"
+    :quiz.result/tertiary-note "Install Included"
+    :quiz.result/cta-label     "Add To Bag"}
+   {:quiz.result/id            "result-option-1"
+    :quiz.result/index-label   "Option 2"
+    :quiz.result/ucare-id      "f7568a58-d240-4856-9d7d-21096bafda1c"
+    :quiz.result/primary       "Brazilian Wavy"
+    :quiz.result/secondary     "20”, 22”, 22”"
+    :quiz.result/tertiary      "$400.99"
+    :quiz.result/tertiary-note "Install Included"
+    :quiz.result/cta-label     "Add To Bag"}])
+
 (defn ^:export page
   [state]
   (let [{:order.items/keys [quantity]} (api.orders/current state)
@@ -224,15 +282,27 @@
         quiz-id      :quiz/shopping
         progression  (get-in state (conj k/models-progressions quiz-id))
         quiz-answers (get-in state (conj k/models-quizzes quiz-id))
-        ;; TODO: spinning state does not belong with quiz answers
-        spinning?    (:spinning? quiz-answers)]
-    (->> {:header           {:forced-mobile-layout? true
-                             :quantity              (or quantity 0)}
-          :progress         (progress< progression)
-          :quiz-questions   (quiz-questions< quiz-answers progression)
-          :quiz-see-results (quiz-see-results< progression)
-          :spinning/id      (when spinning? "spinning")}
-         (c/build (if spinning? spinner-template template)))))
+        quiz-results (get-in state (conj k/models-quizzes-results quiz-id))]
+    (cond
+      (get-in state (conj k/models-wait quiz-id)) spinner-template
+
+      (seq quiz-results) (->> {:quiz-results {:quiz/results                quiz-results
+                                              :quiz.results/primary        "Hair & Services"
+                                              :quiz.results/secondary      "We think these styles will look great on you."
+                                              :quiz.alternative/primary    "Wanna explore more options?"
+                                              :quiz.alternative/id         "quiz-result-alternative"
+                                              :quiz.alternative/cta-target [e/navigate-category {:page/slug  "mayvenn-install"
+                                                                                                 :catalog/category-id "23"}]
+                                              :quiz.alternative/cta-label  "Browse Hair"}
+                               :header       {:forced-mobile-layout? true
+                                              :quantity              (or quantity 0)}}
+                              (c/build results-template))
+      :else              (->> {:header           {:forced-mobile-layout? true
+                                                  :quantity              (or quantity 0)}
+                               :progress         (progress< progression)
+                               :quiz-questions   (quiz-questions< quiz-answers progression)
+                               :quiz-see-results (quiz-see-results< progression)}
+                              (c/build template)))))
 
 ;;---------- -behavior
 
@@ -246,25 +316,35 @@
 (defmethod t/transition-state e/flow|quiz|reset
   [_ _ {quiz-id :quiz/id} state]
   (-> state
-      (assoc-in (conj k/models-quizzes quiz-id)
-                initial-answers)))
+      (assoc-in (conj k/models-quizzes quiz-id) initial-answers)
+      (assoc-in (conj k/models-quizzes-results quiz-id) nil)))
 
 (defmethod fx/perform-effects e/flow|quiz|submitted
   [_ _ {quiz-id :quiz/id} _ _]
-  (publish e/flow|wait|begun {:quiz/id quiz-id}))
+  (publish e/flow|wait|begun {:wait/id quiz-id})
+  (publish e/flow|quiz|results|resulted {:quiz/id quiz-id
+                                         :quiz/results quiz-results<}))
+
+
+(defmethod t/transition-state e/flow|quiz|results|resulted
+  [_ _ {:quiz/keys [id results]} state]
+  (-> state
+      (assoc-in (conj k/models-quizzes-results id)
+                results)))
 
 (defmethod t/transition-state e/flow|wait|begun
-  [_ _ {quiz-id :quiz/id} state]
-  (assoc-in state (conj k/models-quizzes quiz-id :spinning?) true))
+  [_ _ {wait-id :wait/id} state]
+  (assoc-in state (conj k/models-wait wait-id) true))
 
 (defmethod fx/perform-effects e/flow|wait|begun
-  [_ _ {quiz-id :quiz/id} _ _]
-  (messages/handle-later e/flow|wait|elapsed {:quiz/id quiz-id} 3000))
+  [_ _ {wait-id :wait/id} _ _]
+  (messages/handle-later e/flow|wait|elapsed {:wait/id wait-id
+                                              :wait/ms 3000}
+                         3000))
 
 (defmethod t/transition-state e/flow|wait|elapsed
-  [_ _ {quiz-id :quiz/id} state]
-  (assoc-in state (conj k/models-quizzes quiz-id :spinning?) false))
-
+  [_ _ {wait-id :wait/id} state]
+  (assoc-in state (conj k/models-wait wait-id) false))
 
 (defmethod fx/perform-effects e/flow|quiz|reset
   [_ _ {quiz-id :quiz/id} _ _]

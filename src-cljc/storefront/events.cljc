@@ -670,6 +670,8 @@
 (defpath flow|quiz|answered)
 (defpath flow|quiz|submitted)
 
+(defpath flow|quiz|results|resulted)
+
 (defpath flow|progression|reset)
 (defpath flow|progression|progressed)
 
