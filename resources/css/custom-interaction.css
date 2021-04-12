@@ -82,3 +82,26 @@ video.hide-chromecast-icon::-internal-media-controls-overlay-cast-button {
     0% { opacity: 0 }
     100% { opacity: 1 }
 }
+
+.spin-y{
+    -webkit-animation: spin linear 1.44s infinite;
+    animation: spin linear 1.44s infinite;
+}
+
+@-webkit-keyframes spin{
+    from {-webkit-transform: rotateY(0deg);}
+    to {-webkit-transform: rotateY(180deg);}
+}
+
+@keyframes spin{
+    from {
+        -moz-transform: rotateY(0deg);
+        -ms-transform: rotateY(0deg);
+        transform: rotateY(0deg);
+    }
+    to {
+        -moz-transform: rotateY(180deg);
+        -ms-transform: rotateY(180deg);
+        transform: rotateY(180deg);
+    }
+}

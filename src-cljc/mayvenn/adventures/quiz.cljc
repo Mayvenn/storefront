@@ -156,7 +156,8 @@
   (when id
     [:div.max-580.bg-pale-purple.absolute.overlay
      [:div.absolute.overlay.border.border-white.border-framed-white.m4.p5.flex.flex-column.items-center.justify-center
-      [:div (svg/mayvenn-logo {:style {:width "54px"}})]
+      [:div (svg/mayvenn-logo {:class "spin-y"
+                               :style {:width "140px"}})]
       [:div {:style {:height "50%"}}
        [:div.title-2.canela.center
         [:div "Sit back and relax."]
