@@ -623,6 +623,20 @@
      :quiz.result/cta-label     "Add To Bag"
      :quiz.result/tertiary-note "Install Included"}))
 
+(defn quiz-results< [quiz-answers quiz-results]
+  (merge
+   (if (every? #{:unsure} (vals quiz-answers))
+     {:quiz.results/primary   "Still Undecided?"
+      :quiz.results/secondary "These are our most popular styles."}
+     {:quiz.results/primary   "Hair & Services"
+      :quiz.results/secondary "We think these styles will look great on you."})
+   {:quiz.results/options        (map-indexed quiz-result-option< quiz-results)
+    :quiz.alternative/primary    "Wanna explore more options?"
+    :quiz.alternative/id         "quiz-result-alternative"
+    :quiz.alternative/cta-target [e/navigate-category {:page/slug           "mayvenn-install"
+                                                       :catalog/category-id "23"}]
+    :quiz.alternative/cta-label  "Browse Hair"}))
+
 (defn ^:export page
   [state]
   (let [{:order.items/keys [quantity]} (api.orders/current state)
@@ -634,14 +648,7 @@
     (cond
       (get-in state (conj k/models-wait quiz-id)) spinner-template
 
-      (seq quiz-results) (->> {:quiz-results {:quiz.results/options        (map-indexed quiz-result-option< quiz-results)
-                                              :quiz.results/primary        "Hair & Services"
-                                              :quiz.results/secondary      "We think these styles will look great on you."
-                                              :quiz.alternative/primary    "Wanna explore more options?"
-                                              :quiz.alternative/id         "quiz-result-alternative"
-                                              :quiz.alternative/cta-target [e/navigate-category {:page/slug           "mayvenn-install"
-                                                                                                 :catalog/category-id "23"}]
-                                              :quiz.alternative/cta-label  "Browse Hair"}
+      (seq quiz-results) (->> {:quiz-results (quiz-results< quiz-answers quiz-results)
                                :header       {:forced-mobile-layout? true
                                               :quantity              (or quantity 0)}}
                               (c/build results-template))
