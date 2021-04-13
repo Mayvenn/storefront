@@ -14,22 +14,24 @@
             api.current
             api.orders
             api.products
-            [homepage.ui.faq :as faq]
             [catalog.facets :as facets]
             [catalog.keypaths :as catalog.keypaths]
             [catalog.product-details-ugc :as ugc]
             [catalog.products :as products]
             [catalog.selector.sku :as sku-selector]
-            [catalog.ui.molecules :as catalog.M]
+            [catalog.ui.add-to-cart :as add-to-cart]
+            [catalog.ui.browse-stylists-banner :as browse-stylists-banner]
             [catalog.ui.how-it-works :as how-it-works]
+            [catalog.ui.molecules :as catalog.M]
             [checkout.cart.swap :as swap]
+            [homepage.ui.faq :as faq]
             [spice.selector :as selector]
             [storefront.accessors.contentful :as contentful]
-            [storefront.accessors.products :as accessors.products]
-            [storefront.accessors.skus :as skus]
             [storefront.accessors.images :as images]
-            [storefront.component :as component :refer [defcomponent]]
+            [storefront.accessors.products :as accessors.products]
             [storefront.accessors.sites :as sites]
+            [storefront.accessors.skus :as skus]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
             [storefront.components.picker.picker :as picker]
             [storefront.components.tabbed-information :as tabbed-information]
@@ -43,9 +45,7 @@
             [storefront.platform.reviews :as review-component]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
-            storefront.ugc
-            [catalog.ui.add-to-cart :as add-to-cart]
-            [catalog.ui.browse-stylists-banner :as browse-stylists-banner]))
+            storefront.ugc))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
