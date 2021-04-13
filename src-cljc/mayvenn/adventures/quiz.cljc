@@ -17,7 +17,9 @@
              :as messages
              :refer [handle-message]
              :rename {handle-message publish}]
-            [storefront.transitions :as t]))
+            [storefront.transitions :as t]
+            [storefront.components.money-formatters :as mf]
+            [clojure.string :as string]))
 
 ;; state
 
@@ -249,7 +251,7 @@
     [:div.flex.flex-column.px2
      [:div.shout.proxima.title-2 (:quiz.results/primary quiz-results)]
      [:div.m3.canela.title-1 (:quiz.results/secondary quiz-results)]]
-    (c/elements quiz-results-organism quiz-results :quiz/results)]
+    (c/elements quiz-results-organism quiz-results :quiz.results/options)]
    green-divider-atom
    (let [{:quiz.alternative/keys [primary cta-label cta-target id]} quiz-results]
      [:div.bg-white.py5.flex.flex-column.center.items-center
@@ -257,23 +259,369 @@
       (ui/button-small-secondary (merge {:data-test id :class "mt2 mx-auto"}
                                         (apply utils/route-to cta-target)) cta-label)])])
 
-(def quiz-results<
-  [{:quiz.result/id            "result-option-0"
-    :quiz.result/index-label   "Option 1"
-    :quiz.result/ucare-id      "f7568a58-d240-4856-9d7d-21096bafda1c"
-    :quiz.result/primary       "Brazilian Wavy"
-    :quiz.result/secondary     "20”, 22” + 24” Frontal"
-    :quiz.result/tertiary      "$400.99"
-    :quiz.result/tertiary-note "Install Included"
-    :quiz.result/cta-label     "Add To Bag"}
-   {:quiz.result/id            "result-option-1"
-    :quiz.result/index-label   "Option 2"
-    :quiz.result/ucare-id      "f7568a58-d240-4856-9d7d-21096bafda1c"
-    :quiz.result/primary       "Brazilian Wavy"
-    :quiz.result/secondary     "20”, 22”, 22”"
-    :quiz.result/tertiary      "$400.99"
-    :quiz.result/tertiary-note "Install Included"
-    :quiz.result/cta-label     "Add To Bag"}])
+
+
+(def BNS-short {:img/id       "16029dd0-285c-4bc6-803c-0c201c3d402c"
+                :hair/origin  "Brazilian"
+                :hair/texture "Straight"
+                :skus         ["BNS10","BNS12","BNS14"]})
+(def BNS-short-closure (update BNS-short :skus conj "BNSLC10"))
+
+(def BNS-medium {:img/id       "16029dd0-285c-4bc6-803c-0c201c3d402c"
+                 :hair/origin  "Brazilian"
+                 :hair/texture "Straight"
+                 :skus         ["BNS14","BNS16","BNS18"]})
+(def BNS-medium-closure (update BNS-medium :skus conj "BNSLC14"))
+
+(def BNS-long {:img/id       "16029dd0-285c-4bc6-803c-0c201c3d402c"
+               :hair/origin  "Brazilian"
+               :hair/texture "Straight"
+               :skus         ["BNS18","BNS20","BNS22"]})
+(def BNS-long-closure (update BNS-long :skus conj "BNSLC18"))
+
+(def BNS-extra-long {:img/id       "16029dd0-285c-4bc6-803c-0c201c3d402c"
+                     :hair/origin  "Brazilian"
+                     :hair/texture "Straight"
+                     :skus         ["BNS22","BNS24","BNS26"]})
+(def BNS-extra-long-closure (update BNS-extra-long :skus conj "BNSLC18"))
+
+(def BLW-short {:img/id       "f7568a58-d240-4856-9d7d-21096bafda1c"
+                :hair/origin  "Brazilian"
+                :hair/texture "Loose Wave"
+                :skus         ["BLW10","BLW12","BLW14"]})
+(def BLW-short-closure (update BLW-short :skus conj "BLWLC10"))
+
+(def BLW-medium {:img/id       "f7568a58-d240-4856-9d7d-21096bafda1c"
+                 :hair/origin  "Brazilian"
+                 :hair/texture "Loose Wave"
+                 :skus         ["BLW14","BLW16","BLW18"]})
+(def BLW-medium-closure (update BLW-medium :skus conj "BLWLC14"))
+
+(def BLW-long {:img/id       "f7568a58-d240-4856-9d7d-21096bafda1c"
+               :hair/origin  "Brazilian"
+               :hair/texture "Loose Wave"
+               :skus         ["BLW18","BLW20","BLW22"]})
+(def BLW-long-closure (update BLW-long :skus conj "BLWLC18"))
+
+(def BLW-extra-long {:img/id       "f7568a58-d240-4856-9d7d-21096bafda1c"
+                     :hair/origin  "Brazilian"
+                     :hair/texture "Loose Wave"
+                     :skus         ["BLW22","BLW24","BLW26"]})
+(def BLW-extra-long-closure (update BLW-extra-long :skus conj "BLWLC18"))
+
+(def MBW-short {:img/id       "888b9c79-265d-4547-b8ce-0c7ce56c8741"
+                :hair/origin  "Malaysian"
+                :hair/texture "Body Wave"
+                :skus         ["MBW10","MBW12","MBW14"]})
+(def MBW-short-closure (update MBW-short :skus conj "MBWLC10"))
+
+(def MBW-medium {:img/id       "888b9c79-265d-4547-b8ce-0c7ce56c8741"
+                 :hair/origin  "Malaysian"
+                 :hair/texture "Body Wave"
+                 :skus         ["MBW14","MBW16","MBW18"]})
+(def MBW-medium-closure (update MBW-medium :skus conj "MBWLC14"))
+
+(def MBW-long {:img/id       "888b9c79-265d-4547-b8ce-0c7ce56c8741"
+               :hair/origin  "Malaysian"
+               :hair/texture "Body Wave"
+               :skus         ["MBW18","MBW20","MBW22"]})
+(def MBW-long-closure (update MBW-long :skus conj "MBWLC18"))
+
+(def MBW-extra-long {:img/id       "888b9c79-265d-4547-b8ce-0c7ce56c8741"
+                     :hair/origin  "Malaysian"
+                     :hair/texture "Body Wave"
+                     :skus         ["MBW22","MBW24","MBW26"]})
+(def MBW-extra-long-closure (update MBW-extra-long :skus conj "MBWLC18"))
+
+(def mini-cellar
+  {"BLW10"
+   {:hair/family "bundles",
+    :sku/price 59.99,
+    :hair/length "10",
+    :catalog/sku-id "BLW10",
+    :legacy/variant-id 599},
+   "BLW12"
+   {:hair/family "bundles",
+    :sku/price 64.99,
+    :hair/length "12",
+    :catalog/sku-id "BLW12",
+    :legacy/variant-id 2},
+   "BLW14"
+   {:hair/family "bundles",
+    :sku/price 69.99,
+    :hair/length "14",
+    :catalog/sku-id "BLW14",
+    :legacy/variant-id 3},
+   "BLW16"
+   {:hair/family "bundles",
+    :sku/price 74.99,
+    :hair/length "16",
+    :catalog/sku-id "BLW16",
+    :legacy/variant-id 4},
+   "BLW18"
+   {:hair/family "bundles",
+    :sku/price 79.99,
+    :hair/length "18",
+    :catalog/sku-id "BLW18",
+    :legacy/variant-id 5},
+   "BLW20"
+   {:hair/family "bundles",
+    :sku/price 84.99,
+    :hair/length "20",
+    :catalog/sku-id "BLW20",
+    :legacy/variant-id 6},
+   "BLW22"
+   {:hair/family "bundles",
+    :sku/price 89.99,
+    :hair/length "22",
+    :catalog/sku-id "BLW22",
+    :legacy/variant-id 7},
+   "BLW24"
+   {:hair/family "bundles",
+    :sku/price 114.99,
+    :hair/length "24",
+    :catalog/sku-id "BLW24",
+    :legacy/variant-id 8},
+   "BLW26"
+   {:hair/family "bundles",
+    :sku/price 134.99,
+    :hair/length "26",
+    :catalog/sku-id "BLW26",
+    :legacy/variant-id 9},
+   "BLWLC10"
+   {:hair/family "closures",
+    :sku/price 89.99,
+    :hair/length "10",
+    :catalog/sku-id "BLWLC10",
+    :legacy/variant-id 600},
+   "BLWLC14"
+   {:hair/family "closures",
+    :sku/price 94.99,
+    :hair/length "14",
+    :catalog/sku-id "BLWLC14",
+    :legacy/variant-id 12},
+   "BLWLC18"
+   {:hair/family "closures",
+    :sku/price 104.99,
+    :hair/length "18",
+    :catalog/sku-id "BLWLC18",
+    :legacy/variant-id 13},
+   "BNS10"
+   {:hair/family "bundles",
+    :sku/price 55.99,
+    :hair/length "10",
+    :img/url "//ucarecdn.com//",
+    :catalog/sku-id "BNS10",
+    :legacy/variant-id 479},
+   "BNS12"
+   {:hair/family "bundles",
+    :sku/price 59.99,
+    :hair/length "12",
+    :catalog/sku-id "BNS12",
+    :legacy/variant-id 80},
+   "BNS14"
+   {:hair/family "bundles",
+    :sku/price 64.99,
+    :hair/length "14",
+    :catalog/sku-id "BNS14",
+    :legacy/variant-id 81},
+   "BNS16"
+   {:hair/family "bundles",
+    :sku/price 69.99,
+    :hair/length "16",
+    :catalog/sku-id "BNS16",
+    :legacy/variant-id 82},
+   "BNS18"
+   {:hair/family "bundles",
+    :sku/price 74.99,
+    :hair/length "18",
+    :catalog/sku-id "BNS18",
+    :legacy/variant-id 83},
+   "BNS20"
+   {:hair/family "bundles",
+    :sku/price 79.99,
+    :hair/length "20",
+    :catalog/sku-id "BNS20",
+    :legacy/variant-id 84},
+   "BNS22"
+   {:hair/family "bundles",
+    :sku/price 84.99,
+    :hair/length "22",
+    :catalog/sku-id "BNS22",
+    :legacy/variant-id 85},
+   "BNS24"
+   {:hair/family "bundles",
+    :sku/price 109.99,
+    :hair/length "24",
+    :catalog/sku-id "BNS24",
+    :legacy/variant-id 86},
+   "BNS26"
+   {:hair/family "bundles",
+    :sku/price 129.99,
+    :hair/length "26",
+    :catalog/sku-id "BNS26",
+    :legacy/variant-id 87},
+   "BNSLC10"
+   {:hair/family "closures",
+    :sku/price 89.99,
+    :hair/length "10",
+    :catalog/sku-id "BNSLC10",
+    :legacy/variant-id 601},
+   "BNSLC14"
+   {:hair/family "closures",
+    :sku/price 94.99,
+    :hair/length "14",
+    :catalog/sku-id "BNSLC14",
+    :legacy/variant-id 90},
+   "BNSLC18"
+   {:hair/family "closures",
+    :sku/price 104.99,
+    :hair/length "18",
+    :catalog/sku-id "BNSLC18",
+    :legacy/variant-id 91},
+   "MBW10"
+   {:hair/family "bundles",
+    :sku/price 64.99,
+    :hair/length "10",
+    :img/url "//ucarecdn.com//",
+    :catalog/sku-id "MBW10",
+    :legacy/variant-id 602},
+   "MBW12"
+   {:hair/family "bundles",
+    :sku/price 69.99,
+    :hair/length "12",
+    :catalog/sku-id "MBW12",
+    :legacy/variant-id 15},
+   "MBW14"
+   {:hair/family "bundles",
+    :sku/price 74.99,
+    :hair/length "14",
+    :catalog/sku-id "MBW14",
+    :legacy/variant-id 16},
+   "MBW16"
+   {:hair/family "bundles",
+    :sku/price 79.99,
+    :hair/length "16",
+    :catalog/sku-id "MBW16",
+    :legacy/variant-id 17},
+   "MBW18"
+   {:hair/family "bundles",
+    :sku/price 84.99,
+    :hair/length "18",
+    :catalog/sku-id "MBW18",
+    :legacy/variant-id 18},
+   "MBW20"
+   {:hair/family "bundles",
+    :sku/price 89.99,
+    :hair/length "20",
+    :catalog/sku-id "MBW20",
+    :legacy/variant-id 19},
+   "MBW22"
+   {:hair/family "bundles",
+    :sku/price 94.99,
+    :hair/length "22",
+    :catalog/sku-id "MBW22",
+    :legacy/variant-id 20},
+   "MBW24"
+   {:hair/family "bundles",
+    :sku/price 119.99,
+    :hair/length "24",
+    :catalog/sku-id "MBW24",
+    :legacy/variant-id 21},
+   "MBW26"
+   {:hair/family "bundles",
+    :sku/price 139.99,
+    :hair/length "26",
+    :catalog/sku-id "MBW26",
+    :legacy/variant-id 22},
+   "MBWLC10"
+   {:hair/family "closures",
+    :sku/price 89.99,
+    :hair/length "10",
+    :catalog/sku-id "MBWLC10",
+    :legacy/variant-id 603},
+   "MBWLC14"
+   {:hair/family "closures",
+    :sku/price 94.99,
+    :hair/length "14",
+    :catalog/sku-id "MBWLC14",
+    :legacy/variant-id 25},
+   "MBWLC18"
+   {:hair/family "closures",
+    :sku/price 104.99,
+    :hair/length "18",
+    :catalog/sku-id "MBWLC18",
+    :legacy/variant-id 26}})
+
+(def answers->results
+  {:straight {:short      {:yes    [BNS-short              BNS-medium]
+                           :no     [BNS-short-closure      BNS-medium-closure]
+                           :unsure [BNS-short              BNS-short-closure]}
+              :medium     {:yes    [BNS-medium             BNS-long]
+                           :no     [BNS-medium-closure     BNS-long-closure]
+                           :unsure [BNS-medium             BNS-medium-closure]}
+              :long       {:yes    [BNS-long               BNS-extra-long]
+                           :no     [BNS-long-closure       BNS-extra-long-closure]
+                           :unsure [BNS-long               BNS-long-closure]}
+              :extra-long {:yes    [BNS-extra-long         BNS-long]
+                           :no     [BNS-extra-long-closure BNS-long-closure]
+                           :unsure [BNS-extra-long         BNS-extra-long-closure]}
+              :unsure     {:yes    [BNS-medium             BNS-long]
+                           :no     [BNS-medium-closure     BNS-long-closure]
+                           :unsure [BNS-medium             BNS-long-closure]}}
+   :wavy     {:short      {:yes    [BLW-short              MBW-short]
+                           :no     [BLW-short-closure      MBW-short-closure]
+                           :unsure [BLW-short              MBW-short-closure]}
+              :medium     {:yes    [BLW-medium             MBW-medium]
+                           :no     [BLW-medium-closure     MBW-medium-closure]
+                           :unsure [BLW-medium             MBW-medium-closure]}
+              :long       {:yes    [BLW-long               MBW-long]
+                           :no     [BLW-long-closure       MBW-long-closure]
+                           :unsure [BLW-long               MBW-long-closure]}
+              :extra-long {:yes    [BLW-extra-long         MBW-extra-long]
+                           :no     [BLW-extra-long-closure MBW-extra-long-closure]
+                           :unsure [BLW-extra-long         MBW-extra-long-closure]}
+              :unsure     {:yes    [BLW-medium             MBW-long]
+                           :no     [BLW-medium-closure     MBW-long-closure]
+                           :unsure [BLW-medium             MBW-long-closure]}}
+   :unsure   {:short      {:yes    [BNS-short              BLW-short]
+                           :no     [BNS-short-closure      BLW-short-closure]
+                           :unsure [BNS-short              BLW-short-closure]}
+              :medium     {:yes    [BNS-medium             BLW-medium]
+                           :no     [BNS-medium-closure     BLW-medium-closure]
+                           :unsure [BNS-medium             BLW-medium-closure]}
+              :long       {:yes    [BNS-long               BLW-long]
+                           :no     [BNS-long-closure       BLW-long-closure]
+                           :unsure [BNS-long               BLW-long-closure]}
+              :extra-long {:yes    [BNS-extra-long         BLW-extra-long]
+                           :no     [BNS-extra-long-closure BLW-extra-long-closure]
+                           :unsure [BNS-extra-long         BLW-extra-long-closure]}
+              :unsure     {:yes    [BNS-medium             BLW-long]
+                           :no     [BNS-medium-closure     BLW-long-closure]
+                           :unsure [BNS-medium             BLW-long-closure]}}})
+
+(defn quiz-result-option< [idx quiz-result]
+  (let [skus                  (mapv  #(get mini-cellar %) (:skus quiz-result))
+        {bundles  "bundles"
+         closures "closures"} (group-by :hair/family skus)
+        includes-closure?     (seq closures)]
+    {:quiz.result/id            (str "result-option-" idx)
+     :quiz.result/index-label   (str "Option " (inc idx))
+     :quiz.result/ucare-id      (:img/id quiz-result)
+     :quiz.result/primary       (str (:hair/origin quiz-result) " " (:hair/texture quiz-result))
+     :quiz.result/secondary     (str
+                                 (string/join
+                                  ", "
+                                  (->> bundles
+                                       (mapv :hair/length)
+                                       (mapv #(str % "”"))))
+                                 (when includes-closure?
+                                   (str " + "
+                                        (-> closures first :hair/length)
+                                        "” Closure")))
+     :quiz.result/tertiary      (->> skus (mapv :sku/price) (reduce + 0) mf/as-money)
+     :quiz.result/cta-label     "Add To Bag"
+     :quiz.result/tertiary-note "Install Included"}))
 
 (defn ^:export page
   [state]
@@ -286,12 +634,12 @@
     (cond
       (get-in state (conj k/models-wait quiz-id)) spinner-template
 
-      (seq quiz-results) (->> {:quiz-results {:quiz/results                quiz-results
+      (seq quiz-results) (->> {:quiz-results {:quiz.results/options        (map-indexed quiz-result-option< quiz-results)
                                               :quiz.results/primary        "Hair & Services"
                                               :quiz.results/secondary      "We think these styles will look great on you."
                                               :quiz.alternative/primary    "Wanna explore more options?"
                                               :quiz.alternative/id         "quiz-result-alternative"
-                                              :quiz.alternative/cta-target [e/navigate-category {:page/slug  "mayvenn-install"
+                                              :quiz.alternative/cta-target [e/navigate-category {:page/slug           "mayvenn-install"
                                                                                                  :catalog/category-id "23"}]
                                               :quiz.alternative/cta-label  "Browse Hair"}
                                :header       {:forced-mobile-layout? true
@@ -320,10 +668,15 @@
       (assoc-in (conj k/models-quizzes-results quiz-id) nil)))
 
 (defmethod fx/perform-effects e/flow|quiz|submitted
-  [_ _ {quiz-id :quiz/id} _ _]
+  [_ _ {quiz-id :quiz/id} _ state]
   (publish e/flow|wait|begun {:wait/id quiz-id})
-  (publish e/flow|quiz|results|resulted {:quiz/id quiz-id
-                                         :quiz/results quiz-results<}))
+  (let [{:keys [texture length leave-out]} (get-in state (conj k/models-quizzes quiz-id))]
+    (publish e/flow|quiz|results|resulted {:quiz/id quiz-id
+                                           :quiz/results
+                                           (get-in answers->results
+                                                   [texture
+                                                    length
+                                                    leave-out])})))
 
 
 (defmethod t/transition-state e/flow|quiz|results|resulted
