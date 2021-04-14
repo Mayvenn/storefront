@@ -671,6 +671,7 @@
 (defpath flow|quiz|submitted)
 
 (defpath flow|quiz|results|resulted)
+(defpath flow|quiz|results|option-selected)
 
 (defpath flow|progression|reset)
 (defpath flow|progression|progressed)
