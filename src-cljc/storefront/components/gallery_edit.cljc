@@ -51,26 +51,15 @@
 ;; TODO: Fix gallery not showing on hard load. "Works" once a change has been saved
 ;; NOTE: Don't forget the experiment
 
-(def add-reorderable-photo-square
-  [:a.block.col-4.pp1.bg-pale-purple.white.board-item
-   (merge (utils/route-to events/navigate-gallery-image-picker)
-          {:data-test "add-to-gallery-link"})
-   (ui/aspect-ratio 1 1
-                    [:div.flex.flex-column.justify-evenly.container-size
-                     [:div ui/nbsp]
-                     [:div.center.bold
-                      {:style {:font-size "60px"}}
-                      "+"]
-                     [:div.center.shout.title-3.proxima "Add Photo"]])])
-
 (def timer-completion-timestamp (atom nil))
 (def timer-delay 1000)
 
-#?(:cljs (defn maybe-complete-timer []
+#?(:cljs (defn maybe-complete-timer [post-id]
            (when (and @timer-completion-timestamp
                       (< (+ (.getTime @timer-completion-timestamp) timer-delay)
                          (.getTime (js/Date.))))
-             (messages/handle-message events/stylist-gallery-reorder-mode-entered)
+             (do (messages/handle-message events/stylist-gallery-reorder-mode-entered)
+                 (messages/handle-message events/control-stylist-gallery-drag-begun {:post-id post-id}))
              (reset! timer-completion-timestamp nil))))
 
 #?(:cljs (defn tap-press [e]
@@ -78,14 +67,26 @@
              ;; WARNING: date function calls mutate
              (.setSeconds expiration (.getSeconds expiration))
              (reset! timer-completion-timestamp expiration)
-             (js/setTimeout maybe-complete-timer timer-delay))))
+             (js/setTimeout (partial maybe-complete-timer (-> e
+                                                              .-target
+                                                              (.closest ".board-item")
+                                                              .-dataset
+                                                              .-postId
+                                                              js/parseInt)) timer-delay))))
 
 #?(:cljs (defn tap-release [e]
+           (prn "release")
            (reset! timer-completion-timestamp nil)))
 
+#?(:cljs (defn reorder-release [e]
+           (messages/handle-message events/stylist-gallery-reorder-mode-exited)))
+
 #?(:cljs (defn reorder-mode-handlers []
-           {:on-click (fn [e] (messages/handle-message events/stylist-gallery-reorder-mode-exited))
-            :style    {:touch-action "none"}}))
+           {:on-click     (fn [e] (messages/handle-message events/stylist-gallery-reorder-mode-exited))
+            :style        {:touch-action "none"
+                           :filter       "brightness(0.5)"}
+            :on-mouse-up  reorder-release
+            :on-touch-end reorder-release}))
 
 #?(:cljs (defn view-mode-handlers [photo-id]
            (merge (utils/route-to events/navigate-gallery-photo {:photo-id photo-id})
@@ -143,23 +144,38 @@
                                                  (messages/handle-message events/control-stylist-gallery-reordered-v2)))))))
   ;; TODO:: Fix errors to push gallery down
   (render [this]
-          (let [{:keys [posts images reorder-mode]} (component/get-props this)]
+          (let [{:keys [posts images reorder-mode currently-dragging-post-id]} (component/get-props this)]
             (component/html [:div
                              [:div.fixed
                               {:ref (component/use-ref this "gallery-container")}]
                              (into [:div
                                     {:ref (component/use-ref this "gallery")}
-                                   add-reorderable-photo-square]
+                                    [:a.block.col-4.pp1.board-item
+                                     (merge (utils/route-to events/navigate-gallery-image-picker)
+                                            {:data-test "add-to-gallery-link"
+                                             :style     {:padding "1px"}})
+                                     [:div.bg-pale-purple.white
+                                      (ui/aspect-ratio 1 1
+                                                       [:div.flex.flex-column.justify-evenly.container-size
+                                                        [:div ui/nbsp]
+                                                        [:div.center.bold
+                                                         {:style {:font-size "60px"}}
+                                                         "+"]
+                                                        [:div.center.shout.title-3.proxima "Add Photo"]])]]]
                                    #?(:cljs (for [{:keys [image-ordering]} posts
                                                   :let                     [{:keys [status resizable-url id post-id]} (->> images
                                                                                                                            (filter #(= (:id %) (first image-ordering)))
                                                                                                                            first)]]
                                               [:div.col-4.board-item.absolute
-                                               (merge {:key          resizable-url
-                                                       :data-post-id post-id}
-                                                      (if reorder-mode
-                                                        (reorder-mode-handlers)
-                                                        (view-mode-handlers id)))
+                                               (update (merge {:key          resizable-url
+                                                               :data-post-id post-id}
+                                                              (if reorder-mode
+                                                                (reorder-mode-handlers)
+                                                                (view-mode-handlers id)))
+                                                       :style (fn [style] (merge style
+                                                                                 {:padding "1px"}
+                                                                                 (when (= currently-dragging-post-id post-id)
+                                                                                   {:filter "none"}))))
                                                (ui/aspect-ratio 1 1
                                                                 (if (= "approved" status)
                                                                   (ui/img {:class    "container-size"
@@ -169,13 +185,19 @@
                                                                            :max-size 749})
                                                                   pending-approval))])))]))))
 
+(defmethod transitions/transition-state events/control-stylist-gallery-drag-begun
+  [_ _ {:keys [post-id]} app-state]
+  (assoc-in app-state keypaths/stylist-gallery-currently-dragging-post post-id))
+
 (defmethod transitions/transition-state events/stylist-gallery-reorder-mode-entered
   [_ _ args app-state]
   (assoc-in app-state keypaths/stylist-gallery-reorder-mode true))
 
 (defmethod transitions/transition-state events/stylist-gallery-reorder-mode-exited
   [_ _ args app-state]
-  (assoc-in app-state keypaths/stylist-gallery-reorder-mode false))
+  (-> app-state
+      (assoc-in keypaths/stylist-gallery-reorder-mode false)
+      (update-in keypaths/stylist-gallery dissoc :currently-dragging-post)))
 
 (defcomponent reorderable-wrapper
   [data _ _]
@@ -206,9 +228,10 @@
   {:gallery (get-in state keypaths/user-stylist-gallery-images)})
 
 (defn query-v2 [state]
-  {:images       (get-in state keypaths/user-stylist-gallery-images)
-   :posts        (get-in state keypaths/user-stylist-gallery-posts)
-   :reorder-mode (get-in state keypaths/stylist-gallery-reorder-mode)})
+  {:images                     (get-in state keypaths/user-stylist-gallery-images)
+   :posts                      (get-in state keypaths/user-stylist-gallery-posts)
+   :reorder-mode               (get-in state keypaths/stylist-gallery-reorder-mode)
+   :currently-dragging-post-id (get-in state keypaths/stylist-gallery-currently-dragging-post)})
 
 (defn ^:export built-component [data opts]
   (if (experiments/edit-gallery? data)

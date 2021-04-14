@@ -231,6 +231,7 @@
 
 (def stylist-gallery (conj ui :gallery))
 (def stylist-gallery-reorder-mode (conj stylist-gallery :reorder-mode))
+(def stylist-gallery-currently-dragging-post (conj stylist-gallery :currently-dragging-post))
 
 (def billing-address [:billing-address])
 
