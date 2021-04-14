@@ -63,6 +63,42 @@
                       "+"]
                      [:div.center.shout.title-3.proxima "Add Photo"]])])
 
+(def timer-state (atom 0))
+(def timer-id (atom nil))
+
+#?(:cljs (defn timer []
+           (prn "timing")
+           (if (< @timer-state 50)
+             (do (reset! timer-id (.requestAnimationFrame js/window timer))
+                 (swap! timer-state inc))
+             (messages/handle-message events/stylist-gallery-reorder-mode-entered))))
+
+#?(:cljs (defn tap-press [e]
+           (prn "pressing")
+           (reset! timer-state 0)
+           (.requestAnimationFrame js/window timer)))
+
+#?(:cljs (defn tap-release [e]
+           (prn "releasing")
+           (.cancelAnimationFrame js/window @timer-id)
+           (reset! timer-state 0)))
+
+#?(:cljs (defn reorder-mode-handlers []
+           {:on-click (fn [e] (messages/handle-message events/stylist-gallery-reorder-mode-exited))
+            :style    {:touch-action "none"}}))
+
+#?(:cljs (defn view-mode-handlers [photo-id]
+           (merge (utils/route-to events/navigate-gallery-photo {:photo-id photo-id})
+                  {:style           {:touch-action "pan-y"}
+                   :on-mouse-down   tap-press
+                   :on-mouse-up     tap-release
+                   :on-mouse-leave  tap-release
+                   :on-touch-start  tap-press
+                   :on-touch-end    tap-release
+                   :on-context-menu (fn [e]
+                                      (.preventDefault e)
+                                      (.stopPropagation e))})))
+
 (defdynamic-component reorderable-component
   (constructor [this props]
                (component/create-ref! this "gallery")
@@ -82,15 +118,17 @@
                                                                     #js {:element  (component/get-ref this "gallery")
                                                                          :priority 1
                                                                          :axis     js/Muuri.AutoScroller.AXIS_X}]}
+                             :dragCssProps       #js {:touch-action "pan-y"
+                                                      :user-select  "none"}
                              :dragStartPredicate (fn [item event]
                                                    (when (and (-> item
                                                                   .getGrid
                                                                   .getItems
                                                                   (.indexOf item)
                                                                   (not= 0))
-                                                              (-> event
-                                                                  .-deltaTime
-                                                                  (> 500)))
+                                                              (-> this
+                                                                  component/get-props
+                                                                  :reorder-mode))
                                                      true))
                              :dragSortPredicate  (fn [item]
                                                    (some-> js/Muuri
@@ -106,32 +144,40 @@
                                                  (messages/handle-message events/control-stylist-gallery-reordered-v2)))))))
   ;; TODO:: Fix errors to push gallery down
   (render [this]
-          (let [{:keys [posts images]}  (component/get-props this)]
+          (spice.core/spy this)
+          (let [{:keys [posts images reorder-mode]} (component/get-props this)]
             (component/html [:div
                              [:div.fixed
                               {:ref (component/use-ref this "gallery-container")}]
                              (into [:div
-                                   {:ref (component/use-ref this "gallery")}
+                                    {:ref (component/use-ref this "gallery")}
                                    add-reorderable-photo-square]
-                                  (for [{:keys [image-ordering]} posts
-                                        :let                     [{:keys [status resizable-url id post-id]} (->> images
-                                                                                                                 (filter #(= (:id %) (first image-ordering)))
-                                                                                                                 first)]]
-                                    [:div.col-4.board-item.absolute
-                                     (merge (update (utils/route-to events/navigate-gallery-photo {:photo-id id})
-                                                    :on-click (fn [routing-fn] (fn [e]
-                                                                                 (when (-> e .-target (.closest ".muuri-item-releasing") not)
-                                                                                   (routing-fn e)))))
-                                            {:key          resizable-url
-                                             :data-post-id post-id})
-                                     (ui/aspect-ratio 1 1
-                                                      (if (= "approved" status)
-                                                        (ui/img {:class    "container-size"
-                                                                 :style    {:object-position "50% 25%"
-                                                                            :object-fit      "cover"}
-                                                                 :src      resizable-url
-                                                                 :max-size 749})
-                                                        pending-approval))]))]))))
+                                   #?(:cljs (for [{:keys [image-ordering]} posts
+                                                  :let                     [{:keys [status resizable-url id post-id]} (->> images
+                                                                                                                           (filter #(= (:id %) (first image-ordering)))
+                                                                                                                           first)]]
+                                              [:div.col-4.board-item.absolute
+                                               (merge {:key          resizable-url
+                                                       :data-post-id post-id}
+                                                      (if reorder-mode
+                                                        (reorder-mode-handlers)
+                                                        (view-mode-handlers id)))
+                                               (ui/aspect-ratio 1 1
+                                                                (if (= "approved" status)
+                                                                  (ui/img {:class    "container-size"
+                                                                           :style    {:object-position "50% 25%"
+                                                                                      :object-fit      "cover"}
+                                                                           :src      resizable-url
+                                                                           :max-size 749})
+                                                                  pending-approval))])))]))))
+
+(defmethod transitions/transition-state events/stylist-gallery-reorder-mode-entered
+  [_ _ args app-state]
+  (assoc-in app-state keypaths/stylist-gallery-reorder-mode true))
+
+(defmethod transitions/transition-state events/stylist-gallery-reorder-mode-exited
+  [_ _ args app-state]
+  (assoc-in app-state keypaths/stylist-gallery-reorder-mode false))
 
 (defcomponent reorderable-wrapper
   [data _ _]
@@ -162,8 +208,9 @@
   {:gallery (get-in state keypaths/user-stylist-gallery-images)})
 
 (defn query-v2 [state]
-  {:images        (get-in state keypaths/user-stylist-gallery-images)
-   :posts         (get-in state keypaths/user-stylist-gallery-posts)})
+  {:images       (get-in state keypaths/user-stylist-gallery-images)
+   :posts        (get-in state keypaths/user-stylist-gallery-posts)
+   :reorder-mode (get-in state keypaths/stylist-gallery-reorder-mode)})
 
 (defn ^:export built-component [data opts]
   (if (experiments/edit-gallery? data)
@@ -179,6 +226,7 @@
                :user-token (get-in app-state keypaths/user-token)})
              (effects/redirect events/navigate-store-gallery))))
 
+;; TODO: init long touch and reorder states
 (defmethod transitions/transition-state events/api-success-stylist-gallery
   [_ event {:keys [images posts]} app-state]
   (-> app-state

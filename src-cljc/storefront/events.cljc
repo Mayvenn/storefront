@@ -696,3 +696,5 @@
 ;; Stylist Gallery
 (defpath control-stylist-gallery-reordered-v2)
 (defpath control-stylist-gallery-delete-v2)
+(defpath stylist-gallery-reorder-mode-entered)
+(defpath stylist-gallery-reorder-mode-exited)

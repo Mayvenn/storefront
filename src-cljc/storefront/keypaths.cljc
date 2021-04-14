@@ -229,6 +229,9 @@
 (def flash-later-failure (conj flash-later :failure))
 (def flash-later-failure-message (conj flash-later-failure :message))
 
+(def stylist-gallery (conj ui :gallery))
+(def stylist-gallery-reorder-mode (conj stylist-gallery :reorder-mode))
+
 (def billing-address [:billing-address])
 
 (def shipping-address [:shipping-address])
