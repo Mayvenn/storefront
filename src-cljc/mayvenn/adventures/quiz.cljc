@@ -19,14 +19,15 @@
              :rename {handle-message publish}]
             [storefront.transitions :as t]
             [storefront.components.money-formatters :as mf]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [storefront.accessors.orders :as orders]))
 
 ;; state
 
 (def questions
   [{:quiz/question-id     :texture
     :quiz/question-prompt ["Let's talk about texture."
-                           "Do you want your final look to be:"]
+                           "What do you want your final look to be?"]
     :quiz/choices
     [{:quiz/choice-id     :straight
       :quiz/choice-answer "Straight"
@@ -37,8 +38,7 @@
      {:quiz/choice-id     :unsure
       :quiz/choice-answer "I'm not sure yet" }]}
    {:quiz/question-id     :length
-    :quiz/question-prompt ["What about length?"
-                           "Do you want your final look to be:"]
+    :quiz/question-prompt ["What about length?"]
     :quiz/choices
     [{:quiz/choice-id     :short
       :quiz/choice-answer "Short 10\" to 14\""}
