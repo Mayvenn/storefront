@@ -84,7 +84,6 @@
 	  border-image-slice: 25%;
     border-image-width: 25px;
     border-image-source: svg-load(var(--white-frame-svg));
-    stroke-color: #fff;
 }
 
 .capped { border-radius: 1000px; }
