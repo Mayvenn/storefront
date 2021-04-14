@@ -518,7 +518,7 @@
         secondary]]))))
 
 (c/defcomponent quiz-question-choice-button-molecule
-  [{:quiz.question.choice.button/keys [primary icon-url target selected?]} _ {:keys [id]}]
+  [{:quiz.question.choice.button/keys [id primary icon-url target selected?]} _ _]
   [:div
    {:key id}
    ;; TODO(corey) rationale for if
@@ -528,7 +528,8 @@
     (merge
      {:class "my2"}
      (when target
-       {:on-click (apply utils/send-event-callback target)}))
+       {:data-test-id id
+        :on-click     (apply utils/send-event-callback target)}))
     [:div.flex.items-center.py2
      {:style {:height "0px"}}
      (when icon-url
@@ -585,7 +586,7 @@
 (defn quiz-see-results<
   [progression]
   (when (>= (count progression) (dec (count questions)))
-    {:quiz.see-results.button/id        "quiz.see-results"
+    {:quiz.see-results.button/id        "quiz-see-results"
      :quiz.see-results.button/disabled? (not= (count questions)
                                               (count progression))
      :quiz.see-results.button/target    [e/flow|quiz|submitted {:quiz/id :quiz/shopping}]
@@ -610,6 +611,7 @@
         #:quiz.question.choice.button
         {:icon-url  img-url
          :primary   choice-answer
+         :id        (str (name question-id) "-" (name choice-id))
          :target    [e/flow|quiz|answered
                      {:quiz/id           :quiz/shopping
                       :quiz/question-idx question-idx
