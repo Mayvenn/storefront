@@ -63,25 +63,25 @@
                       "+"]
                      [:div.center.shout.title-3.proxima "Add Photo"]])])
 
-(def timer-state (atom 0))
-(def timer-id (atom nil))
+(def timer-completion-timestamp (atom nil))
+(def timer-delay 1000)
 
-#?(:cljs (defn timer []
-           (prn "timing")
-           (if (< @timer-state 50)
-             (do (reset! timer-id (.requestAnimationFrame js/window timer))
-                 (swap! timer-state inc))
-             (messages/handle-message events/stylist-gallery-reorder-mode-entered))))
+#?(:cljs (defn maybe-complete-timer []
+           (when (and @timer-completion-timestamp
+                      (< (+ (.getTime @timer-completion-timestamp) timer-delay)
+                         (.getTime (js/Date.))))
+             (messages/handle-message events/stylist-gallery-reorder-mode-entered)
+             (reset! timer-completion-timestamp nil))))
 
 #?(:cljs (defn tap-press [e]
-           (prn "pressing")
-           (reset! timer-state 0)
-           (.requestAnimationFrame js/window timer)))
+           (let [expiration (js/Date.)]
+             ;; WARNING: date function calls mutate
+             (.setSeconds expiration (.getSeconds expiration))
+             (reset! timer-completion-timestamp expiration)
+             (js/setTimeout maybe-complete-timer timer-delay))))
 
 #?(:cljs (defn tap-release [e]
-           (prn "releasing")
-           (.cancelAnimationFrame js/window @timer-id)
-           (reset! timer-state 0)))
+           (reset! timer-completion-timestamp nil)))
 
 #?(:cljs (defn reorder-mode-handlers []
            {:on-click (fn [e] (messages/handle-message events/stylist-gallery-reorder-mode-exited))
@@ -118,8 +118,7 @@
                                                                     #js {:element  (component/get-ref this "gallery")
                                                                          :priority 1
                                                                          :axis     js/Muuri.AutoScroller.AXIS_X}]}
-                             :dragCssProps       #js {:touch-action "pan-y"
-                                                      :user-select  "none"}
+                             :dragCssProps       #js {:touch-action "pan-y"}
                              :dragStartPredicate (fn [item event]
                                                    (when (and (-> item
                                                                   .getGrid
@@ -144,7 +143,6 @@
                                                  (messages/handle-message events/control-stylist-gallery-reordered-v2)))))))
   ;; TODO:: Fix errors to push gallery down
   (render [this]
-          (spice.core/spy this)
           (let [{:keys [posts images reorder-mode]} (component/get-props this)]
             (component/html [:div
                              [:div.fixed
