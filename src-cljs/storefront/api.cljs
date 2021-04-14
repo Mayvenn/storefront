@@ -881,11 +881,11 @@
    POST
    "/v2/add-to-bag"
    (conj request-keys/add-to-bag (:catalog/sku-id sku))
-   {:params (merge (select-keys params [:quantity :stylist-id :user-id :user-token])
-                   {:session-id session-id
-                    :sku (:catalog/sku-id sku)}
-                   (when heat-feature-flags {:heat-feature-flags heat-feature-flags})
-                   (when (and token number) {:token token :number number}))
+   {:params  (merge (select-keys params [:quantity :stylist-id :user-id :user-token])
+                    {:session-id session-id
+                     :sku        (:catalog/sku-id sku)}
+                    (when heat-feature-flags {:heat-feature-flags heat-feature-flags})
+                    (when (and token number) {:token token :number number}))
     :handler (comp handler orders/TEMP-pretend-service-items-do-not-exist)}))
 
 (defn add-skus-to-bag [session-id {:keys [token number sku-id->quantity heat-feature-flags] :as params} handler]
@@ -898,6 +898,22 @@
                      :sku-id->quantity sku-id->quantity}
                     (when heat-feature-flags {:heat-feature-flags heat-feature-flags})
                     (when (and token number) {:token token :number number}))
+    :handler (fn [order]
+               (handler {:order            (orders/TEMP-pretend-service-items-do-not-exist order)
+                         :sku-id->quantity sku-id->quantity}))}))
+
+(defn new-order-from-sku-ids
+  [session-id {:keys [sku-id->quantity heat-feature-flags store-stylist-id servicing-stylist-id] :as params} handler]
+  (storeback-api-req
+   POST
+   "/v2/bulk-add-to-bag"
+   (conj request-keys/add-to-bag (set (keys sku-id->quantity)))
+   {:params  (merge
+              {:stylist-id           store-stylist-id
+               :servicing-stylist-id servicing-stylist-id
+               :session-id           session-id
+               :sku-id->quantity     sku-id->quantity}
+              (when heat-feature-flags {:heat-feature-flags heat-feature-flags}))
     :handler (fn [order]
                (handler {:order            (orders/TEMP-pretend-service-items-do-not-exist order)
                          :sku-id->quantity sku-id->quantity}))}))

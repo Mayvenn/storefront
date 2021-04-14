@@ -22,7 +22,8 @@
              :as messages
              :refer [handle-message]
              :rename {handle-message publish}]
-            [storefront.transitions :as t]))
+            [storefront.transitions :as t]
+            [api.orders :as api.orders]))
 
 ;; state
 
@@ -781,6 +782,22 @@
                                          (mapv (fn [sku-id]
                                                  (-> (get mini-cellar sku-id)
                                                      (select-keys [:legacy/variant-id :catalog/sku-id]))))))))}))))
+
+#?(:cljs
+   (defmethod fx/perform-effects e/flow|quiz|results|option-selected
+     [_ _ {product-sku-ids :product/sku-ids
+           service-sku-id  :service/sku-id} _ state]
+     (let [{servicing-stylist-id :services/stylist-id} (api.orders/services state (get-in state k/order))]
+       (api/new-order-from-sku-ids (get-in state k/session-id)
+                                   {:store-stylist-id     (get-in state k/store-stylist-id)
+                                    :servicing-stylist-id servicing-stylist-id
+                                    :sku-id->quantity     (->> (conj product-sku-ids service-sku-id)
+                                                               (map (fn [s] [s 1]))
+                                                               (into {}))}
+                                   ;; TODO: more specific handler
+                                   #(messages/handle-message e/api-success-update-order
+                                                             {:order    (:order %)
+                                                              :navigate e/navigate-cart})))))
 
 (defmethod t/transition-state e/flow|wait|begun
   [_ _ {wait-id :wait/id} state]
