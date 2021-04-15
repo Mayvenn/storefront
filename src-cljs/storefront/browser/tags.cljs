@@ -1,6 +1,6 @@
 (ns storefront.browser.tags
   (:require [goog.dom.classlist :as classlist]
-            [storefront.browser.events :as events]
+            [goog.dom.dataset :as dataset]
             [clojure.string :as string]))
 
 (defn- insert-before-selector [selector tag]
@@ -35,6 +35,13 @@
   (insert-body-bottom (text-tag text class)))
 
 (defn insert-tag-with-callback [tag callback]
+  (set! (.-onload tag) callback)
+  (insert-body-bottom tag))
+
+(defn insert-tag-with-dataset-and-callback
+  [tag dataset callback]
+  (dataset/set tag )
+  (set! (.-onload tag) dataset)
   (set! (.-onload tag) callback)
   (insert-body-bottom tag))
 

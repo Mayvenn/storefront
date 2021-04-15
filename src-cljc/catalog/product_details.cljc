@@ -7,6 +7,7 @@
                        [storefront.hooks.seo :as seo]
                        [storefront.browser.scroll :as scroll]
                        [storefront.history :as history]
+                       [storefront.hooks.kustomer :as kustomer]
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.trackings :as trackings]])
@@ -22,6 +23,7 @@
             [catalog.ui.add-to-cart :as add-to-cart]
             [catalog.ui.browse-stylists-banner :as browse-stylists-banner]
             [catalog.ui.how-it-works :as how-it-works]
+            [catalog.ui.live-help :as live-help]
             [catalog.ui.molecules :as catalog.M]
             [checkout.cart.swap :as swap]
             [homepage.ui.faq :as faq]
@@ -45,7 +47,8 @@
             [storefront.platform.reviews :as review-component]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
-            storefront.ugc))
+            storefront.ugc
+            [storefront.accessors.experiments :as experiments]))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
@@ -143,7 +146,7 @@
    (catalog.M/yotpo-reviews-summary data)])
 
 (defcomponent component
-  [{:keys [carousel-images
+  [{:keys             [carousel-images
            product
            reviews
            selected-sku
@@ -151,7 +154,8 @@
            picker-data
            ugc
            faq-section
-           add-to-cart] :as data} owner opts]
+           add-to-cart
+           live-help] :as data} owner opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (if-not product
@@ -196,7 +200,10 @@
              (when how-it-works
                [:div.container.mx-auto.mt4.px4
                 (component/build how-it-works/organism {:how-it-works how-it-works})])
-             [:div.m3 (component/build browse-stylists-banner/organism data opts)]
+             [:div.m3
+              (component/build browse-stylists-banner/organism data opts)]
+             (component/build live-help/organism
+                              live-help)
              [:div.mxn2.mb3 (component/build ugc/component ugc opts)]]]))]]
        (when (seq reviews)
          [:div.container.col-7-on-tb-dt.px2
@@ -204,6 +211,7 @@
        (when faq-section
          [:div.container
           (component/build faq/organism faq-section opts)])])))
+
 
 (defn min-of-maps
   ([k] {})
@@ -440,13 +448,26 @@
                                  :class       "bg-pale-purple"
                                  :id          "browse-stylists-banner-cta"}))))
 
+(defn live-help<
+  [live-help?]
+  (when live-help?
+    {:title/icon      nil
+     :title/primary   "How can we help?"
+     :title/secondary "Text now to get live help with an expert about your dream look"
+     :title/target    [events/flow|live-help|opened]
+     :action/id       ""
+     :action/label    "Chat with us"
+     :action/target   [events/flow|live-help|opened]}))
+
 (defn ^:export built-component
   [state opts]
-  (let [selected-sku (get-in state catalog.keypaths/detailed-product-selected-sku)]
+  (let [selected-sku (get-in state catalog.keypaths/detailed-product-selected-sku)
+        live-help?   (experiments/live-help? state)]
     (component/build component
                      (merge (query state selected-sku)
                             {:add-to-cart (add-to-cart-query state
-                                                             selected-sku)})
+                                                             selected-sku)
+                             :live-help   (live-help< live-help?)})
                      opts)))
 
 
@@ -635,8 +656,11 @@
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
-     [_ event args _ _]
-     (messages/handle-message events/initialize-product-details (assoc args :origin-nav-event event))))
+     [_ event args _ state]
+     (when (experiments/live-help? state)
+       (kustomer/init storefront.core/current-order))
+     (messages/handle-message events/initialize-product-details
+                              (assoc args :origin-nav-event event))))
 
 #?(:cljs
    (defmethod trackings/perform-track events/navigate-product-details
@@ -737,4 +761,7 @@
   [_ event {:keys [quantity sku]} app-state] ;; TODO: why does this have a quantity always set as 1?
   (assoc-in app-state keypaths/browse-sku-quantity 1))
 
-
+(defmethod effects/perform-effects events/flow|live-help|opened
+  [_ _ _ _ state]
+  #?(:cljs
+     (kustomer/open-conversation)))

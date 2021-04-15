@@ -1,6 +1,5 @@
 (ns storefront.accessors.experiments
-  (:require [storefront.keypaths :as keypaths]
-            [storefront.accessors.sites :as sites]))
+  (:require [storefront.keypaths :as keypaths]))
 
 #_(defn bucketing-example
     [data]
@@ -117,3 +116,7 @@
 (defn shopping-quiz?
   [data]
   (display-feature? data "shopping-quiz"))
+
+(defn live-help?
+  [data]
+  (display-feature? data "live-help"))
