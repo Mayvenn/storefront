@@ -4,10 +4,10 @@
                 [[storefront.api :as api]
                  [storefront.browser.scroll :as scroll]
                  [storefront.hooks.stringer :as stringer]
+                 storefront.frontend-trackings
                  [storefront.trackings :as trackings]])
             api.orders
             [clojure.string :as string]
-
             [storefront.assets :as assets]
             [storefront.component :as c]
             [storefront.components.header :as header]
@@ -22,6 +22,7 @@
              :as messages
              :refer [handle-message]
              :rename {handle-message publish}]
+            [storefront.request-keys :as request-keys]
             [storefront.transitions :as t]
             [api.orders :as api.orders]))
 
@@ -528,8 +529,8 @@
     (merge
      {:class "my2"}
      (when target
-       {:data-test-id id
-        :on-click     (apply utils/send-event-callback target)}))
+       {:data-test id
+        :on-click  (apply utils/send-event-callback target)}))
     [:div.flex.items-center.py2
      {:style {:height "0px"}}
      (when icon-url
@@ -560,7 +561,7 @@
                :disabled? disabled?})
        label)])])
 
-(def spinner-template
+(def wait-template
   (c/html
    [:div.max-580.bg-pale-purple.absolute.overlay
     [:div.absolute.overlay.border.border-white.border-framed-white.m4.p5.flex.flex-column.items-center.justify-center
@@ -630,7 +631,7 @@
 
 (c/defcomponent quiz-results-organism
   [{:quiz.result/keys [id index-label ucare-id primary secondary tertiary tertiary-note cta-label cta-target]} _ _]
-  [:div.left-align.px3
+  [:div.left-align.px3.mt5
    [:div.shout.proxima.title-3.mb1 index-label]
    [:div.bg-white
     [:div.flex.p3
@@ -658,7 +659,7 @@
    [:div.max-580.col-12.bg-white
     (c/build header/mobile-nav-header-component header)]
 
-   [:div.center.pyj2
+   [:div.center.ptj2
     [:div.flex.flex-column.px2
      [:div.shout.proxima.title-2 (:quiz.results/primary quiz-results)]
      [:div.m3.canela.title-1 (:quiz.results/secondary quiz-results)]]
@@ -713,20 +714,28 @@
 (defn ^:export page
   [state]
   (let [{:order.items/keys [quantity]} (api.orders/current state)
-
-        quiz-id      :quiz/shopping
-        progression  (get-in state (conj k/models-progressions quiz-id))
-        quiz-answers (get-in state (conj k/models-quizzes quiz-id))
-        quiz-results (get-in state (conj k/models-quizzes-results quiz-id))]
+        quiz-id                        :quiz/shopping
+        progression                    (get-in state (conj k/models-progressions quiz-id))
+        quiz-answers                   (get-in state (conj k/models-quizzes quiz-id))
+        quiz-results                   (get-in state (conj k/models-quizzes-results quiz-id))
+        header-data                    {:forced-mobile-layout? true
+                                        :quantity              (or quantity 0)}]
     (cond
-      (get-in state (conj k/models-wait quiz-id)) spinner-template
+      (utils/requesting-from-endpoint? state request-keys/new-order-from-sku-ids)
+
+      (c/html
+       [:div.flex.items-center.justify-between.col-12
+        [:div.mx-auto
+         (ui/large-spinner {:style {:height "80px"
+                                    :width  "80px"}})]])
+
+      (or (get-in state (conj k/models-wait quiz-id))
+          (utils/requesting-from-endpoint? state request-keys/get-products)) wait-template
 
       (seq quiz-results) (->> {:quiz-results (quiz-results< quiz-answers quiz-results)
-                               :header       {:forced-mobile-layout? true
-                                              :quantity              (or quantity 0)}}
+                               :header       header-data}
                               (c/build results-template))
-      :else              (->> {:header           {:forced-mobile-layout? true
-                                                  :quantity              (or quantity 0)}
+      :else              (->> {:header           header-data
                                :progress         (progress< progression)
                                :quiz-questions   (quiz-questions< quiz-answers progression)
                                :quiz-see-results (quiz-see-results< progression)}
@@ -760,6 +769,13 @@
   (-> state
       (assoc-in (conj k/models-quizzes-results id)
                 results)))
+(defmethod fx/perform-effects e/flow|quiz|results|resulted
+  [_ _ {:quiz/keys [id results]} _ state]
+  (publish e/ensure-sku-ids
+           {:sku-ids (set
+                      (concat
+                       (mapcat :product/sku-ids results)
+                       (map :service/sku-id results)))}))
 
 #?(:cljs
    (defmethod trackings/perform-track e/flow|quiz|results|resulted
@@ -797,9 +813,18 @@
                                                                (map (fn [s] [s 1]))
                                                                (into {}))}
                                    ;; TODO: more specific handler
-                                   #(messages/handle-message e/api-success-update-order
-                                                             {:order    (:order %)
-                                                              :navigate e/navigate-cart})))))
+                                   (fn [{:keys [order]}]
+                                     (messages/handle-message
+                                      e/api-success-update-order
+                                      {:order    order
+                                       :navigate e/navigate-cart})
+                                     (storefront.frontend-trackings/track-cart-initialization
+                                      "shopping-quiz"
+                                      nil
+                                      {:skus-db          (get-in state k/v2-skus)
+                                       :image-catalog    (get-in state k/v2-images)
+                                       :store-experience (get-in state k/store-experience)
+                                       :order            order}))))))
 
 (defmethod t/transition-state e/flow|wait|begun
   [_ _ {wait-id :wait/id} state]

@@ -907,7 +907,7 @@
   (storeback-api-req
    POST
    "/v2/bulk-add-to-bag"
-   (conj request-keys/add-to-bag (set (keys sku-id->quantity)))
+   request-keys/new-order-from-sku-ids
    {:params  (merge
               {:stylist-id           store-stylist-id
                :servicing-stylist-id servicing-stylist-id

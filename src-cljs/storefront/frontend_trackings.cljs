@@ -206,6 +206,28 @@
                            :total_quantity        (->> line-item-skuers (map :item/quantity) (reduce + 0))
                            :store_id              (get-in app-state keypaths/store-stylist-id)})))
 
+(defn track-cart-initialization
+  [initialized-by initialized-id {:keys [skus-db images-catalog store-experience order]}]
+  (let [line-item-skuers   (waiter-line-items->line-item-skuer skus-db (orders/product-and-service-items order))
+        line-item-quantity (->> line-item-skuers (map :item/quantity) (reduce + 0))
+        cart-items         (mapv (partial line-item-skuer->stringer-cart-item images-catalog) line-item-skuers)]
+    (facebook-analytics/track-event "AddToCart" {:content_type "product"
+                                                 :content_ids  (map :catalog/sku-id line-item-skuers)
+                                                 :num_items    line-item-quantity})
+    (google-tag-manager/track-add-to-cart {:number           (:number order)
+                                           :line-item-skuers line-item-skuers})
+    (stringer/track-event "cart_initialized"
+                          (merge {:store_experience store-experience
+                                  :order_number     (:number order)
+                                  :order_total      (:total order)
+                                  :order_quantity   line-item-quantity
+                                  :skus             (->> line-item-skuers (map :catalog/sku-id) (string/join ","))
+                                  :variant_ids      (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
+                                  :context          {:cart-items cart-items}
+                                  :initialized_by   {:type initialized-by ;; shopping-quiz-result, look, shared-cart
+                                                     :id   initialized-id}}))))
+
+;; NOTE: deprecated, use `track-cart-initialization` instead
 (defn track-bulk-add-to-cart
   [{:keys [skus-db images-catalog store-experience order shared-cart-id look-id]}]
   (let [line-item-skuers       (waiter-line-items->line-item-skuer

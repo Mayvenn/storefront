@@ -70,3 +70,4 @@
 (def fetch-matched-stylist [:fetch-matched-stylist])
 (def fetch-matched-stylists [:fetch-matched-stylists])
 (def fetch-stylist-reviews [:fetch-matched-stylist])
+(def new-order-from-sku-ids [:new-order-from-sku-ids])
