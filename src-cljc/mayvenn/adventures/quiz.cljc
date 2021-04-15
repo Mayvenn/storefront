@@ -631,7 +631,7 @@
 
 (c/defcomponent quiz-results-organism
   [{:quiz.result/keys [id index-label ucare-id primary secondary tertiary tertiary-note cta-label cta-target]} _ _]
-  [:div.left-align.px3.mt5
+  [:div.left-align.px3.mt5.mb3
    [:div.shout.proxima.title-3.mb1 index-label]
    [:div.bg-white
     [:div.flex.p3
@@ -660,16 +660,18 @@
     (c/build header/mobile-nav-header-component header)]
 
    [:div.center.ptj2
+    {:style {:padding-bottom "160px"}} ;; Footer height...
     [:div.flex.flex-column.px2
      [:div.shout.proxima.title-2 (:quiz.results/primary quiz-results)]
      [:div.m3.canela.title-1 (:quiz.results/secondary quiz-results)]]
     (c/elements quiz-results-organism quiz-results :quiz.results/options)]
-   green-divider-atom
-   (let [{:quiz.alternative/keys [primary cta-label cta-target id]} quiz-results]
-     [:div.bg-white.py5.flex.flex-column.center.items-center
-      primary
-      (ui/button-small-secondary (merge {:data-test id :class "mt2 mx-auto"}
-                                        (apply utils/route-to cta-target)) cta-label)])])
+   [:div.absolute.bottom-0.left-0.right-0
+    green-divider-atom
+    (let [{:quiz.alternative/keys [primary cta-label cta-target id]} quiz-results]
+      [:div.bg-white.py5.flex.flex-column.center.items-center
+       primary
+       (ui/button-small-secondary (merge {:data-test id :class "mt2 mx-auto"}
+                                         (apply utils/route-to cta-target)) cta-label)])]])
 
 
 
