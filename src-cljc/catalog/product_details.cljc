@@ -202,8 +202,7 @@
                 (component/build how-it-works/organism {:how-it-works how-it-works})])
              [:div.m3
               (component/build browse-stylists-banner/organism data opts)]
-             (component/build live-help/organism
-                              live-help)
+             (component/build live-help/organism live-help)
              [:div.mxn2.mb3 (component/build ugc/component ugc opts)]]]))]]
        (when (seq reviews)
          [:div.container.col-7-on-tb-dt.px2

@@ -13,6 +13,7 @@
             api.orders
             api.products
             api.stylist
+            [catalog.ui.live-help :as live-help]
             [clojure.string :refer [join]]
             spice.core
             [storefront.accessors.experiments :as experiments]
@@ -120,17 +121,18 @@
 (def ^:private clear-float-atom [:div.clearfix])
 
 (c/defcomponent template
-  [{:keys [carousel
+  [{:keys [adv-header
+           card
+           carousel
+           experience
            footer
            google-maps
-           adv-header
+           live-help
            mayvenn-header
            ratings-bar-chart
-           stylist-reviews
-           experience
            specialties-discountable
            sticky-select-stylist
-           card]} _ _]
+           stylist-reviews]} _ _]
   [:div.bg-white.col-12.mb6.stretch {:style {:margin-bottom "-1px"}}
    [:main
     (when mayvenn-header
@@ -144,6 +146,7 @@
      (c/build experience/organism experience)
      (c/build specialties-shopping/organism specialties-discountable)]
     clear-float-atom
+    (c/build live-help/organism live-help)
     (c/build ratings-bar-chart/organism ratings-bar-chart)
     (c/build stylist-reviews/organism stylist-reviews)]
    (c/build footer/organism footer)
@@ -309,6 +312,17 @@
          :specialties-shopping/specialties
          (map service-sku-query offered-services)}))))
 
+(defn live-help<
+  [live-help?]
+  (when live-help?
+    {:title/icon      nil
+     :title/primary   "How can we help?"
+     :title/secondary "Text now to get live help with an expert about your dream look"
+     :title/target    [e/flow|live-help|opened]
+     :action/id       ""
+     :action/label    "Chat with us"
+     :action/target   [e/flow|live-help|opened]}))
+
 ;; TODO(corey) Stylist not found template? currently redirects to find-your-stylist
 (defn ^:export page
   [state _]
@@ -326,6 +340,7 @@
         from-cart-or-direct-load? (or (= (first (:navigation-message (first undo-history))) e/navigate-cart)
                                       (nil? (first undo-history)))
 
+        live-help?                         (experiments/live-help? state)
         hide-star-distribution?            (experiments/hide-star-distribution? state)
         newly-added-stylist-ui-experiment? (and (experiments/stylist-results-test? state)
                                                 (or (experiments/just-added-only? state)
@@ -348,6 +363,7 @@
                                                          hide-star-distribution?
                                                          newly-added-stylist-ui-experiment?
                                                          detailed-stylist)
+                       :live-help                (live-help< live-help?)
                        :ratings-bar-chart        (ratings-bar-chart<- hide-star-distribution?
                                                                       detailed-stylist)
                        :experience               (experience<- detailed-stylist)
