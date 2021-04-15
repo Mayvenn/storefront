@@ -113,13 +113,12 @@
                              :dragEnabled        true
                              :dragSort           true
                              :layout             #js {:fillGaps true}
-                             :dragContainer      (component/get-ref this "gallery")
+                             :dragContainer      (component/get-ref this "gallery-container")
                              :dragAutoScroll     #js {:targets #js [#js {:element  js/window
                                                                          :priority 0}
                                                                     #js {:element  (component/get-ref this "gallery")
                                                                          :priority 1
                                                                          :axis     js/Muuri.AutoScroller.AXIS_X}]}
-                             :dragCssProps       #js {:touch-action "pan-y"}
                              :dragStartPredicate (fn [item event]
                                                    (when (and (-> item
                                                                   .getGrid
