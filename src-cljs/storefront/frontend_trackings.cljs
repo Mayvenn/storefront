@@ -224,8 +224,10 @@
                                   :skus             (->> line-item-skuers (map :catalog/sku-id) (string/join ","))
                                   :variant_ids      (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
                                   :context          {:cart-items cart-items}
-                                  :initialized_by   {:type initialized-by ;; shopping-quiz-result, look, shared-cart
-                                                     :id   initialized-id}}))))
+                                  :initialized_by   (merge
+                                                     {:type initialized-by} ;; shopping-quiz-result, shop-by-look, shared-cart
+                                                     (when initialized-id   ;; look-id, shared-cart-id
+                                                       {:id initialized-id}))}))))
 
 ;; NOTE: deprecated, use `track-cart-initialization` instead
 (defn track-bulk-add-to-cart
