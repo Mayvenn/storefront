@@ -13,8 +13,9 @@
             api.orders
             api.products
             api.stylist
-            [catalog.ui.live-help :as live-help]
             [clojure.string :refer [join]]
+            mayvenn.live-help.core
+            [mayvenn.visual.lib.call-out-box :as call-out-box]
             spice.core
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.sites :as sites]
@@ -146,7 +147,7 @@
      (c/build experience/organism experience)
      (c/build specialties-shopping/organism specialties-discountable)]
     clear-float-atom
-    (c/build live-help/organism live-help)
+    (c/build call-out-box/organism live-help)
     (c/build ratings-bar-chart/organism ratings-bar-chart)
     (c/build stylist-reviews/organism stylist-reviews)]
    (c/build footer/organism footer)

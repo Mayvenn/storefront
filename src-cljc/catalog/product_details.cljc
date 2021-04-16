@@ -7,7 +7,6 @@
                        [storefront.hooks.seo :as seo]
                        [storefront.browser.scroll :as scroll]
                        [storefront.history :as history]
-                       [storefront.hooks.kustomer :as kustomer]
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.trackings :as trackings]])
@@ -23,10 +22,11 @@
             [catalog.ui.add-to-cart :as add-to-cart]
             [catalog.ui.browse-stylists-banner :as browse-stylists-banner]
             [catalog.ui.how-it-works :as how-it-works]
-            [catalog.ui.live-help :as live-help]
             [catalog.ui.molecules :as catalog.M]
             [checkout.cart.swap :as swap]
             [homepage.ui.faq :as faq]
+            mayvenn.live-help.core
+            [mayvenn.visual.lib.call-out-box :as call-out-box]
             [spice.selector :as selector]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.images :as images]
@@ -202,7 +202,7 @@
                 (component/build how-it-works/organism {:how-it-works how-it-works})])
              [:div.m3
               (component/build browse-stylists-banner/organism data opts)]
-             (component/build live-help/organism live-help)
+             (component/build call-out-box/organism live-help)
              [:div.mxn2.mb3 (component/build ugc/component ugc opts)]]]))]]
        (when (seq reviews)
          [:div.container.col-7-on-tb-dt.px2

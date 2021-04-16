@@ -5,7 +5,7 @@
             [storefront.effects :as fx]
             [storefront.events :as e]))
 
-(defmethod fx/perform-effects e/flow|live-help|init
+(defmethod fx/perform-effects e/flow|live-help|reset
   [_ _ _ _ state]
   (when (experiments/live-help? state)
     #?(:cljs (kustomer/init))))

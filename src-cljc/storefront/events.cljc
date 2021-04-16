@@ -679,7 +679,6 @@
 (defpath flow|wait|begun)
 (defpath flow|wait|elapsed)
 
-(defpath flow|live-help|init)
 (defpath flow|live-help|reset)
 (defpath flow|live-help|opened)
 
