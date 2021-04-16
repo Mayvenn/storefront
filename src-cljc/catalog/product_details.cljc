@@ -5,7 +5,6 @@
                        [storefront.accessors.auth :as auth]
                        [storefront.api :as api]
                        [storefront.hooks.seo :as seo]
-                       storefront.core
                        [storefront.browser.scroll :as scroll]
                        [storefront.history :as history]
                        [storefront.hooks.kustomer :as kustomer]
@@ -657,6 +656,7 @@
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
      [_ event args _ state]
+     #_
      (when (experiments/live-help? state)
        (kustomer/init storefront.core/current-order))
      (messages/handle-message events/initialize-product-details
