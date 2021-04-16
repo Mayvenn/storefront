@@ -656,9 +656,7 @@
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
      [_ event args _ state]
-     #_
-     (when (experiments/live-help? state)
-       (kustomer/init storefront.core/current-order))
+     (messages/handle-message events/flow|live-help|reset)
      (messages/handle-message events/initialize-product-details
                               (assoc args :origin-nav-event event))))
 
@@ -760,8 +758,3 @@
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
   [_ event {:keys [quantity sku]} app-state] ;; TODO: why does this have a quantity always set as 1?
   (assoc-in app-state keypaths/browse-sku-quantity 1))
-
-(defmethod effects/perform-effects events/flow|live-help|opened
-  [_ _ _ _ state]
-  #?(:cljs
-     (kustomer/open-conversation)))

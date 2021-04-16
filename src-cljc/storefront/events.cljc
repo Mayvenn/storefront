@@ -679,6 +679,7 @@
 (defpath flow|wait|begun)
 (defpath flow|wait|elapsed)
 
+(defpath flow|live-help|reset)
 (defpath flow|live-help|opened)
 
 ;; NOTE(corey) Generally...
