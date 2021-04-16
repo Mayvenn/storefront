@@ -147,7 +147,7 @@
      (c/build experience/organism experience)
      (c/build specialties-shopping/organism specialties-discountable)]
     clear-float-atom
-    (c/build call-out-box/organism live-help)
+    (c/build call-out-box/variation-2 live-help)
     (c/build ratings-bar-chart/organism ratings-bar-chart)
     (c/build stylist-reviews/organism stylist-reviews)]
    (c/build footer/organism footer)

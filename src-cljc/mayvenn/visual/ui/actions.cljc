@@ -3,6 +3,7 @@
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]))
 
+;; TODO(corey) this only takes nav targets
 (defn action-molecule
   [{:keys [id label target]}]
   (c/html

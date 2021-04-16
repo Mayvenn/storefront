@@ -28,13 +28,26 @@
    (apply utils/route-to target)
    content])
 
-(c/defcomponent organism
-  [{:as data} _ _]
+;; Pale purple, Canela
+(c/defcomponent variation-1
+  [data _ _]
+  (when (seq data)
+    [:div.m3
+     [:div.col-12.bg-pale-purple.flex.flex-column.items-center.p5
+      (link-to-atom
+       (with :action data)
+       (titles/canela (with :title data)))
+      (actions/action-molecule (with :action data))]]))
+
+;; Warm Gray, Proxima
+(c/defcomponent variation-2
+  [data _ _]
   (when (seq data)
     [:div.m3
      [:div.col-12.bg-warm-gray.flex.flex-column.items-center.p5
-      {:class "bg-warm-gray"}
       (link-to-atom
        (with :action data)
-       (titles/title-molecule (with :title data)))
+       (titles/proxima (with :title data)))
       (actions/action-molecule (with :action data))]]))
+
+

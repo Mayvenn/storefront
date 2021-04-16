@@ -146,7 +146,7 @@
    (catalog.M/yotpo-reviews-summary data)])
 
 (defcomponent component
-  [{:keys             [carousel-images
+  [{:keys [carousel-images
            product
            reviews
            selected-sku
@@ -155,6 +155,7 @@
            ugc
            faq-section
            add-to-cart
+           browse-stylists-banner
            live-help] :as data} owner opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
@@ -200,9 +201,8 @@
              (when how-it-works
                [:div.container.mx-auto.mt4.px4
                 (component/build how-it-works/organism {:how-it-works how-it-works})])
-             [:div.m3
-              (component/build browse-stylists-banner/organism data opts)]
-             (component/build call-out-box/organism live-help)
+             (component/build call-out-box/variation-1 browse-stylists-banner)
+             (component/build call-out-box/variation-2 live-help)
              [:div.mxn2.mb3 (component/build ugc/component ugc opts)]]]))]]
        (when (seq reviews)
          [:div.container.col-7-on-tb-dt.px2
@@ -308,8 +308,8 @@
                                                       "stylist with qualifying purchases.* ")}))))
 
 (defn query [data selected-sku]
-  (let [selections                 (get-in data catalog.keypaths/detailed-product-selections)
-        product                    (products/current-product data)
+  (let [selections (get-in data catalog.keypaths/detailed-product-selections)
+        product    (products/current-product data)
 
         product-skus               (products/extract-product-skus data product)
         images-catalog             (get-in data keypaths/v2-images)
@@ -416,7 +416,7 @@
                                                               :content content}))
                                                          [["Maintenance Level" :copy/maintenance-level]
                                                           ["Can it be Dyed?" :copy/dyeable?]])}]})
-      (let [{:keys [copy/description
+       (let [{:keys [copy/description
                      copy/colors
                      copy/weights
                      copy/density
@@ -424,28 +424,28 @@
                      copy/whats-included
                      copy/summary
                      copy/duration]} product]
-        #:product-description {:duration             duration
-                               :summary              summary
-                               :description          description
-                               :materials            materials
-                               :colors               colors
-                               :density              density
-                               :whats-included       whats-included
-                               :weights              (when-not density
-                                                       weights)
-                               :learn-more-nav-event (when-not (contains? (:stylist-exclusives/family product) "kits")
-                                                       events/navigate-content-our-hair)}))
+         #:product-description {:duration             duration
+                                :summary              summary
+                                :description          description
+                                :materials            materials
+                                :colors               colors
+                                :density              density
+                                :whats-included       whats-included
+                                :weights              (when-not density
+                                                        weights)
+                                :learn-more-nav-event (when-not (contains? (:stylist-exclusives/family product) "kits")
+                                                        events/navigate-content-our-hair)}))
 
      (when (and shop?
                 (not (or
                       tape-in-or-seamless-clips?
                       wig?)))
-       #:browse-stylists-banner {:title       "Buy 3 items and we'll pay for your hair install"
-                                 :subtitle    "Choose any Mayvenn stylist in your area"
-                                 :button-copy "browse stylists"
-                                 :nav-event   [events/navigate-adventure-find-your-stylist]
-                                 :class       "bg-pale-purple"
-                                 :id          "browse-stylists-banner-cta"}))))
+       {:browse-stylists-banner {:title/primary   "Buy 3 items and we'll pay for your hair install"
+                                 :title/secondary "Choose any Mayvenn stylist in your area"
+                                 :action/label    "browse stylists"
+                                 :action/target   [events/navigate-adventure-find-your-stylist]
+                                 :class           "bg-pale-purple"
+                                 :action/id       "browse-stylists-banner-cta"}}))))
 
 (defn live-help<
   [live-help?]
