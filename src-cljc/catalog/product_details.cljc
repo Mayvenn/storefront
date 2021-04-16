@@ -5,6 +5,7 @@
                        [storefront.accessors.auth :as auth]
                        [storefront.api :as api]
                        [storefront.hooks.seo :as seo]
+                       storefront.core
                        [storefront.browser.scroll :as scroll]
                        [storefront.history :as history]
                        [storefront.hooks.kustomer :as kustomer]
