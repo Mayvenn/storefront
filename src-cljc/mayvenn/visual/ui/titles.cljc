@@ -20,7 +20,8 @@
 
 (defn proxima-left
   "Usages:
-  - stylist cards"
+  - stylist cards
+  - product summary on product details"
   [{:keys [id icon primary secondary]}]
   (c/html
    [:div.left-align
