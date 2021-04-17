@@ -1,17 +1,10 @@
 (ns mayvenn.visual.lib.call-out-box
   "Call out boxes"
   (:require [storefront.component :as c]
+            [mayvenn.visual.tools :refer [with]]
             [mayvenn.visual.ui.actions :as actions]
             [mayvenn.visual.ui.titles :as titles]
             [storefront.platform.component-utils :as utils]))
-
-(defn with
-  [key data]
-  (let [ks (filter #(= (name key) (namespace %))
-                   (keys data))]
-    (into {}
-          (map (fn [[k v]] [(-> k name keyword) v]))
-          (select-keys data ks))))
 
 ;; TODO(corey)
 ;; Another way to look at this is as
