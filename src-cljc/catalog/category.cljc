@@ -14,7 +14,6 @@
    [catalog.skuers :as skuers]
    [catalog.ui.category-hero :as category-hero]
    [catalog.ui.content-box :as content-box]
-   [catalog.ui.how-it-works :as how-it-works]
    [catalog.ui.product-card-listing :as product-card-listing]
    [homepage.ui.faq :as faq]
    [storefront.accessors.categories :as accessors.categories]
@@ -67,9 +66,6 @@
    (when content-box
      [:div green-divider-atom
       (c/build content-box/organism content-box)])
-   (when (:how-it-works queried-data)
-     [:div.col-10.col-7-on-tb-dt.mx-auto.mt6
-      (c/build how-it-works/organism queried-data)])
    (when faq-section
      (c/build faq/organism faq-section))])
 
@@ -116,7 +112,6 @@
                 {:title filter-title})
               {:category-hero          (category-hero-query current)
                :video                  (when-let [video (get-in app-state adventure.keypaths/adventure-home-video)] video)
-               :how-it-works           (when (:how-it-works/title-primary current) current)
                :content-box            (when (and shop? (:content-block/type current))
                                          {:title    (:content-block/title current)
                                           :header   (:content-block/header current)

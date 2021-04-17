@@ -7,7 +7,6 @@
             [catalog.ui.category-filters :as category-filters]
             [catalog.ui.content-box :as content-box]
             [catalog.ui.facet-filters :as facet-filters]
-            [catalog.ui.how-it-works :as how-it-works]
             [catalog.ui.product-card-listing :as product-card-listing]
             [homepage.ui.faq :as faq]
             [spice.maps :as maps]
@@ -205,9 +204,6 @@
     (when title [:div.canela.title-1.center.mb2 title])
     (component/build facet-filters/organism queried-data {:opts {:child-component product-list}})]
 
-   (when (:how-it-works queried-data)
-     [:div.col-10.col-7-on-tb-dt.mx-auto.mt6
-      (component/build how-it-works/organism queried-data)])
    (when content-box
      [:div green-divider-atom
       (component/build content-box/organism content-box)])
@@ -260,7 +256,6 @@
                                                    :list/sections      (for [{:keys [question answer]} question-answers]
                                                                          {:faq/title   (:text question)
                                                                           :faq/content answer})}))
-                       :how-it-works          (when (:how-it-works/title-primary interstitial-category) interstitial-category)
                        :product-card-listing  (product-card-listing/query state
                                                                           interstitial-category
                                                                           category-products-matching-criteria)}
