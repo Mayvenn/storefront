@@ -35,9 +35,34 @@
        secondary])]))
 
 (defn canela
-  [{:keys [icon primary secondary target]}]
+  "Usages:
+  - call out boxes"
+  [{:keys [id icon primary secondary]}]
   (c/html
    [:div.center
-    (svg/symbolic->html icon)
-    [:div.title-2.canela primary]
-    [:div.mt2.content-3 secondary]]))
+    (when icon
+      (svg/symbolic->html icon))
+    [:div.title-2.canela
+     (when id
+       {:data-test id})
+     primary]
+    (when secondary
+      [:div.mt2.content-3
+       secondary])]))
+
+(defn canela-left
+  "Usages:
+  - call out boxes"
+  [{:keys [id icon primary secondary]}]
+  (c/html
+   [:div.left-align
+    (when icon
+      (svg/symbolic->html icon))
+    [:div.title-2.canela
+     (when id
+       {:data-test id})
+     primary]
+    (when secondary
+      [:div.mt2.content-3
+       secondary])]))
+

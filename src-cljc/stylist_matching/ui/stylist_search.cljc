@@ -3,6 +3,8 @@
                        storefront.keypaths
                        adventure.keypaths
                        [storefront.hooks.stringer :as stringer]])
+            [mayvenn.visual.tools :refer [with]]
+            [mayvenn.visual.ui.titles :as titles]
             [stylist-matching.core :refer [stylist-matching<-]]
             [stylist-matching.keypaths :as k]
             [storefront.component :as c]
@@ -91,14 +93,6 @@
                                      (apply utils/fake-href target))
                               label))))
 
-(defn stylist-search-title-molecule
-  [{:stylist-search.title/keys [id primary secondary]}]
-  (when id
-    (c/html
-     [:div.left-align
-      [:div.title-2.canela.my2.light primary]
-      [:div.h5.my2.light secondary]])))
-
 (c/defdynamic-component organism
   (did-mount
    [_]
@@ -111,7 +105,7 @@
      (c/html
       [:div.m5
        [:div.mb4
-        (stylist-search-title-molecule data)]
+        (titles/canela-left (with :stylist-search.title data))]
        [:div.mb4
         (stylist-search-location-search-box data)]
        [:div
