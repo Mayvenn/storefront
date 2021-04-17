@@ -1,5 +1,7 @@
 (ns stylist-matching.ui.stylist-cards
-  (:require [storefront.component :as component :refer [defcomponent]]
+  (:require [mayvenn.visual.tools :refer [with]]
+            [mayvenn.visual.ui.titles :as titles]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.platform.carousel :as carousel]
@@ -24,14 +26,6 @@
       [:span.overflow-hidden.nowrap
        {:style {:text-overflow "ellipsis"}}
        value]])))
-
-(defn stylist-card-title-molecule
-  [{:stylist-card.title/keys [id primary]}]
-  (when id
-    (component/html
-     [:div.proxima.title-2.shout
-      {:data-test id}
-      primary])))
 
 (defn stylist-card-gallery-item-molecule
   [{:stylist-card.gallery-item/keys [id target ucare-id]}]
@@ -115,7 +109,7 @@
      [:div.flex.justify-center.items-center.col-3.ml4
       (stylist-card-thumbnail-molecule data)]
      [:div.col-9.medium.px3
-      (stylist-card-title-molecule data)
+      (titles/proxima-left (with :stylist-card.title data))
       [:div.flex.items-center
        (molecules/stars-rating-molecule data)
        (stylist-ratings-molecule data)

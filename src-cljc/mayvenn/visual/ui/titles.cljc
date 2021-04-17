@@ -3,12 +3,36 @@
             [storefront.components.svg :as svg]))
 
 (defn proxima
-  [{:keys [icon primary secondary target]}]
+  "Usages:
+  - call out boxes"
+  [{:keys [id icon primary secondary]}]
   (c/html
    [:div.center
-    (svg/symbolic->html icon)
-    [:div.title-2.proxima.shout primary]
-    [:div.mt2.content-2 secondary]]))
+    (when icon
+      (svg/symbolic->html icon))
+    [:div.title-2.proxima.shout
+     (when id
+       {:data-test id})
+     primary]
+    (when secondary
+      [:div.mt2.content-2
+       secondary])]))
+
+(defn proxima-left
+  "Usages:
+  - stylist cards"
+  [{:keys [id icon primary secondary]}]
+  (c/html
+   [:div.left-align
+    (when icon
+      (svg/symbolic->html icon))
+    [:div.title-2.proxima.shout
+     (when id
+       {:data-test id})
+     primary]
+    (when secondary
+      [:div.mt2.content-2
+       secondary])]))
 
 (defn canela
   [{:keys [icon primary secondary target]}]
