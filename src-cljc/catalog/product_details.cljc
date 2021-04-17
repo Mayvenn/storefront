@@ -21,7 +21,6 @@
             [catalog.selector.sku :as sku-selector]
             [catalog.ui.add-to-cart :as add-to-cart]
             [catalog.ui.browse-stylists-banner :as browse-stylists-banner]
-            [catalog.ui.how-it-works :as how-it-works]
             [catalog.ui.molecules :as catalog.M]
             [checkout.cart.swap :as swap]
             [homepage.ui.faq :as faq]
@@ -150,7 +149,6 @@
            product
            reviews
            selected-sku
-           how-it-works
            picker-data
            ugc
            faq-section
@@ -175,10 +173,7 @@
           (component/html
            [:div ^:inline (carousel carousel-images product)
             [:div.my5 (component/build browse-stylists-banner/organism data opts)]
-            (component/build ugc/component ugc opts)
-            (when how-it-works
-              [:div.container.mx-auto.mt4.px4
-               (component/build how-it-works/organism {:how-it-works how-it-works})])])
+            (component/build ugc/component ugc opts)])
           (component/html
            [:div
             [:div
@@ -198,9 +193,6 @@
             (component/build tabbed-information/component data)
             (component/build catalog.M/non-hair-product-description data opts)
             [:div.hide-on-tb-dt
-             (when how-it-works
-               [:div.container.mx-auto.mt4.px4
-                (component/build how-it-works/organism {:how-it-works how-it-works})])
              (component/build call-out-box/variation-1 browse-stylists-banner)
              (component/build call-out-box/variation-2 live-help)
              [:div.mxn2.mb3 (component/build ugc/component ugc opts)]]]))]]
