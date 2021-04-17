@@ -26,6 +26,8 @@
             [homepage.ui.faq :as faq]
             mayvenn.live-help.core
             [mayvenn.visual.lib.call-out-box :as call-out-box]
+            [mayvenn.visual.tools :refer [with]]
+            [mayvenn.visual.ui.titles :as titles]
             [spice.selector :as selector]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.images :as images]
@@ -139,7 +141,7 @@
   [:div.mt3.mx3
    [:div.flex.items-center.justify-between
     [:div.flex-auto
-     (catalog.M/product-title data)]
+     (titles/proxima-left (with :title data))]
     [:div.col-2
      (catalog.M/price-block data)]]
    (catalog.M/yotpo-reviews-summary data)])

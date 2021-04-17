@@ -2,15 +2,7 @@
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.reviews :as review-component]
-            ui.molecules))
-
-(defn product-title
-  "TODO empty state"
-  [{:title/keys [id primary secondary]}]
-  [:div {:data-test id}
-   [:h3.proxima.title-2.shout primary]
-   [:div.content-3 secondary]])
+            [storefront.platform.reviews :as review-component]))
 
 (defn price-block
   [{:price-block/keys [primary primary-struck secondary secondary-classes]}]
