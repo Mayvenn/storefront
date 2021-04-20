@@ -1,7 +1,8 @@
 (ns storefront.components.gallery-edit
-  (:require #?@(:cljs [[storefront.api :as api]
-                       [storefront.loader :as loader]
-                       Muuri])
+  (:require #?@(:cljs [MuuriReact
+                       react
+                       [storefront.api :as api]
+                       [storefront.loader :as loader]])
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defdynamic-component defcomponent]]
@@ -48,18 +49,15 @@
                                         :max-size 749})
                                pending-approval))]))])
 
-;; TODO: Fix gallery not showing on hard load. "Works" once a change has been saved
-;; NOTE: Don't forget the experiment
-
 (def timer-completion-timestamp (atom nil))
-(def timer-delay 1000)
+(def timer-delay 500)
 
 #?(:cljs (defn maybe-complete-timer [post-id]
            (when (and @timer-completion-timestamp
                       (< (+ (.getTime @timer-completion-timestamp) timer-delay)
                          (.getTime (js/Date.))))
-             (do (messages/handle-message events/stylist-gallery-reorder-mode-entered)
-                 (messages/handle-message events/control-stylist-gallery-drag-begun {:post-id post-id}))
+             (messages/handle-message events/stylist-gallery-reorder-mode-entered)
+             (messages/handle-message events/control-stylist-gallery-drag-begun {:post-id post-id})
              (reset! timer-completion-timestamp nil))))
 
 #?(:cljs (defn tap-press [e]
@@ -74,15 +72,17 @@
                                                               .-postId
                                                               js/parseInt)) timer-delay))))
 
+
 #?(:cljs (defn tap-release [e]
-           (prn "release")
            (reset! timer-completion-timestamp nil)))
 
 #?(:cljs (defn reorder-release [e]
-           (messages/handle-message events/stylist-gallery-reorder-mode-exited)))
+           (messages/handle-later events/stylist-gallery-reorder-mode-exited)))
 
 #?(:cljs (defn reorder-mode-handlers []
-           {:on-click     (fn [e] (messages/handle-message events/stylist-gallery-reorder-mode-exited))
+           {:on-click     (fn [e]
+                            (.preventDefault e)
+                            (.stopPropagation e))
             :style        {:touch-action "none"
                            :filter       "brightness(0.5)"}
             :on-mouse-up  reorder-release
@@ -100,89 +100,97 @@
                                       (.preventDefault e)
                                       (.stopPropagation e))})))
 
-(defdynamic-component reorderable-component
-  (constructor [this props]
-               (component/create-ref! this "gallery")
-               (component/create-ref! this "gallery-container")
-               {})
-  (did-mount [this]
-             #?(:cljs  (-> (component/get-ref this "gallery")
-                           (js/Muuri.
-                            #js
-                            {:items              ".board-item"
-                             :dragEnabled        true
-                             :dragSort           true
-                             :layout             #js {:fillGaps true}
-                             :dragContainer      (component/get-ref this "gallery-container")
-                             :dragAutoScroll     #js {:targets #js [#js {:element  js/window
-                                                                         :priority 0}
-                                                                    #js {:element  (component/get-ref this "gallery")
-                                                                         :priority 1
-                                                                         :axis     js/Muuri.AutoScroller.AXIS_X}]}
-                             :dragStartPredicate (fn [item event]
-                                                   (when (and (-> item
-                                                                  .getGrid
-                                                                  .getItems
-                                                                  (.indexOf item)
-                                                                  (not= 0))
-                                                              (-> this
-                                                                  component/get-props
-                                                                  :reorder-mode))
-                                                     true))
-                             :dragSortPredicate  (fn [item]
-                                                   (some-> js/Muuri
-                                                           .-ItemDrag
-                                                           (.defaultSortPredicate item)
-                                                           (#(when (not= 0 (.-index %)) %))))})
-                           (.on "dragEnd" (fn [item _event]
-                                            (->> item
-                                                 .getGrid
-                                                 .getItems
-                                                 (keep #(some-> % .getElement .-dataset .-postId js/parseInt))
-                                                 ((fn [posts-order] {:posts-ordering posts-order}))
-                                                 (messages/handle-message events/control-stylist-gallery-reordered-v2)))))))
-  ;; TODO:: Fix errors to push gallery down
-  (render [this]
-          (let [{:keys [posts images reorder-mode currently-dragging-post-id]} (component/get-props this)]
-            (component/html [:div
-                             [:div.fixed
-                              {:ref (component/use-ref this "gallery-container")}]
-                             (into [:div
-                                    {:ref (component/use-ref this "gallery")}
-                                    [:a.block.col-4.pp1.board-item
-                                     (merge (utils/route-to events/navigate-gallery-image-picker)
-                                            {:data-test "add-to-gallery-link"
-                                             :style     {:padding "1px"}})
-                                     [:div.bg-pale-purple.white
-                                      (ui/aspect-ratio 1 1
-                                                       [:div.flex.flex-column.justify-evenly.container-size
-                                                        [:div ui/nbsp]
-                                                        [:div.center.bold
-                                                         {:style {:font-size "60px"}}
-                                                         "+"]
-                                                        [:div.center.shout.title-3.proxima "Add Photo"]])]]]
-                                   #?(:cljs (for [{:keys [image-ordering]} posts
-                                                  :let                     [{:keys [status resizable-url id post-id]} (->> images
-                                                                                                                           (filter #(= (:id %) (first image-ordering)))
-                                                                                                                           first)]]
-                                              [:div.col-4.board-item.absolute
-                                               (update (merge {:key          resizable-url
-                                                               :data-post-id post-id}
-                                                              (if reorder-mode
-                                                                (reorder-mode-handlers)
-                                                                (view-mode-handlers id)))
-                                                       :style (fn [style] (merge style
-                                                                                 {:padding "1px"}
-                                                                                 (when (= currently-dragging-post-id post-id)
-                                                                                   {:filter "none"}))))
-                                               (ui/aspect-ratio 1 1
-                                                                (if (= "approved" status)
-                                                                  (ui/img {:class    "container-size"
-                                                                           :style    {:object-position "50% 25%"
-                                                                                      :object-fit      "cover"}
-                                                                           :src      resizable-url
-                                                                           :max-size 749})
-                                                                  pending-approval))])))]))))
+(defcomponent child-node
+  [{react-key :key
+    :keys     [currently-dragging-post-id post images reorder-mode]} _ _]
+
+  (component/html
+   #?(:clj [:div]
+      :cljs
+      [:div {:key react-key}
+       (let [{:keys [image-ordering]} post
+             {:keys [status id resizable-url post-id]}
+             (->> images
+                  (filter #(= (:id %) (first image-ordering)))
+                  first)]
+         (ui/aspect-ratio 1 1
+                          [:div.container-size.board-item
+                           (update (merge {:data-post-id post-id}
+                                          (if reorder-mode
+                                            (reorder-mode-handlers)
+                                            (view-mode-handlers id)))
+                                   :style (fn [style] (merge style
+                                                             {:padding "1px"}
+                                                             (when (= currently-dragging-post-id post-id)
+                                                               {:filter "none"}))))
+                           (if (= "approved" status)
+                             (ui/img {:class    "container-size"
+                                      :style    {:object-position "50% 25%"
+                                                 :object-fit      "cover"}
+                                      :src      resizable-url
+                                      :max-size 749})
+                             pending-approval)]))])))
+
+(defn add-photo-square-2 []
+  #?(:cljs
+     (let [set-draggable (MuuriReact/useDraggable)]
+       (set-draggable false)))
+  (component/html
+   [:div
+    [:a.block.pp1.board-item
+     (merge (utils/route-to events/navigate-gallery-image-picker)
+            {:key "add-photo"
+             :data-test "add-to-gallery-link"
+             :style     {:padding "1px"}})
+     [:div.bg-pale-purple.white
+      (ui/aspect-ratio 1 1
+                       [:div.flex.flex-column.justify-evenly.container-size
+                        [:div ui/nbsp]
+                        [:div.center.bold {:style {:font-size "60px"}} "+"]
+                        [:div.center.shout.title-3.proxima "Add Photo"]])]]]))
+
+
+;; TODO: There is an api call to change sort order on drag completed (talk to diva. maybe need to debounce)
+;; Changing opacity using filter css property?
+
+(defcomponent reorderable-component-2
+  [{:keys [posts images reorder-mode currently-dragging-post-id] :as data} _ _]
+  ;; TODO:: Flash shows incorrectly on page
+  (component/html
+   #?(:clj [:div]
+      :cljs [:div
+             (prn "reorder mode" reorder-mode)
+             (apply react/createElement
+                    MuuriReact/MuuriComponent
+                    #js {:dragEnabled        true
+                         :itemClass          "col-4"
+                         :itemDraggingClass  "embiggen"
+                         :dragStartPredicate (fn [_ e]
+                                               (and
+                                                (>= (.-deltaTime e) timer-delay)
+                                                reorder-mode))
+                         :dragSortPredicate  (fn [item _e]
+                                              (some-> (.defaultSortPredicate MuuriReact/ItemDrag item)
+                                                      (#(when (not= 0 (.-index %)) %))))
+                         :propsToData        (fn [item]
+                                               (let [props (get-in (js->clj item) ["props"])]
+                                                 {:post         (:post props)
+                                                  :reorder-mode (:reorder-mode props)}))
+                         :onDragEnd (fn [item _event]
+                                      (->> item
+                                           .getGrid
+                                           .getItems
+                                           (keep #(some-> % .getData :post :id))
+                                           (assoc {} :posts-ordering)
+                                           (messages/handle-message events/control-stylist-gallery-reordered-v2)))}
+                    (cons
+                     (component/build add-photo-square-2 {:key "add-photo"})
+                     (for [post (sort-by (comp first :image-ordering) posts)]
+                       (component/build child-node {:key                        (:id post)
+                                                    :reorder-mode               reorder-mode
+                                                    :currently-dragging-post-id currently-dragging-post-id
+                                                    :post                       post
+                                                    :images                     images}))))])))
 
 (defmethod transitions/transition-state events/control-stylist-gallery-drag-begun
   [_ _ {:keys [post-id]} app-state]
@@ -201,8 +209,9 @@
 (defcomponent reorderable-wrapper
   [data _ _]
   [:div
-   (if (seq (:posts data))
-     (component/build reorderable-component data)
+   ;; TODO: real loader. Make sure page works when experiment is turned on while on the page
+   (if true #_(seq (:posts data))
+     (component/build reorderable-component-2 data)
      (ui/large-spinner {:style {:height "6em"}}))])
 
 (defmethod transitions/transition-state events/control-stylist-gallery-reordered-v2

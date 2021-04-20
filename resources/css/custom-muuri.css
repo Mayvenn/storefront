@@ -11,3 +11,7 @@
 .board-item.muuri-item-hidden {
   z-index: 0;
 }
+
+.embiggen {
+  transform: scale(5.1);
+}

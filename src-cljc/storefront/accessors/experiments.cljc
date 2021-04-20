@@ -111,7 +111,8 @@
 
 (defn edit-gallery?
   [data]
-  (display-feature? data "edit-gallery"))
+  (display-feature? data "edit-gallery")
+  true)
 
 (defn shopping-quiz?
   [data]

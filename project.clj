@@ -126,12 +126,17 @@
                                            {:file     "src-cljs/storefront/muuri.js"
                                             :file-min "target/min-js/muuri.js"
                                             :provides ["Muuri"]}
+                                           {:file     "src-cljs/storefront/muuri_react.js"
+                                            :file-min "target/min-js/muuri_react.js"
+                                            :requires ["Muuri"]
+                                            :provides ["MuuriReact"]}
                                            {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
                                             :file-min "target/min-js/bugsnag-2.5.0.js"
                                             :provides ["bugsnag"]}]
                         :externs          ["externs/luckyorange.js"
                                            "externs/jsQR.js"
                                            "externs/muuri.js"
+                                           "externs/muuri_react.js"
                                            "externs/bugsnag.js"
                                            "externs/browser.js"
                                            "externs/convert.js"

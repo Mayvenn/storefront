@@ -145,7 +145,9 @@
                          (str "building " (:file debug-data) ":" (:line debug-data)
                               " includes a function which is not recommended because it reforces constant rerenders (" @problems ")"))))
              (cond
-               (gobj/get component "isNewStyleComponent" false)
+               (or
+                (gobj/get component "isNewStyleComponent" false)
+                (fn? component))
                (react/createElement component
                                     (cond-> #js{:props               data
                                                 :options             (:opts opts)
