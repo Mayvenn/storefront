@@ -16,8 +16,6 @@
   Muuri = Muuri && Object.prototype.hasOwnProperty.call(Muuri, 'default') ? Muuri['default'] : Muuri;
   var React__default = 'default' in React ? React['default'] : React;
 
-                                            console.log("HELLO");
-
   function _defineProperty(obj, key, value) {
     if (key in obj) {
       Object.defineProperty(obj, key, {
