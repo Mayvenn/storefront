@@ -149,10 +149,8 @@
                        [[cider/piggieback "0.5.0"]
                         [nrepl "0.7.0"]]}
              :dev     {:source-paths ["dev/clj"]
-                       :dependencies [[cider/piggieback "0.5.0"]
-                                      [com.bhauman/figwheel-main "0.2.10"]
+                       :dependencies [[com.bhauman/figwheel-main "0.2.10"]
                                       [com.bhauman/rebel-readline-cljs "0.1.4"]
-                                      [nrepl "0.7.0"]
                                       [org.clojure/tools.reader "1.3.2"]
                                       [org.clojure/tools.namespace "1.0.0"]
                                       [binaryage/devtools "0.9.10"]
@@ -161,6 +159,5 @@
                                       [ring/ring-mock "0.3.0"]]
                        :injections   [(require 'pjstadig.humane-test-output)
                                       (pjstadig.humane-test-output/activate!)]
-                       :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
                        :cljsbuild
                        {:builds {:dev {:source-paths ["dev/cljs"]}}}}})
