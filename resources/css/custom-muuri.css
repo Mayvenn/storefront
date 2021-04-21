@@ -1,17 +1,16 @@
-.board-item {
+.muuri-item-shown {
   cursor: pointer;
 }
-.board-item.muuri-item-releasing {
-  z-index: 9998;
-}
-.board-item.muuri-item-dragging {
-  z-index: 9999;
-  cursor: move;
-}
-.board-item.muuri-item-hidden {
-  z-index: 0;
+
+.muuri-item-releasing {
+  z-index: 5;
 }
 
-.embiggen {
-  transform: scale(5.1);
+.muuri-item-dragging {
+  z-index: 5;
+  cursor: move;
+}
+
+.muuri-item-dragging > div.relative {
+  transform: scale(1.1);
 }

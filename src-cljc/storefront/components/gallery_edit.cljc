@@ -5,7 +5,7 @@
                        [storefront.loader :as loader]])
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
-            [storefront.component :as component :refer [defdynamic-component defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -13,6 +13,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.routes :as routes]
+            [spice.maps :as maps]
             [storefront.transitions :as transitions]))
 
 (def add-photo-square
@@ -49,80 +50,54 @@
                                         :max-size 749})
                                pending-approval))]))])
 
-(def timer-completion-timestamp (atom nil))
-(def timer-delay 500)
-
-#?(:cljs (defn maybe-complete-timer [post-id]
-           (when (and @timer-completion-timestamp
-                      (< (+ (.getTime @timer-completion-timestamp) timer-delay)
-                         (.getTime (js/Date.))))
-             (messages/handle-message events/stylist-gallery-reorder-mode-entered)
-             (messages/handle-message events/control-stylist-gallery-drag-begun {:post-id post-id})
-             (reset! timer-completion-timestamp nil))))
-
-#?(:cljs (defn tap-press [e]
-           (let [expiration (js/Date.)]
-             ;; WARNING: date function calls mutate
-             (.setSeconds expiration (.getSeconds expiration))
-             (reset! timer-completion-timestamp expiration)
-             (js/setTimeout (partial maybe-complete-timer (-> e
-                                                              .-target
-                                                              (.closest ".board-item")
-                                                              .-dataset
-                                                              .-postId
-                                                              js/parseInt)) timer-delay))))
+#?(:cljs (defn do-nothing-handler [e]
+           (.preventDefault e)
+           (.stopPropagation e)))
 
 
-#?(:cljs (defn tap-release [e]
-           (reset! timer-completion-timestamp nil)))
-
-#?(:cljs (defn reorder-release [e]
-           (messages/handle-later events/stylist-gallery-reorder-mode-exited)))
-
-#?(:cljs (defn reorder-mode-handlers []
-           {:on-click     (fn [e]
-                            (.preventDefault e)
-                            (.stopPropagation e))
+#?(:cljs (def reorder-mode-attrs
+           {:on-click     do-nothing-handler
             :style        {:touch-action "none"
                            :filter       "brightness(0.5)"}
-            :on-mouse-up  reorder-release
-            :on-touch-end reorder-release}))
+            :on-context-menu do-nothing-handler}))
 
-#?(:cljs (defn view-mode-handlers [photo-id]
+#?(:cljs
+   (def currently-dragging-post-attrs
+     {:style {:filter "none"}}))
+
+#?(:cljs (defn view-mode-attrs [photo-id]
            (merge (utils/route-to events/navigate-gallery-photo {:photo-id photo-id})
                   {:style           {:touch-action "pan-y"}
-                   :on-mouse-down   tap-press
-                   :on-mouse-up     tap-release
-                   :on-mouse-leave  tap-release
-                   :on-touch-start  tap-press
-                   :on-touch-end    tap-release
-                   :on-context-menu (fn [e]
-                                      (.preventDefault e)
-                                      (.stopPropagation e))})))
+                   :on-context-menu do-nothing-handler})))
+
+#?(:cljs
+   (defn base-container-attrs [post-id]
+     {:data-post-id post-id
+      :style {:padding "1px"}}))
+
 
 (defcomponent child-node
   [{react-key :key
     :keys     [currently-dragging-post-id post images reorder-mode]} _ _]
-
   (component/html
    #?(:clj [:div]
       :cljs
       [:div {:key react-key}
        (let [{:keys [image-ordering]} post
              {:keys [status id resizable-url post-id]}
+             ;; TODO: refactor this out of the child node and into the top level post data structure. The image is the "COVER photo" for the post
              (->> images
                   (filter #(= (:id %) (first image-ordering)))
                   first)]
          (ui/aspect-ratio 1 1
-                          [:div.container-size.board-item
-                           (update (merge {:data-post-id post-id}
-                                          (if reorder-mode
-                                            (reorder-mode-handlers)
-                                            (view-mode-handlers id)))
-                                   :style (fn [style] (merge style
-                                                             {:padding "1px"}
-                                                             (when (= currently-dragging-post-id post-id)
-                                                               {:filter "none"}))))
+                          [:div.container-size
+                           (maps/deep-merge
+                            (base-container-attrs post-id)
+                            (if reorder-mode
+                              reorder-mode-attrs
+                              (view-mode-attrs post-id))
+                            (when (= currently-dragging-post-id post-id)
+                              currently-dragging-post-attrs))
                            (if (= "approved" status)
                              (ui/img {:class    "container-size"
                                       :style    {:object-position "50% 25%"
@@ -137,7 +112,7 @@
        (set-draggable false)))
   (component/html
    [:div
-    [:a.block.pp1.board-item
+    [:a.block.pp1
      (merge (utils/route-to events/navigate-gallery-image-picker)
             {:key "add-photo"
              :data-test "add-to-gallery-link"
@@ -149,6 +124,39 @@
                         [:div.center.bold {:style {:font-size "60px"}} "+"]
                         [:div.center.shout.title-3.proxima "Add Photo"]])]]]))
 
+#?(:cljs
+   (def muuri-config
+     #js {:dragEnabled        true
+          :itemClass          "col-4"
+
+          ;; By default muuri sets scale(1) or scale(0.5) onto items style tag
+          ;; depending upon their visibility or hidden...ness.
+          ;; Because it is on a style tag, it has higher specificity
+          ;; than a class. This clears that so we can scale by adding a class
+          ;; when dragging.
+          :visibleStyles      #js {}
+          :hiddenStyles       #js {}
+
+          :dragStartPredicate #js {:delay 500}
+          :dragSortPredicate  (fn [item _e]
+                                (some-> (.defaultSortPredicate MuuriReact/ItemDrag item)
+                                        (#(when (not= 0 (.-index %)) %))))
+          :propsToData        (fn [item]
+                                (let [props (get-in (js->clj item) ["props"])]
+                                  {:post         (:post props)
+                                   :reorder-mode (:reorder-mode props)}))
+          :onDragStart        (fn [item _event]
+                                (messages/handle-message events/control-stylist-gallery-drag-begun
+                                                         {:post-id (-> item .getData :post :id )})
+                                (messages/handle-message events/stylist-gallery-reorder-mode-entered))
+          :onDragEnd          (fn [item _event]
+                                (->> item
+                                     .getGrid
+                                     .getItems
+                                     (keep #(some-> % .getData :post :id))
+                                     (assoc {} :posts-ordering)
+                                     (messages/handle-message events/control-stylist-gallery-reordered-v2))
+                                (messages/handle-message events/stylist-gallery-reorder-mode-exited))}))
 
 ;; TODO: There is an api call to change sort order on drag completed (talk to diva. maybe need to debounce)
 ;; Changing opacity using filter css property?
@@ -159,30 +167,9 @@
   (component/html
    #?(:clj [:div]
       :cljs [:div
-             (prn "reorder mode" reorder-mode)
              (apply react/createElement
                     MuuriReact/MuuriComponent
-                    #js {:dragEnabled        true
-                         :itemClass          "col-4"
-                         :itemDraggingClass  "embiggen"
-                         :dragStartPredicate (fn [_ e]
-                                               (and
-                                                (>= (.-deltaTime e) timer-delay)
-                                                reorder-mode))
-                         :dragSortPredicate  (fn [item _e]
-                                              (some-> (.defaultSortPredicate MuuriReact/ItemDrag item)
-                                                      (#(when (not= 0 (.-index %)) %))))
-                         :propsToData        (fn [item]
-                                               (let [props (get-in (js->clj item) ["props"])]
-                                                 {:post         (:post props)
-                                                  :reorder-mode (:reorder-mode props)}))
-                         :onDragEnd (fn [item _event]
-                                      (->> item
-                                           .getGrid
-                                           .getItems
-                                           (keep #(some-> % .getData :post :id))
-                                           (assoc {} :posts-ordering)
-                                           (messages/handle-message events/control-stylist-gallery-reordered-v2)))}
+                    muuri-config
                     (cons
                      (component/build add-photo-square-2 {:key "add-photo"})
                      (for [post (sort-by (comp first :image-ordering) posts)]
@@ -255,7 +242,6 @@
                :user-token (get-in app-state keypaths/user-token)})
              (effects/redirect events/navigate-store-gallery))))
 
-;; TODO: init long touch and reorder states
 (defmethod transitions/transition-state events/api-success-stylist-gallery
   [_ event {:keys [images posts]} app-state]
   (-> app-state
