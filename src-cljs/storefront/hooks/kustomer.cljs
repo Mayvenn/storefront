@@ -2,7 +2,9 @@
   (:require [storefront.browser.tags :as tags]
             [storefront.effects :as effects]
             [storefront.events :as e]
-            [storefront.platform.messages :as messages]))
+            [storefront.keypaths :as k]
+            [storefront.platform.messages :as messages]
+            [storefront.transitions :as transitions]))
 
 (defn- logging-cb
   [response error]
@@ -35,9 +37,9 @@
   (.open js/Kustomer
          (partial describe-conversation order-number)))
 
-(defmethod transitions/transition-state events/inserted-kustomer
+(defmethod transitions/transition-state e/inserted-kustomer
   [_ event args app-state]
-  (assoc-in app-state keypaths/loaded-kustomer true))
+  (assoc-in app-state k/loaded-kustomer true))
 
 (defmethod effects/perform-effects e/inserted-kustomer
   [_ _ _ _]
