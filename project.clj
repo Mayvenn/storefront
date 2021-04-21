@@ -145,9 +145,8 @@
   :auto-clean false
   :profiles {:uberjar {:aot :all}
              :test    {:plugins [[lein-test-report-junit-xml "0.2.0"]]}
-             :repl    {:dependencies
-                       [[cider/piggieback "0.5.0"]
-                        [nrepl "0.7.0"]]}
+             :repl    {:dependencies [[cider/piggieback "0.5.2"]
+                                      [nrepl "0.8.3"]]}
              :dev     {:source-paths ["dev/clj"]
                        :dependencies [[com.bhauman/figwheel-main "0.2.10"]
                                       [com.bhauman/rebel-readline-cljs "0.1.4"]
