@@ -269,6 +269,8 @@
 (def editing-gallery? (conj ui :editing-gallery))
 (def hide-header? (conj ui :hide-header?))
 
+(def debounce-timers (conj ui :debounce-timers))
+
 (def errors (conj ui :errors))
 (def field-errors (conj errors :field-errors))
 (def error-message (conj errors :error-message))

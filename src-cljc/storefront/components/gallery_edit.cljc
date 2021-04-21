@@ -256,10 +256,30 @@
               {:user-id    (get-in app-state keypaths/user-id)
                :user-token (get-in app-state keypaths/user-token)}))))
 
+ ;; TODO(ellie, 2021-04-21): Move these somewhere better?
+(defmethod effects/perform-effects events/debounced-event-enqueued
+  [_ _ {:keys [debounced-event]} prev-app-state app-state]
+  #?(:cljs
+     (when-let [timer (get-in prev-app-state (conj keypaths/debounce-timers debounced-event))]
+       (js/clearTimeout timer))))
+
+(defmethod transitions/transition-state events/debounced-event-enqueued
+  [_ _ {:keys [timer debounced-event]} app-state]
+  (assoc-in app-state (conj keypaths/debounce-timers debounced-event) timer))
+
+(defmethod effects/perform-effects events/debounced-event-initialized
+  [_ _ {[debounced-event debounced-event-args] :message
+        timeout                                :timeout} prev-app-state app-state]
+  (when-let [debounce-timer (messages/handle-later debounced-event debounced-event-args timeout)]
+    (messages/handle-message events/debounced-event-enqueued {:timer           debounce-timer
+                                                              :debounced-event debounced-event})))
+
+
 (defmethod effects/perform-effects events/api-success-stylist-gallery [_ event args _ app-state]
   (let [signed-in-as-stylist? (auth/stylist? (auth/signed-in app-state))
         on-edit-page?         (routes/exact-page? (get-in app-state keypaths/navigation-message) [events/navigate-gallery-edit])]
     (when (and signed-in-as-stylist?
                on-edit-page?
                (some (comp #{"pending"} :status) (get-in app-state keypaths/user-stylist-gallery-images)))
-      (messages/handle-later events/poll-gallery {} 5000))))
+      (messages/handle-message events/debounced-event-initialized {:timeout 5000
+                                                                   :message [events/poll-gallery {}]}))))

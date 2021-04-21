@@ -262,6 +262,9 @@
 
 (defpath snap)
 
+(defpath debounced-event-initialized)
+(defpath debounced-event-enqueued)
+
 (defpath api)
 (defpath api-start)
 (defpath api-end)
