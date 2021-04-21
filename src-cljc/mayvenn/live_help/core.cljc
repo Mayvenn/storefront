@@ -7,7 +7,8 @@
 
 (defmethod fx/perform-effects e/flow|live-help|reset
   [_ _ _ _ state]
-  (when (experiments/live-help? state)
+  (when (and (experiments/live-help? state)
+             (not (get-in state keypaths/loaded-kustomer)))
     #?(:cljs (kustomer/init))))
 
 (defmethod fx/perform-effects e/flow|live-help|opened

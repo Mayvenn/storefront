@@ -277,6 +277,7 @@
 (def loaded-stripe (conj loaded :stripe))
 (def loaded-quadpay (conj loaded :quadpay))
 (def loaded-uploadcare (conj loaded :uploadcare))
+(def loaded-kustomer (conj loaded :kustomer))
 
 (def facebook-email-denied (conj ui :facebook-email-denied))
 
