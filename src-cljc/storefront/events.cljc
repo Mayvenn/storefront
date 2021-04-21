@@ -409,6 +409,8 @@
 (defpath inserted-quadpay)
 (defpath inserted-stripe)
 (defpath inserted-uploadcare)
+(defpath inserted-kustomer)
+(defpath started-kustomer)
 
 (defpath did-insert-convert)
 

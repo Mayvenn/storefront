@@ -39,11 +39,9 @@
   (insert-body-bottom tag))
 
 (defn insert-tag-with-dataset-and-callback
-  [tag dataset callback]
-  (dataset/set tag )
-  (set! (.-onload tag) dataset)
-  (set! (.-onload tag) callback)
-  (insert-body-bottom tag))
+  [tag dataset-key dataset callback]
+  (dataset/set tag dataset-key dataset)
+  (insert-tag-with-callback tag callback))
 
 (defn insert-tag-pair [src text class]
   (let [tag (src-tag src (str class "-src"))
