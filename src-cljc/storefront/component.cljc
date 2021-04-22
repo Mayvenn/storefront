@@ -146,8 +146,8 @@
                               " includes a function which is not recommended because it reforces constant rerenders (" @problems ")"))))
              (cond
                (or
-                (gobj/get component "isNewStyleComponent" false)
-                (fn? component))
+                (fn? component)
+                (gobj/get component "isNewStyleComponent" false))
                (react/createElement component
                                     (cond-> #js{:props               data
                                                 :options             (:opts opts)

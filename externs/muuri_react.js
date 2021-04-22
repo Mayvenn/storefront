@@ -1,5 +1,8 @@
 var MuuriReact = {
   MuuriComponent: function() {},
   useDraggable: function() {},
-  ItemDrag: function() {}
+  ItemDrag: function() {},
+  AutoScroller: {
+    AXIS_X: {}
+  }
 };

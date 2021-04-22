@@ -5,7 +5,7 @@
                        [storefront.loader :as loader]])
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
-            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -124,18 +124,26 @@
                         [:div.center.bold {:style {:font-size "60px"}} "+"]
                         [:div.center.shout.title-3.proxima "Add Photo"]])]]]))
 
+
 #?(:cljs
-   (def muuri-config
-     #js {:dragEnabled        true
-          :itemClass          "col-4"
+   (defn muuri-config [gallery-ref]
+     #js {:dragEnabled true
+          :itemClass   "col-4"
+          :dragCssProps #js {:touchAction "pan-y"}
 
           ;; By default muuri sets scale(1) or scale(0.5) onto items style tag
           ;; depending upon their visibility or hidden...ness.
           ;; Because it is on a style tag, it has higher specificity
           ;; than a class. This clears that so we can scale by adding a class
           ;; when dragging.
-          :visibleStyles      #js {}
-          :hiddenStyles       #js {}
+          :visibleStyles #js {}
+          :hiddenStyles  #js {}
+
+          :dragAutoScroll #js {:targets #js [#js {:element  js/window
+                                                  :priority 0}
+                                             #js {:element  gallery-ref
+                                                  :priority 1
+                                                  :axis     MuuriReact/AutoScroller.AXIS_X}]}
 
           :dragStartPredicate #js {:delay 500}
           :dragSortPredicate  (fn [item _e]
@@ -159,25 +167,36 @@
                                 (messages/handle-message events/stylist-gallery-reorder-mode-exited))}))
 
 ;; TODO: There is an api call to change sort order on drag completed (talk to diva. maybe need to debounce)
-;; Changing opacity using filter css property?
+;; Move first element not draggable logic into Muuri config
+;; Scrolling issues
+;;; Can't scroll by touching a draggable element
+;;; `:dragAutoScroll???`
 
-(defcomponent reorderable-component-2
-  [{:keys [posts images reorder-mode currently-dragging-post-id] :as data} _ _]
+
+(defdynamic-component reorderable-component-2
+  (constructor [this props]
+               (component/create-ref! this "gallery")
+               nil)
   ;; TODO:: Flash shows incorrectly on page
-  (component/html
-   #?(:clj [:div]
-      :cljs [:div
-             (apply react/createElement
-                    MuuriReact/MuuriComponent
-                    muuri-config
-                    (cons
-                     (component/build add-photo-square-2 {:key "add-photo"})
-                     (for [post (sort-by (comp first :image-ordering) posts)]
-                       (component/build child-node {:key                        (:id post)
-                                                    :reorder-mode               reorder-mode
-                                                    :currently-dragging-post-id currently-dragging-post-id
-                                                    :post                       post
-                                                    :images                     images}))))])))
+  (render [this]
+          (let [{:keys [posts images reorder-mode currently-dragging-post-id]} (component/get-props this)
+                gallery-ref (component/use-ref this "gallery")]
+            (component/html
+             #?(:clj [:div]
+                :cljs [:div
+
+                       {:ref gallery-ref}
+                       (apply react/createElement
+                              MuuriReact/MuuriComponent
+                              (muuri-config gallery-ref)
+                              (cons
+                               (component/build add-photo-square-2 {:key "add-photo"})
+                               (for [post (sort-by (comp first :image-ordering) posts)]
+                                 (component/build child-node {:key                        (:id post)
+                                                              :reorder-mode               reorder-mode
+                                                              :currently-dragging-post-id currently-dragging-post-id
+                                                              :post                       post
+                                                              :images                     images}))))])))))
 
 (defmethod transitions/transition-state events/control-stylist-gallery-drag-begun
   [_ _ {:keys [post-id]} app-state]
