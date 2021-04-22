@@ -101,3 +101,13 @@
     {"address-login" {:enabled?   false
                       :variations [{:feature "address-login-control"}
                                    {:feature "address-login"}]}}))
+
+(def kustomer-api-key
+  (case js/environment
+    "production" "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkMjRlMjFkZTZhY2E2MDA4ZmY0MTkxZSIsInVzZXIiOiI1ZDI0ZTIxZGQ2ZWExMTAwMTI3ODY5YWIiLCJvcmciOiI1Y2Y2YzNlMmVkODg5YzAwMTI0ZmRkMTMiLCJvcmdOYW1lIjoibWF5dmVubiIsInVzZXJUeXBlIjoibWFjaGluZSIsInJvbGVzIjpbIm9yZy50cmFja2luZyJdLCJhdWQiOiJ1cm46Y29uc3VtZXIiLCJpc3MiOiJ1cm46YXBpIiwic3ViIjoiNWQyNGUyMWRkNmVhMTEwMDEyNzg2OWFiIn0.6DBXhYV5ypGVbMhZGHRTHlHGMZZ9nBh9f3szQh38Lmo"
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkMWE1OGVmZWE2NTI3MDA5NjAxYjYyYiIsInVzZXIiOiI1ZDFhNThlZTRkNzdhMDAwMWE0MTkwNGYiLCJvcmciOiI1Y2Y2YzcxNTYyNGEwNzAwMTNhZDQ0YzgiLCJvcmdOYW1lIjoibWF5dmVubi1zYW5kYm94IiwidXNlclR5cGUiOiJtYWNoaW5lIiwicm9sZXMiOlsib3JnLnRyYWNraW5nIl0sImF1ZCI6InVybjpjb25zdW1lciIsImlzcyI6InVybjphcGkiLCJzdWIiOiI1ZDFhNThlZTRkNzdhMDAwMWE0MTkwNGYifQ.N_3t02QEEURClNfyBodzPmFSmv60CwdIROXArlVtudE"))
+
+(def kustomer-brand-id
+  (case js/environment
+    "production" "5daf7912124be4f2960cafca"
+    "5daf7912124be4f2960cafcc"))

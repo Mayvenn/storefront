@@ -1,5 +1,6 @@
 (ns storefront.hooks.kustomer
   (:require [storefront.browser.tags :as tags]
+            [storefront.config :as config]
             [storefront.effects :as effects]
             [storefront.events :as e]
             [storefront.keypaths :as k]
@@ -24,7 +25,7 @@
       (tags/src-tag "kustomer-script")
       (tags/insert-tag-with-dataset-and-callback
        "kustomerApiKey"
-       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkMWE1OGVmZWE2NTI3MDA5NjAxYjYyYiIsInVzZXIiOiI1ZDFhNThlZTRkNzdhMDAwMWE0MTkwNGYiLCJvcmciOiI1Y2Y2YzcxNTYyNGEwNzAwMTNhZDQ0YzgiLCJvcmdOYW1lIjoibWF5dmVubi1zYW5kYm94IiwidXNlclR5cGUiOiJtYWNoaW5lIiwicm9sZXMiOlsib3JnLnRyYWNraW5nIl0sImF1ZCI6InVybjpjb25zdW1lciIsImlzcyI6InVybjphcGkiLCJzdWIiOiI1ZDFhNThlZTRkNzdhMDAwMWE0MTkwNGYifQ.N_3t02QEEURClNfyBodzPmFSmv60CwdIROXArlVtudE"
+       config/kustomer-api-key
        (partial messages/handle-message e/inserted-kustomer))))
 (defn open-conversation [] (.open js/Kustomer))
 (defn describe-conversation [description]
@@ -40,7 +41,7 @@
 (defmethod effects/perform-effects e/inserted-kustomer
   [_ _ _ _ _]
   (.start js/Kustomer
-          #js{"brandId"      "5daf7912124be4f2960cafcc"
+          #js{"brandId"      config/kustomer-brand-id
               "hideChatIcon" true}
           (partial messages/handle-message kustomer|started)))
 
