@@ -31,10 +31,10 @@
 (defn open-conversation [] (.open js/Kustomer))
 
 (defn describe-conversation [conversation-id {:keys [page-url order-number]}]
-  (let [description (spice.core/sspy (cond-> {:conversationId   conversation-id
-                                              :customAttributes {:chatPageUrl page-url}}
-                                       order-number
-                                       (assoc-in [:customAttributes :chatCartOrderNumberStr] order-number)))]
+  (let [description (cond-> {:conversationId   conversation-id
+                             :customAttributes {:chatPageUrl page-url}}
+                      order-number
+                      (assoc-in [:customAttributes :chatCartOrderNumberStr] order-number))]
     (.describeConversation js/Kustomer (clj->js description)
                            #(messages/handle-message kustomer|conversationDescribed {:description description
                                                                                      :response    %1
@@ -63,7 +63,6 @@
 
 (defmethod transitions/transition-state kustomer|onConversationCreate
   [_ _ {:keys [response error]} app-state]
-  ;; Should we nil this out when a convo ends? How?
   (assoc-in app-state k/kustomer-conversation-id (.-conversationId response)))
 
 (defmethod effects/perform-effects kustomer|onConversationCreate
@@ -71,3 +70,7 @@
   (describe-conversation (get-in app-state k/kustomer-conversation-id)
                          {:page-url     (str (get-in app-state k/navigation-uri))
                           :order-number (get-in app-state k/order-number)}))
+
+(defmethod transitions/transition-state kustomer|onUnread
+  [_ _ {:keys [response error]} app-state]
+  (assoc-in app-state k/kustomer-conversation-id (.. response -change -conversationId)))
