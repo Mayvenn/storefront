@@ -27,12 +27,18 @@
        "kustomerApiKey"
        config/kustomer-api-key
        (partial messages/handle-message e/inserted-kustomer))))
+
 (defn open-conversation [] (.open js/Kustomer))
-(defn describe-conversation [description]
-  (.describeConversation js/Kustomer (clj->js description)
-                         #(messages/handle-message kustomer|conversationDescribed {:description description
-                                                                                   :response    %1
-                                                                                   :error       %2})))
+
+(defn describe-conversation [conversation-id {:keys [page-url order-number]}]
+  (let [description (spice.core/sspy (cond-> {:conversationId   conversation-id
+                                              :customAttributes {:chatPageUrl page-url}}
+                                       order-number
+                                       (assoc-in [:customAttributes :chatCartOrderNumberStr] order-number)))]
+    (.describeConversation js/Kustomer (clj->js description)
+                           #(messages/handle-message kustomer|conversationDescribed {:description description
+                                                                                     :response    %1
+                                                                                     :error       %2}))))
 
 (defmethod transitions/transition-state e/inserted-kustomer
   [_ event args app-state]
@@ -55,10 +61,13 @@
     (.addListener "onLogin"              #(messages/handle-message kustomer|onLogin              {:response %1 :error %2}))
     (.addListener "onLogout"             #(messages/handle-message kustomer|onLogout             {:response %1 :error %2}))))
 
+(defmethod transitions/transition-state kustomer|onConversationCreate
+  [_ _ {:keys [response error]} app-state]
+  ;; Should we nil this out when a convo ends? How?
+  (assoc-in app-state k/kustomer-conversation-id (.-conversationId response)))
+
 (defmethod effects/perform-effects kustomer|onConversationCreate
   [_ _ {:keys [response error]} _ app-state]
-  (let [order-number (get-in app-state k/order-number)]
-    (describe-conversation (cond-> {:conversationId   (.-conversationId response)
-                                    :customAttributes {:chatPageUrl (-> js/window .-location .-href)}}
-                             order-number
-                             (assoc-in [:customAttributes :chatCartOrderNumberStr] order-number)))))
+  (describe-conversation (get-in app-state k/kustomer-conversation-id)
+                         {:page-url     (str (get-in app-state k/navigation-uri))
+                          :order-number (get-in app-state k/order-number)}))

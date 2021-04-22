@@ -23,6 +23,7 @@
             [storefront.hooks.exception-handler :as exception-handler]
             [storefront.hooks.facebook :as facebook]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
+            [storefront.hooks.kustomer :as kustomer]
             [storefront.hooks.lucky-orange :as lucky-orange]
             [storefront.hooks.google-maps :as google-maps]
             [storefront.hooks.reviews :as reviews]
@@ -209,6 +210,10 @@
     (seo/set-tags app-state)
 
     (when-not landing-on-same-page?
+      (when-let [conversation-id (get-in app-state keypaths/kustomer-conversation-id)]
+        (kustomer/describe-conversation conversation-id
+                                        {:page-url     (str (get-in app-state keypaths/navigation-uri))
+                                         :order-number (get-in app-state keypaths/order-number)}))
       (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
         (if (zero? restore-scroll-top)
           ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
