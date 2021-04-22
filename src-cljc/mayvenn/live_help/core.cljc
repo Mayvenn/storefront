@@ -14,6 +14,4 @@
 (defmethod fx/perform-effects e/flow|live-help|opened
   [_ _ _ _ state]
   (when (experiments/live-help? state)
-    #?(:cljs
-       (kustomer/open-conversation (get-in state
-                                           k/order-number)))))
+    #?(:cljs (kustomer/open-conversation))))
