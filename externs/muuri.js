@@ -79,8 +79,11 @@ var Muuri = {
     "_unbindListeners": function () {}
   },
   "Emitter": function () {},
-  "Item": function () {},
+  "Item": {
+    "_drag": {}
+  },
   "ItemDrag": {
+    "_dragger": {},
     "autoScroller": {
       "_actionPool": {
         "createItem": function () {},

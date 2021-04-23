@@ -180,10 +180,8 @@
                                                            {:item item}))})))
 
 ;; TODO: There is an api call to change sort order on drag completed (talk to diva. maybe need to debounce)
+;; Ordering is not being retained
 ;; Move first element not draggable logic into Muuri config
-;; Scrolling issues
-;;; Can't scroll by touching a draggable element
-;;; `:dragAutoScroll???`
 
 (defdynamic-component reorderable-component-2
   (constructor [this props]
@@ -243,27 +241,17 @@
    (defn set-dragger-touch [dragger value]
      (.setCssProps dragger #js {:touchAction value})))
 
-;; NOTE: I have no mouth but I must scream.
 (defmethod effects/perform-effects events/control-stylist-gallery-drag-predicate-start-loop
   [_ _ {:keys [item event delay startTime]} app-state]
   #?(:cljs
      (let [eventType (.-type event)
            drag (.-_drag item)
            dragger (.-_dragger drag)
-           now (.getTime (js/Date.))]
-       (spice.core/spy {:now now
-                        :startTime startTime
-                        :delay delay
-                        :diff (- now startTime)})
-       (cond
+           now (.getTime (js/Date.))
+           startTime' (or startTime now)]
+      (cond
          (not= eventType "start") (set-dragger-touch dragger "pan-y")
-         (nil? startTime) (messages/handle-message events/debounced-event-initialized
-                                                   {:timeout 50
-                                                    :message [events/control-stylist-gallery-drag-predicate-start-loop
-                                                              {:item item
-                                                               :event event
-                                                               :delay delay
-                                                               :startTime now}]})
+
          (> (- now startTime) delay) (do
                                        (set-dragger-touch dragger "none")
                                        (._forceResolveStartPredicate drag event))
@@ -274,23 +262,7 @@
                                              {:item item
                                               :event event
                                               :delay delay
-                                              :startTime startTime}]})
-         )
-
-
-       )))
-
-#_(defmethod effects/perform-effects events/control-stylist-gallery-drag-begun
-  [_ _ {:keys [item]} app-state]
-  #?(:cljs
-     (let [dragger (.. item -_drag -_dragger)]
-       (.setCssProps dragger #js {:touchAction "none"}))))
-
-#_(defmethod effects/perform-effects events/stylist-gallery-reorder-mode-exited
-  [_ _ {:keys [item]} app-state]
-  #?(:cljs
-     (let [dragger (.. item -_drag -_dragger)]
-       (.setCssProps dragger #js {:touchAction "pan-y"}))))
+                                              :startTime startTime'}]})))))
 
 (defmethod effects/perform-effects events/control-stylist-gallery-reordered-v2
   [_ _ {:keys [posts-ordering]} app-state]
