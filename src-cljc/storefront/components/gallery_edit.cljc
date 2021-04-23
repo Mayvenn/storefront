@@ -57,7 +57,7 @@
 
 #?(:cljs (def reorder-mode-attrs
            {:on-click     do-nothing-handler
-            :style        {:touch-action "none"
+            :style        {:touchAction "none"
                            :filter       "brightness(0.5)"}
             :on-context-menu do-nothing-handler}))
 
@@ -67,7 +67,7 @@
 
 #?(:cljs (defn view-mode-attrs [photo-id]
            (merge (utils/route-to events/navigate-gallery-photo {:photo-id photo-id})
-                  {:style           {:touch-action "pan-y"}
+                  {:style           {:touchAction "pan-y"}
                    :on-context-menu do-nothing-handler})))
 
 #?(:cljs
@@ -85,7 +85,8 @@
       [:div {:key react-key}
        (let [{:keys [image-ordering]} post
              {:keys [status id resizable-url post-id]}
-             ;; TODO: refactor this out of the child node and into the top level post data structure. The image is the "COVER photo" for the post
+             ;; TODO: refactor this out of the child node and into the top level post data structure.
+             ;; The image is the "COVER photo" for the post
              (->> images
                   (filter #(= (:id %) (first image-ordering)))
                   first)]
@@ -125,53 +126,64 @@
                         [:div.center.shout.title-3.proxima "Add Photo"]])]]]))
 
 
+
 #?(:cljs
-   (defn muuri-config [gallery-ref]
-     #js {:dragEnabled true
-          :itemClass   "col-4"
-          :dragCssProps #js {:touchAction "pan-y"}
+   (defn muuri-config [gallery-ref reorder-mode]
+     (let [touch-action (if reorder-mode
+                          "none"
+                          "pan-y")]
+       #js {:dragEnabled true
+            :itemClass   "col-4"
+            :dragCssProps #js {:touchAction touch-action}
 
-          ;; By default muuri sets scale(1) or scale(0.5) onto items style tag
-          ;; depending upon their visibility or hidden...ness.
-          ;; Because it is on a style tag, it has higher specificity
-          ;; than a class. This clears that so we can scale by adding a class
-          ;; when dragging.
-          :visibleStyles #js {}
-          :hiddenStyles  #js {}
+            ;; By default muuri sets scale(1) or scale(0.5) onto items style tag
+            ;; depending upon their visibility or hidden...ness.
+            ;; Because it is on a style tag, it has higher specificity
+            ;; than a class. This clears that so we can scale by adding a class
+            ;; when dragging.
+            :visibleStyles #js {}
+            :hiddenStyles  #js {}
 
-          :dragAutoScroll #js {:targets #js [#js {:element  js/window
-                                                  :priority 0}
-                                             #js {:element  gallery-ref
-                                                  :priority 1
-                                                  :axis     MuuriReact/AutoScroller.AXIS_X}]}
+            :dragAutoScroll #js {:targets #js [#js {:element  js/window
+                                                    :priority 0}
+                                               #js {:element  gallery-ref
+                                                    :priority 1
+                                                    :axis     MuuriReact/AutoScroller.AXIS_X}]}
 
-          :dragStartPredicate #js {:delay 500}
-          :dragSortPredicate  (fn [item _e]
-                                (some-> (.defaultSortPredicate MuuriReact/ItemDrag item)
-                                        (#(when (not= 0 (.-index %)) %))))
-          :propsToData        (fn [item]
-                                (let [props (get-in (js->clj item) ["props"])]
-                                  {:post         (:post props)
-                                   :reorder-mode (:reorder-mode props)}))
-          :onDragStart        (fn [item _event]
-                                (messages/handle-message events/control-stylist-gallery-drag-begun
-                                                         {:post-id (-> item .getData :post :id )})
-                                (messages/handle-message events/stylist-gallery-reorder-mode-entered))
-          :onDragEnd          (fn [item _event]
-                                (->> item
-                                     .getGrid
-                                     .getItems
-                                     (keep #(some-> % .getData :post :id))
-                                     (assoc {} :posts-ordering)
-                                     (messages/handle-message events/control-stylist-gallery-reordered-v2))
-                                (messages/handle-message events/stylist-gallery-reorder-mode-exited))}))
+            :dragStartPredicate (fn [item event options]
+                                  (messages/handle-message events/debounced-event-initialized
+                                                           {:timeout 50
+                                                            :message [events/control-stylist-gallery-drag-predicate-start-loop
+                                                                      {:item item
+                                                                       :event event
+                                                                       :delay 500}]}))
+            :dragSortPredicate  (fn [item _e]
+                                  (some-> (.defaultSortPredicate MuuriReact/ItemDrag item)
+                                          (#(when (not= 0 (.-index %)) %))))
+            :propsToData        (fn [item]
+                                  (let [props (get-in (js->clj item) ["props"])]
+                                    {:post         (:post props)
+                                     :reorder-mode (:reorder-mode props)}))
+            :onDragStart        (fn [item _event]
+                                  (messages/handle-message events/control-stylist-gallery-drag-begun
+                                                           {:post-id (-> item .getData :post :id )})
+                                  (messages/handle-message events/stylist-gallery-reorder-mode-entered
+                                                           {:item item}))
+            :onDragEnd          (fn [item _event]
+                                  (->> item
+                                       .getGrid
+                                       .getItems
+                                       (keep #(some-> % .getData :post :id))
+                                       (assoc {} :posts-ordering)
+                                       (messages/handle-message events/control-stylist-gallery-reordered-v2))
+                                  (messages/handle-message events/stylist-gallery-reorder-mode-exited
+                                                           {:item item}))})))
 
 ;; TODO: There is an api call to change sort order on drag completed (talk to diva. maybe need to debounce)
 ;; Move first element not draggable logic into Muuri config
 ;; Scrolling issues
 ;;; Can't scroll by touching a draggable element
 ;;; `:dragAutoScroll???`
-
 
 (defdynamic-component reorderable-component-2
   (constructor [this props]
@@ -188,7 +200,7 @@
                        {:ref gallery-ref}
                        (apply react/createElement
                               MuuriReact/MuuriComponent
-                              (muuri-config gallery-ref)
+                              (muuri-config gallery-ref reorder-mode)
                               (cons
                                (component/build add-photo-square-2 {:key "add-photo"})
                                (for [post (sort-by (comp first :image-ordering) posts)]
@@ -225,6 +237,60 @@
   #?(:cljs (update-in app-state keypaths/user-stylist-gallery-images
                       #(sort-by (fn [image]
                                   (.indexOf posts-ordering (:id image))) %))))
+
+
+#?(:cljs
+   (defn set-dragger-touch [dragger value]
+     (.setCssProps dragger #js {:touchAction value})))
+
+;; NOTE: I have no mouth but I must scream.
+(defmethod effects/perform-effects events/control-stylist-gallery-drag-predicate-start-loop
+  [_ _ {:keys [item event delay startTime]} app-state]
+  #?(:cljs
+     (let [eventType (.-type event)
+           drag (.-_drag item)
+           dragger (.-_dragger drag)
+           now (.getTime (js/Date.))]
+       (spice.core/spy {:now now
+                        :startTime startTime
+                        :delay delay
+                        :diff (- now startTime)})
+       (cond
+         (not= eventType "start") (set-dragger-touch dragger "pan-y")
+         (nil? startTime) (messages/handle-message events/debounced-event-initialized
+                                                   {:timeout 50
+                                                    :message [events/control-stylist-gallery-drag-predicate-start-loop
+                                                              {:item item
+                                                               :event event
+                                                               :delay delay
+                                                               :startTime now}]})
+         (> (- now startTime) delay) (do
+                                       (set-dragger-touch dragger "none")
+                                       (._forceResolveStartPredicate drag event))
+
+         :otherwise (messages/handle-message events/debounced-event-initialized
+                                  {:timeout 50
+                                   :message [events/control-stylist-gallery-drag-predicate-start-loop
+                                             {:item item
+                                              :event event
+                                              :delay delay
+                                              :startTime startTime}]})
+         )
+
+
+       )))
+
+#_(defmethod effects/perform-effects events/control-stylist-gallery-drag-begun
+  [_ _ {:keys [item]} app-state]
+  #?(:cljs
+     (let [dragger (.. item -_drag -_dragger)]
+       (.setCssProps dragger #js {:touchAction "none"}))))
+
+#_(defmethod effects/perform-effects events/stylist-gallery-reorder-mode-exited
+  [_ _ {:keys [item]} app-state]
+  #?(:cljs
+     (let [dragger (.. item -_drag -_dragger)]
+       (.setCssProps dragger #js {:touchAction "pan-y"}))))
 
 (defmethod effects/perform-effects events/control-stylist-gallery-reordered-v2
   [_ _ {:keys [posts-ordering]} app-state]

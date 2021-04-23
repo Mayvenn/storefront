@@ -697,6 +697,7 @@
 ;; cache - data handling from remotes, no conceptualization
 
 ;; Stylist Gallery
+(defpath control-stylist-gallery-drag-predicate-start-loop)
 (defpath control-stylist-gallery-drag-begun)
 (defpath control-stylist-gallery-reordered-v2)
 (defpath control-stylist-gallery-delete-v2)
