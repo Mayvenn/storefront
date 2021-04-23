@@ -9,6 +9,7 @@
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
+            [storefront.debounce :as debounce]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
@@ -153,7 +154,7 @@
             :dragStartPredicate (fn [item event options]
                                   (messages/handle-message events/debounced-event-initialized
                                                            {:timeout 50
-                                                            :message [events/control-stylist-gallery-drag-predicate-start-loop
+                                                            :message [events/control-stylist-gallery-drag-predicate-loop
                                                                       {:item item
                                                                        :event event
                                                                        :delay 500}]}))
@@ -241,7 +242,7 @@
    (defn set-dragger-touch [dragger value]
      (.setCssProps dragger #js {:touchAction value})))
 
-(defmethod effects/perform-effects events/control-stylist-gallery-drag-predicate-start-loop
+(defmethod effects/perform-effects events/control-stylist-gallery-drag-predicate-loop
   [_ _ {:keys [item event delay startTime]} app-state]
   #?(:cljs
      (let [eventType (.-type event)
@@ -258,7 +259,7 @@
 
          :otherwise (messages/handle-message events/debounced-event-initialized
                                   {:timeout 50
-                                   :message [events/control-stylist-gallery-drag-predicate-start-loop
+                                   :message [events/control-stylist-gallery-drag-predicate-loop
                                              {:item item
                                               :event event
                                               :delay delay
@@ -312,25 +313,6 @@
                 api/get-stylist-gallery)
               {:user-id    (get-in app-state keypaths/user-id)
                :user-token (get-in app-state keypaths/user-token)}))))
-
- ;; TODO(ellie, 2021-04-21): Move these somewhere better?
-(defmethod effects/perform-effects events/debounced-event-enqueued
-  [_ _ {:keys [debounced-event]} prev-app-state app-state]
-  #?(:cljs
-     (when-let [timer (get-in prev-app-state (conj keypaths/debounce-timers debounced-event))]
-       (js/clearTimeout timer))))
-
-(defmethod transitions/transition-state events/debounced-event-enqueued
-  [_ _ {:keys [timer debounced-event]} app-state]
-  (assoc-in app-state (conj keypaths/debounce-timers debounced-event) timer))
-
-(defmethod effects/perform-effects events/debounced-event-initialized
-  [_ _ {[debounced-event debounced-event-args] :message
-        timeout                                :timeout} prev-app-state app-state]
-  (when-let [debounce-timer (messages/handle-later debounced-event debounced-event-args timeout)]
-    (messages/handle-message events/debounced-event-enqueued {:timer           debounce-timer
-                                                              :debounced-event debounced-event})))
-
 
 (defmethod effects/perform-effects events/api-success-stylist-gallery [_ event args _ app-state]
   (let [signed-in-as-stylist? (auth/stylist? (auth/signed-in app-state))
