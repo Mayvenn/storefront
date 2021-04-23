@@ -697,9 +697,10 @@
 ;; cache - data handling from remotes, no conceptualization
 
 ;; Stylist Gallery
-(defpath control-stylist-gallery-drag-predicate-loop)
-(defpath control-stylist-gallery-drag-begun)
-(defpath control-stylist-gallery-reordered-v2)
+(defpath control-stylist-gallery-posts-drag-predicate-loop)
+(defpath control-stylist-gallery-posts-drag-began)
+(defpath control-stylist-gallery-posts-drag-ended)
 (defpath control-stylist-gallery-delete-v2)
-(defpath stylist-gallery-reorder-mode-entered)
-(defpath stylist-gallery-reorder-mode-exited)
+(defpath control-stylist-gallery-posts-drag-init-predicate)
+(defpath stylist-gallery-posts-drag-predicate-loop)
+(defpath stylist-gallery-posts-reordered)
