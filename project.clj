@@ -133,6 +133,7 @@
                                            "externs/convert.js"
                                            "externs/facebook.js"
                                            "externs/google_maps.js"
+                                           "externs/kustomer.js"
                                            "externs/quadpay.js"
                                            "externs/riskified.js"
                                            "externs/spreedly.js"
