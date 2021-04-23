@@ -20,7 +20,7 @@
 (def drag-delay 500)
 (def gallery-poll-rate 5000)
 (def drag-start-predicate-rate 50)
-(def reorder-api-call-debounce-period 5000)
+(def reorder-api-call-debounce-period 500)
 
 (def add-photo-square
   [:a.block.col-4.pp1.bg-pale-purple.white
@@ -60,7 +60,6 @@
            (.preventDefault e)
            (.stopPropagation e)))
 
-
 #?(:cljs (def reorder-mode-attrs
            {:on-click     do-nothing-handler
             :style        {:touchAction "none"
@@ -80,7 +79,6 @@
    (defn base-container-attrs [post-id]
      {:data-post-id post-id
       :style {:padding "1px"}}))
-
 
 (defcomponent child-node
   [{react-key :key
@@ -126,7 +124,32 @@
                         [:div.center.bold {:style {:font-size "60px"}} "+"]
                         [:div.center.shout.title-3.proxima "Add Photo"]])]]]))
 
+(defn muuri-event-listener [event]
+  (fn [item muuri-event & other-args]
+    (messages/handle-message event
+                             {:item item
+                              :muuri-event muuri-event})))
 
+(def muuri-drag-start-predicate (muuri-event-listener events/control-stylist-gallery-posts-drag-predicate-initialized))
+(def muuri-on-drag-start (muuri-event-listener events/control-stylist-gallery-posts-drag-began))
+(def muuri-on-drag-end (muuri-event-listener events/control-stylist-gallery-posts-drag-ended))
+
+(def muuri-sort-fn (memoize (fn [post-ordering]
+                              (fn [a-post b-post]
+                                (if (= (:id a-post) (first (keep #{(:id a-post) (:id b-post)} post-ordering)))
+                                  1
+                                  -1)))))
+
+(defn muuri-drag-sort-predicate [item _muuri-event]
+  #?(:cljs
+     (some-> (.defaultSortPredicate MuuriReact/ItemDrag item)
+             (#(when (not= 0 (.-index %)) %)))))
+
+(defn muuri-props-to-data [item]
+  #?(:cljs
+     (let [props (get-in (js->clj item) ["props"])]
+       {:post         (:post props)
+        :reorder-mode (:reorder-mode props)})))
 
 #?(:cljs
    (defn muuri-config [gallery-ref reorder-mode post-ordering]
@@ -151,30 +174,12 @@
                                                     :priority 1
                                                     :axis     MuuriReact/AutoScroller.AXIS_X}]}
 
-            :dragStartPredicate (fn [item event options]
-                                  (messages/handle-message events/control-stylist-gallery-posts-drag-init-predicate
-                                                           {:item item
-                                                            :event event}))
-            :sort               (fn [a-post b-post]
-                                  (if (= (:id a-post) (first (keep #{(:id a-post) (:id b-post)} post-ordering)))
-                                    1
-                                    -1))
-
-            :dragSortPredicate (fn [item _e]
-                                 (some-> (.defaultSortPredicate MuuriReact/ItemDrag item)
-                                         (#(when (not= 0 (.-index %)) %))))
-            :propsToData       (fn [item]
-                                 (let [props (get-in (js->clj item) ["props"])]
-                                   {:post         (:post props)
-                                    :reorder-mode (:reorder-mode props)}))
-            :onDragStart       (fn [item event]
-                                 (messages/handle-message events/control-stylist-gallery-posts-drag-began
-                                                          {:item item
-                                                           :event event}))
-            :onDragEnd         (fn [item event]
-                                 (messages/handle-message events/control-stylist-gallery-posts-drag-ended
-                                                          {:item item
-                                                           :event event}))})))
+            :sort               (muuri-sort-fn post-ordering)
+            :dragSortPredicate  muuri-drag-sort-predicate
+            :propsToData        muuri-props-to-data
+            :dragStartPredicate muuri-drag-start-predicate
+            :onDragStart        muuri-on-drag-start
+            :onDragEnd          muuri-on-drag-end})))
 
 ;; TODO: There is an api call to change sort order on drag completed (talk to diva. maybe need to debounce)
 ;; Move first element not draggable logic into Muuri config
@@ -214,22 +219,24 @@
   [_ _ {:keys [item]} app-state]
   (let [post-id (-> item .getData :post :id)]
     (-> app-state
+        (assoc-in keypaths/user-stylist-gallery-new-posts-ordering [])
         (assoc-in keypaths/stylist-gallery-reorder-mode true)
         (assoc-in keypaths/stylist-gallery-currently-dragging-post post-id))))
 
 (defmethod transitions/transition-state events/control-stylist-gallery-posts-drag-ended
-  [_ _ args app-state]
+  [_ _ {:keys [item]} app-state]
   (-> app-state
+      (assoc-in keypaths/user-stylist-gallery-new-posts-ordering (->> item
+                                                                 .getGrid
+                                                                 .getItems
+                                                                 (keep #(some-> % .getData :post :id))))
       (assoc-in keypaths/stylist-gallery-reorder-mode false)
       (update-in keypaths/stylist-gallery dissoc :currently-dragging-post)))
 
 (defmethod effects/perform-effects events/control-stylist-gallery-posts-drag-ended
-  [_ _ {:keys [item]} app-state]
+  [_ _ args _ app-state]
   #?(:cljs
-     (let [posts-ordering (->> item
-                               .getGrid
-                               .getItems
-                               (keep #(some-> % .getData :post :id)))
+     (let [posts-ordering (get-in app-state keypaths/user-stylist-gallery-new-posts-ordering)
            event-args     {:user-id        (get-in app-state keypaths/user-id)
                            :user-token     (get-in app-state keypaths/user-token)
                            :posts-ordering posts-ordering}]
@@ -239,67 +246,62 @@
          :message [events/stylist-gallery-posts-reordered event-args]}))))
 
 (defmethod effects/perform-effects events/stylist-gallery-posts-reordered
-  [_ _ {:keys [user-id user-token posts-ordering]} app-state]
+  [_ _ {:keys [user-id user-token posts-ordering]} _ app-state]
   #?(:cljs
      (api/reorder-store-gallery {:user-id user-id
                                  :user-token user-token
                                  :posts-ordering posts-ordering})))
 
-(defmethod effects/perform-effects events/control-stylist-gallery-posts-drag-init-predicate
-  [_ _ args app-state]
+(defmethod effects/perform-effects events/control-stylist-gallery-posts-drag-predicate-initialized
+  [_ _ args _ app-state]
   #?(:cljs
      (messages/handle-message events/debounced-event-initialized
                               {:timeout drag-start-predicate-rate
                                :message [events/stylist-gallery-posts-drag-predicate-loop args]})))
 
 (defmethod effects/perform-effects events/control-stylist-gallery-delete-v2
-  [_ _ {:keys [post-id]} app-state]
+  [_ _ {:keys [post-id]} _ app-state]
   #?(:cljs (api/delete-v2-gallery-post {:user-id    (get-in app-state keypaths/user-id)
                                         :user-token (get-in app-state keypaths/user-token)
                                         :post-id    post-id})))
-
 
 #?(:cljs
    (defn set-dragger-touch-action [dragger value]
      (.setCssProps dragger #js {:touchAction value})))
 
 (defmethod effects/perform-effects events/stylist-gallery-posts-drag-predicate-loop
-  [_ _ {:keys [item event startTime]} app-state]
+  [_ _ {:keys [item muuri-event startTime]} _ app-state]
   #?(:cljs
-     (let [eventType  (.-type event)
+     (let [eventType  (.-type muuri-event)
            drag       (.-_drag item)
            dragger    (.-_dragger drag)
            now        (.getTime (js/Date.))
            startTime' (or startTime now)]
-      (cond
-        (not= eventType "start") (set-dragger-touch-action dragger "pan-y")
+       (cond
+         (not= eventType "start") (set-dragger-touch-action dragger "pan-y")
 
-        (> (- now startTime') drag-delay) (do
-                                       (set-dragger-touch-action dragger "none")
-                                       (._forceResolveStartPredicate drag event))
+         (> (- now startTime') drag-delay) (do
+                                             (set-dragger-touch-action dragger "none")
+                                             (._forceResolveStartPredicate drag muuri-event))
 
-        :otherwise (messages/handle-message events/debounced-event-initialized
-                                            {:timeout drag-start-predicate-rate
-                                             :message [events/stylist-gallery-posts-drag-predicate-loop
-                                                       {:item      item
-                                                        :event     event
-                                                        :delay     drag-delay
-                                                        :startTime startTime'}]})))))
-
-
-
-
+         :otherwise (messages/handle-message events/debounced-event-initialized
+                                             {:timeout drag-start-predicate-rate
+                                              :message [events/stylist-gallery-posts-drag-predicate-loop
+                                                        {:item        item
+                                                         :muuri-event muuri-event
+                                                         :delay       drag-delay
+                                                         :startTime   startTime'}]})))))
 
 (defn query [state]
   {:gallery (get-in state keypaths/user-stylist-gallery-images)})
 
 (defn query-v2 [state]
   (let [images        (->> (get-in state keypaths/user-stylist-gallery-images)
-                            (spice.maps/index-by :id))
+                           (spice.maps/index-by :id))
         indexed-posts (->> (get-in state keypaths/user-stylist-gallery-posts)
                            (map (fn [post] (->> post :image-ordering first (get images) (assoc post :cover-image))))
                            (spice.maps/index-by :id))
-        post-ordering (get-in state keypaths/user-stylist-gallery-posts-ordering)
+        post-ordering (get-in state keypaths/user-stylist-gallery-initial-posts-ordering)
         sorted-posts  (map indexed-posts post-ordering)]
     {:posts-with-cover           sorted-posts
      :post-ordering              post-ordering
@@ -323,17 +325,17 @@
 (defmethod transitions/transition-state events/navigate-gallery-edit
   [_ event args app-state]
   (-> app-state
-      (assoc-in keypaths/user-stylist-gallery-posts-ordering [])))
+      (assoc-in keypaths/user-stylist-gallery-initial-posts-ordering [])))
 
 (defmethod transitions/transition-state events/api-success-stylist-gallery
   [_ event {:keys [images posts]} app-state]
   (-> app-state
       (assoc-in keypaths/user-stylist-gallery-images images)
       (assoc-in keypaths/user-stylist-gallery-posts posts)
-      (update-in keypaths/user-stylist-gallery-posts-ordering (fn [ordering]
-                                                               (if (seq ordering)
-                                                                 ordering
-                                                                 (map :id posts))))))
+      (update-in keypaths/user-stylist-gallery-initial-posts-ordering (fn [ordering]
+                                                                        (if (seq ordering)
+                                                                          ordering
+                                                                          (map :id posts))))))
 
 (defmethod effects/perform-effects events/api-success-stylist-gallery [_ event args _ app-state]
   (let [signed-in-as-stylist? (auth/stylist? (auth/signed-in app-state))

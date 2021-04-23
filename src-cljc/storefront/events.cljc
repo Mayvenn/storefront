@@ -701,6 +701,6 @@
 (defpath control-stylist-gallery-posts-drag-began)
 (defpath control-stylist-gallery-posts-drag-ended)
 (defpath control-stylist-gallery-delete-v2)
-(defpath control-stylist-gallery-posts-drag-init-predicate)
+(defpath control-stylist-gallery-posts-drag-predicate-initialized)
 (defpath stylist-gallery-posts-drag-predicate-loop)
 (defpath stylist-gallery-posts-reordered)
