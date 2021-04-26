@@ -119,4 +119,6 @@
 
 (defn live-help?
   [data]
-  (display-feature? data "live-help"))
+  (and
+   (get-in data keypaths/loaded-kustomer) ;; <-- NOTE: this check will replace calls to `live-help?` once the feature goes to 100
+   (display-feature? data "live-help")))

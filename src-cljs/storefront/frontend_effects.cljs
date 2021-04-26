@@ -106,7 +106,10 @@
 
 (defmethod effects/perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
   (when (= feature "add-on-services") ;; Remove when experiments/add-on-services is removed
-    (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})))
+    (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)}))
+
+  (when (= feature "live-help")
+    (messages/handle-message events/flow|live-help|reset)))
 
 (defmethod effects/perform-effects events/ensure-sku-ids
   [_ _ {:keys [sku-ids]} _ app-state]

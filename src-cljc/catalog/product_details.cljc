@@ -650,7 +650,6 @@
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
      [_ event args _ state]
-     (messages/handle-message events/flow|live-help|reset)
      (messages/handle-message events/initialize-product-details
                               (assoc args :origin-nav-event event))))
 

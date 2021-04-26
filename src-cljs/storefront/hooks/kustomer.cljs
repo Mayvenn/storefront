@@ -21,12 +21,13 @@
 
 (defn init
   []
-  (-> "https://cdn.kustomerapp.com/chat-web/widget.js"
-      (tags/src-tag "kustomer-script")
-      (tags/insert-tag-with-dataset-and-callback
-       "kustomerApiKey"
-       config/kustomer-api-key
-       (partial messages/handle-message e/inserted-kustomer))))
+  (when-not (.hasOwnProperty js/window "Kustomer")
+    (-> "https://cdn.kustomerapp.com/chat-web/widget.js"
+        (tags/src-tag "kustomer-script")
+        (tags/insert-tag-with-dataset-and-callback
+         "kustomerApiKey"
+         config/kustomer-api-key
+         (partial messages/handle-message e/inserted-kustomer)))))
 
 (defn open-conversation [] (.open js/Kustomer))
 
