@@ -82,7 +82,7 @@
 
 (defcomponent child-node
   [{react-key :key
-    :keys     [currently-dragging-post-id post reorder-mode]} _ _]
+    :keys     [currently-dragging-post-id post reorder-mode?]} _ _]
   (component/html
    #?(:clj [:div]
       :cljs
@@ -93,7 +93,8 @@
                           [:div.container-size
                            (maps/deep-merge
                             (base-container-attrs post-id)
-                            (if reorder-mode
+                            ;; TODO: Refactor these conditionals out of `child-node`
+                            (if reorder-mode?
                               reorder-mode-attrs
                               (view-mode-attrs post-id))
                             (when (= currently-dragging-post-id post-id)
@@ -124,6 +125,7 @@
                         [:div.center.bold {:style {:font-size "60px"}} "+"]
                         [:div.center.shout.title-3.proxima "Add Photo"]])]]]))
 
+;; TODO: Memoize this?
 (defn muuri-event-listener [event]
   (fn [item muuri-event & other-args]
     (messages/handle-message event
@@ -148,12 +150,12 @@
 (defn muuri-props-to-data [item]
   #?(:cljs
      (let [props (get-in (js->clj item) ["props"])]
-       {:post         (:post props)
-        :reorder-mode (:reorder-mode props)})))
+       {:post          (:post props)
+        :reorder-mode? (:reorder-mode? props)})))
 
 #?(:cljs
-   (defn muuri-config [gallery-ref reorder-mode post-ordering]
-     (let [touch-action (if reorder-mode
+   (defn muuri-config [gallery-ref reorder-mode? post-ordering]
+     (let [touch-action (if reorder-mode?
                           "none"
                           "pan-y")]
        #js {:dragEnabled  true
@@ -181,17 +183,16 @@
             :onDragStart        muuri-on-drag-start
             :onDragEnd          muuri-on-drag-end})))
 
-;; TODO: There is an api call to change sort order on drag completed (talk to diva. maybe need to debounce)
-;; Move first element not draggable logic into Muuri config
+;; TODO: Move first element not draggable logic into Muuri config
 
-(defdynamic-component reorderable-component-2
+(defdynamic-component reorderable-component
   (constructor [this props]
                (component/create-ref! this "gallery")
                nil)
   ;; TODO:: Flash shows incorrectly on page
   (render [this]
-          (let [{:keys [posts-with-cover post-ordering reorder-mode currently-dragging-post-id]} (component/get-props this)
-                gallery-ref                                                                      (component/use-ref this "gallery")]
+          (let [{:keys [posts-with-cover post-ordering reorder-mode? currently-dragging-post-id]} (component/get-props this)
+                gallery-ref                                                                       (component/use-ref this "gallery")]
             (component/html
              #?(:clj [:div]
                 :cljs [:div
@@ -199,12 +200,12 @@
                        {:ref gallery-ref}
                        (apply react/createElement
                               MuuriReact/MuuriComponent
-                              (muuri-config gallery-ref reorder-mode post-ordering)
+                              (muuri-config gallery-ref reorder-mode? post-ordering)
                               (cons
                                (component/build add-photo-square-2 {:key "add-photo"})
                                (for [post posts-with-cover]
                                  (component/build child-node {:key                        (:id post)
-                                                              :reorder-mode               reorder-mode
+                                                              :reorder-mode?              reorder-mode?
                                                               :currently-dragging-post-id currently-dragging-post-id
                                                               :post                       post}))))])))))
 (defcomponent reorderable-wrapper
@@ -212,7 +213,7 @@
   [:div
    ;; TODO: real loader. Make sure page works when experiment is turned on while on the page
    (if true #_(seq (:posts data))
-       (component/build reorderable-component-2 data)
+       (component/build reorderable-component data)
        (ui/large-spinner {:style {:height "6em"}}))])
 
 (defmethod transitions/transition-state events/control-stylist-gallery-posts-drag-began
@@ -278,13 +279,13 @@
            now        (.getTime (js/Date.))
            startTime' (or startTime now)]
        (cond
-         (not= eventType "start") (set-dragger-touch-action dragger "pan-y")
+         (not (#{"start" "move" "cancel"} eventType)) (set-dragger-touch-action dragger "pan-y")
 
          (> (- now startTime') drag-delay) (do
                                              (set-dragger-touch-action dragger "none")
                                              (._forceResolveStartPredicate drag muuri-event))
 
-         :otherwise (messages/handle-message events/debounced-event-initialized
+         :else (messages/handle-message events/debounced-event-initialized
                                              {:timeout drag-start-predicate-rate
                                               :message [events/stylist-gallery-posts-drag-predicate-loop
                                                         {:item        item
@@ -305,7 +306,7 @@
         sorted-posts  (map indexed-posts post-ordering)]
     {:posts-with-cover           sorted-posts
      :post-ordering              post-ordering
-     :reorder-mode               (get-in state keypaths/stylist-gallery-reorder-mode)
+     :reorder-mode?              (get-in state keypaths/stylist-gallery-reorder-mode)
      :currently-dragging-post-id (get-in state keypaths/stylist-gallery-currently-dragging-post)}))
 
 (defn ^:export built-component [data opts]
@@ -314,17 +315,18 @@
     (component/build static-component (query data) nil)))
 
 (defmethod effects/perform-effects events/navigate-gallery-edit [_ event args _ app-state]
-  #?(:cljs (if (auth/stylist? (auth/signed-in app-state))
-             ((if (experiments/edit-gallery? app-state)
-                api/get-v2-stylist-gallery
-                api/get-stylist-gallery)
-              {:user-id    (get-in app-state keypaths/user-id)
-               :user-token (get-in app-state keypaths/user-token)})
-             (effects/redirect events/navigate-store-gallery))))
+  #?(:cljs
+     (let [api-params {:user-id    (get-in app-state keypaths/user-id)
+                       :user-token (get-in app-state keypaths/user-token)}]
+       (cond
+         (-> app-state auth/signed-in auth/stylist? not) (effects/redirect events/navigate-store-gallery)
+         (experiments/edit-gallery? app-state)           (api/get-v2-stylist-gallery api-params)
+         :else                                           (api/get-stylist-gallery api-params)))))
 
 (defmethod transitions/transition-state events/navigate-gallery-edit
   [_ event args app-state]
   (-> app-state
+      ;; Reset the initial ordering for the muuri component
       (assoc-in keypaths/user-stylist-gallery-initial-posts-ordering [])))
 
 (defmethod transitions/transition-state events/api-success-stylist-gallery
@@ -332,6 +334,10 @@
   (-> app-state
       (assoc-in keypaths/user-stylist-gallery-images images)
       (assoc-in keypaths/user-stylist-gallery-posts posts)
+
+      ;; MuuriComponent expects the passed in children to be in the same order as the initial load
+      ;; Without this, react replaces the children, but MuuriComponent does not update the Muuri Grid,
+      ;; breaking the grid.
       (update-in keypaths/user-stylist-gallery-initial-posts-ordering (fn [ordering]
                                                                         (if (seq ordering)
                                                                           ordering
