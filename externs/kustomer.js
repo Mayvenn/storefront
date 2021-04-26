@@ -12,3 +12,6 @@ Kustomer.isChatAvailable = function() {};
 Kustomer.createConversation = function() {};
 Kustomer.openConversationById = function() {};
 Kustomer.getOpenConversations = function() {};
+
+var KustomerOnConversationCreateResponse = {conversationId: {}};
+var KustomerOnUnreadRespones = {change: {conversationId: {}}} ;

@@ -63,15 +63,15 @@
     (.addListener "onLogout"             #(messages/handle-message kustomer|onLogout             {:response %1 :error %2}))))
 
 (defmethod transitions/transition-state kustomer|onConversationCreate
-  [_ _ {:keys [response error]} app-state]
+  [_ _ {:keys [^KustomerOnConversationCreateResponse response _error]} app-state]
   (assoc-in app-state k/kustomer-conversation-id (.-conversationId response)))
 
 (defmethod effects/perform-effects kustomer|onConversationCreate
-  [_ _ {:keys [response error]} _ app-state]
+  [_ _ _ _ app-state]
   (describe-conversation (get-in app-state k/kustomer-conversation-id)
                          {:page-url     (str (get-in app-state k/navigation-uri))
                           :order-number (get-in app-state k/order-number)}))
 
 (defmethod transitions/transition-state kustomer|onUnread
-  [_ _ {:keys [response error]} app-state]
+  [_ _ {:keys [^KustomerOnUnreadRespones response _error]} app-state]
   (assoc-in app-state k/kustomer-conversation-id (.. response -change -conversationId)))
