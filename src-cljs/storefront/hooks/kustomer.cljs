@@ -52,6 +52,10 @@
               "hideChatIcon" true}
           (partial messages/handle-message kustomer|started)))
 
+(defmethod transitions/transition-state kustomer|started
+  [_ event args app-state]
+  (assoc-in app-state k/started-kustomer true))
+
 (defmethod effects/perform-effects kustomer|started
   [_ _ _ _ _]
   (doto js/Kustomer

@@ -278,7 +278,10 @@
 (def loaded-stripe (conj loaded :stripe))
 (def loaded-quadpay (conj loaded :quadpay))
 (def loaded-uploadcare (conj loaded :uploadcare))
+
 (def loaded-kustomer (conj loaded :kustomer))
+;; Kustomer integration requires to be called and completed after tag insertion
+(def started-kustomer (conj ui :started :kustomer))
 
 (def facebook-email-denied (conj ui :facebook-email-denied))
 
