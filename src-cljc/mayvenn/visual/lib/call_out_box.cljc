@@ -25,22 +25,18 @@
 (c/defcomponent variation-1
   [data _ _]
   (when (seq data)
-    [:div.m3
-     [:div.col-12.bg-pale-purple.flex.flex-column.items-center.p5
-      (link-to-atom
-       (with :action data)
-       (titles/canela (with :title data)))
-      (actions/action-molecule (with :action data))]]))
+    [:div.col-12.bg-pale-purple.flex.flex-column.items-center.p5
+     (link-to-atom
+      (with :action data)
+      (titles/canela (with :title data)))
+     (actions/action-molecule (with :action data))]))
 
 ;; Warm Gray, Proxima
 (c/defcomponent variation-2
   [data _ _]
   (when (seq data)
-    [:div.m3
-     [:div.col-12.bg-warm-gray.flex.flex-column.items-center.p5
-      (link-to-atom
-       (with :action data)
-       (titles/proxima (with :title data)))
-      (actions/action-molecule (with :action data))]]))
-
-
+    [:div.col-12.bg-warm-gray.flex.flex-column.items-center.p5
+     (link-to-atom
+      (with :action data)
+      (titles/proxima (with :title data)))
+     (actions/action-molecule (with :action data))]))

@@ -20,7 +20,6 @@
             [catalog.products :as products]
             [catalog.selector.sku :as sku-selector]
             [catalog.ui.add-to-cart :as add-to-cart]
-            [catalog.ui.browse-stylists-banner :as browse-stylists-banner]
             [catalog.ui.molecules :as catalog.M]
             [checkout.cart.swap :as swap]
             [homepage.ui.faq :as faq]
@@ -174,7 +173,7 @@
          (page
           (component/html
            [:div ^:inline (carousel carousel-images product)
-            [:div.my5 (component/build browse-stylists-banner/organism data opts)]
+            [:div.my5 (component/build call-out-box/variation-1 browse-stylists-banner)]
             (component/build ugc/component ugc opts)])
           (component/html
            [:div
@@ -194,10 +193,11 @@
               shipping-and-guarantee)
             (component/build tabbed-information/component data)
             (component/build catalog.M/non-hair-product-description data opts)
-            [:div.hide-on-tb-dt
-             (component/build call-out-box/variation-1 browse-stylists-banner)
+            [:div.hide-on-tb-dt.m3
              (component/build call-out-box/variation-2 live-help)
+             [:div.mt3 (component/build call-out-box/variation-1 browse-stylists-banner)]
              [:div.mxn2.mb3 (component/build ugc/component ugc opts)]]]))]]
+
        (when (seq reviews)
          [:div.container.col-7-on-tb-dt.px2
           (component/build review-component/reviews-component reviews opts)])
