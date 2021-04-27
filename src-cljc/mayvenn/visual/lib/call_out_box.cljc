@@ -36,6 +36,7 @@
   [data _ _]
   (when (seq data)
     [:div.col-12.bg-warm-gray.flex.flex-column.items-center.p5
+     {:key (:action/id data)}
      (link-to-atom
       (with :action data)
       (titles/proxima (with :title data)))

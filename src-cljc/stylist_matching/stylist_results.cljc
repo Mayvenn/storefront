@@ -29,7 +29,9 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
             [spice.date :as date]
-            storefront.keypaths))
+            storefront.keypaths
+            [mayvenn.live-help.core :as live-help]))
+
 
 ;;  Navigating to the results page causes the effect of searching for stylists
 ;;
@@ -468,11 +470,20 @@
                              (component/component-id count-id))])
          (when (:list.matching/key data)
            [:div
-            (for [card (:list.matching/cards data)]
-              [:div {:key (:react/key card)}
-               (ui/screen-aware stylist-cards/organism
-                                card
-                                (component/component-id (:react/key card)))])])
+            (for [{:keys [type data]} (:list.matching/cards data)]
+              (case type
+                :matching-stylist-card
+                [:div {:key (:react/key data)}
+                 (ui/screen-aware stylist-cards/organism
+                                  data
+                                  (component/component-id (:react/key data)))]
+
+                :live-help-breaker
+                [:div.m3
+                 {:key "call-out-box"}
+                 live-help/banner]
+
+                nil))])
          (when (:list.breaker/id data)
            [:div
             {:key       "non-matching-breaker"
@@ -710,6 +721,11 @@
   (messages/handle-message e/flow|stylist-matching|set-presearch-field args)
   (execute-named-search (:name args)))
 
+(defn ^:private insert-at-pos
+  [position i coll]
+  (let [[h & r] (partition-all position coll)]
+    (flatten (into [h] (concat [i] r)))))
+
 (defn ^:export page
   [app-state _]
   (let [;; Models
@@ -723,7 +739,7 @@
         just-added-control?    (experiments/just-added-control? app-state)
         stylist-results-test?  (experiments/stylist-results-test? app-state)
 
-        google-loaded? (get-in app-state storefront.keypaths/loaded-google-maps)
+        google-loaded?        (get-in app-state storefront.keypaths/loaded-google-maps)
         presearching-name?    (contains? (:status matching) :results.presearch/name)
         empty-search-results? (and (empty? (:results.presearch/name matching))
                                    presearching-name?)
@@ -739,7 +755,7 @@
         matching-stylist-cards        (stylist-data->stylist-cards (assoc stylist-data :stylists matching-stylists))
         non-matching-stylist-cards    (stylist-data->stylist-cards (assoc stylist-data :stylists non-matching-stylists))
         filter-menu                   #?(:cljs (filter-menu/query app-state) :clj nil)
-        address-field-errors    (get-in app-state k/address-field-errors)]
+        address-field-errors          (get-in app-state k/address-field-errors)]
     (if filter-menu
       (component/build #?(:clj  (component/html [:div])
                           :cljs filter-menu/component) filter-menu nil)
@@ -768,7 +784,13 @@
                         :list.stylist-counter/key     (when (pos? (count matching-stylists))
                                                         "stylist-count-content")
                         :list.matching/key            (when (seq matching-stylists) "stylist-matching")
-                        :list.matching/cards          matching-stylist-cards
+                        :list.matching/cards (cond->> (mapv
+                                                       (fn [msc]
+                                                         {:type :matching-stylist-card
+                                                          :data msc})
+                                                       matching-stylist-cards)
+                                               (experiments/live-help? app-state)
+                                               (insert-at-pos 3 {:type :live-help-breaker}))
                         :list.breaker/id              (when (seq non-matching-stylists) "non-matching-breaker")
                         :list.breaker/results-content (when (and (seq non-matching-stylists)
                                                                  (empty? matching-stylists))

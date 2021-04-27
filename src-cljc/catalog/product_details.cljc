@@ -48,7 +48,8 @@
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             storefront.ugc
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.accessors.experiments :as experiments]
+            [mayvenn.live-help.core :as live-help]))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
@@ -194,7 +195,7 @@
             (component/build tabbed-information/component data)
             (component/build catalog.M/non-hair-product-description data opts)
             [:div.hide-on-tb-dt.m3
-             (component/build call-out-box/variation-2 live-help)
+             (when live-help live-help/banner)
              [:div.mt3 (component/build call-out-box/variation-1 browse-stylists-banner)]
              [:div.mxn2.mb3 (component/build ugc/component ugc opts)]]]))]]
 
@@ -441,17 +442,6 @@
                                  :class           "bg-pale-purple"
                                  :action/id       "browse-stylists-banner-cta"}}))))
 
-(defn live-help<
-  [live-help?]
-  (when live-help?
-    {:title/icon      nil
-     :title/primary   "How can we help?"
-     :title/secondary "Text now to get live help with an expert about your dream look"
-     :title/target    [events/flow|live-help|opened]
-     :action/id       ""
-     :action/label    "Chat with us"
-     :action/target   [events/flow|live-help|opened]}))
-
 (defn ^:export built-component
   [state opts]
   (let [selected-sku (get-in state catalog.keypaths/detailed-product-selected-sku)
@@ -460,7 +450,7 @@
                      (merge (query state selected-sku)
                             {:add-to-cart (add-to-cart-query state
                                                              selected-sku)
-                             :live-help   (live-help< live-help?)})
+                             :live-help   live-help?})
                      opts)))
 
 

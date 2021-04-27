@@ -15,7 +15,6 @@
             api.stylist
             [clojure.string :refer [join]]
             mayvenn.live-help.core
-            [mayvenn.visual.lib.call-out-box :as call-out-box]
             spice.core
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.sites :as sites]
@@ -41,7 +40,8 @@
             [stylist-profile.ui.ratings-bar-chart :as ratings-bar-chart]
             [stylist-profile.ui.specialties-shopping :as specialties-shopping]
             [stylist-profile.ui.sticky-select-stylist :as sticky-select-stylist]
-            [stylist-profile.ui.stylist-reviews :as stylist-reviews]))
+            [stylist-profile.ui.stylist-reviews :as stylist-reviews]
+            [mayvenn.live-help.core :as live-help]))
 
 ;; ---------------------------- behavior
 
@@ -128,11 +128,11 @@
            experience
            footer
            google-maps
-           live-help
            mayvenn-header
            ratings-bar-chart
            specialties-discountable
            sticky-select-stylist
+           live-help
            stylist-reviews]} _ _]
   [:div.bg-white.col-12.mb6.stretch {:style {:margin-bottom "-1px"}}
    [:main
@@ -147,7 +147,7 @@
      (c/build experience/organism experience)
      (c/build specialties-shopping/organism specialties-discountable)]
     clear-float-atom
-    [:div.m3 (c/build call-out-box/variation-2 live-help)]
+    (when live-help [:div.m3 live-help/banner])
     (c/build ratings-bar-chart/organism ratings-bar-chart)
     (c/build stylist-reviews/organism stylist-reviews)]
    (c/build footer/organism footer)
@@ -313,17 +313,6 @@
          :specialties-shopping/specialties
          (map service-sku-query offered-services)}))))
 
-(defn live-help<
-  [live-help?]
-  (when live-help?
-    {:title/icon      nil
-     :title/primary   "How can we help?"
-     :title/secondary "Text now to get live help with an expert about your dream look"
-     :title/target    [e/flow|live-help|opened]
-     :action/id       ""
-     :action/label    "Chat with us"
-     :action/target   [e/flow|live-help|opened]}))
-
 ;; TODO(corey) Stylist not found template? currently redirects to find-your-stylist
 (defn ^:export page
   [state _]
@@ -363,7 +352,7 @@
                                                          hide-star-distribution?
                                                          newly-added-stylist-ui-experiment?
                                                          detailed-stylist)
-                       :live-help                (live-help< (experiments/live-help? state))
+                       :live-help                (experiments/live-help? state)
                        :ratings-bar-chart        (ratings-bar-chart<- hide-star-distribution?
                                                                       detailed-stylist)
                        :experience               (experience<- detailed-stylist)
