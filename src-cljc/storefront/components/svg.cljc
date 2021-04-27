@@ -472,6 +472,11 @@
    [:svg opts
     ^:inline (svg-xlink "customer-service-representative")]))
 
+(defn chat-bubble-diamonds [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "chat-bubble-diamonds")]))
+
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.
 
@@ -493,5 +498,6 @@
        :svg/icon-sms                        ^:inline (icon-sms attrs)
        :svg/mirror                          ^:inline (mirror attrs)
        :svg/shaded-shipping-package         ^:inline (shaded-shipping-package attrs)
-       :svg/worry-free                      ^:inline (worry-free attrs))
+       :svg/worry-free                      ^:inline (worry-free attrs)
+       :svg/chat-bubble-diamonds            ^:inline (chat-bubble-diamonds attrs))
      [:div])))

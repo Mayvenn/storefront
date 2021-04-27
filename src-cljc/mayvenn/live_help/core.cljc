@@ -18,7 +18,9 @@
     #?(:cljs (kustomer/open-conversation))))
 
 (def live-help-query
-  {:title/icon      nil
+  {:title/icon      [:svg/chat-bubble-diamonds {:style {:height "30px"
+                                                        :fill   "black"
+                                                        :width  "28px"}}]
    :title/primary   "How can we help?"
    :title/secondary "Text now to get live help with an expert about your dream look"
    :title/target    [e/flow|live-help|opened]
