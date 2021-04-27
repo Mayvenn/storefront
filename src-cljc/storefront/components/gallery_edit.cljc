@@ -137,10 +137,11 @@
 (def muuri-on-drag-end (muuri-event-listener events/control-stylist-gallery-posts-drag-ended))
 
 (def muuri-sort-fn (memoize (fn [post-ordering]
-                              (fn [a-post b-post]
-                                (if (= (:id a-post) (first (keep #{(:id a-post) (:id b-post)} post-ordering)))
-                                  1
-                                  -1)))))
+                              (fn [{a-post :post} {b-post :post}]
+                                (let [first-post (some #{(:id a-post) (:id b-post)} post-ordering)]
+                                  (if (= (:id a-post) first-post)
+                                    1
+                                    -1))))))
 
 (defn muuri-drag-sort-predicate [item _muuri-event]
   #?(:cljs
@@ -230,7 +231,9 @@
       (assoc-in keypaths/user-stylist-gallery-new-posts-ordering (->> item
                                                                  .getGrid
                                                                  .getItems
-                                                                 (keep #(some-> % .getData :post :id))))
+                                                                 vec
+                                                                 (keep #(some-> % .getData :post :id))
+                                                                 (into [])))
       (assoc-in keypaths/stylist-gallery-reorder-mode false)
       (update-in keypaths/stylist-gallery dissoc :currently-dragging-post)))
 
@@ -268,6 +271,7 @@
 
 #?(:cljs
    (defn set-dragger-touch-action [dragger value]
+     (prn "Setting dragger to " value)
      (.setCssProps dragger #js {:touchAction value})))
 
 (defmethod effects/perform-effects events/stylist-gallery-posts-drag-predicate-loop
@@ -279,19 +283,21 @@
            now        (.getTime (js/Date.))
            startTime' (or startTime now)]
        (cond
-         (not (#{"start" "move" "cancel"} eventType)) (set-dragger-touch-action dragger "pan-y")
+         (not (#{"start" "move"} eventType)) (set-dragger-touch-action dragger "pan-y")
 
-         (> (- now startTime') drag-delay) (do
-                                             (set-dragger-touch-action dragger "none")
-                                             (._forceResolveStartPredicate drag muuri-event))
+         (> (- now startTime') drag-delay)   (do
+                                               (set-dragger-touch-action dragger "none")
+                                               (MuuriReact.ItemDrag.defaultStartPredicate item muuri-event #js {:delay 1})
+                                               #_(._forceResolveStartPredicate drag muuri-event))
 
-         :else (messages/handle-message events/debounced-event-initialized
-                                             {:timeout drag-start-predicate-rate
-                                              :message [events/stylist-gallery-posts-drag-predicate-loop
-                                                        {:item        item
-                                                         :muuri-event muuri-event
-                                                         :delay       drag-delay
-                                                         :startTime   startTime'}]})))))
+         :else                               (messages/handle-message
+                                              events/debounced-event-initialized
+                                              {:timeout drag-start-predicate-rate
+                                               :message [events/stylist-gallery-posts-drag-predicate-loop
+                                                         {:item        item
+                                                          :muuri-event muuri-event
+                                                          :delay       drag-delay
+                                                          :startTime   startTime'}]})))))
 
 (defn query [state]
   {:gallery (get-in state keypaths/user-stylist-gallery-images)})
@@ -341,7 +347,7 @@
       (update-in keypaths/user-stylist-gallery-initial-posts-ordering (fn [ordering]
                                                                         (if (seq ordering)
                                                                           ordering
-                                                                          (map :id posts))))))
+                                                                          (mapv :id posts))))))
 
 (defmethod effects/perform-effects events/api-success-stylist-gallery [_ event args _ app-state]
   (let [signed-in-as-stylist? (auth/stylist? (auth/signed-in app-state))
