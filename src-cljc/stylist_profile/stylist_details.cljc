@@ -147,7 +147,7 @@
      (c/build experience/organism experience)
      (c/build specialties-shopping/organism specialties-discountable)]
     clear-float-atom
-    (c/build call-out-box/variation-2 live-help)
+    [:div.m3 (c/build call-out-box/variation-2 live-help)]
     (c/build ratings-bar-chart/organism ratings-bar-chart)
     (c/build stylist-reviews/organism stylist-reviews)]
    (c/build footer/organism footer)
@@ -341,7 +341,6 @@
         from-cart-or-direct-load? (or (= (first (:navigation-message (first undo-history))) e/navigate-cart)
                                       (nil? (first undo-history)))
 
-        live-help?                         (experiments/live-help? state)
         hide-star-distribution?            (experiments/hide-star-distribution? state)
         newly-added-stylist-ui-experiment? (and (experiments/stylist-results-test? state)
                                                 (or (experiments/just-added-only? state)
@@ -364,7 +363,7 @@
                                                          hide-star-distribution?
                                                          newly-added-stylist-ui-experiment?
                                                          detailed-stylist)
-                       :live-help                (live-help< live-help?)
+                       :live-help                (live-help< (experiments/live-help? state))
                        :ratings-bar-chart        (ratings-bar-chart<- hide-star-distribution?
                                                                       detailed-stylist)
                        :experience               (experience<- detailed-stylist)
