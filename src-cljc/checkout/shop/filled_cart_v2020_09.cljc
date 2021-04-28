@@ -30,7 +30,8 @@
    [storefront.platform.component-utils :as utils]
    [storefront.request-keys :as request-keys]
    [ui.molecules :as ui-molecules]
-   [ui.promo-banner :as promo-banner]))
+   [ui.promo-banner :as promo-banner]
+   [mayvenn.live-help.core :as live-help]))
 
 ;; page selectors - maybe they can just be cats
 
@@ -121,16 +122,17 @@
 
 (defn live-help-toast< [live-help?]
   (when live-help?
-    {:live-help-toast/primary    "Need help?"
-     :live-help-toast/cta-label  "Chat with us"
-     :live-help-toast/cta-target [events/flow|live-help|opened]
-     :live-help-toast/id         "Need help?"
-     :live-help-toast/icon       [:svg/chat-bubble-diamonds {:class "fill-p-color mr1"
+    {:live-help-toast/primary     "Need help?"
+     :live-help-toast/id          "toast-need-help"
+     :live-help-button/cta-label  "Chat with us"
+     :live-help-button/cta-target [events/flow|live-help|opened]
+     :live-help-button/id         "toast-chat-with-us"
+     :live-help-button/icon       [:svg/chat-bubble-diamonds {:class "fill-p-color mr1"
                                                              :style {:height "14px"
                                                                      :width  "13px"}}]}))
 
 (component/defcomponent live-help-toast-component
-  [{:live-help-toast/keys [primary cta-label cta-target id icon]} _ _]
+  [{:live-help-toast/keys [primary id] :as query} _ _]
   (when id
     [:div.bg-white.flex.justify-between.px3.py2.shout.proxima.title-3.mb3
      {:style {:border-left   "4px solid #4427c1"
@@ -138,10 +140,7 @@
               :border-bottom "1px solid #8B8B8B"
               :border-right  "1px solid #8B8B8B"}}
      primary
-     [:a.p-color.underline.flex.items-center.title-2
-      (apply utils/fake-href cta-target)
-      (svg/symbolic->html icon)
-      cta-label]]))
+     (component/build live-help/button-component query)]))
 
 (defcomponent full-component
   [{:keys [promo-banner
