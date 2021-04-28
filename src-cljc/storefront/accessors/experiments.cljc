@@ -121,6 +121,6 @@
 (defn live-help?
   [data]
   (and
-   (= :site (sites/determine-site data))
+   (= :shop (sites/determine-site data))
    (get-in data keypaths/started-kustomer) ;; <-- NOTE: this check will replace calls to `live-help?` once the feature goes to 100
    (display-feature? data "live-help")))
