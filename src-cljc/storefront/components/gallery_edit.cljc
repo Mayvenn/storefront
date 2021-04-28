@@ -148,8 +148,8 @@
                                   (cond
                                     (or (nil? a-post-id)
                                         (nil? b-post-id))    2
-                                    (= a-post-id first-post) 1
-                                    :else                    -1))))))
+                                    (= a-post-id first-post) -1
+                                    :else                    1))))))
 
 
 (defn muuri-drag-sort-predicate [item _muuri-event]
@@ -239,8 +239,7 @@
       (assoc-in keypaths/user-stylist-gallery-new-posts-ordering (->> item
                                                                  .getGrid
                                                                  .getItems
-                                                                 (keep #(some-> % .getData :post :id))
-                                                                 reverse))
+                                                                 (keep #(some-> % .getData :post :id))))
       (assoc-in keypaths/stylist-gallery-reorder-mode false)
       (update-in keypaths/stylist-gallery dissoc :currently-dragging-post)))
 
