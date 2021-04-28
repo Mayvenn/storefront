@@ -16,30 +16,35 @@
   [data
    {:subsections/keys [subsection-selectors]}
    products-matching-criteria]
-  (if (seq subsection-selectors)
-    (keep-indexed
-     (fn [index {:subsection/keys [title selector]}]
-       (when-let [product-cards (->> products-matching-criteria
-                                     (select selector)
-                                     (mapv (partial product-card/query data))
-                                     (sort-by :sort/value)
-                                     not-empty)]
-         {:product-cards  (cond->> product-cards
-                            (and
-                             (experiments/live-help? data)
-                             (= 0 index))
-                            (general-utils/insert-at-pos 6 {:card/type :live-help-banner}))
-          :subsection-key (clojure.string/replace title #" " "-")
-          :title/primary  title}))
-     subsection-selectors)
-    [{:product-cards  (some->> products-matching-criteria
-                           (mapv (partial product-card/query data))
-                           (sort-by :sort/value)
-                           not-empty
-                           (#(if (experiments/live-help? data)
-                               (general-utils/insert-at-pos 6 {:card/type :live-help-banner} %)
-                               %)))
-      :subsection-key :no-subsections}]))
+  (let [live-help-data (when (experiments/live-help? data)
+                         {:card/type          :live-help-banner
+                          :live-help/location "category-page-product-breaker"})]
+    (if (seq subsection-selectors)
+      (let [subsections
+            (->> subsection-selectors
+                 (keep
+                  (fn [{:subsection/keys [title selector]}]
+                    (when-let [product-cards (->> products-matching-criteria
+                                                  (select selector)
+                                                  (mapv (partial product-card/query data))
+                                                  (sort-by :sort/value)
+                                                  not-empty)]
+                      {:product-cards  product-cards
+                       :subsection-key (clojure.string/replace title #" " "-")
+                       :title/primary  title})))
+                 vec
+                 not-empty)]
+        (cond-> subsections
+          (and live-help-data subsections)
+          (update-in [0 :product-cards] (partial general-utils/insert-at-pos 6 live-help-data))))
+      (let [product-cards (some->> products-matching-criteria
+                                   (mapv (partial product-card/query data))
+                                   (sort-by :sort/value)
+                                   not-empty)]
+        [{:product-cards  (cond->> product-cards
+                            (and product-cards live-help-data)
+                            (general-utils/insert-at-pos 6 live-help-data))
+          :subsection-key :no-subsections}]))))
 
 (c/defcomponent ^:private product-list-subsection-component
   [{:keys [product-cards] primary-title :title/primary} _ {:keys [id]}]
