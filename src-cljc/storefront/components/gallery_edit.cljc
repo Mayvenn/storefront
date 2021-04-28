@@ -162,7 +162,9 @@
    (defn muuri-config [gallery-ref reorder-mode? post-ordering]
      #js {:dragEnabled  true
           :itemClass    "col-4"
-          :dragCssProps #js {:touchAction "none"}
+          :dragCssProps #js {:touchAction  "none !important"
+                             :userSelect   "none !important"
+                             :touchCallout "none !important"}
 
           ;; By default muuri sets scale(1) or scale(0.5) onto items style tag
           ;; depending upon their visibility or hidden...ness.
@@ -199,7 +201,6 @@
             (component/html
              #?(:clj [:div]
                 :cljs [:div
-
                        {:ref gallery-ref}
                        (apply react/createElement
                               MuuriReact/MuuriComponent
