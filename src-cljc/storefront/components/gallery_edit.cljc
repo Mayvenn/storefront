@@ -63,8 +63,7 @@
 #?(:cljs (def reorder-mode-attrs
            {:on-click     do-nothing-handler
             :style        {:touchAction "none"
-                           :filter       "brightness(0.5)"}
-            :on-context-menu do-nothing-handler}))
+                           :filter       "brightness(0.5)"}}))
 
 #?(:cljs
    (def currently-dragging-post-attrs
@@ -72,12 +71,12 @@
 
 #?(:cljs (defn view-mode-attrs [photo-id]
            (merge (utils/route-to events/navigate-gallery-photo {:photo-id photo-id})
-                  {:style           {:touchAction "pan-y"}
-                   :on-context-menu do-nothing-handler})))
+                  {:style           {:touchAction "pan-y"}})))
 
 #?(:cljs
    (defn base-container-attrs [post-id]
      {:data-post-id post-id
+      :on-context-menu do-nothing-handler
       :style {:padding "1px"}}))
 
 (defcomponent child-node
@@ -287,8 +286,7 @@
 
          (> (- now startTime') drag-delay)   (do
                                                (set-dragger-touch-action dragger "none")
-                                               (MuuriReact.ItemDrag.defaultStartPredicate item muuri-event #js {:delay 1})
-                                               #_(._forceResolveStartPredicate drag muuri-event))
+                                               (._forceResolveStartPredicate drag muuri-event))
 
          :else                               (messages/handle-message
                                               events/debounced-event-initialized
