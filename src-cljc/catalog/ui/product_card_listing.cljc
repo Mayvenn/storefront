@@ -7,14 +7,10 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
+            [storefront.utils :as general-utils]
             [storefront.request-keys :as request-keys]
             [mayvenn.live-help.core :as live-help]
             [storefront.accessors.experiments :as experiments]))
-
-(defn ^:private insert-at-pos
-  [position i coll]
-  (let [[h & r] (partition-all position coll)]
-    (flatten (into [h] (concat [i] r)))))
 
 (defn ^:private subsections-query
   [data
@@ -32,7 +28,7 @@
                             (and
                              (experiments/live-help? data)
                              (= 0 index))
-                            (insert-at-pos 6 {:card/type :live-help-banner}))
+                            (general-utils/insert-at-pos 6 {:card/type :live-help-banner}))
           :subsection-key (clojure.string/replace title #" " "-")
           :title/primary  title}))
      subsection-selectors)
@@ -41,7 +37,7 @@
                            (sort-by :sort/value)
                            not-empty
                            (#(if (experiments/live-help? data)
-                               (insert-at-pos 6 {:card/type :live-help-banner} %)
+                               (general-utils/insert-at-pos 6 {:card/type :live-help-banner} %)
                                %)))
       :subsection-key :no-subsections}]))
 

@@ -27,6 +27,7 @@
             [storefront.transitions :as transitions]
             [storefront.platform.messages :as messages]
             [storefront.platform.component-utils :as utils]
+            [storefront.utils :as general-utils]
             [storefront.request-keys :as request-keys]
             [spice.date :as date]
             storefront.keypaths
@@ -721,11 +722,6 @@
   (messages/handle-message e/flow|stylist-matching|set-presearch-field args)
   (execute-named-search (:name args)))
 
-(defn ^:private insert-at-pos
-  [position i coll]
-  (let [[h & r] (partition-all position coll)]
-    (flatten (into [h] (concat [i] r)))))
-
 (defn ^:export page
   [app-state _]
   (let [;; Models
@@ -790,7 +786,7 @@
                                                           :data msc})
                                                        matching-stylist-cards)
                                                (experiments/live-help? app-state)
-                                               (insert-at-pos 3 {:type :live-help-breaker}))
+                                               (general-utils/insert-at-pos 3 {:type :live-help-breaker}))
                         :list.breaker/id              (when (seq non-matching-stylists) "non-matching-breaker")
                         :list.breaker/results-content (when (and (seq non-matching-stylists)
                                                                  (empty? matching-stylists))

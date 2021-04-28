@@ -21,3 +21,7 @@
    m
    (partition 2 args)))
 
+(defn insert-at-pos
+  [position i coll]
+  (let [[h & r] (partition-all position coll)]
+    (flatten (into [h] (concat [i] r)))))
