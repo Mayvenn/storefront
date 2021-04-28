@@ -17,7 +17,7 @@
             [spice.maps :as maps]
             [storefront.transitions :as transitions]))
 
-(def drag-delay 500)
+(def drag-delay 150)
 (def gallery-poll-rate 5000)
 (def drag-start-predicate-rate 50)
 (def reorder-api-call-debounce-period 500)
@@ -62,16 +62,14 @@
 
 #?(:cljs (def reorder-mode-attrs
            {:on-click     do-nothing-handler
-            :style        {:touchAction "none"
-                           :filter       "brightness(0.5)"}}))
+            :style        {:filter       "brightness(0.5)"}}))
 
 #?(:cljs
    (def currently-dragging-post-attrs
      {:style {:filter "none"}}))
 
 #?(:cljs (defn view-mode-attrs [photo-id]
-           (merge (utils/route-to events/navigate-gallery-photo {:photo-id photo-id})
-                  {:style           {:touchAction "pan-y"}})))
+           (utils/route-to events/navigate-gallery-photo {:photo-id photo-id})))
 
 #?(:cljs
    (defn base-container-attrs [post-id]
@@ -88,23 +86,30 @@
       [:div {:key react-key}
        (let [{:keys [cover-image]} post
              {:keys [status id resizable-url post-id]} (:cover-image post)]
-         (ui/aspect-ratio 1 1
-                          [:div.container-size
-                           (maps/deep-merge
-                            (base-container-attrs post-id)
-                            ;; TODO: Refactor these conditionals out of `child-node`
-                            (if reorder-mode?
-                              reorder-mode-attrs
-                              (view-mode-attrs post-id))
-                            (when (= currently-dragging-post-id post-id)
-                              currently-dragging-post-attrs))
-                           (if (= "approved" status)
-                             (ui/img {:class    "container-size"
-                                      :style    {:object-position "50% 25%"
-                                                 :object-fit      "cover"}
-                                      :src      resizable-url
-                                      :max-size 749})
-                             pending-approval)]))])))
+         [:div
+          (ui/aspect-ratio 1 1
+                           [:div.container-size
+                            (maps/deep-merge
+                             (base-container-attrs post-id)
+                             ;; TODO: Refactor these conditionals out of `child-node`
+                             (if reorder-mode?
+                               reorder-mode-attrs
+                               (view-mode-attrs post-id))
+                             (when (= currently-dragging-post-id post-id)
+                               currently-dragging-post-attrs))
+                            [:div.drag-handle.absolute.z4.top-0.left-0.bg-pink.p2
+                             {:width 100
+                              :height 100
+                              :style {:touch-action "none"}}
+                             "⿓"]
+                            (if (= "approved" status)
+                              (ui/img {:class    "container-size"
+                                       :style    {:object-position "50% 25%"
+                                                  :object-fit      "cover"
+                                                  :touch-action "pan-y"}
+                                       :src      resizable-url
+                                       :max-size 749})
+                              pending-approval)])])])))
 
 (defn add-photo-square-2 []
   #?(:cljs
@@ -155,33 +160,31 @@
 
 #?(:cljs
    (defn muuri-config [gallery-ref reorder-mode? post-ordering]
-     (let [touch-action (if reorder-mode?
-                          "none"
-                          "pan-y")]
-       #js {:dragEnabled  true
-            :itemClass    "col-4"
-            :dragCssProps #js {:touchAction touch-action}
+     #js {:dragEnabled  true
+          :itemClass    "col-4"
+          :dragCssProps #js {:touchAction "none"}
 
-            ;; By default muuri sets scale(1) or scale(0.5) onto items style tag
-            ;; depending upon their visibility or hidden...ness.
-            ;; Because it is on a style tag, it has higher specificity
-            ;; than a class. This clears that so we can scale by adding a class
-            ;; when dragging.
-            :visibleStyles #js {}
-            :hiddenStyles  #js {}
+          ;; By default muuri sets scale(1) or scale(0.5) onto items style tag
+          ;; depending upon their visibility or hidden...ness.
+          ;; Because it is on a style tag, it has higher specificity
+          ;; than a class. This clears that so we can scale by adding a class
+          ;; when dragging.
+          :visibleStyles #js {}
+          :hiddenStyles  #js {}
+          :dragHandle    ".drag-handle"
 
-            :dragAutoScroll #js {:targets #js [#js {:element  js/window
-                                                    :priority 0}
-                                               #js {:element  gallery-ref
-                                                    :priority 1
-                                                    :axis     MuuriReact/AutoScroller.AXIS_X}]}
+          :dragAutoScroll #js {:targets #js [#js {:element  js/window
+                                                  :priority 0}
+                                             #js {:element  gallery-ref
+                                                  :priority 1
+                                                  :axis     MuuriReact/AutoScroller.AXIS_X}]}
 
-            :sort               (muuri-sort-fn post-ordering)
-            :dragSortPredicate  muuri-drag-sort-predicate
-            :propsToData        muuri-props-to-data
-            :dragStartPredicate muuri-drag-start-predicate
-            :onDragStart        muuri-on-drag-start
-            :onDragEnd          muuri-on-drag-end})))
+          :sort               (muuri-sort-fn post-ordering)
+          :dragSortPredicate  muuri-drag-sort-predicate
+          :propsToData        muuri-props-to-data
+          :dragStartPredicate muuri-drag-start-predicate
+          :onDragStart        muuri-on-drag-start
+          :onDragEnd          muuri-on-drag-end}))
 
 ;; TODO: Move first element not draggable logic into Muuri config
 
@@ -268,11 +271,6 @@
                                         :user-token (get-in app-state keypaths/user-token)
                                         :post-id    post-id})))
 
-#?(:cljs
-   (defn set-dragger-touch-action [dragger value]
-     (prn "Setting dragger to " value)
-     (.setCssProps dragger #js {:touchAction value})))
-
 (defmethod effects/perform-effects events/stylist-gallery-posts-drag-predicate-loop
   [_ _ {:keys [item muuri-event startTime]} _ app-state]
   #?(:cljs
@@ -282,11 +280,7 @@
            now        (.getTime (js/Date.))
            startTime' (or startTime now)]
        (cond
-         (not (#{"start" "move"} eventType)) (set-dragger-touch-action dragger "pan-y")
-
-         (> (- now startTime') drag-delay)   (do
-                                               (set-dragger-touch-action dragger "none")
-                                               (._forceResolveStartPredicate drag muuri-event))
+         (> (- now startTime') drag-delay)   (._forceResolveStartPredicate drag muuri-event)
 
          :else                               (messages/handle-message
                                               events/debounced-event-initialized

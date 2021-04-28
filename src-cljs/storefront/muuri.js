@@ -4046,7 +4046,6 @@
   ItemDrag.prototype._onScroll = function (event) {
     var item = this._item;
 
-      debugger;
     if (!item._isActive) {
       this.stop();
       return;
