@@ -122,14 +122,15 @@
 
 (defn live-help-toast< [live-help?]
   (when live-help?
-    {:live-help-toast/primary     "Need help?"
-     :live-help-toast/id          "toast-need-help"
-     :live-help-button/cta-label  "Chat with us"
-     :live-help-button/cta-target [events/flow|live-help|opened]
-     :live-help-button/id         "toast-chat-with-us"
-     :live-help-button/icon       [:svg/chat-bubble-diamonds {:class "fill-p-color mr1"
-                                                             :style {:height "14px"
-                                                                     :width  "13px"}}]}))
+    {:live-help-toast/primary                 "Need help?"
+     :live-help-toast/id                      "toast-need-help"
+     :live-help-button/cta-label              "Chat with us"
+     :live-help-button/cta-target             [events/flow|live-help|opened]
+     :live-help-button/id                     "toast-chat-with-us"
+     :live-help-button/label-and-border-color "#4427c1"
+     :live-help-button/icon                   [:svg/chat-bubble-diamonds {:class "fill-p-color mr1"
+                                                                          :style {:height "14px"
+                                                                                  :width  "13px"}}]}))
 
 (component/defcomponent live-help-toast-component
   [{:live-help-toast/keys [primary id] :as query} _ _]

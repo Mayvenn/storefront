@@ -12,7 +12,8 @@
             [storefront.platform.messages :as messages]
             [ui.promo-banner :as promo-banner]
             [storefront.components.svg :as svg]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.accessors.experiments :as experiments]
+            [mayvenn.live-help.core :as live-help]))
 
 (defn burger-header [cart]
   (component/html
@@ -204,25 +205,23 @@
       sign-out-area])])
 
 (def live-help-banner<
-  {:live-help-banner/primary    "Need help?"
-   :live-help-banner/cta-label  "Chat with us"
-   :live-help-banner/cta-target [events/flow|live-help|opened]
-   :live-help-banner/id         "Need help?"
-   :live-help-banner/icon       [:svg/chat-bubble-diamonds-p-color {:class "fill-white mr1"
-                                                                    :style {:height "14px"
-                                                                            :width  "13px"}}]})
+  {:live-help-banner/primary                "Need help?"
+   :live-help-banner/id                     "hamburger-need-help"
+   :live-help-button/cta-label              "Chat with us"
+   :live-help-button/cta-target             [events/flow|live-help|opened]
+   :live-help-button/id                     "hamburger-chat-with-us"
+   :live-help-button/label-and-border-color "#FFF"
+   :live-help-button/icon                   [:svg/chat-bubble-diamonds-p-color {:class "fill-white mr1"
+                                                                                :style {:height "14px"
+                                                                                        :width  "13px"}}]})
 
 (component/defcomponent live-help-banner-component
-  [{:live-help-banner/keys [primary cta-label cta-target id icon]} _ _]
+  [{:live-help-banner/keys [primary id] :as query} _ _]
   (when id
     [:div.bg-p-color.white.flex.justify-between.px3.py1.shout.proxima.title-3.mb3
      {:style {:font-size "14px"}}
      primary
-     [:a.underline.flex.items-center.title-3.inherit-color
-      (merge (apply utils/fake-href cta-target)
-             {:style {:font-size "12px"}})
-      (svg/symbolic->html icon)
-      cta-label]]))
+     (component/build live-help/button-component query)]))
 
 (defcomponent component
   [{:keys [cart on-taxon? menu-data promo-banner live-help-banner] :as data}

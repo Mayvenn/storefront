@@ -28,12 +28,13 @@
   [data]
   (merge {:call-number config/support-phone-number}
          (when (experiments/live-help? data)
-           {:live-help-button/cta-label  "Chat with us"
-            :live-help-button/cta-target [events/flow|live-help|opened]
-            :live-help-button/id         "chat with us"
-            :live-help-button/icon       [:svg/chat-bubble-diamonds {:class "fill-p-color mr1"
-                                                              :style {:height "14px"
-                                                                      :width  "13px"}}]})))
+           {:live-help-button/cta-label              "Chat with us"
+            :live-help-button/cta-target             [events/flow|live-help|opened]
+            :live-help-button/id                     "chat with us"
+            :live-help-button/label-and-border-color "#4427c1"
+            :live-help-button/icon                   [:svg/chat-bubble-diamonds {:class "fill-p-color mr1"
+                                                                                 :style {:height "14px"
+                                                                                         :width  "13px"}}]})))
 
 (defn built-component
   [data opts]

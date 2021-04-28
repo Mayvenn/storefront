@@ -34,11 +34,12 @@
   (c/build call-out-box/variation-2 live-help-query))
 
 (c/defcomponent button-component
-  [{:live-help-button/keys [cta-label cta-target id icon]} _ _]
+  [{:live-help-button/keys [cta-label cta-target id icon label-and-border-color]} _ _]
   (when id
     [:a.flex.items-center
      (apply utils/fake-href cta-target)
      (svg/symbolic->html icon)
-     [:div
-      {:class "p-color button-font-3 shout border-bottom border-width-2 border-p-color"}
+     [:div.button-font-3.shout.border-bottom.border-width-2
+      {:style {:border-color label-and-border-color
+               :color label-and-border-color}}
       cta-label]]))
