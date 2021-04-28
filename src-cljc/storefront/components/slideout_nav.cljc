@@ -10,7 +10,9 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [ui.promo-banner :as promo-banner]))
+            [ui.promo-banner :as promo-banner]
+            [storefront.components.svg :as svg]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn burger-header [cart]
   (component/html
@@ -201,20 +203,49 @@
      [:div.px6.border-top.border-gray
       sign-out-area])])
 
+(def live-help-banner<
+  {:live-help-banner/primary    "Need help?"
+   :live-help-banner/cta-label  "Chat with us"
+   :live-help-banner/cta-target [events/flow|live-help|opened]
+   :live-help-banner/id         "Need help?"
+   :live-help-banner/icon       [:svg/chat-bubble-diamonds-p-color {:class "fill-white mr1"
+                                                                    :style {:height "14px"
+                                                                            :width  "13px"}}]})
+
+(component/defcomponent live-help-banner-component
+  [{:live-help-banner/keys [primary cta-label cta-target id icon]} _ _]
+  (when id
+    [:div.bg-p-color.white.flex.justify-between.px3.py1.shout.proxima.title-3.mb3
+     {:style {:font-size "14px"}}
+     primary
+     [:a.underline.flex.items-center.title-3.inherit-color
+      (merge (apply utils/fake-href cta-target)
+             {:style {:font-size "12px"}})
+      (svg/symbolic->html icon)
+      cta-label]]))
+
 (defcomponent component
-  [{:keys [cart on-taxon? menu-data promo-banner] :as data}
-   owner
-   opts]
+  [{:keys [cart on-taxon? menu-data promo-banner live-help-banner] :as data}
+   _
+   _]
   [:div
    (promo-banner/static-organism promo-banner nil nil)
+   (component/build live-help-banner-component live-help-banner)
+
    [:div.top-0.sticky.z4
     (burger-header cart)]
    (if on-taxon?
-     (component/build menu/component menu-data nil)
-     (component/build root-menu data nil))])
+     (component/build menu/component menu-data)
+     (component/build root-menu data))])
 
 (defn query [data]
   (-> (header/basic-query data)
+      (cond->
+          (experiments/live-help? data)
+        (-> ;; NOTE(jjw, stc): Show live-help-banner instead of promo-banner when feature flag is on.
+            ;; When this feature goes 100% `experiments/live-help?` becomes `kustomer/started?`
+         (assoc :live-help-banner live-help-banner<)
+         (dissoc :promo-banner)))
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
       (assoc-in [:cart :quantity] (orders/displayed-cart-count (get-in data keypaths/order)))
       (assoc-in [:menu-data] (case (get-in data keypaths/current-traverse-nav-menu-type)

@@ -45,10 +45,10 @@
            :advertised true}
           (promos/default-advertised-promotion promotion-db)))))
 
-(defn ^:private nav-whitelist-for
+(defn ^:private nav-allowlist-for
   "Promo code banner should only show on these nav-events
 
-   Depending on experiments, this whitelist may be modified"
+   Depending on experiments, this allowlist may be modified"
   [no-applied-promos? on-shop?]
   (cond-> #{events/navigate-about-mayvenn-install
             events/navigate-home
@@ -66,7 +66,7 @@
   (let [no-applied-promo? (orders/no-applied-promo? (get-in data keypaths/order))
         on-shop?          (= :shop (sites/determine-site data))
         nav-event         (get-in data keypaths/navigation-event)
-        show?             (contains? (nav-whitelist-for no-applied-promo? on-shop?) nav-event)
+        show?             (contains? (nav-allowlist-for no-applied-promo? on-shop?) nav-event)
         hide-on-mb-tb?    (boolean (get-in data catalog.keypaths/category-panel))]
     (cond-> {:promo (promotion-to-advertise data)}
       show?          (assoc :promo/type :basic)

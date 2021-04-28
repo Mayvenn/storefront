@@ -472,10 +472,17 @@
    [:svg opts
     ^:inline (svg-xlink "customer-service-representative")]))
 
+;; TODO: Find a way to override particular portions of the svg's fill currently
+;; we are only able to override the larget background area and not the inner
+;; diamonds
 (defn chat-bubble-diamonds [opts]
   (component/html
    [:svg opts
     ^:inline (svg-xlink "chat-bubble-diamonds")]))
+(defn chat-bubble-diamonds-p-color [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "chat-bubble-diamonds-p-color")]))
 
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.
@@ -499,5 +506,8 @@
        :svg/mirror                          ^:inline (mirror attrs)
        :svg/shaded-shipping-package         ^:inline (shaded-shipping-package attrs)
        :svg/worry-free                      ^:inline (worry-free attrs)
-       :svg/chat-bubble-diamonds            ^:inline (chat-bubble-diamonds attrs))
+       :svg/chat-bubble-diamonds            ^:inline (chat-bubble-diamonds attrs)
+       :svg/chat-bubble-diamonds-p-color    ^:inline (chat-bubble-diamonds-p-color attrs)
+
+       [:div])
      [:div])))
