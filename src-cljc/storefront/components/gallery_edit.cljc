@@ -68,8 +68,10 @@
    (def currently-dragging-post-attrs
      {:style {:filter "none"}}))
 
-#?(:cljs (defn view-mode-attrs [photo-id]
-           (utils/route-to events/navigate-gallery-photo {:photo-id photo-id})))
+#?(:cljs (defn view-mode-attrs [post-id status]
+           (when post-id
+             ;; TODO(ellie, 2021-04-28): Should be refactored to point to a post edit page
+             (utils/route-to events/navigate-gallery-photo {:photo-id post-id}))))
 
 #?(:cljs
    (defn base-container-attrs [post-id]
@@ -94,7 +96,7 @@
                              ;; TODO: Refactor these conditionals out of `child-node`
                              (if reorder-mode?
                                reorder-mode-attrs
-                               (view-mode-attrs post-id))
+                               (view-mode-attrs post-id status))
                              (when (= currently-dragging-post-id post-id)
                                currently-dragging-post-attrs))
                             [:div.drag-handle.absolute.z4.top-0.left-0.bg-pink.p2
