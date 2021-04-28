@@ -142,10 +142,15 @@
 
 (def muuri-sort-fn (memoize (fn [post-ordering]
                               (fn [{a-post :post} {b-post :post}]
-                                (let [first-post (some #{(:id a-post) (:id b-post)} post-ordering)]
-                                  (if (= (:id a-post) first-post)
-                                    1
-                                    -1))))))
+                                (let [a-post-id  (:id a-post)
+                                      b-post-id  (:id b-post)
+                                      first-post (some #{a-post-id b-post-id} post-ordering)]
+                                  (cond
+                                    (or (nil? a-post-id)
+                                        (nil? b-post-id))    2
+                                    (= a-post-id first-post) 1
+                                    :else                    -1))))))
+
 
 (defn muuri-drag-sort-predicate [item _muuri-event]
   #?(:cljs
@@ -234,9 +239,8 @@
       (assoc-in keypaths/user-stylist-gallery-new-posts-ordering (->> item
                                                                  .getGrid
                                                                  .getItems
-                                                                 vec
                                                                  (keep #(some-> % .getData :post :id))
-                                                                 (into [])))
+                                                                 reverse))
       (assoc-in keypaths/stylist-gallery-reorder-mode false)
       (update-in keypaths/stylist-gallery dissoc :currently-dragging-post)))
 
