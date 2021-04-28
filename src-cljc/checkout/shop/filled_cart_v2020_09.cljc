@@ -119,6 +119,30 @@
 
      [:div.border-bottom.border-gray.hide-on-mb]]))
 
+(defn live-help-toast< [live-help?]
+  (when live-help?
+    {:live-help-toast/primary    "Need help?"
+     :live-help-toast/cta-label  "Chat with us"
+     :live-help-toast/cta-target [events/flow|live-help|opened]
+     :live-help-toast/id         "Need help?"
+     :live-help-toast/icon       [:svg/chat-bubble-diamonds {:class "fill-p-color mr1"
+                                                             :style {:height "14px"
+                                                                     :width  "13px"}}]}))
+
+(component/defcomponent live-help-toast-component
+  [{:live-help-toast/keys [primary cta-label cta-target id icon]} _ _]
+  (when id
+    [:div.bg-white.flex.justify-between.px3.py2.shout.proxima.title-3.mb3
+     {:style {:border-left   "4px solid #4427c1"
+              :border-top    "1px solid #8B8B8B"
+              :border-bottom "1px solid #8B8B8B"
+              :border-right  "1px solid #8B8B8B"}}
+     primary
+     [:a.p-color.underline.flex.items-center.title-2
+      (apply utils/fake-href cta-target)
+      (svg/symbolic->html icon)
+      cta-label]]))
+
 (defcomponent full-component
   [{:keys [promo-banner
            service-items
@@ -131,6 +155,7 @@
            checkout-wo-mayvenn-install
            quadpay
            browser-pay?
+           live-help-toast
            checkout-caption]}
    _ _]
   [:div.container.px2
@@ -138,6 +163,7 @@
    [:div.clearfix.mxn3
     [:div
      [:div.bg-refresh-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
+      (component/build live-help-toast-component live-help-toast)
       (service-items-component service-items)
       (physical-items-component physical-items suggestions)]]
 
@@ -714,11 +740,11 @@
 
 (defn ^:export page
   [app-state nav-event]
-  (let [waiter-order                                         (get-in app-state keypaths/order)
-        {:keys [:services/stylist]}                          (api.orders/services app-state waiter-order)
+  (let [waiter-order                                (get-in app-state keypaths/order)
+        {:keys [:services/stylist]}                 (api.orders/services app-state waiter-order)
         {:free-mayvenn-service/keys [hair-missing-quantity
-                                     service-item]}          (api.orders/free-mayvenn-service stylist waiter-order)
-        {:order/keys [items]}                                (api.orders/current app-state)
+                                     service-item]} (api.orders/free-mayvenn-service stylist waiter-order)
+        {:order/keys [items]}                       (api.orders/current app-state)
 
         ;; TODO(corey) these are session
         pending-requests?         (update-pending? app-state)
@@ -772,7 +798,8 @@
                                                                     (experiments/browser-pay? app-state)
                                                                     (seq (get-in app-state keypaths/shipping-methods))
                                                                     (seq (get-in app-state keypaths/states)))
-                                  :suggestions                 suggestions}
+                                  :suggestions                 suggestions
+                                  :live-help-toast             (live-help-toast< (experiments/live-help? app-state))}
                       :header    app-state
                       :footer    app-state
                       :popup     app-state
