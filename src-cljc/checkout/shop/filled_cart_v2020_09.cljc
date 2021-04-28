@@ -135,7 +135,7 @@
 (component/defcomponent live-help-toast-component
   [{:live-help-toast/keys [primary id] :as query} _ _]
   (when id
-    [:div.bg-white.flex.justify-between.px3.py2.shout.proxima.title-3.mb3
+    [:div.bg-white.flex.justify-between.px3.py2.shout.proxima.title-3
      {:style {:border-left   "4px solid #4427c1"
               :border-top    "1px solid #8B8B8B"
               :border-bottom "1px solid #8B8B8B"
@@ -155,7 +155,6 @@
            checkout-wo-mayvenn-install
            quadpay
            browser-pay?
-           live-help-toast
            checkout-caption]}
    _ _]
   [:div.container.px2
@@ -163,7 +162,6 @@
    [:div.clearfix.mxn3
     [:div
      [:div.bg-refresh-gray.p3.col-on-tb-dt.col-6-on-tb-dt.bg-white-on-tb-dt
-      (component/build live-help-toast-component live-help-toast)
       (service-items-component service-items)
       (physical-items-component physical-items suggestions)]]
 
@@ -263,7 +261,7 @@
        [:span.flex.items-center.px2.proxima.title-3.shout.black primary])])))
 
 (defcomponent template
-  [{:keys [header footer popup flash cart nav-event]} _ _]
+  [{:keys [header footer popup flash cart nav-event live-help-toast]} _ _]
   [:div.flex.flex-column.stretch
    {:style {:margin-bottom "-1px"}}
    #?(:cljs (popup/built-component popup nil))
@@ -279,12 +277,19 @@
        [:div.border-bottom.border-gray.border-width-1.m-auto.col-7-on-dt
         [:div.flex.justify-between
          [:div.px2.my2.flex.items-center (ui-molecules/return-link (:return-link cart))]
-         (clear-cart-link (:clear-cart-link cart))]]]
+         (clear-cart-link (:clear-cart-link cart))]]
+       (when live-help-toast
+         [:div.bg-refresh-gray.px2.pt3
+          (component/build live-help-toast-component live-help-toast)])]
       [:div.hide-on-mb.col-7-on-dt.mx-auto
+
        [:div.m-auto.container
         [:div.flex.justify-between
          [:div.px2.my2 (ui-molecules/return-link (:return-link cart))]
-         (clear-cart-link (:clear-cart-link cart))]]]
+         (clear-cart-link (:clear-cart-link cart))]]
+       (when live-help-toast
+         [:div.myj1.mx-auto.container
+          (component/build live-help-toast-component live-help-toast)])]
       [:div.col-7-on-dt.mx-auto
        (component/build full-component cart)]]]
     [:footer
@@ -765,43 +770,43 @@
         suggestions (suggestions/consolidated-query app-state)
         no-items?   (empty? items)]
     (component/build template
-                     {:cart      {:return-link                 (return-link<- items)
-                                  :clear-cart-link             (clear-cart-link<- app-state)
-                                  :promo-banner                (when (zero? (orders/product-quantity waiter-order))
-                                                                 (promo-banner/query app-state))
-                                  :cta                         (cta<- no-items? hair-missing-quantity pending-requests?)
-                                  :physical-items              (physical-items<- items
-                                                                                 update-line-item-requests
-                                                                                 delete-line-item-requests)
-                                  :service-items               (service-items<-
-                                                                (api.current/stylist app-state)
-                                                                items
-                                                                remove-in-progress?
-                                                                delete-line-item-requests)
-                                  :checkout-caption            (checkout-caption<- items)
-                                  :cart-summary                (merge (cart-summary<- waiter-order items)
-                                                                      (freeinstall-informational<- waiter-order items adding-freeinstall? service-skus-with-addons?)
-                                                                      (promo-input<- app-state
-                                                                                     waiter-order
-                                                                                     pending-requests?))
-                                  :shared-cart                 (shared-cart<- app-state)
-                                  :quadpay                     (quadpay<- app-state waiter-order)
-                                  :paypal                      (paypal<- app-state
-                                                                         items
-                                                                         pending-requests?)
-                                  :checkout-wo-mayvenn-install (checkout-wo-mayvenn-install<-
-                                                                hair-missing-quantity
-                                                                pending-requests?
-                                                                delete-line-item-requests
-                                                                service-item)
-                                  :browser-pay?                (and (get-in app-state keypaths/loaded-stripe)
-                                                                    (experiments/browser-pay? app-state)
-                                                                    (seq (get-in app-state keypaths/shipping-methods))
-                                                                    (seq (get-in app-state keypaths/states)))
-                                  :suggestions                 suggestions
-                                  :live-help-toast             (live-help-toast< (experiments/live-help? app-state))}
-                      :header    app-state
-                      :footer    app-state
-                      :popup     app-state
-                      :flash     app-state
-                      :nav-event nav-event})))
+                     {:cart            {:return-link                 (return-link<- items)
+                                        :clear-cart-link             (clear-cart-link<- app-state)
+                                        :promo-banner                (when (zero? (orders/product-quantity waiter-order))
+                                                                       (promo-banner/query app-state))
+                                        :cta                         (cta<- no-items? hair-missing-quantity pending-requests?)
+                                        :physical-items              (physical-items<- items
+                                                                                       update-line-item-requests
+                                                                                       delete-line-item-requests)
+                                        :service-items               (service-items<-
+                                                                      (api.current/stylist app-state)
+                                                                      items
+                                                                      remove-in-progress?
+                                                                      delete-line-item-requests)
+                                        :checkout-caption            (checkout-caption<- items)
+                                        :cart-summary                (merge (cart-summary<- waiter-order items)
+                                                                            (freeinstall-informational<- waiter-order items adding-freeinstall? service-skus-with-addons?)
+                                                                            (promo-input<- app-state
+                                                                                           waiter-order
+                                                                                           pending-requests?))
+                                        :shared-cart                 (shared-cart<- app-state)
+                                        :quadpay                     (quadpay<- app-state waiter-order)
+                                        :paypal                      (paypal<- app-state
+                                                                               items
+                                                                               pending-requests?)
+                                        :checkout-wo-mayvenn-install (checkout-wo-mayvenn-install<-
+                                                                      hair-missing-quantity
+                                                                      pending-requests?
+                                                                      delete-line-item-requests
+                                                                      service-item)
+                                        :browser-pay?                (and (get-in app-state keypaths/loaded-stripe)
+                                                                          (experiments/browser-pay? app-state)
+                                                                          (seq (get-in app-state keypaths/shipping-methods))
+                                                                          (seq (get-in app-state keypaths/states)))
+                                        :suggestions                 suggestions}
+                      :live-help-toast (live-help-toast< (experiments/live-help? app-state))
+                      :header          app-state
+                      :footer          app-state
+                      :popup           app-state
+                      :flash           app-state
+                      :nav-event       nav-event})))
