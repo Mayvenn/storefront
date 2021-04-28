@@ -61,40 +61,26 @@
                            live-help/banner]
         nil))]])
 
-(c/defcomponent ^:private product-cards-empty-state
-  [_ _ _]
-  [:div.col-12.my8.py4.center
-   [:p.h1.py4 "😞"]
-   [:p.h2.py6 "Sorry, we couldn’t find any matches."]
-   [:p.h4.mb10.pb10
-    [:a.p-color (utils/fake-href events/control-category-option-clear) "Clear all filters"]
-    " to see more hair."]])
-
 (c/defcomponent organism
-  [{:keys [id subsections loading-products? no-product-cards?]} _ _]
+  [{:keys [id subsections loading-products?]} _ _]
   (when id
     [:div.px2.pb4.pt6
-     (cond
-       loading-products? [:div.col-12.center (ui/large-spinner {:style {:height "4em"}})]
+     (if
+         loading-products? [:div.col-12.center (ui/large-spinner {:style {:height "4em"}})]
 
-       no-product-cards? (c/build product-cards-empty-state {} {})
-
-       :else             (mapv (fn build [{:as subsection :keys [subsection-key]}]
-                                 (c/build product-list-subsection-component
-                                          subsection
-                                          (c/component-id (str "subsection-" subsection-key))))
-                               subsections))]))
+         (mapv (fn build [{:as subsection :keys [subsection-key]}]
+                 (c/build product-list-subsection-component
+                          subsection
+                          (c/component-id (str "subsection-" subsection-key))))
+               subsections))]))
 
 (defn query
   [app-state category products-matching-filter-selections]
-  (let [subsections       (subsections-query
-                           app-state
-                           category
-                           products-matching-filter-selections)
-        no-product-cards? (empty? (mapcat :product-cards subsections))]
+  (let [subsections (subsections-query
+                     app-state
+                     category
+                     products-matching-filter-selections)]
     {:id                "product-card-listing"
      :subsections       subsections
-     :no-product-cards? no-product-cards?
-     :loading-products? (and no-product-cards?
-                             (utils/requesting? app-state (conj request-keys/get-products
-                                                                (skuers/essentials category))))}))
+     :loading-products? (utils/requesting? app-state (conj request-keys/get-products
+                                                           (skuers/essentials category)))}))
