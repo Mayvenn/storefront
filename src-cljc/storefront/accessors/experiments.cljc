@@ -1,5 +1,6 @@
 (ns storefront.accessors.experiments
-  (:require [storefront.keypaths :as keypaths]))
+  (:require [storefront.keypaths :as keypaths]
+            [storefront.accessors.sites :as sites]))
 
 #_(defn bucketing-example
     [data]
@@ -120,5 +121,6 @@
 (defn live-help?
   [data]
   (and
+   (= :site (sites/determine-site data))
    (get-in data keypaths/started-kustomer) ;; <-- NOTE: this check will replace calls to `live-help?` once the feature goes to 100
    (display-feature? data "live-help")))
