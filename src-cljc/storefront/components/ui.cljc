@@ -567,7 +567,7 @@
   [url-or-image-id]
   (let [url-or-image-id (str url-or-image-id)]
     (or (string/includes? url-or-image-id "ucarecdn.com")
-        (not (string/includes? "/" url-or-image-id)))))
+        (not (string/includes? url-or-image-id "/")))))
 
 (defn ucare-img-id ;; NOTE(jeff): should be private insteaed of public, please use img function instead
   [url-or-image-id]
