@@ -99,11 +99,14 @@
                                (view-mode-attrs post-id status))
                              (when (= currently-dragging-post-id post-id)
                                currently-dragging-post-attrs))
-                            [:div.drag-handle.absolute.z4.top-0.left-0.bg-pink.p2
-                             {:width 100
-                              :height 100
+                            [:div.drag-handle.absolute.z4.top-0.left-0
+                             {:class "mp2"
                               :style {:touch-action "none"}}
-                             "⿓"]
+                             (ui/img {:width 25
+                                      :height 25
+                                      :style {:opacity 0.33}
+                                      ;; TODO(ellie, 2021-04-28): Replace with the approved drag handle before flight
+                                      :src      "/images/icons/2d-drag-handle.png"})]
                             (if (= "approved" status)
                               (ui/img {:class    "container-size"
                                        :style    {:object-position "50% 25%"
