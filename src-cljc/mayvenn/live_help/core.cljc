@@ -47,9 +47,10 @@
   [{:live-help-button/keys [cta-label cta-target id icon label-and-border-color]} _ _]
   (when id
     [:a.flex.items-center
-     (apply utils/fake-href cta-target)
+     (assoc (apply utils/fake-href cta-target)
+            :data-test id)
      (svg/symbolic->html icon)
      [:div.button-font-3.shout.border-bottom.border-width-2
       {:style {:border-color label-and-border-color
-               :color label-and-border-color}}
+               :color        label-and-border-color}}
       cta-label]]))

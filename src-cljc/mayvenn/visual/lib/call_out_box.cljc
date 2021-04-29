@@ -16,9 +16,10 @@
 ;; - nth insert
 ;; - wrap
 (defn link-to-atom
-  [{:keys [target]} & content]
+  [{:keys [target id]} & content]
   [:a.inherit-color
-   (apply utils/route-to target)
+   (assoc (apply utils/route-to target)
+          :data-test id)
    content])
 
 ;; Pale purple, Canela
