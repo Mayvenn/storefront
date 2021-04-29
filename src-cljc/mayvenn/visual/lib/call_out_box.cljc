@@ -35,7 +35,7 @@
 (c/defcomponent variation-2
   [data _ _]
   (when (seq data)
-    [:div.col-12.bg-warm-gray.flex.flex-column.items-center.p5
+    [:div.col-12.bg-warm-gray.flex.flex-column.items-center.p5.pyj2
      {:key (:action/id data)}
      (link-to-atom
       (with :action data)

@@ -28,7 +28,8 @@
 
 (defn live-help-query [location]
   (let [target [e/flow|live-help|opened {:location location}]]
-    {:title/icon      [:svg/chat-bubble-diamonds {:style {:height "30px"
+    {:title/icon      [:svg/chat-bubble-diamonds {:class "mb2"
+                                                  :style {:height "30px"
                                                           :fill   "black"
                                                           :width  "28px"}}]
      :title/primary   "How can we help?"
