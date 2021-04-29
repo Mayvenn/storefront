@@ -1,28 +1,32 @@
 (ns storefront.components.footer-minimal
-  (:require [storefront.accessors.experiments :as experiments]
+  (:require [mayvenn.live-help.core :as live-help]
+            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.footer-links :as footer-links]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
-            [storefront.events :as events]
-            [mayvenn.live-help.core :as live-help]))
+            [storefront.events :as events]))
 
 (defcomponent component
   [{:keys [call-number] :as query} owner opts]
-  [:div.px3.py2.bg-cool-gray
-   [:div.flex.justify-between
-    [:div.title-2.proxima.my1.shout "Need Help?"]
-    (component/build live-help/button-component query nil)]
-   [:div.content-3.proxima
-    [:span.hide-on-tb-dt
-     (ui/link :link/phone :a.inherit-color {} call-number)]
-    [:span.hide-on-mb
-     (ui/link :link/phone :a.inherit-color {} call-number)]
-    " | 8am-5pm PST M-F"]
-   [:div.left
-    (component/build footer-links/component {:minimal? true} nil)]
+  [:div.bg-cool-gray
+   [:div.hide-on-mb.p8 ;; Desktop & Tablet
+    [:div.flex.justify-between
+     [:div.flex.items-start
+      [:div.title-2.proxima.shout "Need Help?"]
+      [:div.flex.flex-column.items-start.ml8.ptp3.content-2
+       [:div call-number " | 8am-5pm PST M-F"]
+       [:div.left.mt3 (component/build footer-links/component {:minimal? true} nil)]]]
+     [:div (component/build live-help/button-component query)]]]
+
+   [:div.hide-on-tb-dt.py2.px3 ;; mobile
+    [:div.flex.justify-between
+     [:div.title-2.proxima.my1-on-mb.shout "Need Help?"]
+     (component/build live-help/button-component query)]
+    [:div.content-3.proxima (ui/link :link/phone :a.inherit-color {} call-number) " | 8am-5pm PST M-F"]
+    [:div.left (component/build footer-links/component {:minimal? true} nil)]]
    ;; Space for promotion helper
-   [:div {:style {:margin-bottom "100px"}}]])
+   [:div {:style {:padding-bottom "100px"}}]])
 
 (defn query
   [data]
