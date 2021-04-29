@@ -11,6 +11,7 @@
             [storefront.events :as events]
             [storefront.debounce :as debounce]
             [storefront.keypaths :as keypaths]
+            [storefront.request-keys :as request-keys]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.routes :as routes]
@@ -61,25 +62,25 @@
            (.stopPropagation e)))
 
 #?(:cljs (def reorder-mode-attrs
-           {:on-click     do-nothing-handler
-            :style        {:filter       "brightness(0.5)"}}))
+           {:on-click do-nothing-handler
+            :style    {:filter "brightness(0.5)"}}))
 
 #?(:cljs
    (def currently-dragging-post-attrs
      {:style {:filter "none"}}))
 
-#?(:cljs (defn view-mode-attrs [post-id status]
+#?(:cljs (defn view-mode-attrs [post-id]
            (when post-id
              ;; TODO(ellie, 2021-04-28): Should be refactored to point to a post edit page
              (utils/route-to events/navigate-gallery-photo {:photo-id post-id}))))
 
 #?(:cljs
    (defn base-container-attrs [post-id]
-     {:data-post-id post-id
+     {:data-post-id    post-id
       :on-context-menu do-nothing-handler
-      :style {:padding "1px"}}))
+      :style           {:padding "1px"}}))
 
-(defcomponent child-node
+(defcomponent post-thumbnail
   [{react-key :key
     :keys     [currently-dragging-post-id post reorder-mode?]} _ _]
   (component/html
@@ -93,10 +94,10 @@
                            [:div.container-size
                             (maps/deep-merge
                              (base-container-attrs post-id)
-                             ;; TODO: Refactor these conditionals out of `child-node`
+                             ;; TODO: Refactor these conditionals out of `post-thumbnail`
                              (if reorder-mode?
                                reorder-mode-attrs
-                               (view-mode-attrs post-id status))
+                               (view-mode-attrs post-id))
                              (when (= currently-dragging-post-id post-id)
                                currently-dragging-post-attrs))
                             [:div.drag-handle.absolute.z4.top-0.left-0
@@ -116,30 +117,33 @@
                                        :max-size 749})
                               pending-approval)])])])))
 
-(defn add-photo-square-2 []
+(defn add-post-square []
   #?(:cljs
      (let [set-draggable (MuuriReact/useDraggable)]
        (set-draggable false)))
   (component/html
    [:div
     [:a.block.pp1
+     ;; TODO(ellie, 2021-04-28): Change to navigate to the post edit page
      (merge (utils/route-to events/navigate-gallery-image-picker)
-            {:key "add-photo"
-             :data-test "add-to-gallery-link"
+            {:key "add-post"
+             :data-test "add-post-to-gallery-link"
              :style     {:padding "1px"}})
      [:div.bg-pale-purple.white
       (ui/aspect-ratio 1 1
                        [:div.flex.flex-column.justify-evenly.container-size
                         [:div ui/nbsp]
                         [:div.center.bold {:style {:font-size "60px"}} "+"]
-                        [:div.center.shout.title-3.proxima "Add Photo"]])]]]))
+                        [:div.center.shout.title-3.proxima "Add Post"]])]]]))
 
-;; TODO: Memoize this?
-(defn muuri-event-listener [event]
-  (fn [item muuri-event & other-args]
-    (messages/handle-message event
-                             {:item item
-                              :muuri-event muuri-event})))
+(def muuri-event-listener
+  (memoize
+   (fn
+     [event]
+     (fn [item muuri-event & other-args]
+       (messages/handle-message event
+                                {:item item
+                                 :muuri-event muuri-event})))))
 
 (def muuri-drag-start-predicate (muuri-event-listener events/control-stylist-gallery-posts-drag-predicate-initialized))
 (def muuri-on-drag-start (muuri-event-listener events/control-stylist-gallery-posts-drag-began))
@@ -172,6 +176,8 @@
    (defn muuri-config [gallery-ref reorder-mode? post-ordering]
      #js {:dragEnabled  true
           :itemClass    "col-4"
+          ;; ↓ These prevent long presses on the drag handler from
+          ;; ↓ selecting or scrolling. It is very important.
           :dragCssProps #js {:touchAction  "none !important"
                              :userSelect   "none !important"
                              :touchCallout "none !important"}
@@ -191,20 +197,24 @@
                                                   :priority 1
                                                   :axis     MuuriReact/AutoScroller.AXIS_X}]}
 
+          ;; ↓ Function which defines how sort works in the Muuri Grid
           :sort               (muuri-sort-fn post-ordering)
+          ;; ↓ Function to determine whether or not a new ordering (post-drag) should be allowed
           :dragSortPredicate  muuri-drag-sort-predicate
+          ;; ↓ Function to convert the children of the grid's (ie, post component) props into a specific shape.
           :propsToData        muuri-props-to-data
+          ;; ↓ Function triggered by touching the drag handle
           :dragStartPredicate muuri-drag-start-predicate
+          ;; ↓ Function triggered once a drag event starts.
           :onDragStart        muuri-on-drag-start
+          ;; ↓ Function triggered once a drag event ends.
           :onDragEnd          muuri-on-drag-end}))
-
-;; TODO: Move first element not draggable logic into Muuri config
 
 (defdynamic-component reorderable-component
   (constructor [this props]
                (component/create-ref! this "gallery")
                nil)
-  ;; TODO:: Flash shows incorrectly on page
+  ;; TODO:: Flash shows incorrectly on page (perhaps caused by lack of spinner?)
   (render [this]
           (let [{:keys [posts-with-cover post-ordering reorder-mode? currently-dragging-post-id]} (component/get-props this)
                 gallery-ref                                                                       (component/use-ref this "gallery")]
@@ -216,17 +226,19 @@
                               MuuriReact/MuuriComponent
                               (muuri-config gallery-ref reorder-mode? post-ordering)
                               (cons
-                               (component/build add-photo-square-2 {:key "add-photo"})
+                               (component/build add-post-square {:key "add-photo"})
                                (for [post posts-with-cover]
-                                 (component/build child-node {:key                        (:id post)
-                                                              :reorder-mode?              reorder-mode?
-                                                              :currently-dragging-post-id currently-dragging-post-id
-                                                              :post                       post}))))])))))
+                                 (component/build post-thumbnail {:key                        (:id post)
+                                                                  :reorder-mode?              reorder-mode?
+                                                                  :currently-dragging-post-id currently-dragging-post-id
+                                                                  :post                       post}))))])))))
+
 (defcomponent reorderable-wrapper
   [data _ _]
   [:div
-   ;; TODO: real loader. Make sure page works when experiment is turned on while on the page
-   (if true #_(seq (:posts data))
+   ;; TODO: (squash blocker) Make this be aware of the fetching helper; make this actually have logic
+   (if (or (seq (:posts data))
+           (not (:fetching-posts? data)))
        (component/build reorderable-component data)
        (ui/large-spinner {:style {:height "6em"}}))])
 
@@ -304,15 +316,17 @@
   {:gallery (get-in state keypaths/user-stylist-gallery-images)})
 
 (defn query-v2 [state]
-  (let [images        (->> (get-in state keypaths/user-stylist-gallery-images)
-                           (spice.maps/index-by :id))
-        indexed-posts (->> (get-in state keypaths/user-stylist-gallery-posts)
-                           (map (fn [post] (->> post :image-ordering first (get images) (assoc post :cover-image))))
-                           (spice.maps/index-by :id))
-        post-ordering (get-in state keypaths/user-stylist-gallery-initial-posts-ordering)
-        sorted-posts  (map indexed-posts post-ordering)]
+  (let [images          (->> (get-in state keypaths/user-stylist-gallery-images)
+                             (spice.maps/index-by :id))
+        indexed-posts   (->> (get-in state keypaths/user-stylist-gallery-posts)
+                             (map (fn [post] (->> post :image-ordering first (get images) (assoc post :cover-image))))
+                             (spice.maps/index-by :id))
+        post-ordering   (get-in state keypaths/user-stylist-gallery-initial-posts-ordering)
+        sorted-posts    (map indexed-posts post-ordering)
+        fetching-posts? (utils/requesting? state request-keys/get-stylist-gallery)]
     {:posts-with-cover           sorted-posts
      :post-ordering              post-ordering
+     :fetching-posts?            fetching-posts?
      :reorder-mode?              (get-in state keypaths/stylist-gallery-reorder-mode)
      :currently-dragging-post-id (get-in state keypaths/stylist-gallery-currently-dragging-post)}))
 
@@ -330,11 +344,10 @@
          (experiments/edit-gallery? app-state)           (api/get-v2-stylist-gallery api-params)
          :else                                           (api/get-stylist-gallery api-params)))))
 
-(defmethod transitions/transition-state events/navigate-gallery-edit
-  [_ event args app-state]
+(defmethod transitions/transition-state events/navigate-gallery-edit [_ event args app-state]
   (-> app-state
-      ;; Reset the initial ordering for the muuri component
-      (assoc-in keypaths/user-stylist-gallery-initial-posts-ordering [])))
+      (assoc-in keypaths/user-stylist-gallery-initial-posts-ordering [])
+      (assoc-in keypaths/editing-gallery? false)))
 
 (defmethod transitions/transition-state events/api-success-stylist-gallery
   [_ event {:keys [images posts]} app-state]

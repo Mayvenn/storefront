@@ -111,9 +111,7 @@
 
 (defn edit-gallery?
   [data]
-  (display-feature? data "edit-gallery")
-  ;; TODO(ellie, 2021-04-28): Remove this true
-  true)
+  (display-feature? data "edit-gallery"))
 
 (defn shopping-quiz?
   [data]
