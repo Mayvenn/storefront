@@ -65,39 +65,74 @@
 (defn number-of-days-to-ship
   ;; Key:
   ;; o - day ordered
-  ;; h - handling
+  ;; s - day shipped
   ;; x - no movement or delivery
-  ;; # - day of movement
-  ;; Express: "WAITER-SHIPPING-2" {:min 1 :max 2 :saturday-delivery? false} after 1pm et
-  ;; S M T W TH F Sa
-  ;;          o h x
-  ;;;x 1 2
+  ;; ~ - unevented day of transit
+  ;; b - best case delivery
+  ;; w - worst case delivery
 
-  ;; Priority: "WAITER-SHIPPING-7" {:min 2 :max 4 :saturday-delivery? true} after 1pm et
+  ;; Express: "WAITER-SHIPPING-2" {:min 1 :max 2 :saturday-delivery? false} after 1pm on Thursday et
   ;; S M T W TH F Sa
-  ;;       x sh 1 2
-  ;;;x 3 4
+  ;;          o s x
+  ;; x b w
 
-  ;; Priority: "WAITER-SHIPPING-7" {:min 2 :max 4 :saturday-delivery? true}
+  ;; Priority: "WAITER-SHIPPING-7" {:min 2 :max 4 :saturday-delivery? true} after 1pm on Thursday et
+  ;; S M T W TH F Sa
+  ;;          o s  ~
+  ;; x b ~ w
+
+  ;; Priority: "WAITER-SHIPPING-7" {:min 2 :max 4 :saturday-delivery? true} before 1pm on Wednesday et
   ;; before 1pm et
   ;; S M T W TH F Sa
-  ;;       h  1 2 3
-  ;;;x 4
+  ;;       os ~ b  ~
+  ;; x w
 
-  [weekday-order-is-placed
+  ;; Priority: "WAITER-SHIPPING-7" {:min 2 :max 4 :saturday-delivery? true} before 10am on Friday et
+  ;; before 1pm et
+  ;; S M T W TH F Sa
+  ;;            os ~
+  ;; x b ~ w
+
+  ;; Priority: "WAITER-SHIPPING-7" {:min 2 :max 4 :saturday-delivery? true} after 10am on Friday et
+  ;; before 1pm et
+  ;; S M T W TH F Sa
+  ;;            o  x
+  ;; x s ~ b  ~ w
+
+  ;; Express: "WAITER-SHIPPING-2" {:min 1 :max 2 :saturday-delivery? false} before 10am on Friday et
+  ;; S M T W TH F Sa
+  ;;            os x
+  ;; x b w
+
+  ;; Free: "WAITER-SHIPPING-1" {:min-delivery 4 :max-delivery 6 :saturday-delivery? true} before 10am on Friday et
+  ;; S M T W TH F Sa
+  ;;            os ~
+  ;; x ~ ~ b  ~ w
+
+  ;; Free: "WAITER-SHIPPING-1" {:min-delivery 4 :max-delivery 6 :saturday-delivery? true} after 10am on Friday et
+  ;; S M T W TH F Sa
+  ;;            o  x
+  ;; x s ~ ~  b ~  w
+
+  [day-of-week-order-was-placed
    within-shipping-window?
    saturday-delivery?
-   days-to-ship]
-  (let [handling-time        1
-        after-window-penalty (if within-shipping-window? 0 1)]
-    (+ days-to-ship
-       after-window-penalty
-       (->> (cycle ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"])
-            (drop-while (complement #{weekday-order-is-placed}))
-            (drop (+ handling-time after-window-penalty))
-            (take days-to-ship)
-            (map (partial convert-weekend saturday-delivery?))
-            (apply max)))))
+   transit-days]
+  (let [days-until-shipped (cond
+                             (= "Sat" day-of-week-order-was-placed) 2
+                             (= "Sun" day-of-week-order-was-placed) 1
+                             within-shipping-window?                0
+                             (= "Fri" day-of-week-order-was-placed) 3
+                             :weekday-not-in-shipping-window        1)
+        transit-delay      (->> (cycle ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"])
+                                (drop-while (complement #{day-of-week-order-was-placed}))
+                                (drop (+ days-until-shipped 1))
+                                (take transit-days)
+                                (map (partial convert-weekend saturday-delivery?))
+                                (apply max))]
+    (+ days-until-shipped
+       transit-delay
+       transit-days)))
 
 (defn format-delivery-date [date]
   (str (formatters/day->day-abbr date) "(" (formatters/month+day date) ")"))
@@ -164,8 +199,12 @@
            :clj nil)
         parsed-east-coast-hour (spice/parse-int east-coast-hour-str)
         weekday?               (contains? #{"Mon" "Tue" "Wed" "Thu" "Fri"} east-coast-weekday)
-        in-window?             (and parsed-east-coast-hour
-                                    (< parsed-east-coast-hour 13))
+        friday?                (= "Fri" east-coast-weekday)
+        in-window?             (and weekday?
+                                    parsed-east-coast-hour
+                                    (< parsed-east-coast-hour 13)
+                                    (or (not friday?)
+                                        (< parsed-east-coast-hour 10)))
 
         order          (get-in data keypaths/order)
         shipping       (orders/shipping-item order)
@@ -179,6 +218,7 @@
                                        now
                                        east-coast-weekday
                                        in-window?) shipping-methods)
-     :delivery.note/id   (when (and weekday? in-window?)
-                           "delivery-note")
-     :delivery.note/copy "Order by 1pm ET today to have the guaranteed delivery dates below"}))
+     :delivery.note/id   (when in-window? "delivery-note")
+     :delivery.note/copy (if friday?
+                           "Order by 10am ET today to have the guaranteed delivery dates below"
+                           "Order by 1pm ET today to have the guaranteed delivery dates below")}))
