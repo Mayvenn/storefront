@@ -204,7 +204,7 @@
 (c/defcomponent flyout-content
   [{:flyout/keys [items id]} _ _]
   (if id
-    [:div.bg-cool-gray.flex.flex-column.p8.border.border-pale-purple
+    [:div.stacking-context.bg-cool-gray.flex.flex-column.p8.border.border-pale-purple
      (for [{:keys [key nav-message copy]} items]
        [:a.inherit-color.left-align.nowrap.my1.content-1.hover-menu-item
         (merge
