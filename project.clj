@@ -50,11 +50,11 @@
   :repl-options {:init-ns user}
   :jvm-opts ~(concat
               ["-Xmx1024m" "-XX:-OmitStackTraceInFastThrow"]
-              (let [version     (System/getProperty "java.version")
-                    [major _ _] (clojure.string/split version #"\.")]
-                (if (>= (Integer. major) 9)
-                  ["--add-modules" "java.xml.bind"]
-                  [])))
+              (let [version               (System/getProperty "java.version")
+                    [major _minor _patch] (clojure.string/split version #"\.")]
+                (cond
+                  (#{9 10} (Integer. major)) ["--add-modules" "java.xml.bind"]
+                  :else                      [])))
   :clean-targets ^{:protect false} [:target-path
                                     "resources/public/js/out/"
                                     "resources/public/css/"
