@@ -208,7 +208,7 @@
   {:live-help-banner/primary                "Need help?"
    :live-help-banner/id                     "hamburger-need-help"
    :live-help-button/cta-label              "Chat with us"
-   :live-help-button/cta-target             [events/flow|live-help|opened]
+   :live-help-button/cta-target             [events/flow|live-help|opened {:location "hamburger-menu"}]
    :live-help-button/id                     "hamburger-chat-with-us"
    :live-help-button/label-and-border-color "#FFF"
    :live-help-button/icon                   [:svg/chat-bubble-diamonds-p-color {:class "fill-white mr1"

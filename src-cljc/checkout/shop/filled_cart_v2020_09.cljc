@@ -125,7 +125,7 @@
     {:live-help-toast/primary                 "Need help?"
      :live-help-toast/id                      "toast-need-help"
      :live-help-button/cta-label              "Chat with us"
-     :live-help-button/cta-target             [events/flow|live-help|opened]
+     :live-help-button/cta-target             [events/flow|live-help|opened {:location "cart-toast"}]
      :live-help-button/id                     "toast-chat-with-us"
      :live-help-button/label-and-border-color "#4427c1"
      :live-help-button/icon                   [:svg/chat-bubble-diamonds {:class "fill-p-color mr1"

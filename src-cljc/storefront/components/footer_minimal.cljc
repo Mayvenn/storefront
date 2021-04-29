@@ -22,14 +22,14 @@
    [:div.left
     (component/build footer-links/component {:minimal? true} nil)]
    ;; Space for promotion helper
-   [:div {:style {:margin-bottom "80px"}}]])
+   [:div {:style {:margin-bottom "100px"}}]])
 
 (defn query
   [data]
   (merge {:call-number config/support-phone-number}
          (when (experiments/live-help? data)
            {:live-help-button/cta-label              "Chat with us"
-            :live-help-button/cta-target             [events/flow|live-help|opened]
+            :live-help-button/cta-target             [events/flow|live-help|opened {:location "minimal-footer"}]
             :live-help-button/id                     "chat with us"
             :live-help-button/label-and-border-color "#4427c1"
             :live-help-button/icon                   [:svg/chat-bubble-diamonds {:class "fill-p-color mr1"

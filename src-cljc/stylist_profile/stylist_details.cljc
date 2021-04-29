@@ -147,7 +147,7 @@
      (c/build experience/organism experience)
      (c/build specialties-shopping/organism specialties-discountable)]
     clear-float-atom
-    (when live-help [:div.m3 live-help/banner])
+    (when live-help [:div.m3 (c/build live-help/banner {:live-help/location "stylist-profile-page"})])
     (c/build ratings-bar-chart/organism ratings-bar-chart)
     (c/build stylist-reviews/organism stylist-reviews)]
    (c/build footer/organism footer)

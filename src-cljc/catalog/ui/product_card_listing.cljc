@@ -59,7 +59,7 @@
         :product          (product-card/organism card)
         :live-help-banner [:div.my3.col-12.mx1
                            {:key "category-product-list-live-help"}
-                           live-help/banner]
+                           (c/build live-help/banner card)]
         nil))]])
 
 (c/defcomponent organism

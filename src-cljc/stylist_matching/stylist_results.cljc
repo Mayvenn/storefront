@@ -480,9 +480,7 @@
                                   (component/component-id (:react/key data)))]
 
                 :live-help-breaker
-                [:div.m3
-                 {:key "call-out-box"}
-                 live-help/banner]
+                [:div.m3 {:key "call-out-box"} (component/build live-help/banner data)]
 
                 nil))])
          (when (:list.breaker/id data)
@@ -780,13 +778,17 @@
                         :list.stylist-counter/key     (when (pos? (count matching-stylists))
                                                         "stylist-count-content")
                         :list.matching/key            (when (seq matching-stylists) "stylist-matching")
-                        :list.matching/cards (cond->> (mapv
-                                                       (fn [msc]
-                                                         {:type :matching-stylist-card
-                                                          :data msc})
-                                                       matching-stylist-cards)
-                                               (experiments/live-help? app-state)
-                                               (general-utils/insert-at-pos 3 {:type :live-help-breaker}))
+                        :list.matching/cards          (cond->> matching-stylist-cards
+                                                        :always
+                                                        (mapv
+                                                         (fn [msc]
+                                                           {:type :matching-stylist-card
+                                                            :data msc}))
+                                                        (experiments/live-help? app-state)
+                                                        (general-utils/insert-at-pos
+                                                         3
+                                                         {:type :live-help-breaker
+                                                          :data {:live-help/location "stylist-results-breaker"}}))
                         :list.breaker/id              (when (seq non-matching-stylists) "non-matching-breaker")
                         :list.breaker/results-content (when (and (seq non-matching-stylists)
                                                                  (empty? matching-stylists))
