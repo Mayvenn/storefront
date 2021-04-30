@@ -416,13 +416,12 @@
                                      (quadpay<- state order)
                                      (cart-summary<- order)
                                      {:servicing-stylist-sms-info (servicing-stylist-sms-info<- order-items (:diva/stylist servicing-stylist))
-                                      ;; TODO there are multiple CTAs!
-                                      ;; TODO consider spinning/disabled for alla these buttons
                                       :cta                        {:cta/id        "start-checkout-button"
                                                                    :cta/disabled? pending-request?
                                                                    :cta/target    [events/control-shared-cart-checkout-clicked
                                                                                    {:id               number
                                                                                     :advertised-price advertised-price
+                                                                                    :upsell-addons?   (api.orders/requires-addons-followup? order)
                                                                                     :validate-price?  true}]
                                                                    :cta/spinning? (= :checkout spinning-button)
                                                                    :cta/content   "Check out"}
@@ -556,9 +555,11 @@
 
 #?(:cljs
    (defmethod effects/perform-effects events/control-shared-cart-checkout-clicked
-     [_ _ args _ state]
+     [_ _ {:keys [upsell-addons?] :as args} _ state]
      (control-fx state args (partial history/enqueue-navigate
-                                     events/navigate-checkout-returning-or-guest))))
+                                     (if upsell-addons?
+                                       events/navigate-checkout-add
+                                       events/navigate-checkout-returning-or-guest)))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/control-shared-cart-paypal-checkout-clicked

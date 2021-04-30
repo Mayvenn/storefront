@@ -497,3 +497,10 @@
            apply-promos
            shared-cart->waiter-order
            (->order state)))
+
+(defn requires-addons-followup?
+  [{:order/keys [items]}]
+  (and
+   (select ?discountable items)
+   (empty? (mapcat :item.service/addons items))
+   (empty? (mapcat :join/addon-facets items))))

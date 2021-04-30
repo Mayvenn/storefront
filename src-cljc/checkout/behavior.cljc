@@ -15,21 +15,13 @@
 
 ;; == /checkout/add page ==
 
-(defn ^:private requires-addons-followup?
-  [{:order/keys [items]}]
-  (and
-   (select ?discountable items)
-   (empty? (mapcat :item.service/addons items))
-   (empty? (mapcat :join/addon-facets items))))
-
 (defmethod effects/perform-effects events/navigate-checkout-add
-  [_ _ {:keys [navigate/caused-by]} _ app-state]
+  [_ _ _ _ app-state]
   (messages/handle-message events/cache|product|requested
                            {:query ?service})
-  (when (and (#{:module-load :first-nav} caused-by)
-             (-> app-state
-                 api.orders/current
-                 requires-addons-followup?))
+  (when-not (-> app-state
+                api.orders/current
+                api.orders/requires-addons-followup?)
     (effects/redirect events/navigate-cart)))
 
 ;; == Cart controls ==
@@ -84,7 +76,7 @@
   [_ _ _ _ state]
   (->> (if (-> state
                api.orders/current
-               requires-addons-followup?)
+               api.orders/requires-addons-followup?)
          events/navigate-checkout-add
          events/navigate-checkout-address)
        #?(:cljs history/enqueue-navigate)))
