@@ -9,15 +9,17 @@
             [storefront.platform.component-utils :as utils]
             [storefront.utils :as general-utils]
             [storefront.request-keys :as request-keys]
-            [mayvenn.live-help.core :as live-help]))
+            [mayvenn.live-help.core :as live-help]
+            [mayvenn.visual.lib.call-out-box :as call-out-box]))
 
 (defn ^:private subsections-query
   [data
    {:subsections/keys [subsection-selectors]}
    products-matching-criteria]
   (let [live-help-data (when (live-help/kustomer-started? data)
-                         {:card/type          :live-help-banner
-                          :live-help/location "category-page-product-breaker"})]
+                         (merge
+                          {:card/type :live-help-banner}
+                          (live-help/banner-query "category-page-product-breaker")))]
     (if (seq subsection-selectors)
       (let [subsections
             (->> subsection-selectors
@@ -58,7 +60,11 @@
         :product          (product-card/organism card)
         :live-help-banner [:div.my3.col-12.mx1
                            {:key "category-product-list-live-help"}
-                           (c/build live-help/banner card)]
+                           [:div.col-12.bg-warm-gray.hide-on-tb-dt
+                            [:div.mx-auto (c/build call-out-box/variation-2 card)]]
+                           [:div.col-12.hide-on-mb.bg-cool-gray
+                            [:div.mx-auto {:style {:max-width "400px"}}
+                             (c/build call-out-box/variation-3 card)]]]
         nil))]])
 
 (c/defcomponent organism

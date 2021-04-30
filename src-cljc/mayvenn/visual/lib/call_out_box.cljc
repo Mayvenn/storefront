@@ -42,3 +42,14 @@
       (with :action data)
       (titles/proxima (with :title data)))
      (actions/action-molecule (with :action data))]))
+
+;; Cool Gray, Proxima
+(c/defcomponent variation-3
+  [data _ _]
+  (when (seq data)
+    [:div.col-12.flex.bg-cool-gray.flex-column.items-center.p5.pyj2
+     {:key (:action/id data)}
+     (link-to-atom
+      (with :action data)
+      (titles/proxima (with :title data)))
+     (actions/action-molecule (with :action data))]))

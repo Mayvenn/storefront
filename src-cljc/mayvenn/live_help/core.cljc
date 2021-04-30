@@ -34,7 +34,7 @@
   [_ _ {:keys [location]} _]
   #?(:cljs (stringer/track-event "chat_link_pressed" {:location-on-page location})))
 
-(defn live-help-query [location]
+(defn banner-query [location]
   (let [target [e/flow|live-help|opened {:location location}]]
     {:title/icon      [:svg/chat-bubble-diamonds {:class "mb2"
                                                   :style {:height "30px"
@@ -49,7 +49,7 @@
 
 (c/defcomponent banner
   [{:live-help/keys [location]} _ _]
-  (c/build call-out-box/variation-2 (live-help-query location)))
+  (c/build call-out-box/variation-2 (banner-query location)))
 
 (c/defcomponent button-component
   [{:live-help-button/keys [cta-label cta-target id icon label-and-border-color]} _ _]
