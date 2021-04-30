@@ -9,17 +9,25 @@
             [storefront.component :as c]
             [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as utils]
-            [storefront.trackings :as trackings]))
+            [storefront.trackings :as trackings]
+            [storefront.accessors.sites :as sites]))
 
-(defmethod fx/perform-effects e/flow|live-help|reset
-  [_ _ _ _ state]
-  (when (not (get-in state k/loaded-kustomer))
-    #?(:cljs (kustomer/init))))
+(defn kustomer-started? [app-state]
+  (boolean
+   (and
+    (= :shop (sites/determine-site app-state))
+    (get-in app-state k/started-kustomer))))
+
+#?(:cljs
+   (defmethod fx/perform-effects e/flow|live-help|reset
+     [_ _ _ _ state]
+     (when-not (get-in state k/loaded-kustomer)
+       (kustomer/init))))
 
 #?(:cljs
    (defmethod fx/perform-effects e/flow|live-help|opened
      [_ _ _ _ state]
-     (when (experiments/live-help? state)
+     (when (kustomer-started? state)
        (kustomer/open-conversation))))
 
 (defmethod trackings/perform-track e/flow|live-help|opened

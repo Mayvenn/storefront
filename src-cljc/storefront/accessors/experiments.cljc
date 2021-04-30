@@ -117,10 +117,3 @@
 (defn shopping-quiz?
   [data]
   (display-feature? data "shopping-quiz"))
-
-(defn live-help?
-  [data]
-  (and
-   (= :shop (sites/determine-site data))
-   (get-in data keypaths/started-kustomer) ;; <-- NOTE: this check will replace calls to `live-help?` once the feature goes to 100
-   (display-feature? data "live-help")))

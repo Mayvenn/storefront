@@ -9,14 +9,13 @@
             [storefront.platform.component-utils :as utils]
             [storefront.utils :as general-utils]
             [storefront.request-keys :as request-keys]
-            [mayvenn.live-help.core :as live-help]
-            [storefront.accessors.experiments :as experiments]))
+            [mayvenn.live-help.core :as live-help]))
 
 (defn ^:private subsections-query
   [data
    {:subsections/keys [subsection-selectors]}
    products-matching-criteria]
-  (let [live-help-data (when (experiments/live-help? data)
+  (let [live-help-data (when (live-help/kustomer-started? data)
                          {:card/type          :live-help-banner
                           :live-help/location "category-page-product-breaker"})]
     (if (seq subsection-selectors)

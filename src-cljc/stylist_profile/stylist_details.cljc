@@ -352,7 +352,7 @@
                                                          hide-star-distribution?
                                                          newly-added-stylist-ui-experiment?
                                                          detailed-stylist)
-                       :live-help                (experiments/live-help? state)
+                       :live-help                (live-help/kustomer-started? state)
                        :ratings-bar-chart        (ratings-bar-chart<- hide-star-distribution?
                                                                       detailed-stylist)
                        :experience               (experience<- detailed-stylist)

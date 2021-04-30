@@ -31,7 +31,7 @@
 (defn query
   [data]
   (merge {:call-number config/support-phone-number}
-         (when (experiments/live-help? data)
+         (when (live-help/kustomer-started? data)
            {:live-help-button/cta-label              "Chat with us"
             :live-help-button/cta-target             [events/flow|live-help|opened {:location "minimal-footer"}]
             :live-help-button/id                     "chat with us"

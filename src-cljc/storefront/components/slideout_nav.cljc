@@ -240,9 +240,8 @@
 (defn query [data]
   (-> (header/basic-query data)
       (cond->
-          (experiments/live-help? data)
-        (-> ;; NOTE(jjw, stc): Show live-help-banner instead of promo-banner when feature flag is on.
-            ;; When this feature goes 100% `experiments/live-help?` becomes `kustomer/started?`
+          (live-help/kustomer-started? data)
+        (->
          (assoc :live-help-banner live-help-banner<)
          (dissoc :promo-banner)))
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))

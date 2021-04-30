@@ -444,13 +444,12 @@
 
 (defn ^:export built-component
   [state opts]
-  (let [selected-sku (get-in state catalog.keypaths/detailed-product-selected-sku)
-        live-help?   (experiments/live-help? state)]
+  (let [selected-sku (get-in state catalog.keypaths/detailed-product-selected-sku)]
     (component/build component
                      (merge (query state selected-sku)
                             {:add-to-cart (add-to-cart-query state
                                                              selected-sku)
-                             :live-help   (when live-help?
+                             :live-help   (when (live-help/kustomer-started? state)
                                             {:live-help/location "product-detail-page-banner"})})
                      opts)))
 

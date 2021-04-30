@@ -87,6 +87,11 @@
   (riskified/insert-tracking (get-in app-state keypaths/session-id))
   (stringer/fetch-browser-id)
   (refresh-account app-state)
+
+  (when (= :shop (sites/determine-site app-state))
+    ;; Enables Kustomer Chat 2.0
+    (messages/handle-message events/flow|live-help|reset))
+
   (browser-events/attach-global-listeners)
   (browser-events/attach-click-away-handler)
   (browser-events/attach-esc-key-listener)

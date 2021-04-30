@@ -784,7 +784,7 @@
                                                          (fn [msc]
                                                            {:type :matching-stylist-card
                                                             :data msc}))
-                                                        (experiments/live-help? app-state)
+                                                        (live-help/kustomer-started? app-state)
                                                         (general-utils/insert-at-pos
                                                          3
                                                          {:type :live-help-breaker

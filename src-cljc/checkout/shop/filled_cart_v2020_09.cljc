@@ -120,8 +120,8 @@
 
      [:div.border-bottom.border-gray.hide-on-mb]]))
 
-(defn live-help-toast< [live-help?]
-  (when live-help?
+(defn live-help-toast< [kustomer-started?]
+  (when kustomer-started?
     {:live-help-toast/primary                 "Need help?"
      :live-help-toast/id                      "toast-need-help"
      :live-help-button/cta-label              "Chat with us"
@@ -804,7 +804,7 @@
                                                                           (seq (get-in app-state keypaths/shipping-methods))
                                                                           (seq (get-in app-state keypaths/states)))
                                         :suggestions                 suggestions}
-                      :live-help-toast (live-help-toast< (experiments/live-help? app-state))
+                      :live-help-toast (live-help-toast< (live-help/kustomer-started? app-state))
                       :header          app-state
                       :footer          app-state
                       :popup           app-state
