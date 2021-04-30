@@ -175,7 +175,7 @@
            [:div ^:inline (carousel carousel-images product)
             [:div.my5
              (when live-help
-               (component/build call-out-box/variation-2 live-help))]
+               (component/build call-out-box/variation-2 (update live-help :action/id str "-desktop")))]
             (component/build ugc/component ugc opts)])
           (component/html
            [:div

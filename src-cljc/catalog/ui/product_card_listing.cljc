@@ -64,7 +64,7 @@
                             [:div.mx-auto (c/build call-out-box/variation-1 card)]]
                            [:div.col-12.hide-on-mb.bg-cool-gray
                             [:div.mx-auto {:style {:max-width "400px"}}
-                             (c/build call-out-box/variation-2 card)]]]
+                             (c/build call-out-box/variation-2 (update card :action/id str "-desktop"))]]]
         nil))]])
 
 (c/defcomponent organism
