@@ -61,10 +61,10 @@
         :live-help-banner [:div.my3.col-12.mx1
                            {:key "category-product-list-live-help"}
                            [:div.col-12.bg-warm-gray.hide-on-tb-dt
-                            [:div.mx-auto (c/build call-out-box/variation-2 card)]]
+                            [:div.mx-auto (c/build call-out-box/variation-1 card)]]
                            [:div.col-12.hide-on-mb.bg-cool-gray
                             [:div.mx-auto {:style {:max-width "400px"}}
-                             (c/build call-out-box/variation-3 card)]]]
+                             (c/build call-out-box/variation-2 card)]]]
         nil))]])
 
 (c/defcomponent organism

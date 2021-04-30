@@ -22,18 +22,9 @@
           :data-test id)
    content])
 
-;; Pale purple, Canela
-(c/defcomponent variation-1
-  [data _ _]
-  (when (seq data)
-    [:div.col-12.bg-pale-purple.flex.flex-column.items-center.p5
-     (link-to-atom
-      (with :action data)
-      (titles/canela (with :title data)))
-     (actions/action-molecule (with :action data))]))
 
 ;; Warm Gray, Proxima
-(c/defcomponent variation-2
+(c/defcomponent variation-1
   [data _ _]
   (when (seq data)
     [:div.col-12.bg-warm-gray.flex.flex-column.items-center.p5.pyj2
@@ -44,7 +35,7 @@
      (actions/action-molecule (with :action data))]))
 
 ;; Cool Gray, Proxima
-(c/defcomponent variation-3
+(c/defcomponent variation-2
   [data _ _]
   (when (seq data)
     [:div.col-12.flex.bg-cool-gray.flex-column.items-center.p5.pyj2

@@ -49,7 +49,7 @@
 
 (c/defcomponent banner
   [{:live-help/keys [location]} _ _]
-  (c/build call-out-box/variation-2 (banner-query location)))
+  (c/build call-out-box/variation-1 (banner-query location)))
 
 (c/defcomponent button-component
   [{:live-help-button/keys [cta-label cta-target id icon label-and-border-color]} _ _]

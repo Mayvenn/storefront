@@ -193,7 +193,7 @@
             (component/build tabbed-information/component data)
             (component/build catalog.M/non-hair-product-description data opts)
             [:div.hide-on-tb-dt.m3
-             (when live-help (component/build live-help/banner live-help))
+             (when live-help (component/build call-out-box/variation-1 live-help))
              [:div.mxn2.mb3 (component/build ugc/component ugc opts)]]]))]]
 
        (when (seq reviews)
@@ -436,7 +436,7 @@
                             {:add-to-cart (add-to-cart-query state
                                                              selected-sku)
                              :live-help   (when (live-help/kustomer-started? state)
-                                            {:live-help/location "product-detail-page-banner"})})
+                                            (live-help/banner-query "product-detail-page-banner"))})
                      opts)))
 
 
