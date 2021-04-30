@@ -129,27 +129,6 @@
        ;; result
        :discounted?           (and service-line-item (not (seq failed-rules)))})))
 
-;;; Some ad-hoc transforms?
-
-(defn ^:private ->service
-  [waiter-line-item]
-  {:title  (:variant-name waiter-line-item)
-   :sku-id (:sku waiter-line-item)
-   :price  (:unit-price waiter-line-item)})
-
-(defn ^:private ->addon-service
-  [waiter-addon-line-item]
-  (->service waiter-addon-line-item))
-
-(defn ^:private ->base-service
-  [waiter-order waiter-base-line-item]
-  (let [addon-services (->> waiter-order
-                            orders/service-line-items
-                            (filter line-items/addon-service?)
-                            (filter #(= (:line-item-group waiter-base-line-item) (:line-item-group %)))
-                            (map ->addon-service))]
-    (assoc (->service waiter-base-line-item) :addons addon-services)))
-
 (declare items<-)
 
 (defn offered-services-sku-ids
@@ -162,9 +141,6 @@
 (defn ->order
   [app-state waiter-order]
   (let [recents           (get-in app-state storefront.keypaths/cart-recently-added-skus)
-        base-services     (->> waiter-order
-                               orders/service-line-items
-                               (filter line-items/base-service?))
         products-db       (get-in app-state storefront.keypaths/v2-products)
         skus-db           (get-in app-state storefront.keypaths/v2-skus)
         images-db         (get-in app-state storefront.keypaths/v2-images)
@@ -181,7 +157,6 @@
      :order/submitted?     (= "submitted" (:state waiter-order))
      :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
      :order.items/quantity (orders/displayed-cart-count waiter-order)
-     :order.items/services (map (partial ->base-service waiter-order) base-services)
      :order/items          items
      :service/world        (cond ; Consider current order contents first, then ff, default old
                              (select ?new-world-service items)        "SV2"
