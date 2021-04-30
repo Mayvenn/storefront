@@ -155,7 +155,6 @@
            ugc
            faq-section
            add-to-cart
-           browse-stylists-banner
            live-help] :as data} owner opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
@@ -174,7 +173,6 @@
          (page
           (component/html
            [:div ^:inline (carousel carousel-images product)
-            [:div.my5 (component/build call-out-box/variation-1 browse-stylists-banner)]
             (component/build ugc/component ugc opts)])
           (component/html
            [:div
@@ -196,7 +194,6 @@
             (component/build catalog.M/non-hair-product-description data opts)
             [:div.hide-on-tb-dt.m3
              (when live-help (component/build live-help/banner live-help))
-             [:div.mt3 (component/build call-out-box/variation-1 browse-stylists-banner)]
              [:div.mxn2.mb3 (component/build ugc/component ugc opts)]]]))]]
 
        (when (seq reviews)
@@ -429,18 +426,7 @@
                                 :weights              (when-not density
                                                         weights)
                                 :learn-more-nav-event (when-not (contains? (:stylist-exclusives/family product) "kits")
-                                                        events/navigate-content-our-hair)}))
-
-     (when (and shop?
-                (not (or
-                      tape-in-or-seamless-clips?
-                      wig?)))
-       {:browse-stylists-banner {:title/primary   "Buy 3 items and we'll pay for your hair install"
-                                 :title/secondary "Choose any Mayvenn stylist in your area"
-                                 :action/label    "browse stylists"
-                                 :action/target   [events/navigate-adventure-find-your-stylist]
-                                 :class           "bg-pale-purple"
-                                 :action/id       "browse-stylists-banner-cta"}}))))
+                                                        events/navigate-content-our-hair)})))))
 
 (defn ^:export built-component
   [state opts]
