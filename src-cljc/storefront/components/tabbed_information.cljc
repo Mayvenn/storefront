@@ -3,7 +3,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]
             [storefront.events :as events]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [storefront.components.ui :as ui]))
 
 (defn ^:private tab-content
   [{:keys [id primary sections active?]}]
@@ -12,13 +13,17 @@
      {:key (str id "-tab")}
      [:div primary]
      [:div.flex.flex-wrap.justify-between
-      (for [{:keys [content heading]} sections]
+      (for [{:keys [content heading] :as section} sections]
         [:div.my2.pr2
          {:style {:min-width "50%"}}
          [:div.proxima.title-3.shout heading]
-         [:div content]])]]))
+         [:div content]
+         (when-let [link-content (:link/content section)]
+           (ui/button-small-underline-primary
+            {}
+            link-content))])]]))
 
-(c/defcomponent component [{:tabbed-information/keys [tabs id content keypath]} owner _]
+(c/defcomponent component [{:tabbed-information/keys [tabs id keypath]} owner _]
   (when id
     [:div.mx4
      [:div.flex.mx-auto.justify-between

@@ -117,3 +117,7 @@
 (defn shopping-quiz?
   [data]
   (display-feature? data "shopping-quiz"))
+
+(defn length-guide?
+  [data]
+  (display-feature? data "length-guide"))
