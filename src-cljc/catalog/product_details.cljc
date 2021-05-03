@@ -370,7 +370,8 @@
                                                            (when-let [content (get product content-key)]
                                                              {:heading heading
                                                               :content content}))
-                                                         [["Unit Weight" :copy/weights]
+                                                         [["Model Wearing" :copy/model-wearing]
+                                                          ["Unit Weight" :copy/weights]
                                                           ["Hair Quality" :copy/quality]
                                                           ["Hair Origin" :copy/origin]
                                                           ["Hair Weft Type" :copy/weft-type]
@@ -397,7 +398,6 @@
                                                               :content content}))
                                                          [["Hair Type" :copy/hair-type]
                                                           ["What's Included" :copy/whats-included]
-                                                          ["Model Wearing" :copy/model-wearing]
                                                           ["Available Services" :copy/available-services]])}
                                         {:title    "Care"
                                          :id       :care
