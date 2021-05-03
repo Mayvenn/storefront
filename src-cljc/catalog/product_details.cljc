@@ -6,6 +6,7 @@
                        [storefront.api :as api]
                        [storefront.hooks.seo :as seo]
                        [storefront.browser.scroll :as scroll]
+                       [storefront.components.popup :as popup]
                        [storefront.history :as history]
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.reviews :as review-hooks]
@@ -272,6 +273,37 @@
      {}
      (keys options))))
 
+#?(:cljs
+   [(defmethod popup/query :length-guide [state]
+      (when-let [image (get-in state catalog.keypaths/length-guide-image)]
+        {:length-guide/image-url    (:url image)
+         :length-guide/close-target [events/popup-hide-length-guide]
+         :length-guide/primary      "Length Guide"}))
+    (defmethod popup/component :length-guide
+      [{:length-guide/keys [image-url close-target primary]} _ _]
+      (ui/modal
+       {:close-attrs
+        {:on-click #(apply messages/handle-message close-target)}}
+       [:div.bg-white
+        [:div.bg-white.col-12.flex.justify-between.px6.py3
+         [:div {:style {:min-width "12px"}}]
+         [:div primary]
+         [:div
+          (svg/x-sharp (merge (apply utils/fake-href close-target)
+                              {:style {:width  "12px"
+                                       :height "12px"}}))]]
+        (ui/aspect-ratio 1.105 1
+                         (ui/img
+                          {:class    "col-12"
+                           :max-size 600
+                           :src      image-url}))]))])
+
+(defmethod transitions/transition-state events/popup-show-length-guide
+  [_ _ {:keys [length-guide-image]} state]
+  (-> state
+      (assoc-in keypaths/popup :length-guide)
+      (assoc-in catalog.keypaths/length-guide-image length-guide-image)))
+
 (defn add-to-cart-query
   [app-state
    selected-sku]
@@ -316,22 +348,27 @@
   (let [selections (get-in data catalog.keypaths/detailed-product-selections)
         product    (products/current-product data)
 
-        product-skus    (products/extract-product-skus data product)
-        images-catalog  (get-in data keypaths/v2-images)
-        facets          (facets/by-slug data)
-        carousel-images (find-carousel-images product product-skus images-catalog
-                                              (select-keys selections [:hair/color])
-                                              selected-sku)
-        options         (get-in data catalog.keypaths/detailed-product-options)
-        ugc             (ugc-query product selected-sku data)
-        sku-price       (or (:product/essential-price selected-sku)
-                            (:sku/price selected-sku))
-        review-data     (review-component/query data)
-        shop?           (or (= "shop" (get-in data keypaths/store-slug))
-                            (= "retail-location" (get-in data keypaths/store-experience)))
-        hair?           (accessors.products/hair? product)
-        faq             (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
-                          (get-in data (conj keypaths/cms-faq pdp-faq-id)))]
+        product-skus       (products/extract-product-skus data product)
+        images-catalog     (get-in data keypaths/v2-images)
+        facets             (facets/by-slug data)
+        carousel-images    (find-carousel-images product product-skus images-catalog
+                                                 (select-keys selections [:hair/color])
+                                                 selected-sku)
+        length-guide-image (when (experiments/length-guide? data)
+                             (->> product
+                                  (images/for-skuer images-catalog)
+                                  (select {:use-case #{"length-guide"}})
+                                  first))
+        options            (get-in data catalog.keypaths/detailed-product-options)
+        ugc                (ugc-query product selected-sku data)
+        sku-price          (or (:product/essential-price selected-sku)
+                               (:sku/price selected-sku))
+        review-data        (review-component/query data)
+        shop?              (or (= "shop" (get-in data keypaths/store-slug))
+                               (= "retail-location" (get-in data keypaths/store-experience)))
+        hair?              (accessors.products/hair? product)
+        faq                (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
+                             (get-in data (conj keypaths/cms-faq pdp-faq-id)))]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -378,9 +415,10 @@
                                                          [(merge
                                                            {:heading     "Model Wearing"
                                                             :content-key :copy/model-wearing}
-                                                           (when (experiments/length-guide? data)
+                                                           (when length-guide-image
                                                              {:link/content "Length Guide"
-                                                              :link/target  []}))
+                                                              :link/target  [events/popup-show-length-guide
+                                                                             {:length-guide-image length-guide-image}]}))
                                                           {:heading     "Unit Weight"
                                                            :content-key :copy/weights}
                                                           {:heading     "Hair Quality"
@@ -465,7 +503,6 @@
                                             (live-help/banner-query "product-detail-page-banner"))})
                      opts)))
 
-
 (defn determine-sku-id
   [app-state product]
   (let [selected-sku-id    (get-in app-state catalog.keypaths/detailed-product-selected-sku-id)
@@ -505,7 +542,7 @@
                          (when-let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)]
                            (messages/handle-message events/viewed-sku {:sku selected-sku}))))
 
-     (if-let [current-product (products/current-product app-state)]
+     (when-let [current-product (products/current-product app-state)]
        (if (auth/permitted-product? app-state current-product)
          (review-hooks/insert-reviews)
          (effects/redirect events/navigate-home)))))

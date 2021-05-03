@@ -447,6 +447,9 @@
 (defpath popup-show-consolidated-cart-free-install)
 (defpath control-consolidated-cart-free-install-dismiss)
 
+(defpath popup-show-length-guide)
+(defpath popup-hide-length-guide)
+
 (defpath popup-show-wigs-customization)
 (defpath control-wigs-customization-dismiss)
 

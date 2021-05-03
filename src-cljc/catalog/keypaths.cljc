@@ -15,6 +15,8 @@
 (def detailed-product-selected-picker (conj detailed-product :selected-picker))
 (def detailed-product-picker-visible? (conj detailed-product :picker-visible?))
 
+(def length-guide-image (conj detailed-product :length-guide-image))
+
 (def category (conj ui :category))
 (def category-panel (conj ui :panel))
 (def category-id (conj ui :id))
