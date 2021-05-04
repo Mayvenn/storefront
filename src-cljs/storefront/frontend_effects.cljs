@@ -596,7 +596,9 @@
 (defmethod effects/perform-effects events/uploadcare-api-success-upload-gallery [_ event {:keys [cdnUrl]} _ app-state]
   (let [user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]
-    (api/append-stylist-gallery user-id user-token {:gallery-urls [cdnUrl]})
+    (if (experiments/edit-gallery? app-state)
+      (api/append-stylist-v2-gallery user-id user-token {:gallery-urls [cdnUrl]})
+      (api/append-stylist-gallery user-id user-token {:gallery-urls [cdnUrl]}))
     (history/enqueue-navigate events/navigate-gallery-edit)))
 
 (defmethod effects/perform-effects events/control-checkout-update-addresses-submit [_ event args _ app-state]

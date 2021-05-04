@@ -527,6 +527,18 @@
     :handler
     #(messages/handle-message events/api-success-stylist-gallery-append %)}))
 
+
+(defn append-stylist-v2-gallery [user-id user-token {:keys [gallery-urls]}]
+  (storeback-api-req
+   POST
+   "/v2/gallery/post/append"
+   request-keys/append-gallery
+   {:params {:user-id    user-id
+             :user-token user-token
+             :urls       gallery-urls}
+    :handler
+    #(messages/handle-message events/api-success-stylist-gallery-append %)}))
+
 (defn get-stylist-gallery [params]
   (storeback-api-req
    GET
