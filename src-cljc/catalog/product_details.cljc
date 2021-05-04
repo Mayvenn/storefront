@@ -260,13 +260,14 @@
        {:close-attrs
         {:on-click #(apply messages/handle-message close-target)}}
        [:div.bg-white
-        [:div.bg-white.col-12.flex.justify-between.px6.py3
+        [:div.bg-white.col-12.flex.justify-between.items-center.px6
          [:div {:style {:min-width "12px"}}]
          [:div primary]
-         [:div
-          (svg/x-sharp (merge (apply utils/fake-href close-target)
-                              {:style {:width  "12px"
-                                       :height "12px"}}))]]
+         [:a.p3
+          (merge (apply utils/fake-href close-target)
+                 {:data-test "close-length-guide-modal"})
+          (svg/x-sharp {:style {:width  "12px"
+                                :height "12px"}})]]
         (ui/aspect-ratio 1.105 1
                          (ui/img
                           {:class    "col-12"
