@@ -320,10 +320,10 @@
    {:keys [heading content-key]
     :as   section}]
   (when-let [content (get product content-key)]
-    {:heading      heading
-     :content      content
-     :link/content (:link/content section)
-     :link/target  (:link/target section)}))
+    (merge
+     {:heading heading
+      :content content}
+     (select-keys section [:link/content :link/target :link/id]))))
 
 (defn query [data selected-sku]
   (let [selections (get-in data catalog.keypaths/detailed-product-selections)
@@ -400,7 +400,8 @@
                                                              {:link/content "Length Guide"
                                                               :link/target  [events/popup-show-length-guide
                                                                              {:length-guide-image length-guide-image
-                                                                              :location           "hair-info-tab"}]}))
+                                                                              :location           "hair-info-tab"}]
+                                                              :link/id      "hair-info-tab-length-guide"}))
                                                           {:heading     "Unit Weight"
                                                            :content-key :copy/weights}
                                                           {:heading     "Hair Quality"

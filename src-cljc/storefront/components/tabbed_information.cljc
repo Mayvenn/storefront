@@ -20,7 +20,9 @@
          [:div content]
          (when-let [link-content (:link/content section)]
            (ui/button-small-underline-primary
-            (apply utils/fake-href (:link/target section))
+            (assoc
+             (apply utils/fake-href (:link/target section))
+             :data-test (:link/id section))
             link-content))])]]))
 
 (c/defcomponent component [{:tabbed-information/keys [tabs id keypath]} owner _]

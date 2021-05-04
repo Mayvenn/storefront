@@ -347,7 +347,9 @@
                   [primary target id]}]
   (when id
     (ui/button-small-underline-primary
-     (apply utils/fake-href target)
+     (assoc
+      (apply utils/fake-href target)
+      :data-test id)
      primary)))
 
 (defn picker-dialog
@@ -417,7 +419,7 @@
                                                              :item             item}))}
 
                                      (when length-guide-image
-                                       {:title-cta/id      "length-guide"
+                                       {:title-cta/id      "length-picker-length-guide"
                                         :title-cta/target  [events/popup-show-length-guide {:length-guide-image length-guide-image
                                                                                             :location           "length-picker"}]
                                         :title-cta/primary "Length Guide"})))
