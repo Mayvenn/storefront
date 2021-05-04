@@ -418,7 +418,8 @@
 
                                      (when length-guide-image
                                        {:title-cta/id      "length-guide"
-                                        :title-cta/target  [events/popup-show-length-guide {:length-guide-image length-guide-image}]
+                                        :title-cta/target  [events/popup-show-length-guide {:length-guide-image length-guide-image
+                                                                                            :location           "length-picker"}]
                                         :title-cta/primary "Length Guide"})))
         :item/quantity (picker-dialog {:title             "Quantity"
                                        :items             (range 1 11)

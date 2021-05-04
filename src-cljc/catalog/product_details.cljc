@@ -9,6 +9,7 @@
                        [storefront.history :as history]
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.reviews :as review-hooks]
+                       [storefront.hooks.stringer :as stringer]
                        [storefront.hooks.seo :as seo]
                        [storefront.trackings :as trackings]])
             [api.catalog :refer [select]]
@@ -48,6 +49,7 @@
             [storefront.platform.messages :as messages]
             [storefront.platform.reviews :as review-component]
             [storefront.request-keys :as request-keys]
+            [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
             storefront.ugc
             [storefront.components.svg :as svg]))
@@ -277,6 +279,12 @@
       (assoc-in keypaths/popup :length-guide)
       (assoc-in catalog.keypaths/length-guide-image length-guide-image)))
 
+#?(:cljs
+   (defmethod trackings/perform-track events/popup-show-length-guide
+     [_ event {:keys [location] :as args} state]
+     (stringer/track-event "length_guide_link_pressed"
+                           {:location location})))
+
 (defn add-to-cart-query
   [app-state
    selected-sku]
@@ -391,7 +399,8 @@
                                                            (when length-guide-image
                                                              {:link/content "Length Guide"
                                                               :link/target  [events/popup-show-length-guide
-                                                                             {:length-guide-image length-guide-image}]}))
+                                                                             {:length-guide-image length-guide-image
+                                                                              :location           "hair-info-tab"}]}))
                                                           {:heading     "Unit Weight"
                                                            :content-key :copy/weights}
                                                           {:heading     "Hair Quality"
