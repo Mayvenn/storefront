@@ -69,10 +69,10 @@
    (def currently-dragging-post-attrs
      {:style {:filter "none"}}))
 
-#?(:cljs (defn view-mode-attrs [post-id]
-           (when post-id
-             ;; TODO(ellie, 2021-04-28): Should be refactored to point to a post edit page
-             (utils/route-to events/navigate-gallery-photo {:photo-id post-id}))))
+;; TODO(ellie, 2021-04-28): Should be refactored to point to a post edit page
+#?(:cljs (defn view-mode-attrs [photo-id]
+           (when photo-id
+             (utils/route-to events/navigate-gallery-photo {:photo-id photo-id}))))
 
 #?(:cljs
    (defn base-container-attrs [post-id]
@@ -87,8 +87,7 @@
    #?(:clj [:div]
       :cljs
       [:div {:key react-key}
-       (let [{:keys [cover-image]} post
-             {:keys [status id resizable-url post-id]} (:cover-image post)]
+       (let [{:keys [status id resizable-url post-id]} (:cover-image post)]
          [:div
           (ui/aspect-ratio 1 1
                            [:div.container-size
@@ -97,7 +96,7 @@
                              ;; TODO: Refactor these conditionals out of `post-thumbnail`
                              (if reorder-mode?
                                reorder-mode-attrs
-                               (view-mode-attrs post-id))
+                               (view-mode-attrs id))
                              (when (= currently-dragging-post-id post-id)
                                currently-dragging-post-attrs))
                             [:div.drag-handle.absolute.z4.top-0.left-0
