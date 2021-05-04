@@ -1,10 +1,12 @@
 (ns storefront.components.picker.picker
-  (:require [catalog.facets :as facets]
+  (:require api.catalog
+            [catalog.facets :as facets]
             [catalog.keypaths :as catalog.keypaths]
             [catalog.products :as products]
             [clojure.string :as string]
             [spice.core :as spice]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.images :as images]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -341,22 +343,33 @@
     :timeout       1000}
    (component/html (or content [:div]))))
 
+(defn title-cta [{:title-cta/keys
+                  [primary target id]}]
+  (when id
+    (ui/button-small-underline-primary
+     (apply utils/fake-href target)
+     primary)))
+
 (defn picker-dialog
   "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
-  [{:keys [title items cell-component-fn wrap?]}]
-  [:div.hide-on-tb-dt.z6.fixed.overlay.overflow-auto.bg-cool-gray
+  [{:keys [title items cell-component-fn wrap?]
+    :as data}]
+  [:div.hide-on-tb-dt.z5.fixed.overlay.overflow-auto.bg-cool-gray
    {:key (str "picker-dialog-" title) :data-test "picker-dialog"}
-   [:div.p3.content-1.proxima.bg-white.relative.border-bottom.border-gray
-    {:style {:height "70px"}}
-    [:div.absolute.overlay.flex.items-center.justify-center
-     title]
+   [:div.py3.pl3.pr1.content-2.proxima.bg-white.relative.border-bottom.border-gray.flex.justify-between.items-center
+    {:style {:height "55px"}}
+    [:div.self-start
+     {:style {:min-width "96px"}}
+     (title-cta data)]
+    [:div.self-center.flex-grow-1.center title]
 
-    [:div.absolute.overlay.flex.items-center.justify-end
-     [:a.flex.items-center.justify-center.medium.p3
-      (merge {:style     {:height "70px" :width "70px"}
+    [:div.flex.justify-end
+     {:style {:min-width "96px"}}
+     [:a.flex.items-center.justify-center.medium
+      (merge {:style     {:height "55px" :width "55px"}
               :data-test "picker-close"}
              (utils/fake-href events/control-product-detail-picker-close))
-      (svg/x-sharp {:height "14px" :width "14px"})]]]
+      (svg/x-sharp {:height "12px" :width "12px"})]]]
    [:div.py3.px1 ;; body
     (when wrap?
       {:class "flex flex-wrap"})
@@ -370,51 +383,58 @@
            options
            sku-quantity
            color-picker-redesign?
-           picker-visible?]
+           picker-visible?
+           length-guide-image]
     :as   data} owner _]
   (let [color-option-fn (if color-picker-redesign? color-option-new color-option)]
     [:div
      (slide-animate
       picker-visible?
       (condp = selected-picker
-        :hair/color    (picker-dialog {:title               (get-in facets [selected-picker :facet/name])
-                                       :items               (sort-by :option/order (get options selected-picker))
-                                       :wrap?               color-picker-redesign?
-                                       :cell-component-fn   (fn [item]
-                                                              (color-option-fn
-                                                               {:key              (str "color-" (:option/name item))
-                                                                :selected-picker  selected-picker
-                                                                :navigation-event navigation-event
-                                                                :color            item
-                                                                :checked?         (= (:hair/color selections)
-                                                                                     (:option/slug item))
-                                                                :sku-image        (:option/sku-swatch item)}))})
-        :hair/length   (picker-dialog {:title               (get-in facets [selected-picker :facet/name])
-                                       :items               (sort-by :option/order (get options selected-picker))
-                                       :cell-component-fn   (fn [item]
-                                                              (length-option
-                                                               {:key              (str "length-" (:option/name item))
-                                                                :primary-label    (:option/name item)
-                                                                :navigation-event navigation-event
-                                                                :checked?         (= (:hair/length selections)
-                                                                                     (:option/slug item))
-                                                                :selected-picker  selected-picker
-                                                                :item             item}))})
-        :item/quantity (picker-dialog {:title               "Quantity"
-                                       :items               (range 1 11)
-                                       :cell-component-fn   (fn [quantity]
-                                                              (quantity-option
-                                                               {:key           (str "quantity-" quantity)
-                                                                :primary-label (str quantity)
-                                                                :checked?      (= quantity sku-quantity)
-                                                                :quantity      quantity}))})
+        :hair/color  (picker-dialog {:title             (get-in facets [selected-picker :facet/name])
+                                     :items             (sort-by :option/order (get options selected-picker))
+                                     :wrap?             color-picker-redesign?
+                                     :cell-component-fn (fn [item]
+                                                          (color-option-fn
+                                                           {:key              (str "color-" (:option/name item))
+                                                            :selected-picker  selected-picker
+                                                            :navigation-event navigation-event
+                                                            :color            item
+                                                            :checked?         (= (:hair/color selections)
+                                                                                 (:option/slug item))
+                                                            :sku-image        (:option/sku-swatch item)}))})
+        :hair/length (picker-dialog (merge
+                                     {:title             (get-in facets [selected-picker :facet/name])
+                                      :items             (sort-by :option/order (get options selected-picker))
+                                      :cell-component-fn (fn [item]
+                                                           (length-option
+                                                            {:key              (str "length-" (:option/name item))
+                                                             :primary-label    (:option/name item)
+                                                             :navigation-event navigation-event
+                                                             :checked?         (= (:hair/length selections)
+                                                                                  (:option/slug item))
+                                                             :selected-picker  selected-picker
+                                                             :item             item}))}
+
+                                     (when length-guide-image
+                                       {:title-cta/id      "length-guide"
+                                        :title-cta/target  [events/popup-show-length-guide {:length-guide-image length-guide-image}]
+                                        :title-cta/primary "Length Guide"})))
+        :item/quantity (picker-dialog {:title             "Quantity"
+                                       :items             (range 1 11)
+                                       :cell-component-fn (fn [quantity]
+                                                            (quantity-option
+                                                             {:key           (str "quantity-" quantity)
+                                                              :primary-label (str quantity)
+                                                              :checked?      (= quantity sku-quantity)
+                                                              :quantity      quantity}))})
         nil))
      (if (seq options)
        (picker-rows data)
        [:div.py2])]))
 
 (defn query
-  [data]
+  [data length-guide-image]
   (let [options           (get-in data catalog.keypaths/detailed-product-options)
         selected-picker   (get-in data catalog.keypaths/detailed-product-selected-picker)
         picker-visible?   (get-in data catalog.keypaths/detailed-product-picker-visible?)
@@ -432,4 +452,5 @@
      :selected-length        (get-in facets [:hair/length :facet/options (:hair/length selections)])
      :product-sold-out-style (when product-sold-out? {:class "gray"})
      :sku-quantity           (get-in data keypaths/browse-sku-quantity 1)
-     :navigation-event       events/navigate-product-details}))
+     :navigation-event       events/navigate-product-details
+     :length-guide-image     length-guide-image}))

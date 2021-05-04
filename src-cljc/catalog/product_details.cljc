@@ -361,7 +361,7 @@
       :selected-sku                       selected-sku
       :facets                             facets
       :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
-      :picker-data                        (picker/query data)
+      :picker-data                        (picker/query data length-guide-image)
       :faq-section                        (when (and shop? faq)
                                             (let [{:keys [question-answers]} faq]
                                               {:faq/expanded-index (get-in data keypaths/faq-expanded-section)
