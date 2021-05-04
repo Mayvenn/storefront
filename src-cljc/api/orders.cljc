@@ -287,7 +287,8 @@
          (when (select ?discountable [item])
            (let [rules-for-service (or
                                     (get rules sku-id)
-                                    (get SV2-rules (-> item :item/service-attrs :product/sku-part)))
+                                    (get SV2-rules (-> item :item/service-attrs :product/sku-part))
+                                    (get SV2-rules (-> item :product/sku-part)))
                  physical-items    (select ?physical items)
 
                  failed-rules
