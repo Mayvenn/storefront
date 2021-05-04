@@ -4,19 +4,19 @@
                        [goog.style]
                        [storefront.accessors.auth :as auth]
                        [storefront.api :as api]
-                       [storefront.hooks.seo :as seo]
                        [storefront.browser.scroll :as scroll]
                        [storefront.components.popup :as popup]
                        [storefront.history :as history]
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.reviews :as review-hooks]
+                       [storefront.hooks.seo :as seo]
                        [storefront.trackings :as trackings]])
-            [api.catalog :refer [select ?addons ?discountable]]
+            [api.catalog :refer [select]]
             api.current
             api.orders
             api.products
             [catalog.facets :as facets]
-            [catalog.keypaths :as catalog.keypaths]
+            catalog.keypaths
             [catalog.product-details-ugc :as ugc]
             [catalog.products :as products]
             [catalog.selector.sku :as sku-selector]
@@ -24,12 +24,13 @@
             [catalog.ui.molecules :as catalog.M]
             [checkout.cart.swap :as swap]
             [homepage.ui.faq :as faq]
-            mayvenn.live-help.core
+            [mayvenn.live-help.core :as live-help]
             [mayvenn.visual.lib.call-out-box :as call-out-box]
             [mayvenn.visual.tools :refer [with]]
             [mayvenn.visual.ui.titles :as titles]
             [spice.selector :as selector]
             [storefront.accessors.contentful :as contentful]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.images :as images]
             [storefront.accessors.products :as accessors.products]
             [storefront.accessors.sites :as sites]
@@ -49,8 +50,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             storefront.ugc
-            [storefront.accessors.experiments :as experiments]
-            [mayvenn.live-help.core :as live-help]))
+            [storefront.components.svg :as svg]))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
@@ -60,18 +60,6 @@
 
 (defn full-bleed-narrow [body]
   [:div.hide-on-tb-dt body])
-
-(defn counter-or-out-of-stock [can-supply? quantity]
-  (if can-supply?
-    [:div
-     (ui/counter {:spinning? false
-                  :data-test "pdp"}
-                 quantity
-                 (utils/send-event-callback events/control-counter-dec
-                                            {:path keypaths/browse-sku-quantity})
-                 (utils/send-event-callback events/control-counter-inc
-                                            {:path keypaths/browse-sku-quantity}))]
-    [:span.h4 "Currently out of stock"]))
 
 (def sold-out-button
   [:div.pt1.pb3.px3
@@ -87,27 +75,12 @@
                              :disabled? true}
                             "Unavailable")])
 
-(defn ^:private handle-scroll [component e]
-  #?(:cljs (component/set-state! component :show? (< 866 (.-y (goog.dom/getDocumentScroll))))))
-
-(defn ^:private set-height [component]
-  #?(:cljs (component/set-state! component :add-button-height (some-> (component/get-ref component "add-button")
-                                                                      goog.style/getSize
-                                                                      .-height))))
-
-(def checkout-button
-  (component/html
-   [:div
-    {:data-test "cart-button"
-     :data-ref "cart-button"}
-    (ui/button-large-primary (utils/route-to events/navigate-cart) "Check out")]))
-
 (def shipping-and-guarantee
   (component/html
    [:div.border-top.border-bottom.border-gray.p2.my2.center.shout.medium.h6
     "Free shipping & 30 day guarantee"]))
 
-(defn image-body [i {:keys [filename url alt]}]
+(defn image-body [i {:keys [url alt]}]
   (ui/aspect-ratio
    640 580
    (if (zero? i)
@@ -156,7 +129,7 @@
            ugc
            faq-section
            add-to-cart
-           live-help] :as data} owner opts]
+           live-help] :as data} _ opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (if-not product
