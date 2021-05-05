@@ -123,6 +123,7 @@
               "/stylist/account/social"                   (edn->bidi events/navigate-stylist-account-social)
               "/stylist/redeem"                           (edn->bidi events/navigate-voucher-redeem)
               "/stylist/redeemed"                         (edn->bidi events/navigate-voucher-redeemed)
+              "/stylist/payout-rates"                     (edn->bidi events/navigate-v2-stylist-dashboard-payout-rates)
               "/stylist/payments"                         (edn->bidi events/navigate-v2-stylist-dashboard-payments)
               "/stylist/orders"                           (edn->bidi events/navigate-v2-stylist-dashboard-orders)
               ["/stylist/orders/" :order-number]          (edn->bidi events/navigate-stylist-dashboard-order-details)

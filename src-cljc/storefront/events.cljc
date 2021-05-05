@@ -312,6 +312,7 @@
 (defpath api-success-cash-out-failed)
 (defpath api-success-cash-out-complete)
 (defpath api-success-user-stylist-service-menu-fetch)
+(defpath api-success-user-stylist-offered-services)
 
 (defpath api-success-fetch-stylists-matching-filters)
 
@@ -482,7 +483,6 @@
 
 ;;SECTION v2 Control
 
-
 (defpath control-v2-stylist-dashboard-section-toggle)
 (defpath control-v2-stylist-dashboard-sales-load-more)
 (defpath control-v2-stylist-dashboard-balance-transfers-load-more)
@@ -504,6 +504,7 @@
 (defpath navigate-v2-stylist-dashboard)
 (defpath navigate-v2-stylist-dashboard-payments)
 (defpath navigate-v2-stylist-dashboard-orders)
+(defpath navigate-v2-stylist-dashboard-payout-rates)
 
 ;; CUSTOMER
 (defpath navigate-customer-orders)

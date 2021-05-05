@@ -610,6 +610,13 @@
   (cond-> app-state
     menu (assoc-in keypaths/user-stylist-service-menu menu)))
 
+(defmethod transition-state events/api-success-user-stylist-offered-services
+  [_ event {:keys [menu]} app-state]
+  (cond-> app-state
+    (seq menu)
+    (assoc-in keypaths/user-stylist-offered-services
+              (maps/index-by (comp keyword :offered-service-slug) menu))))
+
 (defmethod transition-state events/stringer-browser-identified
   [_ _ {:keys [id]} app-state]
   (assoc-in app-state keypaths/stringer-browser-id id))

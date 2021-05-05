@@ -65,6 +65,7 @@
 (def fetch-cms-keypath [:fetch-cms-keypath])
 (def voucher-redemption [:voucher-redemption])
 (def fetch-user-stylist-service-menu [:fetch-user-stylist-service-menu])
+(def fetch-user-stylist-offered-services [:fetch-user-stylist-offered-services])
 (def fetch-stylists-matching-filters [:fetch-stylists-matching-filters])
 (def presearch-name [:presearch-name])
 

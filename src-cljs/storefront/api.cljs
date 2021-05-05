@@ -1104,6 +1104,17 @@
               :user-token user-token}
     :handler #(messages/handle-message events/api-success-user-stylist-service-menu-fetch %)}))
 
+(defn fetch-user-stylist-offered-services [cache {:keys [user-id user-token stylist-id]}]
+  (cache-req
+   cache
+   GET
+   "/v1/stylist/offered-services"
+   request-keys/fetch-user-stylist-offered-services
+   {:params  {:stylist-id stylist-id
+              :user-id    user-id
+              :user-token user-token}
+    :handler #(messages/handle-message events/api-success-user-stylist-offered-services %)}))
+
 (defn presearch-name
   [params handler]
   (storeback-api-req GET "/v1/stylist/presearch"
@@ -1118,8 +1129,7 @@
    request-keys/fetch-stylists-matching-filters
    {:params  params
     :handler (or handler
-                 #(messages/handle-message events/api-success-fetch-stylists-matching-filters
-                                           %))}))
+                 #(messages/handle-message events/api-success-fetch-stylists-matching-filters %))}))
 
 (defn fetch-matched-stylist
   ([cache stylist-id]

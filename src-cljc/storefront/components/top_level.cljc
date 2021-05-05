@@ -58,6 +58,7 @@
         events/navigate-stylist-account-social                     #(ui/lazy-load-component :dashboard 'storefront.components.stylist.account/built-component events/navigate-stylist-account-social)
         events/navigate-v2-stylist-dashboard-payments              #(ui/lazy-load-component :dashboard 'stylist.dashboard/built-component events/navigate-v2-stylist-dashboard-payments)
         events/navigate-v2-stylist-dashboard-orders                #(ui/lazy-load-component :dashboard 'stylist.dashboard/built-component events/navigate-v2-stylist-dashboard-orders)
+        events/navigate-v2-stylist-dashboard-payout-rates          #(ui/lazy-load-component :dashboard 'stylist.dashboard-payout-rates/page events/navigate-v2-stylist-dashboard-payout-rates)
         events/navigate-gallery-image-picker                       #(ui/lazy-load-component :dashboard 'storefront.components.stylist.gallery-image-picker/built-component events/navigate-gallery-image-picker)
         events/navigate-account-manage                             #(partial sign-in/requires-sign-in account/built-component)
         events/navigate-added-to-cart                              #(ui/lazy-load-component :catalog 'checkout.added-to-cart/built-component events/navigate-added-to-cart)

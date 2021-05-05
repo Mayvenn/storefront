@@ -28,6 +28,7 @@
 (def user-store-id (conj user :store-id))
 (def user-stylist-experience (conj user :stylist-experience))
 (def user-stylist-service-menu (conj user :service-menu))
+(def user-stylist-offered-services (conj user :offered-services))
 (def user-stylist-portrait (conj user :stylist-portrait))
 (def user-stylist-gallery-images (conj user :stylist-gallery-images))
 (def user-stylist-gallery-posts (conj user :stylist-gallery-posts))

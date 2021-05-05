@@ -16,6 +16,7 @@
             stylist.dashboard-stats
             stylist.dashboard-orders-tab
             stylist.dashboard-payments-tab
+            stylist.dashboard-payout-rates
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
