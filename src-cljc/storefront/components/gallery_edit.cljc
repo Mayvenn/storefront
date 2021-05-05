@@ -233,13 +233,14 @@
                                                                   :post                       post}))))])))))
 
 (defcomponent reorderable-wrapper
-  [data _ _]
+  [{:as data :keys [posts fetching-posts? :appending-post?]} _ _]
   [:div
    ;; TODO: (squash blocker) Make this be aware of the fetching helper; make this actually have logic
-   (if (or (seq (:posts data))
-           (not (:fetching-posts? data)))
-       (component/build reorderable-component data)
-       (ui/large-spinner {:style {:height "6em"}}))])
+   (if (and (empty? posts)
+            (or fetching-posts? appending-post?))
+       (ui/large-spinner {:style {:height "6em"}})
+       (component/build reorderable-component data))])
+
 
 (defmethod transitions/transition-state events/control-stylist-gallery-posts-drag-began
   [_ _ {:keys [item]} app-state]
@@ -326,6 +327,7 @@
     {:posts-with-cover           sorted-posts
      :post-ordering              post-ordering
      :fetching-posts?            fetching-posts?
+     :appending-post?            (utils/requesting? state request-keys/append-gallery)
      :reorder-mode?              (get-in state keypaths/stylist-gallery-reorder-mode)
      :currently-dragging-post-id (get-in state keypaths/stylist-gallery-currently-dragging-post)}))
 
@@ -347,6 +349,10 @@
   (-> app-state
       (assoc-in keypaths/user-stylist-gallery-initial-posts-ordering [])
       (assoc-in keypaths/editing-gallery? false)))
+
+(defmethod transitions/transition-state events/api-success-stylist-gallery-append
+  [_ event {:keys [images posts]} app-state]
+  (assoc-in app-state keypaths/user-stylist-gallery-initial-posts-ordering []))
 
 (defmethod transitions/transition-state events/api-success-stylist-gallery
   [_ event {:keys [images posts]} app-state]
