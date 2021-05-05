@@ -127,8 +127,7 @@
      [:div.bg-pale-purple.white
       (ui/aspect-ratio 1 1
                        [:div.flex.flex-column.justify-evenly.container-size
-                        [:div.drag-handle.hidden] ; Every Muuri Item needs a drag-handle (if using drag handles)
-                        [:div ui/nbsp]
+                        [:div.drag-handle.hidden ui/nbsp]  ; Every Muuri Item needs a drag-handle (if using drag handles)
                         [:div.center.bold {:style {:font-size "60px"}} "+"]
                         [:div.center.shout.title-3.proxima "Add Post"]])]]]))
 
