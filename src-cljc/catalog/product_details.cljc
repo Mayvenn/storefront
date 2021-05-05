@@ -260,8 +260,8 @@
        {:close-attrs
         {:on-click #(apply messages/handle-message close-target)}}
        [:div.bg-white
-        [:div.bg-white.col-12.flex.justify-between.items-center.px6
-         [:div {:style {:min-width "12px"}}]
+        [:div.bg-white.col-12.flex.justify-between.items-center
+         [:div {:style {:min-width "42px"}}]
          [:div primary]
          [:a.p3
           (merge (apply utils/fake-href close-target)
