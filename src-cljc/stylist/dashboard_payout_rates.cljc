@@ -19,6 +19,13 @@
                :sew-in-frontal
                :sew-in-360-frontal
                :wig-install]}
+   {:name     "Add-On Services"
+    :services [:addon-natural-hair-trim
+               :addon-weave-take-down
+               :addon-hair-deep-conditioning
+               :addon-closure-customization
+               :addon-frontal-customization
+               :addon-360-frontal-customization]}
    {:name     "Other Services"
     :services [:silk-press
                :weave-maintenance
@@ -34,14 +41,7 @@
     :services [:reinstall-leave-out
                :reinstall-closure
                :reinstall-frontal
-               :reinstall-360-frontal]}
-   {:name     "Add-On Services"
-    :services [:addon-natural-hair-trim
-               :addon-weave-take-down
-               :addon-hair-deep-conditioning
-               :addon-closure-customization
-               :addon-frontal-customization
-               :addon-360-frontal-customization]}])
+               :reinstall-360-frontal]}])
 
 (defcomponent service-rate
   [{:service-rate/keys [id primary secondary]} _ _]
