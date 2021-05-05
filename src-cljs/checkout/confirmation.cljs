@@ -201,9 +201,9 @@
                           :class "mtp2"} "9664879b-07e0-432e-9c09-b2cf4c899b10")
            [:div.px1
             (if servicing-stylist
-              (str "You will be connected to "
+              (str "You've selected "
                    (stylists/->display-name servicing-stylist)
-                   " over SMS to make an appointment within 2 business days after the check out")
+                   " as your stylist. A Concierge Specialist will reach out to you within 3 business days to coordinate your appointment.")
               "You’ll be able to select your Certified Mayvenn Stylist after checkout.")]])]]]
      [:div.py6.h2
       [:div.py4 (ui/large-spinner {:style {:height "6em"}})]

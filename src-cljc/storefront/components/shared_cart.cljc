@@ -235,9 +235,9 @@
   [items servicing-stylist]
   (when (select ?service items)
     (if servicing-stylist
-      {:copy          (str "After your order ships, you'll be connected with "
+      {:copy          (str "You've selected "
                            (stylists/->display-name servicing-stylist)
-                           " over SMS to make an appointment.")
+                           " as your stylist. A Concierge Specialist will reach out to you within 3 business days to coordinate your appointment.")
        :servicing-stylist-portrait-url (-> servicing-stylist :portrait :resizable-url)}
       {:copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
        :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})))

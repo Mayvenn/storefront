@@ -721,9 +721,9 @@
   [items]
   (when-let [services (select ?service items)]
     (if-let [stylist (:item.service/stylist (first services))]
-      {:checkout-caption-copy          (str "You will be connected to "
+      {:checkout-caption-copy          (str "You've selected "
                                             (stylists/->display-name stylist)
-                                            " over SMS to make an appointment within 2 business days after the check out")
+                                            " as your stylist. A Concierge Specialist will reach out to you within 3 business days to coordinate your appointment.")
        :servicing-stylist-portrait-url (-> stylist :portrait :resizable-url)}
       {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
        :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})))
