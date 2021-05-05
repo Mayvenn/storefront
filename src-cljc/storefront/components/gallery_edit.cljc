@@ -97,13 +97,6 @@
                                (view-mode-attrs id))
                              (when (= currently-dragging-post-id post-id)
                                currently-dragging-post-attrs))
-                            [:div.drag-handle.absolute.z4.top-0.left-0
-                             {:class "mp2"
-                              :style {:touch-action "none"}}
-                             (ui/img {:width 25
-                                      :height 25
-                                      :style {:opacity 0.33}
-                                      :src      "/images/icons/2d-drag-handle.png"})]
                             (if (= "approved" status)
                               (ui/img {:class    "container-size"
                                        :style    {:object-position "50% 25%"
@@ -127,7 +120,7 @@
      [:div.bg-pale-purple.white
       (ui/aspect-ratio 1 1
                        [:div.flex.flex-column.justify-evenly.container-size
-                        [:div.drag-handle.hidden ui/nbsp]  ; Every Muuri Item needs a drag-handle (if using drag handles)
+                        [:div ui/nbsp]
                         [:div.center.bold {:style {:font-size "60px"}} "+"]
                         [:div.center.shout.title-3.proxima "Add Post"]])]]]))
 
@@ -169,7 +162,7 @@
 
 #?(:cljs
    (defn muuri-config [gallery-ref reorder-mode? post-ordering]
-     #js {:dragEnabled  true
+     #js {:dragEnabled  false
           :itemClass    "col-4"
           ;; ↓ These prevent long presses on the drag handler from
           ;; ↓ selecting or scrolling. It is very important.
