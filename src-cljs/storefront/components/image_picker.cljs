@@ -21,8 +21,8 @@
              [:div.container.sans-serif
               [:div.p2
                (ui.molecules/return-link
-                {:return-link/id            "back to gallery"
-                 :return-link/copy          "Back to Gallery"
+                {:return-link/id            (:back-copy back-link)
+                 :return-link/copy          (:back-copy back-link)
                  :return-link/event-message [(:navigation-event back-link)]})]
               [:div.bg-warm-gray.border-top.border-gray
                [:div.mt8.mb1.title-1.canela.center "Select a source"]
