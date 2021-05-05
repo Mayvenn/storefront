@@ -26,7 +26,9 @@
             [voucher.keypaths :as voucher-keypaths]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.service-menu :as service-menu]
-            [storefront.components.money-formatters :as mf]))
+            [storefront.components.money-formatters :as mf]
+            [storefront.components.ui :as ui]
+            [storefront.accessors.experiments :as experiments]))
 
 (def tabs
   [{:id :orders
@@ -48,10 +50,16 @@
                        "bg-white")})
       title])])
 
-(defn ^:private empty-ledger [{:keys [empty-title empty-copy]}]
-  [:div.my6.center
-   [:h4.gray.bold.p1 empty-title]
-   [:h6.col-5.mx-auto.line-height-2 empty-copy]])
+(defcomponent payout-rate-link
+  [{:payout-rate-link/keys [id primary target]} _ _]
+  (when id
+    [:div.px4.mb4.mt2.flex.items-center
+     (ui/button-small-underline-primary
+      (merge
+       (apply utils/route-to target)
+       {:data-test id
+        :class "shout"})
+      primary)]))
 
 (defcomponent component
   [{:keys [stats-cards activity-ledger-tab
@@ -61,6 +69,9 @@
   (let [{:keys [active-tab-name]} activity-ledger-tab]
     [:div.col-6-on-dt.col-9-on-tb.mx-auto
      (component/build stylist.dashboard-stats/component stats-cards nil)
+
+     (component/build payout-rate-link data)
+
      (ledger-tabs active-tab-name)
 
      (case active-tab-name
@@ -112,23 +123,29 @@
   [data]
   (let [get-balance-transfer second
         balance-transfers    (get-in data keypaths/v2-dashboard-balance-transfers-elements)]
-    {:stats-cards         (stylist.dashboard-stats/query data)
-     :activity-ledger-tab (determine-active-tab (get-in data keypaths/navigation-event))
-     :pending-voucher-row (some->> (get-in data voucher-keypaths/voucher-redeemed-response)
-                                  (voucher-response->pending-voucher-row (get-in data keypaths/v2-skus)
-                                                                         (get-in data keypaths/user-stylist-service-menu)))
+    (merge
+     {:stats-cards         (stylist.dashboard-stats/query data)
+      :activity-ledger-tab (determine-active-tab (get-in data keypaths/navigation-event))
+      :pending-voucher-row (some->> (get-in data voucher-keypaths/voucher-redeemed-response)
+                                    (voucher-response->pending-voucher-row (get-in data keypaths/v2-skus)
+                                                                           (get-in data keypaths/user-stylist-service-menu)))
 
-     :balance-transfers            (into []
-                                         (comp
-                                          (map get-balance-transfer)
-                                          (remove (fn [transfer]
-                                                    (when-let [status (-> transfer :data :status)]
-                                                      (not= "paid" status)))))
-                                         balance-transfers)
-     :fetching-balance-transfers?  (or (utils/requesting? data request-keys/get-stylist-dashboard-balance-transfers)
-                                       (utils/requesting? data request-keys/fetch-user-stylist-service-menu))
-     :balance-transfers-pagination (get-in data keypaths/v2-dashboard-balance-transfers-pagination)
-     :orders-data                  (stylist.dashboard-orders-tab/query data)}))
+      :balance-transfers            (into []
+                                          (comp
+                                           (map get-balance-transfer)
+                                           (remove (fn [transfer]
+                                                     (when-let [status (-> transfer :data :status)]
+                                                       (not= "paid" status)))))
+                                          balance-transfers)
+      :fetching-balance-transfers?  (or (utils/requesting? data request-keys/get-stylist-dashboard-balance-transfers)
+                                        (utils/requesting? data request-keys/fetch-user-stylist-service-menu))
+      :balance-transfers-pagination (get-in data keypaths/v2-dashboard-balance-transfers-pagination)
+      :orders-data                  (stylist.dashboard-orders-tab/query data)}
+     (when (and (= "aladdin" (get-in data keypaths/user-stylist-experience))
+                (experiments/payout-rates? data))
+       {:payout-rate-link/id      "view-payout-rates"
+        :payout-rate-link/primary "View My Payout Rates"
+        :payout-rate-link/target  [events/navigate-v2-stylist-dashboard-payout-rates]}))))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
