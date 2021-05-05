@@ -108,6 +108,7 @@
                              sharing-store-events
                              share-cart-events
                              stylist-dashboard-events
+                             gallery-page-events
                              voucher-events
                              adventures-quiz-events
                              interstitial-page-events))
