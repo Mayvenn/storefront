@@ -69,7 +69,6 @@
    (def currently-dragging-post-attrs
      {:style {:filter "none"}}))
 
-;; TODO(ellie, 2021-04-28): Should be refactored to point to a post edit page
 #?(:cljs (defn view-mode-attrs [photo-id]
            (when photo-id
              (utils/route-to events/navigate-gallery-photo {:photo-id photo-id}))))
@@ -93,7 +92,6 @@
                            [:div.container-size
                             (maps/deep-merge
                              (base-container-attrs post-id)
-                             ;; TODO: Refactor these conditionals out of `post-thumbnail`
                              (if reorder-mode?
                                reorder-mode-attrs
                                (view-mode-attrs id))
@@ -105,7 +103,6 @@
                              (ui/img {:width 25
                                       :height 25
                                       :style {:opacity 0.33}
-                                      ;; TODO(ellie, 2021-04-28): Replace with the approved drag handle before flight
                                       :src      "/images/icons/2d-drag-handle.png"})]
                             (if (= "approved" status)
                               (ui/img {:class    "container-size"
@@ -123,7 +120,6 @@
   (component/html
    [:div
     [:a.block.pp1
-     ;; TODO(ellie, 2021-04-28): Change to navigate to the post edit page
      (merge (utils/route-to events/navigate-gallery-image-picker)
             {:key "add-post"
              :data-test "add-post-to-gallery-link"
@@ -131,6 +127,7 @@
      [:div.bg-pale-purple.white
       (ui/aspect-ratio 1 1
                        [:div.flex.flex-column.justify-evenly.container-size
+                        [:div.drag-handle.hidden] ; Every Muuri Item needs a drag-handle (if using drag handles)
                         [:div ui/nbsp]
                         [:div.center.bold {:style {:font-size "60px"}} "+"]
                         [:div.center.shout.title-3.proxima "Add Post"]])]]]))
@@ -235,7 +232,6 @@
 (defcomponent reorderable-wrapper
   [{:as data :keys [posts fetching-posts? :appending-post?]} _ _]
   [:div
-   ;; TODO: (squash blocker) Make this be aware of the fetching helper; make this actually have logic
    (if (and (empty? posts)
             (or fetching-posts? appending-post?))
        (ui/large-spinner {:style {:height "6em"}})
