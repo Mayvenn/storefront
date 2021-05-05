@@ -231,8 +231,9 @@
 (defcomponent reorderable-wrapper
   [{:as data :keys [posts fetching-posts? :appending-post?]} _ _]
   [:div
-   (if (and (empty? posts)
-            (or fetching-posts? appending-post?))
+   (if (or (and (empty? posts)
+                fetching-posts?)
+           appending-post?)
        (ui/large-spinner {:style {:height "6em"}})
        (component/build reorderable-component data))])
 
