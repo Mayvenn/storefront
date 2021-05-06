@@ -122,7 +122,7 @@
         user-id    (get-in app-state keypaths/user-id)
         stylist-id (get-in app-state keypaths/user-store-id)]
     (when (and user-token stylist-id)
-      (uploadcare/insert)
+      (uploadcare/insert app-state)
       (spreedly/insert)
       (api/get-states (get-in app-state keypaths/api-cache))
       (api/get-stylist-account user-id user-token stylist-id))))

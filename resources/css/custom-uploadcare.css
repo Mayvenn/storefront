@@ -1,21 +1,21 @@
-.uploadcare-dialog-tab,
-.uploadcare-dialog-tabs,
-.uploadcare-dialog-panel {
+.uploadcare--menu__item,
+.uploadcare--menu__item,
+.uploadcare--panel  {
     background: transparent;
     border: 0;
 }
 
-.uploadcare-dialog-panel :focus {
+.uploadcare--panel :focus {
     outline: inherit;
 }
 
-.uploadcare-dialog-panel {
+.uploadcare--panel {
     padding-left: 0;
     padding-bottom: 0px;
     margin-bottom: 0px;
 }
 
-.uploadcare-dialog-tabs {
+.uploadcare--menu__items {
     float: none;
     width: auto;
     height: auto;
@@ -24,7 +24,8 @@
     display: flex;
     justify-content: center;
 }
-.uploadcare-dialog-tab {
+
+.uploadcare--menu__item {
     width: 72px;
     height: 72px;
     margin: 0 10px 10px 0;
@@ -34,10 +35,10 @@
     border-width: var(--border-width);
     border-color: var(--white);
 }
-.uploadcare-dialog-tab:hover {
+.uploadcare--menu__item:hover {
     background-color: var(--warm-gray);
 }
-.uploadcare-dialog-tab-facebook:before, .uploadcare-dialog-tab-facebook:hover:before {
+.uploadcare--menu__item_tab_facebook:before, .uploadcare--menu__item_tab_facebook:hover:before {
     background-image: url('/images/icons/facebook-f.svg');
     background-size: 13px 27px;
     background-position: 50%;
@@ -45,7 +46,7 @@
     opacity: 1;
 }
 
-.uploadcare-dialog-tab-instagram:before, .uploadcare-dialog-tab-instagram:hover:before {
+.uploadcare--menu__item_tab_instagram:before, .uploadcare--menu__item_tab_instagram:hover:before {
     background-image: url('/images/icons/instagram.svg');
     background-size: 25px 25px;
     background-position: 50%;
@@ -53,11 +54,11 @@
     opacity: 1;
 }
 
-.uploadcare-dialog-tab .uploadcare-dialog-icon, .uploadcare-dialog-tab:hover:before, .uploadcare-dialog-tab:before {
+.uploadcare--menu__item .uploadcare--icon, .uploadcare--menu__item:hover:before, .uploadcare--menu__item:before {
     opacity: 1;
 }
-.uploadcare-dialog-tab-file:before,
-.uploadcare-dialog-tab-file:hover:before {
+.uploadcare--menu__item_tab_file:before,
+.uploadcare--menu__item_tab_file:hover:before {
     background-image: url('/images/icons/up-arrow.svg');
     background-size: 30px 30px;
     background-position: 50%;
@@ -67,48 +68,83 @@
     border-width: var(--border-width);
     opacity: 1;
 }
-.uploadcare-dialog-tab-file:hover:before {
+.uploadcare--menu__item_tab_file:hover:before {
     opacity: 1;
 }
-.uploadcare-dialog-tab_current {
+.uploadcare--menu__tab_item_current {
     border-style: solid;
     border-width: var(--selected-border-width);
     border-color: var(--p-color);
 }
 
-.uploadcare-dialog-tab-file.uploadcare-dialog-tab_current:before {
+.uploadcare--menu__item_tab_file.uploadcare--menu__tab_item_current:before {
     opacity: 1;
 }
-.uploadcare-dialog-tabs-panel,
-.uploadcare-dialog-source-base-wrap {
+.uploadcare--dialog-tabs-panel,
+.uploadcare--dialog-source-base-wrap {
     padding: 0;
     margin: 0;
 }
-.uploadcare-dialog-file-or:not(.uploadcare-if-draganddrop),
-.uploadcare-dialog-file-sources {
+.uploadcare--dialog-file-or:not(.uploadcare--if-draganddrop),
+.uploadcare--dialog-file-sources {
     display: none;
 }
 
 @media (--on-mobile) {
-    .uploadcare-dialog-tabs-panel {
+    .uploadcare--menu__items_panel {
         height: 318px;
     }
 }
 
 @media (--on-tablet-and-desktop) {
-    .uploadcare-dialog-tabs-panel {
+    .uploadcare--tab {
         height: 425px;
     }
 }
 
-.uploadcare-dialog-big-button,
-.uploadcare-dialog-big-button:hover,
-.uploadcare-dialog-big-button:focus,
-.uploadcare-dialog-big-button:active,
+.uploadcare--button_size_big,
+.uploadcare--button_size_big:hover,
+.uploadcare--button_size_big:focus,
+.uploadcare--button_size_big:active,
 .big-button,
 .big-button:hover,
 .big-button:focus,
 .big-button:active {
+    box-shadow: none;
+    border: none;
+    text-shadow: none;
+    font-family: var(--button-font-family);
+    font-size: var(--button-font-size);
+    font-weight: 900;
+    letter-spacing: var(--button-letter-spacing);
+    text-decoration: none;
+    text-transform: uppercase;
+    text-align: center;
+    cursor: pointer;
+    line-height: var(--button-line-height);
+    vertical-align: middle;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0.5);
+    user-select: none;
+    border-radius: 0px;
+    border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--p-color), stroke=none);
+	  border-image-slice: 15 fill;
+    border-image-width: 15px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    width: 80%;
+
+    padding-left: 30px;
+    padding-right: 30px;
+
+    border-image-repeat: stretch;
+
+    background: none;
+    background-image: none;
+}
+
+.source-instagram
+.big-button {
     box-shadow: none;
     border: none;
     text-shadow: none;
@@ -147,49 +183,49 @@
 }
 
 
-.source-instagram .big-button,
-.source-instagram:hover .big-button:hover {
-    background: none;
-}
+/* .source-instagram .big-button, */
+/* .source-instagram:hover .big-button:hover { */
+/*     background: none; */
+/* } */
 
-.uploadcare-dialog-title {
+.uploadcare--dialog-title {
     text-align: center;
 }
 
-.uploadcare-dialog-tab-preview.uploadcare-dialog-tab_current .uploadcare-widget-circle--canvas {
+.uploadcare--menu_item_tab_preview.uploadcare--tab_current .uploadcare--widget-circle--canvas {
     color: var(--primary);
 }
 
-.uploadcare-draganddrop .uploadcare-dialog-file-drop-area {
+.uploadcare--draganddrop .uploadcare--draganddrop__supported {
     /* Dotted border around drag-and-drop area. Though it's supported, we don't want to encourage drag-and-drop. Besides, the dotted border is ugly. */
     border: none;
     background-color: var(--warm-gray);
 }
 
-.uploadcare-draganddrop .uploadcare-if-draganddrop {
+.uploadcare--draganddrop .uploadcare--if-draganddrop {
     /* Copy that explains how to drag-and-drop. Again, hiding drag-and-drop, especially because it's not really possible on phones. */
     display: none;
 }
 
-.uploadcare-clouds-tip {
+.uploadcare--clouds-tip {
     /* Tries to tell users they will be able to use the native file dialog to access cloud storage and social networks. */
     display: none;
 }
 
 /* Tweaks to file upload footer */
-.uploadcare-panel-footer {
+.uploadcare--powered-by {
     padding: 0 10px;
 }
 
-.uploadcare-panel-footer .uploadcare-dialog-button {
+.uploadcare--powered-by .uploadcare--menu_button {
     float: none;
 }
 
-.uploadcare-panel-footer .uploadcare-dialog-button, .uploadcare-panel-footer .uploadcare-dialog-button-success {
+.uploadcare--powered-by .uploadcare--dialog-button, .uploadcare--powered-by .uploadcare--dialog-button-success {
     margin: 10px;
 }
 
-.uploadcare-dialog-footer {
+.uploadcare--powered-by {
     /* The uploadcare logo */
     display: none;
 }

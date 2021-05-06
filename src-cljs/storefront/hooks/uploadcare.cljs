@@ -2,17 +2,20 @@
   (:require [storefront.browser.tags :refer [insert-tag-with-callback src-tag]]
             [storefront.config :as config]
             [storefront.events :as events]
+            [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
             [storefront.platform.messages :refer [handle-message]]))
 
 (defn ^:private loaded? [] (.hasOwnProperty js/window "uploadcare"))
 
-(defn insert []
+(defn insert [app-state]
   (when-not (loaded?)
     (set! js/UPLOADCARE_PUBLIC_KEY config/uploadcare-public-key)
     (set! js/UPLOADCARE_LIVE false)
     (insert-tag-with-callback
-     (src-tag "https://ucarecdn.com/libs/widget/2.10.3/uploadcare.full.min.js"
+     (src-tag (if (experiments/updated-uploadcare? app-state)
+                "https://ucarecdn.com/libs/widget/3.11.0/uploadcare.full.min.js"
+                "https://ucarecdn.com/libs/widget/2.10.3/uploadcare.full.min.js")
               "uploadcare")
      #(do
         ;; These custom styles don't work on localhost... test on diva-acceptance.com
