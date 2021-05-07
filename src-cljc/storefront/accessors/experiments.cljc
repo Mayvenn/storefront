@@ -125,7 +125,3 @@
 (defn payout-rates?
   [data]
   (display-feature? data "payout-rates"))
-
-(defn updated-uploadcare?
-  [data]
-  (display-feature? data "updated-uploadcare"))
