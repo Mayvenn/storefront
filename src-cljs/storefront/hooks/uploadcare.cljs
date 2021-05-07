@@ -11,6 +11,7 @@
   (when-not (loaded?)
     (set! js/UPLOADCARE_PUBLIC_KEY config/uploadcare-public-key)
     (set! js/UPLOADCARE_LIVE false)
+    (set! js/UPLOADCARE_MANUAL_START true)
     (insert-tag-with-callback
      (src-tag "https://ucarecdn.com/libs/widget/3.11.0/uploadcare.full.min.js"
               "uploadcare")
