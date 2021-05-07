@@ -82,40 +82,15 @@
     background-image: none;
 }
 
-/* .source-instagram */
-/* .big-button { */
-/*     box-shadow: none; */
-/*     border: none; */
-/*     text-shadow: none; */
-/*     font-family: var(--button-font-family); */
-/*     font-size: var(--button-font-size); */
-/*     font-weight: 900; */
-/*     letter-spacing: var(--button-letter-spacing); */
-/*     text-decoration: none; */
-/*     text-transform: uppercase; */
-/*     text-align: center; */
-/*     cursor: pointer; */
-/*     line-height: var(--button-line-height); */
-/*     vertical-align: middle; */
-/*     -webkit-appearance: none; */
-/*     -webkit-tap-highlight-color: rgba(0,0,0,0.5); */
-/*     user-select: none; */
-/*     border-radius: 0px; */
-/*     border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--p-color), stroke=none); */
-/* 	  border-image-slice: 15 fill; */
-/*     border-image-width: 15px; */
-/*     padding-top: 15px; */
-/*     padding-bottom: 15px; */
-/*     width: 80%; */
-
-/*     padding-left: 30px; */
-/*     padding-right: 30px; */
-
-/*     border-image-repeat: stretch; */
-
-/*     background: none; */
-/*     background-image: none; */
-/* } */
+.source-instagram
+.big-button,
+.source-facebook
+.big-button{
+    padding-top: 15px;
+    padding-bottom: 15px;
+    background: none;
+    background-image: none;
+}
 
 .source-facebook, .source-instagram {
     background-color: var(--warm-gray);
