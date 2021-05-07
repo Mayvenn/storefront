@@ -26,5 +26,5 @@
 
 (defmethod effects/perform-effects events/navigate-gallery-image-picker [_ event args _ app-state]
   (if (auth/stylist? (auth/signed-in app-state))
-    (uploadcare/insert app-state)
+    (uploadcare/insert)
     (effects/redirect events/navigate-store-gallery)))

@@ -7,7 +7,7 @@
 
 (defn ^:private loaded? [] (.hasOwnProperty js/window "uploadcare"))
 
-(defn insert [app-state]
+(defn insert []
   (when-not (loaded?)
     (set! js/UPLOADCARE_PUBLIC_KEY config/uploadcare-public-key)
     (set! js/UPLOADCARE_LIVE false)
