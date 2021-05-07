@@ -85,7 +85,9 @@
 .source-instagram
 .big-button,
 .source-facebook
-.big-button{
+.big-button,
+.source-instagram
+.big-button:hover {
     padding-top: 15px;
     padding-bottom: 15px;
     background: none;
