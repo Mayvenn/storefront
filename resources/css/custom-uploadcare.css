@@ -15,79 +15,18 @@
     margin-bottom: 0px;
 }
 
+
+.uploadcare--menu_opened
+.uploadcare--menu__toggle {
+    background-color: var(--warm-gray);
+}
+
 .uploadcare--menu__items {
-    float: none;
-    width: auto;
-    height: auto;
-    overflow: hidden;
-    margin-left: 0;
-    display: flex;
-    justify-content: center;
+    background-color: var(--warm-gray);
 }
 
 .uploadcare--menu__item {
-    width: 72px;
-    height: 72px;
-    margin: 0 10px 10px 0;
-    float: left;
     background-color: var(--warm-gray);
-    border-style: solid;
-    border-width: var(--border-width);
-    border-color: var(--white);
-}
-.uploadcare--menu__item:hover {
-    background-color: var(--warm-gray);
-}
-.uploadcare--menu__item_tab_facebook:before, .uploadcare--menu__item_tab_facebook:hover:before {
-    background-image: url('/images/icons/facebook-f.svg');
-    background-size: 13px 27px;
-    background-position: 50%;
-    background-repeat: no-repeat;
-    opacity: 1;
-}
-
-.uploadcare--menu__item_tab_instagram:before, .uploadcare--menu__item_tab_instagram:hover:before {
-    background-image: url('/images/icons/instagram.svg');
-    background-size: 25px 25px;
-    background-position: 50%;
-    background-repeat: no-repeat;
-    opacity: 1;
-}
-
-.uploadcare--menu__item .uploadcare--icon, .uploadcare--menu__item:hover:before, .uploadcare--menu__item:before {
-    opacity: 1;
-}
-.uploadcare--menu__item_tab_file:before,
-.uploadcare--menu__item_tab_file:hover:before {
-    background-image: url('/images/icons/up-arrow.svg');
-    background-size: 30px 30px;
-    background-position: 50%;
-    background-repeat: no-repeat;
-    border-radius: 50%;
-    border-color: black;
-    border-width: var(--border-width);
-    opacity: 1;
-}
-.uploadcare--menu__item_tab_file:hover:before {
-    opacity: 1;
-}
-.uploadcare--menu__tab_item_current {
-    border-style: solid;
-    border-width: var(--selected-border-width);
-    border-color: var(--p-color);
-}
-
-.uploadcare--menu__item_tab_file.uploadcare--menu__tab_item_current:before {
-    opacity: 1;
-}
-.uploadcare--dialog-tabs-panel,
-.uploadcare--dialog-source-base-wrap {
-    padding: 0;
-    margin: 0;
-}
-.uploadcare--dialog-file-or:not(.uploadcare--if-draganddrop),
-.uploadcare--dialog-file-sources {
-    display: none;
 }
 
 @media (--on-mobile) {
@@ -143,40 +82,40 @@
     background-image: none;
 }
 
-.source-instagram
-.big-button {
-    box-shadow: none;
-    border: none;
-    text-shadow: none;
-    font-family: var(--button-font-family);
-    font-size: var(--button-font-size);
-    font-weight: 900;
-    letter-spacing: var(--button-letter-spacing);
-    text-decoration: none;
-    text-transform: uppercase;
-    text-align: center;
-    cursor: pointer;
-    line-height: var(--button-line-height);
-    vertical-align: middle;
-    -webkit-appearance: none;
-    -webkit-tap-highlight-color: rgba(0,0,0,0.5);
-    user-select: none;
-    border-radius: 0px;
-    border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--p-color), stroke=none);
-	  border-image-slice: 15 fill;
-    border-image-width: 15px;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    width: 80%;
+/* .source-instagram */
+/* .big-button { */
+/*     box-shadow: none; */
+/*     border: none; */
+/*     text-shadow: none; */
+/*     font-family: var(--button-font-family); */
+/*     font-size: var(--button-font-size); */
+/*     font-weight: 900; */
+/*     letter-spacing: var(--button-letter-spacing); */
+/*     text-decoration: none; */
+/*     text-transform: uppercase; */
+/*     text-align: center; */
+/*     cursor: pointer; */
+/*     line-height: var(--button-line-height); */
+/*     vertical-align: middle; */
+/*     -webkit-appearance: none; */
+/*     -webkit-tap-highlight-color: rgba(0,0,0,0.5); */
+/*     user-select: none; */
+/*     border-radius: 0px; */
+/*     border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--p-color), stroke=none); */
+/* 	  border-image-slice: 15 fill; */
+/*     border-image-width: 15px; */
+/*     padding-top: 15px; */
+/*     padding-bottom: 15px; */
+/*     width: 80%; */
 
-    padding-left: 30px;
-    padding-right: 30px;
+/*     padding-left: 30px; */
+/*     padding-right: 30px; */
 
-    border-image-repeat: stretch;
+/*     border-image-repeat: stretch; */
 
-    background: none;
-    background-image: none;
-}
+/*     background: none; */
+/*     background-image: none; */
+/* } */
 
 .source-facebook, .source-instagram {
     background-color: var(--warm-gray);
@@ -200,11 +139,6 @@
     /* Dotted border around drag-and-drop area. Though it's supported, we don't want to encourage drag-and-drop. Besides, the dotted border is ugly. */
     border: none;
     background-color: var(--warm-gray);
-}
-
-.uploadcare--draganddrop .uploadcare--if-draganddrop {
-    /* Copy that explains how to drag-and-drop. Again, hiding drag-and-drop, especially because it's not really possible on phones. */
-    display: none;
 }
 
 .uploadcare--clouds-tip {

@@ -51,6 +51,6 @@
                    {:imageShrink "1600x1600"
                     :imagesOnly  true
                     :crop        "1:1"
-                    :tabs        "instagram facebook file"}
+                    :tabs        "file instagram facebook"}
                    widget-config)))
         (.done (partial handle-file on-success)))))
