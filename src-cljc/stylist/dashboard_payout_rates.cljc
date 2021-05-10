@@ -10,7 +10,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [ui.molecules :as ui-molecules]))
+            [ui.molecules :as ui-molecules]
+            [storefront.config :as config]))
 
 (def service-categories
   [{:name     "Install Services"
@@ -63,13 +64,23 @@
   (ui/large-spinner
    {:style {:height "4em"}}))
 
+(defcomponent notice
+  [{:notice/keys [copy contact-number]} _ _]
+  [:div.content-2
+   copy
+   [:span.py1
+    [:span.hide-on-tb-dt (ui/link :link/phone :a.inherit-color {} contact-number)]
+    [:span.hide-on-mb contact-number]]])
+
 (defcomponent template
   [data _ _]
   [:div.container
    [:div.px3.pt3.mb2 (ui-molecules/return-link (:return-link data))]
-   [:div.px5.pb5.col-5-on-dt
-    [:div.title-3.canela.mb3 "Payout Rates"]
-    (component/elements service-category data :service-rate-categories)]])
+   [:div.px5.pb5
+    [:div.title-3.canela "Payout Rates"]
+    [:div.mt3.mb4 (component/build notice data)]
+    [:div.col-5-on-dt
+     (component/elements service-category data :service-rate-categories)]]])
 
 (defn service-rate-category<
   [offered-services service-category]
@@ -91,7 +102,7 @@
 
 (defn ^:export page
   [state _]
-  (let [offered-services   (get-in state (conj keypaths/user :offered-services))
+  (let [offered-services       (get-in state (conj keypaths/user :offered-services))
         fetching-service-menu? (utils/requesting? state request-keys/fetch-user-stylist-offered-services)]
     (cond
       fetching-service-menu?
@@ -100,6 +111,10 @@
       :else
       (component/build template
                        {:service-rate-categories (service-rate-categories< offered-services)
+                        :notice/copy             (str "Below are the rates that you will be paid for each service."
+                                                      " These rates are different than the advertised rate that customers see on mayvenn.com."
+                                                      " If you have any questions about your payout rates please reach out to us at ")
+                        :notice/contact-number   config/support-phone-number
                         :return-link             {:return-link/event-message [events/navigate-v2-stylist-dashboard-orders]
                                                   :return-link/copy          "Back"
                                                   :return-link/id            "back-link"}}))))
