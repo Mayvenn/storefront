@@ -122,16 +122,13 @@
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-payout-rates
   [_ event args _ app-state]
   #?(:cljs
-     (cond
-       (not (and (experiments/payout-rates? app-state)
-                 (= "aladdin" (get-in app-state keypaths/user-stylist-experience))))
-       (history/enqueue-redirect events/navigate-v2-stylist-dashboard-orders)
-
-       :else
+     (if (= "aladdin" (get-in app-state keypaths/user-stylist-experience))
        (let [stylist-id (get-in app-state keypaths/user-store-id)
              user-id    (get-in app-state keypaths/user-id)
              user-token (get-in app-state keypaths/user-token)]
          (api/fetch-user-stylist-offered-services (get-in app-state keypaths/api-cache)
                                                   {:user-id    user-id
                                                    :user-token user-token
-                                                   :stylist-id stylist-id})))))
+                                                   :stylist-id stylist-id}))
+
+       (history/enqueue-redirect events/navigate-v2-stylist-dashboard-orders))))
