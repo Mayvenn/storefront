@@ -121,7 +121,3 @@
 (defn length-guide?
   [data]
   (display-feature? data "length-guide"))
-
-(defn payout-rates?
-  [data]
-  (display-feature? data "payout-rates"))

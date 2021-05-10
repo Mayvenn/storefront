@@ -141,8 +141,7 @@
                                         (utils/requesting? data request-keys/fetch-user-stylist-service-menu))
       :balance-transfers-pagination (get-in data keypaths/v2-dashboard-balance-transfers-pagination)
       :orders-data                  (stylist.dashboard-orders-tab/query data)}
-     (when (and (= "aladdin" (get-in data keypaths/user-stylist-experience))
-                (experiments/payout-rates? data))
+     (when (= "aladdin" (get-in data keypaths/user-stylist-experience))
        {:payout-rate-link/id      "view-payout-rates"
         :payout-rate-link/primary "View My Payout Rates"
         :payout-rate-link/target  [events/navigate-v2-stylist-dashboard-payout-rates]}))))
