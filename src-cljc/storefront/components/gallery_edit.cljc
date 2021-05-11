@@ -98,12 +98,13 @@
                              (when (= currently-dragging-post-id post-id)
                                currently-dragging-post-attrs))
                             (if (= "approved" status)
-                              (ui/img {:class    "container-size"
-                                       :style    {:object-position "50% 25%"
-                                                  :object-fit      "cover"
-                                                  :touch-action "pan-y"}
-                                       :src      resizable-url
-                                       :max-size 749})
+                              (ui/img {:class                         "container-size"
+                                       :style                         {:object-position "50% 25%"
+                                                                       :object-fit      "cover"
+                                                                       :touch-action    "pan-y"}
+                                       :preserve-url-transformations? true
+                                       :src                           resizable-url
+                                       :max-size                      749})
                               pending-approval)])])])))
 
 (defn add-post-square []

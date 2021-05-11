@@ -580,48 +580,52 @@
   ;; TODO(jeff): remove picture-classes (using img tag natively now)
   ;; NOTE(jeff): picture-classes is deprecated, please do not use
   [{:as   img-attrs
-    :keys [width retina-quality default-quality picture-classes retina? square-size max-size]
+    :keys [width retina-quality default-quality picture-classes retina? square-size max-size preserve-url-transformations?]
     :or   {retina-quality  "lightest"
            default-quality "normal"
            retina?         true
            max-size        nil}}
-   image-id]
+   url-or-image-id]
   (component/html
-   (let [width          (spice/parse-int width)
-         px?            (and width (or (= (str (:width img-attrs)) (str width))
-                                       (string/includes? (str (:width img-attrs)) "px")))
-         image-id       (ucare-img-id image-id)
-         compute-url    (fn [image-id retina? width]
-                          (let [quality (if retina? retina-quality default-quality)]
-                            (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" quality "/")
-                              square-size (str "-/scale_crop/" square-size "x" square-size "/center/")
-                              width       (str "-/resize/" width "x/"))))
-         default-url    (compute-url image-id false (when px? width))
-         compute-srcset (fn []
-                          (->> (for [multiplier (if retina?
-                                                  [1 2]
-                                                  [1])
-                                     w          [180 ;; half size of smallest device
-                                                 360 ;; Samsung Galaxy S9
-                                                 375 ;; iPhone 6/7/8/X/Xs/11/12 mini, Pixel 2
-                                                 ;;390 ;; iPhone 12/12 Pro ;; not common enough
-                                                 414 ;; iPhone 8+/Xs Max/Xr
-                                                 550 ;; Most other phones
-                                                 800 ;; Tablets
-                                                 1024 ;; Desktops
-                                                 ]
-                                     :let       [retina? (< 1 multiplier)
-                                                 effective-width (if retina? (* 2 w) w)]
-                                     :when      (and (or (nil? max-size) (>= max-size w))
-                                                     (or (not px?) (>= width w)))]
-                                 (str (compute-url image-id retina? effective-width) " " effective-width "w"))
-                               (string/join ", ")))]
+   (let [width       (spice/parse-int width)
+         px?         (and width (or (= (str (:width img-attrs)) (str width))
+                                    (string/includes? (str (:width img-attrs)) "px")))
+         image-id    (ucare-img-id url-or-image-id)
+         basic-url   (if preserve-url-transformations?
+                       url-or-image-id
+                       (str "//ucarecdn.com/" image-id "/"))
+         compute-url (fn [retina? width]
+                       (let [quality (if retina? retina-quality default-quality)]
+                         (cond-> basic-url
+                           :always     (str "-/format/auto/")
+                           :always     (str "-/quality/" quality "/")
+                           square-size (str "-/scale_crop/" square-size "x" square-size "/center/")
+                           width       (str "-/resize/" width "x/"))))
+         default-url (compute-url false (when px? width))
+         srcset      (->> (for [multiplier (if retina?
+                                             [1 2]
+                                             [1])
+                                w          [180 ;; half size of smallest device
+                                            360 ;; Samsung Galaxy S9
+                                            375 ;; iPhone 6/7/8/X/Xs/11/12 mini, Pixel 2
+                                            ;;390 ;; iPhone 12/12 Pro ;; not common enough
+                                            414 ;; iPhone 8+/Xs Max/Xr
+                                            550 ;; Most other phones
+                                            800 ;; Tablets
+                                            1024 ;; Desktops
+                                            ]
+                                :let       [retina? (< 1 multiplier)
+                                            effective-width (if retina? (* 2 w) w)]
+                                :when      (and (or (nil? max-size) (>= max-size w))
+                                                (or (not px?) (>= width w)))]
+                            (str (compute-url retina? effective-width) " " effective-width "w"))
+                          (string/join ", "))]
      [:img ^:attrs
       (-> img-attrs
           (dissoc :retina-quality :default-quality :picture-classes :retina? :square-size :src :max-size)
           (assoc :class (str picture-classes " " (:class img-attrs)))
           (cond-> image-id (assoc :src default-url
-                                  :src-set (compute-srcset)
+                                  :src-set srcset
                                   :sizes "(min-width: 1000px) 1000px, 100vw"
                                   :key image-id)))])))
 
@@ -632,7 +636,7 @@
   "
   ;; WARN(jeff): it is strongly recommended to specify max-size to minimize srcSet sizes!!
   [{:as   img-attrs
-    :keys [width retina-quality default-quality retina? square-size max-size src]
+    :keys [width retina-quality default-quality retina? square-size max-size src preserve-url-transformations?]
     :or   {retina-quality  "lightest"
            default-quality "normal"
            retina?         true
