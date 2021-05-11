@@ -224,10 +224,10 @@
 (defcomponent reorderable-wrapper
   [{:as data :keys [posts fetching-posts? :appending-post?]} _ _]
   [:div
-   [:div.bg-cool-gray.center.mx-auto.pt8
+   [:div.bg-cool-gray.center.mx-auto.pt8.hide-on-mb-tb
     [:h1.px2.py10.canela.title-1
      "My Gallery"]]
-   [:div.py8
+   [:div.py8-on-dt
     (if (or (and (empty? posts)
                  fetching-posts?)
             appending-post?)
