@@ -87,7 +87,7 @@
       :cljs
       [:div {:key react-key}
        (let [{:keys [status id resizable-url post-id]} (:cover-image post)]
-         [:div
+         [:div.p1-on-dt
           (ui/aspect-ratio 1 1
                            [:div.container-size
                             (maps/deep-merge
@@ -111,7 +111,7 @@
      (let [set-draggable (MuuriReact/useDraggable)]
        (set-draggable false)))
   (component/html
-   [:div
+   [:div.p1-on-dt
     [:a.block.pp1
      (merge (utils/route-to events/navigate-gallery-image-picker)
             {:key "add-post"
@@ -163,7 +163,7 @@
 #?(:cljs
    (defn muuri-config [gallery-ref reorder-mode? post-ordering]
      #js {:dragEnabled  false
-          :itemClass    "col-4"
+          :itemClass    "col-4-col-3-on-dt"
           ;; ↓ These prevent long presses on the drag handler from
           ;; ↓ selecting or scrolling. It is very important.
           :dragCssProps #js {:touchAction  "none !important"
@@ -208,7 +208,7 @@
                 gallery-ref                                                                       (component/use-ref this "gallery")]
             (component/html
              #?(:clj [:div]
-                :cljs [:div
+                :cljs [:div.max-1080.mx-auto
                        {:ref gallery-ref}
                        (apply react/createElement
                               MuuriReact/MuuriComponent
@@ -224,11 +224,15 @@
 (defcomponent reorderable-wrapper
   [{:as data :keys [posts fetching-posts? :appending-post?]} _ _]
   [:div
-   (if (or (and (empty? posts)
-                fetching-posts?)
-           appending-post?)
-       (ui/large-spinner {:style {:height "6em"}})
-       (component/build reorderable-component data))])
+   [:div.bg-cool-gray.center.mx-auto.pt8
+    [:h1.px2.py10.canela.title-1
+     "My Gallery"]]
+   [:div.py8
+    (if (or (and (empty? posts)
+                 fetching-posts?)
+            appending-post?)
+      (ui/large-spinner {:style {:height "6em"}})
+      (component/build reorderable-component data))]])
 
 
 (defmethod transitions/transition-state events/control-stylist-gallery-posts-drag-began

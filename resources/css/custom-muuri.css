@@ -14,3 +14,10 @@
 .muuri-item-dragging > div.relative {
   transform: scale(1.1);
 }
+
+.col-4-col-3-on-dt { width: calc(4/12 * 100%) }
+@media (--on-desktop) {
+    .col-4-col-3-on-dt { width: calc(3/12 * 100%) }
+}
+
+@custom-media --on-desktop (min-width: 1000px);
