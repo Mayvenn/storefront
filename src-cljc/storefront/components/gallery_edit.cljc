@@ -50,11 +50,12 @@
                    {:key resizable-url})
             (ui/aspect-ratio 1 1
                              (if (= "approved" status)
-                               (ui/img {:class    "container-size"
-                                        :style    {:object-position "50% 25%"
-                                                   :object-fit      "cover"}
-                                        :src      resizable-url
-                                        :max-size 749})
+                               (ui/img {:class                         "container-size"
+                                        :style                         {:object-position "50% 25%"
+                                                                        :object-fit      "cover"}
+                                        :preserve-url-transformations? true
+                                        :src                           resizable-url
+                                        :max-size                      749})
                                pending-approval))]))])
 
 #?(:cljs (defn do-nothing-handler [e]
