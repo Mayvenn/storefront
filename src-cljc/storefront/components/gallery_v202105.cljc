@@ -1,4 +1,5 @@
 (ns storefront.components.gallery-v202105
+  "This gallery is for stylist view/edit of their own gallery."
   (:require #?@(:cljs [[storefront.api :as api]])
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
@@ -21,13 +22,6 @@
   (if (experiments/edit-gallery? data)
     (component/build gallery-edit-v202105/reorderable-wrapper (gallery-edit-v202105/query data))
     (component/build gallery-edit/static-component (query data) nil)))
-
-(defmethod effects/perform-effects events/navigate-store-gallery [_ event args _ app-state]
-  #?(:cljs (api/get-store-gallery {:stylist-id (get-in app-state keypaths/store-stylist-id)})))
-
-(defmethod effects/perform-effects events/api-success-store-gallery-fetch [_ event args _ app-state]
-  (when (empty? (get-in app-state keypaths/store-gallery-images))
-    (effects/page-not-found)))
 
 (defmethod effects/perform-effects events/navigate-gallery-edit [_ event args _ app-state]
   #?(:cljs
