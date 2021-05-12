@@ -57,11 +57,5 @@
       :on-context-menu do-nothing-handler
       :style           {:padding "1px"}}))
 
-(defmethod effects/perform-effects events/control-stylist-gallery-delete-v2
-  [_ _ {:keys [post-id]} _ app-state]
-  #?(:cljs (api/delete-v2-gallery-post {:user-id    (get-in app-state keypaths/user-id)
-                                        :user-token (get-in app-state keypaths/user-token)
-                                        :post-id    post-id})))
-
 (defn query [state]
   {:gallery (get-in state keypaths/user-stylist-gallery-images)})
