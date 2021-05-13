@@ -140,7 +140,7 @@
     (when (seq service-items)
       (merge
        {:thank-you/primary
-        "We've received your order and a Mayvenn Concierge representative will contact you to make an appointment within 2 business days."}
+        "We've received your order and a Mayvenn Concierge representative will contact you to make an appointment within 3 business days."}
        (when-let [stylist-display-name (some-> servicing-stylist not-empty stylists/->display-name)]
          {:matched-component.message/id    "servicing-stylist-name"
           :matched-component.message/title (str "Chat with Concierge")
