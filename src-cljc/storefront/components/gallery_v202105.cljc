@@ -17,6 +17,16 @@
 
 (def gallery-poll-rate 5000)
 
+(def ^:private tabs
+  [{:id                 :past-appointments
+    :title              "past appointments"
+    :navigate           events/navigate-gallery-appointments
+    :not-selected-class "border-right"}
+   {:id                 :my-gallery
+    :title              "my gallery"
+    :navigate           events/navigate-gallery-edit
+    :not-selected-class "border-left"}])
+
 (defcomponent component [data owner opts]
   (let [current-nav-event (get-in data keypaths/navigation-event)]
     [:div
@@ -25,7 +35,7 @@
        "My Gallery"]]
      (when (experiments/past-appointments? data)
        [:div
-        (tabs/component current-nav-event)])
+        (tabs/component current-nav-event tabs)])
      [:div
       (condp = current-nav-event
         events/navigate-gallery-appointments
