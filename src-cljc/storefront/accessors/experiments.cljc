@@ -112,7 +112,8 @@
 
 (defn edit-gallery?
   [data]
-  (display-feature? data "edit-gallery"))
+  true
+  #_(display-feature? data "edit-gallery"))
 
 (defn shopping-quiz?
   [data]
@@ -121,3 +122,8 @@
 (defn length-guide?
   [data]
   (display-feature? data "length-guide"))
+
+(defn past-appointments?
+  [data]
+  true
+  #_(display-feature? data "past-appointments"))
