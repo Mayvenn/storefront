@@ -622,7 +622,7 @@
                           (string/join ", "))]
      [:img ^:attrs
       (-> img-attrs
-          (dissoc :retina-quality :default-quality :picture-classes :retina? :square-size :src :max-size)
+          (dissoc :retina-quality :default-quality :picture-classes :retina? :square-size :src :max-size :preserve-url-transformations?)
           (assoc :class (str picture-classes " " (:class img-attrs)))
           (cond-> image-id (assoc :src default-url
                                   :src-set srcset
