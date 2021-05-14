@@ -114,58 +114,54 @@
 (defn account-info
   ;; TODO(jeff): is this overload an error? this fn used to be a multimethod. And JS
   ;;             implicitly allows calling a fn with less args than specified.
-  ;; ([signed-in user vouchers?] (account-info signed-in user vouchers? nil ))
-  [signed-in {:keys [email expanded?]} vouchers? stylist-experience past-appointments?]
-  (c/html
-   (case (::auth/as signed-in)
+  ([signed-in user vouchers?] (account-info signed-in user vouchers? nil))
+  ([signed-in {:keys [email expanded?]} vouchers? store]
+   (c/html
+    (case (::auth/as signed-in)
 
-     :user    (ui/drop-down
-               expanded?
-               (c/html
-                [:a.inherit-color.h6
-                 ^:attrs (utils/fake-href events/control-menu-expand {:keypath keypaths/account-menu-expanded})
-                 "Signed in with: " [:span.p-color email]
-                 " | Account" [:span.ml1 ^:inline (ui/expand-icon expanded?)]])
-               (c/html
-                [:div.bg-white.absolute.right-0.top-lit
-                 [:div
-                  ^:inline (drop-down-row (utils/route-to events/navigate-account-manage) "Account")]
-                 [:div.border-top.border-gray
-                  ^:inline (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
+      :user    (ui/drop-down
+                expanded?
+                (c/html
+                 [:a.inherit-color.h6
+                  ^:attrs (utils/fake-href events/control-menu-expand {:keypath keypaths/account-menu-expanded})
+                  "Signed in with: " [:span.p-color email]
+                  " | Account" [:span.ml1 ^:inline (ui/expand-icon expanded?)]])
+                (c/html
+                 [:div.bg-white.absolute.right-0.top-lit
+                  [:div
+                   ^:inline (drop-down-row (utils/route-to events/navigate-account-manage) "Account")]
+                  [:div.border-top.border-gray
+                   ^:inline (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-     :stylist (ui/drop-down
-               expanded?
-               (c/html
-                [:a.inherit-color.h6
-                 ^:attrs (utils/fake-href events/control-menu-expand {:keypath keypaths/account-menu-expanded})
-                 "Signed in with: " [:span.p-color email]
-                 " | My dashboard" [:span.ml1 ^:inline (ui/expand-icon expanded?)]])
-               (c/html
-                [:div.bg-white.absolute.right-0.border.border-gray.top-lit
-                 [:div
-                  ^:inline (drop-down-row (utils/route-to events/navigate-v2-stylist-dashboard-orders) "My Dashboard")]
+      :stylist (ui/drop-down
+                expanded?
+                (c/html
+                 [:a.inherit-color.h6
+                  ^:attrs (utils/fake-href events/control-menu-expand {:keypath keypaths/account-menu-expanded})
+                  "Signed in with: " [:span.p-color email]
+                  " | My dashboard" [:span.ml1 ^:inline (ui/expand-icon expanded?)]])
+                (c/html
+                 [:div.bg-white.absolute.right-0.border.border-gray.top-lit
+                  [:div
+                   ^:inline (drop-down-row (utils/route-to events/navigate-v2-stylist-dashboard-orders) "My Dashboard")]
 
-                 (when vouchers?
-                   [:div.border-top.border-gray
-                    ^:inline (drop-down-row (utils/route-to events/navigate-voucher-redeem) "Redeem Client Voucher")])
+                  (when vouchers?
+                    [:div.border-top.border-gray
+                     ^:inline (drop-down-row (utils/route-to events/navigate-voucher-redeem) "Redeem Client Voucher")])
 
-                 [:div.border-top.border-gray
-                  ^:inline (drop-down-row
-                            (if (and past-appointments? (= stylist-experience "aladdin"))
-                              (utils/route-to events/navigate-gallery-appointments)
-                              (utils/route-to events/navigate-gallery-edit))
-                            "Edit Gallery")]
-                 [:div.border-top.border-gray
-                  ^:inline (drop-down-row (utils/route-to events/navigate-stylist-account-profile) "Account Settings")]
-                 [:div.border-top.border-gray
-                  ^:inline (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
+                  [:div.border-top.border-gray
+                   ^:inline (drop-down-row (utils/route-to events/navigate-gallery-edit) "Edit Gallery")]
+                  [:div.border-top.border-gray
+                   ^:inline (drop-down-row (utils/route-to events/navigate-stylist-account-profile) "Account Settings")]
+                  [:div.border-top.border-gray
+                   ^:inline (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-     :guest [:div
-             [:a.inherit-color ^:attrs (utils/route-to events/navigate-sign-in) "Sign in"]
-             " | "
-             [:a.inherit-color ^:attrs (utils/route-to events/navigate-sign-up) "Create Account"]]
+      :guest [:div
+              [:a.inherit-color ^:attrs (utils/route-to events/navigate-sign-in) "Sign in"]
+              " | "
+              [:a.inherit-color ^:attrs (utils/route-to events/navigate-sign-up) "Create Account"]]
 
-     [:div])))
+      [:div]))))
 
 
 (defmethod transitions/transition-state events/stick-flyout
@@ -300,7 +296,7 @@
 
 (c/defcomponent component
   [{:as   data
-    :keys [store user cart signed-in vouchers? stylist-experience past-appointments?]} _ _]
+    :keys [store user cart signed-in vouchers?]} _ _]
   [:div
    [:div.hide-on-mb-tb.relative
     [:div.relative.border-bottom.border-gray
@@ -308,7 +304,7 @@
       [:div {:key "store-info"} ^:inline (store-info signed-in store)]
       [:div {:key "account-info"}
        [:div.my2
-        ^:inline (account-info signed-in user vouchers? stylist-experience past-appointments?)]]]
+        ^:inline (account-info signed-in user vouchers? store)]]]
      [:div.flex.justify-between.px8
       [:div {:style {:width "33px"}}]
       [:div.mb3 {:key "logo"}
@@ -399,8 +395,6 @@
                                    :email            (get-in data keypaths/user-email)}
      :store                       store
      :vouchers?                   (experiments/dashboard-with-vouchers? data)
-     :stylist-experience          (get-in data keypaths/user-stylist-experience)
-     :past-appointments?          (experiments/past-appointments? data)
      :site                        site
      :slide-out-nav/content-items [{:slide-out-nav-content-item/target  [events/navigate-content-guarantee]
                                     :slide-out-nav-content-item/id      "content-guarantee"

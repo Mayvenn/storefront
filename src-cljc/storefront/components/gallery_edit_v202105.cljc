@@ -201,12 +201,17 @@
 
 (defcomponent reorderable-wrapper
   [{:as data :keys [posts fetching-posts? :appending-post?]} _ _]
-  [:div.py8-on-dt
-   (if (or (and (empty? posts)
-                fetching-posts?)
-           appending-post?)
-     (ui/large-spinner {:style {:height "6em"}})
-     (component/build reorderable-component data))])
+  [:div
+   [:div.bg-cool-gray.center.mx-auto.pt8.hide-on-mb-tb
+    [:h1.px2.py10.canela.title-1
+     "My Gallery"]]
+   [:div.py8-on-dt
+    (if (or (and (empty? posts)
+                 fetching-posts?)
+            appending-post?)
+      (ui/large-spinner {:style {:height "6em"}})
+      (component/build reorderable-component data))]])
+
 
 (defmethod transitions/transition-state events/control-stylist-gallery-posts-drag-began
   [_ _ {:keys [item]} app-state]

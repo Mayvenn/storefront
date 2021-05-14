@@ -3,11 +3,9 @@
   (:require #?@(:cljs [[storefront.api :as api]])
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
-            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component]
             [storefront.components.gallery-edit :as gallery-edit]
             [storefront.components.gallery-edit-v202105 :as gallery-edit-v202105]
-            [storefront.components.gallery-appointments-v202105 :as appointments]
-            [storefront.components.tabs-v202105 :as tabs]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
@@ -17,41 +15,13 @@
 
 (def gallery-poll-rate 5000)
 
-(def ^:private tabs
-  [{:id                 :past-appointments
-    :title              "past appointments"
-    :navigate           events/navigate-gallery-appointments
-    :not-selected-class "border-right"}
-   {:id                 :my-gallery
-    :title              "my gallery"
-    :navigate           events/navigate-gallery-edit
-    :not-selected-class "border-left"}])
-
-(defcomponent component [data owner opts]
-  (let [current-nav-event (get-in data keypaths/navigation-event)]
-    [:div
-     [:div.bg-cool-gray.center.mx-auto.pt8.hide-on-mb-tb
-      [:h1.px2.py10.canela.title-1
-       "My Gallery"]]
-     (when (experiments/past-appointments? data)
-       [:div
-        (tabs/component current-nav-event tabs)])
-     [:div
-      (condp = current-nav-event
-        events/navigate-gallery-appointments
-        (component/build appointments/component {} opts)
-
-        events/navigate-gallery-edit
-        (component/build gallery-edit-v202105/reorderable-wrapper (gallery-edit-v202105/query data))
-        nil)]]))
-
-(defn old-query [data]
+(defn query [data]
   {:gallery (get-in data keypaths/user-stylist-gallery-images)})
 
 (defn built-component [data opts]
   (if (experiments/edit-gallery? data)
-    (component/build component data opts)
-    (component/build gallery-edit/static-component (old-query data) nil)))
+    (component/build gallery-edit-v202105/reorderable-wrapper (gallery-edit-v202105/query data))
+    (component/build gallery-edit/static-component (query data) nil)))
 
 (defmethod effects/perform-effects events/navigate-gallery-edit [_ event args _ app-state]
   #?(:cljs

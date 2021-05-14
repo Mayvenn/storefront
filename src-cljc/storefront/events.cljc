@@ -49,7 +49,6 @@
 (defpath navigate-shared-cart)
 (defpath navigate-store-gallery)
 (defpath navigate-gallery-edit)
-(defpath navigate-gallery-appointments)
 (defpath navigate-gallery-image-picker)
 (defpath navigate-gallery-photo)
 

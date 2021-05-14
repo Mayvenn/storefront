@@ -92,7 +92,6 @@
 
 (def gallery-page-events
   #{events/navigate-gallery-edit
-    events/navigate-gallery-appointments
     events/navigate-gallery-image-picker
     events/navigate-gallery-photo})
 

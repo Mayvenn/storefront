@@ -183,22 +183,18 @@
                                "Sign out")
     [:div])))
 
-(defn ^:private gallery-link
-  [stylist-experience past-appointments?]
+(def ^:private gallery-link
   (component/html
-   [:div
-    (ui/button-small-underline-primary
-     (if (and past-appointments? (= stylist-experience "aladdin"))
-       (utils/route-to events/navigate-gallery-appointments)
-       (utils/route-to events/navigate-gallery-edit))
-     "Edit Gallery")]))
+   (ui/button-small-underline-primary
+    (utils/route-to events/navigate-gallery-edit)
+    "Edit Gallery")))
 
 (defcomponent ^:private root-menu
-  [{:keys [user signed-in vouchers? stylist-experience past-appointments?] :as data} owner opts]
+  [{:keys [user signed-in vouchers?] :as data} owner opts]
   [:div
    [:div.bg-cool-gray.p4
     (when (auth/stylist? signed-in)
-      [:div.flex.items-center (stylist-portrait user) (gallery-link stylist-experience past-appointments?)])
+      [:div.flex.items-center (stylist-portrait user) gallery-link])
     (account-info-marquee signed-in user)
     [:div.my3
      (actions-marquee signed-in vouchers?)]]
