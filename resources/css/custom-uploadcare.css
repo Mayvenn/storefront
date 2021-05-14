@@ -99,12 +99,10 @@
     background-color: var(--warm-gray);
 }
 
-
-/* .source-instagram .big-button, */
-/* .source-instagram:hover .big-button:hover { */
-/*     background: none; */
-/* } */
-
+.uploadcare--draganddrop__title {
+    font: 36px/42px Canela,Times New Roman,Times,serif; /* .title-1.canela */
+    text-transform: capitalize;
+}
 .uploadcare--dialog-title {
     text-align: center;
 }
