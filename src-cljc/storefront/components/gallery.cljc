@@ -1,5 +1,4 @@
 (ns storefront.components.gallery
-  "This gallery is for customer view of classic stores only. TODO: determine if deprecated"
   (:require #?@(:cljs [[storefront.api :as api]])
             [storefront.assets :as assets]
             [storefront.component :as component :refer [defcomponent]]
