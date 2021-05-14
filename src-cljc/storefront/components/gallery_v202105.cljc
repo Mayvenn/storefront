@@ -48,7 +48,7 @@
 (defn old-query [data]
   {:gallery (get-in data keypaths/user-stylist-gallery-images)})
 
-(defn built-component [data opts]
+(defn ^:export built-component [data opts]
   (if (experiments/edit-gallery? data)
     (component/build component data opts)
     (component/build gallery-edit/static-component (old-query data) nil)))
