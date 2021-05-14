@@ -472,6 +472,11 @@
    [:svg opts
     ^:inline (svg-xlink "customer-service-representative")]))
 
+(defn exclamation-circle [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "exclamation-circle")]))
+
 ;; TODO: Find a way to override particular portions of the svg's fill currently
 ;; we are only able to override the larget background area and not the inner
 ;; diamonds

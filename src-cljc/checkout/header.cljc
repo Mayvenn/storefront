@@ -9,7 +9,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
 
-(defn desktop-header [{:keys [store user cart signed-in vouchers?]}]
+(defn desktop-header [{:keys [store user cart signed-in vouchers? stylist-experience past-appointments?]}]
   (component/html
    [:div.hide-on-mb.relative
     [:div.relative.border-bottom.border-gray
@@ -17,7 +17,7 @@
       [:div {:key "store-info"} ^:inline (storefront-header/store-info signed-in store)]
       [:div {:key "account-info"}
        [:div.my2
-        ^:inline (storefront-header/account-info signed-in user vouchers? store)]]]
+        ^:inline (storefront-header/account-info signed-in user vouchers? stylist-experience past-appointments?)]]]
      [:div.flex.justify-between.px8.mb4
       [:div {:style {:width "33px"}}]
       [:div.flex-grow-1 {:key "logo"}

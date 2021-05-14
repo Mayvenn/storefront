@@ -98,7 +98,8 @@
    events/navigate-sign-up                 (constantly sign-up/built-component)
    events/navigate-forgot-password         (constantly forgot-password/built-component)
    events/navigate-store-gallery           (constantly gallery/built-component)
-   events/navigate-gallery-edit            #(ui/lazy-load-component :dashboard 'storefront.components.gallery-edit/built-component events/navigate-gallery-edit)
+   events/navigate-gallery-edit            #(ui/lazy-load-component :dashboard 'storefront.components.gallery-v202105/built-component events/navigate-gallery-edit)
+   events/navigate-gallery-appointments    #(ui/lazy-load-component :dashboard 'storefront.components.gallery-v202105/built-component events/navigate-gallery-appointments)
    events/navigate-gallery-photo           (constantly gallery-photo/built-component)
 
    events/navigate-info-certified-stylists (constantly adventure.informational.certified-stylists/built-component)
