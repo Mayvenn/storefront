@@ -116,15 +116,15 @@
 (def muuri-on-drag-end (muuri-event-listener events/control-stylist-gallery-posts-drag-ended))
 
 (def muuri-sort-fn (memoize (fn [post-ordering]
-                              (fn [{a-post :post} {b-post :post}]
+                              (fn [{a-post :post :as a} {b-post :post :as b}]
                                 (let [a-post-id  (:id a-post)
                                       b-post-id  (:id b-post)
                                       first-post (some #{a-post-id b-post-id} post-ordering)]
                                   (cond
-                                    (or (nil? a-post-id)
-                                        (nil? b-post-id))    2
+                                    (nil? a-post-id)         -1
+                                    (nil? b-post-id)         1
                                     (= a-post-id first-post) -1
-                                    :else                    1))))))
+                                    (= b-post-id first-post) 1))))))
 
 
 (defn muuri-drag-sort-predicate [item _muuri-event]
