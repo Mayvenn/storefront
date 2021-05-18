@@ -39,7 +39,7 @@
      [:div
       (condp = current-nav-event
         events/navigate-gallery-appointments
-        (component/build appointments/component {} opts)
+        (component/build appointments/template (appointments/query data) opts)
 
         events/navigate-gallery-edit
         (component/build gallery-edit-v202105/reorderable-wrapper (gallery-edit-v202105/query data))
