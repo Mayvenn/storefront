@@ -31,9 +31,8 @@ function run(cmd, cb) {
   });
 }
 
-let nodeMajor;
-[nodeMajor, ...rest] = process.versions.node.split('.').map((v) => parseInt(v));
-if (nodeMajor < 14) {
+var nodeVersion = process.versions.node;
+if (nodeVersion.search('12.') === -1 && nodeVersion.search('13.') === -1 && nodeVersion.search('14.') === -1) {
 	console.error("Hey, you need to upgrade node to 14.x.x!");
 	console.error("");
 	console.error("This means running the following:");
