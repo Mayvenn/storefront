@@ -52,7 +52,7 @@
 
 #?(:cljs
    (defn base-container-attrs [post-id]
-     {:data-post-id    post-id
+     {:data-test       (str "post-id-" post-id)
       :on-context-menu do-nothing-handler
       :style           {:padding "1px"}}))
 

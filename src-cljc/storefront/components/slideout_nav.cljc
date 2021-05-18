@@ -188,9 +188,11 @@
   (component/html
    [:div
     (ui/button-small-underline-primary
-     (if (and past-appointments? (= stylist-experience "aladdin"))
-       (utils/route-to events/navigate-gallery-appointments)
-       (utils/route-to events/navigate-gallery-edit))
+     (merge
+      {:data-test "edit-gallery"}
+      (if (and past-appointments? (= stylist-experience "aladdin"))
+        (utils/route-to events/navigate-gallery-appointments)
+        (utils/route-to events/navigate-gallery-edit)))
      "Edit Gallery")]))
 
 (defcomponent ^:private root-menu
