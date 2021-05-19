@@ -305,8 +305,8 @@
       :cta/disabled?               (not (:inventory/in-stock? selected-sku))
       :add-to-cart.quadpay/price   sku-price
       :add-to-cart.quadpay/loaded? quadpay-loaded?}
-     (when shop?
-       (mayvenn-install-incentive-families sku-family)
+     (when (and shop?
+                (mayvenn-install-incentive-families sku-family))
        {:add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
         :add-to-cart.incentive-block/footnote    "*Mayvenn Services cannot be combined with other promotions"
         :add-to-cart.incentive-block/link-id     "learn-more-mayvenn-install"
