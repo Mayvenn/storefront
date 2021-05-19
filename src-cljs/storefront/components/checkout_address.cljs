@@ -280,9 +280,8 @@
           :keypath   keypath})]]]]))
 
 (defcomponent component
-  [{:keys [saving? step-bar billing-address-data shipping-address-data promo-banner] :as data} owner _]
+  [{:keys [saving? step-bar billing-address-data shipping-address-data] :as data} _ _]
   [:div.container
-   (component/build promo-banner/sticky-organism promo-banner nil)
    (component/build checkout-steps/component step-bar)
 
    [:div.m-auto.col-8-on-tb-dt
@@ -314,24 +313,23 @@
         states              (map (juxt :name :abbr) (get-in data keypaths/states))
         field-errors        (get-in data keypaths/field-errors)]
     (merge
-     {:saving?                  (utils/requesting? data request-keys/update-addresses)
-      :step-bar                 (cond-> (checkout-steps/query data)
-                                  (= :guest (::auth/as (auth/signed-in data)))
-                                  (assoc :checkout-title "Guest Checkout"))
-      :promo-banner             (promo-banner/query data)
-      :billing-address-data     {:billing-address           (get-in data keypaths/checkout-billing-address)
-                                 :states                    states
-                                 :bill-to-shipping-address? (get-in data keypaths/checkout-bill-to-shipping-address)
-                                 :google-maps-loaded?       google-maps-loaded?
-                                 :field-errors              field-errors
-                                 :focused                   (get-in data keypaths/ui-focus)}
-      :shipping-address-data    {:shipping-address    (get-in data keypaths/checkout-shipping-address)
-                                 :states              states
-                                 :email               (get-in data keypaths/checkout-guest-email)
-                                 :become-guest?       false
-                                 :google-maps-loaded? google-maps-loaded?
-                                 :field-errors        field-errors
-                                 :focused             (get-in data keypaths/ui-focus)}}
+     {:saving?               (utils/requesting? data request-keys/update-addresses)
+      :step-bar              (cond-> (checkout-steps/query data)
+                               (= :guest (::auth/as (auth/signed-in data)))
+                               (assoc :checkout-title "Guest Checkout"))
+      :billing-address-data  {:billing-address           (get-in data keypaths/checkout-billing-address)
+                              :states                    states
+                              :bill-to-shipping-address? (get-in data keypaths/checkout-bill-to-shipping-address)
+                              :google-maps-loaded?       google-maps-loaded?
+                              :field-errors              field-errors
+                              :focused                   (get-in data keypaths/ui-focus)}
+      :shipping-address-data {:shipping-address    (get-in data keypaths/checkout-shipping-address)
+                              :states              states
+                              :email               (get-in data keypaths/checkout-guest-email)
+                              :become-guest?       false
+                              :google-maps-loaded? google-maps-loaded?
+                              :field-errors        field-errors
+                              :focused             (get-in data keypaths/ui-focus)}}
      (phone-marketing-opt-in-query (get-in data keypaths/checkout-phone-marketing-opt-in)))))
 
 (defn ^:export built-component [data opts]

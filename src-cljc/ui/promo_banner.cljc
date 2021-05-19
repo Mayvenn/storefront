@@ -2,8 +2,7 @@
   (:require #?@(:cljs [[goog.dom]
                        [goog.events]
                        [goog.events.EventType :as EventType]
-                       [goog.style]
-                       ["react" :as react]])
+                       [goog.style]])
             catalog.keypaths
             [storefront.accessors.orders :as orders]
             [storefront.accessors.promos :as promos]
@@ -39,10 +38,10 @@
           ;; NOTE(jeff, justin): ideally contentful should provide the entire
           ;; promo object, but it's so much easier to pretend we have a
           ;; promotion object here.
-          {:id -1
-           :code nil
+          {:id          -1
+           :code        nil
            :description default-advertised-promo-text
-           :advertised true}
+           :advertised  true}
           (promos/default-advertised-promotion promotion-db)))))
 
 (defn ^:private nav-allowlist-for
@@ -73,16 +72,19 @@
       hide-on-mb-tb? (assoc :hide-on-mb-tb? true))))
 
 (defn static-organism
-  [data owner opts]
+  [data _ opts]
   (component data opts))
 
+(defn built-static-organism
+  [app-state opts]
+  (component/html
+   (component (query app-state) nil opts)))
+
 (letfn [(header-height-magic-number []
-          #?(:cljs
-             (if (< (.-width (goog.dom/getViewportSize)) 750) 75 180)))
+          #?(:cljs (if (< (.-width (goog.dom/getViewportSize)) 750) 75 180)))
         (handle-scroll [_]
-          #?(:cljs
-             (this-as this
-                      (component/set-state! this :show? (< (header-height-magic-number) (.-y (goog.dom/getDocumentScroll)))))))]
+          #?(:cljs (this-as this
+                     (component/set-state! this :show? (< (header-height-magic-number) (.-y (goog.dom/getDocumentScroll)))))))]
   (defdynamic-component sticky-organism
     (constructor [this props]
                  (component/create-ref! this "banner")
@@ -112,24 +114,3 @@
                    :style {:margin-top (str "-" banner-height "px")}})
                 [:div {:ref (component/use-ref this "banner")}
                  (component data nil opts)]])))))
-
-(defn built-sticky-organism
-  [app-state opts]
-  [:div
-   (component/build sticky-organism (query app-state) opts)])
-
-(defn built-static-organism
-  [app-state opts]
-  (component/html
-   (component (query app-state) nil opts)))
-
-;; page-top-most sticky promo bar
-(defn built-static-sticky-organism
-  [app-state opts]
-  (let [{:as data :keys [hide-on-mb-tb?]} (query app-state)]
-    (component/html
-     [:div {:class (when hide-on-mb-tb? "hide-on-mb-tb")}
-      [:div.invisible {:key "promo-filler"} ;; provides height spacing for layout
-       (component data nil (assoc opts :hide-dt? true))] ; Hide redundant data-test for Heat
-      [:div.fixed.z5.top-0.left-0.right-0 {:key "promo"}
-       (component data nil opts)]])))

@@ -33,8 +33,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
             [storefront.effects :as effects]
-            [storefront.platform.messages :as messages]
-            [ui.promo-banner :as promo-banner]))
+            [storefront.platform.messages :as messages]))
 
 (defn requires-additional-payment?
   [data]
@@ -117,14 +116,12 @@
            order
            loaded-quadpay?
            payment
-           promo-banner
            requires-additional-payment?
            selected-quadpay?
            servicing-stylist
            service-line-items]}
    _ _]
   [:div.container.p2
-   (component/build promo-banner/sticky-organism promo-banner nil)
    (component/build checkout-steps/component checkout-steps nil)
    (if order
      [:form
@@ -491,7 +488,6 @@
      {:order                        order
       :store-slug                   (get-in data keypaths/store-slug)
       :requires-additional-payment? (requires-additional-payment? data)
-      :promo-banner                 (promo-banner/query data)
       :checkout-steps               (checkout-steps/query data)
       :products                     (get-in data keypaths/v2-products)
       :payment                      (checkout-credit-card/query data)

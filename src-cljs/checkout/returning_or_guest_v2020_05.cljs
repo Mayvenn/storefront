@@ -9,8 +9,7 @@
             [storefront.events :as e]
             [storefront.keypaths :as k]
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]
-            [ui.promo-banner :as promo-banner]))
+            [storefront.request-keys :as request-keys]))
 
 (def or-separator
   [:div.black.py1.flex.items-center.col-10.mx-auto
@@ -19,13 +18,11 @@
    [:div.flex-grow-1.border-bottom.border-gray]])
 
 (defcomponent template
-  [{:keys [promo-banner
-           secure-checkout
+  [{:keys [secure-checkout
            checkout-steps
            checkout-address-form]}
    _ _]
   [:div.container
-   (c/build promo-banner/sticky-organism promo-banner nil)
    (c/build secure-checkout/organism secure-checkout)
    or-separator
    (c/build checkout-steps/component checkout-steps nil)
@@ -294,8 +291,7 @@
         saving?                      (utils/requesting? app-state request-keys/update-addresses)
         phone-marketing-opt-in-value (get-in app-state k/checkout-phone-marketing-opt-in)
         show-phone-marketing-opt-in? (not= "retail-location" (get-in app-state k/store-experience))]
-    {:promo-banner          (promo-banner/query app-state) ;; no app-states
-     :secure-checkout       (secure-checkout-query facebook-loaded?)
+    {:secure-checkout       (secure-checkout-query facebook-loaded?)
      :checkout-steps        (checkout-steps-query current-nav-event)
      :checkout-address-form (checkout-address-form-query shipping-address
                                                          billing-address

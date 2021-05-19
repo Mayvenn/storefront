@@ -147,14 +147,10 @@
                               :data-test id})]) )
 
 (defcomponent component
-  [{:keys [step-bar
-           loaded-stripe?
-           promo-banner]
+  [{:keys              [step-bar]
     :store-credit/keys [fully-covered? can-use-store-credit?]
-    :as data}
-   owner _]
+    :as                data} _ _]
   [:div.container.p2
-   (component/build promo-banner/sticky-organism promo-banner nil)
    (component/build checkout-steps/component step-bar)
 
    (ui/narrow-container
@@ -227,8 +223,7 @@
       :cta/id        (when loaded-stripe?
                        "payment-form-submit")}
      {:step-bar       (checkout-steps/query data)
-      :loaded-stripe? loaded-stripe?
-      :promo-banner   (promo-banner/query data)})))
+      :loaded-stripe? loaded-stripe?})))
 
 (defn ^:private built-non-auth-component [data opts]
   (component/build component (query data) opts))

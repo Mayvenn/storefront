@@ -265,7 +265,8 @@
   [:div.flex.flex-column.stretch
    {:style {:margin-bottom "-1px"}}
    #?(:cljs (popup/built-component popup nil))
-
+   (when-let [promo-banner (:promo-banner cart)]
+     (promo-banner/static-organism promo-banner nil nil))
    (header/built-component header nil)
    [:div.relative.flex.flex-column.flex-auto
     (flash/built-component flash nil)

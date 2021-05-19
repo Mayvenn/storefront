@@ -4,7 +4,6 @@
             [storefront.components.facebook :as facebook]
             [storefront.components.checkout-address :as checkout-address]
             [storefront.components.ui :as ui]
-            [ui.promo-banner :as promo-banner]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
             [storefront.keypaths :as keypaths]
@@ -16,11 +15,10 @@
    [:div.h4.mx2 "or"]
    [:div.flex-grow-1.border-bottom.border-gray]])
 
-(defcomponent component [{:keys [facebook-loaded? address promo-banner]} owner _]
+(defcomponent component [{:keys [facebook-loaded? address]} owner _]
   [:div
    [:div.container ;; Tries to match what's going on in checkout-address/component
     [:div
-     (component/build promo-banner/sticky-organism promo-banner nil)
      [:div.m-auto.col-8-on-tb-dt
       [:div.px2.pt2
        [:div.center
@@ -41,7 +39,6 @@
 
 (defn query [data]
   {:facebook-loaded? (get-in data keypaths/loaded-facebook)
-   :promo-banner     (promo-banner/query data)
    :address          (-> (checkout-address/query data)
                          (assoc-in [:shipping-address-data :become-guest?] true))})
 
