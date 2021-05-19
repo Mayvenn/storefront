@@ -118,10 +118,6 @@
   [data]
   (display-feature? data "shopping-quiz"))
 
-(defn length-guide?
-  [data]
-  (display-feature? data "length-guide"))
-
 (defn past-appointments?
   [data]
   (display-feature? data "past-appointments"))

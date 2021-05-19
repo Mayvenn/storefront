@@ -336,11 +336,10 @@
         carousel-images    (find-carousel-images product product-skus images-catalog
                                                  (select-keys selections [:hair/color])
                                                  selected-sku)
-        length-guide-image (when (experiments/length-guide? data)
-                             (->> product
-                                  (images/for-skuer images-catalog)
-                                  (select {:use-case #{"length-guide"}})
-                                  first))
+        length-guide-image (->> product
+                                (images/for-skuer images-catalog)
+                                (select {:use-case #{"length-guide"}})
+                                first)
         options            (get-in data catalog.keypaths/detailed-product-options)
         ugc                (ugc-query product selected-sku data)
         sku-price          (or (:product/essential-price selected-sku)
