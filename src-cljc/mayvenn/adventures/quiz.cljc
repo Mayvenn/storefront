@@ -15,6 +15,7 @@
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.effects :as fx]
+            [storefront.accessors.experiments :as experiments]
             [storefront.events :as e]
             [storefront.keypaths :as k]
             [storefront.platform.component-utils :as utils]
@@ -420,7 +421,19 @@
    {:hair/family "closures",
     :sku/price 0, ;; Free in this context
     :catalog/sku-id "SRV-CBI-000",
-    :legacy/variant-id 1037}})
+    :legacy/variant-id 1037}
+
+   "SV2-LBI-X"
+   {:hair/family "bundles",
+    :sku/price 0, ;; Free in this context
+    :catalog/sku-id "SV2-LBI-X",
+    :legacy/variant-id 1156}
+
+   "SV2-CBI-X"
+   {:hair/family "closures",
+    :sku/price 0, ;; Free in this context
+    :catalog/sku-id "SV2-CBI-X",
+    :legacy/variant-id 1114}})
 
 (def answers->results
   {:straight {:short      {:yes    [BNS-short              BNS-medium]
@@ -761,10 +774,14 @@
 (defmethod fx/perform-effects e/flow|quiz|submitted
   [_ _ {quiz-id :quiz/id} _ state]
   (publish e/flow|wait|begun {:wait/id quiz-id})
-  (let [{:keys [texture length leave-out]} (get-in state (conj k/models-quizzes quiz-id))]
+  (let [{:keys [texture length leave-out]} (get-in state (conj k/models-quizzes quiz-id))
+        results (cond->> (get-in answers->results [texture length leave-out])
+                  (experiments/service-skus-with-addons? state)
+                  (map #(update % :service/sku-id {"SRV-LBI-000" "SV2-LBI-X"
+                                                   "SRV-CBI-000" "SV2-CBI-X"})))]
     (publish e/flow|quiz|results|resulted
              {:quiz/id      quiz-id
-              :quiz/results (get-in answers->results [texture length leave-out])})))
+              :quiz/results results})))
 
 (defmethod t/transition-state e/flow|quiz|results|resulted
   [_ _ {:quiz/keys [id results]} state]
