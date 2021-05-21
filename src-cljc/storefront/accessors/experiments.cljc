@@ -112,7 +112,9 @@
 
 (defn edit-gallery?
   [data]
-  (display-feature? data "edit-gallery"))
+  (or
+   (display-feature? data "past-appointments")
+   (display-feature? data "edit-gallery")))
 
 (defn shopping-quiz?
   [data]
