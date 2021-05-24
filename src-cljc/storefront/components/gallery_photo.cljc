@@ -51,7 +51,10 @@
                  (delete-modal data)))
      [:div.container.bg-warm-gray.p3
       [:div.bg-white.p3.container
-       (ui/img {:src resizable-url :class "col-12" :square-size "400"})
+       (ui/img {:src                           resizable-url
+                :class                         "col-12"
+                :square-size                   "400"
+                :preserve-url-transformations? true})
        (ui/button-small-underline-red {:on-click  (utils/send-event-callback e/control-show-gallery-photo-delete-modal)
                                        :data-test "delete-photo"} "Delete")]]]))
 
