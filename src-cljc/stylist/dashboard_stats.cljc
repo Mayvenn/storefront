@@ -100,7 +100,8 @@
        ^:inline (svg/dropdown-arrow {:class  (str "ml1 "
                                                   (when expanded? "rotate-180"))
                                      :height "1em"
-                                     :width  "1em"})]]
+                                     :width  "1em"
+                                     :data-test "toggle-credit-balance"})]]
 
      [:div.flex.items-center
       [:a.col-7 toggle-expand
