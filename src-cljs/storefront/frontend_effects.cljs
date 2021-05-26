@@ -322,6 +322,8 @@
       (let [just-arrived? (not= events/navigate-shop-by-look
                                 (get-in previous-app-state keypaths/navigation-event))
             cache         (get-in app-state keypaths/api-cache)
+            ;; Is there a reason why carts are only fetched for aladdin free install?
+            ;; Do we still have :aladdin-free-install albums?
             handler       (if (= :aladdin-free-install actual-album-kw)
                             (fn [result]
                               (when-let [cart-ids (->> (get-in result [:ugc-collection :aladdin-free-install :looks])
@@ -330,7 +332,11 @@
                                 (api/fetch-shared-carts cache cart-ids))
                               (when just-arrived?
                                 (messages/handle-message events/flow|facet-filtering|initialized)))
-                            identity)]
+                            (fn [result]
+                              (when-let [cart-ids (->> (get-in result [:ugc-collection actual-album-kw :looks])
+                                                       (mapv contentful/shared-cart-id)
+                                                       not-empty)]
+                                (api/fetch-shared-carts cache cart-ids))))]
         (effects/fetch-cms-keypath app-state [:ugc-collection actual-album-kw] handler)))))
 
 (defmethod effects/perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-keyword]} _ app-state]

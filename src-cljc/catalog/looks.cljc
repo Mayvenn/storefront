@@ -182,6 +182,88 @@
 
 ;; Biz Domain: Looks
 
+(defn look<-
+  [skus-db looks-shared-carts-db facets-db look album-keyword index]
+  (when-let [shared-cart-id (contentful/shared-cart-id look)]
+    (let [shared-cart              (get looks-shared-carts-db shared-cart-id)
+          _ (prn "^^^^" shared-cart)
+          album-copy               (get ugc/album-copy album-keyword)
+          sku-ids-from-shared-cart (->> shared-cart
+                                        :line-items
+                                        (mapv :catalog/sku-id)
+                                        sort)
+          sku-id->quantity         (->> shared-cart
+                                        :line-items
+                                        (maps/index-by :catalog/sku-id)
+                                        (maps/map-values :item/quantity))
+          item-quantity            (reduce + (vals sku-id->quantity))
+          all-skus                 (->> (select-keys skus-db sku-ids-from-shared-cart)
+                                        vals
+                                        vec)
+          ;; NOTE: assumes only one discountable service item for the look
+          discountable-service-sku (->> all-skus
+                                        (select ?discountable)
+                                        first)
+          product-items            (->> all-skus
+                                        (select ?physical)
+                                        (mapv (fn [{:as sku :keys [catalog/sku-id]}]
+                                                (assoc sku :item/quantity (get sku-id->quantity sku-id))))
+                                        vec)
+          tex-ori-col              (some->> product-items
+                                            (mapv #(select-keys % [:hair/color :hair/origin :hair/texture]))
+                                            not-empty
+                                            (apply merge-with clojure.set/union))
+
+          origin-name  (get-in facets-db [:hair/origin :facet/options (first (:hair/origin tex-ori-col)) :sku/name])
+          texture-name (get-in facets-db [:hair/texture :facet/options (first (:hair/texture tex-ori-col)) :option/name])
+
+          discountable-service-title-component (when-let [discountable-service-category
+                                                          (some->> discountable-service-sku
+                                                                   :service/category
+                                                                   first)]
+                                                 (case discountable-service-category
+                                                   "install"      "+ FREE Install Service"
+                                                   "construction" "+ FREE Custom Wig"
+                                                   nil))
+          total-price                          (some->> all-skus
+                                                        (mapv (fn [{:keys [catalog/sku-id sku/price]}]
+                                                                (* (get sku-id->quantity sku-id 0) price)))
+                                                        (reduce + 0))
+          discounted-price                     (when-let [discountable-service-price (:sku/price discountable-service-sku)]
+                                                 (- total-price discountable-service-price))
+          look-id                              (:content/id look)]
+      (merge tex-ori-col ;; TODO(corey) apply merge-with into
+             (spice.core/spy {:look/title (clojure.string/join " " [origin-name
+                                                                    texture-name
+                                                                    "Hair"
+                                                                    discountable-service-title-component])
+
+                              ;; TODO: only handles the free service discount,
+                              ;; other promotions can be back ported here after
+                              ;; #176485395 is completed
+                              :look/cart-number      shared-cart-id
+                              :look/total-price      (some-> total-price mf/as-money)
+                              :look/discounted?      discounted-price
+                              :look/discounted-price (or (some-> discounted-price mf/as-money)
+                                                         (some-> total-price mf/as-money))
+                              :look/id               look-id
+
+                              ;; Look
+                              :look/secondary-id "item-quantity-in-look"
+                              :look/secondary    (str item-quantity " items in this " (:short-name album-copy))
+
+                              ;; Looks page
+                              :look/hero-imgs [{:url (:photo-url look)
+                                                :platform-source
+                                                (when-let [icon (svg/social-icon (:social-media-platform look))]
+                                                  (icon {:class "fill-white"
+                                                         :style {:opacity 0.7}}))}]
+                              :look/target    [e/shop-by-look|look-selected {:album-keyword album-keyword
+                                                                             :look-id       look-id
+                                                                             :card-index    index
+                                                                             :variant-ids   (map :legacy/variant-id all-skus)}]
+                              :look/items     product-items})))))
+
 (defn ^:private looks<-
   "
   What is a look?
@@ -212,73 +294,7 @@
                               :looks)]
     (->> contentful-looks
          (keep-indexed (fn [index look]
-                         (when-let [shared-cart-id (contentful/shared-cart-id look)]
-                           (let [shared-cart              (get looks-shared-carts-db shared-cart-id)
-                                 sku-ids-from-shared-cart (->> shared-cart
-                                                               :line-items
-                                                               (mapv :catalog/sku-id)
-                                                               sort)
-                                 sku-id->quantity         (->> shared-cart
-                                                               :line-items
-                                                               (maps/index-by :catalog/sku-id)
-                                                               (maps/map-values :item/quantity))
-                                 all-skus                 (->> (select-keys skus-db sku-ids-from-shared-cart)
-                                                               vals
-                                                               vec)
-                                 ;; NOTE: assumes only one discountable service item for the look
-                                 discountable-service-sku (->> all-skus
-                                                               (select ?discountable)
-                                                               first)
-                                 product-items            (->> all-skus
-                                                               (select ?physical)
-                                                               (mapv (fn [{:as sku :keys [catalog/sku-id]}]
-                                                                       (assoc sku :item/quantity (get sku-id->quantity sku-id))))
-                                                               vec)
-                                 tex-ori-col              (some->> product-items
-                                                                   (mapv #(select-keys % [:hair/color :hair/origin :hair/texture]))
-                                                                   not-empty
-                                                                   (apply merge-with clojure.set/union))
-
-                                 origin-name  (get-in facets-db [:hair/origin :facet/options (first (:hair/origin tex-ori-col)) :sku/name])
-                                 texture-name (get-in facets-db [:hair/texture :facet/options (first (:hair/texture tex-ori-col)) :option/name])
-
-                                 discountable-service-title-component (when-let [discountable-service-category
-                                                                                 (some->> discountable-service-sku
-                                                                                          :service/category
-                                                                                          first)]
-                                                                        (case discountable-service-category
-                                                                          "install"      "+ FREE Install Service"
-                                                                          "construction" "+ FREE Custom Wig"
-                                                                          nil))
-                                 total-price                          (some->> all-skus
-                                                                               (mapv (fn [{:keys [catalog/sku-id sku/price]}]
-                                                                                       (* (get sku-id->quantity sku-id 0) price)))
-                                                                               (reduce + 0))
-                                 discounted-price                     (when-let [discountable-service-price (:sku/price discountable-service-sku)]
-                                                                        (- total-price discountable-service-price))
-                                 look-id                              (:content/id look)]
-                             (merge tex-ori-col ;; TODO(corey) apply merge-with into
-                                    {:look/title (clojure.string/join " " [origin-name
-                                                                           texture-name
-                                                                           "Hair"
-                                                                           discountable-service-title-component])
-
-                                     ;; TODO: only handles the free service discount,
-                                     ;; other promotions can be back ported here after
-                                     ;; #176485395 is completed
-                                     :look/total-price      (some-> total-price mf/as-money)
-                                     :look/discounted-price (some-> discounted-price mf/as-money)
-                                     :look/hero-imgs        [{:url (:photo-url look)
-                                                              :platform-source
-                                                              (when-let [icon (svg/social-icon (:social-media-platform look))]
-                                                                (icon {:class "fill-white"
-                                                                       :style {:opacity 0.7}}))}]
-                                     :look/id               look-id
-                                     :look/target           [e/shop-by-look|look-selected {:album-keyword album-keyword
-                                                                                           :look-id       look-id
-                                                                                           :card-index    index
-                                                                                           :variant-ids   (map :legacy/variant-id all-skus)}]
-                                     :look/items            product-items})))))
+                         (look<- skus-db looks-shared-carts-db facets-db look album-keyword index)))
          vec)))
 
 ;; Visual Domain: Page

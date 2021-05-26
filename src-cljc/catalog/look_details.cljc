@@ -8,6 +8,7 @@
             api.orders
             [catalog.facets :as facets]
             [catalog.images :as catalog-images]
+            [catalog.look-details-v202105 :as look-details-v202105]
             [checkout.ui.cart-item-v202004 :as cart-item]
             [clojure.string :as str]
             [spice.core :as spice]
@@ -121,9 +122,7 @@
            yotpo-data-attributes cart-items service-line-items look-customization] :as queried-data}]
   [:div.clearfix
    (when look
-     (if look-customization
-       (component/build look-card-v202105 queried-data "look-card")
-       (component/build look-card queried-data "look-card")))
+     (component/build look-card queried-data "look-card"))
    (if fetching-shared-cart?
      [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
      (when shared-cart
@@ -347,4 +346,6 @@
    (look-details-body queried-data)])
 
 (defn ^:export built-component [data opts]
-  (component/build component (query data) opts))
+  (if (experiments/look-customization? data)
+    (component/build look-details-v202105/component (look-details-v202105/query data) opts)
+    (component/build component (query data) opts)))
