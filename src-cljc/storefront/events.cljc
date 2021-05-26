@@ -696,6 +696,10 @@
 (defpath flow|live-help|reset)
 (defpath flow|live-help|opened)
 
+;; Unified Free Install adventure
+
+(defpath navigate-unified-freeinstall)
+
 ;; NOTE(corey) Generally...
 ;; flow - sequence of user interactions, visual in nature (ui state machine)
 ;; biz - conceptual, independent of a particular user interface, builds a 'model'

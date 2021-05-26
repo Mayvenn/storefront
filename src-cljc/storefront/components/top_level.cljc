@@ -18,7 +18,10 @@
             adventure.informational.certified-stylists
 
             mayvenn-install.about
+
             mayvenn.adventures.quiz
+            mayvenn.adventures.unified-freeinstall
+
             [storefront.components.ui :as ui]
             [storefront.components.content :as content]
             [storefront.components.flash :as flash]
@@ -122,7 +125,8 @@
                                                                         'adventure.stylist-matching.stylist-gallery/built-component
                                                                         events/navigate-adventure-stylist-gallery)
 
-   events/navigate-adventure-quiz (constantly mayvenn.adventures.quiz/page)})
+   events/navigate-adventure-quiz      (constantly mayvenn.adventures.quiz/page)
+   events/navigate-unified-freeinstall (constantly mayvenn.adventures.unified-freeinstall/page)})
 
 (defn main-component
   [nav-event]
