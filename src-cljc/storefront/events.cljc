@@ -700,10 +700,31 @@
 
 (defpath navigate-unified-freeinstall)
 
-;; NOTE(corey) Generally...
-;; flow - sequence of user interactions, visual in nature (ui state machine)
-;; biz - conceptual, independent of a particular user interface, builds a 'model'
-;; cache - data handling from remotes, no conceptualization
+;; NOTE
+;; Models
+;; - form concepts/nouns
+;; - composed of actions/verbs that work on that concept
+;;
+;; Events
+;; - form verbs/actions
+;; - descriptions, so always in past tense
+;;
+;; Prepend events with these prefixes to enhance understanding
+;;
+;; flow|
+;; - sequence of user interactions
+;; - visual in nature (ui state machine)
+;; - the 'noun' is the ui state
+;;
+;; biz|
+;; - independent of a particular user interface
+;; - the 'noun' is a business concept e.g. cart, customer
+;;
+;; cache|
+;; - less conceptualization, don't interpret into other models
+;; - e.g. data handling from http remotes, 1-1 with APIs
+;; - e.g. wraps data stores like cookies
+;; - the 'noun' is a store e.g. db, cookies, remote api state
 
 ;; Stylist Gallery
 (defpath control-stylist-gallery-posts-drag-predicate-loop)
