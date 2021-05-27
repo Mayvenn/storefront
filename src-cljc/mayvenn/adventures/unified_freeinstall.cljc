@@ -1,12 +1,23 @@
 (ns mayvenn.adventures.unified-freeinstall
-  "Visual Layer: Unified-Free Install adventure
+  "
+  Visual Layer: Unified-Free Install adventure
 
-  Product is also calling this 'shopping quiz'
-  We should argue that this is confusing."
-  (:require mayvenn.adventures.core
+  Product is also calling this 'shopping quiz' because that
+  is the feature-slot in the customers' experience.
+  "
+  (:require [mayvenn.adventures.core :as adventures]
             [mayvenn.visual.ui.titles :as titles]
             [mayvenn.visual.ui.actions :as actions]
+            [storefront.events :as e]
             [storefront.component :as c]))
+
+(def ^:private adventure-id
+  :unified-freeinstall)
+
+(def ^:private adventure-steps #{0 1})
+
+(def ^:private adventure-initial-model
+  #:adventure{:step 0})
 
 ;; TODO Fix other quiz adventure
 ;;      - The domain scope spread too far
@@ -16,6 +27,11 @@
 ;; TODO Get product to agree to our terminology on:
 ;;      quiz, adventure, shopping, etc
 
+(c/defcomponent questions-template
+  [_ _ _]
+  [:div.bg-pale-purple.stretch.ptj3
+   [:div.col-10.mx-auto
+    [:div "quiz"]]])
 
 (c/defcomponent intro-template
   [_ _ _]
@@ -29,10 +45,25 @@
                          :secondary "This short quiz (2-3 minutes) will help you find the look and a stylist to complete your install in your area"})
     [:div.flex.justify-center
      (actions/action-molecule
-      {:id    "quiz-continue"
-       :label "Continue"
-       :target []})]]])
+      {:id     "quiz-continue"
+       :label  "Continue"
+       :target [e/flow|adventure|advanced
+                #:adventure
+                {:id   adventure-id
+                 :step 1}]})]]])
 
 (defn ^:export page
+  "
+  Shopping Quiz: Unified Products+Service v1
+
+  An adventure for helping customers find hair products for a look
+  combined with picking a stylist that can do that look.
+  "
   [state]
-  (c/build intro-template {}))
+  (let [{:adventure/keys [step]} (adventures/<- state
+                                                adventure-initial-model
+                                                adventure-id)]
+    (case step
+      1 (c/build questions-template {})
+      ;; default or 0
+      (c/build intro-template {}))))
