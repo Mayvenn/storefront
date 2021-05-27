@@ -67,3 +67,22 @@
       [:div.mt2.content-3
        secondary])]))
 
+(defn canela-huge
+  "Usages:
+  - call out boxes"
+  [{:keys [id icon primary secondary]}]
+  (c/html
+   [:div.center
+    (when icon
+      [:div.myj1
+       (svg/symbolic->html icon)])
+    [:div.title-1.canela.myj1
+     (when id
+       {:data-test id})
+     (if (vector? primary)
+       (interpose [:br] primary)
+       primary)]
+    (when secondary
+      [:div.content-2.myj1
+       secondary])]))
+
