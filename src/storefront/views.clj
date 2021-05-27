@@ -173,7 +173,7 @@
                       :as   "image"
                       :href "https://images.ctfassets.net/76m8os65degn/3G0TE1RlgrcTA0rPEpkQJ1/faa7337aa049c535f78ab07f2f869198/homepage_hero_012921_image_mob-04.jpg?fm=webp&q=75&w=1600"}])
             [:meta {:name "fragment" :content "!"}]
-            [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
+            [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
             [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
             [:meta {:name "theme-color" :content "#ffffff"}]
             [:meta {:name "apple-mobile-web-app-capable" :content "yes"}]
@@ -309,7 +309,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
          [:head
           [:title "Not Found | Mayvenn"]
           [:meta {:name "fragment" :content "!"}]
-          [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
+          [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
           [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
           favicon-links
           (page/include-css (assets/path "/css/app.css"))]
@@ -331,7 +331,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   (html5 {:lang "en"}
          [:head
           [:meta {:name "fragment" :content "!"}]
-          [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
+          [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0"}]
           [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
           [:title "Something went wrong | Mayvenn"]]
          [:body.proxima
