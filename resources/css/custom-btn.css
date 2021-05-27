@@ -84,22 +84,26 @@
 .btn-p-color.btn-large  { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--p-color), stroke=none); }
 .btn-p-color.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--p-color), stroke=none); }
 .btn-p-color.btn-small  { background-color: var(--p-color); }
+.btn-p-color span       { background-color: var(--p-color); }
 
 .btn-outline            { color: var(--p-color); }
 .btn-outline.btn-large  { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--white), stroke=var(--s-color), vector-effect="non-scaling-stroke"); }
 .btn-outline.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--white), stroke=var(--s-color), vector-effect="non-scaling-stroke"); }
 .btn-outline.btn-small  { border: solid 1px var(--s-color); }
+.btn-outline span       { background-color: var(--white); }
 
 .btn-paypal-color           { color: var(--white); }
 .btn-paypal-color.btn-large { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--paypal), stroke=none); }
 
-.btn-facebook-blue           { color: var(--white); }
-.btn-facebook-blue.btn-large { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--facebook-blue), stroke=none); }
+.btn-facebook-blue            { color: var(--white); }
+.btn-facebook-blue.btn-large  { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--facebook-blue), stroke=none); }
 .btn-facebook-blue.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--facebook-blue), stroke=none); }
+.btn-facebook-blue span       { background-color: var(--facebook-blue); }
 
-.btn-red           { color: var(--white); }
-.btn-red.btn-large { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--red), stroke=none); }
+.btn-red            { color: var(--white); }
+.btn-red.btn-large  { border-image-source: svg-load(var(--oct-button-large-svg), fill=var(--red), stroke=none); }
 .btn-red.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--red), stroke=none); }
+.btn-red span       { background-color: var(--red); }
 
 .btn-ghost            { color: var(--s-color); text-decoration: underline }
 
@@ -111,6 +115,7 @@
 .btn-gray.btn-medium { border-image-source: svg-load(var(--oct-button-medium-svg), fill=var(--cool-gray), stroke=none); }
 .btn-gray.btn-small  { background-color: var(--cool-gray); border-style: none; }
 .btn-gray.btn-square { background-color: var(--cool-gray); }
+.btn-gray span       { background-color: var(--cool-gray); }
 
 ::-moz-focus-inner {
   border: 0;
