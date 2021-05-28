@@ -53,8 +53,8 @@
    "/about-mayvenn-install"                                            (edn->bidi events/navigate-about-mayvenn-install)})
 
 (def adventure-quiz-routes
-  {"/adv/quiz" (edn->bidi events/navigate-adventure-quiz)
-   "/quiz"     (edn->bidi events/navigate-unified-freeinstall)})
+  {"/adv/quiz"                       (edn->bidi events/navigate-adventure-quiz)
+   "/quiz/unified-freeinstall/intro" (edn->bidi events/navigate-shopping-quiz-unified-freeinstall)})
 
 (def catalog-routes
   ;; NOTE: if you update category url, don't forget to update the fast-inverse-catalog-routes below

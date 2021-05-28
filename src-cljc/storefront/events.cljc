@@ -696,9 +696,8 @@
 (defpath flow|live-help|reset)
 (defpath flow|live-help|opened)
 
-;; Unified Free Install adventure
-
-(defpath navigate-unified-freeinstall)
+;; Shopping Quiz iterations
+(defpath navigate-shopping-quiz-unified-freeinstall)
 
 ;; NOTE
 ;; Models

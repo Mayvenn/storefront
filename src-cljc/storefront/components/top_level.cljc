@@ -20,7 +20,7 @@
             mayvenn-install.about
 
             mayvenn.adventures.quiz
-            mayvenn.adventures.unified-freeinstall
+            mayvenn.shopping-quiz.unified-freeinstall
 
             [storefront.components.ui :as ui]
             [storefront.components.content :as content]
@@ -125,8 +125,8 @@
                                                                         'adventure.stylist-matching.stylist-gallery/built-component
                                                                         events/navigate-adventure-stylist-gallery)
 
-   events/navigate-adventure-quiz      (constantly mayvenn.adventures.quiz/page)
-   events/navigate-unified-freeinstall (constantly mayvenn.adventures.unified-freeinstall/page)})
+   events/navigate-adventure-quiz                    (constantly mayvenn.adventures.quiz/page)
+   events/navigate-shopping-quiz-unified-freeinstall (constantly mayvenn.shopping-quiz.unified-freeinstall/page)})
 
 (defn main-component
   [nav-event]

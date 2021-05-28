@@ -1,4 +1,4 @@
-(ns mayvenn.adventures.unified-freeinstall
+(ns mayvenn.shopping-quiz.unified-freeinstall
   "
   Visual Layer: Unified-Free Install adventure
 
