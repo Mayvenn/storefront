@@ -25,8 +25,7 @@
              :refer [handle-message]
              :rename {handle-message publish}]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as t]
-            [api.orders :as api.orders]))
+            [storefront.transitions :as t]))
 
 ;; state
 
