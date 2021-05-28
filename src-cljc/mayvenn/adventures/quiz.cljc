@@ -7,6 +7,7 @@
                  storefront.frontend-trackings
                  [storefront.trackings :as trackings]])
             api.orders
+            [mayvenn.concept.progression :as progression]
             [clojure.string :as string]
             [storefront.assets :as assets]
             [storefront.component :as c]
@@ -730,7 +731,7 @@
   [state]
   (let [{:order.items/keys [quantity]} (api.orders/current state)
         quiz-id                        :quiz/shopping
-        progression                    (get-in state (conj k/models-progressions quiz-id))
+        progression                    (progression/<- state quiz-id)
         quiz-answers                   (get-in state (conj k/models-quizzes quiz-id))
         quiz-results                   (get-in state (conj k/models-quizzes-results quiz-id))
         header-data                    {:forced-mobile-layout? true
@@ -892,15 +893,6 @@
          :question_position      question-idx
          :answer_position        choice-idx}))))
 
-;; flow|progression
-
-(defmethod t/transition-state e/flow|progression|reset
-  [_ _ {:progression/keys [id value]} state]
-  (assoc-in state (conj k/models-progressions id) value))
-
-(defmethod t/transition-state e/flow|progression|progressed
-  [_ _ {:progression/keys [id value]} state]
-  (update-in state (conj k/models-progressions id) conj value))
 
 (comment
   {:visual/quiz ["init" "answered"]
