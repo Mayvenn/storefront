@@ -186,7 +186,6 @@
   [skus-db looks-shared-carts-db facets-db look album-keyword index]
   (when-let [shared-cart-id (contentful/shared-cart-id look)]
     (let [shared-cart              (get looks-shared-carts-db shared-cart-id)
-          _ (prn "^^^^" shared-cart)
           album-copy               (get ugc/album-copy album-keyword)
           sku-ids-from-shared-cart (->> shared-cart
                                         :line-items
