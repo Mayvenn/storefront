@@ -232,36 +232,36 @@
                                                  (- total-price discountable-service-price))
           look-id                              (:content/id look)]
       (merge tex-ori-col ;; TODO(corey) apply merge-with into
-             (spice.core/spy {:look/title (clojure.string/join " " [origin-name
-                                                                    texture-name
-                                                                    "Hair"
-                                                                    discountable-service-title-component])
+             {:look/title (clojure.string/join " " [origin-name
+                                                    texture-name
+                                                    "Hair"
+                                                    discountable-service-title-component])
 
-                              ;; TODO: only handles the free service discount,
-                              ;; other promotions can be back ported here after
-                              ;; #176485395 is completed
-                              :look/cart-number      shared-cart-id
-                              :look/total-price      (some-> total-price mf/as-money)
-                              :look/discounted?      discounted-price
-                              :look/discounted-price (or (some-> discounted-price mf/as-money)
-                                                         (some-> total-price mf/as-money))
-                              :look/id               look-id
+              ;; TODO: only handles the free service discount,
+              ;; other promotions can be back ported here after
+              ;; #176485395 is completed
+              :look/cart-number      shared-cart-id
+              :look/total-price      (some-> total-price mf/as-money)
+              :look/discounted?      discounted-price
+              :look/discounted-price (or (some-> discounted-price mf/as-money)
+                                         (some-> total-price mf/as-money))
+              :look/id               look-id
 
-                              ;; Look
-                              :look/secondary-id "item-quantity-in-look"
-                              :look/secondary    (str item-quantity " items in this " (:short-name album-copy))
+              ;; Look
+              :look/secondary-id "item-quantity-in-look"
+              :look/secondary    (str item-quantity " items in this " (:short-name album-copy))
 
-                              ;; Looks page
-                              :look/hero-imgs [{:url (:photo-url look)
-                                                :platform-source
-                                                (when-let [icon (svg/social-icon (:social-media-platform look))]
-                                                  (icon {:class "fill-white"
-                                                         :style {:opacity 0.7}}))}]
-                              :look/target    [e/shop-by-look|look-selected {:album-keyword album-keyword
-                                                                             :look-id       look-id
-                                                                             :card-index    index
-                                                                             :variant-ids   (map :legacy/variant-id all-skus)}]
-                              :look/items     product-items})))))
+              ;; Looks page
+              :look/hero-imgs [{:url (:photo-url look)
+                                :platform-source
+                                (when-let [icon (svg/social-icon (:social-media-platform look))]
+                                  (icon {:class "fill-white"
+                                         :style {:opacity 0.7}}))}]
+              :look/target    [e/shop-by-look|look-selected {:album-keyword album-keyword
+                                                             :look-id       look-id
+                                                             :card-index    index
+                                                             :variant-ids   (map :legacy/variant-id all-skus)}]
+              :look/items     product-items}))))
 
 (defn ^:private looks<-
   "
