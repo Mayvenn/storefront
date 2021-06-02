@@ -384,17 +384,18 @@
            selections
            options
            sku-quantity
+           color-picker-redesign?
            picker-visible?
            length-guide-image]
     :as   data} owner _]
-  (let [color-option-fn color-option-new]
+  (let [color-option-fn (if color-picker-redesign? color-option-new color-option)]
     [:div
      (slide-animate
       picker-visible?
       (condp = selected-picker
         :hair/color  (picker-dialog {:title             (get-in facets [selected-picker :facet/name])
                                      :items             (sort-by :option/order (get options selected-picker))
-                                     :wrap?             true
+                                     :wrap?             color-picker-redesign?
                                      :cell-component-fn (fn [item]
                                                           (color-option-fn
                                                            {:key              (str "color-" (:option/name item))
@@ -446,6 +447,7 @@
         selections        (get-in data catalog.keypaths/detailed-product-selections)]
     {:selected-picker        selected-picker
      :picker-visible?        (and options selected-picker picker-visible?)
+     :color-picker-redesign? (experiments/color-picker-redesign? data)
      :facets                 facets
      :selections             selections
      :options                options
