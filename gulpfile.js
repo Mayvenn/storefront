@@ -36,6 +36,8 @@ var nodeMajorVersion = nodeVersion[0];
 if (nodeMajorVersion < 14) {
 	console.error("Hey, you need to upgrade node to 14.x.x!");
 	console.error("");
+	console.error("You seem to be running", nodeVersion);
+	console.error("");
 	console.error("This means running the following:");
 	console.error("  brew upgrade node");
 	console.error("  rm -rf node_modules");
