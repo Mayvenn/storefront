@@ -5,7 +5,6 @@
             [catalog.products :as products]
             [clojure.string :as string]
             [spice.core :as spice]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.images :as images]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
@@ -304,36 +303,6 @@
                                    :default-quality "better"}
                                   "9e2a48b3-9811-46d2-840b-31c9f85670ad")]]])])])
 
-(defn swatch-content-layer-new [{:option/keys [name rectangle-swatch]}]
-  [:div.flex.flex-column.bg-white
-   [:div.flex
-    [:div.bg-repeat-x
-     {:style
-      {:width            "100%"
-       :height           "165px"
-       :background-size  "cover"
-       :background-image (str "url(" rectangle-swatch ")")}}]]
-   [:div.py3.ml3.self-start.content-3.proxima
-    name]])
-
-(defn color-option-new
-  [{:keys [key color checked? selected-picker navigation-event]}]
-  [:div.col-6.flex-wrap
-   {:key       key
-    :data-test (str "picker-color-" (hacky-fix-of-bad-slugs-on-facets (:option/slug color)))}
-   (ui/option {:key      (str key "-option")
-               :on-click #(select-and-close
-                           events/control-product-detail-picker-option-select
-                           {:selection        selected-picker
-                            :navigation-event navigation-event
-                            :value            (:option/slug color)})}
-              (swatch-content-layer-new color)
-              [:div
-               (when checked?
-                 [:div.absolute.border.border-width-3.border-s-color.overlay.flex
-                  [:div.col-12.flex.justify-end.m2
-                   checkmark-circle]])])])
-
 (defn- slide-animate [enabled? content]
   (css-transitions/transition-group
    {:classNames    "picker"
@@ -384,18 +353,17 @@
            selections
            options
            sku-quantity
-           color-picker-redesign?
            picker-visible?
            length-guide-image]
     :as   data} owner _]
-  (let [color-option-fn (if color-picker-redesign? color-option-new color-option)]
+  (let [color-option-fn color-option]
     [:div
      (slide-animate
       picker-visible?
       (condp = selected-picker
         :hair/color  (picker-dialog {:title             (get-in facets [selected-picker :facet/name])
                                      :items             (sort-by :option/order (get options selected-picker))
-                                     :wrap?             color-picker-redesign?
+                                     :wrap?             false
                                      :cell-component-fn (fn [item]
                                                           (color-option-fn
                                                            {:key              (str "color-" (:option/name item))
@@ -447,7 +415,6 @@
         selections        (get-in data catalog.keypaths/detailed-product-selections)]
     {:selected-picker        selected-picker
      :picker-visible?        (and options selected-picker picker-visible?)
-     :color-picker-redesign? (experiments/color-picker-redesign? data)
      :facets                 facets
      :selections             selections
      :options                options
