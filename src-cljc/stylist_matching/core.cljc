@@ -49,8 +49,6 @@
   (merge (apply dissoc query-params query-param-keys)
          (when (seq moniker)
            {:name moniker})
-         (when-let [{:keys [latitude longitude]} location]
-           {:lat latitude :long longitude})
          (when (seq services)
            {:preferred-services (string/join service-delimiter
                                              services)})

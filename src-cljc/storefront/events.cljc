@@ -541,6 +541,7 @@
 (defpath adventure-stylist-search-results-displayed)
 (defpath stylist-results-address-component-mounted)
 (defpath stylist-results-address-selected)
+(defpath stylist-results-update-location-from-address)
 
 (defpath control-stylist-search-toggle-filter)
 (defpath control-stylist-search-reset-filters)

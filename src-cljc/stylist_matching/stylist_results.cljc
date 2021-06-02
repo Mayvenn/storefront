@@ -62,11 +62,14 @@
         (messages/handle-message e/flow|stylist-matching|param-ids-constrained
                                  {:ids stylist-ids}))
       ;; Pull name search from URI
-      (messages/handle-message e/flow|stylist-matching|set-presearch-field {:name moniker})
-      (messages/handle-message e/flow|stylist-matching|param-name-constrained {:name moniker})
+      (messages/handle-message e/flow|stylist-matching|set-presearch-field
+                               {:name moniker})
+      (messages/handle-message e/flow|stylist-matching|param-name-constrained
+                               {:name moniker})
 
       ;; Address from URI
-      (messages/handle-message e/flow|stylist-matching|set-address-field {:address address})
+      (messages/handle-message e/flow|stylist-matching|set-address-field
+                               {:address address})
 
       ;; Pull preferred services from URI; filters for service types
       (when-let [services (some-> preferred-services
@@ -124,7 +127,9 @@
                              (fn [e]
                                (when (= "Enter" (.. e -key))
                                  ((.-enterKeyPressed component) true)
-                                 (.blur (.-target e))))))])))
+                                 (.blur (.-target e))))))
+                          (fn [_elem _]
+                            (messages/handle-message e/stylist-results-update-location-from-address))])))
 
 (defn ^:private address-input
   [elemID]
@@ -143,6 +148,17 @@
                               :state              state
                               :latitude           latitude
                               :longitude          longitude}))))
+
+(defmethod effects/perform-effects e/stylist-results-update-location-from-address
+  [_ _ _ _ state]
+  #?(:cljs
+     (let [location (get-in state k/location)
+           address  (get-in state k/address)]
+       (when-not location
+         (google-maps/get-geo-code
+          address
+          k/google-location
+          (fn [] (messages/handle-message e/stylist-results-address-selected)))))))
 
 (defmethod effects/perform-effects e/stylist-results-address-selected
   [_ _ _ _ state]

@@ -28,13 +28,16 @@
            (into {:latitude  lat
                   :longitude lng})))))
 
-(defn address [autocomplete]
-  (when-let [place (js->clj (.getPlace autocomplete) :keywordize-keys true)]
+(defn address-for-place [place]
+  (when place
     (let [{:as extracted-address :keys [city sublocality state street street-number]} (extract-address place)]
       (some-> extracted-address
               (assoc :address1 (str street-number " " street)
                      :city     (or city sublocality))
               (dissoc :street :street-number :sublocality)))))
+
+(defn address-for-autocomplete [autocomplete]
+  (address-for-place (js->clj (.getPlace autocomplete) :keywordize-keys true)))
 
 (defn insert []
   (when-not (.hasOwnProperty js/window "google")
@@ -59,7 +62,7 @@
                      "place_changed"
                      (fn [_]
                        (m/handle-message events/autocomplete-update-address
-                                         {:address         (address autocomplete)
+                                         {:address         (address-for-autocomplete autocomplete)
                                           :address-keypath address-keypath})
                        (place-change-callback)))
        (doseq [f additional-fns]
@@ -179,3 +182,21 @@
           elem     (.getElementById js/document (name address-elem))
           map      (google.maps.Map. elem opts)]
       (place-marker lat-long map))))
+
+(defn get-geo-code
+  [address-string address-keypath place-change-callback]
+  (when (.hasOwnProperty js/window "google")
+    (let [ac-service          (google.maps.places.AutocompleteService.)
+          geocoder            (google.maps.Geocoder.)
+          geo-callback        (fn [geo]
+                                (m/handle-message events/autocomplete-update-address
+                                                  {:address         (-> (first geo)
+                                                                        (js->clj :keywordize-keys true)
+                                                                        address-for-place)
+                                                   :address-keypath address-keypath})
+                                (place-change-callback))
+          prediction-callback (fn [predictions]
+                                (let [place-id (get (js->clj (aget predictions 0)) "place_id")]
+                                  (.geocode geocoder (clj->js {:placeId place-id}) geo-callback)))]
+      (.getPlacePredictions ac-service (clj->js {:input address-string})
+                            prediction-callback))))
