@@ -158,7 +158,9 @@
          (google-maps/get-geo-code
           address
           k/google-location
-          (fn [] (messages/handle-message e/stylist-results-address-selected)))))))
+          (fn []
+            (messages/handle-message e/stylist-results-address-selected)
+            (messages/handle-message e/flow|stylist-matching|searched)))))))
 
 (defmethod effects/perform-effects e/stylist-results-address-selected
   [_ _ _ _ state]

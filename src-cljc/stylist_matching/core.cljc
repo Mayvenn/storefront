@@ -193,14 +193,19 @@
   (update-in state k/status disj :results/stylists))
 
 (defmethod fx/perform-effects e/flow|stylist-matching|prepared
-  [_ _ _ _ state]
+  [_ _ _ prev-state state]
   #?(:cljs (cookie-jar/save-adventure (get-in state storefront.keypaths/cookie)
                                       (get-in state adventure.keypaths/adventure)))
   #?(:cljs
-     (let [query-params (->> (stylist-matching<- state)
-                             (query-params<- {}))]
-       (history/enqueue-navigate e/navigate-adventure-stylist-results
-                                 {:query-params query-params}))))
+     (let [prev-nav-msg      (get-in prev-state storefront.keypaths/navigation-message)
+           prev-nav-event    (get prev-nav-msg 0)
+           prev-query-params (get-in prev-nav-msg [1 :query-params])
+           query-params      (->> (stylist-matching<- state)
+                                  (query-params<- {}))]
+       (when-not (= (spice.core/spy [prev-nav-event prev-query-params])
+                    (spice.core/spy [e/navigate-adventure-stylist-results query-params]))
+         (history/enqueue-navigate e/navigate-adventure-stylist-results
+                                   {:query-params query-params})))))
 
 ;; Searched
 ;; -> screen: results
