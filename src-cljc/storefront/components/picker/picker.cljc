@@ -216,7 +216,7 @@
   (messages/handle-message select-event options)
   (messages/handle-later close-event nil))
 
-(defn quantity-option [{:keys [key quantity primary-label checked?]}]
+(defn quantity-option [{:keys [key quantity primary-label checked? close-event select-event]}]
   (let [label-style (cond
                       checked?  "medium"
                       :else     nil)]
@@ -224,10 +224,7 @@
            :data-test (str "picker-quantity-" quantity)}
      (ui/option {:height   "4em"
                  :key      (str key "-option")
-                 :on-click #(select-and-close
-                             events/control-product-detail-picker-close
-                             events/control-product-detail-picker-option-quantity-select
-                             {:value quantity})}
+                 :on-click #(select-and-close close-event select-event {:value quantity})}
                 (simple-content-layer
                  [:div.col-2
                   (when label-style
@@ -238,18 +235,15 @@
                    (simple-selected-layer))])]))
 
 (defn length-option
-  [{:keys [item key primary-label secondary-label checked? selected-picker navigation-event]}]
+  [{:keys [item key primary-label secondary-label checked? selected-picker navigation-event close-event select-event]}]
   [:div {:key       key
          :data-test (str "picker-length-" (:option/slug item))}
    (ui/option {:height   "4em"
                :key      (str key "-option")
                :href     "#"
-               :on-click #(select-and-close
-                           events/control-product-detail-picker-close
-                           events/control-product-detail-picker-option-select
-                           {:selection        selected-picker
-                            :navigation-event navigation-event
-                            :value            (:option/slug item)})}
+               :on-click #(select-and-close close-event select-event {:selection        selected-picker
+                                                                      :navigation-event navigation-event
+                                                                      :value            (:option/slug item)})}
               (simple-content-layer
                (list
                 [:div.col-2
@@ -279,16 +273,13 @@
     name]])
 
 (defn color-option
-  [{:keys [key color sku-image checked? selected-picker navigation-event]}]
+  [{:keys [key color sku-image checked? selected-picker navigation-event close-event select-event]}]
   [:div {:key       key
          :data-test (str "picker-color-" (facets/hacky-fix-of-bad-slugs-on-facets (:option/slug color)))}
    (ui/option {:key      (str key "-option")
-               :on-click #(select-and-close
-                           events/control-product-detail-picker-close
-                           events/control-product-detail-picker-option-select
-                           {:selection        selected-picker
-                            :navigation-event navigation-event
-                            :value            (:option/slug color)})}
+               :on-click #(select-and-close close-event select-event {:selection        selected-picker
+                                                                      :navigation-event navigation-event
+                                                                      :value            (:option/slug color)})}
               (swatch-content-layer color sku-image checked?)
               [:div
                (when checked?
@@ -302,7 +293,7 @@
                                    :default-quality "better"}
                                   "9e2a48b3-9811-46d2-840b-31c9f85670ad")]]])])])
 
-(defn- slide-animate [enabled? content]
+(defn slide-animate [enabled? content]
   (css-transitions/transition-group
    {:classNames    "picker"
     :key           "picker"
@@ -355,53 +346,58 @@
            picker-visible?
            length-guide-image]
     :as   data} owner _]
-  (let [color-option-fn color-option]
-    [:div
-     (slide-animate
-      picker-visible?
-      (condp = selected-picker
-        :hair/color  (picker-dialog {:title             (get-in facets [selected-picker :facet/name])
-                                     :items             (sort-by :option/order (get options selected-picker))
-                                     :wrap?             false
-                                     :cell-component-fn (fn [item]
-                                                          (color-option-fn
-                                                           {:key              (str "color-" (:option/name item))
-                                                            :selected-picker  selected-picker
-                                                            :navigation-event navigation-event
-                                                            :color            item
-                                                            :checked?         (= (:hair/color selections)
-                                                                                 (:option/slug item))
-                                                            :sku-image        (:option/sku-swatch item)}))})
-        :hair/length (picker-dialog (merge
-                                     {:title             (get-in facets [selected-picker :facet/name])
-                                      :items             (sort-by :option/order (get options selected-picker))
-                                      :cell-component-fn (fn [item]
-                                                           (length-option
-                                                            {:key              (str "length-" (:option/name item))
-                                                             :primary-label    (:option/name item)
-                                                             :navigation-event navigation-event
-                                                             :checked?         (= (:hair/length selections)
-                                                                                  (:option/slug item))
-                                                             :selected-picker  selected-picker
-                                                             :item             item}))}
+  [:div
+   (slide-animate
+    picker-visible?
+    (condp = selected-picker
+      :hair/color  (picker-dialog {:title             (get-in facets [selected-picker :facet/name])
+                                   :items             (sort-by :option/order (get options selected-picker))
+                                   :wrap?             false
+                                   :cell-component-fn (fn [item]
+                                                        (color-option
+                                                         {:key              (str "color-" (:option/name item))
+                                                          :selected-picker  selected-picker
+                                                          :navigation-event navigation-event
+                                                          :color            item
+                                                          :checked?         (= (:hair/color selections)
+                                                                               (:option/slug item))
+                                                          :sku-image        (:option/sku-swatch item)
+                                                          :close-event      events/control-product-detail-picker-close
+                                                          :select-event     events/control-product-detail-picker-option-select}))})
+      :hair/length (picker-dialog (merge
+                                   {:title             (get-in facets [selected-picker :facet/name])
+                                    :items             (sort-by :option/order (get options selected-picker))
+                                    :cell-component-fn (fn [item]
+                                                         (length-option
+                                                          {:key              (str "length-" (:option/name item))
+                                                           :primary-label    (:option/name item)
+                                                           :navigation-event navigation-event
+                                                           :checked?         (= (:hair/length selections)
+                                                                                (:option/slug item))
+                                                           :selected-picker  selected-picker
+                                                           :item             item
+                                                           :close-event      events/control-product-detail-picker-close
+                                                           :select-event     events/control-product-detail-picker-option-select}))}
 
-                                     (when length-guide-image
-                                       {:title-cta/id      "length-picker-length-guide"
-                                        :title-cta/target  [events/popup-show-length-guide {:length-guide-image length-guide-image
-                                                                                            :location           "length-picker"}]
-                                        :title-cta/primary "Length Guide"})))
-        :item/quantity (picker-dialog {:title             "Quantity"
-                                       :items             (range 1 11)
-                                       :cell-component-fn (fn [quantity]
-                                                            (quantity-option
-                                                             {:key           (str "quantity-" quantity)
-                                                              :primary-label (str quantity)
-                                                              :checked?      (= quantity sku-quantity)
-                                                              :quantity      quantity}))})
-        nil))
-     (if (seq options)
-       (picker-rows data)
-       [:div.py2])]))
+                                   (when length-guide-image
+                                     {:title-cta/id      "length-picker-length-guide"
+                                      :title-cta/target  [events/popup-show-length-guide {:length-guide-image length-guide-image
+                                                                                          :location           "length-picker"}]
+                                      :title-cta/primary "Length Guide"})))
+      :item/quantity (picker-dialog {:title             "Quantity"
+                                     :items             (range 1 11)
+                                     :cell-component-fn (fn [quantity]
+                                                          (quantity-option
+                                                           {:key           (str "quantity-" quantity)
+                                                            :primary-label (str quantity)
+                                                            :checked?      (= quantity sku-quantity)
+                                                            :quantity      quantity
+                                                            :close-event      events/control-product-detail-picker-close
+                                                            :select-event     events/control-product-detail-picker-option-quantity-select}))})
+      nil))
+   (if (seq options)
+     (picker-rows data)
+     [:div.py2])])
 
 (defn query
   [data length-guide-image]
