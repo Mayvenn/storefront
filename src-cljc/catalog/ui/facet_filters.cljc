@@ -4,6 +4,7 @@
                        [storefront.hooks.stringer :as stringer]
                        [storefront.trackings :as trackings]])
             [api.catalog :refer [select]]
+            [catalog.facets :as facets]
             catalog.keypaths
             [storefront.component :as c]
             storefront.keypaths
@@ -17,9 +18,6 @@
             [storefront.events :as e]
             [storefront.effects :as effects]
             [spice.maps :as maps]))
-
-(defn- hacky-fix-of-bad-slugs-on-facets [slug]
-  (clojure.string/replace (str slug) #"#" ""))
 
 (defn summary-status-molecule
   [{:filtering-summary.status/keys [primary secondary]}]
@@ -287,7 +285,7 @@
                           (cond->
                               #:facet-filtering.section.filter
                               {:primary option-name
-                               :id      (str "filter-option-" (hacky-fix-of-bad-slugs-on-facets option-slug))
+                               :id      (str "filter-option-" (facets/hacky-fix-of-bad-slugs-on-facets option-slug))
                                :target  [e/flow|facet-filtering|filter-toggled
                                          {:facet-key  facet-slug
                                           :navigation-event navigation-event

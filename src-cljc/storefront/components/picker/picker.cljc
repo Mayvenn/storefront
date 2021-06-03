@@ -3,7 +3,6 @@
             [catalog.facets :as facets]
             [catalog.keypaths :as catalog.keypaths]
             [catalog.products :as products]
-            [clojure.string :as string]
             [spice.core :as spice]
             [storefront.accessors.images :as images]
             [storefront.component :as component :refer [defcomponent]]
@@ -97,9 +96,6 @@
                 :width   "100%"
                 :height  "100%"}}
    options])
-
-(defn- hacky-fix-of-bad-slugs-on-facets [slug]
-  (string/replace (str slug) #"#" ""))
 
 (def vertical-border
   [:div.border-right.border-cool-gray.mx3 {:style {:height "45px"}}])
@@ -200,7 +196,7 @@
      [:span.proxima.title-3.shout
       "Color"]
      [:span (merge
-             {:data-test (str "picker-selected-color-" (hacky-fix-of-bad-slugs-on-facets (:option/slug selected-color)))}
+             {:data-test (str "picker-selected-color-" (facets/hacky-fix-of-bad-slugs-on-facets (:option/slug selected-color)))}
              product-sold-out-style)
       (:option/name selected-color)]
      (:option/rectangle-swatch selected-color)))])
@@ -283,7 +279,7 @@
 (defn color-option
   [{:keys [key color sku-image checked? selected-picker navigation-event]}]
   [:div {:key       key
-         :data-test (str "picker-color-" (hacky-fix-of-bad-slugs-on-facets (:option/slug color)))}
+         :data-test (str "picker-color-" (facets/hacky-fix-of-bad-slugs-on-facets (:option/slug color)))}
    (ui/option {:key      (str key "-option")
                :on-click #(select-and-close
                            events/control-product-detail-picker-option-select

@@ -1,7 +1,8 @@
 (ns catalog.facets
   "Facets are possible shopping attributes like color, texture, length, etc."
   (:require [spice.maps :as maps]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [clojure.string :as string]))
 
 ;; TODO spec out what a facet looks like
 
@@ -30,3 +31,6 @@
        :facet/options
        (filter (fn [color] (= (:option/slug color) color-slug)))
        first))
+
+(defn hacky-fix-of-bad-slugs-on-facets [slug]
+  (string/replace (str slug) #"#" ""))

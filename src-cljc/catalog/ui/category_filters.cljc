@@ -9,7 +9,7 @@
    [catalog.categories :as categories]
    catalog.keypaths
    clojure.set
-   [clojure.string :as string]
+   [catalog.facets :as facets]
    [spice.maps :as maps]
    [storefront.component :as c]
    [storefront.components.ui :as ui]
@@ -19,9 +19,6 @@
    [storefront.transitions :as transitions]
    [spice.core :as spice]
    [storefront.platform.messages :as messages]))
-
-(defn- hacky-fix-of-bad-slugs-on-facets [slug]
-  (string/replace (str slug) #"#" ""))
 
 (c/defcomponent ^:private filter-tab
   [{:filter-tab/keys [any-selected? selected? target id label]} _ _]
@@ -145,7 +142,7 @@
         represented? (contains? represented-options facet-option-slug)]
     {:filter-option/selected? selected?
      :filter-option/disabled? (not represented?)
-     :filter-option/id        (str "filter-option-" (hacky-fix-of-bad-slugs-on-facets facet-option-slug))
+     :filter-option/id        (str "filter-option-" (facets/hacky-fix-of-bad-slugs-on-facets facet-option-slug))
      :filter-option/target    [(if selected?
                                  events/control-category-option-unselect
                                  events/control-category-option-select)
