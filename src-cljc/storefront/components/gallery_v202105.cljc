@@ -13,7 +13,10 @@
             [storefront.platform.messages :as messages]
             [storefront.routes :as routes]
             [storefront.transitions :as transitions]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [spice.maps :as maps]
+            [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]))
 
 (def gallery-poll-rate 5000)
 
@@ -27,30 +30,56 @@
     :navigate           events/navigate-gallery-edit
     :not-selected-class "border-left"}])
 
-(defcomponent component [data owner opts]
-  (let [current-nav-event (get-in data keypaths/navigation-event)]
-    [:div
-     [:div.bg-cool-gray.center.mx-auto.pt8.hide-on-mb-tb
-      [:h1.px2.py10.canela.title-1
-       "My Gallery"]]
-     (when (experiments/past-appointments? data)
-       [:div
-        (tabs/component current-nav-event tabs)])
-     [:div
-      (condp = current-nav-event
-        events/navigate-gallery-appointments
-        (component/build appointments/template (appointments/query data) opts)
+(defn query [data]
+  (let [selected-tab (condp = (get-in data keypaths/navigation-event)
+                       events/navigate-gallery-appointments :past-appointments
+                       events/navigate-gallery-edit         :my-gallery
+                       nil)]
+    (cond-> {:stylist-gallery/past-appts?       (experiments/past-appointments? data)
+             :stylist-gallery-tabs/tabs         tabs
+             :stylist-gallery-tabs/selected-tab selected-tab}
 
-        events/navigate-gallery-edit
-        (component/build gallery-edit-v202105/reorderable-wrapper (gallery-edit-v202105/query data))
-        nil)]]))
+      (= :past-appointments selected-tab)
+      (merge {:stylist-gallery-appointments/id       (when (= :past-appointments selected-tab) "stylist-gallery-appointments")
+              :stylist-gallery-appointments/target   [events/navigate-gallery-edit]
+              :stylist-gallery-appointments/no-appts (not= "aladdin" (get-in data keypaths/user-stylist-experience))})
+
+      (= :my-gallery selected-tab)
+      (merge (let [images          (->> (get-in data keypaths/user-stylist-gallery-images)
+                                        (maps/index-by :id))
+                   post-ordering   (get-in data keypaths/user-stylist-gallery-initial-posts-ordering)
+                   sorted-posts    (->> (get-in data keypaths/user-stylist-gallery-posts)
+                                        (map (fn [post] (->> post :image-ordering first (get images) (assoc post :cover-image))))
+                                        (maps/index-by :id)
+                                        (#(map % post-ordering)))
+                   fetching-posts? (utils/requesting? data request-keys/get-stylist-gallery)]
+               {:stylist-gallery-my-gallery/id                         "stylist-gallery-my-gallery"
+                :stylist-gallery-my-gallery/posts-with-cover           sorted-posts
+                :stylist-gallery-my-gallery/post-ordering              post-ordering
+                :stylist-gallery-my-gallery/fetching-posts?            fetching-posts?
+                :stylist-gallery-my-gallery/appending-post?            (utils/requesting? data request-keys/append-gallery)
+                :stylist-gallery-my-gallery/reorder-mode?              (get-in data keypaths/stylist-gallery-reorder-mode)
+                :stylist-gallery-my-gallery/currently-dragging-post-id (get-in data keypaths/stylist-gallery-currently-dragging-post)})))))
+
+(defcomponent component
+  [{:stylist-gallery/keys [past-appts?] :as data} owner opts]
+  [:div
+   [:div.bg-cool-gray.center.mx-auto.pt8.hide-on-mb-tb
+    [:h1.px2.py10.canela.title-1
+     "My Gallery"]]
+   (when past-appts?
+     [:div
+      (tabs/component data)])
+   [:div
+    (component/build appointments/template data opts)
+    (component/build gallery-edit-v202105/reorderable-wrapper data)]])
 
 (defn old-query [data]
   {:gallery (get-in data keypaths/user-stylist-gallery-images)})
 
 (defn ^:export built-component [data opts]
   (if (experiments/edit-gallery? data)
-    (component/build component data opts)
+    (component/build component (query data) opts)
     (component/build gallery-edit/static-component (old-query data) nil)))
 
 (defmethod effects/perform-effects events/navigate-gallery-edit [_ event args _ app-state]

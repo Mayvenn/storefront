@@ -7,7 +7,6 @@
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.request-keys :as request-keys]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [spice.maps :as maps]
@@ -182,8 +181,9 @@
                nil)
   ;; TODO:: Flash shows incorrectly on page (perhaps caused by lack of spinner?)
   (render [this]
-          (let [{:keys [posts-with-cover post-ordering reorder-mode? currently-dragging-post-id]} (component/get-props this)
-                gallery-ref                                                                       (component/use-ref this "gallery")]
+          (let [{:stylist-gallery-my-gallery/keys [posts-with-cover post-ordering
+                                                   reorder-mode? currently-dragging-post-id]} (component/get-props this)
+                gallery-ref                                                                   (component/use-ref this "gallery")]
             (component/html
              #?(:clj [:div]
                 :cljs [:div.max-1080.mx-auto
@@ -200,13 +200,17 @@
                                                                   :post                       post}))))])))))
 
 (defcomponent reorderable-wrapper
-  [{:as data :keys [posts fetching-posts? :appending-post?]} _ _]
-  [:div.py8-on-dt
-   (if (or (and (empty? posts)
-                fetching-posts?)
-           appending-post?)
-     (ui/large-spinner {:style {:height "6em"}})
-     (component/build reorderable-component data))])
+  [{:as data :stylist-gallery-my-gallery/keys [id posts-with-cover fetching-posts? appending-post?]} _ _]
+  (do (prn posts-with-cover)
+      (if id
+        [:div.py8-on-dt
+         {:key id}
+         (if (or (and (empty? posts-with-cover)
+                      fetching-posts?)
+                 appending-post?)
+           (ui/large-spinner {:style {:height "6em"}})
+           (component/build reorderable-component data))]
+        [:div])))
 
 (defmethod transitions/transition-state events/control-stylist-gallery-posts-drag-began
   [_ _ {:keys [item]} app-state]
@@ -277,19 +281,3 @@
                                                           :muuri-event muuri-event
                                                           :delay       drag-delay
                                                           :startTime   startTime'}]})))))
-
-(defn query [state]
-  (let [images          (->> (get-in state keypaths/user-stylist-gallery-images)
-                             (spice.maps/index-by :id))
-        indexed-posts   (->> (get-in state keypaths/user-stylist-gallery-posts)
-                             (map (fn [post] (->> post :image-ordering first (get images) (assoc post :cover-image))))
-                             (spice.maps/index-by :id))
-        post-ordering   (get-in state keypaths/user-stylist-gallery-initial-posts-ordering)
-        sorted-posts    (map indexed-posts post-ordering)
-        fetching-posts? (utils/requesting? state request-keys/get-stylist-gallery)]
-    {:posts-with-cover           sorted-posts
-     :post-ordering              post-ordering
-     :fetching-posts?            fetching-posts?
-     :appending-post?            (utils/requesting? state request-keys/append-gallery)
-     :reorder-mode?              (get-in state keypaths/stylist-gallery-reorder-mode)
-     :currently-dragging-post-id (get-in state keypaths/stylist-gallery-currently-dragging-post)}))
