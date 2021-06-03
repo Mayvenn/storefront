@@ -212,9 +212,9 @@
     (desktop-length-and-quantity-picker-rows data)
     (mobile-length-and-quantity-picker-rows data)]])
 
-(defn select-and-close [event-key options]
-  (messages/handle-message event-key options)
-  (messages/handle-later events/control-product-detail-picker-close nil))
+(defn select-and-close [close-event select-event options]
+  (messages/handle-message select-event options)
+  (messages/handle-later close-event nil))
 
 (defn quantity-option [{:keys [key quantity primary-label checked?]}]
   (let [label-style (cond
@@ -225,6 +225,7 @@
      (ui/option {:height   "4em"
                  :key      (str key "-option")
                  :on-click #(select-and-close
+                             events/control-product-detail-picker-close
                              events/control-product-detail-picker-option-quantity-select
                              {:value quantity})}
                 (simple-content-layer
@@ -244,6 +245,7 @@
                :key      (str key "-option")
                :href     "#"
                :on-click #(select-and-close
+                           events/control-product-detail-picker-close
                            events/control-product-detail-picker-option-select
                            {:selection        selected-picker
                             :navigation-event navigation-event
@@ -282,6 +284,7 @@
          :data-test (str "picker-color-" (facets/hacky-fix-of-bad-slugs-on-facets (:option/slug color)))}
    (ui/option {:key      (str key "-option")
                :on-click #(select-and-close
+                           events/control-product-detail-picker-close
                            events/control-product-detail-picker-option-select
                            {:selection        selected-picker
                             :navigation-event navigation-event
