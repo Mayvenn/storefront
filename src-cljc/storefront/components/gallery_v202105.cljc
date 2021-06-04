@@ -40,9 +40,49 @@
              :stylist-gallery-tabs/selected-tab selected-tab}
 
       (= :past-appointments selected-tab)
-      (merge {:stylist-gallery-appointments/id       (when (= :past-appointments selected-tab) "stylist-gallery-appointments")
-              :stylist-gallery-appointments/target   [events/navigate-gallery-edit]
-              :stylist-gallery-appointments/no-appts (not= "aladdin" (get-in data keypaths/user-stylist-experience))})
+      (merge {:stylist-gallery-appointments/id           (when (= :past-appointments selected-tab) "stylist-gallery-appointments")
+              :stylist-gallery-appointments/target       [events/navigate-gallery-edit]
+              :stylist-gallery-appointments/no-appts     (not= "aladdin" (get-in data keypaths/user-stylist-experience))
+              :stylist-gallery-appointments/appointments [{:id              "based-on-appointment-entity-id"
+                                                           :target          events/navigate-gallery-appointments
+                                                           :title-primary   "18"
+                                                           :title-secondary "Jan"
+                                                           :detail          "Mika"}
+                                                          {:id              "based-on-appointment-entity-id"
+                                                           :target          events/navigate-gallery-appointments
+                                                           :title-primary   "09"
+                                                           :title-secondary "Dec"
+                                                           :detail          "Tamara"}
+                                                          {:id              "based-on-appointment-entity-id"
+                                                           :target          events/navigate-gallery-appointments
+                                                           :title-primary   "09"
+                                                           :title-secondary "Dec"
+                                                           :detail          "Marie"}
+                                                          {:id              "based-on-appointment-entity-id"
+                                                           :target          events/navigate-gallery-appointments
+                                                           :title-primary   "09"
+                                                           :title-secondary "Jan"
+                                                           :detail          "Mika"}
+                                                          {:id              "based-on-appointment-entity-id"
+                                                           :target          events/navigate-gallery-appointments
+                                                           :title-primary   "23"
+                                                           :title-secondary "Nov"
+                                                           :detail          "Mika"}
+                                                          {:id              "based-on-appointment-entity-id"
+                                                           :target          events/navigate-gallery-appointments
+                                                           :title-primary   "16"
+                                                           :title-secondary "Nov"
+                                                           :detail          "Mika"}
+                                                          {:id              "based-on-appointment-entity-id"
+                                                           :target          events/navigate-gallery-appointments
+                                                           :title-primary   "09"
+                                                           :title-secondary "Nov"
+                                                           :detail          "Mika"}
+                                                          {:id              "based-on-appointment-entity-id"
+                                                           :target          events/navigate-gallery-appointments
+                                                           :title-primary   "25"
+                                                           :title-secondary "Oct"
+                                                           :detail          "Mika"}]})
 
       (= :my-gallery selected-tab)
       (merge (let [images          (->> (get-in data keypaths/user-stylist-gallery-images)
