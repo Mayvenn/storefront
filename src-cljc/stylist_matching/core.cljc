@@ -202,8 +202,8 @@
            prev-query-params (get-in prev-nav-msg [1 :query-params])
            query-params      (->> (stylist-matching<- state)
                                   (query-params<- {}))]
-       (when-not (= (spice.core/spy [prev-nav-event prev-query-params])
-                    (spice.core/spy [e/navigate-adventure-stylist-results query-params]))
+       (when-not (= [prev-nav-event prev-query-params]
+                    [e/navigate-adventure-stylist-results query-params])
          (history/enqueue-navigate e/navigate-adventure-stylist-results
                                    {:query-params query-params})))))
 
