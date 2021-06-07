@@ -386,9 +386,10 @@
   (api/get-shipping-methods)
   (api/get-states (get-in app-state keypaths/api-cache))
   ;; Fetch SKUS of services in case they aren't there- they are needed for add-to-bag stringer events
+  ;; TODO: re-evaluate necessity of this request
   (api/get-products (get-in app-state keypaths/api-cache)
-                    {:service/type     "base"
-                     :service/category "install"}
+                    {:catalog/department "service"
+                     :service/category   "install"}
                     (fn [response]
                       (messages/handle-message events/api-success-v3-products response)))
   (google-maps/insert) ;; for address screen on the next page
