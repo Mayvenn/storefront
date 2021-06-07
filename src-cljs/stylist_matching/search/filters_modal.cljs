@@ -17,14 +17,18 @@
    [storefront.platform.messages :as messages]
    [stylist-directory.keypaths]
    [stylist-matching.core :refer [stylist-matching<-]]
+   [stylist-matching.search.accessors.filters :as filters]
    [storefront.css-transitions :as css-transitions]))
 
 (defn specialty->filter
   ;; Here, 'specialty' is in sku-id form
   [selected-filters [primary specialty price]]
-  (let [checked? (some #{specialty} selected-filters)]
+  (let [checked? (some #{specialty} selected-filters)
+        price-copy (if (zero? price)
+                     "FREE"
+                     "(for additional fee)")]
     {:stylist-search-filter/primary   primary
-     :stylist-search-filter/secondary (str "(" (mf/as-money-or-free price) ")")
+     :stylist-search-filter/secondary price-copy
      :stylist-search-filter/id        (str "stylist-filter-" specialty)
      :stylist-search-filter/target    [events/control-stylist-search-toggle-filter
                                        {:previously-checked?      checked?
@@ -35,9 +39,6 @@
   [data]
   (when (get-in data stylist-directory.keypaths/stylist-search-show-filters?)
     (let [selected-filters         (:param/services (stylist-matching<- data))
-          service-skus             (->> (vals (get-in data storefront.keypaths/v2-skus))
-                                        (select ?service)
-                                        (filter (comp #(re-find #"SRV" %) :catalog/sku-id)))
           expanded-filter-sections (get-in data stylist-directory.keypaths/stylist-search-expanded-filter-sections)]
       {:stylist-search-filters/sections
        [(let [section-id "free-mayvenn-services"
@@ -51,9 +52,8 @@
            :stylist-search-filter-section/primary      (str
                                                         "Get Mayvenn services (valued up to $200) for free when purchasing "
                                                         "qualifying hair from Mayvenn. You buy the hair, we cover the service!")
-           :stylist-search-filter-section/filters      (->> service-skus
-                                                            (select-sorted ?discountable-install :legacy/variant-id)
-                                                            (mapv (juxt :sku/title :catalog/sku-id (constantly 0)))
+           :stylist-search-filter-section/filters      (->> filters/free-install-filter-data
+                                                            (mapv (juxt :title :sku-id :price))
                                                             (mapv (partial specialty->filter selected-filters)))})
         (let [section-id "add-on-services"
               open?      (contains? expanded-filter-sections section-id)]
@@ -63,9 +63,8 @@
                                                         {:previously-opened? open?
                                                          :section-id         section-id}]
            :stylist-search-filter-section/open?        open?
-           :stylist-search-filter-section/filters      (->> service-skus
-                                                            (select-sorted ?addons :legacy/variant-id)
-                                                            (mapv (juxt :sku/name :catalog/sku-id :sku/price))
+           :stylist-search-filter-section/filters      (->> filters/addon-filter-data
+                                                            (mapv (juxt :title :sku-id :price))
                                                             (mapv (partial specialty->filter selected-filters)))})]})))
 
 (component/defcomponent filter-section
