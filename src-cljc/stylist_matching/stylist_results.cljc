@@ -645,6 +645,13 @@
       (when scrim?
         scrim-atom)])])
 
+(defcomponent top-stylist-template
+  [{:keys [spinning? header] :as data} _ _]
+  [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
+   (components.header/adventure-header header)
+
+   ])
+
 (def shopping-method-choice-query
   {:shopping-method-choice.error-title/id        "stylist-matching-shopping-method-choice"
    :shopping-method-choice.error-title/primary   "We need some time to find you the perfect stylist!"
@@ -764,13 +771,63 @@
         stylist-data                  {:just-added-only?       just-added-only?
                                        :just-added-experience? just-added-experience?
                                        :stylist-results-test?  stylist-results-test?}
-        matching-stylist-cards        (stylist-data->stylist-cards (assoc stylist-data :stylists matching-stylists))
-        non-matching-stylist-cards    (stylist-data->stylist-cards (assoc stylist-data :stylists non-matching-stylists))
+        matching-stylist-cards        (stylist-data->stylist-cards
+                                       (assoc stylist-data :stylists matching-stylists))
+        non-matching-stylist-cards    (stylist-data->stylist-cards
+                                       (assoc stylist-data :stylists non-matching-stylists))
         filter-menu                   #?(:cljs (filter-menu/query app-state) :clj nil)
+        show-filter-menu?             (some? filter-menu)
+        show-top-stylist?             true
         address-field-errors          (get-in app-state k/address-field-errors)]
-    (if filter-menu
+    (cond
+      show-filter-menu?
       (component/build #?(:clj  (component/html [:div])
                           :cljs filter-menu/component) filter-menu nil)
+
+      show-top-stylist?
+      (component/build top-stylist-template
+                       {:gallery-modal            (gallery-modal-query app-state)
+                        :spinning?                (or (empty? (:status matching))
+                                                      (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
+                                                      (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters)
+                                                      (utils/requesting-from-endpoint? app-state request-keys/get-products)
+                                                      (and (not (get-in app-state storefront.keypaths/loaded-convert))
+                                                           stylist-results-test?
+                                                           (or (not just-added-control?)
+                                                               (not just-added-only?)
+                                                               (not just-added-experience?))))
+                        :header                   (header<- current-order)
+                        :stylist-results-present? (seq (concat matching-stylists non-matching-stylists))
+
+                        :stylist-results-returned?  (contains? (:status matching) :results/stylists)
+                        :list.stylist-counter/title (str (count matching-stylists) " Stylists Found")
+                        :list.stylist-counter/key   (when (pos? (count matching-stylists))
+                                                        "stylist-count-content")
+                        :list.matching/key          (when (seq matching-stylists) "stylist-matching")
+                        :list.matching/cards        (cond->> matching-stylist-cards
+                                                      :always
+                                                      (mapv
+                                                       (fn [msc]
+                                                         {:type :matching-stylist-card
+                                                          :data msc}))
+
+                                                      (live-help/kustomer-started? app-state)
+                                                      (general-utils/insert-at-pos
+                                                       3
+                                                       {:type :live-help-breaker
+                                                        :data {:live-help/location "stylist-results-breaker"}}))
+                        :list.breaker/id              (when (seq non-matching-stylists) "non-matching-breaker")
+                        :list.breaker/results-content (when (and (seq non-matching-stylists)
+                                                                 (empty? matching-stylists))
+                                                        "0 results found")
+                        :list.breaker/content         "Other stylists in your area"
+                        :list.non-matching/key        (when (seq non-matching-stylists) "non-matching-stylists")
+                        :list.non-matching/cards      non-matching-stylist-cards
+                        :stylist.analytics/cards      (into matching-stylist-cards non-matching-stylist-cards)
+                        :shopping-method-choice       shopping-method-choice-query}
+                       )
+
+      :else
       (component/build template
                        {:gallery-modal            (gallery-modal-query app-state)
                         :spinning?                (or (empty? (:status matching))
@@ -791,22 +848,23 @@
                         :header                   (header<- current-order)
                         :stylist-results-present? (seq (concat matching-stylists non-matching-stylists))
 
-                        :stylist-results-returned?    (contains? (:status matching) :results/stylists)
-                        :list.stylist-counter/title   (str (count matching-stylists) " Stylists Found")
-                        :list.stylist-counter/key     (when (pos? (count matching-stylists))
+                        :stylist-results-returned?  (contains? (:status matching) :results/stylists)
+                        :list.stylist-counter/title (str (count matching-stylists) " Stylists Found")
+                        :list.stylist-counter/key   (when (pos? (count matching-stylists))
                                                         "stylist-count-content")
-                        :list.matching/key            (when (seq matching-stylists) "stylist-matching")
-                        :list.matching/cards          (cond->> matching-stylist-cards
-                                                        :always
-                                                        (mapv
-                                                         (fn [msc]
-                                                           {:type :matching-stylist-card
-                                                            :data msc}))
-                                                        (live-help/kustomer-started? app-state)
-                                                        (general-utils/insert-at-pos
-                                                         3
-                                                         {:type :live-help-breaker
-                                                          :data {:live-help/location "stylist-results-breaker"}}))
+                        :list.matching/key          (when (seq matching-stylists) "stylist-matching")
+                        :list.matching/cards        (cond->> matching-stylist-cards
+                                                      :always
+                                                      (mapv
+                                                       (fn [msc]
+                                                         {:type :matching-stylist-card
+                                                          :data msc}))
+
+                                                      (live-help/kustomer-started? app-state)
+                                                      (general-utils/insert-at-pos
+                                                       3
+                                                       {:type :live-help-breaker
+                                                        :data {:live-help/location "stylist-results-breaker"}}))
                         :list.breaker/id              (when (seq non-matching-stylists) "non-matching-breaker")
                         :list.breaker/results-content (when (and (seq non-matching-stylists)
                                                                  (empty? matching-stylists))

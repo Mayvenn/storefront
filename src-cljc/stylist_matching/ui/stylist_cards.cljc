@@ -58,6 +58,7 @@
   [{:stylist-card.cta/keys [id label target]}]
   (when id
     (component/html
+     ;; TODO if "top-stylist", then do button-medium-primary instead?
      (ui/button-medium-secondary
       (merge {:data-test id}
              (apply utils/fake-href target))
@@ -109,6 +110,7 @@
      [:div.flex.justify-center.items-center.col-3.ml4
       (stylist-card-thumbnail-molecule data)]
      [:div.col-9.medium.px3
+      ;; TODO if "top-stylist", show crown and "Top Stylist" in p-color
       (titles/proxima-left (with :stylist-card.title data))
       [:div.flex.items-center
        (molecules/stars-rating-molecule data)
@@ -128,4 +130,5 @@
     (if (:screen/seen? data)
       (stylist-card-gallery-molecule data)
       (ui/aspect-ratio 426 105 [:div]))]
+   ;; TODO if "top-stylist", show the four information points
    [:div.col-12.py3.px2 (stylist-card-cta-molecule data)]])
