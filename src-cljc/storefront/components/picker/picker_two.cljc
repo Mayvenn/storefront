@@ -189,16 +189,15 @@
 (defn color-picker-face
   [{:keys                            [selected-color open-target options]
     [selection-event selection-args] :selection-target}]
-  (let [face (picker-face
-              #:picker-face{:id        (str "picker-selected-color-" (facets/hacky-fix-of-bad-slugs-on-facets (:option/slug selected-color)))
-                            :title     "Color"
-                            :image-src (:option/rectangle-swatch selected-color)
-                            :primary   (:option/name selected-color)})]
+  (let [face-data #:picker-face{:id        (str "picker-selected-color-" (facets/hacky-fix-of-bad-slugs-on-facets (:option/slug selected-color)))
+                                :title     "Color"
+                                :image-src (:option/rectangle-swatch selected-color)
+                                :primary   (:option/name selected-color)}]
     [:div
      [:div.hide-on-tb-dt
       (field
        (merge {:data-test "picker-color"} (apply utils/fake-href open-target))
-       face)]
+       (picker-face face-data))]
      [:div.hide-on-mb.relative.col-12
       (invisible-select
        {:value     (:option/slug selected-color)
@@ -209,7 +208,7 @@
                                     :key   (str "color-" (:option/slug option))}
                            (:option/name option)])
                         options)})
-      face]]))
+      (picker-face (update face-data :id str "-desktop"))]]))
 
 (defn select-and-close [close-target select-event options]
   (messages/handle-message select-event options)
