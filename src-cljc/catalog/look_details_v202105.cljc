@@ -223,13 +223,12 @@
    (if fetching-shared-cart?
      [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
      (when shared-cart
-       ;; TODO/FIXME: Desktop View
        [:div.px2.bg-refresh-gray
         (component/build picker/open-picker-component color-picker)
         (component/build look-title queried-data)
 
         [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
-         [:div.my4 (picker/mobile-color-picker-face color-picker-face)]
+         [:div.my4 (picker/color-picker-face color-picker-face)]
          [:div.center.pt4
           (when discount-text
             [:div.center.flex.items-center.justify-center.title-2.bold
@@ -353,6 +352,7 @@
                                          [events/navigate-shop-by-look {:album-keyword album-keyword}])
             :return-link/back          back
 
+            ;; TODO: unify face and modal?
             :color-picker      (picker/open-picker-query
                                 {:data         data
                                  :options      color-options
@@ -360,8 +360,10 @@
                                                     (get-in data catalog.keypaths/detailed-look-picker-visible?))
                                  :picker-type  :hair/color
                                  :close-target [events/control-look-detail-picker-close]})
-            :color-picker-face {:selected-color (first (filter :checked? color-options))
-                                :open-target    [events/control-look-detail-picker-open {:facet-slug :hair/color}]}}
+            :color-picker-face {:selected-color   (first (filter :checked? color-options))
+                                :selection-target [events/control-look-detail-picker-option-select {:selection :hair/color}]
+                                :options          color-options
+                                :open-target      [events/control-look-detail-picker-open {:facet-slug :hair/color}]}}
            look-data
            #?(:cljs (reviews/query-look-detail shared-cart data)))))
 

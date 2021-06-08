@@ -186,16 +186,30 @@
                        (:hair/color options))})
      (:option/rectangle-swatch selected-color)))])
 
-(defn mobile-color-picker-face
-  [{:keys [selected-color open-target]}]
-  [:div.hide-on-tb-dt
-   (field
-    (merge {:data-test "picker-color"} (apply utils/fake-href open-target))
-    (picker-face
-     #:picker-face{:id        (str "picker-selected-color-" (facets/hacky-fix-of-bad-slugs-on-facets (:option/slug selected-color)))
-                   :title     "Color"
-                   :image-src (:option/rectangle-swatch selected-color)
-                   :primary   (:option/name selected-color)}))])
+(defn color-picker-face
+  [{:keys                            [selected-color open-target options]
+    [selection-event selection-args] :selection-target}]
+  (let [face (picker-face
+              #:picker-face{:id        (str "picker-selected-color-" (facets/hacky-fix-of-bad-slugs-on-facets (:option/slug selected-color)))
+                            :title     "Color"
+                            :image-src (:option/rectangle-swatch selected-color)
+                            :primary   (:option/name selected-color)})]
+    [:div
+     [:div.hide-on-tb-dt
+      (field
+       (merge {:data-test "picker-color"} (apply utils/fake-href open-target))
+       face)]
+     [:div.hide-on-mb.relative.col-12
+      (invisible-select
+       {:value     (:option/slug selected-color)
+        :on-change #(messages/handle-message selection-event
+                                             (assoc selection-args :value (.-value (.-target %))))
+        :options   (map (fn [option]
+                          [:option {:value (:option/slug option)
+                                    :key   (str "color-" (:option/slug option))}
+                           (:option/name option)])
+                        options)})
+      face]]))
 
 (defn select-and-close [close-target select-event options]
   (messages/handle-message select-event options)
