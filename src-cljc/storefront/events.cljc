@@ -260,6 +260,12 @@
 (defpath control-product-detail-picker-option-select)
 (defpath control-product-detail-picker-option-quantity-select)
 
+(defpath control-look-detail-picker-option-select)
+(defpath control-look-detail-picker-open)
+(defpath control-look-detail-picker-close)
+
+(defpath initialize-look-details)
+
 (defpath video-played)
 
 (defpath snap)

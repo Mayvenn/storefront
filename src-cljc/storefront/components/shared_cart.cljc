@@ -24,6 +24,7 @@
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
+            catalog.keypaths
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
             [storefront.platform.messages
@@ -464,7 +465,7 @@
            (not stylist?))))
 
 (defmethod effects/perform-effects events/api-success-shared-cart-fetch
-  [_ _ {{:keys [promotion-codes servicing-stylist-id]} :shared-cart} _ app-state]
+  [_ _ {{:keys [promotion-codes servicing-stylist-id]} :shared-cart :as args} _ app-state]
   #?(:cljs
      (let [shared-cart  (get-in app-state keypaths/shared-cart-current)
            catalog-skus (get-in app-state keypaths/v2-skus)
@@ -477,11 +478,13 @@
          (do (messages/handle-message events/flash-later-show-failure
                                       {:message "The bag that has been shared with you has items that are no longer available."})
              (history/enqueue-navigate events/navigate-home))
-         (when servicing-stylist-id
-           (api/fetch-matched-stylist
-            api-cache servicing-stylist-id
-            {:error-handler   #(publish events/shared-cart-error-matched-stylist-not-eligible %)
-             :success-handler #(publish events/api-success-fetch-shared-cart-matched-stylist %)}))))))
+         (do (when servicing-stylist-id
+               (api/fetch-matched-stylist api-cache servicing-stylist-id
+                                          {:error-handler   #(publish events/shared-cart-error-matched-stylist-not-eligible %)
+                                           :success-handler #(publish events/api-success-fetch-shared-cart-matched-stylist %)}))
+             (messages/handle-message events/initialize-look-details
+                                      (assoc args
+                                             :shared-cart shared-cart)))))))
 
 (defmethod effects/perform-effects events/api-success-fetch-shared-cart-matched-stylist
   [_ _ {:keys [stylist]} _ _]

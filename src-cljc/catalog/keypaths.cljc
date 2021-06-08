@@ -15,6 +15,16 @@
 (def detailed-product-selected-picker (conj detailed-product :selected-picker))
 (def detailed-product-picker-visible? (conj detailed-product :picker-visible?))
 
+
+;; TODO: re-address
+(def detailed-look (conj ui :detailed-look))
+(def detailed-look-id (conj detailed-look :id))
+(def detailed-look-options (conj detailed-look :options))
+(def detailed-look-selections (conj detailed-look :selections))
+
+(def detailed-look-selected-picker (conj detailed-look :selected-picker))
+(def detailed-look-picker-visible? (conj detailed-look :picker-visible?))
+
 (def length-guide-image (conj detailed-product :length-guide-image))
 
 (def category (conj ui :category))

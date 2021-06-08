@@ -1,32 +1,152 @@
 (ns catalog.look-details-v202105
   "Shopping by Looks: Detail page for an individual 'look'"
-  (:require #?@(:cljs [[storefront.api :as api]
+  (:require #?@(:cljs [[storefront.browser.scroll :as scroll]
                        [storefront.hooks.quadpay :as quadpay]
+                       [storefront.platform.messages :as messages]
                        ;; popups, must be required to load properly
                        looks.customization-modal])
             [api.catalog :refer [select  ?discountable ?physical ?service ?model-image ?cart-product-image]]
             api.orders
+            api.products
             [catalog.facets :as facets]
-            [catalog.images :as catalog-images]
+            catalog.keypaths
+            catalog.products
+            [catalog.selector.sku :as sku-selector]
             [catalog.looks :as looks]
-            [clojure.string :as str]
+            [clojure.string :as string]
             [spice.maps :as maps]
+            [spice.selector :as selector]
             [storefront.accessors.contentful :as contentful]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.images :as images]
             [storefront.accessors.products :as products]
             [storefront.accessors.shared-cart :as shared-cart]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
+            [storefront.components.picker.picker-two :as picker]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.reviews :as reviews]
             [storefront.request-keys :as request-keys]
+            [storefront.transitions :as transitions]
             [storefront.ugc :as ugc]
-            [api.orders :as api.orders]))
+            ))
+
+(defn first-when-only [coll]
+  (when (= 1 (count coll))
+    (first coll)))
+
+(defn product-skus
+  [app-state]
+  (let [shared-cart-sku-ids (->> (get-in app-state keypaths/shared-cart-current)
+                                 :line-items
+                                 (remove (comp #(string/starts-with? % "SV2") :catalog/sku-id))
+                                 (map :catalog/sku-id))
+        skus           (get-in app-state keypaths/v2-skus)
+        product-ids    (mapcat
+                        #(-> (get skus %)
+                             :selector/from-products
+                             first)
+                        shared-cart-sku-ids)
+        products       (mapv (partial catalog.products/product-by-id app-state) product-ids)]
+    (mapcat (partial catalog.products/extract-product-skus app-state) products)))
+
+(defn ^:private get-product-from-sku
+  [app-state sku-id]
+  (-> app-state
+      (get-in keypaths/v2-skus)
+      (get sku-id)
+      :selector/from-products
+      first))
+
+(defn determine-new-case-sku-from-selection
+  [app-state old-case-sku new-selections]
+  (let [product-sku    (get-product-from-sku app-state old-case-sku)
+        old-selections (get-in app-state catalog.keypaths/detailed-look-selections)]
+    (->> product-sku
+         vec
+         (selector/match-all {} (merge old-selections new-selections))
+         first-when-only)))
+
+;; shared cart -> sku -> product
+(defn- generate-look-options
+  [app-state case-sku-id]
+  (let [product-id   (-> app-state
+                         (get-in keypaths/v2-skus)
+                         (get case-sku-id)
+                         :selector/from-products
+                         first)
+        product      (catalog.products/product-by-id app-state product-id)
+        facets       (facets/by-slug app-state)
+        product-skus (product-skus app-state)
+        images       (get-in app-state keypaths/v2-images)]
+    (sku-selector/product-options facets product product-skus images)))
+
+(defn- generate-look-noptions
+  [app-state physical-line-items]
+  (let [look-options (->> physical-line-items
+                          (map :catalog/sku-id)
+                          (map (partial generate-look-options app-state)))]
+    {:hair/color (->> look-options
+                      (mapcat :hair/color)
+                      (map #(dissoc % :price :stocked? :filter/order))
+                      distinct)
+     :hair/lengths (map #(dissoc % :hair/color) look-options)}))
+
+(defmethod transitions/transition-state events/control-look-detail-picker-option-select
+  [_ event {:keys [selection value]} app-state]
+  (update-in app-state catalog.keypaths/detailed-look-selections merge {selection value}))
+
+(defmethod effects/perform-effects events/control-look-detail-picker-option-select
+  [_ event {:keys [selection value]} _ _]
+  #?(:cljs (messages/handle-later events/control-look-detail-picker-close)))
+
+(defmethod transitions/transition-state events/control-look-detail-picker-open
+  [_ event {:keys [facet-slug]} app-state]
+  (-> app-state
+      (assoc-in catalog.keypaths/detailed-look-selected-picker facet-slug)
+      (assoc-in catalog.keypaths/detailed-look-picker-visible? true)))
+
+(defmethod transitions/transition-state events/control-look-detail-picker-close
+  [_ event _ app-state]
+  (assoc-in app-state catalog.keypaths/detailed-look-picker-visible? false))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/control-look-detail-picker-open
+     [_ _ _ _ _]
+     (scroll/disable-body-scrolling)))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/control-look-detail-picker-close
+     [_ _ _ _ _]
+     (scroll/enable-body-scrolling)))
+
+(defmethod transitions/transition-state events/initialize-look-details
+  [_ event {:as args :keys [shared-cart]} app-state]
+  (let [physical-line-items (->> shared-cart
+                                 :line-items
+                                 (remove (comp #(string/starts-with? % "SV2") :catalog/sku-id))
+                                 (map (fn [{:keys [catalog/sku-id item/quantity]}]
+                                        (-> (get-in app-state (conj keypaths/v2-skus sku-id))
+                                            (assoc :item/quantity quantity))))
+                                 (mapcat #(repeat (:item/quantity %) (dissoc % :item/quantity))))
+        noptions            (generate-look-noptions app-state physical-line-items)
+        initial-selections  (let [{:hair/keys [origin texture color]} (-> physical-line-items first)]
+                              ;; TODO make this more tolerable
+                              {:hair/origin  (first origin)
+                               :hair/texture (first texture)
+                               :hair/color   (first color)
+                               :per-item     (mapv #(select-keys % [:hair/family :hair/length]) physical-line-items)})]
+    (-> app-state
+        (assoc-in catalog.keypaths/detailed-look-selected-picker nil)
+        (assoc-in catalog.keypaths/detailed-look-picker-visible? nil)
+        (assoc-in catalog.keypaths/detailed-look-selections initial-selections)
+        (assoc-in catalog.keypaths/detailed-look-options noptions))))
 
 (defn add-to-cart-button
   [sold-out? creating-order? look {:keys [number]}]
@@ -66,7 +186,7 @@
         ^:inline (svg/instagram {:class "fill-dark-gray"})]]
       (when yotpo-data-attributes
         (component/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil))
-      (when-not (str/blank? (:description look))
+      (when-not (string/blank? (:description look))
         [:p.mt1.content-4.proxima.dark-gray (:description look)])]]]])
 
 (component/defcomponent look-title
@@ -82,7 +202,7 @@
         [:span.strike.content-4.ml2
          total-price])]
      [:div.shout.button-font-4 secondary]]
-    ;; NOTE: update event to control-initalize-cart-from-look when color/length can be changed
+    ;; TODO: update event to control-initalize-cart-from-look when color/length can be changed
     [:div.right-align (ui/button-small-primary (merge (utils/fake-href events/control-create-order-from-look
                                                                        {:shared-cart-id cart-number
                                                                         :look-id        (:id id)})
@@ -94,19 +214,22 @@
 
 (defn look-details-body
   [{:keys [creating-order? sold-out? look shared-cart fetching-shared-cart?
-           base-price discounted-price quadpay-loaded? discount-text
-           yotpo-data-attributes] :as queried-data}]
+           base-price discounted-price  discount-text
+           color-picker
+           yotpo-data-attributes color-picker-face] :as queried-data}]
   [:div.clearfix
    (when look
      (component/build look-card-v202105 queried-data "look-card"))
    (if fetching-shared-cart?
      [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
      (when shared-cart
+       ;; TODO/FIXME: Desktop View
        [:div.px2.bg-refresh-gray
+        (component/build picker/open-picker-component color-picker)
         (component/build look-title queried-data)
 
-        [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt.bg-white
-         [:div.border-top.border-cool-gray.mxn2.mt3]
+        [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
+         [:div.my4 (picker/mobile-color-picker-face color-picker-face)]
          [:div.center.pt4
           (when discount-text
             [:div.center.flex.items-center.justify-center.title-2.bold
@@ -120,7 +243,7 @@
           (add-to-cart-button sold-out? creating-order? look shared-cart)]
          #?(:cljs
             (component/build quadpay/component
-                             {:quadpay/show?       quadpay-loaded?
+                             {:quadpay/show?       (:quadpay-loaded? queried-data)
                               :quadpay/order-total discounted-price
                               :quadpay/directive   :just-select}
                              nil))
@@ -168,15 +291,6 @@
      (get-model-image images-catalog (first sorted-line-items))
      (get-cart-product-image images-catalog (first sorted-line-items)))))
 
-(defn ^:private hacky-cart-image
-  [item]
-  (some->> item
-           :selector/images
-           (filter #(= "cart" (:use-case %)))
-           first
-           :url
-           ui/ucare-img-id))
-
 (defn query [data]
   (let [skus            (get-in data keypaths/v2-skus)
         skus-db         skus
@@ -206,7 +320,18 @@
                                    (maps/index-by (comp keyword :facet/slug))
                                    (maps/map-values (fn [facet]
                                                       (update facet :facet/options
-                                                              (partial maps/index-by :option/slug)))))]
+                                                              (partial maps/index-by :option/slug)))))
+        look-data             (looks/look<- skus-db looks-shared-carts-db facets-db look album-keyword nil)
+        selections            (get-in data catalog.keypaths/detailed-look-selections)
+        color-options         (->> (get-in data catalog.keypaths/detailed-look-options)
+                                   :hair/color
+                                   (mapv (fn [{:option/keys [slug] :as option}]
+                                           (merge option
+                                                  {:id               (str "picker-color-" (facets/hacky-fix-of-bad-slugs-on-facets slug))
+                                                   :selection-target [events/control-look-detail-picker-option-select
+                                                                      {:selection :hair/color
+                                                                       :value     slug}]
+                                                   :checked?         (= (:hair/color selections) slug)}))))]
     (merge {:shared-cart               shared-cart
             :look                      contentful-look
             :creating-order?           (utils/requesting? data request-keys/create-order-from-shared-cart)
@@ -226,8 +351,18 @@
             :return-link/event-message (if (and (not back) back-event)
                                          [back-event]
                                          [events/navigate-shop-by-look {:album-keyword album-keyword}])
-            :return-link/back          back}
-           (looks/look<- skus-db looks-shared-carts-db facets-db look album-keyword nil)
+            :return-link/back          back
+
+            :color-picker      (picker/open-picker-query
+                                {:data         data
+                                 :options      color-options
+                                 :open?        (and (= :hair/color (get-in data catalog.keypaths/detailed-look-selected-picker))
+                                                    (get-in data catalog.keypaths/detailed-look-picker-visible?))
+                                 :picker-type  :hair/color
+                                 :close-target [events/control-look-detail-picker-close]})
+            :color-picker-face {:selected-color (first (filter :checked? color-options))
+                                :open-target    [events/control-look-detail-picker-open {:facet-slug :hair/color}]}}
+           look-data
            #?(:cljs (reviews/query-look-detail shared-cart data)))))
 
 (defcomponent component
