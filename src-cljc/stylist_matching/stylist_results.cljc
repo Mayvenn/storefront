@@ -18,6 +18,7 @@
             [storefront.events :as e]
             [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]
             [stylist-matching.ui.stylist-cards :as stylist-cards]
+            [stylist-matching.ui.top-stylist-cards :as top-stylist-cards]
             [stylist-matching.ui.gallery-modal :as gallery-modal]
             [stylist-matching.search.accessors.filters :as accessors.filters]
             [storefront.components.ui :as ui]
@@ -31,6 +32,8 @@
             [storefront.request-keys :as request-keys]
             [spice.date :as date]
             storefront.keypaths
+            [mayvenn.visual.ui.titles :as titles]
+            [mayvenn.visual.tools :refer [with within]]
             [mayvenn.live-help.core :as live-help]))
 
 
@@ -646,19 +649,15 @@
         scrim-atom)])])
 
 (defcomponent top-stylist-template
-  [{:keys [spinning? header top-matching/card top-matching/stylist-name] :as data} _ _]
-  [:div.bg-pale-purple.black.center.flex.flex-auto.flex-column
-   (components.header/adventure-header header)
-   [:div.m6
-    [:div.title-1.canela
-     "You are in luck!"]
-    [:div.content-3.mt4
-     (str "Top Stylist alert! " stylist-name " is an experienced and licensed "
-          "stylist who is rated highly for their skill, professionalism, and "
-          "cleanliness.")]]
-   (ui/screen-aware stylist-cards/organism
-                    card
-                    (component/component-id (:react/key data)))])
+  [{:keys [header top-matching/card top-matching/stylist-name] :as data} _ _]
+  (let [template-data (with :template data)]
+    [:div.bg-pale-purple.black.center.flex.flex-auto.flex-column
+     (components.header/adventure-header (with :header data))
+     [:div.m6
+      (titles/canela-huge (with :top-matching.title data))]
+     (ui/screen-aware top-stylist-cards/organism
+                      (:card (with :top-stylist data))
+                      (component/component-id (:react/key data)))]))
 
 (def shopping-method-choice-query
   {:shopping-method-choice.error-title/id        "stylist-matching-shopping-method-choice"
@@ -794,41 +793,45 @@
                           :cljs filter-menu/component) filter-menu nil)
 
       show-top-stylist?
-      (component/build top-stylist-template
-                       {:gallery-modal            (gallery-modal-query app-state)
-                        :spinning?                (or (empty? (:status matching))
-                                                      (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
-                                                      (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters)
-                                                      (utils/requesting-from-endpoint? app-state request-keys/get-products)
-                                                      (and (not (get-in app-state storefront.keypaths/loaded-convert))
-                                                           stylist-results-test?
-                                                           (or (not just-added-control?)
-                                                               (not just-added-only?)
-                                                               (not just-added-experience?))))
-                        :header                   (header<- current-order)
-                        :stylist-results-present? (seq (concat matching-stylists non-matching-stylists))
+      (component/build
+       top-stylist-template
+       (merge #_(within stylist.analytics
+                      {:cards [(->> top-stylist
+                                    (conj '())
+                                    (assoc stylist-data :stylists)
+                                    stylist-data->stylist-cards
+                                    first)]})
+              {:gallery-modal            (gallery-modal-query app-state)}
 
-                        :stylist-results-returned?    (contains? (:status matching) :results/stylists)
-                        :list.stylist-counter/title   (str (count matching-stylists) " Stylists Found")
-                        :list.stylist-counter/key     (when (pos? (count matching-stylists))
-                                                        "stylist-count-content")
-                        :list.matching/key            (when (seq matching-stylists) "stylist-matching")
-                        :top-matching/card            (->> top-stylist
-                                                           (conj '())
-                                                           (assoc stylist-data :stylists)
-                                                           stylist-data->stylist-cards
-                                                           first)
-                        :top-matching/stylist-name    (str (-> top-stylist :address :firstname) " " (-> top-stylist :address :lastname))
-                        :list.breaker/id              (when (seq non-matching-stylists) "non-matching-breaker")
-                        :list.breaker/results-content (when (and (seq non-matching-stylists)
-                                                                 (empty? matching-stylists))
-                                                        "0 results found")
-                        :list.breaker/content         "Other stylists in your area"
-                        :list.non-matching/key        (when (seq non-matching-stylists) "non-matching-stylists")
-                        :list.non-matching/cards      non-matching-stylist-cards
-                        :stylist.analytics/cards      (into matching-stylist-cards non-matching-stylist-cards)
-                        :shopping-method-choice       shopping-method-choice-query}
-                       )
+              (within :template
+                      {:spinning?
+                       (or (empty? (:status matching))
+                           (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
+                           (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters)
+                           (utils/requesting-from-endpoint? app-state request-keys/get-products)
+                           (and (not (get-in app-state storefront.keypaths/loaded-convert))
+                                stylist-results-test?
+                                (or (not just-added-control?)
+                                    (not just-added-only?)
+                                    (not just-added-experience?))))})
+              (within :top-stylist
+                      {:card (->> top-stylist
+                                  (conj '())
+                                  (assoc stylist-data :stylists)
+                                  stylist-data->stylist-cards
+                                  first)})
+              (within :header
+                      (header<- current-order))
+              (within :top-matching.footer
+                      {:primary "View All Stylists"})
+              (within :top-matching.title
+                      {:id        "top-match-copy-header"
+                       :primary   "You are in luck!"
+                       :secondary (str "Top Stylist alert! "
+                                       (-> top-stylist :address :firstname) " " (-> top-stylist :address :lastname)
+                                       " is an experienced and licensed "
+                                       "stylist who is rated highly for their skill, professionalism, and "
+                                       "cleanliness.")})))
 
       :else
       (component/build template

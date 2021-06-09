@@ -35,6 +35,24 @@
       [:div.mt2.content-2
        secondary])]))
 
+(defn proxima-left-primary-color
+  "
+  A blue title, without .shout on the ID
+  Usages:
+  - top stylist cards"
+  [{:keys [id icon primary secondary]}]
+  (c/html
+   [:div.left-align
+    (when icon
+      (svg/symbolic->html icon))
+    [:div.title-2.proxima.p-color
+     (when id
+       {:data-test id})
+     primary]
+    (when secondary
+      [:div.mt2.content-2
+       secondary])]))
+
 (defn canela
   "Usages:
   - call out boxes"
