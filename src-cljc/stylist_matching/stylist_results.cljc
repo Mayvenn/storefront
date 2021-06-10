@@ -649,15 +649,18 @@
         scrim-atom)])])
 
 (defcomponent top-stylist-template
-  [{:keys [header top-matching/card top-matching/stylist-name] :as data} _ _]
+  [data _ _]
   (let [template-data (with :template data)]
     [:div.bg-pale-purple.black.center.flex.flex-auto.flex-column
+     (component/build gallery-modal/organism (with :gallery-modal data) nil)
      (components.header/adventure-header (with :header data))
      [:div.m6
-      (titles/canela-huge (with :top-matching.title data))]
+      (titles/canela-huge (with :top-stylist.title data))]
      (ui/screen-aware top-stylist-cards/organism
-                      (:card (with :top-stylist data))
-                      (component/component-id (:react/key data)))]))
+                      (with :top-stylist data)
+                      (component/component-id (:react/key data)))
+     (titles/proxima-small {:primary [:a.underline.p-color "View All Stylists"]})
+     ]))
 
 (def shopping-method-choice-query
   {:shopping-method-choice.error-title/id        "stylist-matching-shopping-method-choice"
@@ -801,7 +804,9 @@
                                     (assoc stylist-data :stylists)
                                     stylist-data->stylist-cards
                                     first)]})
-              {:gallery-modal            (gallery-modal-query app-state)}
+
+              (within :gallery-modal
+                      (gallery-modal-query app-state))
 
               (within :template
                       {:spinning?
@@ -815,16 +820,21 @@
                                     (not just-added-only?)
                                     (not just-added-experience?))))})
               (within :top-stylist
-                      {:card (->> top-stylist
-                                  (conj '())
-                                  (assoc stylist-data :stylists)
-                                  stylist-data->stylist-cards
-                                  first)})
+                      (->> top-stylist
+                           (conj '())
+                           (assoc stylist-data :stylists)
+                           stylist-data->stylist-cards
+                           first))
+              (within :top-stylist.crown
+                      {:primary [:div.p-color "Top Stylist"]
+                       :icon      [:svg/heart {:style {:height "0.9em"
+                                                       :width  "2em"}
+                                               :class "fill-p-color"}]})
               (within :header
                       (header<- current-order))
-              (within :top-matching.footer
+              (within :top-stylist.footer
                       {:primary "View All Stylists"})
-              (within :top-matching.title
+              (within :top-stylist.title
                       {:id        "top-match-copy-header"
                        :primary   "You are in luck!"
                        :secondary (str "Top Stylist alert! "
