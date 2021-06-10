@@ -2,13 +2,13 @@
   (:require [spice.maps :as maps]
             [clojure.string :as string]))
 
-(defn ^:private split-namespace [keyword]
-  (if-let [kw-ns (namespace keyword)]
-    (string/split (namespace keyword) #"\.")
-    [(name keyword)]))
+(defn ^:private split-namespace [kw]
+  (if-let [kw-ns (namespace kw)]
+    (string/split (namespace kw) #"\.")
+    []))
 
-(defn ^:private split-name [keyword]
-  (string/split (name keyword) #"\."))
+(defn ^:private split-name [kw]
+  (string/split (name kw) #"\."))
 
 (defn ^:private kw-in-ns [keyword-namespace target-keyword]
   (let [super (split-namespace target-keyword)
@@ -20,13 +20,11 @@
 (defn ^:private remove-path-prefix [keyword-namespace target-keyword]
   (let [super (split-namespace target-keyword)
         sub (split-name keyword-namespace)
-        namespace (string/join "." (subvec super (count sub) (count super)))]
+        ns-str (string/join "." (subvec super (count sub) (count super)))]
     (when (kw-in-ns keyword-namespace target-keyword)
-      (if (seq namespace)
-        (keyword (string/join "." (subvec super (count sub) (count super)))
-                 (name target-keyword))
+      (if (seq ns-str)
+        (keyword ns-str (name target-keyword))
         (keyword (name target-keyword))))))
-
 
 (defn with
   "Given:
@@ -42,6 +40,8 @@
     (into {}
           (map (fn [[k v]] [(remove-path-prefix keyword-namespace k) v]))
           (select-keys data ks))))
+
+
 
 ;; TODO This needs a better name
 (defn within
@@ -61,3 +61,18 @@
                      (keyword (string/join "." (remove empty? (concat kwns-path map-ns-path)))
                               (name map-key))))
                  map))
+
+
+(comment
+  ;; Here are some tests
+  (let [data     {:c   "c"
+                  :c/d "c/d"}
+        expected {:a.b/c   "c"
+                  :a.b.c/d "c/d"}]
+    (assert (= expected (within :a.b data))))
+
+  (let [data     {:a.b/c "a.b/c"
+                  :a.b.c/d "a.b.c/d"}
+        expected {:c   "a.b/c"
+                  :c/d "a.b.c/d"}]
+    (assert (= expected (with :a.b data)))))
