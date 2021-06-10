@@ -79,26 +79,3 @@
                   (assoc acc-options facet-slug)))
            {}
            (select-keys facets electives))))
-
-
-;;     ;; Options generation
-;;
-;;     
-;;     (defn selected-options [options selections] options')
-
-
-
-;;     ;; Navigation on PDP w/ sku-id param
-;;
-;;     (defn find-sku [product sku-id] sku)
-;;     (defn sku->selections [product sku] selections)
-
-
-;;     ;; Navigation on PDP w/o sku-id param
-;;
-;;     (defn filter-valid-selections [selections product] selections')
-;;     (defn cheapest-sku [product] cheapest-sku) ; 'epitome'
-;;     (defn selections->sku [product selections] sku)
-;;
-;;     ;; comp'ing cheapest-sku and sku->selections gives you default options
-;;     (defn default-selections [product] selections) ; derivable from above primitives

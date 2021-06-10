@@ -41,8 +41,8 @@
                 :height  "100%"}}
    options])
 
-(defn picker-face*
-  [{:picker-face/keys [id primary image-src]}]
+(defn ^:private picker-face
+  [{:picker-face/keys [id label image-src]}]
   [:div.col-12.flex.justify-between.items-center
    {:style {:height "100%"}}
    (ui/img
@@ -50,11 +50,10 @@
      :width       "63"
      :square-size 63
      :max-size    100})
-   [:div.ml2.col-12
-    [:div {:data-test id} primary]]
+   [:div.ml2.col-12 {:data-test id} label]
    [:div.self-center ^:inline picker-chevron]])
 
-(defn picker-face
+(defn component
   [{:keys
     [id
      value-id
@@ -66,51 +65,52 @@
     [selection-event selection-args] :selection-target}]
   (let [face-data #:picker-face{:id        value-id
                                 :image-src image-src
-                                :primary   primary}]
+                                :label   primary}]
     [:div.bg-white.my2.p3
      {:key id}
      [:div.hide-on-tb-dt
       (merge {:data-test id}
              (apply utils/fake-href open-target))
-      (picker-face* face-data)]
+      (picker-face face-data)]
      [:div.hide-on-mb.relative.col-12
       (invisible-select
        {:value     selected-value
         :on-change #(messages/handle-message selection-event
                                              (assoc selection-args :value (.-value (.-target %))))
-        :options   (map (fn [option]
-                          [:option {:value (:option/slug option)
-                                    :key   (str id "-" (:option/slug option))}
-                           (:option/name option)])
+        :options   (map (fn [{:option/keys [value label]}]
+                          [:option {:value value
+                                    :key   (str id "-" value)}
+                           label])
                         options)})
-      (picker-face* (update face-data :id str "-desktop"))]]))
+      (picker-face (update face-data :id str "-desktop"))]]))
 
 (defn ^:private length-option
-  [{:keys [id
-           key
-           primary-label
-           secondary-label
-           checked?
-           select-target]}]
+  [{:option/keys
+    [id
+     label
+     checked?
+     selection-target]}]
   [:div {:key       id
          :data-test id}
    (ui/option {:height   "4em"
-               :key      (str key "-option")
+               :key      (str id "-option")
                :href     "#"
-               :on-click (when select-target (apply utils/send-event-callback select-target))}
+               :on-click (apply utils/send-event-callback selection-target)}
               (simple-content-layer
                (list
                 [:div.col-2
                  {:key "primary-label"}
-                 primary-label]
-                [:div.gray.flex-auto
+                 label]
+                ;; TODO for error processing
+                #_[:div.gray.flex-auto
                  {:key "secondary-label"}
                  secondary-label]))
               [:div
                (when checked?
                  (simple-selected-layer))])])
 
-(defn ^:private swatch-content-layer [{:option/keys [name rectangle-swatch]} sku-img checked?]
+(defn ^:private swatch-content-layer-two
+  [{:option/keys [bg-image-src image-src label checked?]}]
   [:div.flex.flex-column.bg-white
    [:div.flex
     [:div.rounded-top-left.bg-repeat-x
@@ -118,29 +118,25 @@
       {:width            "100%"
        :height           "100px"
        :background-size  "contain"
-       :background-image (str "url(" rectangle-swatch ")")}}]
+       :background-image (str "url(" bg-image-src ")")}}]
     (ui/img {:class    "rounded-top-right"
              :height   "100px"
              :width    "110"
-             :src      sku-img
+             :src      image-src
              :max-size 110})]
-
    [:div.py1.h6.ml3.self-start
-    (when checked?
-      {:class "bold"})
-    name]])
+    (when checked? {:class "bold"}) label]])
 
 (defn ^:private color-option
-  [{:keys
+  [{:option/keys
     [id
-     color ;; {:option/keys [name rectangle-swatch slug]}
-     sku-image
      checked?
-     select-target]}]
+     selection-target]
+    :as option}]
   [:div {:key       id
          :data-test id}
-   (ui/option {:on-click (when select-target (apply utils/send-event-callback select-target))}
-              (swatch-content-layer color sku-image checked?)
+   (ui/option {:on-click (apply utils/send-event-callback selection-target)}
+              (swatch-content-layer-two option)
               [:div
                (when checked?
                  [:div.absolute.border.border-width-3.rounded-0.border-cool-gray.overlay.flex
@@ -209,29 +205,14 @@
     (condp = picker-type
       :hair/color
       (picker-dialog {:title             title
-                      :items             (sort-by :option/order options)
+                      :items             options
                       :wrap?             false
                       :close-target      close-target
-                      :cell-component-fn (fn [option]
-                                           (color-option
-                                            {:id              (:id option)
-                                             :selected-picker picker-type
-                                             :color           option
-                                             :checked?        (:checked? option)
-                                             :sku-image       (:option/sku-swatch option)
-                                             :close-target    close-target
-                                             :select-target   (:selection-target option)}))})
+                      :cell-component-fn color-option})
 
       :hair/length (picker-dialog {:title             title
                                    :close-target      close-target
                                    :items             (sort-by :option/order options)
-                                   :cell-component-fn (fn [option]
-                                                        (length-option
-                                                         {:id              (:id option)
-                                                          :primary-label   (:option/name option)
-                                                          :checked?        (:checked? option)
-                                                          :selected-picker picker-type
-                                                          :close-target    close-target
-                                                          :select-target   (:selection-target option)}))})
+                                   :cell-component-fn length-option})
 
       nil))])

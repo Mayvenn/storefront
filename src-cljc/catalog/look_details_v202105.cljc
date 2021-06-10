@@ -39,16 +39,18 @@
 (defn distinct-by
   "TODO: add to spice"
   [f coll]
-  (second
-   (reduce
-    (fn [[state new-coll :as acc] i]
-      (let [v (f i)]
-        (if (contains? state v)
-          acc
-          [(conj state v)
-           (conj new-coll i)])))
-    [#{} '()]
-    coll)))
+  (->> coll
+       (reduce
+        (fn [acc i]
+          (let [v (f i)]
+            (if (contains? (:state acc) v)
+              acc
+              (-> acc
+                  (update :state conj v)
+                  (update :new-coll conj i)))))
+        {:state    #{}
+         :new-coll []})
+       :new-coll))
 
 (defn- generate-product-options
   [products-db skus-db images-db facets sku-id]
@@ -59,6 +61,32 @@
         product-skus (mapv #(get skus-db %)
                            (:selector/sku-ids product))]
     (sku-selector/product-options facets product product-skus images-db)))
+
+(defn color-option<
+  [selections {:option/keys [slug] :as option}]
+  #:option{:id               (str "picker-color-" (facets/hacky-fix-of-bad-slugs-on-facets slug))
+           :selection-target [events/control-look-detail-picker-option-select
+                              {:selection [:hair/color]
+                               :value     slug}]
+           :checked?         (= (:hair/color selections) slug)
+           :label            (:option/name option)
+           :value            slug
+           :bg-image-src     (:option/rectangle-swatch option)
+           :image-src        (:option/sku-swatch option)})
+
+(defn hair-length-option<
+  [selections index per-item]
+  (update per-item :hair/length
+          (partial mapv
+                   (fn [{:as option :option/keys [slug]}]
+                     (let [selection-path [:per-item index :hair/length]]
+                       #:option{:id               (str "picker-length-" index "-" slug)
+                                :selection-target [events/control-look-detail-picker-option-select
+                                                   {:selection selection-path
+                                                    :value     slug}]
+                                :checked?         (= (get-in selections selection-path) slug)
+                                :label            (:option/name option)
+                                :value            slug})))))
 
 (defn- generate-look-picker-options
   [products-db
@@ -77,42 +105,24 @@
     {:hair/color (->> look-options
                       (mapcat :hair/color)
                       (sort-by :filter/order)
-                      (map #(dissoc % :price :stocked? :filter/order))
+                      (map #(dissoc % :price :stocked?))
                       (distinct-by :option/slug)
-                      (mapv (fn [{:option/keys [slug] :as option}]
-                              (merge option
-                                     {:id               (str "picker-color-" (facets/hacky-fix-of-bad-slugs-on-facets slug))
-                                      :selection-target [events/control-look-detail-picker-option-select
-                                                         {:selection [:hair/color]
-                                                          :value     slug}]
-                                      :checked?         (= (:hair/color selections) slug)}))))
+                      (mapv (partial color-option< selections)))
      :per-item   (->> look-options
                       (mapv #(select-keys % [:hair/length]))
-                      (map-indexed
-                       (fn [index per-item]
-                         (update per-item :hair/length
-                                 (partial mapv
-                                          (fn [{:as option :option/keys [slug]}]
-                                            (let [selection-path [:per-item index :hair/length]]
-                                              (merge option
-                                                     {:id (str "picker-length-" index "-" slug)
-                                                      :selection-target [events/control-look-detail-picker-option-select
-                                                                         {:selection selection-path
-                                                                          :value     slug}]
-                                                      :checked? (= (get-in selections selection-path) slug)})))))))
+                      (map-indexed (partial hair-length-option< selections))
                       vec)}))
 
 (defmethod transitions/transition-state events/control-look-detail-picker-option-select
-  ;; TODO/FIXME selection and option path are interchangeable
-                  ;;; {:selection [:hair/color] :value "black"}
   [_ event {:keys [selection value]} app-state]
   (-> app-state
       (assoc-in (concat catalog.keypaths/detailed-look-selections selection) value)
       (update-in (concat catalog.keypaths/detailed-look-options selection)
                  (partial mapv (fn [option]
-                                 (assoc option :checked?
-                                        (= (:option/slug option)
-                                           value)))))))
+                                 (let [checked? (= (:option/slug option) value)]
+                                   (-> option
+                                       (assoc :checked? checked?)
+                                       (assoc-in [:v2-schema :option/checked?] checked?))))))))
 
 (defmethod effects/perform-effects events/control-look-detail-picker-option-select
   [_ event {:keys [selection value]} _ _]
@@ -237,8 +247,8 @@
   [{:keys [creating-order? sold-out? look shared-cart fetching-shared-cart?
            base-price discounted-price  discount-text
            picker-modal
-           color-picker-face
-           length-picker-faces
+           color-picker
+           length-pickers
            yotpo-data-attributes] :as queried-data}]
   [:div.clearfix
    (when look
@@ -253,11 +263,10 @@
         [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
          [:div.my4 ;; TODO extract this component
           [:div.proxima.title-3.shout "Color"]
-          (picker/picker-face color-picker-face)]
+          (picker/component color-picker)]
          [:div.my4 ;; TODO extract this component
           [:div.proxima.title-3.shout "Lengths"]
-          (mapv (fn [p] (picker/picker-face p))
-           length-picker-faces)]
+          (map picker/component length-pickers)]
          [:div.center.pt4
           (when discount-text
             [:div.center.flex.items-center.justify-center.title-2.bold
@@ -335,37 +344,34 @@
      ;; child options re-rendering.
      :picker-modal/visible?     (and picker-visible? options selected-picker)
      :picker-modal/close-target [events/control-look-detail-picker-close]}))
-;; seq, vec, set coll -> coll
-;; sequence, vector, hash-set ->
 
-(defn ^:private picker-faces<
+(defn ^:private pickers<
   [facets-db
+   ;; TODO: cache a focused look sku db for this UI
    skus-db
    selections
    picker-options]
-  (let [color-options       (->> picker-options :hair/color)
-        hair-length-options (->> picker-options :per-item (mapv :hair/length))
-        merged-criterion    (merge
-                             (maps/map-values hash-set (dissoc selections :per-item))
-                             (->> selections
-                                  :per-item
-                                  (mapv (partial maps/map-values hash-set))
-                                  (apply merge-with clojure.set/union)))
-        sku-db-subset       (select merged-criterion skus-db)]
-    {:color-picker-face (let [{:option/keys [rectangle-swatch name slug]}
-                              (get-in facets-db [:hair/color
-                                                 :facet/options
-                                                 (get-in selections [:hair/color])])]
-                          {:id               "picker-color"
-                           :value-id         (str "picker-selected-color-" (facets/hacky-fix-of-bad-slugs-on-facets slug))
-                           :image-src        rectangle-swatch
-                           :primary          name
-                           :options          color-options
-                           :selected-value   slug
-                           :selection-target [events/control-look-detail-picker-option-select {:selection [:hair/color]}]
-                           :open-target      [events/control-look-detail-picker-open {:picker-id [:hair/color]}]})
+  (let [merged-criterion (merge
+                          (maps/map-values hash-set (dissoc selections :per-item))
+                          (->> selections
+                               :per-item
+                               (mapv (partial maps/map-values hash-set))
+                               (apply merge-with clojure.set/union)))
+        sku-db-subset    (select merged-criterion skus-db)]
+    {:color-picker (let [{:option/keys [rectangle-swatch name slug]}
+                         (get-in facets-db [:hair/color
+                                            :facet/options
+                                            (get-in selections [:hair/color])])]
+                     {:id               "picker-color"
+                      :value-id         (str "picker-selected-color-" (facets/hacky-fix-of-bad-slugs-on-facets slug))
+                      :image-src        rectangle-swatch
+                      :primary          name
+                      :options          (->> picker-options :hair/color)
+                      :selected-value   slug
+                      :selection-target [events/control-look-detail-picker-option-select {:selection [:hair/color]}]
+                      :open-target      [events/control-look-detail-picker-open {:picker-id [:hair/color]}]})
 
-     :length-picker-faces
+     :length-pickers
      (map-indexed
       (fn [index length-options]
         (let [{:keys [selector/images]}
@@ -396,7 +402,7 @@
            :selected-value   (:option/slug hair-length-facet-option)
            :selection-target [events/control-look-detail-picker-option-select {:selection [:per-item index :hair/length]}]
            :open-target      [events/control-look-detail-picker-open {:picker-id [:per-item index :hair/length]}]}))
-      hair-length-options)}))
+      (->> picker-options :per-item (mapv :hair/length)))}))
 
 (defn query [data]
   (let [skus-db         (get-in data keypaths/v2-skus)
@@ -408,7 +414,7 @@
                                  (shared-cart/enrich-line-items-with-sku-data skus-db)
                                  (map (partial add-product-title-and-color-to-line-item products facets)))
         album-keyword   (get-in data keypaths/selected-album-keyword)
-        look            (get-in data (conj keypaths/cms-ugc-collection-all-looks (get-in data keypaths/selected-look-id))) ;;take out
+        look            (get-in data (conj keypaths/cms-ugc-collection-all-looks (get-in data keypaths/selected-look-id)))
         contentful-look (contentful/look->look-detail-social-card album-keyword
                                                                   (contentful/selected-look data))
         back            (first (get-in data keypaths/navigation-undo-stack))
@@ -453,10 +459,10 @@
            {:picker-modal (picker-modal< picker-options
                                          (get-in data catalog.keypaths/detailed-look-picker-visible?)
                                          (get-in data catalog.keypaths/detailed-look-selected-picker))}
-           (picker-faces< facets-db
-                          (vals skus-db)
-                          (get-in data catalog.keypaths/detailed-look-selections)
-                          picker-options))))
+           (pickers< facets-db
+                     (vals skus-db)
+                     (get-in data catalog.keypaths/detailed-look-selections)
+                     picker-options))))
 
 (defcomponent component
   [queried-data _ _]

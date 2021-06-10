@@ -482,9 +482,9 @@
                (api/fetch-matched-stylist api-cache servicing-stylist-id
                                           {:error-handler   #(publish events/shared-cart-error-matched-stylist-not-eligible %)
                                            :success-handler #(publish events/api-success-fetch-shared-cart-matched-stylist %)}))
+             ;; TODO Isolate this to look detail experiment
              (messages/handle-message events/initialize-look-details
-                                      (assoc args
-                                             :shared-cart shared-cart)))))))
+                                      (assoc args :shared-cart shared-cart)))))))
 
 (defmethod effects/perform-effects events/api-success-fetch-shared-cart-matched-stylist
   [_ _ {:keys [stylist]} _ _]
