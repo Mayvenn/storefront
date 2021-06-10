@@ -687,15 +687,9 @@
 ;; Adventure Quiz
 (defpath navigate-adventure-quiz)
 
-(defpath flow|quiz|reset)
-(defpath flow|quiz|answered)
-(defpath flow|quiz|submitted)
-
-(defpath flow|quiz|results|resulted)
-(defpath flow|quiz|results|option-selected)
-
-(defpath flow|progression|reset)
-(defpath flow|progression|progressed)
+(defpath biz|questioning|reset)
+(defpath biz|questioning|answered)
+(defpath biz|questioning|submitted)
 
 (defpath flow|wait|begun)
 (defpath flow|wait|elapsed)
@@ -703,7 +697,18 @@
 (defpath flow|live-help|reset)
 (defpath flow|live-help|opened)
 
+;; suggesting looks (from quiz)
+(defpath biz|looks-suggestions|reset)
+(defpath biz|looks-suggestions|queried)
+(defpath biz|looks-suggestions|resulted)
+(defpath biz|looks-suggestions|selected)
+
+;; generalized concept of progress
+(defpath biz|progression|reset)
+(defpath biz|progression|progressed)
+
 ;; Shopping Quiz iterations
+(defpath navigate-shopping-quiz)
 (defpath navigate-shopping-quiz-unified-freeinstall)
 
 ;; NOTE

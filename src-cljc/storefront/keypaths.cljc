@@ -353,6 +353,6 @@
 (def models-stylists (conj models-root :stylists))
 (def models-products (conj models-root :products))
 (def models-progressions (conj models-root :progressions))
-(def models-quizzes (conj models-root :quizzes))
-(def models-quizzes-results (conj models-root :quizzes-results))
+(def models-questionings (conj models-root :questionings))
+(def models-looks-suggestions (conj models-root :looks-suggestions))
 (def models-wait (conj models-root :wait))

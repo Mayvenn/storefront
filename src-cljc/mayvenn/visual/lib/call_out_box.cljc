@@ -22,7 +22,6 @@
           :data-test id)
    content])
 
-
 ;; Warm Gray, Proxima
 (c/defcomponent variation-1
   [data _ _]

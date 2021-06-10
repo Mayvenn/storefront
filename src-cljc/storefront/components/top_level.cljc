@@ -19,7 +19,7 @@
 
             mayvenn-install.about
 
-            mayvenn.adventures.quiz
+            mayvenn.shopping-quiz.unnamed-v1
             mayvenn.shopping-quiz.unified-freeinstall
 
             [storefront.components.ui :as ui]
@@ -125,7 +125,7 @@
                                                                         'adventure.stylist-matching.stylist-gallery/built-component
                                                                         events/navigate-adventure-stylist-gallery)
 
-   events/navigate-adventure-quiz                    (constantly mayvenn.adventures.quiz/page)
+   events/navigate-adventure-quiz                    (constantly mayvenn.shopping-quiz.unnamed-v1/page)
    events/navigate-shopping-quiz-unified-freeinstall (constantly mayvenn.shopping-quiz.unified-freeinstall/page)})
 
 (defn main-component
@@ -202,7 +202,9 @@
        ((ui/lazy-load-component :checkout 'checkout.shop.cart-v2020-09/page nav-event) data nav-event)
 
        ;; TODO this should be moved into the UI domain of stylist-matching
-       (routes/sub-page? [nav-event] [events/navigate-adventure])
+       (or
+        (routes/sub-page? [nav-event] [events/navigate-adventure])
+        (routes/sub-page? [nav-event] [events/navigate-shopping-quiz]))
        [:div {:data-test (keypaths/->component-str nav-event)}
         [:div {:key "popup"}
          #?(:cljs (popup/built-component data nil))]
