@@ -3,7 +3,9 @@
             [clojure.string :as string]))
 
 (defn ^:private split-namespace [keyword]
-  (string/split (namespace keyword) #"\."))
+  (if-let [kw-ns (namespace keyword)]
+    (string/split (namespace keyword) #"\.")
+    [(name keyword)]))
 
 (defn ^:private split-name [keyword]
   (string/split (name keyword) #"\."))
