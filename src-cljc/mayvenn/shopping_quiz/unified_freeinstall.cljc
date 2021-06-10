@@ -34,7 +34,7 @@
     ;; TODO(corey) discover what this is and name it
     [:div.center
      (:title/primary data)]
-    [:div.col-6.flex.justify-center.items-center
+    [:div.col-5.flex.justify-center.items-center.py1
      (actions/small-secondary (with :action data))]]])
 
 (c/defcomponent suggestions-template
@@ -121,18 +121,13 @@
 
 (defn see-results<
   [questions progression]
-  (prn (>= (count progression) (dec (count questions)))
-       (count progression)
-       (dec (count questions))
-       (not= (count questions)
-             (count progression)))
   (when (>= (count progression) (dec (count questions)))
     {:action/id        "quiz-see-results"
      :action/disabled? (not= (count questions)
                              (count progression))
      :action/target    [e/biz|questioning|submitted
                         {:questioning/id id
-                         :on/success     [:looks-suggestions :queried]}]
+                         :on/success     e/biz|looks-suggestions|queried}]
      :action/label     "See Results"}))
 
 (defn- fmt
@@ -153,18 +148,18 @@
                {bundles  "bundles"
                 closures "closures"} (group-by :hair/family skus)]]
      {:quiz.result/id            (str "result-option-" idx)
-      :quiz.result/index-label   (str "Option " (inc idx))
+      :quiz.result/index-label   (str "Hair + Service Bundle " (inc idx))
       :quiz.result/ucare-id      img-id
       :quiz.result/primary       (str origin " " texture)
       :quiz.result/secondary     (apply str
                                         (cond-> (fmt bundles :hair/length "”" ", ")
                                           (seq closures)
-                                          (conj
-                                           " + " (fmt closures :hair/length "”" ""))))
+                                          (concat [" + "]
+                                                  (fmt closures :hair/length "”" ""))))
       :quiz.result/tertiary      (->> skus (mapv :sku/price) (reduce + 0) mf/as-money)
       :quiz.result/tertiary-note "Install Included"
       :action/id                 (str "result-option-" idx)
-      :action/label              "Add To Bag"
+      :action/label              "Choose this look"
       :action/target             [e/biz|looks-suggestions|selected
                                   (select-keys looks-suggestion
                                                [:product/sku-ids
