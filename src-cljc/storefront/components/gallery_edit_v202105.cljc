@@ -201,16 +201,15 @@
 
 (defcomponent reorderable-wrapper
   [{:as data :stylist-gallery-my-gallery/keys [id posts-with-cover fetching-posts? appending-post?]} _ _]
-  (do (prn posts-with-cover)
-      (if id
-        [:div.py8-on-dt
-         {:key id}
-         (if (or (and (empty? posts-with-cover)
-                      fetching-posts?)
-                 appending-post?)
-           (ui/large-spinner {:style {:height "6em"}})
-           (component/build reorderable-component data))]
-        [:div])))
+  (if id
+    [:div.py8-on-dt
+     {:key id}
+     (if (or (and (empty? posts-with-cover)
+                  fetching-posts?)
+             appending-post?)
+       (ui/large-spinner {:style {:height "6em"}})
+       (component/build reorderable-component data))]
+    [:div]))
 
 (defmethod transitions/transition-state events/control-stylist-gallery-posts-drag-began
   [_ _ {:keys [item]} app-state]
