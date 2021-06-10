@@ -45,7 +45,7 @@
   (when id
     (c/html
      [:div.col-10.col-8-on-tb
-      (ui/button-small-primary
+      (ui/button-small-secondary
        (merge {:data-test id}
               (when disabled? {:disabled? disabled?})
               (apply utils/route-to target))
