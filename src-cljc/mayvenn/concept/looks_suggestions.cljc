@@ -373,16 +373,6 @@
    {:hair/family "bundles",
     :sku/price 0, ;; Free in this context
     :catalog/sku-id "SV2-LBI-X",
-    :legacy/variant-id 1036}
-   "SV2-CBI-X"
-   {:hair/family "closures",
-    :sku/price 0, ;; Free in this context
-    :catalog/sku-id "SV2-CBI-X",
-    :legacy/variant-id 1037}
-   "SV2-LBI-X"
-   {:hair/family "bundles",
-    :sku/price 0, ;; Free in this context
-    :catalog/sku-id "SV2-LBI-X",
     :legacy/variant-id 1156}
    "SV2-CBI-X"
    {:hair/family "closures",
