@@ -1,6 +1,7 @@
 (ns storefront.components.picker.picker-two
   "Exists temporarily to allow us to refactor the interface for use in varying contexts"
-  (:require [storefront.component :as component :refer [defcomponent]]
+  (:require #?@(:cljs [[storefront.browser.scroll :as scroll]])
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.css-transitions :as css-transitions]
@@ -167,30 +168,39 @@
       :data-test id)
      primary)))
 
-(defn ^:private picker-dialog
-  "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
-  [{:keys [title items cell-component-fn wrap? close-target]
-    :as data}]
-  [:div.hide-on-tb-dt.z5.fixed.overlay.overflow-auto.bg-cool-gray
-   {:key (str "picker-dialog-" title) :data-test "picker-dialog"}
-   [:div.py3.pl3.pr1.content-2.proxima.bg-white.relative.border-bottom.border-gray.flex.justify-between.items-center
-    {:style {:height "55px"}}
-    [:div.self-start
-     {:style {:min-width "96px"}}
-     (title-cta data)]
-    [:div.self-center.flex-grow-1.center title]
 
-    [:div.flex.justify-end
-     {:style {:min-width "96px"}}
-     [:a.flex.items-center.justify-center.medium
-      (merge {:style     {:height "55px" :width "55px"}
-              :data-test "picker-close"}
-             (apply utils/fake-href close-target))
-      (svg/x-sharp {:height "12px" :width "12px"})]]]
-   [:div.py3.px1 ;; body
-    (when wrap?
-      {:class "flex flex-wrap"})
-    (mapv cell-component-fn items)]])
+"picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
+(component/defdynamic-component ^:private picker-dialog
+  (did-mount [_]
+    #?(:cljs (scroll/disable-body-scrolling)))
+  (will-unmount [_]
+    #?(:cljs (scroll/enable-body-scrolling)))
+  (render [this]
+          (let [{:keys [title items wrap? close-target]
+                 :as data}
+                (component/get-props this)
+                {:keys [cell-component-fn]} (component/get-opts this)]
+            (component/html
+             [:div.hide-on-tb-dt.z5.fixed.overlay.overflow-auto.bg-cool-gray
+              {:key (str "picker-dialog-" title) :data-test "picker-dialog"}
+              [:div.py3.pl3.pr1.content-2.proxima.bg-white.relative.border-bottom.border-gray.flex.justify-between.items-center
+               {:style {:height "55px"}}
+               [:div.self-start
+                {:style {:min-width "96px"}}
+                (title-cta data)]
+               [:div.self-center.flex-grow-1.center title]
+
+               [:div.flex.justify-end
+                {:style {:min-width "96px"}}
+                [:a.flex.items-center.justify-center.medium
+                 (merge {:style     {:height "55px" :width "55px"}
+                         :data-test "picker-close"}
+                        (apply utils/fake-href close-target))
+                 (svg/x-sharp {:height "12px" :width "12px"})]]]
+              [:div.py3.px1 ;; body
+               (when wrap?
+                 {:class "flex flex-wrap"})
+               (mapv cell-component-fn items)]]))))
 
 (defcomponent modal
   [{:picker-modal/keys
@@ -204,15 +214,19 @@
     visible?
     (condp = picker-type
       :hair/color
-      (picker-dialog {:title             title
+      (component/build
+       picker-dialog {:title             title
                       :items             options
                       :wrap?             false
-                      :close-target      close-target
-                      :cell-component-fn color-option})
+                      :close-target      close-target}
+       {:opts {:cell-component-fn color-option}})
 
-      :hair/length (picker-dialog {:title             title
-                                   :close-target      close-target
-                                   :items             (sort-by :option/order options)
-                                   :cell-component-fn length-option})
+
+      :hair/length
+      (component/build
+       picker-dialog {:title             title
+                      :close-target      close-target
+                      :items             options}
+       {:opts {:cell-component-fn length-option}})
 
       nil))])

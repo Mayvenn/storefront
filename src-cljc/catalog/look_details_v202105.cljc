@@ -1,7 +1,6 @@
 (ns catalog.look-details-v202105
   "Shopping by Looks: Detail page for an individual 'look'"
-  (:require #?@(:cljs [[storefront.browser.scroll :as scroll]
-                       [storefront.hooks.quadpay :as quadpay]
+  (:require #?@(:cljs [[storefront.hooks.quadpay :as quadpay]
                        [storefront.platform.messages :as messages]
                        ;; popups, must be required to load properly
                        looks.customization-modal])
@@ -490,13 +489,3 @@
 (defmethod transitions/transition-state events/control-look-detail-picker-close
   [_ event _ app-state]
   (assoc-in app-state catalog.keypaths/detailed-look-picker-visible? false))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/control-look-detail-picker-open
-     [_ _ _ _ _]
-     (scroll/disable-body-scrolling)))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/control-look-detail-picker-close
-     [_ _ _ _ _]
-     (scroll/enable-body-scrolling)))
