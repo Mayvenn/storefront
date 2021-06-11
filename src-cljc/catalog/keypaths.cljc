@@ -23,6 +23,7 @@
 (def detailed-look-selections (conj detailed-look :selections))
 
 (def detailed-look-skus-db (conj detailed-look :skus-db))
+(def detailed-look-availability (conj detailed-look :availability))
 
 (def detailed-look-selected-picker (conj detailed-look :selected-picker))
 (def detailed-look-picker-visible? (conj detailed-look :picker-visible?))

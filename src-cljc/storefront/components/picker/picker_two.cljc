@@ -90,7 +90,9 @@
     [id
      label
      checked?
-     selection-target]}]
+     selection-target
+     secondary-label
+     available?]}]
   [:div {:key       id
          :data-test id}
    (ui/option {:height   "4em"
@@ -101,11 +103,9 @@
                (list
                 [:div.col-2
                  {:key "primary-label"}
-                 label]
-                ;; TODO for error processing
-                #_[:div.gray.flex-auto
-                 {:key "secondary-label"}
-                 secondary-label]))
+                 label
+                 (when-not available?
+                   secondary-label)]))
               [:div
                (when checked?
                  (simple-selected-layer))])])

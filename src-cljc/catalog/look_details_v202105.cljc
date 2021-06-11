@@ -36,6 +36,15 @@
             [catalog.keypaths :as catalog.keypaths]
             [spice.selector :as selector]))
 
+;; A customizable look is a product merging all of the products that the base
+;; look's skus come from It has two levels of selectors, those that affect all
+;; physical items in the look and those that affect each item individually
+;; {:selector/essentials [:hair/origin :hair/texture]
+;;  :selector/electives  [:hair/color]
+;;  :per-item [{:selector/essentials [:hair/family]
+;;              :selector/electives  [:hair/length]}]}
+;; For now services are handled separately since we don't customize the services
+
 (defn distinct-by
   "TODO: add to spice"
   [f coll]
@@ -64,19 +73,34 @@
            :bg-image-src     (:option/rectangle-swatch option)
            :image-src        (:option/sku-swatch option)})
 
+(defn ^:private get-length-availability
+  [availability selected-color hair-family hair-length]
+  (boolean
+   (get-in availability [hair-family
+                         selected-color
+                         hair-length])))
+
 (defn ^:private hair-length-option<
-  [selections index per-item]
-  (update per-item :hair/length
-          (partial mapv
-                   (fn [{:as option :option/keys [slug]}]
-                     (let [selection-path [:per-item index :hair/length]]
-                       #:option{:id               (str "picker-length-" index "-" slug)
-                                :selection-target [events/control-look-detail-picker-option-select
-                                                   {:selection selection-path
-                                                    :value     slug}]
-                                :checked?         (= (get-in selections selection-path) slug)
-                                :label            (:option/name option)
-                                :value            slug})))))
+  [{selected-hair-color :hair/color
+    per-items           :per-item} availability index per-item]
+  (let [{selected-hair-length :hair/length
+         selected-hair-family :hair/family} (get per-items index)]
+    (update per-item :hair/length
+            (partial map
+                     (fn [{:as option :option/keys [slug]}]
+                       (let [selection-path [:per-item index :hair/length]]
+                         #:option{:id               (str "picker-length-" index "-" slug)
+                                  :selection-target [events/control-look-detail-picker-option-select
+                                                     {:selection selection-path
+                                                      :value     slug}]
+                                  :checked?         (= selected-hair-length slug)
+                                  :label            (:option/name option)
+                                  :value            slug
+                                  :secondary-label  "- Unavailable"
+                                  :available? (get-length-availability availability
+                                                                       selected-hair-color
+                                                                       selected-hair-family
+                                                                       slug)}))))))
 
 (defn ^:private merge-selection-criteria [selections]
   (merge
@@ -92,13 +116,14 @@
   (let [product-skus (mapv #(get skus-db %) (:selector/sku-ids product))]
     (sku-selector/product-options facets product product-skus images-db)))
 
-(defn- generate-look-picker-options
+(defn- initialize-look-picker-options
   [products-db
    skus-db
    images-db
    facets
    selections
-   physical-line-items]
+   physical-line-items
+   availability]
   (let [look-options (into []
                            (comp
                             (map :catalog/sku-id)
@@ -106,16 +131,17 @@
                             (map (comp first :selector/from-products))
                             (map #(get products-db %))
                             (map (partial generate-product-options skus-db images-db facets)))
-                          physical-line-items)]
+                           physical-line-items)]
+
     {:hair/color (->> look-options
                       (mapcat :hair/color)
-                      (sort-by :filter/order)
                       (map #(dissoc % :price :stocked?))
                       (distinct-by :option/slug)
+                      (sort-by :filter/order)
                       (mapv (partial color-option< selections)))
      :per-item   (->> look-options
                       (map #(select-keys % [:hair/length]))
-                      (map-indexed (partial hair-length-option< selections))
+                      (map-indexed (partial hair-length-option< selections availability))
                       vec)}))
 
 (defn ^:private
@@ -137,36 +163,42 @@
 
 (defmethod transitions/transition-state events/initialize-look-details
   [_ event {:as args :keys [shared-cart]} app-state]
-  (let [physical-line-items             (->> shared-cart
-                                             :line-items
-                                             (remove (comp #(string/starts-with? % "SV2") :catalog/sku-id))
-                                             (map (fn [{:keys [catalog/sku-id item/quantity]}]
-                                                    (-> (get-in app-state (conj keypaths/v2-skus sku-id))
-                                                        (assoc :item/quantity quantity))))
-                                             (sort-by :sku/price)
-                                             (mapcat #(repeat (:item/quantity %) (dissoc % :item/quantity))))
-        initial-selections              (let [{:hair/keys [origin texture color]} (-> physical-line-items first)]
-                                          ;; TODO make this more tolerable
-                                          {:hair/origin  (first origin)
-                                           :hair/texture (first texture)
-                                           :hair/color   (first color)
-                                           :per-item     (->> physical-line-items
-                                                              (map #(select-keys % [:hair/family :hair/length]))
-                                                              (map (partial maps/map-values first))
-                                                              vec)})
-        sliced-sku-db                   (slice-sku-db (get-in app-state keypaths/v2-skus) shared-cart initial-selections)
-        options                         (generate-look-picker-options (get-in app-state keypaths/v2-products)
-                                                                      sliced-sku-db
-                                                                      (get-in app-state keypaths/v2-images)
-                                                                      (facets/by-slug app-state)
-                                                                      initial-selections
-                                                                      physical-line-items)]
+  (let [physical-line-items (->> shared-cart
+                                 :line-items
+                                 (remove (comp #(string/starts-with? % "SV2") :catalog/sku-id))
+                                 (map (fn [{:keys [catalog/sku-id item/quantity]}]
+                                        (-> (get-in app-state (conj keypaths/v2-skus sku-id))
+                                            (assoc :item/quantity quantity))))
+                                 (sort-by :sku/price)
+                                 (mapcat #(repeat (:item/quantity %) (dissoc % :item/quantity))))
+        initial-selections  (let [{:hair/keys [origin texture color]} (-> physical-line-items first)]
+                              ;; TODO make this more tolerable
+                              {:hair/origin  (first origin)
+                               :hair/texture (first texture)
+                               :hair/color   (first color)
+                               :per-item     (->> physical-line-items
+                                                  (map #(select-keys % [:hair/family :hair/length]))
+                                                  (map (partial maps/map-values first))
+                                                  vec)})
+        sliced-sku-db       (slice-sku-db (get-in app-state keypaths/v2-skus) shared-cart initial-selections)
+        availability        (reduce (fn [acc {:hair/keys [family color length]}]
+                                      (cond-> acc
+                                        (and family color length)
+                                        (update-in [(first family) (first color)] (fnil conj #{}) (first length)))) {} (vals sliced-sku-db))
+        options             (initialize-look-picker-options (get-in app-state keypaths/v2-products)
+                                                            sliced-sku-db
+                                                            (get-in app-state keypaths/v2-images)
+                                                            (facets/by-slug app-state)
+                                                            initial-selections
+                                                            physical-line-items
+                                                            availability)]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-look-selected-picker nil)
         (assoc-in catalog.keypaths/detailed-look-picker-visible? nil)
         (assoc-in catalog.keypaths/detailed-look-selections initial-selections)
         (assoc-in catalog.keypaths/detailed-look-options options)
-        (assoc-in catalog.keypaths/detailed-look-skus-db sliced-sku-db))))
+        (assoc-in catalog.keypaths/detailed-look-skus-db sliced-sku-db)
+        (assoc-in catalog.keypaths/detailed-look-availability availability))))
 
 ;; END Initialization
 
@@ -365,7 +397,7 @@
      :length-pickers
      (map-indexed
       (fn [index length-options]
-        (let [{:keys [selector/images]}
+        (let [{:keys [selector/images] :as sku}
               (first
                (select
                 (merge
@@ -388,7 +420,10 @@
                                   (select ?cart-product-image)
                                   first
                                   :url)
-           :primary          (str (:option/name hair-length-facet-option) " " (:sku/name hair-family-facet-option))
+           :primary          (str (:option/name hair-length-facet-option) " " (:sku/name hair-family-facet-option)
+
+                                  (when (nil? sku)
+                                    "- Unavailable"))
            :options          length-options
            :selected-value   (:option/slug hair-length-facet-option)
            :selection-target [events/control-look-detail-picker-option-select {:selection [:per-item index :hair/length]}]
@@ -465,16 +500,35 @@
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
 
+(defn ^:private update-length-availability
+  [availability selections selected-color per-item-options]
+  (->> per-item-options
+       (map-indexed
+        (fn [index per-item-options]
+          (update per-item-options
+                  :hair/length
+                  (partial mapv
+                           #(assoc %
+                                   :option/available?
+                                   (get-length-availability
+                                        availability
+                                        selected-color
+                                        (get-in selections [:per-item index :hair/family])
+                                        (:option/value %)))))))
+       vec))
+
 (defmethod transitions/transition-state events/control-look-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]
-  (-> app-state
-      (assoc-in (concat catalog.keypaths/detailed-look-selections selection) value)
-      (update-in (concat catalog.keypaths/detailed-look-options selection)
-                 (partial mapv (fn [option]
-                                 (let [checked? (= (:option/slug option) value)]
-                                   (-> option
-                                       (assoc :checked? checked?)
-                                       (assoc-in [:v2-schema :option/checked?] checked?))))))))
+  (let [availability (get-in app-state catalog.keypaths/detailed-look-availability)
+        selections (get-in app-state catalog.keypaths/detailed-look-selections)]
+    (cond->
+        (-> app-state
+            (assoc-in (concat catalog.keypaths/detailed-look-selections selection) value)
+            (update-in (concat catalog.keypaths/detailed-look-options selection)
+                       (partial mapv (fn [option] (assoc option :option/checked? (= (:option/value option) value))))))
+      (= [:hair/color] selection)
+      (update-in (conj catalog.keypaths/detailed-look-options :per-item)
+                 (partial update-length-availability availability selections value)))))
 
 (defmethod effects/perform-effects events/control-look-detail-picker-option-select
   [_ event {:keys [selection value]} _ _]
