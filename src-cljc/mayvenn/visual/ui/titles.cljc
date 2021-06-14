@@ -58,10 +58,10 @@
   [{:keys [id icon primary secondary]}]
   (c/html
    [:div.left-align
-    [:div.content-4.flex.flex-auto.items-center
+    [:div.proxima.title-3.flex.flex-auto
      (when icon
        (svg/symbolic->html icon))
-     [:span.bold.proxima.shout
+     [:div
       (when id
         {:data-test id})
       primary]]

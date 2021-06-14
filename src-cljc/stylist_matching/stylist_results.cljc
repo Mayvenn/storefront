@@ -799,11 +799,11 @@
       (component/build
        top-stylist-template
        (merge #_(within stylist.analytics
-                      {:cards [(->> top-stylist
-                                    (conj '())
-                                    (assoc stylist-data :stylists)
-                                    stylist-data->stylist-cards
-                                    first)]})
+                        {:cards [(->> top-stylist
+                                      (conj '())
+                                      (assoc stylist-data :stylists)
+                                      stylist-data->stylist-cards
+                                      first)]})
 
               (within :gallery-modal
                       (gallery-modal-query app-state))
@@ -826,10 +826,28 @@
                            stylist-data->stylist-cards
                            first))
               (within :top-stylist.crown
-                      {:primary [:div.p-color "Top Stylist"]
-                       :icon      [:svg/heart {:style {:height "0.9em"
-                                                       :width  "2em"}
-                                               :class "fill-p-color"}]})
+                      {:primary [:div.p-color.line-height-4 "Top Stylist"]
+                       :icon    [:svg/crown {:style {:height "1.2em"
+                                                     :width  "1.7em"}
+                                             :class "fill-p-color mr1"}]})
+              (within :top-stylist.laurels
+                      {:points [{:icon    [:svg/calendar {:style {:height "1.2em"
+                                                                  :width  "1.7em"}
+                                                          :class "fill-s-color mr1"}]
+                                 :primary [:div.content-4 "Booked 145 times"]}
+                                {:icon    [:svg/chat-bubble-diamonds {:style {:height "1.2em"
+                                                                              :width  "1.7em"}
+                                                                      :class "fill-s-color mr1"}]
+                                 :primary [:div.content-4 "100% response rate"]}
+                                {:icon    [:svg/experience-badge {:style {:height "1.2em"
+                                                                          :width  "1.7em"}
+                                                                  :class "fill-s-color mr1"}]
+                                 :primary [:div.content-4 "Progessional salon"]}
+                                {:icon    [:svg/certified {:style {:height "1.2em"
+                                                                   :width  "1.7em"}
+                                                           :class "fill-s-color mr1"}]
+                                 :primary [:div.content-4 "State licensed stylist"]}]})
+
               (within :header
                       (header<- current-order))
               (within :top-stylist.footer
