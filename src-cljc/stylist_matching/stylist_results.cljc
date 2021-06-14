@@ -34,7 +34,8 @@
             storefront.keypaths
             [mayvenn.visual.ui.titles :as titles]
             [mayvenn.visual.tools :refer [with within]]
-            [mayvenn.live-help.core :as live-help]))
+            [mayvenn.live-help.core :as live-help]
+            [storefront.events :as events]))
 
 
 ;;  Navigating to the results page causes the effect of searching for stylists
@@ -650,17 +651,21 @@
 
 (defcomponent top-stylist-template
   [data _ _]
-  (let [template-data (with :template data)]
+  (let [template-data    (with :template data)
+        top-stylist-data (with :top-stylist data)]
     [:div.bg-pale-purple.black.center.flex.flex-auto.flex-column
      (component/build gallery-modal/organism (with :gallery-modal data) nil)
      (components.header/adventure-header (with :header data))
      [:div.m6
-      (titles/canela-huge (with :top-stylist.title data))]
+      (titles/canela-huge (with :title top-stylist-data))]
      (ui/screen-aware top-stylist-cards/organism
-                      (with :top-stylist data)
+                      top-stylist-data
                       (component/component-id (:react/key data)))
-     (titles/proxima-small {:primary [:a.underline.p-color "View All Stylists"]})
-     ]))
+     (let [{:keys [target primary]} (with :footer top-stylist-data)]
+       [:div.mt4.mb8
+        (ui/button-medium-underline-primary
+         (apply utils/route-to target)
+         primary)])]))
 
 (def shopping-method-choice-query
   {:shopping-method-choice.error-title/id        "stylist-matching-shopping-method-choice"
@@ -851,7 +856,8 @@
               (within :header
                       (header<- current-order))
               (within :top-stylist.footer
-                      {:primary "View All Stylists"})
+                      {:primary "View All Stylists"
+                       :target  [events/navigate-adventure-stylist-results]})
               (within :top-stylist.title
                       {:id        "top-match-copy-header"
                        :primary   "You are in luck!"
