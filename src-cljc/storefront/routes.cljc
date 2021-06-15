@@ -43,14 +43,15 @@
    "/_style/ui"              (edn->bidi events/navigate-design-system-ui)})
 
 (def stylist-matching-routes
-  {"/adv/find-your-stylist"                                            (edn->bidi events/navigate-adventure-find-your-stylist)
-   "/adv/stylist-results"                                              (edn->bidi events/navigate-adventure-stylist-results)
-   "/adv/match-success"                                                (edn->bidi events/navigate-adventure-match-success)
-   ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug]                  (edn->bidi events/navigate-adventure-stylist-profile)
-   ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "/gallery"]       (edn->bidi events/navigate-adventure-stylist-gallery)
-   "/certified-stylists"                                               (edn->bidi events/navigate-info-certified-stylists)
-   "/about-our-hair"                                                   (edn->bidi events/navigate-info-about-our-hair)
-   "/about-mayvenn-install"                                            (edn->bidi events/navigate-about-mayvenn-install)})
+  {"/adv/top-stylist"                                            (edn->bidi events/navigate-adventure-top-stylist)
+   "/adv/find-your-stylist"                                      (edn->bidi events/navigate-adventure-find-your-stylist)
+   "/adv/stylist-results"                                        (edn->bidi events/navigate-adventure-stylist-results)
+   "/adv/match-success"                                          (edn->bidi events/navigate-adventure-match-success)
+   ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug]            (edn->bidi events/navigate-adventure-stylist-profile)
+   ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "/gallery"] (edn->bidi events/navigate-adventure-stylist-gallery)
+   "/certified-stylists"                                         (edn->bidi events/navigate-info-certified-stylists)
+   "/about-our-hair"                                             (edn->bidi events/navigate-info-about-our-hair)
+   "/about-mayvenn-install"                                      (edn->bidi events/navigate-about-mayvenn-install)})
 
 (def adventure-quiz-routes
   {"/adv/quiz"                       (edn->bidi events/navigate-adventure-quiz)

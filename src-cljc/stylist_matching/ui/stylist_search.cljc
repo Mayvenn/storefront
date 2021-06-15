@@ -13,7 +13,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.trackings :as trackings]
-            [storefront.events :as e]))
+            [storefront.events :as e]
+            [storefront.accessors.experiments :as experiments]))
 
 ;; --------------------- Address Input behavior
 
@@ -49,7 +50,9 @@
                            {:address (address-input "stylist-match-address")})
   (messages/handle-message e/flow|stylist-matching|param-location-constrained
                            (get-in state k/google-location))
-  (messages/handle-message e/flow|stylist-matching|prepared))
+  (if (experiments/top-stylist? state)
+    (messages/handle-message e/flow|stylist-matching|diverted-to-top-stylist)
+    (messages/handle-message e/flow|stylist-matching|prepared)))
 
 ;; ---------------------------------------------
 

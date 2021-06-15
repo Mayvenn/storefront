@@ -35,7 +35,8 @@
              :refer [handle-message] :rename {handle-message publish}]
             clojure.set
             [clojure.string :as string]
-            [storefront.transitions :as t])
+            [storefront.transitions :as t]
+            [storefront.accessors.experiments :as experiments])
   #?(:cljs (:import [goog.async Debouncer])))
 
 (def ^:private query-param-keys
@@ -202,10 +203,24 @@
            prev-query-params (get-in prev-nav-msg [1 :query-params])
            query-params      (->> (stylist-matching<- state)
                                   (query-params<- {}))]
-       (when-not (= [prev-nav-event prev-query-params]
-                    [e/navigate-adventure-stylist-results query-params])
-         (history/enqueue-navigate e/navigate-adventure-stylist-results
-                                   {:query-params query-params})))))
+       (if (experiments/top-stylist? state)
+         (messages/handle-message e/flow|stylist-matching|diverted-to-top-stylist)
+         (when-not (= [prev-nav-event prev-query-params]
+                      [e/navigate-adventure-stylist-results query-params])
+           (history/enqueue-navigate e/navigate-adventure-stylist-results {:query-params query-params}))))))
+
+;; Diverted to top stylist...
+(defmethod fx/perform-effects e/flow|stylist-matching|diverted-to-top-stylist
+  [_ _ _ _ _]
+  #?(:cljs
+     (history/enqueue-navigate e/navigate-adventure-top-stylist)))
+
+;; Diversion skipped...
+(defmethod fx/perform-effects e/flow|stylist-matching|diversion-skipped
+  [_ _ _ _ state]
+  #?(:cljs
+     (history/enqueue-navigate e/navigate-adventure-stylist-results {:query-params (->> (stylist-matching<- state)
+                                                                                        (query-params<- {}))})))
 
 ;; Searched
 ;; -> screen: results
