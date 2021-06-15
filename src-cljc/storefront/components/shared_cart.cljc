@@ -31,7 +31,8 @@
              :as messages
              :refer [handle-message] :rename {handle-message publish}]
             [storefront.transitions :as transitions]
-            [api.orders :as api.orders]))
+            [api.orders :as api.orders]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn ^:private hacky-cart-image
   [item]
@@ -483,8 +484,9 @@
                                           {:error-handler   #(publish events/shared-cart-error-matched-stylist-not-eligible %)
                                            :success-handler #(publish events/api-success-fetch-shared-cart-matched-stylist %)}))
              ;; TODO Isolate this to look detail experiment
-             (messages/handle-message events/initialize-look-details
-                                      (assoc args :shared-cart shared-cart)))))))
+             (when (experiments/look-customization? app-state)
+               (messages/handle-message events/initialize-look-details
+                                        (assoc args :shared-cart shared-cart))))))))
 
 (defmethod effects/perform-effects events/api-success-fetch-shared-cart-matched-stylist
   [_ _ {:keys [stylist]} _ _]

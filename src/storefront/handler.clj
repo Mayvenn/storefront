@@ -584,8 +584,7 @@
                          (assoc-in keypaths/shared-cart-current shared-cart)
                          (assoc-in keypaths/shared-cart-creator shared-cart-creator)
                          (update-in keypaths/v2-skus merge (products/index-skus skus))
-                         (update-in keypaths/v2-products merge (products/index-products products))
-                         (transition [events/initialize-look-details {:shared-cart shared-cart}]))))))
+                         (update-in keypaths/v2-products merge (products/index-products products)))))))
 
 (defn generic-server-render [render-ctx data req params]
   (html-response render-ctx data))
