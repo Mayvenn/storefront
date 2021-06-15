@@ -203,11 +203,9 @@
            prev-query-params (get-in prev-nav-msg [1 :query-params])
            query-params      (->> (stylist-matching<- state)
                                   (query-params<- {}))]
-       (if (experiments/top-stylist? state)
-         (messages/handle-message e/flow|stylist-matching|diverted-to-top-stylist)
-         (when-not (= [prev-nav-event prev-query-params]
-                      [e/navigate-adventure-stylist-results query-params])
-           (history/enqueue-navigate e/navigate-adventure-stylist-results {:query-params query-params}))))))
+       (when-not (= [prev-nav-event prev-query-params]
+                    [e/navigate-adventure-stylist-results query-params])
+         (history/enqueue-navigate e/navigate-adventure-stylist-results {:query-params query-params})))))
 
 ;; Diverted to top stylist...
 (defmethod fx/perform-effects e/flow|stylist-matching|diverted-to-top-stylist
@@ -221,6 +219,11 @@
   #?(:cljs
      (history/enqueue-navigate e/navigate-adventure-stylist-results {:query-params (->> (stylist-matching<- state)
                                                                                         (query-params<- {}))})))
+
+(defmethod t/transition-state  e/flow|stylist-matching|diversion-skipped
+  [_ _ _ state]
+  (-> state
+      (assoc-in k/top-stylist-rejected true)))
 
 ;; Searched
 ;; -> screen: results
@@ -336,10 +339,13 @@
 ;; -------------------------- stylist search by filters behavior
 
 (defmethod fx/perform-effects e/api-success-fetch-stylists-matching-filters
-  [_ _ {:keys [stylists]} _ _]
+  [_ _ {:keys [stylists]} _ state]
   (publish e/flow|stylist-matching|resulted
            {:method  :by-location
-            :results stylists}))
+            :results stylists})
+  (when (and (experiments/top-stylist? state)
+             (not (get-in state k/top-stylist-rejected))) ; TODO: divert only when a top stylist is in the results
+    (messages/handle-message e/flow|stylist-matching|diverted-to-top-stylist)))
 
 ;; -------------------------- presearch name
 
