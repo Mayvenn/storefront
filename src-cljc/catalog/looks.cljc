@@ -228,7 +228,7 @@
                                                         (mapv (fn [{:keys [catalog/sku-id sku/price]}]
                                                                 (* (get sku-id->quantity sku-id 0) price)))
                                                         (reduce + 0))
-          discounted-price                     (when-let [discountable-service-price (:sku/price discountable-service-sku)]
+          discounted-price                     (when-let [discountable-service-price (:product/essential-price discountable-service-sku)]
                                                  (- total-price discountable-service-price))
           look-id                              (:content/id look)]
       (merge tex-ori-col ;; TODO(corey) apply merge-with into
