@@ -119,3 +119,7 @@
 (defn past-appointments?
   [data]
   (display-feature? data "past-appointments"))
+
+(defn top-stylist?
+  [data]
+  (display-feature? data "top-stylist"))

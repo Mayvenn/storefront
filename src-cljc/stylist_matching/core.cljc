@@ -35,7 +35,8 @@
              :refer [handle-message] :rename {handle-message publish}]
             clojure.set
             [clojure.string :as string]
-            [storefront.transitions :as t])
+            [storefront.transitions :as t]
+            [storefront.accessors.experiments :as experiments])
   #?(:cljs (:import [goog.async Debouncer])))
 
 (def ^:private query-param-keys
@@ -204,8 +205,25 @@
                                   (query-params<- {}))]
        (when-not (= [prev-nav-event prev-query-params]
                     [e/navigate-adventure-stylist-results query-params])
-         (history/enqueue-navigate e/navigate-adventure-stylist-results
-                                   {:query-params query-params})))))
+         (history/enqueue-navigate e/navigate-adventure-stylist-results {:query-params query-params})))))
+
+;; Diverted to top stylist...
+(defmethod fx/perform-effects e/flow|stylist-matching|diverted-to-top-stylist
+  [_ _ _ _ _]
+  #?(:cljs
+     (history/enqueue-navigate e/navigate-adventure-top-stylist)))
+
+;; Diversion skipped...
+(defmethod fx/perform-effects e/flow|stylist-matching|diversion-skipped
+  [_ _ _ _ state]
+  #?(:cljs
+     (history/enqueue-navigate e/navigate-adventure-stylist-results {:query-params (->> (stylist-matching<- state)
+                                                                                        (query-params<- {}))})))
+
+(defmethod t/transition-state  e/flow|stylist-matching|diversion-skipped
+  [_ _ _ state]
+  (-> state
+      (assoc-in k/top-stylist-rejected true)))
 
 ;; Searched
 ;; -> screen: results
@@ -321,10 +339,13 @@
 ;; -------------------------- stylist search by filters behavior
 
 (defmethod fx/perform-effects e/api-success-fetch-stylists-matching-filters
-  [_ _ {:keys [stylists]} _ _]
+  [_ _ {:keys [stylists]} _ state]
   (publish e/flow|stylist-matching|resulted
            {:method  :by-location
-            :results stylists}))
+            :results stylists})
+  (when (and (experiments/top-stylist? state)
+             (not (get-in state k/top-stylist-rejected))) ; TODO: divert only when a top stylist is in the results
+    (messages/handle-message e/flow|stylist-matching|diverted-to-top-stylist)))
 
 ;; -------------------------- presearch name
 

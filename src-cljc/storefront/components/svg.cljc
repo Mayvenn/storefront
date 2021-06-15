@@ -489,6 +489,16 @@
    [:svg opts
     ^:inline (svg-xlink "chat-bubble-diamonds-p-color")]))
 
+(defn crown [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "crown")]))
+
+(defn certified [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "certified")]))
+
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.
 
@@ -513,6 +523,8 @@
        :svg/worry-free                      ^:inline (worry-free attrs)
        :svg/chat-bubble-diamonds            ^:inline (chat-bubble-diamonds attrs)
        :svg/chat-bubble-diamonds-p-color    ^:inline (chat-bubble-diamonds-p-color attrs)
-
+       :svg/crown                           ^:inline (crown attrs)
+       :svg/experience-badge                ^:inline (experience-badge attrs)
+       :svg/certified                       ^:inline (certified attrs)
        [:div])
      [:div])))

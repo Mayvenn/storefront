@@ -108,25 +108,29 @@
     (route-back back)
     (route-to navigation-event navigation-args)))
 
+
 (defn requesting?
   "Look in app-state to see if we are waiting on a request to a particular
   endpoint. This returns falsey before the request gets made, so it's only
   useful if you also check to see whether the desired data is fetched."
   ([data request-key] (requesting? data :request-key request-key))
   ([data request-search request-key]
-   (query/get
-    {request-search request-key}
+   (query/first-starting-with
+    (if (coll? request-key)
+      {request-search request-key}
+      {request-search [request-key]})
     (get-in data keypaths/api-requests))))
 
 (defn requesting-from-endpoint?
-  "Determines if a request to a particular endpoint is in flight regardless of
+  " *DEPRECATED* as requesting? now does this and is more semantically consistent by doing so.
+  Determines if a request to a particular endpoint is in flight regardless of
   additional args. e.g. If there are requests to [:search-v2-product criteria-a]
   and [:search-v2-product criteria-b] either will match
   (requesting-from-endpoint? data [:search-v2-product])"
   [data request-key]
-  (some
-   #(= request-key (-> % :request-key first vector))
-   (get-in data keypaths/api-requests)))
+  (js/console.warn "requesting-from-endpoint? is deprecated and will be removed soon")
+  (spice.core/spy request-key)
+  (requesting? data request-key))
 
 (defn suppress-return-key [e]
   (when (= 13 (.-keyCode e))

@@ -632,18 +632,26 @@
 
 (defcomponent template
   [{:keys [spinning? gallery-modal header stylist-search-inputs scrim?] :as data} _ _]
-  [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
-   (component/build gallery-modal/organism gallery-modal nil)
-   (components.header/adventure-header header)
+  (if spinning?
+    [:div.max-580.bg-pale-purple.absolute.overlay
+     [:div.absolute.overlay.border.border-white.border-framed-white.m4.p5.flex.flex-column.items-center.justify-center
+      [:div (svg/mayvenn-logo {:class "spin-y"
+                               :style {:width "54px"}})]
+      [:div {:style {:height "50%"}}
+       [:div.title-2.canela.center
+        [:div "Sit back and relax."]
+        [:div "There’s no end to what your hair can do."]]]]]
 
-   (component/build search-inputs-organism stylist-search-inputs)
+    [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
+     (component/build gallery-modal/organism gallery-modal nil)
+     (components.header/adventure-header header)
 
-   (if spinning?
-     [:div.mt6 ui/spinner]
+     (component/build search-inputs-organism stylist-search-inputs)
+
      [:div.relative.stretch
       (component/build results data)
       (when scrim?
-        scrim-atom)])])
+        scrim-atom)]]))
 
 (def shopping-method-choice-query
   {:shopping-method-choice.error-title/id        "stylist-matching-shopping-method-choice"
@@ -764,13 +772,21 @@
         stylist-data                  {:just-added-only?       just-added-only?
                                        :just-added-experience? just-added-experience?
                                        :stylist-results-test?  stylist-results-test?}
-        matching-stylist-cards        (stylist-data->stylist-cards (assoc stylist-data :stylists matching-stylists))
-        non-matching-stylist-cards    (stylist-data->stylist-cards (assoc stylist-data :stylists non-matching-stylists))
+        top-stylist                   (first matching-stylists) ;; TODO: use real top matching algorithm
+        matching-stylist-cards        (stylist-data->stylist-cards
+                                       (assoc stylist-data :stylists matching-stylists))
+        non-matching-stylist-cards    (stylist-data->stylist-cards
+                                       (assoc stylist-data :stylists non-matching-stylists))
         filter-menu                   #?(:cljs (filter-menu/query app-state) :clj nil)
+        show-filter-menu?             (some? filter-menu)
+        show-top-stylist?             true
         address-field-errors          (get-in app-state k/address-field-errors)]
-    (if filter-menu
+    (cond
+      show-filter-menu?
       (component/build #?(:clj  (component/html [:div])
                           :cljs filter-menu/component) filter-menu nil)
+
+      :else
       (component/build template
                        {:gallery-modal            (gallery-modal-query app-state)
                         :spinning?                (or (empty? (:status matching))
@@ -791,22 +807,23 @@
                         :header                   (header<- current-order)
                         :stylist-results-present? (seq (concat matching-stylists non-matching-stylists))
 
-                        :stylist-results-returned?    (contains? (:status matching) :results/stylists)
-                        :list.stylist-counter/title   (str (count matching-stylists) " Stylists Found")
-                        :list.stylist-counter/key     (when (pos? (count matching-stylists))
-                                                        "stylist-count-content")
-                        :list.matching/key            (when (seq matching-stylists) "stylist-matching")
-                        :list.matching/cards          (cond->> matching-stylist-cards
-                                                        :always
-                                                        (mapv
-                                                         (fn [msc]
-                                                           {:type :matching-stylist-card
-                                                            :data msc}))
-                                                        (live-help/kustomer-started? app-state)
-                                                        (general-utils/insert-at-pos
-                                                         3
-                                                         {:type :live-help-breaker
-                                                          :data {:live-help/location "stylist-results-breaker"}}))
+                        :stylist-results-returned?  (contains? (:status matching) :results/stylists)
+                        :list.stylist-counter/title (str (count matching-stylists) " Stylists Found")
+                        :list.stylist-counter/key   (when (pos? (count matching-stylists))
+                                                      "stylist-count-content")
+                        :list.matching/key          (when (seq matching-stylists) "stylist-matching")
+                        :list.matching/cards        (cond->> matching-stylist-cards
+                                                      :always
+                                                      (mapv
+                                                       (fn [msc]
+                                                         {:type :matching-stylist-card
+                                                          :data msc}))
+
+                                                      (live-help/kustomer-started? app-state)
+                                                      (general-utils/insert-at-pos
+                                                       3
+                                                       {:type :live-help-breaker
+                                                        :data {:live-help/location "stylist-results-breaker"}}))
                         :list.breaker/id              (when (seq non-matching-stylists) "non-matching-breaker")
                         :list.breaker/results-content (when (and (seq non-matching-stylists)
                                                                  (empty? matching-stylists))

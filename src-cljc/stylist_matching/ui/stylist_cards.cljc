@@ -95,7 +95,7 @@
   (when id
     [:div.content-3.col-12.flex.items-center.flex
      {:data-test id}
-     (svg/experience-badge {:class  "mrp3 stroke-p-color"
+     (svg/experience-badge {:class  "mrp3 fill-p-color"
                             :style  {:margin-bottom "2px"}
                             :width  "12px"
                             :height "12px"})

@@ -522,6 +522,7 @@
 ;; ADVENTURE
 (defpath navigate-adventure)
 (defpath navigate-adventure-find-your-stylist)
+(defpath navigate-adventure-top-stylist)
 (defpath navigate-adventure-stylist-results)
 (defpath navigate-adventure-stylist-gallery)
 (defpath navigate-adventure-match-success)
@@ -614,6 +615,8 @@
 (defpath flow|stylist-matching|presearch-cleared)
 
 (defpath flow|stylist-matching|prepared)
+(defpath flow|stylist-matching|diverted-to-top-stylist)
+(defpath flow|stylist-matching|diversion-skipped)
 (defpath flow|stylist-matching|search-canceled)
 (defpath flow|stylist-matching|searched)
 (defpath flow|stylist-matching|resulted)
