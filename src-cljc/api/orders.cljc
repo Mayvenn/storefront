@@ -367,11 +367,9 @@
 ;; TODO: privatize
 (defn enrich-line-items-with-sku-data
   [sku-db shared-cart]
-  (let [indexed-sku-db (maps/index-by :legacy/variant-id (vals sku-db))]
-    (update shared-cart :line-items
-            #(for [item %]
-               (assoc item :sku (or (->> item :catalog/sku-id (get sku-db))
-                                    (->> item :legacy/variant-id (get indexed-sku-db))))))))
+  (update shared-cart :line-items
+          #(for [item %]
+             (assoc item :sku (->> item :catalog/sku-id (get sku-db))))))
 (defn ^:private meets-discount-criterion?
   [items [_word essentials rule-quantity]]
   (->> items
@@ -470,6 +468,12 @@
 (defn shared-cart->order [state sku-db shared-cart]
   (some->> shared-cart
            (enrich-line-items-with-sku-data sku-db)
+           apply-promos
+           shared-cart->waiter-order
+           (->order state)))
+
+(defn look-customization->order [state look-customization]
+  (some->> look-customization
            apply-promos
            shared-cart->waiter-order
            (->order state)))

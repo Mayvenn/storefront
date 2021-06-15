@@ -9,7 +9,6 @@
             api.products
             [catalog.facets :as facets]
             catalog.products
-            [catalog.looks :as looks]
             [catalog.selector.sku :as sku-selector]
             [clojure.string :as string]
             clojure.set
@@ -17,7 +16,6 @@
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.images :as images]
-            [storefront.accessors.products :as products]
             [storefront.accessors.shared-cart :as shared-cart]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
@@ -199,10 +197,12 @@
                                                   (map (partial maps/map-values first))
                                                   vec)})
         sliced-sku-db       (slice-sku-db (get-in app-state keypaths/v2-skus) shared-cart initial-selections)
-        availability        (reduce (fn [acc {:hair/keys [family color length]}]
+        availability        (reduce (fn [acc {:hair/keys [family color length]
+                                              in-stock?  :inventory/in-stock?}]
                                       (cond-> acc
-                                        (and family color length)
-                                        (update-in [(first family) (first color)] (fnil conj #{}) (first length)))) {} (vals sliced-sku-db))
+                                        (and family color length in-stock?)
+                                        (update-in [(first family) (first color)] (fnil conj #{}) (first length)))) {}
+                                    (vals sliced-sku-db))
         options             (initialize-look-picker-options (get-in app-state keypaths/v2-products)
                                                             sliced-sku-db
                                                             (get-in app-state keypaths/v2-images)
@@ -394,18 +394,19 @@
    :length-pickers
    (map-indexed
     (fn [index length-options]
-      (let [{:keys [selector/images] :as sku}
-            (first
-             (select
-              (merge
-               (dissoc selections :per-item)
-               (get-in selections [:per-item index]))
-              skus-db))
+      (let [{selected-hair-length :hair/length
+             item-hair-family     :hair/family} (get-in selections [:per-item index])
+            hair-family-and-color-skus
+            (select
+             (merge
+              (dissoc selections :per-item)
+              {:hair/family item-hair-family})
+             skus-db)
 
             hair-length-facet-option
             (get-in facets-db [:hair/length
                                :facet/options
-                               (get-in selections [:per-item index :hair/length])])
+                               selected-hair-length])
 
             hair-family-facet-option
             (get-in facets-db [:hair/family
@@ -414,25 +415,23 @@
         (cond->
             {:id               (str "picker-length-" index)
              :value-id         (str "picker-selected-length-" index "-" (:option/slug hair-length-facet-option))
-             :image-src        (->> images (select ?cart-product-image) first :url)
+             :image-src        (->> hair-family-and-color-skus first :selector/images (select ?cart-product-image) first :url)
              :options          length-options
              :primary          (str (:option/name hair-length-facet-option) " " (:sku/name hair-family-facet-option))
              :selected-value   (:option/slug hair-length-facet-option)
              :selection-target [events/control-look-detail-picker-option-select {:selection [:per-item index :hair/length]}]
              :open-target      [events/control-look-detail-picker-open {:picker-id [:per-item index :hair/length]}]}
 
-          (nil? sku) ;; Unavailable selection of facets
+          (nil? (first (select {:hair/length selected-hair-length} hair-family-and-color-skus)))
           (->
            (update :primary str " - Unavailable")
-           (assoc :primary-attrs {:class "red"}))))) ;; TODO: too low contrast
+           (assoc :primary-attrs {:class "red"}  ;; TODO: too low contrast
+                  :image-attrs {:style {:opacity "50%"}})))))
     (->> picker-options :per-item (mapv :hair/length)))})
 
 (defn query [data]
   (let [skus-db         (get-in data catalog.keypaths/detailed-look-skus-db)
         shared-cart     (get-in data keypaths/shared-cart-current)
-        line-items      (some->> shared-cart
-                                 :line-items
-                                 (shared-cart/enrich-line-items-with-sku-data skus-db))
         album-keyword   (get-in data keypaths/selected-album-keyword)
         look            (get-in data (conj keypaths/cms-ugc-collection-all-looks
                                            (get-in data keypaths/selected-look-id)))
@@ -441,11 +440,6 @@
         back            (first (get-in data keypaths/navigation-undo-stack))
         album-copy      (get ugc/album-copy album-keyword)
         back-event      (:default-back-event album-copy)
-        {:order/keys                                  [items]
-         {:keys [adjustments line-items-total total]} :waiter/order}
-        (api.orders/shared-cart->order data skus-db shared-cart)
-
-        discountable-services (select ?discountable items)
 
         ;; Looks query
         facets-db (facets/by-slug data)
@@ -469,7 +463,22 @@
 
         unavailable-lengths-selected? (not= (count uncustomized-look-product-items)
                                             (count skus-matching-selections))
-        sold-out?                     (some (complement :inventory/in-stock?) line-items)]
+
+
+        {:order/keys
+         [items]
+         {:keys [adjustments line-items-total total]}
+         :waiter/order}       (api.orders/look-customization->order
+                               data
+                               {:line-items
+                                (->> (concat skus-matching-selections services)
+                                     (group-by :catalog/sku-id)
+                                     (maps/map-values (fn [skus]
+                                                        {:sku (first skus)
+                                                         :item/quantity (count skus)}))
+                                     vals)})
+
+        discountable-services (select ?discountable items)]
     (merge ;; TODO: vvv demonstrate that this is functioning
            #?(:cljs (reviews/query-look-detail shared-cart data))
            ;; END TODO
@@ -523,15 +532,13 @@
 
             :cta/id                    "add-to-cart-submit"
             :cta/disabled?             (or (not contentful-look)
-                                           sold-out? ;; TODO merge sold out with unavailable
                                            unavailable-lengths-selected?
                                            (utils/requesting? data request-keys/create-order-from-shared-cart))
             :cta/target                [events/control-create-order-from-look
                                         {:shared-cart-id (:number shared-cart)
                                          :look-id        (:id contentful-look)}]
-            :cta/disabled-content      (cond
-                                         unavailable-lengths-selected? "Unavailable"
-                                         sold-out?                     "Sold Out")
+            :cta/disabled-content      (when unavailable-lengths-selected?
+                                         "Unavailable")
             :cta/spinning?             (utils/requesting? data request-keys/create-order-from-shared-cart)
             :cta/label                 "Add To Bag"
             :carousel/images           (imgs (get-in data keypaths/v2-images) contentful-look items)

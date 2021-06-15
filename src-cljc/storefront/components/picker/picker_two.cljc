@@ -43,14 +43,15 @@
    options])
 
 (defn ^:private picker-face
-  [{:picker-face/keys [id attrs label image-src]}]
+  [{:picker-face/keys [id primary-attrs image-attrs label image-src]}]
   [:div.col-12.flex.justify-between.items-center
-   (merge attrs {:style {:height "100%"}})
+   (merge primary-attrs {:style {:height "100%"}})
    (ui/img
-    {:src         image-src
-     :width       "63"
-     :square-size 63
-     :max-size    100})
+    (merge image-attrs
+           {:src         image-src
+            :width       "63"
+            :square-size 63
+            :max-size    100}))
    [:div.ml2.col-12 {:data-test id} label]
    [:div.self-center ^:inline picker-chevron]])
 
@@ -63,12 +64,14 @@
      selected-value
      open-target
      options
-     primary-attrs]
+     primary-attrs
+     image-attrs]
     [selection-event selection-args] :selection-target}]
-  (let [face-data #:picker-face{:id        value-id
-                                :attrs     primary-attrs
-                                :image-src image-src
-                                :label     primary}]
+  (let [face-data #:picker-face{:id            value-id
+                                :primary-attrs primary-attrs
+                                :image-attrs   image-attrs
+                                :image-src     image-src
+                                :label         primary}]
     [:div.bg-white.my2.p3
      {:key id}
      [:div.hide-on-tb-dt
