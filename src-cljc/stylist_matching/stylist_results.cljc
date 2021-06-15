@@ -632,18 +632,26 @@
 
 (defcomponent template
   [{:keys [spinning? gallery-modal header stylist-search-inputs scrim?] :as data} _ _]
-  [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
-   (component/build gallery-modal/organism gallery-modal nil)
-   (components.header/adventure-header header)
+  (if spinning?
+    [:div.max-580.bg-pale-purple.absolute.overlay
+     [:div.absolute.overlay.border.border-white.border-framed-white.m4.p5.flex.flex-column.items-center.justify-center
+      [:div (svg/mayvenn-logo {:class "spin-y"
+                               :style {:width "54px"}})]
+      [:div {:style {:height "50%"}}
+       [:div.title-2.canela.center
+        [:div "Sit back and relax."]
+        [:div "There’s no end to what your hair can do."]]]]]
 
-   (component/build search-inputs-organism stylist-search-inputs)
+    [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
+     (component/build gallery-modal/organism gallery-modal nil)
+     (components.header/adventure-header header)
 
-   (if spinning?
-     [:div.mt6 ui/spinner]
+     (component/build search-inputs-organism stylist-search-inputs)
+
      [:div.relative.stretch
       (component/build results data)
       (when scrim?
-        scrim-atom)])])
+        scrim-atom)]]))
 
 (def shopping-method-choice-query
   {:shopping-method-choice.error-title/id        "stylist-matching-shopping-method-choice"
