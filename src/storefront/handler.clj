@@ -50,7 +50,15 @@
             [storefront.views :as views]
             storefront.accessors.contentful
             [storefront.accessors.sites :as sites]
+            catalog.look-details-v202105
             [api.stylist :as stylist]))
+
+(defn- transition [app-state [event args]]
+  (reduce (fn [app-state dispatch]
+            (or (transitions/transition-state dispatch event args app-state)
+                app-state))
+          app-state
+          (reductions conj [] event)))
 
 (defn ^:private path-for
   "Like routes/path-for, but preserves query params."
@@ -432,6 +440,7 @@
            order-products :products
            order-images   :images} (when (seq needed-skus) ;; NOTE: does not return addon services because they do not have associated products
                                      (api/fetch-v3-products storeback-config {:selector/sku-ids needed-skus}))
+          ;; TODO: clean this up
           {addon-skus :skus}       (api/fetch-v2-skus storeback-config ;; NOTE: get all addon services, except for wig construction
                                                       {:catalog/department "service"
                                                        :service/category   ["preparation" "customization"]
@@ -568,13 +577,15 @@
                                   :aladdin-free-install)]
     (if (nil? shared-cart)
       (util.response/redirect (path-for req events/navigate-shop-by-look {:album-keyword album-keyword}))
-      (html-response render-ctx (-> data
-                                    (assoc-in keypaths/selected-album-keyword (or override-keyword album-keyword))
-                                    (assoc-in keypaths/selected-look-id kw-look-id)
-                                    (assoc-in keypaths/shared-cart-current shared-cart)
-                                    (assoc-in keypaths/shared-cart-creator shared-cart-creator)
-                                    (update-in keypaths/v2-skus merge (products/index-skus skus))
-                                    (update-in keypaths/v2-products merge (products/index-products products)))))))
+      (html-response render-ctx
+                     (-> data
+                         (assoc-in keypaths/selected-album-keyword (or override-keyword album-keyword))
+                         (assoc-in keypaths/selected-look-id kw-look-id)
+                         (assoc-in keypaths/shared-cart-current shared-cart)
+                         (assoc-in keypaths/shared-cart-creator shared-cart-creator)
+                         (update-in keypaths/v2-skus merge (products/index-skus skus))
+                         (update-in keypaths/v2-products merge (products/index-products products))
+                         (transition [events/initialize-look-details {:shared-cart shared-cart}]))))))
 
 (defn generic-server-render [render-ctx data req params]
   (html-response render-ctx data))
@@ -760,13 +771,6 @@
         (update-in keypaths/v2-images merge images)
         (update-in keypaths/v2-products merge (products/index-products products))
         (update-in keypaths/v2-skus merge skus))))
-
-(defn- transition [app-state [event args]]
-  (reduce (fn [app-state dispatch]
-            (or (transitions/transition-state dispatch event args app-state)
-                app-state))
-          app-state
-          (reductions conj [] event)))
 
 (defn frontend-routes [{:keys [storeback-config environment client-version] :as ctx}]
   (fn [{:keys [state] :as req}]

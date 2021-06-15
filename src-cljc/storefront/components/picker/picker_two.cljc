@@ -43,9 +43,9 @@
    options])
 
 (defn ^:private picker-face
-  [{:picker-face/keys [id label image-src]}]
+  [{:picker-face/keys [id attrs label image-src]}]
   [:div.col-12.flex.justify-between.items-center
-   {:style {:height "100%"}}
+   (merge attrs {:style {:height "100%"}})
    (ui/img
     {:src         image-src
      :width       "63"
@@ -62,11 +62,13 @@
      image-src
      selected-value
      open-target
-     options]
+     options
+     primary-attrs]
     [selection-event selection-args] :selection-target}]
   (let [face-data #:picker-face{:id        value-id
+                                :attrs     primary-attrs
                                 :image-src image-src
-                                :label   primary}]
+                                :label     primary}]
     [:div.bg-white.my2.p3
      {:key id}
      [:div.hide-on-tb-dt
@@ -78,10 +80,12 @@
        {:value     selected-value
         :on-change #(messages/handle-message selection-event
                                              (assoc selection-args :value (.-value (.-target %))))
-        :options   (map (fn [{:option/keys [value label]}]
-                          [:option {:value value
-                                    :key   (str id "-" value)}
-                           label])
+        :options   (map (fn [{:option/keys [value label available?]}]
+                          [:option (merge {:value value
+                                           :label label
+                                           :key   (str id "-" value)}
+                                          (when-not available?
+                                            {:disabled true}))])
                         options)})
       (picker-face (update face-data :id str "-desktop"))]]))
 
@@ -91,21 +95,20 @@
      label
      checked?
      selection-target
-     secondary-label
-     available?]}]
+     label-attrs]}]
   [:div {:key       id
          :data-test id}
-   (ui/option {:height   "4em"
-               :key      (str id "-option")
-               :href     "#"
-               :on-click (apply utils/send-event-callback selection-target)}
+   (ui/option (merge
+               {:height   "4em"
+                :key      (str id "-option")
+                :href     "#"}
+               (when selection-target
+                 {:on-click (apply utils/send-event-callback selection-target)}))
               (simple-content-layer
-               (list
-                [:div.col-2
-                 {:key "primary-label"}
-                 label
-                 (when-not available?
-                   secondary-label)]))
+               [:div
+                (merge {:key "primary-label"}
+                       label-attrs)
+                label])
               [:div
                (when checked?
                  (simple-selected-layer))])])
@@ -208,7 +211,7 @@
      visible?
      title
      close-target]
-    picker-type :picker-modal/type} owner _]
+    picker-type :picker-modal/type} _ _]
   [:div
    (slide-animate
     visible?
