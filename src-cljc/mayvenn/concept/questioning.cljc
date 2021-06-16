@@ -66,14 +66,18 @@
 
 (defn <-
   [state id]
-  {:questioning/id id
-   :questions      (case id
-                     :unified-freeinstall db-unnamed-v1
-                     :unnamed-v1          db-unnamed-v1)
-   :answers        (get-in state
-                        (conj k/models-questionings id))
-   :progression    (progression/<- state
-                                (keyword :questionings id))})
+  (when-let [questions (case id
+                         :unified-freeinstall db-unnamed-v1
+                         :unnamed-v1          db-unnamed-v1)]
+    (let [progression (progression/<- state
+                          (keyword "questionings" id))]
+      {:questioning/id id
+       :questioning/unanswered (- (count questions)
+                                  (count progression))
+       :questions      questions
+       :answers        (get-in state
+                               (conj k/models-questionings id))
+       :progression    progression})))
 
 ;; Behavior
 
@@ -88,7 +92,7 @@
 (defmethod fx/perform-effects e/biz|questioning|reset
   [_ _ {:questioning/keys [id]} _ _]
   (publish e/biz|progression|reset
-           {:progression/id    (keyword :questionings id)
+           {:progression/id    (keyword "questionings" id)
             :progression/value #{}}))
 
 (defmethod t/transition-state e/biz|questioning|answered
@@ -106,7 +110,7 @@
 (defmethod fx/perform-effects e/biz|questioning|answered
   [_ _ {:questioning/keys [id] :question/keys [idx]} _ _]
   (publish e/biz|progression|progressed
-           {:progression/id    (keyword :questionings id)
+           {:progression/id    (keyword "questionings" id)
             :progression/value idx}))
 
 (defmethod trk/perform-track e/biz|questioning|answered
@@ -125,6 +129,12 @@
 ;;;; Submitted
 
 (defmethod fx/perform-effects e/biz|questioning|submitted
-  [_ _ {:questioning/keys [id] :on/keys [success]} _ state]
+  [_ _ {:questioning/keys [id]
+        :keys [answers]
+        :on/keys [success]} _ state]
   (when (and id success)
-    (publish success (<- state id))))
+    (let [[e args] success]
+      (publish e (merge {}
+                        args
+                        (<- state id)
+                        {:answers answers})))))

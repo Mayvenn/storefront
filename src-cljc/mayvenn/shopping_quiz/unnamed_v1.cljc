@@ -155,14 +155,15 @@
     :quiz.alternative/cta-label  "Browse Hair"}))
 
 (defn see-results<
-  [questions progression]
-  (when (>= (count progression) (dec (count questions)))
+  [{:questioning/keys [unanswered]
+    :keys [answers]}]
+  (when (<= unanswered 1)
     {:action/id        "quiz-see-results"
-     :action/disabled? (not= (count questions)
-                             (count progression))
+     :action/disabled? (not (zero? unanswered))
      :action/target    [e/biz|questioning|submitted
                         {:questioning/id id
-                         :on/success     e/biz|looks-suggestions|queried}]
+                         :answers        answers
+                         :on/success     [e/biz|looks-suggestions|queried]}]
      :action/label     "See Results"}))
 
 (defn questions<
@@ -198,7 +199,8 @@
 (defn ^:export page
   [state]
   (let [{:order.items/keys [quantity]}          (api.orders/current state)
-        {:keys [questions answers progression]} (questioning/<- state id)
+        {:keys [questions answers progression]
+         :as questioning} (questioning/<- state id)
         looks-suggestions                       (looks-suggestions/<- state id)
         header-data                             {:forced-mobile-layout? true
                                                  :quantity              (or quantity 0)}]
@@ -220,7 +222,7 @@
       (->> {:header      header-data
             :progress    (progress< progression)
             :questions   (questions< questions answers progression)
-            :see-results (see-results< questions progression)}
+            :see-results (see-results< questioning)}
            (c/build questioning-template)))))
 
 ;;;; Behavior

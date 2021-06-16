@@ -714,6 +714,12 @@
 ;; Shopping Quiz iterations
 (defpath navigate-shopping-quiz)
 (defpath navigate-shopping-quiz-unified-freeinstall)
+(defpath navigate-shopping-quiz-unified-freeinstall-intro)
+(defpath navigate-shopping-quiz-unified-freeinstall-question)
+(defpath navigate-shopping-quiz-unified-freeinstall-recommendations)
+(defpath navigate-shopping-quiz-unified-freeinstall-recommendations-summary)
+(defpath navigate-shopping-quiz-unified-freeinstall-find-your-stylist)
+
 
 ;; NOTE
 ;; Models
@@ -726,8 +732,7 @@
 ;;
 ;; Prepend events with these prefixes to enhance understanding
 ;;
-;; flow|
-;; - sequence of user interactions
+;; flow| ;; - sequence of user interactions
 ;; - visual in nature (ui state machine)
 ;; - the 'noun' is the ui state
 ;;
@@ -749,5 +754,3 @@
 (defpath control-stylist-gallery-posts-drag-predicate-initialized)
 (defpath stylist-gallery-posts-drag-predicate-loop)
 (defpath stylist-gallery-posts-reordered)
-
-(defpath flow|adventure|advanced)
