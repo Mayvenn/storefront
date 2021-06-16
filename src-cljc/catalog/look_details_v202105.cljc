@@ -34,7 +34,8 @@
             [storefront.transitions :as transitions]
             [storefront.ugc :as ugc]
             [catalog.keypaths :as catalog.keypaths]
-            [spice.selector :as selector]))
+            [spice.selector :as selector]
+            [ui.molecules]))
 
 ;; A customizable look is a product merging all of the products that the base
 ;; look's skus come from It has two levels of selectors, those that affect all
@@ -309,28 +310,31 @@
            picker-modal
            color-picker
            length-pickers] :as queried-data}]
-  [:div.bg-refresh-gray.bg-white-on-tb-dt
-   [:div.p3 (component/build look-card queried-data "look-card")]
-   (if spinning?
-     [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
-     [:div
-      (component/build picker/modal picker-modal)
-      [:div.p3 (component/build look-title queried-data)]
+  [:div
+   [:div.bg-white.px2.my2
+    (ui.molecules/return-link queried-data)]
+   [:div.bg-refresh-gray.bg-white-on-tb-dt
+    [:div.p3 (component/build look-card queried-data "look-card")]
+    (if spinning?
+      [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
+      [:div
+       (component/build picker/modal picker-modal)
+       [:div.p3 (component/build look-title queried-data)]
 
-      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
-       [:div
-        [:div.my4 ;; TODO extract this component
-         [:div.proxima.title-3.shout "Color"]
-         (picker/component color-picker)]
-        [:div.my4 ;; TODO extract this component
-         [:div.proxima.title-3.shout "Lengths"]
-         (map picker/component length-pickers)]]
-       [:div.bg-white.mxn3
-        (component/build look-total queried-data nil)
-        [:div.col-11.mx-auto.mbn2
-         (add-to-cart-button queried-data)
-         #?(:cljs (component/build quadpay/component queried-data nil))]]]])
-   (yotpo-reviews-component queried-data)])
+       [:div.col-on-tb-dt.col-6-on-tb-dt.px3
+        [:div
+         [:div.my4 ;; TODO extract this component
+          [:div.proxima.title-3.shout "Color"]
+          (picker/component color-picker)]
+         [:div.my4 ;; TODO extract this component
+          [:div.proxima.title-3.shout "Lengths"]
+          (map picker/component length-pickers)]]
+        [:div.bg-white.mxn3
+         (component/build look-total queried-data nil)
+         [:div.col-11.mx-auto.mbn2
+          (add-to-cart-button queried-data)
+          #?(:cljs (component/build quadpay/component queried-data nil))]]]])
+    (yotpo-reviews-component queried-data)]])
 
 (defn ^:private get-model-image
   [images-catalog {:keys [copy/title] :as skuer}]
@@ -546,6 +550,8 @@
             :cta/label                 "Add To Bag"
             :carousel/images           (imgs (get-in data keypaths/v2-images) contentful-look items)
             :carousel/data             {:look look :shared-cart shared-cart}
+            :return-link/copy          "Back"
+            :return-link/id            "back"
             :return-link/event-message (if (and (not back) back-event)
                                          [back-event]
                                          [events/navigate-shop-by-look {:album-keyword album-keyword}])
