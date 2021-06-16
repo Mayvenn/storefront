@@ -1,6 +1,8 @@
 (ns catalog.look-details-v202105
   "Shopping by Looks: Detail page for an individual 'look'"
-  (:require #?@(:cljs [[storefront.hooks.quadpay :as quadpay]
+  (:require #?@(:cljs [[storefront.api :as api]
+                       [storefront.frontend-trackings :as trackings]
+                       [storefront.hooks.quadpay :as quadpay]
                        [storefront.platform.messages :as messages]
                        ;; popups, must be required to load properly
                        looks.customization-modal])
@@ -468,21 +470,20 @@
         {:order/keys
          [items]
          {:keys [adjustments line-items-total total]}
-         :waiter/order}       (api.orders/look-customization->order
-                               data
-                               {:line-items
-                                (->> (concat skus-matching-selections services)
-                                     (group-by :catalog/sku-id)
-                                     (maps/map-values (fn [skus]
-                                                        {:sku (first skus)
-                                                         :item/quantity (count skus)}))
-                                     vals)})
+         :waiter/order} (api.orders/look-customization->order
+                         data
+                         {:line-items
+                          (->> (concat skus-matching-selections services)
+                               (group-by :catalog/sku-id)
+                               (maps/map-values (fn [skus]
+                                                  {:sku           (first skus)
+                                                   :item/quantity (count skus)}))
+                               vals)})
 
         discountable-services (select ?discountable items)]
     (merge ;; TODO: vvv demonstrate that this is functioning
            #?(:cljs (reviews/query-look-detail shared-cart data))
            ;; END TODO
-
            {:spinning? (or (not contentful-look)
                            (utils/requesting? data request-keys/fetch-shared-cart))}
 
@@ -533,13 +534,15 @@
             :cta/id                    "add-to-cart-submit"
             :cta/disabled?             (or (not contentful-look)
                                            unavailable-lengths-selected?
-                                           (utils/requesting? data request-keys/create-order-from-shared-cart))
-            :cta/target                [events/control-create-order-from-look
-                                        {:shared-cart-id (:number shared-cart)
-                                         :look-id        (:id contentful-look)}]
+                                           (utils/requesting? data request-keys/new-order-from-sku-ids))
+            :cta/target                [events/control-create-order-from-customized-look
+                                        {:look-id (:id contentful-look)
+                                         :items   (into {} (map (fn [item]
+                                                                  {(:catalog/sku-id item) (:item/quantity item)})
+                                                                items))}]
             :cta/disabled-content      (when unavailable-lengths-selected?
                                          "Unavailable")
-            :cta/spinning?             (utils/requesting? data request-keys/create-order-from-shared-cart)
+            :cta/spinning?             (utils/requesting? data request-keys/new-order-from-sku-ids)
             :cta/label                 "Add To Bag"
             :carousel/images           (imgs (get-in data keypaths/v2-images) contentful-look items)
             :carousel/data             {:look look :shared-cart shared-cart}
@@ -607,3 +610,23 @@
 (defmethod transitions/transition-state events/control-look-detail-picker-close
   [_ event _ app-state]
   (assoc-in app-state catalog.keypaths/detailed-look-picker-visible? false))
+
+(defmethod effects/perform-effects events/control-create-order-from-customized-look
+  [_ event {:keys [items look-id] :as args} _ app-state]
+  #?(:cljs
+     (api/new-order-from-sku-ids (get-in app-state keypaths/session-id)
+                                   {:store-stylist-id     (get-in app-state keypaths/store-stylist-id)
+                                    :servicing-stylist-id (get-in app-state keypaths/order-servicing-stylist-id)
+                                    :sku-id->quantity     items}
+                                   (fn [{:keys [order]}]
+                                     (messages/handle-message
+                                      events/api-success-update-order
+                                      {:order    order
+                                       :navigate events/navigate-added-to-cart})
+                                     (trackings/track-cart-initialization
+                                      "look-customization"
+                                     look-id
+                                      {:skus-db          (get-in app-state keypaths/v2-skus)
+                                       :image-catalog    (get-in app-state keypaths/v2-images)
+                                       :store-experience (get-in app-state keypaths/store-experience)
+                                       :order            order})))))
