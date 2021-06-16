@@ -2,7 +2,9 @@
   "Shopping by Looks: Detail page for an individual 'look'"
   (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.frontend-trackings :as trackings]
+                       [storefront.trackings]
                        [storefront.hooks.quadpay :as quadpay]
+                       [storefront.hooks.stringer :as stringer]
                        [storefront.platform.messages :as messages]
                        ;; popups, must be required to load properly
                        looks.customization-modal])
@@ -575,6 +577,14 @@
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
+
+#?(:cljs
+   (defmethod storefront.trackings/perform-track events/control-look-detail-picker-open
+     [_ _ {:keys [picker-id] :as args} _]
+     (let [picker-name (name (last picker-id))]
+       (stringer/track-event "look_facet-clicked" (merge {:facet-selected picker-name}
+                                                         (when (= "length" picker-name)
+                                                           {:position (second picker-id)})))) ))
 
 (defmethod transitions/transition-state events/control-look-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]
