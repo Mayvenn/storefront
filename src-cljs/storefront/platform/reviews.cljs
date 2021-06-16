@@ -1,5 +1,8 @@
 (ns storefront.platform.reviews
-  (:require [catalog.products :as products]
+  (:require [api.catalog]
+            [catalog.products :as products]
+            [storefront.accessors.products :as access-product]
+            [storefront.accessors.shared-cart :as shared-cart]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -71,8 +74,14 @@
         {:yotpo-data-attributes (yotpo-data-attributes product all-skus)}))))
 
 (defn query-look-detail [shared-cart-with-skus data]
-  (let [line-item (first (:line-items shared-cart-with-skus))
-        product (get (get-in data keypaths/v2-products) (first (:selector/from-products line-item)))]
+  (let [all-skus (get-in data keypaths/v2-skus)
+        sku-id   (->> shared-cart-with-skus
+                     :line-items
+                     (shared-cart/enrich-line-items-with-sku-data all-skus)
+                     (api.catalog/select api.catalog/?hair)
+                     first
+                     :catalog/sku-id)
+        products (get-in data keypaths/v2-products)
+        product  (access-product/find-product-by-sku-id products sku-id)]
     (when (products/eligible-for-reviews? product)
-      (let [all-skus (get-in data keypaths/v2-skus)]
-        {:yotpo-data-attributes (yotpo-data-attributes product all-skus)}))))
+      {:yotpo-data-attributes (yotpo-data-attributes product all-skus)})))
