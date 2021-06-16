@@ -96,26 +96,6 @@
     (when-not (str/blank? (:description look))
       [:p.mt1.content-4.proxima.dark-gray (:description look)])]])
 
-(component/defcomponent look-card-v202105
-  [{:keys [shared-cart look yotpo-data-attributes] :as queried-data} _ _]
-  [:div.bg-refresh-gray.p3
-   [:div.bg-white
-    [:div.slides-middle.col-on-tb-dt.col-6-on-tb-dt.p3
-     [:div
-      (when shared-cart
-        (carousel {:look look :shared-cart shared-cart} (:carousel/images queried-data)))]
-     [:div.pb3.pt1
-      [:div.flex.items-center
-       [:div.flex-auto.proxima {:style {:word-break "break-all"}}
-        (:title look)]
-       [:div.ml1.line-height-1 {:style {:width  "21px"
-                                        :height "21px"}}
-        ^:inline (svg/instagram {:class "fill-dark-gray"})]]
-      (when yotpo-data-attributes
-        (component/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil))
-      (when-not (str/blank? (:description look))
-        [:p.mt1.content-4.proxima.dark-gray (:description look)])]]]])
-
 (defn look-details-body
   [{:keys [creating-order? sold-out? look shared-cart fetching-shared-cart?
            base-price discounted-price quadpay-loaded? discount-text

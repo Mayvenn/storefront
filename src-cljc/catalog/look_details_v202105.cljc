@@ -242,27 +242,28 @@
                                         :items       1}
                              :slides   (:carousel/images data)}})))
 
-(defn yotpo-reviews-component [{:keys [yotpo-data-attributes]}]
+(defn yotpo-reviews-summary-component [{:keys [yotpo-data-attributes]}]
   (when yotpo-data-attributes
     (component/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil)))
 
+(defn yotpo-reviews-component [{:keys [yotpo-data-attributes]}]
+  (when yotpo-data-attributes
+    [:div.bg-white.col-10-on-dt.mx-auto (component/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)]))
 
-(component/defcomponent ^:private look-card-v202105
+(component/defcomponent ^:private look-card
   [{:look-card/keys [primary secondary] :as queried-data} _ _]
-  [:div.bg-refresh-gray.p3
-   [:div.bg-white
-    [:div.slides-middle.col-on-tb-dt.col-6-on-tb-dt.p3
-     (carousel queried-data)
-     [:div.pb3.pt1
-      [:div.flex.items-center
-       [:div.flex-auto.proxima {:style {:word-break "break-all"}}
-        primary]
-       [:div.ml1.line-height-1 {:style {:width  "21px"
-                                        :height "21px"}}
-        ^:inline (svg/instagram {:class "fill-dark-gray"})]]
-      (yotpo-reviews-component queried-data)
-      (when-not (string/blank? secondary)
-        [:p.mt1.content-4.proxima.dark-gray secondary])]]]])
+  [:div.slides-middle.col-on-tb-dt.col-6-on-tb-dt.p3.bg-white
+   (carousel queried-data)
+   [:div.pb3.pt1
+    [:div.flex.items-center
+     [:div.flex-auto.proxima {:style {:word-break "break-all"}}
+      primary]
+     [:div.ml1.line-height-1 {:style {:width  "21px"
+                                      :height "21px"}}
+      ^:inline (svg/instagram {:class "fill-dark-gray"})]]
+    (yotpo-reviews-summary-component queried-data)
+    (when-not (string/blank? secondary)
+      [:p.mt1.content-4.proxima.dark-gray secondary])]])
 
 (component/defcomponent small-cta
   [{:cta/keys [id target label disabled? disabled-content spinning?]} _ _]
@@ -294,9 +295,9 @@
 
 (component/defcomponent look-total
   [{:look-total/keys [primary secondary tertiary]}_ _]
-  [:div.center.pt4
+  [:div.center.pt4.bg-white
    (when primary
-     [:div.center.flex.items-center.justify-center.title-2.bold
+     [:div.center.flex.items-center.justify-center.title-2.bold.shout
       (svg/discount-tag {:height "28px"
                          :width  "28px"})
       primary])
@@ -308,24 +309,28 @@
            picker-modal
            color-picker
            length-pickers] :as queried-data}]
-  [:div.clearfix
-   (component/build look-card-v202105 queried-data "look-card")
+  [:div.bg-refresh-gray.bg-white-on-tb-dt
+   [:div.p3 (component/build look-card queried-data "look-card")]
    (if spinning?
      [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
-     [:div.px2.bg-refresh-gray
+     [:div
       (component/build picker/modal picker-modal)
-      (component/build look-title queried-data)
+      [:div.p3 (component/build look-title queried-data)]
 
-      [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
-       [:div.my4 ;; TODO extract this component
-        [:div.proxima.title-3.shout "Color"]
-        (picker/component color-picker)]
-       [:div.my4 ;; TODO extract this component
-        [:div.proxima.title-3.shout "Lengths"]
-        (map picker/component length-pickers)]
-       (component/build look-total queried-data nil)
-       [:div.col-11.mx-auto (add-to-cart-button queried-data)]
-       #?(:cljs (component/build quadpay/component queried-data nil))]])])
+      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
+       [:div
+        [:div.my4 ;; TODO extract this component
+         [:div.proxima.title-3.shout "Color"]
+         (picker/component color-picker)]
+        [:div.my4 ;; TODO extract this component
+         [:div.proxima.title-3.shout "Lengths"]
+         (map picker/component length-pickers)]]
+       [:div.bg-white.mxn3
+        (component/build look-total queried-data nil)
+        [:div.col-11.mx-auto.mbn2
+         (add-to-cart-button queried-data)
+         #?(:cljs (component/build quadpay/component queried-data nil))]]]])
+   (yotpo-reviews-component queried-data)])
 
 (defn ^:private get-model-image
   [images-catalog {:keys [copy/title] :as skuer}]
@@ -481,9 +486,7 @@
                                vals)})
 
         discountable-services (select ?discountable items)]
-    (merge ;; TODO: vvv demonstrate that this is functioning
-           #?(:cljs (reviews/query-look-detail shared-cart data))
-           ;; END TODO
+    (merge #?(:cljs (reviews/query-look-detail shared-cart data))
            {:spinning? (or (not contentful-look)
                            (utils/requesting? data request-keys/fetch-shared-cart))}
 
