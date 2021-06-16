@@ -264,26 +264,26 @@
      :cart-item-square-thumbnail/ucare-id      image-id}))
 
 (defn query [data]
-  (let [skus          (get-in data keypaths/v2-skus)
-        skus-db       skus
-        shared-cart   (get-in data keypaths/shared-cart-current)
-        products      (get-in data keypaths/v2-products)
-        facets        (get-in data keypaths/v2-facets)
-        line-items    (some->> shared-cart
-                               :line-items
-                               (shared-cart/enrich-line-items-with-sku-data skus)
-                               (map (partial add-product-title-and-color-to-line-item products facets)))
-        album-keyword (get-in data keypaths/selected-album-keyword)
-        look          (contentful/look->look-detail-social-card album-keyword
-                                                                (contentful/selected-look data))
-        album-copy    (get ugc/album-copy album-keyword)
-        back          (first (get-in data keypaths/navigation-undo-stack))
-        back-event    (:default-back-event album-copy)
+  (let [skus                  (get-in data keypaths/v2-skus)
+        skus-db               skus
+        shared-cart           (get-in data keypaths/shared-cart-current)
+        products              (get-in data keypaths/v2-products)
+        facets                (get-in data keypaths/v2-facets)
+        line-items            (some->> shared-cart
+                                     :line-items
+                                     (shared-cart/enrich-line-items-with-sku-data skus)
+                                     (map (partial add-product-title-and-color-to-line-item products facets)))
+        album-keyword         (get-in data keypaths/selected-album-keyword)
+        look                  (contentful/look->look-detail-social-card album-keyword
+                                                                      (contentful/selected-look data))
+        album-copy            (get ugc/album-copy album-keyword)
+        back                  (first (get-in data keypaths/navigation-undo-stack))
+        back-event            (:default-back-event album-copy)
         {:order/keys                                  [items]
-         item-quantity                                :order.items/quantity
          {:keys [adjustments line-items-total total]} :waiter/order}
         (api.orders/shared-cart->order data skus-db shared-cart)
-
+        physical-cart-items   (->> items
+                                   (select ?physical))
         discountable-services (select ?discountable items)]
     (merge {:shared-cart           shared-cart
             :look                  look
@@ -300,8 +300,7 @@
                                           (filter (comp not (partial contains? #{"freeinstall"}) :name))
                                           first
                                           :name))
-            :cart-items            (->> items
-                                        (select ?physical)
+            :cart-items            (->> physical-cart-items
                                         cart-items-query
                                         shared-cart/sort-by-depart-and-price)
             :service-line-items    (mapv (partial service-line-item-query) discountable-services)
@@ -312,7 +311,7 @@
                                     :look-customization.button/title  "Customize the look"})
             :carousel/images     (imgs (get-in data keypaths/v2-images) look items)
             :items-title/id      "item-quantity-in-look"
-            :items-title/primary (str item-quantity " items in this " (:short-name album-copy))
+            :items-title/primary (str (reduce + 0 (map :item/quantity physical-cart-items)) " products in this " (:short-name album-copy))
 
             :return-link/event-message (if (and (not back) back-event)
                                          [back-event]

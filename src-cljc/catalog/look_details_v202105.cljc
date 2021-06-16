@@ -517,11 +517,8 @@
                  secondary        (if discounted? discounted-price total-price)
                  tertiary         (when discounted? total-price)]
              {:look-title/primary    title
-              :look-title/quaternary (str (->> shared-cart
-                                               :line-items
-                                               (map :item/quantity)
-                                               (reduce + 0))
-                                          " items in this " (:short-name album-copy))
+              :look-title/quaternary (str (count uncustomized-look-product-items)
+                                          " products in this " (:short-name album-copy))
               :look-title/secondary  secondary
               :look-title/tertiary   tertiary
 
