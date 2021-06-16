@@ -129,7 +129,7 @@
   (requesting-from-endpoint? data [:search-v2-product])"
   [data request-key]
   (js/console.warn "requesting-from-endpoint? is deprecated and will be removed soon")
-  (spice.core/spy request-key)
+  request-key
   (requesting? data request-key))
 
 (defn suppress-return-key [e]
