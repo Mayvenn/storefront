@@ -584,7 +584,19 @@
      (let [picker-name (name (last picker-id))]
        (stringer/track-event "look_facet-clicked" (merge {:facet-selected picker-name}
                                                          (when (= "length" picker-name)
-                                                           {:position (second picker-id)})))) ))
+                                                           {:position (second picker-id)}))))))
+
+#?(:cljs
+   (defmethod storefront.trackings/perform-track events/control-look-detail-picker-option-select
+     [_ _ {:keys [selection value] :as args} _]
+     (let [picker-name (name (last selection))]
+       (stringer/track-event "look_facet-changed" (merge {:facet-selected picker-name}
+                                                         (cond (= "color" picker-name)
+                                                               {:selected-color value}
+
+                                                               (= "length" picker-name)
+                                                               {:position        (second selection)
+                                                                :selected-length value}))))))
 
 (defmethod transitions/transition-state events/control-look-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]
