@@ -193,7 +193,7 @@
   (mapcat #(repeat (:item/quantity %) (dissoc % :item/quantity)) items))
 
 (defmethod transitions/transition-state events/initialize-look-details
-  [_ event {:as args :keys [shared-cart]} app-state]
+  [_ _ {:keys [shared-cart]} app-state]
   (let [{physical-line-items false
          services            true} (->> shared-cart
                                         (enrich-and-sort-shared-cart-items (get-in app-state keypaths/v2-skus))
@@ -317,26 +317,25 @@
   (did-mount [this]
     (component/set-state! this :truncatable? (< 3 (get-number-of-lines (.-caption (.-refs this))))))
   (render [this]
-    (let [{:look-card/keys [secondary]}     (component/get-props this)
-          {:keys [truncatable? show-more?]} (component/get-state this)
-          {caption-attrs :caption-attrs
-           cta-label     :cta/label
-           cta-id        :cta/id}           (when truncatable?
-                                              (if show-more?
-                                                {:cta/id    "toggle-caption-closed"
-                                                 :cta/label "Read Less"}
-                                                {:cta/id        "toggle-caption-open"
-                                                 :caption-attrs {:style {:display            "-webkit-box"
-                                                                         :-webkit-box-orient "vertical"
-                                                                         :overflow           "hidden"
-                                                                         :-webkit-line-clamp 3}}
-                                                 :cta/label     "Read More"}))]
+          (let [{:look-card/keys [secondary]}     (component/get-props this)
+                {:keys [truncatable? show-more?]} (component/get-state this)
+                {caption-attrs :caption-attrs
+                 cta-label     :cta/label
+                 cta-id        :cta/id}           (when truncatable?
+                                                    (if show-more?
+                                                      {:cta/id    "toggle-caption-closed"
+                                                       :cta/label "Read Less"}
+                                                      {:cta/id        "toggle-caption-open"
+                                                       :caption-attrs {:style {:display            "-webkit-box"
+                                                                               :-webkit-box-orient "vertical"
+                                                                               :overflow           "hidden"
+                                                                               :-webkit-line-clamp 3}}
+                                                       :cta/label     "Read More"}))]
       (component/html
         (if-not (string/blank? secondary)
           [:div.mt1
            [:div.content-4.proxima.dark-gray
-            (merge {:line-height "inherit"
-                    :ref         "caption"}
+            (merge {:ref "caption"}
                    caption-attrs)
             secondary]
            (when cta-id
@@ -380,11 +379,10 @@
    [:div.proxima.title-2.shout primary]
    [:div.flex.justify-between.mt2
     [:div
-     [:div
-      secondary
-      (when tertiary
-        [:span.strike.content-4.ml2
-         tertiary])]
+     secondary
+     (when tertiary
+       [:span.strike.content-4.ml2
+        tertiary])
      [:div.shout.button-font-4 quaternary]]
     [:div.right-align (component/build small-cta data nil)]]])
 
