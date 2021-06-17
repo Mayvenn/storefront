@@ -117,7 +117,14 @@
     (messages/handle-message events/poll-gallery))
 
   (when (= feature "live-help")
-    (messages/handle-message events/flow|live-help|reset)))
+    (messages/handle-message events/flow|live-help|reset))
+
+  (when (and
+         (= events/navigate-shop-by-look-details (get-in app-state keypaths/navigation-event))
+         (= feature "look-customization"))
+    (messages/handle-message events/initialize-look-details
+                             {:shared-cart
+                              (get-in app-state keypaths/shared-cart-current)})))
 
 (defmethod effects/perform-effects events/ensure-sku-ids
   [_ _ {:keys [sku-ids]} _ app-state]

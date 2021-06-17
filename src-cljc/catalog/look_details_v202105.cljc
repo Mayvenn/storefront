@@ -232,7 +232,6 @@
         (assoc-in catalog.keypaths/detailed-look-skus-db sliced-sku-db)
         (assoc-in catalog.keypaths/detailed-look-availability availability))))
 
-
 (defn ^:private selections->product-selections
   [selections]
   (mapv
@@ -584,6 +583,7 @@
         discountable-services (select ?discountable items)]
     (merge #?(:cljs (reviews/query-look-detail shared-cart data))
            {:spinning? (or (not contentful-look)
+                           (nil? skus-db)
                            (utils/requesting? data request-keys/fetch-shared-cart))}
 
 
