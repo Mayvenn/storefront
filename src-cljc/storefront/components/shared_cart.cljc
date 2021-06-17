@@ -484,6 +484,7 @@
                                           {:error-handler   #(publish events/shared-cart-error-matched-stylist-not-eligible %)
                                            :success-handler #(publish events/api-success-fetch-shared-cart-matched-stylist %)}))
              ;; TODO Isolate this to look detail experiment
+             ;; And probably when you're on the look detail page
              (when (experiments/look-customization? app-state)
                (messages/handle-message events/initialize-look-details
                                         (assoc args :shared-cart shared-cart))))))))

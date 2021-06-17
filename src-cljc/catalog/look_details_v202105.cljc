@@ -125,6 +125,9 @@
         (mapv (partial maps/map-values hash-set))
         (apply merge-with clojure.set/union))))
 
+(defn ^:private sku->data-sku-reference
+  [s]
+  (select-keys s [:catalog/sku-id :legacy/variant-id]) )
 ;; Initialization
 (defn- generate-product-options
   [skus-db images-db facets product]
@@ -176,56 +179,99 @@
                 (mapv :catalog/sku-id)
                 (select-keys full-skus-db)))))
 
-(defn ^:private fan-out-shared-cart-items
+(defn ^:private enrich-and-sort-shared-cart-items
   [skus-db shared-cart]
   (->> shared-cart
        :line-items
        (map (fn [{:keys [catalog/sku-id item/quantity]}]
               (-> (get skus-db sku-id)
                   (assoc :item/quantity quantity))))
-       (sort-by :sku/price)
-       (mapcat #(repeat (:item/quantity %) (dissoc % :item/quantity)))))
+       (sort-by :sku/price)))
+
+(defn ^:private fan-out-items
+  [items]
+  (mapcat #(repeat (:item/quantity %) (dissoc % :item/quantity)) items))
 
 (defmethod transitions/transition-state events/initialize-look-details
   [_ event {:as args :keys [shared-cart]} app-state]
-  (let [physical-line-items (->> shared-cart
-                                 (fan-out-shared-cart-items (get-in app-state keypaths/v2-skus))
-                                 (remove (comp #(string/starts-with? % "SV2") :catalog/sku-id)))
-        initial-selections  (let [{:hair/keys [origin texture color]} (-> physical-line-items first)]
-                              ;; TODO make this more tolerable
-                              {:hair/origin  (first origin)
-                               :hair/texture (first texture)
-                               :hair/color   (first color)
-                               :per-item     (->> physical-line-items
-                                                  (map #(select-keys % [:hair/family :hair/length]))
-                                                  (map (partial maps/map-values first))
-                                                  vec)})
-        sliced-sku-db       (slice-sku-db (get-in app-state keypaths/v2-skus) shared-cart initial-selections)
-        availability        (reduce (fn [acc {:hair/keys [family color length]
-                                              in-stock?  :inventory/in-stock?}]
-                                      (cond-> acc
-                                        (and family color length in-stock?)
-                                        (update-in [(first family) (first color)] (fnil conj #{}) (first length)))) {}
-                                    (vals sliced-sku-db))
-        options             (initialize-look-picker-options (get-in app-state keypaths/v2-products)
-                                                            sliced-sku-db
-                                                            (get-in app-state keypaths/v2-images)
-                                                            (facets/by-slug app-state)
-                                                            initial-selections
-                                                            physical-line-items
-                                                            availability)]
+  (let [{physical-line-items false
+         services            true} (->> shared-cart
+                                        (enrich-and-sort-shared-cart-items (get-in app-state keypaths/v2-skus))
+                                        fan-out-items
+                                        (group-by (comp #(string/starts-with? % "SV2") :catalog/sku-id)))
+        initial-selections         (let [{:hair/keys [origin texture color]} (-> physical-line-items first)]
+                                     ;; TODO make this more tolerable
+                                     {:hair/origin  (first origin)
+                                      :hair/texture (first texture)
+                                      :hair/color   (first color)
+                                      :per-item     (->> physical-line-items
+                                                         (map #(select-keys % [:hair/family :hair/length]))
+                                                         (map (partial maps/map-values first))
+                                                         vec)})
+        sliced-sku-db              (slice-sku-db (get-in app-state keypaths/v2-skus) shared-cart initial-selections)
+        availability               (reduce (fn [acc {:hair/keys [family color length]
+                                                     in-stock?  :inventory/in-stock?
+                                                     :as        sku}]
+                                             (cond-> acc
+                                               (and family color length in-stock?)
+                                               (assoc-in [(first family) (first color) (first length)] sku))) {}
+                                           (vals sliced-sku-db))
+        options                    (initialize-look-picker-options (get-in app-state keypaths/v2-products)
+                                                                   sliced-sku-db
+                                                                   (get-in app-state keypaths/v2-images)
+                                                                   (facets/by-slug app-state)
+                                                                   initial-selections
+                                                                   physical-line-items
+                                                                   availability)]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-look-selected-picker nil)
         (assoc-in catalog.keypaths/detailed-look-picker-visible? nil)
         (assoc-in catalog.keypaths/detailed-look-selections initial-selections)
         (assoc-in catalog.keypaths/detailed-look-options options)
+        (assoc-in catalog.keypaths/detailed-look-services services)
         (assoc-in catalog.keypaths/detailed-look-skus-db sliced-sku-db)
         (assoc-in catalog.keypaths/detailed-look-availability availability))))
+
+
+(defn ^:private selections->product-selections
+  [selections]
+  (mapv
+   #(merge (select-keys selections [:hair/color :hair/texture :hair/origin])
+           (select-keys % [:hair/length :hair/family]))
+   (:per-item selections)))
+
+(defn ^:private product-selections->skus
+  [availability product-selections]
+  (mapv
+   (fn [{:hair/keys [color length family]}]
+     (get-in availability [family color length]))
+   product-selections))
+
+(defn ^:private ->data-event-format
+  [selections availability services]
+  (let [product-selections (selections->product-selections selections)]
+    {:products           (->> product-selections
+                              (product-selections->skus availability)
+                              (mapv sku->data-sku-reference))
+     :services           (mapv (comp not-empty sku->data-sku-reference) services)
+     :product-selections product-selections}))
+
+#?(:cljs
+   (defmethod storefront.trackings/perform-track events/initialize-look-details
+     [_ _ {:keys [shared-cart]} app-state]
+     (stringer/track-event "look_customization-initialized"
+                           (merge
+                            {:shared-cart-id     (:number shared-cart)
+                             :look-id            (:content/id (contentful/selected-look app-state))}
+                            (->data-event-format
+                             (get-in app-state catalog.keypaths/detailed-look-selections)
+                             (get-in app-state catalog.keypaths/detailed-look-availability)
+                             (get-in app-state catalog.keypaths/detailed-look-services))))))
 
 ;; END Initialization
 
 (defn ^:private add-to-cart-button
-  [{:cta/keys [id target disabled? disabled-content label spinning?] }]
+  [{:cta/keys [id target disabled? disabled-content label spinning?]}]
   (ui/button-large-primary
    (merge (apply utils/fake-href target)
           {:data-test        id
@@ -446,7 +492,7 @@
                     :value-id         (str "picker-selected-color-" (facets/hacky-fix-of-bad-slugs-on-facets slug))
                     :image-src        rectangle-swatch
                     :primary          name
-                    :options          (->> picker-options :hair/color)
+                    :options          (:hair/color picker-options)
                     :selected-value   slug
                     :selection-target [events/control-look-detail-picker-option-select {:selection [:hair/color]}]
                     :open-target      [events/control-look-detail-picker-open {:picker-id [:hair/color]}]})
@@ -510,19 +556,16 @@
         ;; look items
         {uncustomized-look-product-items "hair"
          services                        "service"} (->> shared-cart
-                                                         (fan-out-shared-cart-items skus-db)
+                                                         (enrich-and-sort-shared-cart-items skus-db)
+                                                         fan-out-items
                                                          (group-by (comp first :catalog/department)))
         look-selections                             (get-in data catalog.keypaths/detailed-look-selections)
-        skus-for-color                              (select {:hair/color (:hair/color look-selections)} (vals skus-db))
-        skus-matching-selections                    (keep
-                                                     (fn [per-item-selections]
-                                                       (first (select (select-keys
-                                                                       per-item-selections
-                                                                       [:hair/family :hair/length]) skus-for-color)))
-                                                     (:per-item look-selections))
-
-        unavailable-lengths-selected? (not= (count uncustomized-look-product-items)
-                                            (count skus-matching-selections))
+        skus-matching-selections                    (->> (get-in data catalog.keypaths/detailed-look-selections)
+                                                         selections->product-selections
+                                                         (product-selections->skus (get-in data catalog.keypaths/detailed-look-availability))
+                                                         (filter (complement nil?)))
+        unavailable-lengths-selected?               (not= (count uncustomized-look-product-items)
+                                                          (count skus-matching-selections))
 
 
         {:order/keys
@@ -635,15 +678,22 @@
 
 #?(:cljs
    (defmethod storefront.trackings/perform-track events/control-look-detail-picker-option-select
-     [_ _ {:keys [selection value] :as args} _]
+     [_ _ {:keys [selection value]} app-state]
      (let [picker-name (name (last selection))]
-       (stringer/track-event "look_facet-changed" (merge {:facet-selected picker-name}
-                                                         (cond (= "color" picker-name)
-                                                               {:selected-color value}
+       (stringer/track-event "look_facet-changed"
+                             (merge (case picker-name
+                                      "color"
+                                      {:selected-color value}
 
-                                                               (= "length" picker-name)
-                                                               {:position        (second selection)
-                                                                :selected-length value}))))))
+                                      "length"
+                                      {:position        (second selection)
+                                       :selected-length value}
+                                      nil)
+                                    {:facet-selected picker-name}
+                                    (->data-event-format
+                                     (get-in app-state catalog.keypaths/detailed-look-selections)
+                                     (get-in app-state catalog.keypaths/detailed-look-availability)
+                                     (get-in app-state catalog.keypaths/detailed-look-services)))))))
 
 (defmethod transitions/transition-state events/control-look-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]
