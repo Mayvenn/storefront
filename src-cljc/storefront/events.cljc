@@ -217,11 +217,6 @@
 (defpath control-counter-inc)
 (defpath control-counter-dec)
 
-(defpath control-show-look-customization-modal)
-(defpath control-look-customization-modal-dismiss)
-(defpath look-customization-modal-mounted)
-(defpath control-customize-look-button-selected)
-
 (defpath control-checkout-cart-submit)
 (defpath control-checkout-cart-paypal-setup)
 (defpath control-checkout-update-addresses-submit)

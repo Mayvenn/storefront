@@ -80,7 +80,6 @@
    :design-system                  events/control-design-system-popup-dismiss
    :addon-services-menu            events/control-addon-service-menu-dismiss
    :stylist-search-filters         events/control-stylist-search-filters-dismiss
-   :looks-customization            events/control-look-customization-modal-dismiss
    :cart-swap                      events/control-cart-swap-popup-dismiss
    :length-guide                   events/popup-hide-length-guide})
 

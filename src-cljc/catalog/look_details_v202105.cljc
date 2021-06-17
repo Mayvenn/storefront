@@ -5,9 +5,7 @@
                        [storefront.trackings]
                        [storefront.hooks.quadpay :as quadpay]
                        [storefront.hooks.stringer :as stringer]
-                       [storefront.platform.messages :as messages]
-                       ;; popups, must be required to load properly
-                       looks.customization-modal])
+                       [storefront.platform.messages :as messages]])
             [api.catalog :refer [select ?discountable ?model-image ?cart-product-image]]
             api.orders
             api.products

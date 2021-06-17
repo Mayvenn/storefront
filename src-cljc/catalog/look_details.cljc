@@ -1,9 +1,7 @@
 (ns catalog.look-details
   "Shopping by Looks: Detail page for an individual 'look'"
   (:require #?@(:cljs [[storefront.api :as api]
-                       [storefront.hooks.quadpay :as quadpay]
-                       ;; popups, must be required to load properly
-                       looks.customization-modal])
+                       [storefront.hooks.quadpay :as quadpay]])
             [api.catalog :refer [select  ?discountable ?physical ?service ?model-image ?cart-product-image]]
             api.orders
             [catalog.facets :as facets]
@@ -67,17 +65,6 @@
                                       :items       1}
                            :slides   imgs}}))
 
-(component/defcomponent customize-the-look-cta
-  [{:look-customization.button/keys [target title id]} _ _]
-  (when id
-    [:div.my6.mt0-on-tb-dt.flex
-     [:div.hide-on-mb {:style {:height "0px" :width "80px"}}]
-     (ui/button-medium-underline-primary
-      (assoc (apply utils/fake-href target)
-             :data-test id
-             :class "mx-auto-on-mb")
-      title)]))
-
 (component/defcomponent look-card
   [{:keys [shared-cart look yotpo-data-attributes] :as queried-data} _ _]
   [:div.bg-cool-gray.slides-middle.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
@@ -99,7 +86,7 @@
 (defn look-details-body
   [{:keys [creating-order? sold-out? look shared-cart fetching-shared-cart?
            base-price discounted-price quadpay-loaded? discount-text
-           yotpo-data-attributes cart-items service-line-items look-customization] :as queried-data}]
+           yotpo-data-attributes cart-items service-line-items] :as queried-data}]
   [:div.clearfix
    (when look
      (component/build look-card queried-data "look-card"))
@@ -127,8 +114,6 @@
                 [:div.mt2-on-mb
                  (component/build cart-item/organism {:cart-item service-line-item}
                                   (component/component-id (:react/key service-line-item)))]])]])]
-
-        (component/build customize-the-look-cta look-customization)
 
         [:div.border-top.border-cool-gray.mxn2.mt3]
         [:div.center.pt4
@@ -305,10 +290,6 @@
                                         shared-cart/sort-by-depart-and-price)
             :service-line-items    (mapv (partial service-line-item-query) discountable-services)
 
-            :look-customization  (when (experiments/look-customization? data)
-                                   {:look-customization.button/target [events/control-show-look-customization-modal]
-                                    :look-customization.button/id     "customize-the-look"
-                                    :look-customization.button/title  "Customize the look"})
             :carousel/images     (imgs (get-in data keypaths/v2-images) look items)
             :items-title/id      "item-quantity-in-look"
             :items-title/primary (str (reduce + 0 (map :item/quantity physical-cart-items)) " products in this " (:short-name album-copy))
