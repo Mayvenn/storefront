@@ -35,7 +35,8 @@
             [storefront.ugc :as ugc]
             [catalog.keypaths :as catalog.keypaths]
             [spice.selector :as selector]
-            [ui.molecules]))
+            [ui.molecules]
+            [spice.core :as spice]))
 
 ;; A customizable look is a product merging all of the products that the base
 ;; look's skus come from It has two levels of selectors, those that affect all
@@ -249,22 +250,70 @@
 
 (defn yotpo-reviews-component [{:keys [yotpo-data-attributes]}]
   (when yotpo-data-attributes
-    [:div.bg-white.col-10-on-dt.mx-auto (component/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)]))
+    [:div.bg-white.col-10-on-dt.mx-auto
+     (component/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)]))
+
+(defn ^:private get-number-of-lines
+  [el]
+  #?(:cljs (let [line-height (-> (.-lineHeight (js/getComputedStyle el))
+                                 (string/replace "px" "")
+                                 spice/parse-int)]
+             (/ (.-offsetHeight el) line-height))
+     :clj 0))
+
+(component/defdynamic-component ^:private look-card-caption
+  (constructor [this]
+    (set! (.-show-more this)
+          (.bind
+          #(component/set-state! this :show-more?
+                                  (not (:show-more? (component/get-state this))))))
+    {:show-more?   false
+     :truncatable? false})
+  (did-mount [this]
+    (component/set-state! this :truncatable? (< 3 (get-number-of-lines (.-caption (.-refs this))))))
+  (render [this]
+    (let [{:look-card/keys [secondary]}     (component/get-props this)
+          {:keys [truncatable? show-more?]} (component/get-state this)
+          {caption-attrs :caption-attrs
+           cta-label     :cta/label
+           cta-id        :cta/id}           (when truncatable?
+                                              (if show-more?
+                                                {:cta/id    "toggle-caption-closed"
+                                                 :cta/label "Read Less"}
+                                                {:cta/id        "toggle-caption-open"
+                                                 :caption-attrs {:style {:display            "-webkit-box"
+                                                                         :-webkit-box-orient "vertical"
+                                                                         :overflow           "hidden"
+                                                                         :-webkit-line-clamp 3}}
+                                                 :cta/label     "Read More"}))]
+      (component/html
+        (if-not (string/blank? secondary)
+          [:div.mt1
+           [:div.content-4.proxima.dark-gray
+            (merge {:line-height "inherit"
+                    :ref         "caption"}
+                   caption-attrs)
+            secondary]
+           (when cta-id
+             (ui/button-small-underline-primary
+              {:href     nil
+               :on-click #?(:cljs (.-show-more this)
+                            :clj identity)}
+              cta-label))]
+          [:div {:ref "caption"}])))))
 
 (component/defcomponent ^:private look-card
-  [{:look-card/keys [primary secondary] :as queried-data} _ _]
+  [{:look-card/keys [primary] :as queried-data} _ _]
   [:div.slides-middle.col-on-tb-dt.col-6-on-tb-dt.p3.bg-white
    (carousel queried-data)
    [:div.pb3.pt1
     [:div.flex.items-center
-     [:div.flex-auto.proxima {:style {:word-break "break-all"}}
-      primary]
+     [:div.flex-auto.proxima primary]
      [:div.ml1.line-height-1 {:style {:width  "21px"
                                       :height "21px"}}
       ^:inline (svg/instagram {:class "fill-dark-gray"})]]
     (yotpo-reviews-summary-component queried-data)
-    (when-not (string/blank? secondary)
-      [:p.mt1.content-4.proxima.dark-gray secondary])]])
+    (component/build look-card-caption queried-data)]])
 
 (component/defcomponent small-cta
   [{:cta/keys [id target label disabled? disabled-content spinning?]} _ _]
