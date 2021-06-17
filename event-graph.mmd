@@ -1,0 +1,21 @@
+
+graph TD;
+	0[biz/progression/reset];
+	1[biz/looks-suggestions/queried];
+	2[redirect];
+	3[biz/looks-suggestions/reset];
+	4[biz/questioning/submitted];
+	5[navigate-shopping-quiz-unified-freeinstall-question];
+	6[navigate-shopping-quiz-unified-freeinstall-recommendations];
+	7[biz/questioning/reset];
+	8[navigate-shopping-quiz-unified-freeinstall-intro];
+	9[biz/progression/progressed];
+	8 --> 0;
+	5 --> 2;
+	5 --> 8;
+	5 --> 9;
+	5 --> 7;
+	5 --> 3;
+	6 --> 9;
+	6 --> 4;
+	6 --> 1;
