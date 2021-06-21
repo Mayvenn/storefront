@@ -4,10 +4,11 @@
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [stylist-matching.ui.stylist-cards :as stylist-results-card]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             [ui.molecules :as molecules]))
+
+;; Forked from stylist-matching.ui.stylist-cards
 
 (defn stylist-card-thumbnail-molecule
   "We want ucare-ids here but we do not have them"
@@ -36,24 +37,13 @@
       [:img {:src "https://ucarecdn.com/b0f70f0a-51bf-4369-b6b8-80480b54b6f1/-/format/auto/" :alt "" :width 9 :height 14}]
       [:div.pl1.shout.dark-gray.letter-spacing-1 content]]]))
 
-(defn stylist-card-salon-name-molecule
-  [{:stylist-card.salon-name/keys [id value]}]
-  (when id
-    (component/html
-     [:div.content-2.proxima
-      value])))
-
-(defn stylist-card-address-marker-molecule
+(defn stylist-card-address-marker-molecule ; TODO rename
   [{:stylist-card.address-marker/keys [id value]}]
   (when id
     (component/html
      [:div.content-3.col-12.flex.items-center.pyp1
-      (svg/map-pin {:class  "mrp3 fill-p-color"
-                    :width  "14px"
-                    :height "14px"})
-      [:span.overflow-hidden.nowrap
-       {:style {:text-overflow "ellipsis"}}
-       value]])))
+      {:style {:text-overflow "ellipsis"}}
+      value])))
 
 (defn top-stylist-card-cta-molecule
   [{:stylist-card.cta/keys [id label target]}]
@@ -116,12 +106,11 @@
        [:div.col-9.medium.px3
         (titles/proxima-small-left (with :crown data))
         (titles/proxima-left (with :stylist-card.title data))
+        (stylist-card-address-marker-molecule data)
         [:div.flex.items-center
          (molecules/stars-rating-molecule data)
          (stylist-ratings-molecule data)
          (stylist-just-added-molecule data)]
-        (stylist-card-salon-name-molecule data)
-        (stylist-card-address-marker-molecule data)
         (stylist-card-experience-molecule data)]])))
 
 (defn top-stylist-information-points-molecule

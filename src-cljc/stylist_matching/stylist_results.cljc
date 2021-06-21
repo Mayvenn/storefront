@@ -287,7 +287,7 @@
      :stylist.just-added/content       "Just Added"
      :stylist-ratings/id               (when (not show-newly-added-stylist-ui?)
                                          (str "stylist-ratings-" store-slug))
-     :stylist-ratings/content          rating
+     :stylist-ratings/content          (str "(" rating ")")
      :stylist-experience/id            (when (and newly-added-stylist
                                                   stylist-results-test?
                                                   just-added-experience?)
