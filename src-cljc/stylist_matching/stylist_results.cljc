@@ -633,7 +633,7 @@
 
 (defcomponent template
   [{:keys [spinning? gallery-modal header stylist-search-inputs scrim?] :as data} _ _]
-  [:div
+  [:div.flex.flex-auto.flex-column
    (when spinning?
      [:div.max-580.bg-pale-purple.absolute.overlay
       [:div.absolute.overlay.border.border-white.border-framed-white.m4.p5.flex.flex-column.items-center.justify-center
@@ -643,7 +643,7 @@
         [:div.title-2.canela.center
          [:div "Sit back and relax."]
          [:div "There’s no end to what your hair can do."]]]]])
-   [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
+   [:div.bg-cool-gray.black.center
     (when spinning?
       {:class "display-none"})
     (component/build gallery-modal/organism gallery-modal nil)
