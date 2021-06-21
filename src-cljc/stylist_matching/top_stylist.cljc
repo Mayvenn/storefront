@@ -1,10 +1,13 @@
 (ns stylist-matching.top-stylist
-  (:require adventure.keypaths
+  (:require #?@(:cljs [[stylist-matching.keypaths :as k]
+                       [storefront.history :as history]])
+            adventure.keypaths
             [stylist-matching.stylist-results :as stylist-results]
             api.orders
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.header :as components.header]
+            [storefront.effects :as fx]
             [storefront.events :as e]
             [stylist-matching.ui.top-stylist-cards :as top-stylist-cards]
             [stylist-matching.ui.gallery-modal :as gallery-modal]
@@ -117,3 +120,9 @@
                                      " is an experienced and licensed "
                                      "stylist who is rated highly for their skill, professionalism, and "
                                      "cleanliness.")})))))
+
+(defmethod fx/perform-effects e/navigate-adventure-top-stylist
+  [_ _ _ _ state]
+  #?(:cljs
+     (when (empty? (get-in state k/stylist-results))
+       (history/enqueue-navigate e/navigate-adventure-find-your-stylist))))
