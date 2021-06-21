@@ -98,7 +98,7 @@
                               {:icon    [:svg/experience-badge {:style {:height "1.2em"
                                                                         :width  "1.7em"}
                                                                 :class "fill-s-color mr1"}]
-                               :primary [:div.content-4 "Progessional salon"]}
+                               :primary [:div.content-4 "Professional salon"]}
                               {:icon    [:svg/certified {:style {:height "1.2em"
                                                                  :width  "1.7em"}
                                                          :class "fill-s-color mr1"}]
