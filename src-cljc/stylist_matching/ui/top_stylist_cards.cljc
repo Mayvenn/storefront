@@ -101,7 +101,7 @@
     (when id
       [:div.col-12.flex.items-start.pb2.pt4
        (assoc (apply utils/route-to target) :data-test id)
-       [:div.flex.justify-center.items-center.ml4
+       [:div.flex.justify-center.items-center.ml2
         (stylist-card-thumbnail-molecule data)]
        [:div.col-9.medium.px3
         (titles/proxima-small-left (with :crown data))

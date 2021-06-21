@@ -57,14 +57,8 @@
                                 :stylist-results-test?  stylist-results-test?}]
     (component/build
      top-stylist-template
-     (merge #_(within stylist.analytics
-                      {:cards [(->> top-stylist
-                                    (conj '())
-                                    (assoc stylist-data :stylists)
-                                    stylist-data->stylist-cards
-                                    first)]})
 
-            (within :gallery-modal
+     (merge (within :gallery-modal
                     (stylist-results/gallery-modal-query app-state))
 
             (within :template
