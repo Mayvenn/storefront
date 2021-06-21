@@ -44,7 +44,7 @@
 
 (defn ^:private picker-face
   [{:picker-face/keys [id primary-attrs image-attrs label image-src]}]
-  [:div.col-12.flex.justify-between.items-center
+  [:div.col-12.flex.justify-between.items-center.p3-on-mb
    (merge primary-attrs {:style {:height "100%"}})
    (ui/img
     (merge image-attrs
@@ -72,7 +72,7 @@
                                 :image-attrs   image-attrs
                                 :image-src     image-src
                                 :label         primary}]
-    [:div.bg-white.my2.p3
+    [:div.bg-white.my2
      {:key id}
      [:div.hide-on-tb-dt
       (merge {:data-test id}

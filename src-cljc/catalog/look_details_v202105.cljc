@@ -348,9 +348,9 @@
 
 (component/defcomponent ^:private look-card
   [{:look-card/keys [primary] :as queried-data} _ _]
-  [:div.slides-middle.col-on-tb-dt.col-6-on-tb-dt.p3.bg-white
+  [:div.slides-middle.col-on-tb-dt.col-6-on-tb-dt.px3.py3-on-mb.bg-white
    (carousel queried-data)
-   [:div.pb3.pt1
+   [:div.pt1
     [:div.flex.items-center
      [:div.flex-auto.proxima primary]
      [:div.ml1.line-height-1 {:style {:width  "21px"
@@ -375,7 +375,7 @@
                       tertiary
                       quaternary]
     :as data} _ _]
-  [:div.py2
+  [:div
    [:div.proxima.title-2.shout primary]
    [:div.flex.justify-between.mt2
     [:div
@@ -403,24 +403,22 @@
            color-picker
            length-pickers] :as queried-data}]
   [:div
-   [:div.bg-white.px2.my2
-    (ui.molecules/return-link queried-data)]
-   [:div.bg-refresh-gray.bg-white-on-tb-dt
-    [:div.p3 (component/build look-card queried-data "look-card")]
+   (component/build picker/modal picker-modal)
+   [:div.bg-white.px2.my2 (ui.molecules/return-link queried-data)]
+   [:div.bg-refresh-gray.bg-white-on-tb-dt.pb3
+    [:div.mb3.p3-on-mb (component/build look-card queried-data "look-card")]
     (if spinning?
-      [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
+      [:div.flex.justify-center.items-center
+       (ui/large-spinner {:style {:height "4em"}})]
       [:div
-       (component/build picker/modal picker-modal)
-       [:div.p3 (component/build look-title queried-data)]
-
        [:div.col-on-tb-dt.col-6-on-tb-dt.px3
-        [:div
-         [:div.my4 ;; TODO extract this component
-          [:div.proxima.title-3.shout "Color"]
-          (picker/component color-picker)]
-         [:div.my4 ;; TODO extract this component
-          [:div.proxima.title-3.shout "Lengths"]
-          (map picker/component length-pickers)]]
+        (component/build look-title queried-data)
+        [:div.my4 ;; TODO extract this component
+         [:div.proxima.title-3.shout "Color"]
+         (picker/component color-picker)]
+        [:div.my4 ;; TODO extract this component
+         [:div.proxima.title-3.shout "Lengths"]
+         (map picker/component length-pickers)]
         [:div.bg-white.mxn3
          (component/build look-total queried-data nil)
          [:div.col-11.mx-auto.mbn2
