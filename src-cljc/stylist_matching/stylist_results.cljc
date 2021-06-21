@@ -31,7 +31,8 @@
             [storefront.request-keys :as request-keys]
             [spice.date :as date]
             storefront.keypaths
-            [mayvenn.live-help.core :as live-help]))
+            [mayvenn.live-help.core :as live-help]
+            [stylist-matching.core :as core]))
 
 
 ;;  Navigating to the results page causes the effect of searching for stylists
@@ -695,11 +696,6 @@
   (when (seq stylists)
     (into [] (mapcat identity [(stylist-cards-query data stylists)]))))
 
-(defn matches-preferences?
-  [preferences {:keys [service-menu]}]
-  (every? #(service-menu (accessors.filters/service-sku-id->service-menu-key %))
-          preferences))
-
 (defmethod effects/perform-effects e/control-stylist-matching-presearch-stylist-result-selected
   [_ _ args _ state]
   #?(:cljs
@@ -769,19 +765,17 @@
         stylist-search-results        (:results/stylists matching)
         preferences                   (:param/services matching)
         {matching-stylists     true
-         non-matching-stylists false} (group-by (partial matches-preferences? preferences)
+         non-matching-stylists false} (group-by (partial core/matches-preferences? preferences)
                                                 stylist-search-results)
         stylist-data                  {:just-added-only?       just-added-only?
                                        :just-added-experience? just-added-experience?
                                        :stylist-results-test?  stylist-results-test?}
-        top-stylist                   (first matching-stylists) ;; TODO: use real top matching algorithm
         matching-stylist-cards        (stylist-data->stylist-cards
                                        (assoc stylist-data :stylists matching-stylists))
         non-matching-stylist-cards    (stylist-data->stylist-cards
                                        (assoc stylist-data :stylists non-matching-stylists))
         filter-menu                   #?(:cljs (filter-menu/query app-state) :clj nil)
         show-filter-menu?             (some? filter-menu)
-        show-top-stylist?             true
         address-field-errors          (get-in app-state k/address-field-errors)]
     (cond
       show-filter-menu?

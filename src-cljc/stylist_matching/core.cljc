@@ -338,13 +338,23 @@
 
 ;; -------------------------- stylist search by filters behavior
 
+(defn matches-preferences?
+  [preferences {:keys [service-menu]}]
+  (every? #(service-menu (filters/service-sku-id->service-menu-key %))
+          preferences))
+
 (defmethod fx/perform-effects e/api-success-fetch-stylists-matching-filters
   [_ _ {:keys [stylists]} _ state]
   (publish e/flow|stylist-matching|resulted
            {:method  :by-location
             :results stylists})
   (when (and (experiments/top-stylist? state)
-             (not (get-in state k/top-stylist-rejected))) ; TODO: divert only when a top stylist is in the results
+             (not (get-in state k/top-stylist-rejected))
+             (some #(and (:top-stylist %)
+                         (-> state
+                             stylist-matching<-
+                             :param/services
+                             (matches-preferences? %))) stylists))
     (messages/handle-message e/flow|stylist-matching|diverted-to-top-stylist)))
 
 ;; -------------------------- presearch name

@@ -43,13 +43,15 @@
         just-added-experience? (experiments/just-added-experience? app-state)
         just-added-control?    (experiments/just-added-control? app-state)
         stylist-results-test?  (experiments/stylist-results-test? app-state)
-        stylist-search-results        (:results/stylists matching)
-        preferences                   (:param/services matching)
+        stylist-search-results (:results/stylists matching)
+        preferences            (:param/services matching)
         top-stylist            (->> stylist-search-results
-                                    (filter (partial stylist-results/matches-preferences? preferences))
-                                    first)        stylist-data                  {:just-added-only?       just-added-only?
-                                                                                 :just-added-experience? just-added-experience?
-                                                                                 :stylist-results-test?  stylist-results-test?}]
+                                    (filter #(and (stylist-matching.core/matches-preferences? preferences %)
+                                                  (:top-stylist %)))
+                                    first)
+        stylist-data           {:just-added-only?       just-added-only?
+                                :just-added-experience? just-added-experience?
+                                :stylist-results-test?  stylist-results-test?}]
     (component/build
      top-stylist-template
      (merge #_(within stylist.analytics
