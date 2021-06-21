@@ -251,7 +251,8 @@
   (let [product-selections (selections->product-selections selections)]
     {:products           (->> product-selections
                               (product-selections->skus availability)
-                              (mapv sku->data-sku-reference))
+                              (mapv sku->data-sku-reference)
+                              (map #(when (seq %) %)))
      :services           (mapv (comp not-empty sku->data-sku-reference) services)
      :product-selections product-selections}))
 
