@@ -526,5 +526,6 @@
        :svg/crown                           ^:inline (crown attrs)
        :svg/experience-badge                ^:inline (experience-badge attrs)
        :svg/certified                       ^:inline (certified attrs)
+       :svg/mayvenn-logo                    ^:inline (mayvenn-logo attrs)
        [:div])
      [:div])))
