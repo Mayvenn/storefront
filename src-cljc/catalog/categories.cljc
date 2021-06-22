@@ -44,14 +44,14 @@
              tmpl))
 
 (def texture-subsection-selectors
-  [#:subsection{:title "Straight" :selector #:hair{:texture #{"straight"}}}
-   #:subsection{:title "Yaki Straight" :selector #:hair{:texture #{"yaki-straight"}}}
+  [#:subsection{:title "Straight"       :selector #:hair{:texture #{"straight"}}}
+   #:subsection{:title "Yaki Straight"  :selector #:hair{:texture #{"yaki-straight"}}}
    #:subsection{:title "Kinky Straight" :selector #:hair{:texture #{"kinky-straight"}}}
-   #:subsection{:title "Body Wave" :selector #:hair{:texture #{"body-wave"}}}
-   #:subsection{:title "Loose Wave" :selector #:hair{:texture #{"loose-wave"}}}
-   #:subsection{:title "Water Wave" :selector #:hair{:texture #{"water-wave"}}}
-   #:subsection{:title "Deep Wave" :selector #:hair{:texture #{"deep-wave"}}}
-   #:subsection{:title "Curly" :selector #:hair{:texture #{"curly"}}}])
+   #:subsection{:title "Body Wave"      :selector #:hair{:texture #{"body-wave"}}}
+   #:subsection{:title "Loose Wave"     :selector #:hair{:texture #{"loose-wave"}}}
+   #:subsection{:title "Water Wave"     :selector #:hair{:texture #{"water-wave"}}}
+   #:subsection{:title "Deep Wave"      :selector #:hair{:texture #{"deep-wave"}}}
+   #:subsection{:title "Curly"          :selector #:hair{:texture #{"curly"}}}])
 
 (def clip-in-tape-in-templates
   {:page/title-template            [:computed/selected-facet-string " Virgin " :seo/title " | Mayvenn"]

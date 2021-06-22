@@ -679,9 +679,10 @@
 
 (defn return-link<-
   [items]
-  (let [recent-texture (some->> (select (merge ?recent ?physical) items)
+  (let [recent-texture (some->> items
+                                (select (merge ?recent ?physical))
                                 (mapv :hair/texture)
-                                first
+                                ffirst
                                 (assoc-in {} [:query-params :subsection]))]
     {:return-link/id            "continue-shopping"
      :return-link/copy          "Continue Shopping"

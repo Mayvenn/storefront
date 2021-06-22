@@ -31,7 +31,9 @@
                                                   (sort-by :sort/value)
                                                   not-empty)]
                       {:product-cards  product-cards
-                       :subsection-key (clojure.string/replace title #" " "-")
+                       :subsection-key (-> title
+                                           (clojure.string/replace #" " "-")
+                                           clojure.string/lower-case)
                        :title/primary  title})))
                  vec
                  not-empty)]
