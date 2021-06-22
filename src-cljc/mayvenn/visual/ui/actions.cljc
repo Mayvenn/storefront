@@ -18,6 +18,16 @@
               (apply utils/route-to target))
        label)])))
 
+(defn medium-primary
+  [{:keys [id label target]}]
+  (when id
+    (c/html
+     [:div
+      (ui/button-medium-primary
+       (merge {:data-test id}
+              (apply utils/route-to target))
+       label)])))
+
 (defn large-primary
   [{:keys [id disabled? label target]}]
   (when id

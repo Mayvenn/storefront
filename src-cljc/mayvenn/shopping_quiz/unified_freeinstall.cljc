@@ -96,23 +96,6 @@
     [:div.flex.justify-center.items-center
      (actions/large-primary (with :action see-results))]]])
 
-(c/defcomponent intro-template
-  [_ _ _]
-  [:div.bg-pale-purple.stretch.ptj3
-   [:div.col-10.mx-auto
-    (titles/canela-huge {:icon      [:svg/heart {:style {:height "41px"
-                                                         :width  "37px"}
-                                                 :class "fill-p-color"}]
-                         :primary   ["Hair + Service"
-                                     "One Price"]
-                         :secondary "This short quiz (2-3 minutes) will help you find the look and a stylist to complete your install in your area"})
-    [:div.flex.justify-center.items-center
-     (actions/action-molecule
-      {:id     "quiz-continue"
-       :label  "Continue"
-       :target [e/redirect {:nav-message
-                            [e/navigate-shopping-quiz-unified-freeinstall-question]}]})]]])
-
 (defn progress<
   [progression]
   (let [extent (apply max progression)]
@@ -228,6 +211,34 @@
                     :catalog/category-id "23"}]
    :action/label  "Browse Hair"})
 
+;; Template: Intro
+
+(c/defcomponent intro-template
+  [data _ _]
+  [:div.flex.flex-column.stretch.bg-pale-purple
+   [:div.bg-white.self-start
+    (c/build header/mobile-nav-header-component (:header data))]
+   [:div.flex.flex-column.items-center.justify-center.flex-auto
+    [:div.col-10
+     (titles/canela-huge (with :title data))]
+    [:div.col-6
+     (actions/medium-primary (with :action data))]]])
+
+(def intro<
+  {:title/icon      [:svg/heart {:style {:height "41px" :width "37px"}
+                                 :class "fill-p-color"}]
+   :title/primary   ["Hair + Service" "One Price"]
+   :title/secondary (str "This short quiz (2-3 minutes) will help "
+                         "you find the look and a stylist to complete "
+                         "your install in your area")
+   :action/id       "quiz-continue"
+   :action/label    "Continue"
+   :action/target   [e/redirect
+                     {:nav-message
+                      [e/navigate-shopping-quiz-unified-freeinstall-question]}]})
+
+;;;
+
 (defn ^:export page
   "
   Shopping Quiz: Unified Products+Service v1
@@ -260,7 +271,7 @@
                       :questions   (questions< questions answers progression)
                       :see-results (see-results< questions answers progression)})))
       ;; default or 0
-      (c/build intro-template {}))))
+      (c/build intro-template intro<))))
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-intro
   [_ _ _ _ _]
