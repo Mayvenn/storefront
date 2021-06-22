@@ -385,7 +385,7 @@
        [:span.strike.content-4.ml2
         tertiary])
      [:div.shout.button-font-4 quaternary]]
-    [:div.right-align (component/build small-cta data nil)]]])
+    [:div.right-align.col-4.hide-on-tb-dt (component/build small-cta data nil)]]])
 
 (component/defcomponent look-total
   [{:look-total/keys [primary secondary tertiary]}_ _]
@@ -563,7 +563,6 @@
         unavailable-lengths-selected?               (not= (count uncustomized-look-product-items)
                                                           (count skus-matching-selections))
 
-
         {:order/keys
          [items]
          {:keys [adjustments line-items-total total]}
@@ -577,7 +576,10 @@
                                                    :item/quantity (count skus)}))
                                vals)})
 
-        discountable-services (select ?discountable items)]
+        discountable-services (select ?discountable items)
+        disabled-cta?         (or (not contentful-look)
+                                  unavailable-lengths-selected?
+                                  (utils/requesting? data request-keys/new-order-from-sku-ids))]
     (merge #?(:cljs (reviews/query-look-detail shared-cart data))
            {:spinning? (or (not contentful-look)
                            (nil? skus-db)
@@ -607,7 +609,8 @@
                                                                 "install"      "+ FREE Install Service"
                                                                 "construction" "+ FREE Custom Wig"
                                                                 nil))])
-                 secondary        (if discounted? discounted-price total-price)
+                 secondary        (when-not disabled-cta?
+                                    (if discounted? discounted-price total-price))
                  tertiary         (when discounted? total-price)]
              {:look-title/primary    title
               :look-title/quaternary (str (count uncustomized-look-product-items)
@@ -625,9 +628,7 @@
             :look-card/secondary (:description contentful-look)
 
             :cta/id                    "add-to-cart-submit"
-            :cta/disabled?             (or (not contentful-look)
-                                           unavailable-lengths-selected?
-                                           (utils/requesting? data request-keys/new-order-from-sku-ids))
+            :cta/disabled?             disabled-cta?
             :cta/target                [events/control-create-order-from-customized-look
                                         {:look-id (:id contentful-look)
                                          :items   (into {} (map (fn [item]
