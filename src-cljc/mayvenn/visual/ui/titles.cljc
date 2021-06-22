@@ -79,7 +79,9 @@
     [:div.title-2.canela
      (when id
        {:data-test id})
-     primary]
+     (if (vector? primary)
+       (interpose [:br] primary)
+       primary)]
     (when secondary
       [:div.mt2.content-3
        secondary])]))

@@ -433,6 +433,18 @@
        (conj k/models-looks-suggestions)
        (get-in state)))
 
+(defn selected<-
+  "
+  A selected look based on the conception of looks in this namespace.
+  We don't have a canonical schema or ids for these yet.
+
+  purpose-id: the id to store a selected at, determined by caller
+  "
+  [state purpose-id]
+  (->> purpose-id
+       (conj k/models-look-selected)
+       (get-in state)))
+
 ;;;; Behavior
 
 ;; Reset
@@ -496,11 +508,17 @@
          #?(:cljs (stringer/track-event "quiz_submitted")))))
 
 ;; Selected
+(defmethod t/transition-state e/biz|looks-suggestions|selected
+  [_ _ {:keys [id selected-look]} state]
+  (assoc-in state
+            (conj k/models-look-selected id)
+            selected-look))
 
 (defmethod fx/perform-effects e/biz|looks-suggestions|selected
-  [_ _ {product-sku-ids :product/sku-ids
-        service-sku-id  :service/sku-id} _ state]
-  (let [{servicing-stylist-id :services/stylist-id} (api.orders/services state (get-in state k/order))]
+  [_ _ {:keys [selected-look] success :on/success} _ state]
+  (let [{product-sku-ids :product/sku-ids
+         service-sku-id  :service/sku-id} selected-look
+        {servicing-stylist-id :services/stylist-id} (api.orders/services state (get-in state k/order))]
     #?(:cljs
        (api/new-order-from-sku-ids (get-in state k/session-id)
                                    {:store-stylist-id     (get-in state k/store-stylist-id)
@@ -512,8 +530,11 @@
                                    (fn [{:keys [order]}]
                                      (messages/handle-message
                                       e/api-success-update-order
-                                      {:order    order
-                                       :navigate e/navigate-cart})
+                                      (merge
+                                       {:order order}
+                                       (if success
+                                         {:on/success success}
+                                         {:navigate e/navigate-cart})))
                                      (storefront.frontend-trackings/track-cart-initialization
                                       "shopping-quiz"
                                       nil

@@ -825,12 +825,20 @@
                      (stylists/retrieve-parsed-affiliate-id app-state))))
 
 (defmethod effects/perform-effects events/api-success-update-order
-  [_ _ {:keys [order navigate event]} _ _]
+  [_ _ {:keys [order navigate event] :on/keys [success]} _ _]
   (messages/handle-message events/save-order {:order order})
   (when event
     (messages/handle-message event {:order order}))
-  (when navigate
-    (history/enqueue-navigate navigate {:number (:number order)})))
+  ;; This is a roll-forward shim
+  ;; navigate is an event name
+  ;; on/success is a follow up [event args], that we merge args with this events args
+  (if-let [[success-event success-args] success]
+    (history/enqueue-navigate success-event
+                              (merge
+                               success-args
+                               {:number (:number order)}))
+    (when navigate
+      (history/enqueue-navigate navigate {:number (:number order)}))))
 
 (defmethod effects/perform-effects events/api-success-get-order
   [_ _ order _ _]

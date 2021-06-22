@@ -355,4 +355,5 @@
 (def models-progressions (conj models-root :progressions))
 (def models-questionings (conj models-root :questionings))
 (def models-looks-suggestions (conj models-root :looks-suggestions))
+(def models-look-selected (conj models-root :look-selected))
 (def models-wait (conj models-root :wait))

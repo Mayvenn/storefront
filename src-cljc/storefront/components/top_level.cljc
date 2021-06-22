@@ -128,11 +128,11 @@
                                                                         'adventure.stylist-matching.stylist-gallery/built-component
                                                                         events/navigate-adventure-stylist-gallery)
 
-   events/navigate-adventure-quiz                                            (constantly mayvenn.shopping-quiz.unnamed-v1/page)
-   events/navigate-shopping-quiz-unified-freeinstall-intro                   (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
-   events/navigate-shopping-quiz-unified-freeinstall-question                (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
-   events/navigate-shopping-quiz-unified-freeinstall-recommendations         (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
-   events/navigate-shopping-quiz-unified-freeinstall-recommendations-summary (constantly mayvenn.shopping-quiz.unified-freeinstall/page)})
+   events/navigate-adventure-quiz                                    (constantly mayvenn.shopping-quiz.unnamed-v1/page)
+   events/navigate-shopping-quiz-unified-freeinstall-intro           (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
+   events/navigate-shopping-quiz-unified-freeinstall-question        (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
+   events/navigate-shopping-quiz-unified-freeinstall-recommendations (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
+   events/navigate-shopping-quiz-unified-freeinstall-summary         (constantly mayvenn.shopping-quiz.unified-freeinstall/page)})
 
 (defn main-component
   [nav-event]

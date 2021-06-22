@@ -51,6 +51,26 @@
     [:div.col-5.flex.justify-center.items-center.py1
      (actions/small-secondary (with :action data))]]])
 
+(c/defcomponent summary-template
+  [{:keys [header progress selected-look]} _ _]
+  [:div.col-12.bg-pale-purple
+   [:div.bg-white
+    (c/build header/mobile-nav-header-component header)]
+   (c/build progress-bar/variation-1 progress)
+   [:div.flex.flex-column.justify-center.items-center.myj3.pyj3
+    [:div.col-8
+     (titles/canela {:primary
+                     ["Nice choice!"
+                      "Now let's find a stylist near you!"]})]
+    (c/build card/look-suggestion-1
+             selected-look)
+    (actions/large-primary
+     {:id     "summary-continue"
+      :label  "Continue"
+      :target [e/redirect
+               {:nav-message
+                [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})]])
+
 (c/defcomponent suggestions-template
   [{:keys [header progress suggestions escape-hatch]} _ _]
   [:div.col-12.bg-cool-gray
@@ -151,6 +171,25 @@
        (mapv (comp #(str % suffix) k))
        (interpose delim)))
 
+(defn selected-look<
+  [{:as           selected-look
+    :product/keys [sku-ids]
+    :hair/keys    [origin texture]
+    img-id        :img/id}]
+  (let [skus                  (mapv looks-suggestions/mini-cellar sku-ids)
+        {bundles  "bundles"
+         closures "closures"} (group-by :hair/family skus)]
+    {:quiz.result/id            "selected-look"
+     :quiz.result/ucare-id      img-id
+     :quiz.result/primary       (str origin " " texture)
+     :quiz.result/secondary     (apply str
+                                       (cond-> (fmt bundles :hair/length "”" ", ")
+                                         (seq closures)
+                                         (concat [" + "]
+                                                 (fmt closures :hair/length "”" ""))))
+     :quiz.result/tertiary      (->> skus (mapv :sku/price) (reduce + 0) mf/as-money)
+     :quiz.result/tertiary-note "Install Included"}))
+
 (defn suggestions<
   [looks-suggestions]
   {:suggestions
@@ -176,9 +215,10 @@
       :action/id                 (str "result-option-" idx)
       :action/label              "Choose this look"
       :action/target             [e/biz|looks-suggestions|selected
-                                  (select-keys looks-suggestion
-                                               [:product/sku-ids
-                                                :service/sku-id])]})})
+                                  {:id            id
+                                   :selected-look looks-suggestion
+                                   :on/success
+                                   [e/navigate-shopping-quiz-unified-freeinstall-summary]}]})})
 
 (def escape-hatch<
   {:title/primary "Wanna explore more options?"
@@ -200,11 +240,17 @@
         step             (apply max quiz-progression)]
     (case step
       3 nil
-      2 (let [looks-suggestions (looks-suggestions/<- state id)]
-          (c/build suggestions-template
-                   {:progress     (progress< quiz-progression)
-                    :suggestions  (suggestions< looks-suggestions)
-                    :escape-hatch escape-hatch<}))
+      2 (let [looks-suggestions (looks-suggestions/<- state id)
+              selected-look     (looks-suggestions/selected<- state id)]
+          (if selected-look
+            (c/build summary-template
+                     {:progress      (progress< quiz-progression)
+                      :selected-look (selected-look< selected-look)
+                      :escape-hatch  escape-hatch<})
+            (c/build suggestions-template
+                     {:progress     (progress< quiz-progression)
+                      :suggestions  (suggestions< looks-suggestions)
+                      :escape-hatch escape-hatch<})))
       1 (let [{:keys [questions answers progression]} (questioning/<- state id)
               wait                                    (wait/<- state id)]
           (if wait

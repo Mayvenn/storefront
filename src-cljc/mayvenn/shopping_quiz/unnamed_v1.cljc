@@ -132,9 +132,8 @@
      :quiz.result/tertiary      (->> skus (mapv :sku/price) (reduce + 0) mf/as-money)
      :quiz.result/cta-label     "Add To Bag"
      :quiz.result/cta-target    [e/biz|looks-suggestions|selected
-                                 (select-keys looks-suggestion
-                                              [:product/sku-ids
-                                               :service/sku-id])]
+                                 {:id id
+                                  :selected-look looks-suggestion}]
      :quiz.result/tertiary-note "Install Included"}))
 
 (defn quiz-results<
