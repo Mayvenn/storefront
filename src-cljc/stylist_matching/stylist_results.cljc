@@ -19,7 +19,6 @@
             [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]
             [stylist-matching.ui.stylist-cards :as stylist-cards]
             [stylist-matching.ui.gallery-modal :as gallery-modal]
-            [stylist-matching.search.accessors.filters :as accessors.filters]
             [storefront.components.ui :as ui]
             [spice.core :as spice]
             [storefront.effects :as effects]
