@@ -106,7 +106,7 @@
                                :primary "State licensed stylist"}]})
 
             (within :header
-                    (stylist-results/header<- current-order))
+                    (stylist-results/header<- current-order [e/navigate-adventure-find-your-stylist]))
             (within :top-stylist.footer
                     {:primary "View All Stylists"
                      :target  [e/flow|stylist-matching|diversion-skipped]})

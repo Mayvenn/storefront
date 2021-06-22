@@ -215,11 +215,11 @@
                               :name_query         moniker}))))
 
 (defn header<-
-  [{:order.items/keys [quantity]}]
+  [{:order.items/keys [quantity]} target]
   {:header.title/id               "adventure-title"
    :header.title/primary          "Meet Your Stylist"
    :header.back-navigation/id     "adventure-back"
-   :header.back-navigation/target [e/navigate-adventure-find-your-stylist]
+   :header.back-navigation/target target
    :header.cart/id                "mobile-cart"
    :header.cart/value             (or quantity 0)
    :header.cart/color             "white"})
@@ -775,7 +775,14 @@
                                        (assoc stylist-data :stylists non-matching-stylists))
         filter-menu                   #?(:cljs (filter-menu/query app-state) :clj nil)
         show-filter-menu?             (some? filter-menu)
-        address-field-errors          (get-in app-state k/address-field-errors)]
+        address-field-errors          (get-in app-state k/address-field-errors)
+        back-button-target            [(if (and (experiments/top-stylist? app-state)
+                                                (->> stylist-search-results
+                                                     (filter #(and (stylist-matching.core/matches-preferences? preferences %)
+                                                                   (:top-stylist %)))
+                                                     seq))
+                                         e/navigate-adventure-top-stylist
+                                         e/navigate-adventure-find-your-stylist)]]
     (cond
       show-filter-menu?
       (component/build #?(:clj  (component/html [:div])
@@ -799,7 +806,7 @@
                                                                            google-loaded?
                                                                            skus-db
                                                                            address-field-errors)
-                        :header                   (header<- current-order)
+                        :header                   (header<- current-order back-button-target)
                         :stylist-results-present? (seq (concat matching-stylists non-matching-stylists))
 
                         :stylist-results-returned?  (contains? (:status matching) :results/stylists)
