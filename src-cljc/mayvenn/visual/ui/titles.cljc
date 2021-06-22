@@ -53,8 +53,7 @@
 
 (defn proxima-small-left
   "Usages:
-  - stylist cards
-  - product summary on product details"
+  - Top Stylist badge"
   [{:keys [id icon primary secondary]}]
   (c/html
    [:div.left-align

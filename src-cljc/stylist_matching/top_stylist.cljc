@@ -52,6 +52,10 @@
                                     (filter #(and (stylist-matching.core/matches-preferences? preferences %)
                                                   (:top-stylist %)))
                                     first)
+        bookings-count         (->> top-stylist
+                                    :rating-star-counts
+                                    vals
+                                    (apply +))
         stylist-data           {:just-added-only?       just-added-only?
                                 :just-added-experience? just-added-experience?
                                 :stylist-results-test?  stylist-results-test?}]
@@ -87,19 +91,19 @@
                     {:points [{:icon    [:svg/calendar {:style {:height "1.2em"
                                                                 :width  "1.7em"}
                                                         :class "fill-s-color mr1"}]
-                               :primary [:div.content-4 "Booked 145 times"]}
+                               :primary (str "Booked " bookings-count " times")}
                               {:icon    [:svg/chat-bubble-diamonds {:style {:height "1.2em"
                                                                             :width  "1.7em"}
                                                                     :class "fill-s-color mr1"}]
-                               :primary [:div.content-4 "100% response rate"]}
+                               :primary "100% response rate"}
                               {:icon    [:svg/experience-badge {:style {:height "1.2em"
                                                                         :width  "1.7em"}
                                                                 :class "fill-s-color mr1"}]
-                               :primary [:div.content-4 "Professional salon"]}
+                               :primary "Professional salon"}
                               {:icon    [:svg/certified {:style {:height "1.2em"
                                                                  :width  "1.7em"}
                                                          :class "fill-s-color mr1"}]
-                               :primary [:div.content-4 "State licensed stylist"]}]})
+                               :primary "State licensed stylist"}]})
 
             (within :header
                     (stylist-results/header<- current-order))

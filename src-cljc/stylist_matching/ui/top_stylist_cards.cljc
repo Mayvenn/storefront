@@ -118,9 +118,13 @@
   [:div.px2.pt3
    {:style {:display               "grid"
             :grid-template-columns "auto auto"}}
-   (for [point points]
+   (for [{:keys [id icon primary]} points]
      [:div.pb1
-      (titles/proxima-small-left point)])])
+      [:div.left-align
+       [:div.proxima.content-3.flex.flex-auto
+        (when icon
+          (svg/symbolic->html icon))
+        [:div (when id {:data-test id}) primary]]]])])
 
 (defcomponent organism
   [data _ {:keys [id]}]
