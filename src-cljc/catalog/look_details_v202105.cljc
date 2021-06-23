@@ -484,7 +484,8 @@
   [facets-db
    skus-db
    selections
-   picker-options]
+   picker-options
+   availability]
   {:color-picker (let [{:option/keys [rectangle-swatch name slug]}
                        (get-in facets-db [:hair/color
                                           :facet/options
@@ -529,7 +530,10 @@
              :selection-target [events/control-look-detail-picker-option-select {:selection [:per-item index :hair/length]}]
              :open-target      [events/control-look-detail-picker-open {:picker-id [:per-item index :hair/length]}]}
 
-          (nil? (first (select {:hair/length selected-hair-length} hair-family-and-color-skus)))
+          (not (boolean
+                (get-in availability [item-hair-family
+                                      (:hair/color selections)
+                                      selected-hair-length])))
           (->
            (update :primary str " - Unavailable")
            (assoc :primary-attrs {:class "red"}  ;; TODO: too low contrast
@@ -677,7 +681,8 @@
            (pickers< facets-db
                      (vals skus-db)
                      (get-in data catalog.keypaths/detailed-look-selections)
-                     picker-options))))
+                     picker-options
+                     (get-in data catalog.keypaths/detailed-look-availability)))))
 
 (defcomponent component
   [queried-data _ _]
@@ -715,7 +720,7 @@
 
 (defmethod transitions/transition-state events/control-look-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]
-  (let [availability (get-in app-state catalog.keypaths/detailed-look-availability)
+  (let [availability   (get-in app-state catalog.keypaths/detailed-look-availability)
         new-selections (-> app-state
                            (get-in catalog.keypaths/detailed-look-selections)
                            (assoc-in selection value))]
