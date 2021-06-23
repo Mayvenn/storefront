@@ -45,7 +45,7 @@
 (def service-delimiter "~")
 
 ;; TODO: string/blank?
-(defn ^:private query-params<-
+(defn query-params<-
   [query-params {:param/keys [location services address] moniker :param/name}]
   (merge (apply dissoc query-params query-param-keys)
          (when (seq moniker)
@@ -199,31 +199,13 @@
                                       (get-in state adventure.keypaths/adventure)))
   #?(:cljs
      (let [prev-nav-msg      (get-in prev-state storefront.keypaths/navigation-message)
-           prev-nav-event    (get prev-nav-msg 0)
+           nav-event         (first (get-in state storefront.keypaths/navigation-message))
            prev-query-params (get-in prev-nav-msg [1 :query-params])
            query-params      (->> (stylist-matching<- state)
                                   (query-params<- {}))]
-       (when-not (= [prev-nav-event prev-query-params]
-                    [e/navigate-adventure-stylist-results query-params])
+       (when (and (= nav-event e/navigate-adventure-stylist-results)
+                  (not= prev-query-params query-params))
          (history/enqueue-navigate e/navigate-adventure-stylist-results {:query-params query-params})))))
-
-;; Diverted to top stylist...
-(defmethod fx/perform-effects e/flow|stylist-matching|diverted-to-top-stylist
-  [_ _ _ _ _]
-  #?(:cljs
-     (history/enqueue-navigate e/navigate-adventure-top-stylist)))
-
-;; Diversion skipped...
-(defmethod fx/perform-effects e/flow|stylist-matching|diversion-skipped
-  [_ _ _ _ state]
-  #?(:cljs
-     (history/enqueue-navigate e/navigate-adventure-stylist-results {:query-params (->> (stylist-matching<- state)
-                                                                                        (query-params<- {}))})))
-
-(defmethod t/transition-state  e/flow|stylist-matching|diversion-skipped
-  [_ _ _ state]
-  (-> state
-      (assoc-in k/top-stylist-rejected true)))
 
 ;; Searched
 ;; -> screen: results
@@ -237,8 +219,7 @@
          ids
          (api/fetch-matched-stylists (get-in state storefront.keypaths/api-cache)
                                      ids
-                                     #(publish e/api-success-fetch-matched-stylists
-                                               %))
+                                     #(publish e/api-success-fetch-matched-stylists %))
          location
          (let [query
                (-> location
@@ -249,6 +230,30 @@
            (api/fetch-stylists-matching-filters query
                                                 #(publish e/api-success-fetch-stylists-matching-filters
                                                           (merge {:query query} %))))))))
+
+(defn matches-preferences?
+  [preferences {:keys [service-menu]}]
+  (every? #(service-menu (filters/service-sku-id->service-menu-key %))
+          preferences))
+
+(defn contains-top-stylist?
+  [service-params stylists]
+  (some #(and (:top-stylist %)
+              (matches-preferences? service-params %))
+        stylists))
+
+(defmethod fx/perform-effects e/flow|stylist-matching|resulted
+  [_ _ {:keys [results]} _ state]
+  #?(:cljs
+     (let [nav-event (first (get-in state storefront.keypaths/navigation-message))
+           service-params (-> state stylist-matching<- :param/services)]
+       (when-not (= e/navigate-adventure-stylist-results nav-event)
+         (apply history/enqueue-navigate (if (and (= e/navigate-adventure-find-your-stylist nav-event)
+                                            (experiments/top-stylist? state)
+                                            (contains-top-stylist? service-params results))
+                                           [e/navigate-adventure-top-stylist]
+                                           [e/navigate-adventure-stylist-results {:query-params (->> (stylist-matching<- state)
+                                                                                                     (query-params<- {}))}]))))))
 
 ;; Stylists: Resulted
 (defmethod t/transition-state e/flow|stylist-matching|resulted
@@ -264,7 +269,7 @@
 
 ;; ------------------ Stylist selected for inspection
 (defmethod fx/perform-effects e/flow|stylist-matching|selected-for-inspection
-  [_ _ {:keys [stylist-id store-slug]} state]
+  [_ _ {:keys [stylist-id store-slug]} _ state]
   #?(:cljs
      (history/enqueue-navigate e/navigate-adventure-stylist-profile {:stylist-id stylist-id
                                                                      :store-slug store-slug})))
@@ -338,24 +343,14 @@
 
 ;; -------------------------- stylist search by filters behavior
 
-(defn matches-preferences?
-  [preferences {:keys [service-menu]}]
-  (every? #(service-menu (filters/service-sku-id->service-menu-key %))
-          preferences))
+
 
 (defmethod fx/perform-effects e/api-success-fetch-stylists-matching-filters
   [_ _ {:keys [stylists]} _ state]
+  ;; in effects for this, decide where to go
   (publish e/flow|stylist-matching|resulted
            {:method  :by-location
-            :results stylists})
-  (when (and (experiments/top-stylist? state)
-             (not (get-in state k/top-stylist-rejected))
-             (some #(and (:top-stylist %)
-                         (-> state
-                             stylist-matching<-
-                             :param/services
-                             (matches-preferences? %))) stylists))
-    (messages/handle-message e/flow|stylist-matching|diverted-to-top-stylist)))
+            :results stylists}))
 
 ;; -------------------------- presearch name
 

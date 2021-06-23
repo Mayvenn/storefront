@@ -595,11 +595,16 @@
 
 ;; Flows
 
+; Clear everything
 (defpath flow|stylist-matching|initialized)
 
 (defpath flow|stylist-matching|set-presearch-field)
+(defpath flow|stylist-matching|presearch-canceled)
+(defpath flow|stylist-matching|presearch-cleared)
 (defpath flow|stylist-matching|set-address-field)
+(defpath flow|stylist-matching|selected-for-inspection)
 
+; set search params for stylist matching
 (defpath flow|stylist-matching|param-ids-constrained)
 (defpath flow|stylist-matching|param-address-constrained)
 (defpath flow|stylist-matching|param-location-constrained)
@@ -607,17 +612,10 @@
 (defpath flow|stylist-matching|param-name-constrained)
 (defpath flow|stylist-matching|param-services-constrained)
 
-(defpath flow|stylist-matching|presearch-canceled)
-(defpath flow|stylist-matching|presearch-cleared)
-
+; core domain for searching
 (defpath flow|stylist-matching|prepared)
-(defpath flow|stylist-matching|diverted-to-top-stylist)
-(defpath flow|stylist-matching|diversion-skipped)
-(defpath flow|stylist-matching|search-canceled)
 (defpath flow|stylist-matching|searched)
 (defpath flow|stylist-matching|resulted)
-(defpath flow|stylist-matching|selected-for-inspection)
-(defpath flow|stylist-matching|stylist-inspected)
 (defpath flow|stylist-matching|matched)
 
 (defpath control-stylist-matching-presearch-salon-result-selected)

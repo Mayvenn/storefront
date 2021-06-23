@@ -106,10 +106,14 @@
                                :primary "State licensed stylist"}]})
 
             (within :header
-                    (stylist-results/header<- current-order [e/navigate-adventure-find-your-stylist]))
+                    (stylist-results/header<- current-order [e/navigate-adventure-find-your-stylist] (->> (get-in app-state storefront.keypaths/navigation-undo-stack)
+                                                                                                          first
+                                                                                                          not-empty)))
             (within :top-stylist.footer
                     {:primary "View All Stylists"
-                     :target  [e/flow|stylist-matching|diversion-skipped]})
+                     :target  [e/navigate-adventure-stylist-results {:query-params (->> app-state
+                                                                                        stylist-matching.core/stylist-matching<-
+                                                                                        (stylist-matching.core/query-params<- {}))}]})
             (within :top-stylist.title
                     {:id        "top-match-copy-header"
                      :primary   "You are in luck!"

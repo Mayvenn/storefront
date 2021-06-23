@@ -44,5 +44,3 @@
 ;; - UI inputs need to do some setup on mount
 ;; - keypaths might be stored in matching model (google is already)
 ;; - results could be handled similarly
-
-(def top-stylist-rejected (conj stylist-matching :ui/top-stylist-rejected))
