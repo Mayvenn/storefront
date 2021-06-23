@@ -6,6 +6,7 @@
                        [storefront.hooks.quadpay :as quadpay]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.platform.messages :as messages]])
+            [adventure.components.layered :as layered]
             [api.catalog :refer [select ?discountable ?model-image ?cart-product-image]]
             api.orders
             api.products
@@ -402,7 +403,8 @@
   [{:keys [spinning?
            picker-modal
            color-picker
-           length-pickers] :as queried-data}]
+           length-pickers
+           how-it-works] :as queried-data}]
   [:div
    (component/build picker/modal picker-modal)
    [:div.bg-white.px2.my2 (ui.molecules/return-link queried-data)]
@@ -420,11 +422,13 @@
         [:div.my4 ;; TODO extract this component
          [:div.proxima.title-3.shout "Lengths"]
          (map picker/component length-pickers)]
-        [:div.bg-white.mxn3
+        [:div.bg-white.pb8
          (component/build look-total queried-data nil)
          [:div.col-11.mx-auto.mbn2
           (add-to-cart-button queried-data)
-          #?(:cljs (component/build quadpay/component queried-data nil))]]]])
+          #?(:cljs (component/build quadpay/component queried-data nil))]]
+        [:div.bg-warm-gray.pt8.pb3
+         (component/build layered/shop-bulleted-explainer how-it-works)]]])
     (yotpo-reviews-component queried-data)]])
 
 (defn ^:private get-model-image
@@ -585,7 +589,6 @@
                            (nil? skus-db)
                            (utils/requesting? data request-keys/fetch-shared-cart))}
 
-
            (let [total-price      (some-> line-items-total mf/as-money)
                  discounted-price (some-> total mf/as-money)
                  discounted?      (not= total-price discounted-price)
@@ -645,7 +648,20 @@
             :return-link/event-message (if (and (not back) back-event)
                                          [back-event]
                                          [events/navigate-shop-by-look {:album-keyword album-keyword}])
-            :return-link/back          back}
+            :return-link/back          back
+            :how-it-works              {:layer/type     :shop-bulleted-explainer
+                                        :layer/id       "heres-how-it-works"
+                                        :title/value    ["You buy the hair,"
+                                                         "we cover the install."]
+                                        :subtitle/value ["Here's how it works."]
+                                        :bullets        [{:title/value "Pick Your Dream Look"
+                                                          :body/value  "Have a vision in mind? We’ve got the hair for it. Otherwise, peruse our site for inspiration to find your next look."}
+                                                         {:title/value ["Select A Mayvenn" ui/hyphen "Certified Stylist"]
+                                                          :body/value  "We’ve hand-picked thousands of talented stylists around the country. We’ll cover the cost of your salon appointment with them when you buy 3 or more bundles."}
+                                                         {:title/value ["Book Any Add-On Service"]
+                                                          :body/value  "Want an additional service? On the cart page, you can book a Natural Hair Trim, Weave Take Down, or Deep Conditioning service. Then, continue toward checkout."}
+                                                         {:title/value "Schedule Your Appointment"
+                                                          :body/value  "We’ll connect you with your stylist to set up your install. Then, we’ll send you a prepaid voucher to cover the cost of service."}]}}
 
            {:quadpay/show?       (get-in data keypaths/loaded-quadpay)
             :quadpay/order-total total
