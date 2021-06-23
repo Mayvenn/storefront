@@ -64,23 +64,23 @@
   (let [skus                  (mapv looks-suggestions/mini-cellar sku-ids)
         {bundles  "bundles"
          closures "closures"} (group-by :hair/family skus)]
-    {:title/primary             ["Nice choice!"
+    {:title/primary            ["Nice choice!"
                                  "Now let's find a stylist near you!"]
-     :quiz.result/id            "selected-look"
-     :quiz.result/ucare-id      img-id
-     :quiz.result/primary       (str origin " " texture)
-     :quiz.result/secondary     (apply str
-                                       (cond-> (fmt bundles :hair/length "”" ", ")
-                                         (seq closures)
-                                         (concat [" + "]
-                                                 (fmt closures :hair/length "”" ""))))
-     :quiz.result/tertiary      (->> skus (mapv :sku/price) (reduce + 0) mf/as-money)
-     :quiz.result/tertiary-note "Install Included"
-     :action/id                 "summary-continue"
-     :action/label              "Continue"
-     :action/target             [e/redirect
-                                 {:nav-message
-                                  [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]}))
+     :suggestion/id            "selected-look"
+     :suggestion/ucare-id      img-id
+     :suggestion/primary       (str origin " " texture)
+     :suggestion/secondary     (apply str
+                                      (cond-> (fmt bundles :hair/length "”" ", ")
+                                        (seq closures)
+                                        (concat [" + "]
+                                                (fmt closures :hair/length "”" ""))))
+     :suggestion/tertiary      (->> skus (mapv :sku/price) (reduce + 0) mf/as-money)
+     :suggestion/tertiary-note "Install Included"
+     :action/id                "summary-continue"
+     :action/label             "Continue"
+     :action/target            [e/redirect
+                                {:nav-message
+                                 [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]}))
 
 ;; Template: Suggestions
 
@@ -100,41 +100,39 @@
 
 (defn suggestions<
   [looks-suggestions]
-  (merge
-   {:escape-hatch.title/primary "Wanna explore more options?"
-    :escape-hatch.action/id     "quiz-result-alternative"
-    :escape-hatch.action/target [e/navigate-category
-                                 {:page/slug           "mayvenn-install"
-                                  :catalog/category-id "23"}]
-    :escape-hatch.action/label  "Browse Hair"}
-
-   {:suggestions
-    (for [[idx {:as           looks-suggestion
-                :product/keys [sku-ids]
-                :hair/keys    [origin texture]
-                img-id        :img/id}]
-          (map-indexed vector looks-suggestions)
-          :let [skus                  (mapv looks-suggestions/mini-cellar sku-ids)
-                {bundles  "bundles"
-                 closures "closures"} (group-by :hair/family skus)]]
-      {:quiz.result/id            (str "result-option-" idx)
-       :quiz.result/index-label   (str "Hair + Service Bundle " (inc idx))
-       :quiz.result/ucare-id      img-id
-       :quiz.result/primary       (str origin " " texture)
-       :quiz.result/secondary     (apply str
-                                         (cond-> (fmt bundles :hair/length "”" ", ")
-                                           (seq closures)
-                                           (concat [" + "]
-                                                   (fmt closures :hair/length "”" ""))))
-       :quiz.result/tertiary      (->> skus (mapv :sku/price) (reduce + 0) mf/as-money)
-       :quiz.result/tertiary-note "Install Included"
-       :action/id                 (str "result-option-" idx)
-       :action/label              "Choose this look"
-       :action/target             [e/biz|looks-suggestions|selected
-                                   {:id            id
-                                    :selected-look looks-suggestion
-                                    :on/success
-                                    [e/navigate-shopping-quiz-unified-freeinstall-summary]}]})}))
+  {:escape-hatch.title/primary "Wanna explore more options?"
+   :escape-hatch.action/id     "quiz-result-alternative"
+   :escape-hatch.action/target [e/navigate-category
+                                {:page/slug           "mayvenn-install"
+                                 :catalog/category-id "23"}]
+   :escape-hatch.action/label  "Browse Hair"
+   :suggestions
+   (for [[idx {:as           looks-suggestion
+               :product/keys [sku-ids]
+               :hair/keys    [origin texture]
+               img-id        :img/id}]
+         (map-indexed vector looks-suggestions)
+         :let [skus                  (mapv looks-suggestions/mini-cellar sku-ids)
+               {bundles  "bundles"
+                closures "closures"} (group-by :hair/family skus)]]
+     {:suggestion/id            (str "result-option-" idx)
+      :suggestion/index-label   (str "Hair + Service Bundle " (inc idx))
+      :suggestion/ucare-id      img-id
+      :suggestion/primary       (str origin " " texture)
+      :suggestion/secondary     (apply str
+                                       (cond-> (fmt bundles :hair/length "”" ", ")
+                                         (seq closures)
+                                         (concat [" + "]
+                                                 (fmt closures :hair/length "”" ""))))
+      :suggestion/tertiary      (->> skus (mapv :sku/price) (reduce + 0) mf/as-money)
+      :suggestion/tertiary-note "Install Included"
+      :suggestion.action/id      (str "result-option-" idx)
+      :suggestion.action/label   "Choose this look"
+      :suggestion.action/target  [e/biz|looks-suggestions|selected
+                                  {:id            id
+                                   :selected-look looks-suggestion
+                                   :on/success
+                                   [e/navigate-shopping-quiz-unified-freeinstall-summary]}]})})
 
 ;; Template: Questions
 
