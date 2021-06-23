@@ -573,28 +573,26 @@
         unavailable-lengths-selected?               (not= (count uncustomized-look-product-items)
                                                           (count skus-matching-selections))
 
+        raw-order (api.orders/look-customization->order data
+                                                        {:line-items
+                                                         (->> (concat skus-matching-selections services)
+                                                              (group-by :catalog/sku-id)
+                                                              (maps/map-values (fn [skus]
+                                                                                 {:sku           (first skus)
+                                                                                  :item/quantity (count skus)}))
+                                                              vals)})
 
-        {:order/keys
-         [items]
-         {:keys [adjustments line-items-total total]}
-         :waiter/order} (api.orders/look-customization->order
-                         data
-                         {:line-items
-                          (->> (concat skus-matching-selections services)
-                               (group-by :catalog/sku-id)
-                               (maps/map-values (fn [skus]
-                                                  {:sku           (first skus)
-                                                   :item/quantity (count skus)}))
-                               vals)})
+        items                 (:order/items raw-order)
+        discountable-services (select ?discountable items)
 
-        discountable-services (select ?discountable items)]
+        {:keys [adjustments line-items-total total]} (:waiter/order raw-order)]
     (merge #?(:cljs (reviews/query-look-detail shared-cart data))
            {:spinning? (or (not contentful-look)
                            (nil? skus-db)
                            (utils/requesting? data request-keys/fetch-shared-cart))}
 
-           (let [total-price      (some-> line-items-total mf/as-money)
-                 discounted-price (some-> total mf/as-money)
+           (let [total-price      (mf/as-money-or-dashes (when-not unavailable-lengths-selected? line-items-total))
+                 discounted-price (mf/as-money-or-dashes (when-not unavailable-lengths-selected? total))
                  discounted?      (not= total-price discounted-price)
                  title            (clojure.string/join " " [(get-in facets-db
                                                                     [:hair/origin

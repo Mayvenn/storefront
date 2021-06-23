@@ -47,6 +47,11 @@
   (let [amount (or amount 0)]
     (str (as-money-without-cents amount) "." (as-money-cents-only amount))))
 
+(defn as-money-or-dashes [amount]
+  (if (nil? amount)
+    "$--.--"
+    (as-money amount)))
+
 (defn as-money-or-free [amount]
   (warn-if-nil amount)
   (let [amount (or amount 0)]
