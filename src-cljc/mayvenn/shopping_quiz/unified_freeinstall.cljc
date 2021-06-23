@@ -2,7 +2,11 @@
   "
   Visual Layer: Unified-Free Install shopping quiz
   "
-  (:require [mayvenn.concept.progression :as progression]
+  (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]])
+            [clojure.string :refer [starts-with?]]
+            [api.catalog :refer [select ?service]]
+            api.orders
+            [mayvenn.concept.progression :as progression]
             [mayvenn.concept.questioning :as questioning]
             [mayvenn.concept.looks-suggestions :as looks-suggestions]
             [mayvenn.concept.wait :as wait]
@@ -13,6 +17,8 @@
             [mayvenn.visual.tools :refer [with]]
             [mayvenn.visual.ui.titles :as titles]
             [mayvenn.visual.ui.actions :as actions]
+            [stylist-matching.core :refer [stylist-matching<-]]
+            [stylist-matching.ui.stylist-search :as stylist-search]
             [storefront.component :as c]
             [storefront.components.header :as header]
             [storefront.effects :as fx]
@@ -42,7 +48,41 @@
        (mapv (comp #(str % suffix) k))
        (interpose delim)))
 
-;; Template: Summary
+;; Template: 3/Find your stylist
+
+(c/defcomponent find-your-stylist-template
+  [data _ _]
+  [:div.center.flex.flex-column
+   [:div.bg-white
+    (c/build header/mobile-nav-header-component)]
+
+   #_
+   (header/adventure-header header)
+   #_
+   (component/build flash/component flash nil)
+   [:div.px2.mt8.pt4
+    (c/build stylist-search/organism data)]
+   #_
+   (if (seq spinner)
+     (component/build spinner/organism spinner nil)
+     [:div.px2.mt8.pt4
+      (component/build stylist-search/organism stylist-search nil)])])
+
+(defn find-your-stylist<
+  [{:as stylist-matching :google/keys [input location]}]
+  {:stylist-search.title/id                        "find-your-stylist-stylist-search-title"
+   :stylist-search.title/primary                   "Where do you want to get your hair done?"
+   :stylist-search.location-search-box/id          "stylist-match-address"
+   :stylist-search.location-search-box/placeholder "Enter city or street address"
+   :stylist-search.location-search-box/value       (str input)
+   :stylist-search.location-search-box/clear?      (seq location)
+   :stylist-search.button/id                       "stylist-match-address-submit"
+   :stylist-search.button/disabled?                (or (empty? location)
+                                                       (empty? input))
+   :stylist-search.button/target                   [e/control-adventure-location-submit]
+   :stylist-search.button/label                    "Search"})
+
+;; Template: 2/Summary
 
 (c/defcomponent summary-template
   [{:keys [header progress summary]} _ _]
@@ -54,7 +94,7 @@
     [:div.col-8
      (titles/canela (with :title summary))]
     (c/build card/look-suggestion-1
-             summary)
+             (with :suggestion summary))
     (actions/large-primary (with :action summary))]])
 
 (defn summary<
@@ -82,7 +122,7 @@
                                 {:nav-message
                                  [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]}))
 
-;; Template: Suggestions
+;; Template: 2/Suggestions
 
 (c/defcomponent suggestions-template
   [{:keys [header progress suggestions]} _ _]
@@ -115,26 +155,26 @@
          :let [skus                  (mapv looks-suggestions/mini-cellar sku-ids)
                {bundles  "bundles"
                 closures "closures"} (group-by :hair/family skus)]]
-     {:suggestion/id            (str "result-option-" idx)
-      :suggestion/index-label   (str "Hair + Service Bundle " (inc idx))
-      :suggestion/ucare-id      img-id
-      :suggestion/primary       (str origin " " texture)
-      :suggestion/secondary     (apply str
-                                       (cond-> (fmt bundles :hair/length "”" ", ")
-                                         (seq closures)
-                                         (concat [" + "]
-                                                 (fmt closures :hair/length "”" ""))))
-      :suggestion/tertiary      (->> skus (mapv :sku/price) (reduce + 0) mf/as-money)
-      :suggestion/tertiary-note "Install Included"
-      :suggestion.action/id      (str "result-option-" idx)
-      :suggestion.action/label   "Choose this look"
-      :suggestion.action/target  [e/biz|looks-suggestions|selected
-                                  {:id            id
-                                   :selected-look looks-suggestion
-                                   :on/success
-                                   [e/navigate-shopping-quiz-unified-freeinstall-summary]}]})})
+     {:id            (str "result-option-" idx)
+      :index-label   (str "Hair + Service Bundle " (inc idx))
+      :ucare-id      img-id
+      :primary       (str origin " " texture)
+      :secondary     (apply str
+                            (cond-> (fmt bundles :hair/length "”" ", ")
+                              (seq closures)
+                              (concat [" + "]
+                                      (fmt closures :hair/length "”" ""))))
+      :tertiary      (->> skus (mapv :sku/price) (reduce + 0) mf/as-money)
+      :tertiary-note "Install Included"
+      :action/id     (str "result-option-" idx)
+      :action/label  "Choose this look"
+      :action/target [e/biz|looks-suggestions|selected
+                      {:id            id
+                       :selected-look looks-suggestion
+                       :on/success
+                       [e/navigate-shopping-quiz-unified-freeinstall-summary]}]})})
 
-;; Template: Questions
+;; Template: 1/Questions
 
 (c/defcomponent questions-template
   [{:keys [header progress questions]} _ _]
@@ -190,7 +230,7 @@
                        :choice/id      choice-id}]
           :selected? answered?})})}))
 
-;; Template: Waiting
+;; Template: 1/Waiting
 
 (c/defcomponent waiting-template
   [data _ _]
@@ -205,7 +245,7 @@
    :title/primary ["Sit back and relax."
                    "There’s no end to what your hair can do."]})
 
-;; Template: Intro
+;; Template: 0/Intro
 
 (c/defcomponent intro-template
   [data _ _]
@@ -244,7 +284,9 @@
   (let [quiz-progression (progression/<- state id)
         step             (apply max quiz-progression)]
     (case step
-      3 nil
+      3 (let [stylist-matching (stylist-matching<- state)]
+          (c/build find-your-stylist-template
+                   (find-your-stylist< stylist-matching)))
       2 (let [looks-suggestions (looks-suggestions/<- state id)
               selected-look     (looks-suggestions/selected<- state id)]
           (if selected-look
@@ -267,6 +309,7 @@
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-intro
   [_ _ _ _ _]
+  #?(:cljs (google-maps/insert))
   (publish e/biz|progression|reset
            #:progression
            {:id    id
@@ -296,3 +339,51 @@
            {:questioning/id id
             :answers        (maps/map-values keyword params)
             :on/success     [e/biz|looks-suggestions|queried]}))
+
+(defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-summary
+  [_ _ _ _ state]
+  (if (api.orders/current state)
+    (publish e/biz|progression|progressed
+             #:progression
+             {:id    id
+              :value 2})
+    (fx/redirect e/navigate-shopping-quiz-unified-freeinstall-recommendations)))
+
+(def ^:private sv2-codes->srvs
+  {"LBI" "SRV-LBI-000"
+   "CBI" "SRV-CBI-000"
+   "FBI" "SRV-FBI-000"
+   "3BI" "SRV-3BI-000"
+   \3    "SRV-3CU-000"
+   \C    "SRV-DPCU-000"
+   \D    "SRV-TKDU-000"
+   \F    "SRV-FCU-000"
+   \L    "SRV-CCU-000"
+   \T    "SRV-TRMU-000"})
+
+(defn ^:private services->srv-sku-ids
+  [srv-sku-ids {:keys [catalog/sku-id]}]
+  (concat srv-sku-ids
+          (if (starts-with? sku-id "SV2")
+            (let [[_ base addons] (re-find #"SV2-(\w+)-(\w+)" sku-id)]
+              (->> addons
+                   (concat [base])
+                   (map sv2-codes->srvs)
+                   (remove nil?)))
+            [sku-id])))
+
+(defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist
+  [_ _ _ _ state]
+  (publish e/biz|progression|progressed
+           #:progression
+           {:id    id
+            :value 3})
+  #?(:cljs (google-maps/insert))
+  (messages/handle-message e/flow|stylist-matching|initialized)
+  (when-let [preferred-services (->> (api.orders/current state)
+                                     :order/items
+                                     (select ?service)
+                                     (reduce services->srv-sku-ids [])
+                                     not-empty)]
+    (messages/handle-message e/flow|stylist-matching|param-services-constrained
+                             {:services preferred-services})))
