@@ -426,9 +426,9 @@
          (component/build look-total queried-data nil)
          [:div.col-11.mx-auto.mbn2
           (add-to-cart-button queried-data)
-          #?(:cljs (component/build quadpay/component queried-data nil))]]
-        [:div.bg-warm-gray.pt8.pb3
-         (component/build layered/shop-bulleted-explainer how-it-works)]]])
+          #?(:cljs (component/build quadpay/component queried-data nil))]]]])
+    [:div.pt8
+     (component/build layered/shop-bulleted-explainer how-it-works)]
     (yotpo-reviews-component queried-data)]])
 
 (defn ^:private get-model-image
