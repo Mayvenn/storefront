@@ -17,9 +17,9 @@
             clojure.set
             [spice.maps :as maps]
             [storefront.accessors.contentful :as contentful]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.images :as images]
             [storefront.accessors.shared-cart :as shared-cart]
+            [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
             [storefront.components.picker.picker-two :as picker]
@@ -427,8 +427,9 @@
          [:div.col-11.mx-auto.mbn2
           (add-to-cart-button queried-data)
           #?(:cljs (component/build quadpay/component queried-data nil))]]]])
-    [:div.pt8
-     (component/build layered/shop-bulleted-explainer how-it-works)]
+    (when how-it-works
+      [:div.pt8
+       (component/build layered/shop-bulleted-explainer how-it-works)])
     (yotpo-reviews-component queried-data)]])
 
 (defn ^:private get-model-image
@@ -546,6 +547,7 @@
         back            (first (get-in data keypaths/navigation-undo-stack))
         album-copy      (get ugc/album-copy album-keyword)
         back-event      (:default-back-event album-copy)
+        shop?           (= :shop (sites/determine-site data))
 
         ;; Looks query
         facets-db (facets/by-slug data)
@@ -627,6 +629,21 @@
               :look-total/secondary secondary
               :look-total/tertiary  tertiary})
 
+           (when shop?
+             {:how-it-works {:layer/type     :shop-bulleted-explainer
+                             :layer/id       "heres-how-it-works"
+                             :title/value    ["You buy the hair,"
+                                              "we cover the install."]
+                             :subtitle/value ["Here's how it works."]
+                             :bullets        [{:title/value "Pick Your Dream Look"
+                                               :body/value  "Have a vision in mind? We’ve got the hair for it. Otherwise, peruse our site for inspiration to find your next look."}
+                                              {:title/value ["Select A Mayvenn" ui/hyphen "Certified Stylist"]
+                                               :body/value  "We’ve hand-picked thousands of talented stylists around the country. We’ll cover the cost of your salon appointment with them when you buy 3 or more bundles."}
+                                              {:title/value ["Book Any Add-On Service"]
+                                               :body/value  "Want an additional service? On the cart page, you can book a Natural Hair Trim, Weave Take Down, or Deep Conditioning service. Then, continue toward checkout."}
+                                              {:title/value "Schedule Your Appointment"
+                                               :body/value  "We’ll connect you with your stylist to set up your install. Then, we’ll send you a prepaid voucher to cover the cost of service."}]}})
+
            {:look-card/primary   (:title contentful-look)
             :look-card/secondary (:description contentful-look)
 
@@ -648,20 +665,7 @@
             :return-link/event-message (if (and (not back) back-event)
                                          [back-event]
                                          [events/navigate-shop-by-look {:album-keyword album-keyword}])
-            :return-link/back          back
-            :how-it-works              {:layer/type     :shop-bulleted-explainer
-                                        :layer/id       "heres-how-it-works"
-                                        :title/value    ["You buy the hair,"
-                                                         "we cover the install."]
-                                        :subtitle/value ["Here's how it works."]
-                                        :bullets        [{:title/value "Pick Your Dream Look"
-                                                          :body/value  "Have a vision in mind? We’ve got the hair for it. Otherwise, peruse our site for inspiration to find your next look."}
-                                                         {:title/value ["Select A Mayvenn" ui/hyphen "Certified Stylist"]
-                                                          :body/value  "We’ve hand-picked thousands of talented stylists around the country. We’ll cover the cost of your salon appointment with them when you buy 3 or more bundles."}
-                                                         {:title/value ["Book Any Add-On Service"]
-                                                          :body/value  "Want an additional service? On the cart page, you can book a Natural Hair Trim, Weave Take Down, or Deep Conditioning service. Then, continue toward checkout."}
-                                                         {:title/value "Schedule Your Appointment"
-                                                          :body/value  "We’ll connect you with your stylist to set up your install. Then, we’ll send you a prepaid voucher to cover the cost of service."}]}}
+            :return-link/back          back}
 
            {:quadpay/show?       (get-in data keypaths/loaded-quadpay)
             :quadpay/order-total total
