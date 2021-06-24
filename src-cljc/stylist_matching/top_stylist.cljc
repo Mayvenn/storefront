@@ -24,7 +24,7 @@
     [:div.bg-pale-purple.black.center.flex.flex-auto.flex-column
      (component/build gallery-modal/organism (with :gallery-modal data) nil)
      (components.header/adventure-header (with :header data))
-     [:div.m6
+     [:div.m2
       (titles/canela-huge (with :title top-stylist-data))]
      (ui/screen-aware top-stylist-cards/organism
                       top-stylist-data
