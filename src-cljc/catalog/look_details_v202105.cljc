@@ -625,7 +625,7 @@
               :look-total/primary (cond
                                     (some (comp zero? :promo.mayvenn-install/hair-missing-quantity)
                                           discountable-services)
-                                    "HAIR + FREE Service"
+                                    "HAIR + FREE Install"
 
                                     :else
                                     (-> adjustments first :name))
