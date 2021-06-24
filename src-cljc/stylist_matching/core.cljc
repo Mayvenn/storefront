@@ -245,15 +245,16 @@
 (defmethod fx/perform-effects e/flow|stylist-matching|resulted
   [_ _ {:keys [results]} _ state]
   #?(:cljs
-     (let [nav-event (first (get-in state storefront.keypaths/navigation-message))
+     (let [nav-event      (first (get-in state storefront.keypaths/navigation-message))
            service-params (-> state stylist-matching<- :param/services)]
-       (when-not (= e/navigate-adventure-stylist-results nav-event)
-         (apply history/enqueue-navigate (if (and (= e/navigate-adventure-find-your-stylist nav-event)
-                                            (experiments/top-stylist? state)
-                                            (contains-top-stylist? service-params results))
-                                           [e/navigate-adventure-top-stylist]
-                                           [e/navigate-adventure-stylist-results {:query-params (->> (stylist-matching<- state)
-                                                                                                     (query-params<- {}))}]))))))
+       (if (and (= e/navigate-adventure-find-your-stylist nav-event)
+                (experiments/top-stylist? state)
+                (contains-top-stylist? service-params results))
+         (history/enqueue-navigate e/navigate-adventure-top-stylist)
+         (when (= e/navigate-adventure-find-your-stylist nav-event)
+           (history/enqueue-navigate e/navigate-adventure-stylist-results
+                                     {:query-params (->> (stylist-matching<- state)
+                                                         (query-params<- {}))}))))))
 
 ;; Stylists: Resulted
 (defmethod t/transition-state e/flow|stylist-matching|resulted
