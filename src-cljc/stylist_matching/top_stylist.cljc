@@ -29,10 +29,11 @@
      (ui/screen-aware top-stylist-cards/organism
                       top-stylist-data
                       (component/component-id (:react/key data)))
-     (let [{:keys [target primary]} (with :footer top-stylist-data)]
+     (let [{:keys [id target primary]} (with :footer top-stylist-data)]
        [:div.mt4.mb8
         (ui/button-medium-underline-primary
-         (apply utils/route-to target)
+         (merge {:data-test id}
+                (apply utils/route-to target))
          primary)])]))
 
 (defn ^:export page
@@ -110,7 +111,8 @@
                                                                                                           first
                                                                                                           not-empty)))
             (within :top-stylist.footer
-                    {:primary "View All Stylists"
+                    {:id      "view-all-stylists"
+                     :primary "View All Stylists"
                      :target  [e/navigate-adventure-stylist-results {:query-params (->> app-state
                                                                                         stylist-matching.core/stylist-matching<-
                                                                                         (stylist-matching.core/query-params<- {}))}]})
