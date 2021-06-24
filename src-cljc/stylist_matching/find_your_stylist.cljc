@@ -3,14 +3,18 @@
             [api.catalog :refer [select ?service]]
             api.orders
             [clojure.string :as string]
+            [mayvenn.concept.wait :as wait]
             [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.flash :as flash]
             [storefront.components.header :as header]
+            [storefront.components.svg :as svg]
             [storefront.effects :as effects]
             [storefront.events :as events]
             storefront.keypaths
+            [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
+            [storefront.request-keys :as request-keys]
             [stylist-matching.core :refer [google-place-autocomplete<-]]
             [stylist-matching.ui.spinner :as spinner]
             [stylist-matching.ui.stylist-search :as stylist-search]))
@@ -67,7 +71,7 @@
 
 ;; ------------------------
 
-(defn spinner<-
+(defn maps-spinner<-
   [app-state]
   (when-not (boolean (get-in app-state storefront.keypaths/loaded-google-maps))
     {:spinner/id "loading-google-maps"}))
@@ -100,14 +104,23 @@
    :header.title/primary          "Meet Your Stylist"})
 
 (defcomponent template
-  [{:keys [flash header stylist-search spinner cart]} _ _]
-  [:div.center.flex.flex-auto.flex-column
-   (header/adventure-header header)
-   (component/build flash/component flash nil)
-   (if (seq spinner)
-     (component/build spinner/organism spinner nil)
-     [:div.px2.mt8.pt4
-      (component/build stylist-search/organism stylist-search nil)])])
+  [{:keys [flash header stylist-search maps-spinner query-spinner? cart]} _ _]
+  (if query-spinner?
+    [:div.max-580.bg-pale-purple.absolute.overlay
+     [:div.absolute.overlay.border.border-white.border-framed-white.m4.p5.flex.flex-column.items-center.justify-center
+      [:div (svg/mayvenn-logo {:class "spin-y"
+                               :style {:width "54px"}})]
+      [:div {:style {:height "50%"}}
+       [:div.title-2.canela.center
+        [:div "Sit back and relax."]
+        [:div "There’s no end to what your hair can do."]]]]]
+    [:div.center.flex.flex-auto.flex-column
+     (header/adventure-header header)
+     (component/build flash/component flash nil)
+     (if (seq maps-spinner)
+       (component/build spinner/organism maps-spinner nil)
+       [:div.px2.mt8.pt4
+        (component/build stylist-search/organism stylist-search nil)])]))
 
 (defn ^:export page
   [state _]
@@ -117,5 +130,8 @@
     (component/build template
                      {:stylist-search (stylist-search<- place-autocomplete)
                       :flash          (flash/query state)
-                      :spinner        (spinner<- state)
+                      :query-spinner? (or (wait/<- state "location-submit")
+                                          (utils/requesting? state request-keys/fetch-matched-stylists)
+                                          (utils/requesting? state request-keys/fetch-stylists-matching-filters))
+                      :maps-spinner   (maps-spinner<- state)
                       :header         (header<- current-order undo-history)})))

@@ -50,6 +50,7 @@
   (messages/handle-message e/flow|stylist-matching|param-location-constrained
                            (get-in state k/google-location))
   (messages/handle-message e/flow|stylist-matching|prepared)
+  (messages/handle-message e/flow|wait|begun {:wait/id "location-submit"})
   (messages/handle-message e/flow|stylist-matching|searched))
 
 ;; ---------------------------------------------
