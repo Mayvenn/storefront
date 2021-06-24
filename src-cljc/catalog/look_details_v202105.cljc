@@ -622,9 +622,18 @@
               :look-title/secondary  secondary
               :look-title/tertiary   tertiary
 
-              :look-total/primary   (if (some (comp (partial = 0) :promo.mayvenn-install/hair-missing-quantity) discountable-services)
-                                      "HAIR + FREE Service"
-                                      (->> adjustments first :name))
+              :look-total/primary (cond
+                                    (some (comp zero? :promo.mayvenn-install/hair-missing-quantity)
+                                          discountable-services)
+                                    "HAIR + FREE Service"
+
+                                    ;; NOTE(le): As per [#178635132], when there is an unavailable selection
+                                    ;;           it should show HAIR + FREE Install
+                                    (not (-> adjustments first :name))
+                                    "HAIR + FREE Install"
+
+                                    :else
+                                    (-> adjustments first :name))
               :look-total/secondary secondary
               :look-total/tertiary  tertiary})
 
