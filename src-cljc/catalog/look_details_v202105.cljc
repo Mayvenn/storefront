@@ -623,6 +623,9 @@
               :look-title/tertiary   tertiary
 
               :look-total/primary (cond
+                                    (not shop?)
+                                    (-> adjustments first :name)
+
                                     (some (comp zero? :promo.mayvenn-install/hair-missing-quantity)
                                           discountable-services)
                                     "HAIR + FREE Service"
