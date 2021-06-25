@@ -1,11 +1,13 @@
 (ns stylist-matching.ui.top-stylist-cards
   (:require [mayvenn.visual.tools :refer [with]]
             [mayvenn.visual.ui.titles :as titles]
-            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as c :refer [defcomponent defdynamic-component]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.events :as e]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages :as messages]
             [ui.molecules :as molecules]))
 
 ;; Forked from stylist-matching.ui.stylist-cards
@@ -14,7 +16,7 @@
   "We want ucare-ids here but we do not have them"
   [{:stylist-card.thumbnail/keys [id ucare-id] :as data}]
   (when id
-    (component/html
+    (c/html
      (if (:screen/seen? data)
        (ui/circle-picture {:width "72px"}
                           (ui/square-image {:resizable-url ucare-id}
@@ -40,7 +42,7 @@
 (defn stylist-card-address-marker-molecule ; TODO rename
   [{:stylist-card.address-marker/keys [id value]}]
   (when id
-    (component/html
+    (c/html
      [:div.content-3.col-12.flex.items-center.pyp1
       {:style {:text-overflow "ellipsis"}}
       value])))
@@ -48,7 +50,7 @@
 (defn top-stylist-card-cta-molecule
   [{:stylist-card.cta/keys [id label target]}]
   (when id
-    (component/html
+    (c/html
      (ui/button-medium-primary
       (merge {:data-test id}
              (apply utils/fake-href target))
@@ -57,7 +59,7 @@
 (defn stylist-card-gallery-item-molecule
   [{:stylist-card.gallery-item/keys [id target ucare-id]}]
   (when id
-    (component/html
+    (c/html
      [:a.block.px1
       (merge
        (apply utils/route-to target)
@@ -70,9 +72,9 @@
 (defn stylist-card-gallery-molecule
   [{:stylist-card.gallery/keys [id items]}]
   (when id
-    (component/html
+    (c/html
      [:div.px2
-      (component/build carousel/component
+      (c/build carousel/component
                        {:data     items
                         :settings {:controls true
                                    :nav      false
@@ -126,15 +128,25 @@
           (svg/symbolic->html icon))
         [:div (when id {:data-test id}) primary]]]])])
 
-(defcomponent organism
-  [data _ {:keys [id]}]
-  [:div.flex.flex-column.left-align.border.border-cool-gray.mx3.mt1.mb3.bg-white
-   {:id        id
-    :data-test id}
-   (top-stylist-card-header-molecule data)
-   [:div.col-12
-    (if (:screen/seen? data)
-      (stylist-card-gallery-molecule data)
-      (ui/aspect-ratio 426 105 [:div]))]
-   (top-stylist-information-points-molecule (with :laurels data))
-   [:div.col-12.py3.px2 (top-stylist-card-cta-molecule data)]])
+(defdynamic-component organism
+  (did-mount
+   [this]
+   (let [{:keys [analytics/cards analytics/stylist-results-returned?]} (c/get-props this)]
+     (when stylist-results-returned?
+       (messages/handle-message e/adventure-stylist-search-results-displayed
+                                {:cards cards}))))
+  (render
+   [this]
+   (c/html
+    (let [data         (c/get-props this)
+          {:keys [id]} (c/get-opts this)]
+      [:div.flex.flex-column.left-align.border.border-cool-gray.mx3.mt1.mb3.bg-white
+       {:id        id
+        :data-test id}
+       (top-stylist-card-header-molecule data)
+       [:div.col-12
+        (if (:screen/seen? data)
+          (stylist-card-gallery-molecule data)
+          (ui/aspect-ratio 426 105 [:div]))]
+       (top-stylist-information-points-molecule (with :laurels data))
+       [:div.col-12.py3.px2 (top-stylist-card-cta-molecule data)]]))))

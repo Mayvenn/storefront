@@ -63,7 +63,9 @@
     (component/build
      top-stylist-template
 
-     (merge (within :gallery-modal
+     (merge {:react/key "top-stylist"}
+
+            (within :gallery-modal
                     (stylist-results/gallery-modal-query app-state))
 
             (within :template
@@ -105,6 +107,14 @@
                                                                  :width  "1.7em"}
                                                          :class "fill-s-color mr1"}]
                                :primary "State licensed stylist"}]})
+
+            (within :top-stylist.analytics
+                    {:cards                     (->> top-stylist
+                                                     (conj '())
+                                                     (assoc stylist-data :stylists)
+                                                     stylist-results/stylist-data->stylist-cards
+                                                     (take 1))
+                     :stylist-results-returned? (contains? (:status matching) :results/stylists)})
 
             (within :header
                     (stylist-results/header<- current-order [e/navigate-adventure-find-your-stylist] (->> (get-in app-state storefront.keypaths/navigation-undo-stack)

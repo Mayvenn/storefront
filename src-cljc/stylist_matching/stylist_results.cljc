@@ -183,16 +183,11 @@
 
 (defn stylist-results->stringer-event
   [stylist]
-  (let [{:analytics/keys [stylist-id lat long rating just-added? years-of-experience]}
-        (select-keys stylist [:analytics/stylist-id
-                              :analytics/lat
-                              :analytics/long
-                              :analytics/rating
-                              :analytics/just-added?
-                              :analytics/years-of-experience])]
+  (let [{:analytics/keys [stylist-id lat long top-stylist rating just-added? years-of-experience]} stylist]
     {:stylist_id                 stylist-id
      :latitude                   (spice.core/parse-double lat)
      :longitude                  (spice.core/parse-double long)
+     :top_stylist                top-stylist
      :displayed_rating           (spice.core/parse-double rating)
      :just_added                 just-added?
      :displayed_years_experience years-of-experience}))
@@ -242,6 +237,7 @@
                 store-nickname
                 stylist-id
                 stylist-since
+                top-stylist
                 rating]}                      stylist
         rating-count                          (->> rating-star-counts vals (reduce +))
         newly-added-stylist                   (< rating-count 3)
@@ -282,6 +278,7 @@
                                                   years-of-experience)
                                          years-of-experience)
      :analytics/stylist-id             stylist-id
+     :analytics/top-stylist            top-stylist
      :stylist.just-added/id            (when show-newly-added-stylist-ui?
                                          (str "just-added-" store-slug))
      :stylist.just-added/content       "Just Added"
