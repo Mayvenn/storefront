@@ -552,7 +552,7 @@
                                            (get-in data keypaths/selected-look-id)))
         contentful-look (contentful/look->look-detail-social-card album-keyword
                                                                   (contentful/selected-look data))
-        faq             (-> (get-in data keypaths/cms) :faq :free-mayvenn-services) ; NOTE: update with new cms faq path
+        faq             (-> (get-in data keypaths/cms) :faq :shop-by-look)
         back            (first (get-in data keypaths/navigation-undo-stack))
         album-copy      (get ugc/album-copy album-keyword)
         back-event      (:default-back-event album-copy)
