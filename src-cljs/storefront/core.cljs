@@ -179,17 +179,5 @@
                     event
                     (js->clj args :keywordize-keys true))))
 
-(defn ^:export list-registered-effect-methods
-  []
-  (->> (sequence (comp
-                  (map first)
-                  (filter coll?)
-                  (map (partial mapv name))
-                  (map (partial clojure.string/join "-")))
-                 (methods storefront.effects/perform-effects))
-       sort
-       vec
-       clj->js))
-
 (loader/set-loaded! :main)
 (dom-ready #(main app-state))
