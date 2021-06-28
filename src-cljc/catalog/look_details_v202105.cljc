@@ -15,6 +15,7 @@
             [catalog.selector.sku :as sku-selector]
             [clojure.string :as string]
             clojure.set
+            [adventure.faq :as adv-faq]
             [spice.maps :as maps]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.images :as images]
@@ -404,7 +405,8 @@
            picker-modal
            color-picker
            length-pickers
-           how-it-works] :as queried-data}]
+           how-it-works
+           faq] :as queried-data}]
   [:div
    (component/build picker/modal picker-modal)
    [:div.bg-white.px2.my2 (ui.molecules/return-link queried-data)]
@@ -430,6 +432,8 @@
     (when how-it-works
       [:div.pt8
        (component/build layered/shop-bulleted-explainer how-it-works)])
+    (when faq
+      (adv-faq/component faq))
     (yotpo-reviews-component queried-data)]])
 
 (defn ^:private get-model-image
@@ -548,6 +552,7 @@
                                            (get-in data keypaths/selected-look-id)))
         contentful-look (contentful/look->look-detail-social-card album-keyword
                                                                   (contentful/selected-look data))
+        faq             (-> (get-in data keypaths/cms) :faq :free-mayvenn-services) ; NOTE: update with new cms faq path
         back            (first (get-in data keypaths/navigation-undo-stack))
         album-copy      (get ugc/album-copy album-keyword)
         back-event      (:default-back-event album-copy)
@@ -633,7 +638,12 @@
               :look-total/tertiary  tertiary})
 
            (when shop?
-             {:how-it-works {:layer/type     :shop-bulleted-explainer
+             {:faq          (let [{:keys [question-answers]} faq]
+                              {:expanded-index (get-in data keypaths/faq-expanded-section)
+                               :sections       (for [{:keys [question answer]} question-answers]
+                                                 {:title   (:text question)
+                                                  :content answer})})
+              :how-it-works {:layer/type     :shop-bulleted-explainer
                              :layer/id       "heres-how-it-works"
                              :title/value    ["You buy the hair,"
                                               "we cover the install."]

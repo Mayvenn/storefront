@@ -351,6 +351,7 @@
     (if-let [shared-cart-id (contentful/shared-cart-id (contentful/selected-look app-state))]
       (do
         (effects/fetch-cms-keypath app-state [:ugc-collection actual-album-kw])
+        (effects/fetch-cms-keypath app-state [:faq :free-mayvenn-services]) ; NOTE: update with new cms faq path
         (reviews/insert-reviews)
         (api/fetch-shared-cart shared-cart-id))
       (effects/redirect events/navigate-shop-by-look {:album-keyword album-keyword}))))
