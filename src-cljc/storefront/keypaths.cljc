@@ -357,3 +357,4 @@
 (def models-looks-suggestions (conj models-root :looks-suggestions))
 (def models-look-selected (conj models-root :look-selected))
 (def models-wait (conj models-root :wait))
+(def models-follows (conj models-root :follows))
