@@ -391,7 +391,7 @@
                          :height "42px"})]
     (for [[i bullet] (map-indexed vector bullets)]
       ^:inline (shop-step "mb-tb-" i bullet))]
-   [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
+   [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb.left-align
     (for [[i bullet] (map-indexed vector bullets)]
       ^:inline (shop-step "dt-" i bullet))]
    ^:inline (shop-cta-with-icon data)])

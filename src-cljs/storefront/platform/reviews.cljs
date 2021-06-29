@@ -16,7 +16,7 @@
           (let [{:keys [yotpo-data-attributes]} (component/get-props this)]
             (component/html
              [:div
-              [:.mx-auto.mb3
+              [:.mx-auto
                [:.yotpo.yotpo-main-widget yotpo-data-attributes]]]))))
 
 (defcomponent reviews-component

@@ -298,7 +298,7 @@
 
 (defn yotpo-reviews-component [{:keys [yotpo-data-attributes]}]
   (when yotpo-data-attributes
-    [:div.bg-white.col-10-on-dt.mx-auto
+    [:div.col-10-on-dt.mx-auto
      (component/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)]))
 
 (defn ^:private get-number-of-lines
@@ -351,7 +351,7 @@
 
 (component/defcomponent ^:private look-card
   [{:look-card/keys [primary] :as queried-data} _ _]
-  [:div.slides-middle.col-on-tb-dt.col-6-on-tb-dt.px3.py3-on-mb.bg-white
+  [:div.slides-middle.p3.bg-white.mb3
    (carousel queried-data)
    [:div.pt1
     [:div.flex.items-center
@@ -363,13 +363,13 @@
     (component/build look-card-caption queried-data)]])
 
 (component/defcomponent small-cta
-  [{:cta/keys [id target label disabled? disabled-content spinning?]} _ _]
+  [{:cta/keys [id target small-label disabled? disabled-content spinning?]} _ _]
   (ui/button-small-primary (merge (apply utils/fake-href target)
                                   {:data-test        id
                                    :disabled?        disabled?
                                    :disabled-content disabled-content
                                    :spinning?        spinning?})
-                           label))
+                           small-label))
 
 (component/defcomponent ^:private look-title
   ;; TODO better names for these keys
@@ -391,49 +391,51 @@
 
 (component/defcomponent look-total
   [{:look-total/keys [primary secondary tertiary]}_ _]
-  [:div.center.pt4.bg-white
+  [:div.center.pt4.bg-white-on-mb
    (when primary
-     [:div.center.flex.items-center.justify-center.title-2.bold.shout
-      (svg/discount-tag {:height "28px"
-                         :width  "28px"})
+     [:div.center.flex.items-center.justify-center.bold.shout
+      (svg/discount-tag {:height "30px"
+                         :width  "30px"})
       primary])
    (when tertiary [:div.strike.content-3.proxima.mt2 tertiary])
    [:div.title-1.proxima.bold.my1 secondary]])
 
 (defn ^:private look-details-body
-  [{:keys [spinning?
-           picker-modal
-           color-picker
-           length-pickers
-           how-it-works
-           faq] :as queried-data}]
-  [:div
-   (component/build picker/modal picker-modal)
-   [:div.bg-white.px2.my2 (ui.molecules/return-link queried-data)]
-   [:div.bg-refresh-gray.bg-white-on-tb-dt.pb3
-    [:div.mb3.p3-on-mb (component/build look-card queried-data "look-card")]
-    (if spinning?
-      [:div.flex.justify-center.items-center
-       (ui/large-spinner {:style {:height "4em"}})]
-      [:div
-       [:div.col-on-tb-dt.col-6-on-tb-dt.px3
-        (component/build look-title queried-data)
-        [:div.my4 ;; TODO extract this component
+  [{:keys             [spinning?
+                 picker-modal
+                 color-picker
+                 length-pickers
+                 how-it-works
+                 faq] :as queried-data}]
+  [:div.bg-refresh-gray
+   [:div
+    (component/build picker/modal picker-modal)
+    [:div.bg-white-on-mb.p2 (ui.molecules/return-link queried-data)]
+    [:div
+     [:div.col.col-6-on-tb-dt
+      (component/build look-card queried-data "look-card")]
+     (if spinning?
+       [:div.flex.justify-center.items-center
+         (ui/large-spinner {:style {:height "4em"}})]
+       [:div.col-on-tb-dt.col-6-on-tb-dt
+        [:div.px3
+         (component/build look-title queried-data)]
+        [:div.px3.my4 ;; TODO extract this component
          [:div.proxima.title-3.shout "Color"]
          (picker/component color-picker)]
-        [:div.my4 ;; TODO extract this component
+        [:div.px3.my4
          [:div.proxima.title-3.shout "Lengths"]
          (map picker/component length-pickers)]
-        [:div.bg-white.pb8
+        [:div.bg-white-on-mb.pb8.px3
          (component/build look-total queried-data nil)
          [:div.col-11.mx-auto.mbn2
           (add-to-cart-button queried-data)
-          #?(:cljs (component/build quadpay/component queried-data nil))]]]])
-    (when how-it-works
-      [:div.pt8
-       (component/build layered/shop-bulleted-explainer how-it-works)])
-    (when faq
-      (adv-faq/component faq))
+          #?(:cljs (component/build quadpay/component queried-data nil))]]])
+     (when how-it-works
+       (component/build layered/shop-bulleted-explainer how-it-works))]]
+   (when faq
+     [:div.bg-pale-purple.col-12.col (adv-faq/component faq)])
+   [:div
     (yotpo-reviews-component queried-data)]])
 
 (defn ^:private get-model-image
@@ -639,10 +641,11 @@
 
            (when shop?
              {:faq          (let [{:keys [question-answers]} faq]
-                              {:expanded-index (get-in data keypaths/faq-expanded-section)
-                               :sections       (for [{:keys [question answer]} question-answers]
-                                                 {:title   (:text question)
-                                                  :content answer})})
+                              {:background-color "bg-pale-purple"
+                               :expanded-index   (get-in data keypaths/faq-expanded-section)
+                               :sections         (for [{:keys [question answer]} question-answers]
+                                                   {:title   (:text question)
+                                                    :content answer})})
               :how-it-works {:layer/type     :shop-bulleted-explainer
                              :layer/id       "heres-how-it-works"
                              :title/value    ["You buy the hair,"
@@ -672,7 +675,8 @@
             :cta/disabled-content      (when unavailable-lengths-selected?
                                          "Unavailable")
             :cta/spinning?             (utils/requesting? data request-keys/new-order-from-sku-ids)
-            :cta/label                 "Add To Bag"
+            :cta/label                 "Add Products To Bag"
+            :cta/small-label           "Add To Bag"
             :carousel/images           (imgs (get-in data keypaths/v2-images) contentful-look items)
             :carousel/data             {:look look :shared-cart shared-cart}
             :return-link/copy          "Back"
@@ -697,7 +701,7 @@
 
 (defcomponent component
   [queried-data _ _]
-  [:div.container.mb4 (look-details-body queried-data)])
+  [:div.container (look-details-body queried-data)])
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
