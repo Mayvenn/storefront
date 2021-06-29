@@ -7,6 +7,7 @@
             [stylist-matching.core :refer [stylist-matching<- service-delimiter]]
             [stylist-matching.keypaths :as k]
             api.orders
+            clojure.set
             [clojure.string :as string]
             [storefront.accessors.sites :as sites]
             [storefront.accessors.experiments :as experiments]
@@ -517,6 +518,14 @@
         (component/build shopping-method-choice/organism
                          shopping-method-choice))))))
 
+;; HACK: We need to move away from backing these search filters with SRV sku ids
+(def ^:private srv->sv2
+  {"SRV-LBI-000" "SV2-LBI-X"
+   "SRV-FBI-000" "SV2-FBI-X"
+   "SRV-3BI-000" "SV2-3BI-X"
+   "SRV-CBI-000" "SV2-CBI-X"})
+(def ^:private sv2->srv (clojure.set/map-invert srv->sv2))
+
 (defn stylist-search-inputs<-
   "Stylist Search inputs
 
@@ -536,15 +545,16 @@
       :stylist-results.address-input/keypath k/google-input
       :stylist-results.address-input/errors  address-field-errors})
    (when-let [pills (->> (:param/services matching)
+                         (map #(get srv->sv2 % %))
                          (keep
                           (fn [sku-id]
-                            (when-let [sku-name (get-in skus-db [sku-id :sku/name])]
+                            (when-let [sku (get skus-db sku-id)]
                               #:preference-pill
                               {:target  [e/control-stylist-search-toggle-filter
                                          {:previously-checked?      true
-                                          :stylist-filter-selection sku-id}]
-                               :id      (str "remove-preference-button-" sku-id)
-                               :primary sku-name})))
+                                          :stylist-filter-selection (get sv2->srv sku-id sku-id)}]
+                               :id      (str "remove-preference-button-" (get sv2->srv sku-id sku-id))
+                               :primary (:sku/title sku)})))
                          not-empty)]
      {:stylist-results.service-filters/preferences pills})
 
