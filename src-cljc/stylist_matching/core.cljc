@@ -21,6 +21,7 @@
             [api.catalog :refer [select ?base ?service ?physical ?discountable-install]]
             api.orders
             api.stylist
+            [mayvenn.concept.follow :as follow]
             storefront.keypaths
             [spice.maps :as maps]
             [spice.selector :as selector]
@@ -243,26 +244,28 @@
         stylists))
 
 (defmethod fx/perform-effects e/flow|stylist-matching|resulted
-  [_ _ {:keys [results]} _ state]
+  [_ event {:as args :keys [results]} state state']
+  (follow/publish-all state event args)
   #?(:cljs
-     (let [nav-event      (first (get-in state storefront.keypaths/navigation-message))
-           service-params (-> state stylist-matching<- :param/services)]
+     (let [nav-event      (first (get-in state' storefront.keypaths/navigation-message))
+           service-params (-> state' stylist-matching<- :param/services)]
        (if (and (= e/navigate-adventure-find-your-stylist nav-event)
-                (experiments/top-stylist? state)
+                (experiments/top-stylist? state')
                 (contains-top-stylist? service-params results))
          (history/enqueue-navigate e/navigate-adventure-top-stylist)
          (when (= e/navigate-adventure-find-your-stylist nav-event)
            (history/enqueue-navigate e/navigate-adventure-stylist-results
-                                     {:query-params (->> (stylist-matching<- state)
+                                     {:query-params (->> (stylist-matching<- state')
                                                          (query-params<- {}))}))))))
 
 ;; Stylists: Resulted
 (defmethod t/transition-state e/flow|stylist-matching|resulted
-  [_ _ {:keys [results]} state]
+  [_ event {:keys [results]} state]
   (let [stylist-models (->> results
                             (mapv #(api.stylist/stylist<- state %))
                             (maps/index-by :stylist/id))]
     (-> state
+        (follow/clear event)
         ;; TODO(corey) ideally this should go through a cache|stylist|fetched event
         (update-in storefront.keypaths/models-stylists merge stylist-models)
         (assoc-in k/stylist-results results)

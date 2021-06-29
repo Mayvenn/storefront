@@ -749,3 +749,5 @@
 (defpath control-stylist-gallery-posts-drag-predicate-initialized)
 (defpath stylist-gallery-posts-drag-predicate-loop)
 (defpath stylist-gallery-posts-reordered)
+
+(defpath top-stylist-navigation-decided)

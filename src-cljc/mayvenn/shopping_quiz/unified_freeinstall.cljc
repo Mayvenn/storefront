@@ -2,34 +2,36 @@
   "
   Visual Layer: Unified-Free Install shopping quiz
   "
-  (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]])
-            [clojure.string :refer [starts-with?]]
+  (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
+                       [storefront.history :as history]])
             [api.catalog :refer [select ?service]]
             api.orders
+            [clojure.string :refer [starts-with?]]
+            [mayvenn.concept.follow :as follow]
+            [mayvenn.concept.looks-suggestions :as looks-suggestions]
             [mayvenn.concept.progression :as progression]
             [mayvenn.concept.questioning :as questioning]
-            [mayvenn.concept.looks-suggestions :as looks-suggestions]
             [mayvenn.concept.wait :as wait]
             [mayvenn.visual.lib.card :as card]
             [mayvenn.visual.lib.escape-hatch :as escape-hatch]
             [mayvenn.visual.lib.progress-bar :as progress-bar]
             [mayvenn.visual.lib.question :as question]
             [mayvenn.visual.tools :refer [with]]
-            [mayvenn.visual.ui.titles :as titles]
             [mayvenn.visual.ui.actions :as actions]
-            [stylist-matching.core :refer [stylist-matching<-]]
-            [stylist-matching.ui.stylist-search :as stylist-search]
+            [mayvenn.visual.ui.titles :as titles]
+            [spice.core :as spice]
+            [spice.maps :as maps]
+            [storefront.accessors.experiments :as experiments]
             [storefront.component :as c]
             [storefront.components.header :as header]
+            [storefront.components.money-formatters :as mf]
             [storefront.effects :as fx]
             [storefront.events :as e]
-            [storefront.components.money-formatters :as mf]
             [storefront.platform.messages
-             :as messages
              :refer [handle-message]
              :rename {handle-message publish}]
-            [spice.core :as spice]
-            [spice.maps :as maps]))
+            [stylist-matching.core :as stylist-matching :refer [stylist-matching<-]]
+            [stylist-matching.ui.stylist-search :as stylist-search]))
 
 (def ^:private id :unified-freeinstall)
 
@@ -55,21 +57,13 @@
   [:div.center.flex.flex-column
    [:div.bg-white
     (c/build header/mobile-nav-header-component)]
-
-   #_
-   (header/adventure-header header)
    #_
    (component/build flash/component flash nil)
    [:div.px2.mt8.pt4
-    (c/build stylist-search/organism data)]
-   #_
-   (if (seq spinner)
-     (component/build spinner/organism spinner nil)
-     [:div.px2.mt8.pt4
-      (component/build stylist-search/organism stylist-search nil)])])
+    (c/build stylist-search/organism data)]])
 
 (defn find-your-stylist<
-  [{:as stylist-matching :google/keys [input location]}]
+  [{:google/keys [input location]}]
   {:stylist-search.title/id                        "find-your-stylist-stylist-search-title"
    :stylist-search.title/primary                   "Where do you want to get your hair done?"
    :stylist-search.location-search-box/id          "stylist-match-address"
@@ -79,8 +73,28 @@
    :stylist-search.button/id                       "stylist-match-address-submit"
    :stylist-search.button/disabled?                (or (empty? location)
                                                        (empty? input))
-   :stylist-search.button/target                   [e/control-adventure-location-submit]
-   :stylist-search.button/label                    "Search"})
+   :stylist-search.button/label                    "Search"
+   :stylist-search.button/target
+   [e/biz|follow|defined
+    {:follow/start    [e/control-adventure-location-submit]
+     :follow/after-id e/flow|stylist-matching|resulted
+     :follow/then     [e/top-stylist-navigation-decided
+                       {:decision
+                        {:top-stylist     e/navigate-adventure-top-stylist
+                         :stylist-results e/navigate-adventure-stylist-results}}]}]})
+
+(defmethod fx/perform-effects e/top-stylist-navigation-decided
+  [_ _ {:keys [decision] :follow/keys [args]} _ state]
+  (->> [(:stylist-results decision)
+        {:query-params (->> (stylist-matching<- state)
+                            (stylist-matching/query-params<- {}))}]
+       (if (and
+            (experiments/top-stylist? state)
+            (->> (:results args)
+                 (some :top-stylist)
+                 boolean))
+         [(:top-stylist decision)])
+       #?(:cljs (apply history/enqueue-navigate))))
 
 ;; Template: 2/Summary
 
@@ -379,11 +393,11 @@
            {:id    id
             :value 3})
   #?(:cljs (google-maps/insert))
-  (messages/handle-message e/flow|stylist-matching|initialized)
+  (publish e/flow|stylist-matching|initialized)
   (when-let [preferred-services (->> (api.orders/current state)
                                      :order/items
                                      (select ?service)
                                      (reduce services->srv-sku-ids [])
                                      not-empty)]
-    (messages/handle-message e/flow|stylist-matching|param-services-constrained
-                             {:services preferred-services})))
+    (publish e/flow|stylist-matching|param-services-constrained
+             {:services preferred-services})))
