@@ -94,7 +94,12 @@
         available?                          (boolean
                                              (get-in availability [selected-hair-family
                                                                    selected-hair-color
-                                                                   slug]))]
+                                                                   slug]))
+        sold-out?                           (not (boolean
+                                                  (get-in availability [selected-hair-family
+                                                                        selected-hair-color
+                                                                        slug
+                                                                        :inventory/in-stock?])))]
     (merge
      #:product{:option product-option}
      #:option{:id               (str "picker-length-" index "-" slug)
@@ -105,6 +110,10 @@
               :label            option-name
               :value            slug
               :available?       available?}
+     (when sold-out?
+       #:option{:label-attrs      {:class "dark-gray"}
+                :label            (str option-name " - Sold Out")
+                :selection-target nil})
      (when-not available?
        #:option{:label-attrs      {:class "dark-gray"}
                 :label            (str option-name " - Unavailable")
@@ -215,7 +224,7 @@
                                                      in-stock?  :inventory/in-stock?
                                                      :as        sku}]
                                              (cond-> acc
-                                               (and family color length in-stock?)
+                                               (and family color length)
                                                (assoc-in [(first family) (first color) (first length)] sku))) {}
                                            (vals sliced-sku-db))
         options                    (initialize-look-picker-options (get-in app-state keypaths/v2-products)
@@ -525,25 +534,37 @@
             hair-family-facet-option
             (get-in facets-db [:hair/family
                                :facet/options
-                               (get-in selections [:per-item index :hair/family])])]
-        (cond->
-            {:id               (str "picker-length-" index)
-             :value-id         (str "picker-selected-length-" index "-" (:option/slug hair-length-facet-option))
-             :image-src        (->> hair-family-and-color-skus first :selector/images (select ?cart-product-image) first :url)
-             :options          length-options
-             :primary          (str (:option/name hair-length-facet-option) " " (:sku/name hair-family-facet-option))
-             :selected-value   (:option/slug hair-length-facet-option)
-             :selection-target [events/control-look-detail-picker-option-select {:selection [:per-item index :hair/length]}]
-             :open-target      [events/control-look-detail-picker-open {:picker-id [:per-item index :hair/length]}]}
+                               (get-in selections [:per-item index :hair/family])])
 
+            picker-data {:id               (str "picker-length-" index)
+                         :value-id         (str "picker-selected-length-" index "-" (:option/slug hair-length-facet-option))
+                         :image-src        (->> hair-family-and-color-skus first :selector/images (select ?cart-product-image) first :url)
+                         :options          length-options
+                         :primary          (str (:option/name hair-length-facet-option) " " (:sku/name hair-family-facet-option))
+                         :selected-value   (:option/slug hair-length-facet-option)
+                         :selection-target [events/control-look-detail-picker-option-select {:selection [:per-item index :hair/length]}]
+                         :open-target      [events/control-look-detail-picker-open {:picker-id [:per-item index :hair/length]}]}]
+        (cond
           (not (boolean
                 (get-in availability [item-hair-family
                                       (:hair/color selections)
                                       selected-hair-length])))
-          (->
-           (update :primary str " - Unavailable")
-           (assoc :primary-attrs {:class "red"}  ;; TODO: too low contrast
-                  :image-attrs {:style {:opacity "50%"}})))))
+          (-> picker-data
+              (update :primary str " - Unavailable")
+              (assoc :primary-attrs {:class "red"}  ;; TODO: too low contrast
+                     :image-attrs {:style {:opacity "50%"}}))
+
+          (not (boolean
+                (get-in availability [item-hair-family
+                                      (:hair/color selections)
+                                      selected-hair-length
+                                      :inventory/in-stock?])))
+          (-> picker-data
+              (update :primary str " - Sold Out")
+              (assoc :primary-attrs {:class "red"}  ;; TODO: too low contrast
+                     :image-attrs {:style {:opacity "50%"}}))
+
+          :else picker-data)))
     (->> picker-options :per-item (mapv :hair/length)))})
 
 (defn query [data]
