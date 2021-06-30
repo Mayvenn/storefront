@@ -98,10 +98,6 @@
   [data]
   (display-feature? data "reinstall-services"))
 
-(defn service-skus-with-addons?
-  [_]
-  true)
-
 (defn look-customization?
   [data]
   (display-feature? data "look-customization"))

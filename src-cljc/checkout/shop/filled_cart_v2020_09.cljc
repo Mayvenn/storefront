@@ -638,7 +638,7 @@
                                   "Add promo code")}))})))
 
 (defn freeinstall-informational<-
-  [order items adding-freeinstall? service-skus-with-addons?]
+  [order items adding-freeinstall?]
   (when (and (not (orders/discountable-services-on-order? order))
              (some (comp #{"bundles" "closures" "frontals" "360-frontals"} first :hair/family)
                    (filter (comp (partial = "spree") :item/source) items) ))
@@ -647,9 +647,7 @@
      :freeinstall-informational/secondary             "Get a free install by a licensed stylist when you purchase 3 or more qualifying items"
      :freeinstall-informational/cta-label             "Add Mayvenn Install"
      :freeinstall-informational/cta-target            [events/control-add-sku-to-bag
-                                                       {:sku                {:catalog/sku-id                     (if service-skus-with-addons?
-                                                                                                                   "SV2-LBI-X"
-                                                                                                                   "SRV-LBI-000")
+                                                       {:sku                {:catalog/sku-id                     "SV2-LBI-X"
                                                                              :promo.mayvenn-install/discountable true}
                                                         :quantity           1}]
      :freeinstall-informational/id                    "freeinstall-informational"
@@ -755,11 +753,8 @@
 
         ;; TODO(corey) these are session
         pending-requests?         (update-pending? app-state)
-        service-skus-with-addons? (experiments/service-skus-with-addons? app-state)
         remove-in-progress?       (utils/requesting? app-state request-keys/remove-servicing-stylist)
-        adding-freeinstall?       (utils/requesting? app-state (conj request-keys/add-to-bag (if service-skus-with-addons?
-                                                                                               "SV2-LBI-X"
-                                                                                               "SRV-LBI-000")))
+        adding-freeinstall?       (utils/requesting? app-state (conj request-keys/add-to-bag "SV2-LBI-X"))
         update-line-item-requests (merge-with #(or %1 %2)
                                               (->> (map :catalog/sku-id items)
                                                    (variants-requests app-state request-keys/add-to-bag))
@@ -787,7 +782,7 @@
                                                                       delete-line-item-requests)
                                         :checkout-caption            (checkout-caption<- items)
                                         :cart-summary                (merge (cart-summary<- waiter-order items)
-                                                                            (freeinstall-informational<- waiter-order items adding-freeinstall? service-skus-with-addons?)
+                                                                            (freeinstall-informational<- waiter-order items adding-freeinstall?)
                                                                             (promo-input<- app-state
                                                                                            waiter-order
                                                                                            pending-requests?))

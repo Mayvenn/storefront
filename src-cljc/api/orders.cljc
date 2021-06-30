@@ -158,11 +158,10 @@
      :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
      :order.items/quantity (orders/displayed-cart-count waiter-order)
      :order/items          items
-     :service/world        (cond ; Consider current order contents first, then ff, default old
-                             (select ?new-world-service items)        "SV2"
-                             (select ?service items)                  "SRV"
-                             (ff/service-skus-with-addons? app-state) "SV2"
-                             :else                                    "SRV")}))
+     :service/world        (cond ; Consider current order contents first
+                             (select ?new-world-service items) "SV2"
+                             (select ?service items)           "SRV"
+                             :else                             "SV2")}))
 
 (defn completed
   [app-state]
