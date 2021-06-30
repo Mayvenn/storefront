@@ -128,7 +128,7 @@
                                                                                         (stylist-matching.core/query-params<- {}))}]})
             (within :top-stylist.title
                     {:id        "top-match-copy-header"
-                     :primary   "You Are In Luck"
+                     :primary   "You're in luck..."
                      :secondary (str "Top Stylist alert! "
                                      (-> top-stylist :address :firstname) " " (-> top-stylist :address :lastname)
                                      " is an experienced and licensed "
