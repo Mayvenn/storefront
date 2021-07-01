@@ -133,7 +133,8 @@
    events/navigate-shopping-quiz-unified-freeinstall-question          (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
    events/navigate-shopping-quiz-unified-freeinstall-recommendations   (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
    events/navigate-shopping-quiz-unified-freeinstall-summary           (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
-   events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist (constantly mayvenn.shopping-quiz.unified-freeinstall/page)})
+   events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
+   events/navigate-shopping-quiz-unified-freeinstall-stylist-results   (constantly mayvenn.shopping-quiz.unified-freeinstall/page)})
 
 (defn main-component
   [nav-event]

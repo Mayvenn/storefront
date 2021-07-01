@@ -6,12 +6,13 @@
                        [storefront.history :as history]])
             [api.catalog :refer [select ?service]]
             api.orders
-            [clojure.string :refer [starts-with?]]
+            [clojure.string :refer [starts-with? split]]
             [mayvenn.concept.follow :as follow]
             [mayvenn.concept.looks-suggestions :as looks-suggestions]
             [mayvenn.concept.progression :as progression]
             [mayvenn.concept.questioning :as questioning]
             [mayvenn.concept.wait :as wait]
+            [mayvenn.live-help.core :as live-help]
             [mayvenn.visual.lib.card :as card]
             [mayvenn.visual.lib.escape-hatch :as escape-hatch]
             [mayvenn.visual.lib.progress-bar :as progress-bar]
@@ -25,12 +26,18 @@
             [storefront.component :as c]
             [storefront.components.header :as header]
             [storefront.components.money-formatters :as mf]
+            [storefront.components.ui :as ui]
+            [storefront.keypaths :as k]
             [storefront.effects :as fx]
             [storefront.events :as e]
             [storefront.platform.messages
              :refer [handle-message]
              :rename {handle-message publish}]
-            [stylist-matching.core :as stylist-matching :refer [stylist-matching<-]]
+            [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]
+            [stylist-matching.core :refer [stylist-matching<- query-params<- service-delimiter]]
+            [stylist-matching.keypaths :as matching.k]
+            [stylist-matching.stylist-results :as stylist-results]
             [stylist-matching.ui.stylist-search :as stylist-search]))
 
 (def ^:private id :unified-freeinstall)
@@ -49,6 +56,57 @@
   (->> m
        (mapv (comp #(str % suffix) k))
        (interpose delim)))
+
+;; Template: 3/Stylist Results
+(def ^:private scrim-atom
+  [:div.absolute.overlay.bg-darken-4])
+
+(c/defcomponent stylist-results-template
+  [{:keys [stylist-search-inputs results scrim? spinning?]} _ _]
+  [:div.center.flex.flex-column.flex-auto
+   [:div.bg-white
+    (c/build header/mobile-nav-header-component)]
+   (c/build stylist-results/search-inputs-organism
+            stylist-search-inputs)
+   (if spinning?
+     [:div.mt6 ui/spinner]
+     [:div.relative.stretch
+      (when scrim? scrim-atom)
+      (c/build stylist-results/results-template results)])])
+
+(defn stylist-results<
+  [matching
+   skus-db
+   google-loaded?
+   convert-loaded?
+   kustomer-started?
+   requesting?
+   just-added-control?
+   just-added-only?
+   just-added-experience?
+   stylist-results-test?
+   address-field-errors]
+  {:stylist-search-inputs (stylist-results/stylist-search-inputs<-
+                           matching
+                           google-loaded?
+                           skus-db
+                           address-field-errors)
+   :spinning?             (or (empty? (:status matching))
+                              requesting?
+                              (and (not convert-loaded?)
+                                   stylist-results-test?
+                                   (or (not just-added-control?)
+                                       (not just-added-only?)
+                                       (not just-added-experience?))))
+
+   :scrim?                (contains? (:status matching)
+                                     :results.presearch/name)
+   :results               (stylist-results/results< matching
+                                                    kustomer-started?
+                                                    just-added-only?
+                                                    just-added-experience?
+                                                    stylist-results-test?)})
+
 
 ;; Template: 3/Find your stylist
 
@@ -81,13 +139,13 @@
      :follow/then     [e/top-stylist-navigation-decided
                        {:decision
                         {:top-stylist     e/navigate-adventure-top-stylist
-                         :stylist-results e/navigate-adventure-stylist-results}}]}]})
+                         :stylist-results e/navigate-shopping-quiz-unified-freeinstall-stylist-results}}]}]})
 
 (defmethod fx/perform-effects e/top-stylist-navigation-decided
   [_ _ {:keys [decision] :follow/keys [args]} _ state]
   (->> [(:stylist-results decision)
         {:query-params (->> (stylist-matching<- state)
-                            (stylist-matching/query-params<- {}))}]
+                            (query-params<- {}))}]
        (if (and
             (experiments/top-stylist? state)
             (->> (:results args)
@@ -298,9 +356,48 @@
   (let [quiz-progression (progression/<- state id)
         step             (apply max quiz-progression)]
     (case step
-      3 (let [stylist-matching (stylist-matching<- state)]
-          (c/build find-your-stylist-template
-                   (find-your-stylist< stylist-matching)))
+      3 (let [matching (stylist-matching<- state)
+              skus-db  (get-in state k/v2-skus)
+
+              ;; Externals
+              google-loaded?    (get-in state k/loaded-google-maps)
+              convert-loaded?   (get-in state k/loaded-convert)
+              kustomer-started? (live-help/kustomer-started? state)
+
+              requesting?
+              (or
+               (utils/requesting-from-endpoint? state request-keys/fetch-matched-stylists)
+               (utils/requesting-from-endpoint? state request-keys/fetch-stylists-matching-filters)
+               (utils/requesting-from-endpoint? state request-keys/get-products))
+
+              ;; Experiments
+              just-added-control?    (experiments/just-added-control? state)
+              just-added-only?       (experiments/just-added-only? state)
+              just-added-experience? (experiments/just-added-experience? state)
+              stylist-results-test?  (experiments/stylist-results-test? state)
+
+              address-field-errors (get-in state matching.k/address-field-errors)]
+          (prn (:results/stylists matching))
+          (cond
+            (:results/stylists matching)
+            (c/build stylist-results-template
+                     (stylist-results< matching
+                                       skus-db
+                                       google-loaded?
+                                       convert-loaded?
+                                       kustomer-started?
+                                       requesting?
+                                       just-added-control?
+                                       just-added-only?
+                                       just-added-experience?
+                                       stylist-results-test?
+                                       address-field-errors))
+            (not google-loaded?) ;; TODO(corey) different spinner
+            (c/build waiting-template
+                     waiting<)
+            :else
+            (c/build find-your-stylist-template
+                     (find-your-stylist< matching))))
       2 (let [looks-suggestions (looks-suggestions/<- state id)
               selected-look     (looks-suggestions/selected<- state id)]
           (if selected-look
@@ -401,3 +498,59 @@
                                      not-empty)]
     (publish e/flow|stylist-matching|param-services-constrained
              {:services preferred-services})))
+
+(defmethod fx/perform-effects
+  e/navigate-shopping-quiz-unified-freeinstall-stylist-results
+  [_ _ {{preferred-services :preferred-services
+         moniker            :name
+         stylist-ids        :s
+         latitude           :lat
+         longitude          :long
+         address            :address} :query-params} state state']
+  (publish e/biz|progression|progressed
+           #:progression
+           {:id    id
+            :value 3})
+
+  #?(:cljs (google-maps/insert))
+
+  ;; Init the model if there isn't one, e.g. Direct load
+  (when-not (stylist-matching<- state')
+    (publish e/flow|stylist-matching|initialized))
+
+  ;; Pull stylist-ids (s) from URI; predetermined search results
+  (when (seq stylist-ids)
+    (publish e/flow|stylist-matching|param-ids-constrained
+             {:ids stylist-ids}))
+
+  ;; Pull name search from URI
+  (publish e/flow|stylist-matching|set-presearch-field
+           {:name moniker})
+  (publish e/flow|stylist-matching|param-name-constrained
+           {:name moniker})
+
+  ;; Address from URI
+  (publish e/flow|stylist-matching|set-address-field
+           {:address address})
+
+  (when-let [services (some-> preferred-services
+                              not-empty
+                              (split (re-pattern service-delimiter))
+                              set)]
+    (publish e/flow|stylist-matching|param-services-constrained
+             {:services services}))
+  ;; Pull lat/long from URI; search by proximity
+  (when (and (not-empty latitude)
+             (not-empty longitude))
+    (publish e/flow|stylist-matching|param-location-constrained
+             {:latitude  (spice/parse-double latitude)
+              :longitude (spice/parse-double longitude)}))
+  ;; FIXME(matching)
+  (when-not (= (get-in state k/navigation-event)
+               (get-in state' k/navigation-event))
+    (publish e/initialize-stylist-search-filters))
+
+  (publish e/flow|stylist-matching|searched))
+
+;; TODO(corey) only on shop, please
+;; TODO(corey) perhaps reify params capture as event, for reuse
