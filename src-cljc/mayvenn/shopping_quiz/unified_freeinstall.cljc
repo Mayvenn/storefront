@@ -377,7 +377,6 @@
               stylist-results-test?  (experiments/stylist-results-test? state)
 
               address-field-errors (get-in state matching.k/address-field-errors)]
-          (prn (:results/stylists matching))
           (cond
             (:results/stylists matching)
             (c/build stylist-results-template
