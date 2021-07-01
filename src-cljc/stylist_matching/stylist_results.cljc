@@ -34,7 +34,6 @@
             [mayvenn.live-help.core :as live-help]
             [stylist-matching.core :as core]))
 
-
 ;;  Navigating to the results page causes the effect of searching for stylists
 ;;
 ;;  This allows:
@@ -465,7 +464,7 @@
      breaker-results])
    breaker-content])
 
-(defdynamic-component results
+(defdynamic-component results-template
   (did-mount
    [this]
    (let [{:keys [stylist.analytics/cards stylist-results-returned?]}
@@ -532,18 +531,25 @@
   2. name (under experiment)
   3. address (location)
   4. service filters"
-  [matching empty-search-results? google-loaded? skus-db address-field-errors]
+  [{presearch-input   :presearch/name
+    address-input     :google/input
+    :param/keys       [services]
+    :keys             [status]
+    presearch-results :results.presearch/name}
+   google-loaded?
+   skus-db
+   address-field-errors]
   (merge
    {:stylist-results.name-input/id      "stylist-search-name-input"
-    :stylist-results.name-input/value   (:presearch/name matching)
+    :stylist-results.name-input/value   presearch-input
     :stylist-results.name-input/keypath k/presearch-name
     :stylist-results.name-input/errors  []}
    (when google-loaded?
      {:stylist-results.address-input/id      "stylist-search-input"
-      :stylist-results.address-input/value   (:google/input matching)
+      :stylist-results.address-input/value   address-input
       :stylist-results.address-input/keypath k/google-input
       :stylist-results.address-input/errors  address-field-errors})
-   (when-let [pills (->> (:param/services matching)
+   (when-let [pills (->> services
                          (keep
                           (fn [sku-id]
                             (when-let [sku (get skus-db (get srv->sv2 sku-id sku-id))]
@@ -556,32 +562,34 @@
                          not-empty)]
      {:stylist-results.service-filters/preferences pills})
 
-   ;; Things that can appear in the results list
-   (when empty-search-results?
-     {:empty-stylist-search/id      "empty-stylist-results-id"
-      :empty-stylist-search/primary "No results for this search."})
-   (when (contains? (:status matching) :results.presearch/name)
-     {:stylist-results.name-presearch-results/list
-      (map-indexed
-       (fn [index
-            {moniker       :name
-             result-type   :type
-             salon-address :salon-address
-             :as           result}]
-         (merge
-          {:stylist-results.name-presearch-results.result/primary moniker}
-          (when (= "stylist" result-type)
-            {:stylist-results.name-presearch-results.result/ucare-uri (:portrait-uri result)
-             :stylist-results.name-presearch-results.result/target
-             [e/control-stylist-matching-presearch-stylist-result-selected (-> result
-                                                                               (select-keys [:stylist-id :store-slug])
-                                                                               (assoc :result-index index))]})
-          (when (= "salon" result-type)
-            {:stylist-results.name-presearch-results.result/target [e/control-stylist-matching-presearch-salon-result-selected {:name moniker}]})
-          (when salon-address
-            {:stylist-results.name-presearch-results.result/secondary
-             (address->display-string salon-address)})))
-       (:results.presearch/name matching))})))
+   ;; Presearch results list
+   (when (contains? status :results.presearch/name)
+     (if (empty? presearch-results)
+       {:empty-stylist-search/id      "empty-stylist-results-id"
+        :empty-stylist-search/primary "No results for this search."}
+       {:stylist-results.name-presearch-results/list
+        (->> presearch-results
+             (map-indexed
+              (fn [index
+                   {moniker       :name
+                    result-type   :type
+                    salon-address :salon-address
+                    :as           result}]
+                (merge
+                 {:stylist-results.name-presearch-results.result/primary moniker}
+                 (when (= "stylist" result-type)
+                   {:stylist-results.name-presearch-results.result/ucare-uri (:portrait-uri result)
+                    :stylist-results.name-presearch-results.result/target
+                    [e/control-stylist-matching-presearch-stylist-result-selected
+                     (-> result
+                         (select-keys [:stylist-id :store-slug])
+                         (assoc :result-index index))]})
+                 (when (= "salon" result-type)
+                   {:stylist-results.name-presearch-results.result/target
+                    [e/control-stylist-matching-presearch-salon-result-selected {:name moniker}]})
+                 (when salon-address
+                   {:stylist-results.name-presearch-results.result/secondary
+                    (address->display-string salon-address)})))))}))))
 
 ;; TODO(corey) eval the effectiveness of the various 'elements' and
 ;; use the best version here
@@ -637,17 +645,16 @@
   [:div.absolute.overlay.bg-darken-4])
 
 (defcomponent template
-  [{:keys [spinning? gallery-modal header stylist-search-inputs scrim?] :as data} _ _]
+  [{:keys [spinning? gallery-modal header stylist-search-inputs scrim? results] :as data} _ _]
   [:div.bg-cool-gray.black.center.flex.flex-auto.flex-column
-   (component/build gallery-modal/organism gallery-modal nil)
+   ;; TODO(corey) is this used?
+   (component/build gallery-modal/organism gallery-modal)
    (components.header/adventure-header header)
-
    (component/build search-inputs-organism stylist-search-inputs)
-
    (if spinning?
      [:div.mt6 ui/spinner]
      [:div.relative.stretch
-      (component/build results data)
+      (component/build results-template results)
       (when scrim?
         scrim-atom)])])
 
@@ -739,98 +746,116 @@
   (messages/handle-message e/flow|stylist-matching|set-presearch-field args)
   (execute-named-search (:name args)))
 
+(defn results<
+  [{:param/keys   [services]
+    :results/keys [stylists]
+    :keys         [status]}
+   kustomer-started?
+   just-added-only?
+   just-added-experience?
+   stylist-results-test?]
+  (let [{matching-stylists     true
+         non-matching-stylists false} (group-by (partial core/matches-preferences?
+                                                         services)
+                                                stylists)
+
+        matching-stylist-cards     (stylist-data->stylist-cards
+                                    {:just-added-only?       just-added-only?
+                                     :just-added-experience? just-added-experience?
+                                     :stylist-results-test?  stylist-results-test?
+                                     :stylists               matching-stylists})
+        non-matching-stylist-cards (stylist-data->stylist-cards
+                                    {:just-added-only?       just-added-only?
+                                     :just-added-experience? just-added-experience?
+                                     :stylist-results-test?  stylist-results-test?
+                                     :stylists               non-matching-stylists})]
+
+    {:stylist-results-present? (seq (concat matching-stylists non-matching-stylists))
+
+     :stylist-results-returned?  (contains? status :results/stylists)
+     :list.stylist-counter/title (str (count matching-stylists) " Stylists Found")
+     :list.stylist-counter/key   (when (pos? (count matching-stylists))
+                                   "stylist-count-content")
+     :list.matching/key          (when (seq matching-stylists) "stylist-matching")
+     :list.matching/cards        (cond->> matching-stylist-cards
+                                   :always
+                                   (mapv
+                                    (fn [msc]
+                                      {:type :matching-stylist-card
+                                       :data msc}))
+
+                                   kustomer-started?
+                                   (general-utils/insert-at-pos 3
+                                    {:type :live-help-breaker
+                                     :data {:live-help/location "stylist-results-breaker"}}))
+     :list.breaker/id              (when (seq non-matching-stylists) "non-matching-breaker")
+     :list.breaker/results-content (when (and (seq non-matching-stylists)
+                                              (empty? matching-stylists))
+                                     "0 results found")
+     :list.breaker/content         "Other stylists in your area"
+     :list.non-matching/key        (when (seq non-matching-stylists) "non-matching-stylists")
+     :list.non-matching/cards      non-matching-stylist-cards
+     :stylist.analytics/cards      (into matching-stylist-cards non-matching-stylist-cards)
+     :shopping-method-choice       shopping-method-choice-query}))
+
 (defn ^:export page
   [app-state _]
-  (let [;; Models
-        current-order (api.orders/current app-state)
-        matching      (stylist-matching.core/stylist-matching<- app-state)
-        skus-db       (get-in app-state storefront.keypaths/v2-skus)
+  ;; 2 modes: filters or results
+  (or #?(:clj nil :cljs (some->> (filter-menu/query app-state)
+                        (component/build filter-menu/component)))
+      (let [;; Models
+            current-order (api.orders/current app-state)
+            matching      (stylist-matching.core/stylist-matching<- app-state)
+            skus-db       (get-in app-state storefront.keypaths/v2-skus)
 
-        ;; Experiments
-        just-added-only?       (experiments/just-added-only? app-state)
-        just-added-experience? (experiments/just-added-experience? app-state)
-        just-added-control?    (experiments/just-added-control? app-state)
-        stylist-results-test?  (experiments/stylist-results-test? app-state)
+            ;; Experiments
+            just-added-only?       (experiments/just-added-only? app-state)
+            just-added-experience? (experiments/just-added-experience? app-state)
+            just-added-control?    (experiments/just-added-control? app-state)
+            stylist-results-test?  (experiments/stylist-results-test? app-state)
 
-        google-loaded?        (get-in app-state storefront.keypaths/loaded-google-maps)
-        presearching-name?    (contains? (:status matching) :results.presearch/name)
-        empty-search-results? (and (empty? (:results.presearch/name matching))
-                                   presearching-name?)
+            ;; Externals
+            kustomer-started? (live-help/kustomer-started? app-state)
+            google-loaded?    (get-in app-state storefront.keypaths/loaded-google-maps)
 
-        stylist-search-results        (:results/stylists matching)
-        preferences                   (:param/services matching)
-        {matching-stylists     true
-         non-matching-stylists false} (group-by (partial core/matches-preferences? preferences)
-                                                stylist-search-results)
-        stylist-data                  {:just-added-only?       just-added-only?
-                                       :just-added-experience? just-added-experience?
-                                       :stylist-results-test?  stylist-results-test?}
-        matching-stylist-cards        (stylist-data->stylist-cards
-                                       (assoc stylist-data :stylists matching-stylists))
-        non-matching-stylist-cards    (stylist-data->stylist-cards
-                                       (assoc stylist-data :stylists non-matching-stylists))
-        filter-menu                   #?(:cljs (filter-menu/query app-state) :clj nil)
-        show-filter-menu?             (some? filter-menu)
-        address-field-errors          (get-in app-state k/address-field-errors)
-        back-button-target            [(if (and (experiments/top-stylist? app-state)
-                                                (->> stylist-search-results
-                                                     (filter #(and (stylist-matching.core/matches-preferences? preferences %)
-                                                                   (:top-stylist %)))
-                                                     seq))
-                                         e/navigate-adventure-top-stylist
-                                         e/navigate-adventure-find-your-stylist)]]
-    (cond
-      show-filter-menu?
-      (component/build #?(:clj  (component/html [:div])
-                          :cljs filter-menu/component) filter-menu nil)
+            address-field-errors   (get-in app-state k/address-field-errors)
+            back-button-target     [(if (and (experiments/top-stylist? app-state)
+                                             (->> (:results/stylists matching)
+                                                  (filter :top-stylist)
+                                                  (filter (partial stylist-matching.core/matches-preferences?
+                                                                   (:param/services matching)))
+                                                  seq))
+                                      e/navigate-adventure-top-stylist
+                                      e/navigate-adventure-find-your-stylist)]]
+        (component/build template
+                         {:gallery-modal         (gallery-modal-query app-state)
+                          :spinning?             (or (empty? (:status matching))
+                                                     (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
+                                                     (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters)
+                                                     (utils/requesting-from-endpoint? app-state request-keys/get-products)
+                                                     (and (not (get-in app-state storefront.keypaths/loaded-convert))
+                                                          stylist-results-test?
+                                                          (or (not just-added-control?)
+                                                              (not just-added-only?)
+                                                              (not just-added-experience?))))
+                          :scrim?                (contains? (:status matching)
+                                                            :results.presearch/name)
+                          :stylist-search-inputs (stylist-search-inputs<- matching
+                                                                          google-loaded?
+                                                                          skus-db
+                                                                          address-field-errors)
+                          :header                (header<- current-order
+                                                           back-button-target
+                                                           (->> (get-in app-state storefront.keypaths/navigation-undo-stack)
+                                                                first
+                                                                not-empty))
+                          :results               (results< matching
+                                                           kustomer-started?
+                                                           just-added-only?
+                                                           just-added-experience?
+                                                           stylist-results-test?)}
 
-      :else
-      (component/build template
-                       {:gallery-modal            (gallery-modal-query app-state)
-                        :spinning?                (or (empty? (:status matching))
-                                                      (utils/requesting-from-endpoint? app-state request-keys/fetch-matched-stylists)
-                                                      (utils/requesting-from-endpoint? app-state request-keys/fetch-stylists-matching-filters)
-                                                      (utils/requesting-from-endpoint? app-state request-keys/get-products)
-                                                      (and (not (get-in app-state storefront.keypaths/loaded-convert))
-                                                           stylist-results-test?
-                                                           (or (not just-added-control?)
-                                                               (not just-added-only?)
-                                                               (not just-added-experience?))))
-                        :scrim?                   presearching-name?
-                        :stylist-search-inputs    (stylist-search-inputs<- matching
-                                                                           empty-search-results?
-                                                                           google-loaded?
-                                                                           skus-db
-                                                                           address-field-errors)
-                        :header                   (header<- current-order back-button-target (->> (get-in app-state storefront.keypaths/navigation-undo-stack)
-                                                                                                  first
-                                                                                                  not-empty))
-                        :stylist-results-present? (seq (concat matching-stylists non-matching-stylists))
-
-                        :stylist-results-returned?  (contains? (:status matching) :results/stylists)
-                        :list.stylist-counter/title (str (count matching-stylists) " Stylists Found")
-                        :list.stylist-counter/key   (when (pos? (count matching-stylists))
-                                                      "stylist-count-content")
-                        :list.matching/key          (when (seq matching-stylists) "stylist-matching")
-                        :list.matching/cards        (cond->> matching-stylist-cards
-                                                      :always
-                                                      (mapv
-                                                       (fn [msc]
-                                                         {:type :matching-stylist-card
-                                                          :data msc}))
-
-                                                      (live-help/kustomer-started? app-state)
-                                                      (general-utils/insert-at-pos
-                                                       3
-                                                       {:type :live-help-breaker
-                                                        :data {:live-help/location "stylist-results-breaker"}}))
-                        :list.breaker/id              (when (seq non-matching-stylists) "non-matching-breaker")
-                        :list.breaker/results-content (when (and (seq non-matching-stylists)
-                                                                 (empty? matching-stylists))
-                                                        "0 results found")
-                        :list.breaker/content         "Other stylists in your area"
-                        :list.non-matching/key        (when (seq non-matching-stylists) "non-matching-stylists")
-                        :list.non-matching/cards      non-matching-stylist-cards
-                        :stylist.analytics/cards      (into matching-stylist-cards non-matching-stylist-cards)
-                        :shopping-method-choice       shopping-method-choice-query}
-                       {:key (str "stylist-results-" (hash stylist-search-results) "-" (hash stylist-data))}))))
+                         {:key (str "stylist-results-"
+                                    (hash (:results/stylists matching))
+                                    "-"
+                                    [just-added-only? just-added-experience? stylist-results-test?])}))))
