@@ -175,12 +175,6 @@
 
 ;; -------------------------- Matching behavior
 
-(defmethod effects/perform-effects e/control-adventure-select-stylist
-  [_ _ {:keys [card-index servicing-stylist]} _ _]
-  (messages/handle-message e/flow|stylist-matching|matched
-                           {:stylist      servicing-stylist
-                            :result-index card-index}))
-
 (defn stylist-results->stringer-event
   [stylist]
   (let [{:analytics/keys [stylist-id lat long top-stylist rating just-added? years-of-experience]} stylist]
@@ -313,10 +307,9 @@
                                          :preference :wig-customization}]
      :stylist-card.cta/id              (str "select-stylist-" store-slug)
      :stylist-card.cta/label           (str "Select " store-nickname)
-     :stylist-card.cta/target          [e/control-adventure-select-stylist
-                                        {:servicing-stylist stylist
-                                         :card-index        idx}]
-
+     :stylist-card.cta/target          [e/flow|stylist-matching|matched
+                                        {:stylist      stylist
+                                         :result-index idx} ]
      :stylist-card.gallery/id           (str "stylist-card-gallery-" store-slug)
      :element/type                      :stylist-card
      :stylist-card.gallery/items        (let [ucare-img-urls (map :resizable-url gallery-images)]

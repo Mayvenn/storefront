@@ -524,8 +524,6 @@
 (defpath navigate-adventure-match-success)
 (defpath navigate-adventure-stylist-profile)
 
-(defpath control-adventure-select-stylist)
-
 (defpath adventure-address-component-mounted)
 (defpath control-adventure-stylist-salon-address-clicked)
 (defpath control-adventure-stylist-phone-clicked)

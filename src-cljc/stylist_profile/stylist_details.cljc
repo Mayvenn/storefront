@@ -175,16 +175,16 @@
   [current-stylist detailed-stylist]
   (merge
    {:sticky-select-stylist.cta/id     "select-stylist"
-    :sticky-select-stylist.cta/target [e/control-adventure-select-stylist
-                                       {:servicing-stylist (:diva/stylist detailed-stylist)
-                                        :card-index        0}]
-    :sticky-select-stylist.cta/label (str
-                                      (cond
-                                        (empty? current-stylist)              "Select "
-                                        (not= (:stylist/id current-stylist)
-                                              (:stylist/id detailed-stylist)) "Switch to "
-                                        :else                                 "Continue with ")
-                                      (:stylist/name detailed-stylist))}))
+    :sticky-select-stylist.cta/target [e/flow|stylist-matching|matched
+                                       {:stylist      (:diva/stylist detailed-stylist)
+                                        :result-index 0}]
+    :sticky-select-stylist.cta/label  (str
+                                       (cond
+                                         (empty? current-stylist)              "Select "
+                                         (not= (:stylist/id current-stylist)
+                                               (:stylist/id detailed-stylist)) "Switch to "
+                                         :else                                 "Continue with ")
+                                       (:stylist/name detailed-stylist))}))
 
 (defn ^:private carousel<-
   [{:stylist/keys [slug id] :stylist.gallery/keys [images]}]
