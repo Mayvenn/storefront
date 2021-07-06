@@ -33,9 +33,10 @@
                                                :data-test "delete-photo-cancel"}) "Cancel")
      [:div.mx2]
      (ui/button-medium-red
-      (merge (apply utils/fake-href target)
+      (merge (when target (apply utils/fake-href target))
              {:class     "container-size"
-              :data-test "delete-photo-confirm"})
+              :data-test "delete-photo-confirm"
+              :disabled? (nil? target)})
       "delete")]]])
 
 (defcomponent component [{:keys [photo back-link] :as data} owner opts]
@@ -62,16 +63,26 @@
   (let [photo-id           (numbers/parse-int (get-in state (conj keypaths/navigation-message 1 :photo-id)))
         gallery            (get-in state keypaths/user-stylist-gallery-images)
         show-delete-modal? (= :gallery-photo-delete (get-in state keypaths/popup))
-        image              (some #(when (= photo-id (:id %)) %) gallery)]
+        image              (some #(when (= photo-id (:id %)) %) gallery)
+        min-approved-imgs? (and (= "aladdin" (get-in state keypaths/user-stylist-experience))
+                                (->> gallery (filter (comp (partial = "approved") :status))
+                                     count
+                                     (< 3)))
+        cant-delete        (not min-approved-imgs?)]
     {:photo                    image
      :back-link                {:navigation-event e/navigate-gallery-edit}
      :delete-modal/close-event e/control-popup-hide
-     :delete-modal/title       "Are you sure?"
-     :delete-modal/subtitle    "You are about to delete this photo permanently."
+     :delete-modal/title       (if cant-delete
+                                 "Can't delete"
+                                 "Are you sure?")
+     :delete-modal/subtitle    (if cant-delete
+                                 "You need to maintain at least 3 images in your gallery."
+                                 "You are about to delete this photo permanently.")
      :delete-modal/id          (when show-delete-modal? "delete-photo-modal")
-     :delete-modal/target      (if (experiments/edit-gallery? state)
-                                 [e/control-stylist-gallery-delete-v2 {:post-id (:post-id image)}]
-                                 [e/control-delete-gallery-image {:image-url (:resizable-url image)}])}))
+     :delete-modal/target      (when min-approved-imgs?
+                                 (if (experiments/edit-gallery? state)
+                                   [e/control-stylist-gallery-delete-v2 {:post-id (:post-id image)}]
+                                   [e/control-delete-gallery-image {:image-url (:resizable-url image)}]))}))
 
 (defmethod fx/perform-effects e/control-delete-gallery-image
   [_ event {:keys [image-url]} _ app-state]
