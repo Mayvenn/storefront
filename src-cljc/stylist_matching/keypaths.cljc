@@ -17,6 +17,7 @@
 (def name     (conj stylist-matching :param/name))
 
 (def stylist-results (conj stylist-matching :results/stylists))
+(def matched-stylist (conj stylist-matching :matched/stylist))
 
 ;; Stylist Profile Selection
 

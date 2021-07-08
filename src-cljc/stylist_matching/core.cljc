@@ -280,6 +280,12 @@
 
 ;; ------------------- Matched
 ;; -> current stylist: selected
+(defmethod t/transition-state e/flow|stylist-matching|matched
+  [_ _ {:keys [stylist]} state]
+  (-> state
+      (assoc-in k/matched-stylist
+                stylist)))
+
 (defmethod fx/perform-effects e/flow|stylist-matching|matched
   [_ _ {:keys [stylist result-index]} _ state]
   #?@(:cljs
