@@ -1,3 +1,15 @@
+
+.g0  { gap: 0 }
+.g1  { gap: var(--space-1) }
+.g2  { gap: var(--space-2) }
+.g3  { gap: var(--space-3) }
+.g4  { gap: var(--space-4) }
+.g5  { gap: var(--space-5) }
+.g6  { gap: var(--space-6) }
+.g7  { gap: var(--space-7) }
+.g8  { gap: var(--space-8) }
+.g10 { gap: var(--space-10) }
+
 @media (--on-mobile) {
     .flex-row-reverse-on-mb { flex-direction: row-reverse; }
 }
@@ -24,3 +36,15 @@
 .flex-grow-3 { flex-grow: 3; }
 .flex-grow-4 { flex-grow: 4; }
 .flex-grow-5 { flex-grow: 5; }
+
+:root {
+    --space-1: .5rem;
+    --space-2: 1rem;
+    --space-3: 2rem;
+    --space-4: 4rem;
+    --space-5: 8rem;
+    --space-6: 16rem;
+    --space-7: 32rem;
+    --space-8: 64rem;
+    --space-10: 256rem;
+}
