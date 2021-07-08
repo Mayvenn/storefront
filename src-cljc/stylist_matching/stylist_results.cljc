@@ -309,7 +309,7 @@
      :stylist-card.cta/label           (str "Select " store-nickname)
      :stylist-card.cta/target          [e/flow|stylist-matching|matched
                                         {:stylist      stylist
-                                         :result-index idx} ]
+                                         :result-index idx}]
      :stylist-card.gallery/id           (str "stylist-card-gallery-" store-slug)
      :element/type                      :stylist-card
      :stylist-card.gallery/items        (let [ucare-img-urls (map :resizable-url gallery-images)]
