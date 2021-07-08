@@ -1,4 +1,23 @@
 (ns mayvenn.visual.ui.titles
+  "
+  Defined design elements around titles.
+
+  What's a title? Right now:
+
+  Any text/content box with the following data:
+  {id icon primary secondary tertiary}
+
+  TODO(corey)
+  consider a combinator approach, e.g.:
+  (def canela-small
+       (text-box
+         [{:text/value primary
+           :pos/h :center
+           :pos/v top
+           :font/face :canela
+           :font/size :title-3}]))
+
+  "
   (:require [storefront.component :as c]
             [storefront.components.svg :as svg]))
 
@@ -51,6 +70,14 @@
       [:div.mt2.content-2
        secondary])]))
 
+(defn promixa-tiny-right
+  [{:keys [id icon primary secondary]}]
+  (c/html
+   [:div.proxima.right-align
+    {:data-test id}
+    [:div.content-3 primary]
+    [:div.content-4 secondary]]))
+
 (defn proxima-small-left
   "Usages:
   - Top Stylist badge"
@@ -67,6 +94,18 @@
     (when secondary
       [:div.mt2.content-2
        secondary])]))
+
+(defn proxima-content
+  [{:keys [id icon primary secondary tertiary]}]
+  (when (and id primary)
+    [:div
+     [:div.proxima.content-2
+      {:data-test id}
+      primary]
+     [:div secondary]
+     (if (vector? tertiary)
+       (interpose [:br] tertiary)
+       tertiary)]))
 
 (defn canela
   "Usages:

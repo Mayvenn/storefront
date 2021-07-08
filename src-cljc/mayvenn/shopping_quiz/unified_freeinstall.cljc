@@ -5,6 +5,7 @@
   (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
                        [storefront.history :as history]])
             [api.catalog :refer [select ?service]]
+            api.current
             api.orders
             [clojure.string :refer [starts-with? split]]
             [mayvenn.concept.follow :as follow]
@@ -56,6 +57,74 @@
   (->> m
        (mapv (comp #(str % suffix) k))
        (interpose delim)))
+
+;; Template: 3/Match Success
+(c/defcomponent matched-success-template
+  [data _ _]
+  [:div.flex.flex-column.flex-auto.bg-pale-purple
+   [:div.bg-white
+    (c/build header/mobile-nav-header-component)]
+   (c/build progress-bar/variation-1 (:progress data))
+   (titles/canela-huge (with :title data))
+
+   [:div.flex.flex-column.m3.g2
+    (c/elements card/cart-item-1
+                data
+                :card/cart-items)]])
+
+(defn ^:private hacky-stylist-image
+  [stylist]
+  (some->> stylist
+           :stylist/portrait
+           :resizable-url
+           ui/ucare-img-id))
+
+(defn ^:private hacky-cart-image
+  [item]
+  (some->> item
+           :selector/images
+           (filter #(= "cart" (:use-case %)))
+           first
+           :url
+           ui/ucare-img-id))
+
+(defn matched-success<
+  [quiz-progression items current-stylist]
+  (merge
+   {:progress (progress< quiz-progression)}
+   {:title/primary "You are all set!"
+    :card/cart-items
+    (conj
+     (into []
+           (map-indexed
+            (fn [idx
+                 {:keys [catalog/sku-id item/quantity legacy/product-name sku/title
+                         join/facets sku/price hair/length]
+                  :as   item}]
+              {:id                      (str idx "-cart-item-" sku-id "-" quantity)
+               :idx                     idx
+               :title/id                (str "line-item-title-" sku-id)
+               :title/primary           (or product-name title)
+               :title/secondary         (some-> facets :hair/color :option/name)
+               :title/tertiary          [(str "qty. " quantity)]
+               :price-title/id          (str "line-item-price-ea-with-label-" sku-id)
+               :price-title/primary     (mf/as-money price)
+               :price-title/secondary   " each"
+               :thumbnail/id            sku-id
+               :thumbnail/sticker-label (some-> length
+                                                first
+                                                (str "”"))
+               :thumbnail/ucare-id      (hacky-cart-image item)}))
+           items)
+     (let [{:stylist/keys [id name]} current-stylist
+           idx (count items)]
+       {:id                      (str idx "-cart-item-stylist-" id)
+        :idx                     idx
+        :title/id                "line-item-title-stylist"
+        :title/primary           name
+        :title/secondary         "Your Certified Mayvenn Stylist"
+        :thumbnail/id            id
+        :thumbnail/ucare-id      (hacky-stylist-image current-stylist)}))}))
 
 ;; Template: 3/Stylist Results
 (def ^:private scrim-atom
@@ -356,8 +425,10 @@
   (let [quiz-progression (progression/<- state id)
         step             (apply max quiz-progression)]
     (case step
-      3 (let [matching (stylist-matching<- state)
-              skus-db  (get-in state k/v2-skus)
+      3 (let [matching              (stylist-matching<- state)
+              current-stylist       (api.current/stylist state)
+              skus-db               (get-in state k/v2-skus)
+              {:order/keys [items]} (api.orders/current state)
 
               ;; Externals
               google-loaded?    (get-in state k/loaded-google-maps)
@@ -378,6 +449,12 @@
 
               address-field-errors (get-in state matching.k/address-field-errors)]
           (cond
+            (:matched/stylist matching)
+            (c/build matched-success-template
+                     (matched-success< quiz-progression
+                                       items
+                                       current-stylist))
+
             (:results/stylists matching)
             (c/build stylist-results-template
                      (stylist-results< matching
@@ -551,5 +628,14 @@
 
   (publish e/flow|stylist-matching|searched))
 
+(defmethod fx/perform-effects
+  e/navigate-shopping-quiz-unified-freeinstall-match-success
+  [_ _ _ _ _]
+  (publish e/biz|progression|progressed
+           #:progression
+           {:id    id
+            :value 3}))
+
 ;; TODO(corey) only on shop, please
 ;; TODO(corey) perhaps reify params capture as event, for reuse
+;; TODO(corey) when we navi to any of these screens, shall we enable the experiment????
