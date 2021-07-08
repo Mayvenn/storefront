@@ -119,3 +119,7 @@
 (defn top-stylist?
   [data]
   (display-feature? data "top-stylist"))
+
+(defn shopping-quiz-unified-fi?
+  [data]
+  (display-feature? data "shopping-quiz-unified-fi"))

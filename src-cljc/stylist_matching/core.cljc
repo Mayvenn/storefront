@@ -299,10 +299,16 @@
           (:stylist-id stylist) 1
           number token features
           (fn [order]
-            (let [success-event (if (->> order
-                                         (api.orders/free-mayvenn-service stylist)
-                                         :free-mayvenn-service/discounted?)
+            (let [success-event (cond
+                                  (experiments/shopping-quiz-unified-fi? state)
+                                  e/navigate-shopping-quiz-unified-freeinstall-match-success
+
+                                  (->> order
+                                       (api.orders/free-mayvenn-service stylist)
+                                       :free-mayvenn-service/discounted?)
                                   e/navigate-cart
+
+                                  :else
                                   e/navigate-adventure-match-success)]
               (publish e/biz|current-stylist|selected
                        {:order                     order
