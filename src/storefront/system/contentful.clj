@@ -275,12 +275,10 @@
                                                           (utils/?update u' :looks (partial remove :sys))))
                                     :collection-tx-fn
                                     (fn [m]
-                                      (let [m' (maps/map-values
-                                                #(utils/?update % :looks (comp vec (partial take 99))) m)]
-                                        (->> (vals m')
-                                             (mapcat :looks)
-                                             (maps/index-by (comp keyword :content/id))
-                                             (assoc m' :all-looks))))
+                                      (->> (vals m)
+                                           (mapcat :looks)
+                                           (maps/index-by (comp keyword :content/id))
+                                           (assoc m :all-looks)))
                                     :latest?          false}]]
       (doseq [content-params content-type-parameters]
         (at-at/interspaced cache-timeout

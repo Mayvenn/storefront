@@ -290,7 +290,10 @@
                               ;; NOTE(corey) This is hardcoded because obstensibly
                               ;; filtering should replace albums
                               :aladdin-free-install
-                              :looks)]
+                              :looks
+                              ;; *WARNING*, HACK: to limit how many items are
+                              ;; *being rendered / fetched from the backend on this page
+                              (take 99))]
     (->> contentful-looks
          (keep-indexed (fn [index look]
                          (look<- skus-db looks-shared-carts-db facets-db look album-keyword index)))

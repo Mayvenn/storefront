@@ -332,8 +332,12 @@
             ;; Is there a reason why carts are only fetched for aladdin free install?
             ;; Do we still have :aladdin-free-install albums?
             handler       (if (= :aladdin-free-install actual-album-kw)
+                            ;; *WARNING*, HACK: to limit how many items are
+                            ;; *being rendered / fetched from the backend on this page
                             (fn [result]
                               (when-let [cart-ids (->> (get-in result [:ugc-collection :aladdin-free-install :looks])
+
+                                                       (take 99)
                                                        (mapv contentful/shared-cart-id)
                                                        not-empty)]
                                 (api/fetch-shared-carts cache cart-ids))
@@ -341,6 +345,7 @@
                                 (messages/handle-message events/flow|facet-filtering|initialized)))
                             (fn [result]
                               (when-let [cart-ids (->> (get-in result [:ugc-collection actual-album-kw :looks])
+                                                       (take 99)
                                                        (mapv contentful/shared-cart-id)
                                                        not-empty)]
                                 (api/fetch-shared-carts cache cart-ids))))]
