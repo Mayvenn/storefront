@@ -628,8 +628,7 @@
 
   (publish e/flow|stylist-matching|searched))
 
-(defmethod fx/perform-effects
-  e/navigate-shopping-quiz-unified-freeinstall-match-success
+(defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-match-success
   [_ _ _ _ _]
   (publish e/biz|progression|progressed
            #:progression
