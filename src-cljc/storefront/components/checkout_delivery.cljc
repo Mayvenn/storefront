@@ -1,5 +1,7 @@
 (ns storefront.components.checkout-delivery
-  (:require [spice.core :as spice]
+  (:require api.orders
+            [api.catalog :refer [select]]
+            [spice.core :as spice]
             [spice.date :as date]
             [storefront.accessors.shipping :as shipping]
             [storefront.component :as c :refer [defcomponent]]
@@ -32,11 +34,12 @@
       (for [option options]
         [:div.my2 {:key (:react/key option)}
          (ui/radio-section
-          (let [{:control/keys [data-test id data-test-id target selected?]} option]
+          (let [{:control/keys [data-test id data-test-id target selected? disabled?]} option]
             (merge {:name         data-test
                     :id           id
                     :data-test    data-test
                     :data-test-id data-test-id
+                    :disabled     disabled?
                     :on-click     (apply utils/send-event-callback target)}
                    (when selected? {:checked "checked"})))
           [:div.right.ml1.medium
@@ -142,6 +145,7 @@
    current-local-time
    east-coast-weekday
    in-window?
+   drop-shipping?
    {:keys [sku price] :as shipping-method}]
   (let [{:keys [min-delivery
                 max-delivery
@@ -173,6 +177,7 @@
      :control/data-test-id sku
      :control/target       [events/control-checkout-shipping-method-select shipping-method]
      :control/selected?    selected?
+     :control/disabled?    drop-shipping?
      :detail/classes       (if (pos? price) "black" "p-color")
      :detail/value         (mf/as-money-or-free price)}))
 
@@ -206,18 +211,22 @@
                                     (or (not friday?)
                                         (< parsed-east-coast-hour 10)))
 
-        order          (get-in data keypaths/order)
+        {:order/keys [items] :waiter/keys [order]} (api.orders/current data)
+
         shipping       (orders/shipping-item order)
         free-shipping? (= "WAITER-SHIPPING-1" (:sku shipping))
-        only-services? (every? line-items/service? (orders/product-and-service-items order))]
+        only-services? (every? line-items/service? (orders/product-and-service-items order))
+        drop-shipping? (boolean (select {:warehouse/slug #{"factory-cn"}} items))]
     {:delivery/id        (when-not (and free-shipping? only-services?)
                            "shipping-method")
      :delivery/primary   "Shipping Method"
-     :delivery/options   (map (partial shipping-method->shipping-method-option
-                                       selected-sku
-                                       now
-                                       east-coast-weekday
-                                       in-window?) shipping-methods)
+     :delivery/options   (->> shipping-methods
+                              (map (partial shipping-method->shipping-method-option
+                                            selected-sku
+                                            now
+                                            east-coast-weekday
+                                            in-window?
+                                            drop-shipping?)))
      :delivery.note/id   (when in-window? "delivery-note")
      :delivery.note/copy (if friday?
                            "Order by 10am ET today to have the guaranteed delivery dates below"
