@@ -231,11 +231,12 @@
    [:div.bg-white
     (c/build header/mobile-nav-header-component header)]
    (c/build progress-bar/variation-1 progress)
-   [:div.flex.flex-column.justify-center.items-center.myj3.pyj3
-    [:div.col-8
+   [:div.flex.flex-column.justify-center.items-center.myj3
+    [:div.col-8.my2
      (titles/canela (with :title summary))]
-    (c/build card/look-suggestion-1
-             (with :suggestion summary))
+    [:div.mb6
+     (c/build card/look-suggestion-1
+              (with :suggestion summary))]
     (actions/large-primary (with :action summary))]])
 
 (defn summary<
