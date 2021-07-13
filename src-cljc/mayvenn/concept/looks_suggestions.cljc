@@ -451,9 +451,9 @@
 
 (defmethod t/transition-state e/biz|looks-suggestions|reset
   [_ _ {:keys [id]} state]
-  (assoc-in state
-            (conj k/models-looks-suggestions id)
-            nil))
+  (-> state
+      (assoc-in (conj k/models-looks-suggestions id) nil)
+      (assoc-in (conj k/models-look-selected id) nil)))
 
 ;; Queried
 
