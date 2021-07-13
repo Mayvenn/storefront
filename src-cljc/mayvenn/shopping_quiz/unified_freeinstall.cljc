@@ -271,7 +271,7 @@
    [:div.bg-white
     (c/build header/mobile-nav-header-component header)]
    (c/build progress-bar/variation-1 progress)
-   [:div.flex.flex-column.mbj3.pbj3
+   [:div.flex.flex-column.mbj2
     (titles/canela-huge {:primary "Our picks for you"})
     (c/elements card/look-suggestion-1
                 suggestions

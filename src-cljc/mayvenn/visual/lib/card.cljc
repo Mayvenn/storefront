@@ -16,7 +16,7 @@
 (c/defcomponent look-suggestion-1
   [{:as   data
     :keys [id index-label ucare-id primary secondary tertiary tertiary-note]} _ _]
-  [:div.left-align.px3.mt5.mb3
+  [:div.left-align.px3.my1
    [:div.shout.proxima.title-3.mb1 index-label]
    [:div.bg-white
     [:div.flex.p3

@@ -6,7 +6,7 @@
 
 (c/defcomponent variation-1
   [data _ _]
-  [:div.absolute.bottom-0.left-0.right-0.bg-white
+  [:div.bg-white
    dividers/green
    [:div.flex.flex-column.items-center.py5
     ;; Title/primary here is a nonstandard ui element
