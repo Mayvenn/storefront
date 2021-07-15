@@ -24,11 +24,14 @@
      [:div.mr4
       (ui/img {:src ucare-id :width "80px"})]
      [:div.flex.flex-column
+      {:style {:mind-width "175px"}}
       [:div primary]
       [:div secondary]
       [:div.content-1 tertiary]
       [:div.s-color.content-2 tertiary-note]
-      (actions/small-primary (with :action data))]]]])
+      [:div
+       {:style {:width "175px"}}
+       (actions/small-primary (with :action data))]]]]])
 
 ;; TODO(corey) this contract is different, prob should be a new ns
 (c/defcomponent cart-item-1
