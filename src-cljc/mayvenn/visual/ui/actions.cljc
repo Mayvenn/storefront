@@ -39,6 +39,21 @@
               (apply utils/route-to target))
        label)])))
 
+(defn large-paypal
+  [{:keys [id disabled? spinning? target]}]
+  (when id
+    (c/html
+     [:div.col-10.col-8-on-tb
+      (ui/button-large-paypal
+       (merge {:data-test id}
+              (when disabled? {:disabled? disabled?})
+              (when spinning? {:spinning? spinning?})
+              {:on-click (apply utils/send-event-callback target)})
+       (c/html
+        [:div
+         "Check out with "
+         [:span.medium.italic "PayPal™"]]))])))
+
 (defn small-primary
   [{:keys [id disabled? label target]}]
   (when id

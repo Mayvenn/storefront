@@ -192,7 +192,8 @@
 ;; -> uri: params set
 (defmethod t/transition-state e/flow|stylist-matching|prepared
   [_ _ _ state]
-  (update-in state k/status disj :results/stylists))
+  (-> state
+      (update-in k/status disj :results/stylists)))
 
 (defmethod fx/perform-effects e/flow|stylist-matching|prepared
   [_ _ _ prev-state state]
@@ -204,6 +205,10 @@
            prev-query-params (get-in prev-nav-msg [1 :query-params])
            query-params      (->> (stylist-matching<- state)
                                   (query-params<- {}))]
+       (when (and (= nav-event e/navigate-shopping-quiz-unified-freeinstall-stylist-results)
+                  (not= prev-query-params query-params))
+         (history/enqueue-navigate e/navigate-shopping-quiz-unified-freeinstall-stylist-results
+                                   {:query-params query-params}))
        (when (and (= nav-event e/navigate-adventure-stylist-results)
                   (not= prev-query-params query-params))
          (history/enqueue-navigate e/navigate-adventure-stylist-results {:query-params query-params})))))
@@ -286,6 +291,12 @@
       (assoc-in k/matched-stylist
                 stylist)))
 
+(defmethod t/transition-state e/flow|stylist-matching|unmatched
+  [_ _ {:keys [stylist]} state]
+  (-> state
+      (assoc-in k/matched-stylist
+                nil)))
+
 (defmethod fx/perform-effects e/flow|stylist-matching|matched
   [_ _ {:keys [stylist result-index]} _ state]
   #?@(:cljs
@@ -358,7 +369,6 @@
             :results stylists}))
 
 ;; -------------------------- stylist search by filters behavior
-
 
 
 (defmethod fx/perform-effects e/api-success-fetch-stylists-matching-filters

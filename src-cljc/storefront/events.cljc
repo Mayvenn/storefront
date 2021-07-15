@@ -336,7 +336,6 @@
 (defpath api-success-shared-cart-fetch)
 (defpath api-success-shared-carts-fetch)
 
-
 (defpath shared-cart-error-matched-stylist-not-eligible)
 (defpath flow|shared-cart-stylist|resulted)
 
@@ -487,6 +486,7 @@
 
 ;;SECTION v2 Control
 
+
 (defpath control-v2-stylist-dashboard-section-toggle)
 (defpath control-v2-stylist-dashboard-sales-load-more)
 (defpath control-v2-stylist-dashboard-balance-transfers-load-more)
@@ -571,6 +571,7 @@
 
 ;; Spreedly
 
+
 (defpath loaded-spreedly)
 (defpath spreedly-did-mount)
 (defpath spreedly-did-unmount)
@@ -615,6 +616,8 @@
 (defpath flow|stylist-matching|searched)
 (defpath flow|stylist-matching|resulted)
 (defpath flow|stylist-matching|matched)
+;; HACK:(corey) Breaks mental model
+(defpath flow|stylist-matching|unmatched)
 
 (defpath control-stylist-matching-presearch-salon-result-selected)
 (defpath control-stylist-matching-presearch-stylist-result-selected)

@@ -37,6 +37,22 @@
       [:div.mt2.content-2
        secondary])]))
 
+(defn proxima-large
+  "Usages:
+  - call out boxes"
+  [{:keys [id icon primary secondary]}]
+  (c/html
+   [:div.center
+    (when icon
+      (svg/symbolic->html icon))
+    [:div.title-1.proxima.shout
+     (when id
+       {:data-test id})
+     primary]
+    (when secondary
+      [:div.mt2.content-1
+       secondary])]))
+
 (defn proxima-small
   "Usages:
   - call out boxes"
@@ -52,6 +68,14 @@
     (when secondary
       [:div.mt2.content-2
        secondary])]))
+
+(defn proxima-tiny
+  [{:keys [id icon primary secondary]}]
+  (c/html
+   [:div.proxima
+    {:data-test id}
+    [:div.content-3 primary]
+    [:div.content-4 secondary]]))
 
 (defn proxima-left
   "Usages:
@@ -102,10 +126,11 @@
      [:div.proxima.content-2
       {:data-test id}
       primary]
-     [:div secondary]
-     (if (vector? tertiary)
-       (interpose [:br] tertiary)
-       tertiary)]))
+     [:div.content-3 secondary]
+     [:div.content-3
+      (if (vector? tertiary)
+        (interpose [:br] tertiary)
+        tertiary)]]))
 
 (defn canela
   "Usages:

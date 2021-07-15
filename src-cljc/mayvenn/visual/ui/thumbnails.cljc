@@ -17,11 +17,15 @@
                    :top    "-5px"}}
       sticker-label])
    (when-let [image-id (some->> ucare-id (str id "-"))]
-     [:div.flex.items-center.justify-center
+     [(-> "div.flex.items-center.justify-center"
+          (str (when-not sticker-label ".circle.overflow-hidden"))
+          keyword)
       {:style     {:height "45px"
                    :width  "48px"}
        :key       image-id
        :data-test image-id}
-      (ui/ucare-img {:width "48"
-                     :class "block border border-cool-gray"}
-                    ucare-id)])])
+      (ui/img {:width "48"
+               :square-size 48
+               :max-size 48
+               :class "block border border-cool-gray"
+               :src ucare-id})])])

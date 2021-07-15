@@ -108,7 +108,6 @@
    events/navigate-info-certified-stylists (constantly adventure.informational.certified-stylists/built-component)
    events/navigate-info-about-our-hair     (constantly adventure.informational.about-our-hair/built-component)
 
-
    events/navigate-adventure-find-your-stylist #(ui/lazy-load-component :catalog
                                                                         'stylist-matching.find-your-stylist/page
                                                                         events/navigate-adventure-find-your-stylist)
@@ -135,7 +134,9 @@
    events/navigate-shopping-quiz-unified-freeinstall-summary           (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
    events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
    events/navigate-shopping-quiz-unified-freeinstall-stylist-results   (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
-   events/navigate-shopping-quiz-unified-freeinstall-match-success     (constantly mayvenn.shopping-quiz.unified-freeinstall/page)})
+   events/navigate-shopping-quiz-unified-freeinstall-match-success     #(ui/lazy-load-component :checkout
+                                                                                                'mayvenn.shopping-quiz.unified-freeinstall/page
+                                                                                                events/navigate-shopping-quiz-unified-freeinstall-match-success)})
 
 (defn main-component
   [nav-event]

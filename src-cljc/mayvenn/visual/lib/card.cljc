@@ -9,6 +9,7 @@
   (:require [mayvenn.visual.ui.actions :as actions]
             [mayvenn.visual.ui.titles :as titles]
             [mayvenn.visual.ui.thumbnails :as thumbnails]
+            ui.molecules
             [mayvenn.visual.tools :refer [with]]
             [storefront.component :as c]
             [storefront.components.ui :as ui]))
@@ -41,16 +42,9 @@
      [:div.flex-grow-1
       (titles/proxima-content (with :title data))
       [:div
-       #_
-       (ui.molecules/stars-rating-molecule cart-item)]]
+       (ui.molecules/stars-rating-molecule (with :stylist data))]]
 
      ;; price group
      [:div.flex.flex-column.self-stretch.items-end
       {:style {:min-width "67px"}}
-      (titles/promixa-tiny-right (with :price-title data))]]
-
-    #_#_#_#_
-    (cart-item-sub-items-molecule cart-item)
-    (cart-item-addons-molecule cart-item)
-    (component/build cart-item-modify-button cart-item nil)
-    (component/build suggestions/consolidated-component suggestions nil)]])
+      (titles/promixa-tiny-right (with :price-title data))]]]])

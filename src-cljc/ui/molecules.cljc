@@ -19,6 +19,7 @@
         (ui/back-caret {})
         [:span.ml1.border-bottom.border-black.border-width-3 copy]]]])))
 
+;; TODO move/refactor to remove destructuring?
 (defn stars-rating-molecule
   [{:rating/keys [value id]}]
   (component/html
