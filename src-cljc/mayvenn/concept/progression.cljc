@@ -16,5 +16,7 @@
   (assoc-in state (conj k/models-progressions id) value))
 
 (defmethod t/transition-state e/biz|progression|progressed
-  [_ _ {:progression/keys [id value]} state]
-  (update-in state (conj k/models-progressions id) conj value))
+  [_ _ {:progression/keys [id value regress]} state]
+  (-> state
+      (update-in (conj k/models-progressions id) conj value)
+      (update-in (conj k/models-progressions id) #(apply disj %1 %2) regress)))

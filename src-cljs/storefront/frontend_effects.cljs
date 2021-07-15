@@ -189,6 +189,10 @@
   [_ _ {[event args] :nav-message} _ _]
   (history/enqueue-redirect event args))
 
+(defmethod effects/perform-effects events/go-to-navigate
+  [_ _ {:keys [target]} _ _]
+  (apply history/enqueue-navigate target))
+
 (defn apply-pending-promo-code [app-state {:keys [number token]}]
   (let [pending-promo-code (get-in app-state keypaths/pending-promo-code)
         requesting? (utils/requesting? app-state request-keys/add-promotion-code)]

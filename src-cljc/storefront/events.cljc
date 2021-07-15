@@ -25,6 +25,7 @@
 (defpath module-loaded)
 
 (defpath redirect)
+(defpath go-to-navigate)
 (defpath navigate)
 
 (defpath navigate-home)

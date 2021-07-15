@@ -361,9 +361,8 @@
             :suggestion/tertiary-note "Install Included"
             :action/id                "summary-continue"
             :action/label             "Continue"
-            :action/target            [e/redirect
-                                       {:nav-message
-                                        [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})))
+            :action/target            [e/go-to-navigate
+                                       {:target [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})))
 
 ;; Template: 2/Suggestions
 
@@ -442,11 +441,10 @@
      (when (<= unanswered 1)
        {:action/id        "quiz-see-results"
         :action/disabled? (not (zero? unanswered))
-        :action/target    [e/redirect {:nav-message
-                                       [e/navigate-shopping-quiz-unified-freeinstall-recommendations
-                                        {:query-params
-                                         (->> answers
-                                              (maps/map-values spice/kw-name))}]}]
+        :action/target    [e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-recommendations
+                                                           {:query-params
+                                                            (->> answers
+                                                                 (maps/map-values spice/kw-name))}]}]
         :action/label     "See Results"}))
    (progress< quiz-progression)
    (header< undo-history (apply max quiz-progression))
@@ -521,9 +519,7 @@
 
    :action/id     "quiz-continue"
    :action/label  "Continue"
-   :action/target [e/redirect
-                   {:nav-message
-                    [e/navigate-shopping-quiz-unified-freeinstall-question]}]})
+   :action/target [e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-question]}]})
 
 ;;;
 
@@ -628,27 +624,32 @@
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-question
   [_ _ _ _ state]
-  (if (nil? (progression/<- state id))
-    (fx/redirect e/navigate-shopping-quiz-unified-freeinstall-intro)
-    (do
-      (publish e/biz|progression|progressed
-               #:progression
+  (let [progress (progression/<- state id)]
+    (if (nil? progress)
+     (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-intro]})
+     (do
+       (publish e/biz|progression|progressed
+                #:progression
                 {:id    id
-                 :value 1})
-      (publish e/biz|questioning|reset
-               {:questioning/id id})
-      (publish e/biz|looks-suggestions|reset
-               {:id id}))))
+                 :value 1
+                 :regress #{2 3}})
+       (publish e/biz|questioning|reset
+                {:questioning/id id})
+       (publish e/biz|looks-suggestions|reset
+                {:id id})))))
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-recommendations
   [_ _ {params :query-params} _ _]
   (if (nil? params)
-    (fx/redirect e/navigate-shopping-quiz-unified-freeinstall-intro)
+    (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-intro]})
     (do
+      (publish e/biz|looks-suggestions|reset
+               {:id id})
       (publish e/biz|progression|progressed
                #:progression
                 {:id    id
-                 :value 2})
+                 :value 2
+                 :regress #{3}})
       (publish e/biz|questioning|submitted
                {:questioning/id id
                 :answers        (maps/map-values keyword params)
@@ -660,8 +661,9 @@
     (publish e/biz|progression|progressed
              #:progression
               {:id    id
-               :value 2})
-    (fx/redirect e/navigate-shopping-quiz-unified-freeinstall-recommendations)))
+               :value 2
+               :regress #{3}})
+    (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-recommendations]})))
 
 (def ^:private sv2-codes->srvs
   {"LBI" "SRV-LBI-000"
@@ -688,11 +690,11 @@
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist
   [_ _ _ _ state]
+  #?(:cljs (google-maps/insert))
   (publish e/biz|progression|progressed
            #:progression
             {:id    id
              :value 3})
-  #?(:cljs (google-maps/insert))
   (publish e/flow|stylist-matching|initialized)
   (when-let [preferred-services (->> (api.orders/current state)
                                      :order/items
@@ -710,12 +712,11 @@
          latitude           :lat
          longitude          :long
          address            :address} :query-params} state state']
+  #?(:cljs (google-maps/insert))
   (publish e/biz|progression|progressed
            #:progression
             {:id    id
              :value 3})
-
-  #?(:cljs (google-maps/insert))
 
 
   ;; Init the model if there isn't one, e.g. Direct load
@@ -762,15 +763,15 @@
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-match-success
   [_ _ _ _ _]
+  #?(:cljs (google-maps/insert))
   (publish e/biz|progression|progressed
            #:progression
             {:id    id
-             :value 3})
-  #?(:cljs (google-maps/insert)))
+             :value 3}))
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall
   [_ _ _ state _]
   (when-not (= :shop (accessors.sites/determine-site state))
-    (fx/redirect e/navigate-home))
+    (publish e/go-to-navigate {:target [e/navigate-home]}))
   (when-not (experiments/shopping-quiz-unified-fi? state)
     (publish e/enable-feature {:feature "shopping-quiz-unified-fi"})))
