@@ -26,7 +26,8 @@
      [:div.flex.flex-column
       [:div primary]
       [:div secondary]
-      [:div.content-1 tertiary [:span.ml2.s-color.content-2 tertiary-note]]
+      [:div.content-1 tertiary]
+      [:div.s-color.content-2 tertiary-note]
       (actions/small-primary (with :action data))]]]])
 
 ;; TODO(corey) this contract is different, prob should be a new ns

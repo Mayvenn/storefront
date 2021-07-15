@@ -331,7 +331,7 @@
    [:div.flex.flex-column.justify-center.items-center.myj3
     [:div.col-8.my2
      (titles/canela (with :title data))]
-    [:div.mb6
+    [:div.mb6.col-10.col-8-on-tb
      (c/build card/look-suggestion-1
               (with :suggestion data))]
     (actions/large-primary (with :action data))]])
