@@ -657,13 +657,13 @@
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-summary
   [_ _ _ _ state]
-  (if (api.orders/current state)
+  (if (looks-suggestions/selected<- state id)
     (publish e/biz|progression|progressed
              #:progression
-              {:id    id
-               :value 2
-               :regress #{3}})
-    (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-recommendations]})))
+             {:id    id
+              :value 2
+              :regress #{3}})
+    (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-intro]})))
 
 (def ^:private sv2-codes->srvs
   {"LBI" "SRV-LBI-000"

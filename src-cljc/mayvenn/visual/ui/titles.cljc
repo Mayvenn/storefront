@@ -35,18 +35,20 @@
    :primary/title-3     {:primary/size "title-3"}
    :primary/content-1   {:primary/size "content-1"}
    :primary/content-2   {:primary/size "content-2"}
+   :primary/content-3   {:primary/size "content-3"}
    :primary/proxima     {:primary/font "proxima"}
    :primary/canela      {:primary/font "canela"}
    :primary/shout       {:primary/emphasis "shout"}
    :primary/flex        {:primary/flex "flex"}
    :primary/flex-auto   {:primary/flex-args "flex-auto"}
    :primary/myj1        {:primary/padding "myj1"}
-   :secondary/proxima   {:primary/font "proxima"}
+   :secondary/proxima   {:secondary/font "proxima"}
    :secondary/content-2 {:secondary/size "content-2"}
    :secondary/content-3 {:secondary/size "content-3"}
    :secondary/content-4 {:secondary/size "content-4"}
    :secondary/mt2       {:secondary/padding "mt2"}
-   :secondary/myj1      {:secondary/padding "myj1"}})
+   :secondary/myj1      {:secondary/padding "myj1"}
+   :tertiary/content-3  {:tertiary/size "content-3"}})
 
 
 (defn styling<
