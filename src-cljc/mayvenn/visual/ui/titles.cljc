@@ -15,16 +15,7 @@
 
             [storefront.components.svg :as svg]))
 
-(defn
-  ^{:usages [:call-out-boxes]}
-  proxima-large [text]
-  (title [:align/center
-          :primary/title-1
-          :primary/proxima
-          :primary/shout
-          :secondary/mt2
-          :secondary/content-1]
-         text))
+
 
 
 (def styles
@@ -133,6 +124,17 @@
           :primary/shout
           :secondary/content-2
           :secondary/mt2]
+         text))
+
+(defn
+  ^{:usages [:call-out-boxes]}
+  proxima-large [text]
+  (title [:align/center
+          :primary/title-1
+          :primary/proxima
+          :primary/shout
+          :secondary/mt2
+          :secondary/content-1]
          text))
 
 (defn
