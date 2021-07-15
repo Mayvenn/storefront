@@ -51,4 +51,4 @@
      ;; price group
      [:div.flex.flex-column.self-stretch.items-end
       {:style {:min-width "67px"}}
-      (titles/promixa-tiny-right (with :price-title data))]]]])
+      (titles/proxima-tiny-right (with :price-title data))]]]])

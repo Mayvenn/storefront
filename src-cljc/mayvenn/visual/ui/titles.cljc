@@ -6,105 +6,181 @@
 
   Any text/content box with the following data:
   {id icon primary secondary tertiary}
-
-  TODO(corey)
-  consider a combinator approach, e.g.:
-  (def canela-small
-       (text-box
-         [{:text/value primary
-           :pos/h :center
-           :pos/v top
-           :font/face :canela
-           :font/size :title-3}]))
-
   "
   (:require [storefront.component :as c]
+            [mayvenn.visual.tools :refer [with]]
+            [clojure.string :as string]
+            [spice.maps :as maps]
+            [spice.core :as spice]
+
             [storefront.components.svg :as svg]))
 
-(defn proxima
-  "Usages:
-  - call out boxes"
-  [{:keys [id icon primary secondary]}]
-  (c/html
-   [:div.center
-    (when icon
-      (svg/symbolic->html icon))
-    [:div.title-2.proxima.shout
-     (when id
-       {:data-test id})
-     primary]
-    (when secondary
-      [:div.mt2.content-2
-       secondary])]))
+(defn
+  ^{:usages [:call-out-boxes]}
+  proxima-large [text]
+  (title [:align/center
+          :primary/title-1
+          :primary/proxima
+          :primary/shout
+          :secondary/mt2
+          :secondary/content-1]
+         text))
 
-(defn proxima-large
-  "Usages:
-  - call out boxes"
-  [{:keys [id icon primary secondary]}]
-  (c/html
-   [:div.center
-    (when icon
-      (svg/symbolic->html icon))
-    [:div.title-1.proxima.shout
-     (when id
-       {:data-test id})
-     primary]
-    (when secondary
-      [:div.mt2.content-1
-       secondary])]))
 
-(defn proxima-small
-  "Usages:
-  - call out boxes"
-  [{:keys [id icon primary secondary]}]
-  (c/html
-   [:div.center
-    (when icon
-      (svg/symbolic->html icon))
-    [:div.title-3.proxima.shout
-     (when id
-       {:data-test id})
-     primary]
-    (when secondary
-      [:div.mt2.content-2
-       secondary])]))
+(def styles
+  "These define various classes to assign to parts of a title.
 
-(defn proxima-tiny
-  [{:keys [id icon primary secondary]}]
-  (c/html
-   [:div.proxima
-    {:data-test id}
-    [:div.content-3 primary]
-    [:div.content-4 secondary]]))
 
-(defn proxima-left
-  "Usages:
-  - stylist cards
-  - product summary on product details"
-  [{:keys [id icon primary secondary]}]
-  (c/html
-   [:div.left-align
-    (when icon
-      (svg/symbolic->html icon))
-    [:div.title-2.proxima.shout
-     (when id
-       {:data-test id})
-     primary]
-    (when secondary
-      [:div.mt2.content-2
-       secondary])]))
+  In the inner maps, the keyword namespace denotes what field to apply the style to,
+  while the keyword name is primarily for preventing more than one attribute of a type from
+  being applied.
+  "
+  {:align/center        {:align/class "center"}
+   :align/left          {:align/class "left-align"}
+   :align/right         {:align/class "right-align"}
+   :icon/myj1           {:icon/padding "myj1"}
+   :primary/title-1     {:primary/size "title-1"}
+   :primary/title-2     {:primary/size "title-2"}
+   :primary/title-3     {:primary/size "title-3"}
+   :primary/content-1   {:primary/size "content-1"}
+   :primary/content-2   {:primary/size "content-2"}
+   :primary/proxima     {:primary/font "proxima"}
+   :primary/canela      {:primary/font "canela"}
+   :primary/shout       {:primary/emphasis "shout"}
+   :primary/flex        {:primary/flex "flex"}
+   :primary/flex-auto   {:primary/flex-args "flex-auto"}
+   :primary/myj1        {:primary/padding "myj1"}
+   :secondary/proxima   {:primary/font "proxima"}
+   :secondary/content-2 {:secondary/size "content-2"}
+   :secondary/content-3 {:secondary/size "content-3"}
+   :secondary/content-4 {:secondary/size "content-4"}
+   :secondary/mt2       {:secondary/padding "mt2"}
+   :secondary/myj1      {:secondary/padding "myj1"}})
 
-(defn promixa-tiny-right
-  [{:keys [id icon primary secondary]}]
-  (c/html
-   [:div.proxima.right-align
-    {:data-test id}
-    [:div.content-3 primary]
-    [:div.content-4 secondary]]))
 
-(defn proxima-small-left
-  "Usages:
-  - Top Stylist badge"
+(defn styling<
+  "Given a collection of `style` keywords (see styles above)
+  merge the corresponding maps for those styles together into a `styling`,
+
+
+  example:
+     (styling< [:align/center
+                :primary/title-2
+                :primary/shout])
+
+     => {:align/class \"center\"
+         :primary/size \"title-2\"
+         :primary/emphasis \"shout\"}"
+  [style-kws]
+  (let [style-maps (map styles style-kws)
+        style-keys (mapcat keys style-maps)]
+    (assert (= (count (set style-keys)) (count style-keys))
+            (str "styling< was called with a keyword collision, "
+                 (str style-kws)))
+    (apply merge style-maps)))
+
+(defn class<
+  "Takes a keyword and a `styling` (see styling< above) and produces a class string
+  to be used on a hiccup attribute map
+
+  example:
+  (class< :primary {:align/class \"center\"
+                    :primary/size \"title-2\"
+                    :primary/emphasis \"shout\"})
+
+  => \"title-2 shout\"
+
+
+  "
+  [kw styling]
+  (string/join " " (map second (with kw styling))))
+
+(defn should-interpose? [value]
+  (and (vector? value)
+       (not (-> value first keyword?))))
+
+(defn build-if-value [tag attr value]
+  (cond
+    (not value) nil
+    (should-interpose? value) [tag attr (interpose [:br] value)]
+    :else [tag attr value]))
+
+(defn title [style-kws {:keys [id icon primary secondary tertiary]}]
+  (let [styling (styling< style-kws)]
+    (c/html
+     [:div {:class (class< :align styling)}
+      [:div {:class (class< :icon styling)}
+       (when icon
+         (svg/symbolic->html icon))
+       (build-if-value :div
+               (merge {:class (class< :primary styling)}
+                      (when id
+                        {:data-test id}))
+               primary)]
+      (build-if-value :div {:class (class< :secondary styling)}
+              secondary)
+      (build-if-value :div {:class (class< :tertiary styling)}
+              tertiary)])))
+
+
+
+(defn
+  ^{:usages [:call-out-boxs]}
+  proxima [text]
+  (title [:align/center
+          :primary/title-2
+          :primary/proxima
+          :primary/shout
+          :secondary/content-2
+          :secondary/mt2]
+         text))
+
+(defn
+  ^{:usages [:call-out-boxs]}
+  proxima-small [text]
+  (title [:align/center
+          :primary/title-3
+          :primary/proxima
+          :primary/shout
+          :secondary/content-2
+          :secondary/mt2]
+         text))
+
+(defn
+  ^{:usages [:stylist-cards :pdp/product-summary]}
+  proxima-left [text]
+  (title [:align/left
+          :primary/title-2
+          :primary/proxima
+          :primary/shout
+          :secondary/content-2
+          :secondary/mt2]
+         text))
+(defn
+  ^{:usages [:cart-item-card]}
+  proxima-tiny [text]
+  (title [:align/center
+          :primary/content-3
+          :primary/proxima
+          :secondary/proxima
+          :secondary/content-4]
+         text))
+
+(defn
+  ^{:usages [:cart-item-card]}
+  proxima-tiny-right [text]
+  (title [:align/right
+          :primary/content-3
+          :primary/proxima
+          :secondary/proxima
+          :secondary/content-4]
+         text))
+
+(defn
+  ^{:usages [:cart-item-card]}
+  proxima-small-left
+  "Different from normal titles in that the primary styling
+  encompasses the icon as well."
   [{:keys [id icon primary secondary]}]
   (c/html
    [:div.left-align
@@ -119,69 +195,45 @@
       [:div.mt2.content-2
        secondary])]))
 
-(defn proxima-content
-  [{:keys [id icon primary secondary tertiary]}]
-  (when (and id primary)
-    [:div
-     [:div.proxima.content-2
-      {:data-test id}
-      primary]
-     [:div.content-3 secondary]
-     [:div.content-3
-      (if (vector? tertiary)
-        (interpose [:br] tertiary)
-        tertiary)]]))
+(defn
+  ^{:usages [:appointment-booking :lib.ui-cards]}
+  proxima-content
+  [text]
+  (title [:primary/proxima
+          :primary/content-2
+          :secondary/content-3
+          :tertiary/content-3]
 
-(defn canela
-  "Usages:
-  - call out boxes"
-  [{:keys [id icon primary secondary]}]
-  (c/html
-   [:div.center
-    (when icon
-      (svg/symbolic->html icon))
-    [:div.title-2.canela
-     (when id
-       {:data-test id})
-     (if (vector? primary)
-       (interpose [:br] primary)
-       primary)]
-    (when secondary
-      [:div.mt2.content-3
-       secondary])]))
+         text))
 
-(defn canela-left
-  "Usages:
-  - call out boxes"
-  [{:keys [id icon primary secondary]}]
-  (c/html
-   [:div.left-align
-    (when icon
-      (svg/symbolic->html icon))
-    [:div.title-2.canela
-     (when id
-       {:data-test id})
-     primary]
-    (when secondary
-      [:div.mt2.content-3
-       secondary])]))
+(defn
+  ^{:usages [:top-stylist :stylist-search :unified-freeinstall]}
+  canela [text]
+  (title [:align/center
+          :primary/title-2
+          :primary/canela
+          :secondary/mt2
+          :secondary/content-3]
+         text))
 
-(defn canela-huge
-  "Usages:
-  - call out boxes"
-  [{:keys [id icon primary secondary]}]
-  (c/html
-   [:div.center
-    (when icon
-      [:div.myj1
-       (svg/symbolic->html icon)])
-    [:div.title-1.canela.myj1
-     (when id
-       {:data-test id})
-     (if (vector? primary)
-       (interpose [:br] primary)
-       primary)]
-    (when secondary
-      [:div.content-2.myj1
-       secondary])]))
+(defn
+  ^{:usages [:top-stylist :stylist-search :unified-freeinstall]}
+  canela-left [text]
+  (title [:align/left
+          :primary/title-2
+          :primary/canela
+          :secondary/mt2
+          :secondary/content-3]
+         text))
 
+(defn
+  ^{:usages [:call-out-boxes]}
+  canela-huge [text]
+  (title [:align/center
+          :icon/myj1
+          :primary/title-1
+          :primary/canela
+          :primary/myj1
+          :secondary/content-2
+          :secondary/myj1]
+         text))
