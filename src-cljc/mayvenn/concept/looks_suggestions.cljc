@@ -381,51 +381,66 @@
     :legacy/variant-id 1114}})
 
 (def answers->results
-  {:straight {:short      {:yes    [BNS-short              BNS-medium]
-                           :no     [BNS-short-closure      BNS-medium-closure]
-                           :unsure [BNS-short              BNS-short-closure]}
-              :medium     {:yes    [BNS-medium             BNS-long]
-                           :no     [BNS-medium-closure     BNS-long-closure]
-                           :unsure [BNS-medium             BNS-medium-closure]}
-              :long       {:yes    [BNS-long               BNS-extra-long]
-                           :no     [BNS-long-closure       BNS-extra-long-closure]
-                           :unsure [BNS-long               BNS-long-closure]}
-              :extra-long {:yes    [BNS-extra-long         BNS-long]
-                           :no     [BNS-extra-long-closure BNS-long-closure]
-                           :unsure [BNS-extra-long         BNS-extra-long-closure]}
-              :unsure     {:yes    [BNS-medium             BNS-long]
-                           :no     [BNS-medium-closure     BNS-long-closure]
-                           :unsure [BNS-medium             BNS-long-closure]}}
-   :wavy     {:short      {:yes    [BLW-short              MBW-short]
-                           :no     [BLW-short-closure      MBW-short-closure]
-                           :unsure [BLW-short              MBW-short-closure]}
-              :medium     {:yes    [BLW-medium             MBW-medium]
-                           :no     [BLW-medium-closure     MBW-medium-closure]
-                           :unsure [BLW-medium             MBW-medium-closure]}
-              :long       {:yes    [BLW-long               MBW-long]
-                           :no     [BLW-long-closure       MBW-long-closure]
-                           :unsure [BLW-long               MBW-long-closure]}
-              :extra-long {:yes    [BLW-extra-long         MBW-extra-long]
-                           :no     [BLW-extra-long-closure MBW-extra-long-closure]
-                           :unsure [BLW-extra-long         MBW-extra-long-closure]}
-              :unsure     {:yes    [BLW-medium             MBW-long]
-                           :no     [BLW-medium-closure     MBW-long-closure]
-                           :unsure [BLW-medium             MBW-long-closure]}}
-   :unsure   {:short      {:yes    [BNS-short              BLW-short]
-                           :no     [BNS-short-closure      BLW-short-closure]
-                           :unsure [BNS-short              BLW-short-closure]}
-              :medium     {:yes    [BNS-medium             BLW-medium]
-                           :no     [BNS-medium-closure     BLW-medium-closure]
-                           :unsure [BNS-medium             BLW-medium-closure]}
-              :long       {:yes    [BNS-long               BLW-long]
-                           :no     [BNS-long-closure       BLW-long-closure]
-                           :unsure [BNS-long               BLW-long-closure]}
-              :extra-long {:yes    [BNS-extra-long         BLW-extra-long]
-                           :no     [BNS-extra-long-closure BLW-extra-long-closure]
-                           :unsure [BNS-extra-long         BLW-extra-long-closure]}
-              :unsure     {:yes    [BNS-medium             BLW-long]
-                           :no     [BNS-medium-closure     BLW-long-closure]
-                           :unsure [BNS-medium             BLW-long-closure]}}})
+  {:straight   {:short      {:yes    [BNS-short              BNS-medium]
+                             :no     [BNS-short-closure      BNS-medium-closure]
+                             :unsure [BNS-short              BNS-short-closure]}
+                :medium     {:yes    [BNS-medium             BNS-long]
+                             :no     [BNS-medium-closure     BNS-long-closure]
+                             :unsure [BNS-medium             BNS-medium-closure]}
+                :long       {:yes    [BNS-long               BNS-extra-long]
+                             :no     [BNS-long-closure       BNS-extra-long-closure]
+                             :unsure [BNS-long               BNS-long-closure]}
+                :extra-long {:yes    [BNS-extra-long         BNS-long]
+                             :no     [BNS-extra-long-closure BNS-long-closure]
+                             :unsure [BNS-extra-long         BNS-extra-long-closure]}
+                :unsure     {:yes    [BNS-medium             BNS-long]
+                             :no     [BNS-medium-closure     BNS-long-closure]
+                             :unsure [BNS-medium             BNS-long-closure]}}
+   :loose-wave {:short      {:yes    [BLW-short              BLW-medium]
+                             :no     [BLW-short-closure      BLW-medium-closure]
+                             :unsure [BLW-short              BLW-short-closure]}
+                :medium     {:yes    [BLW-medium             BLW-long]
+                             :no     [BLW-medium-closure     BLW-long-closure]
+                             :unsure [BLW-medium             BLW-medium-closure]}
+                :long       {:yes    [BLW-long               BLW-extra-long]
+                             :no     [BLW-long-closure       BLW-extra-long-closure]
+                             :unsure [BLW-long               BLW-long-closure]}
+                :extra-long {:yes    [BLW-extra-long         BLW-long]
+                             :no     [BLW-extra-long-closure BLW-long-closure]
+                             :unsure [BLW-extra-long         BLW-extra-long-closure]}
+                :unsure     {:yes    [BLW-medium             BLW-long]
+                             :no     [BLW-medium-closure     BLW-long-closure]
+                             :unsure [BLW-medium             BLW-long-closure]}}
+   :body-wave  {:short      {:yes    [MBW-short              MBW-medium]
+                             :no     [MBW-short-closure      MBW-medium-closure]
+                             :unsure [MBW-short              MBW-short-closure]}
+                :medium     {:yes    [MBW-medium             MBW-long]
+                             :no     [MBW-medium-closure     MBW-long-closure]
+                             :unsure [MBW-medium             MBW-medium-closure]}
+                :long       {:yes    [MBW-long               MBW-extra-long]
+                             :no     [MBW-long-closure       MBW-extra-long-closure]
+                             :unsure [MBW-long               MBW-long-closure]}
+                :extra-long {:yes    [MBW-extra-long         MBW-long]
+                             :no     [MBW-extra-long-closure MBW-long-closure]
+                             :unsure [MBW-extra-long         MBW-extra-long-closure]}
+                :unsure     {:yes    [MBW-medium             MBW-long]
+                             :no     [MBW-medium-closure     MBW-long-closure]
+                             :unsure [MBW-medium             MBW-long-closure]}}
+   :unsure     {:short      {:yes    [BNS-short              BLW-short]
+                             :no     [BNS-short-closure      BLW-short-closure]
+                             :unsure [BNS-short              BLW-short-closure]}
+                :medium     {:yes    [BNS-medium             BLW-medium]
+                             :no     [BNS-medium-closure     BLW-medium-closure]
+                             :unsure [BNS-medium             BLW-medium-closure]}
+                :long       {:yes    [BNS-long               BLW-long]
+                             :no     [BNS-long-closure       BLW-long-closure]
+                             :unsure [BNS-long               BLW-long-closure]}
+                :extra-long {:yes    [BNS-extra-long         BLW-extra-long]
+                             :no     [BNS-extra-long-closure BLW-extra-long-closure]
+                             :unsure [BNS-extra-long         BLW-extra-long-closure]}
+                :unsure     {:yes    [BNS-medium             BLW-long]
+                             :no     [BNS-medium-closure     BLW-long-closure]
+                             :unsure [BNS-medium             BLW-long-closure]}}})
 
 (defn <-
   [state id]

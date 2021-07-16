@@ -35,9 +35,12 @@
     [{:choice/id      :straight
       :choice/answer  "Straight"
       :choice/img-url "/images/categories/straight-icon.svg"}
-     {:choice/id      :wavy
-      :choice/answer  "Wavy"
+     {:choice/id      :loose-wave
+      :choice/answer  "Loose wave"
       :choice/img-url "/images/categories/water-wave-icon.svg"}
+     {:choice/id      :body-wave
+      :choice/answer  "Body wave"
+      :choice/img-url "/images/categories/deep-wave-icon.svg"}
      {:choice/id     :unsure
       :choice/answer "I'm not sure yet" }]}
    {:question/id     :length
