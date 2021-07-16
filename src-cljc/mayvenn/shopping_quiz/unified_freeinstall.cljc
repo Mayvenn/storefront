@@ -368,7 +368,7 @@
 
 (c/defcomponent suggestions-template
   [data _ _]
-  [:div.col-12.bg-cool-gray
+  [:div.col-12.bg-cool-gray.stretch
    [:div.bg-white
     (quiz-header (with :header data))]
    (c/build progress-bar/variation-1 (with :progress data))
