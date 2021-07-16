@@ -148,7 +148,7 @@
 
 (defn matched-success<
   [quiz-progression items waiter-order current-stylist undo-history quadpay-loaded? paypal-redirect?]
-  (let [order-total (some-> waiter-order orders/products-subtotal)
+  (let [order-total (some-> waiter-order :total)
         step        (apply max quiz-progression)]
     (merge
      (progress< quiz-progression)
@@ -157,7 +157,7 @@
       :summary/icon                [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
                                                        :height "2em" :width "2em"}]
       :summary-subtotal/primary    "Hair + Install"
-      :summary-slash/primary       (some-> waiter-order :total mf/as-money)
+      :summary-slash/primary       (some-> waiter-order :line-items-total mf/as-money)
       :or/primary                  "or"
       :escape-hatch.title/primary "Wanna explore more options?"
       :escape-hatch.action/id     "quiz-result-alternative"
