@@ -39,17 +39,21 @@
                     :id           id
                     :data-test    data-test
                     :data-test-id data-test-id
-                    :disabled     disabled?
-                    :on-click     (apply utils/send-event-callback target)}
+                    :disabled     disabled?}
+                   (when target
+                     {:on-click (apply utils/send-event-callback target)})
                    (when selected? {:checked "checked"})))
           [:div.right.ml1.medium
            (when-let [classes (:detail/classes option)]
              {:class classes})
            (:detail/value option)]
           [:div.overflow-hidden
+           (when-let [classes (:disabled/classes option)]
+             {:class classes})
            [:div {:data-test (:primary/data-test option)} (:primary/copy option)]
            [:div.content-3 (:secondary/copy option)]
-           [:div.content-3 (:tertiary/copy option)]])])]]))
+           [:div.content-3 (:tertiary/copy option)]
+           [:div.content-3.p-color (:quaternary/copy option)]])])]]))
 
 (def shipping-method-rules
   {"WAITER-SHIPPING-1" {:min-delivery 4 :max-delivery 6 :saturday-delivery? true}
@@ -162,25 +166,35 @@
                      in-window?
                      saturday-delivery?
                      max-delivery)
-        selected?   (= selected-shipping-method-sku-id sku)]
-    {:react/key         sku
-     :primary/data-test (when selected? "selected-shipping-method")
-     :primary/copy      (shipping/names-with-time-range sku)
-     :secondary/copy    (str "Delivery Date: "
-                             (format-delivery-date (date/add-delta current-local-time {:days revised-min}))
-                             (when-not (= revised-min revised-max)
-                               (str "–" (format-delivery-date (date/add-delta current-local-time {:days revised-max})))))
-     :tertiary/copy     (shipping/shipping-note sku)
-
+        selected?   (= selected-shipping-method-sku-id sku)
+        disabled?   (and (not= sku "WAITER-SHIPPING-1") drop-shipping?)]
+    {:react/key            sku
+     :disabled/classes     (when disabled? "gray")
+     :primary/data-test    (when selected? "selected-shipping-method")
+     :primary/copy         (shipping/names-with-time-range sku)
+     :secondary/copy       (str "Delivery Date: "
+                                (format-delivery-date (date/add-delta current-local-time {:days revised-min}))
+                                (when-not (= revised-min revised-max)
+                                  (str "–" (format-delivery-date (date/add-delta current-local-time {:days revised-max})))))
+     :tertiary/copy        (shipping/shipping-note sku)
+     :quaternary/copy      (when (and (not disabled?) drop-shipping?)
+                             "This order contains items that are only eligible for Free Standard Shipping.")
      :control/id           (str "shipping-method-" sku)
      :control/data-test    "shipping-method"
      :control/data-test-id sku
-     :control/target       [events/control-checkout-shipping-method-select shipping-method]
+     :control/target       (when-not drop-shipping?
+                             [events/control-checkout-shipping-method-select shipping-method])
      :control/selected?    selected?
-     :control/disabled?    drop-shipping?
-     :detail/classes       (if (pos? price) "black" "p-color")
-     :detail/value         (mf/as-money-or-free price)}))
+     :control/disabled?    disabled?
+     :detail/classes       (cond
+                             (and (not= sku "WAITER-SHIPPING-1") drop-shipping?)
+                             "gray"
 
+                             (pos? price)
+                             "black"
+
+                             :else "p-color")
+     :detail/value (mf/as-money-or-free price)}))
 
 (defn query [data]
   (let [shipping-methods       (get-in data keypaths/shipping-methods)
