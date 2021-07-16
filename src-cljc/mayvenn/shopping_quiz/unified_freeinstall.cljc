@@ -575,7 +575,10 @@
                                        quadpay-loaded?
                                        paypal-redirect?))
 
-            (:results/stylists matching)
+            ;; Search in progress -- prepared or resulted
+            (or (:results/stylists matching)
+                (:param/name matching)
+                (:param/address matching))
             (c/build stylist-results-template
                      (stylist-results< quiz-progression
                                        matching
@@ -599,9 +602,16 @@
                      (find-your-stylist< quiz-progression matching undo-history))))
       2 (let [looks-suggestions (looks-suggestions/<- state id)
               selected-look     (looks-suggestions/selected<- state id)]
-          (if selected-look
+          (cond
+            (utils/requesting-from-endpoint? state request-keys/new-order-from-sku-ids)
+            (c/build waiting-template
+                     waiting<)
+
+            selected-look
             (c/build summary-template
                      (summary< quiz-progression selected-look undo-history))
+
+            :else
             (c/build suggestions-template
                      (suggestions< quiz-progression looks-suggestions undo-history))))
       1 (let [{:keys [questions answers progression]} (questioning/<- state id)
@@ -704,8 +714,7 @@
     (publish e/flow|stylist-matching|param-services-constrained
              {:services preferred-services})))
 
-(defmethod fx/perform-effects
-  e/navigate-shopping-quiz-unified-freeinstall-stylist-results
+(defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-stylist-results
   [_ _ {{preferred-services :preferred-services
          moniker            :name
          stylist-ids        :s
