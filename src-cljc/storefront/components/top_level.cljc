@@ -218,7 +218,7 @@
        [:div {:data-test (keypaths/->component-str nav-event)}
         [:div {:key "popup"}
          #?(:cljs (popup/built-component data nil))]
-        [:div.flex.stretch
+        [:div.stretch
          {:style {:margin-bottom "-30px"}
           :class "max-580 mx-auto relative"}
          ((main-component nav-event) data nil)]]
