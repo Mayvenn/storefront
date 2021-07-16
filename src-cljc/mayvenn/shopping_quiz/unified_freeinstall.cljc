@@ -771,12 +771,14 @@
   (publish e/flow|stylist-matching|searched))
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-match-success
-  [_ _ _ _ _]
+  [_ _ _ _ state]
   #?(:cljs (google-maps/insert))
-  (publish e/biz|progression|progressed
-           #:progression
-            {:id    id
-             :value 3}))
+  (if (stylist-matching<- state)
+    (publish e/biz|progression|progressed
+             #:progression
+             {:id    id
+              :value 3})
+    (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-intro]})))
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall
   [_ _ _ state _]
