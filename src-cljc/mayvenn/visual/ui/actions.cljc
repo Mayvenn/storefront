@@ -75,3 +75,13 @@
               (when disabled? {:disabled? disabled?})
               (apply utils/route-to target))
        label)])))
+
+(defn medium-tertiary
+  [{:keys [id disabled? label target]}]
+  (when id
+    (c/html
+     [:div.center
+      [:a.p-color.center.title-2.shout.bold.underline.proxima
+       (merge {:data-test id}
+              (apply utils/route-to target))
+       label]])))

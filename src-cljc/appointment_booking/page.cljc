@@ -27,7 +27,7 @@
             [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
-            [storefront.keypaths :as k]
+            [appointment-booking.keypaths :as keypaths]
             [storefront.effects :as fx]
             [storefront.events :as e]
             [storefront.platform.messages
@@ -52,17 +52,17 @@
 
 ;; TODO(ellie, 2021-07-15): [START] Move to spice.date
 (def ^:private months ["Jan."
-             "Feb."
-             "Mar."
-             "Apr."
-             "May"
-             "Jun."
-             "Jul."
-             "Aug."
-             "Sep."
-             "Oct."
-             "Nov."
-             "Dec."])
+                       "Feb."
+                       "Mar."
+                       "Apr."
+                       "May"
+                       "Jun."
+                       "Jul."
+                       "Aug."
+                       "Sep."
+                       "Oct."
+                       "Nov."
+                       "Dec."])
 
 (def ^:private days ["Mon"
                      "Tue"
@@ -106,64 +106,95 @@
     selected?
     "circle bg-pale-purple"))
 
+(defn grid-attrs
+  ([[row col] opts]
+   (maps/deep-merge opts
+                    {:style {:grid-row row
+                             :grid-column col}}))
+  ([grid-spec]
+   (grid-attrs grid-spec {})))
+
+(def ^:private day-column [::dummy-value 2 3 4 5 6 7 1])
+
+(defn week-day-headers [week]
+  (for [date week
+        :let [col (date/weekday-index date)]]
+    [:div.pt3.title-3.proxima.shout (grid-attrs [2 (get day-column col)]
+                                                {:style {:width "2em"}})
+     (name-of-day date)]))
+
+(defn week-day-selectors [selected-date earliest-available-date week]
+  (for [date week
+        :let [col (date/weekday-index date)
+              day-of-month (.getDate date)
+              selected? (= selected-date date)
+              selectable? (<= earliest-available-date
+                              date)]]
+    [:a.black.flex.items-center.justify-center
+     (grid-attrs [4 (get day-column col)]
+                 (merge
+                  {:style {:height "2em"
+                           :width  "2em"}
+                   :class (day-of-month-class selectable? selected?)}
+                  (when selectable?
+                    (utils/fake-href e/flow|appointment-booking|date-selected {:date date}))))
+     day-of-month]))
+
+(defn week-arrow [rotation disabled?]
+  (svg/dropdown-arrow
+   {:height "15px"
+    :width  "15px"
+    :class  (if disabled?
+              "stroke-gray"
+              "stroke-p-color")
+    :style  {:transform     rotation
+             :stroke-width "1px"}}))
+
+(def prev-week-arrow
+  (partial week-arrow "rotate(90deg)"))
+
+(def next-week-arrow
+  (partial week-arrow "rotate(-90deg)"))
+
+
+(defn week-contains-date? [selected-date week]
+  (first (filter #(= selected-date %) week)))
+
+(defn get-week [shown-weeks selected-date]
+  (first (filter (partial week-contains-date? selected-date)
+                 shown-weeks)))
 
 (defn week-view [{:keys [shown-weeks
                          earliest-available-date
                          selected-date]}]
-  (let [week (first shown-weeks)]
-    [:div.p5
+  (let [week                  (or (get-week shown-weeks selected-date)
+                                  (first shown-weeks))
+        first-available-week? (= week (first shown-weeks))
+        last-available-week?  (= week (last shown-weeks))]
+    [:div {:style {:display               "grid"
+                   :grid-template-columns "repeat(7, 1fr)"
+                   :grid-auto-rows        "max-content"
+                   :align-items           "center"
+                   :justify-items         "center"}}
+     [:a.center (grid-attrs [1 1]
+                            (when-not first-available-week?
+                              (utils/fake-href e/control-appointment-booking-week-left-chevron-clicked)))
+      (prev-week-arrow first-available-week?)]
 
-     (let []
-       (into [:div {:style {:display               "grid"
-                            :grid-template-columns "repeat(7, 1fr)"
-                            :grid-auto-rows        "max-content"
-                            :grid-column-gap       "20px"}}
+     [:div.center (grid-attrs [1 "2 / span 5"])
+      [:div.title-3.canela.col-12 (split-month week)]]
 
-              [:div.left {:style {:grid-row    1
-                                  :grid-column 1}}
-               (ui/back-caret {})]
+     [:a.center (grid-attrs [1 7]
+                            (when-not last-available-week?
+                              (utils/fake-href e/control-appointment-booking-week-right-chevron-clicked)))
+      (next-week-arrow last-available-week?)]
 
-              [:div.title-3.canela.col-12.center
-               {:style
-                {:grid-row    1
-                 :grid-column "2 / span 5"}}
-               (split-month week)]
+     (week-day-headers week)
 
-              [:div {:style {:grid-row    1
-                             :grid-column 7}}
-               (ui/forward-caret {:class "right"})]
+     [:div.col-11 (grid-attrs [3 "1 / span 7"])
+      [:div.mb4.border-bottom.border-gray]]
 
-
-              [:div.col-12
-               {:style {:margin      "auto"
-                        :grid-row    "3"
-                        :grid-column "1 / span 7"}}
-               [:div.mb4.border-bottom.border-cool-gray]]]
-
-             (for [date   week
-                   header [true false]
-                   :let   [col (date/weekday-index date)
-                           day-of-month (.getDate date)
-                           selected? (= (.getDate selected-date) day-of-month)
-                           selectable? (<= (.getDate earliest-available-date)
-                                           day-of-month)]]
-               (if header
-                 [:div.col-12.pb2.center
-                  {:style {:grid-column col
-                           :grid-row    2}}
-                  (name-of-day date)]
-                 [:div.col-12
-                  {:style {:height      "2em"
-                           :width       "2em"
-                           :grid-row    4
-                           :grid-column col
-                           :margin      "auto"}}
-                  [:div.flex.items-center.justify-center
-                   {:style {:height "2em"
-                            :width  "2em"}
-                    :class (day-of-month-class selectable? selected?)}
-
-                   day-of-month]]))))]))
+     (week-day-selectors selected-date earliest-available-date week)]))
 
 (def ^:private
   time-slots [{:slot/id "08-to-11"
@@ -172,7 +203,6 @@
                :slot/copy "11:00am - 2:00pm"}
               {:slot/id "14-to-17"
                :slot/copy "2:00pm - 5:00pm"}])
-
 
 (defn ^:private radio-section-v2
   [{:as   data
@@ -192,8 +222,7 @@
                     {:type "radio"})]
     (into
      [:div ^:attrs (with :copy.attrs data)]
-          (:copy.content/text data))]))
-
+     (:copy.content/text data))]))
 
 (defn time-radio-group [{:keys [selected-time-slot-id]}]
   (let [radio-name "appointment-time-slot-radio"]
@@ -222,16 +251,16 @@
              (with :appointment.header data))
     (c/build progress-bar/variation-1
              (with :appointment.progression data))]
-   [:div.col-10
+   [:div.col-10.py8
     (titles/canela-left (with :title data))]
-   [:div.col-12
+   [:div.col-12.px2
     (week-view (with :appointment.picker.date data))]
-   [:div.col-12
+   [:div.col-12.pt4.px2
     (time-radio-group (with :appointment.picker.time-slot data))]
-   [:div.col-6
-    (actions/medium-primary (with :action data))]])
-
-
+   [:div.col-6.pt8
+    (actions/medium-primary (with :continue.action data))]
+   [:div.col-6.pt4
+    (actions/medium-tertiary (with :skip.action data))]])
 
 (defn find-previous-sunday [today]
   (let [i     (date/weekday-index today)]
@@ -260,13 +289,17 @@
     :appointment.header.back-navigation/back           back
 
     :appointment.picker.time-slot/selected nil
-    ;;:appointment.
-
-    :action/id     "summary-continue"
-    :action/label  "Continue"
-    :action/target [e/redirect
-                    {:nav-message
-                     [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]}
+    }
+   (within :continue.action {:id     "summary-continue"
+                             :label  "Continue"
+                             :target [e/redirect
+                                                      {:nav-message
+                                                       [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})
+   (within :skip.action {:id     "booking-skip"
+                         :label  "skip this step"
+                         :target [e/redirect
+                                  {:nav-message
+                                   [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})
    (let  [earliest-available-date (-> (date/now)
                                       start-of-day
                                       (date/add-delta {:days 2}))]
@@ -276,7 +309,7 @@
                                            find-previous-sunday
                                            get-weeks)
               :selected-date           (or
-                                        nil ;; fill in from app-state
+                                        (get-in app-state keypaths/booking-selected-date)
                                         earliest-available-date)}))
    (within :appointment.header
            {:forced-mobile-layout? true
