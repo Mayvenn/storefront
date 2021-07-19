@@ -3,7 +3,9 @@
 
 (defn stickered-square
   [{:keys [id ucare-id sticker-label]}]
-  [:div.relative.pt1
+  [(-> "div.relative"
+       (str (when sticker-label ".pt1"))
+       keyword)
    {:key   id
     :style {:height "45px"
             :width  "48px"}}

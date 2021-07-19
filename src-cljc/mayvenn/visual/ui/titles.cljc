@@ -174,7 +174,7 @@
   ^{:usages [:cart-item-card]}
   proxima-tiny-right [text]
   (title [:align/right
-          :primary/content-3
+          :primary/content-2
           :primary/proxima
           :secondary/proxima
           :secondary/content-4]
