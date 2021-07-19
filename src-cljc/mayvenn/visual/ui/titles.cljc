@@ -129,6 +129,16 @@
          text))
 
 (defn
+  ^{:usages [:appointment-booking]}
+  proxima-light [text]
+  (title [:align/center
+          :primary/title-2
+          :primary/proxima
+          :secondary/content-2
+          :secondary/mt2]
+         text))
+
+(defn
   ^{:usages [:call-out-boxes]}
   proxima-large [text]
   (title [:align/center

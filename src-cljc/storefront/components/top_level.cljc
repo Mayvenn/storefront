@@ -19,6 +19,7 @@
 
             mayvenn-install.about
 
+            appointment-booking.page
             mayvenn.shopping-quiz.unnamed-v1
             mayvenn.shopping-quiz.unified-freeinstall
 
@@ -128,6 +129,7 @@
                                                                         events/navigate-adventure-stylist-gallery)
 
    events/navigate-adventure-quiz                                      (constantly mayvenn.shopping-quiz.unnamed-v1/page)
+   events/navigate-adventure-appointment-booking                       (constantly appointment-booking.page/page)
    events/navigate-shopping-quiz-unified-freeinstall-intro             (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
    events/navigate-shopping-quiz-unified-freeinstall-question          (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
    events/navigate-shopping-quiz-unified-freeinstall-recommendations   (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
@@ -214,7 +216,8 @@
        ;; TODO this should be moved into the UI domain of stylist-matching
        (or
         (routes/sub-page? [nav-event] [events/navigate-adventure])
-        (routes/sub-page? [nav-event] [events/navigate-shopping-quiz]))
+        (routes/sub-page? [nav-event] [events/navigate-shopping-quiz])
+        (routes/sub-page? [nav-event] [events/navigate-adventure-appointment-booking]))
        [:div {:data-test (keypaths/->component-str nav-event)}
         [:div {:key "popup"}
          #?(:cljs (popup/built-component data nil))]

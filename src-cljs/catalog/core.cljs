@@ -18,6 +18,7 @@
             checkout.behavior
 
             ;; Stylist matching/profile
+            appointment-booking.core ; TODO is this right?
             stylist-matching.find-your-stylist
             stylist-matching.stylist-results
             stylist-profile.core

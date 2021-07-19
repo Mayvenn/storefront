@@ -868,31 +868,6 @@
                    "//ucarecdn.com/6cfa1b3c-ed89-4e71-b702-b6fdfba72c0a/-/format/auto/collapse"
                    "//ucarecdn.com/dbdcce35-e6da-4247-be57-22991d086fc1/-/format/auto/expand")}]))
 
-(defn back-arrow [attrs]
-  (ucare-img (merge {:width "24"}
-                    attrs)
-             "2dba0ec5-f62b-4aad-b122-68fdf3eba9dc"))
-
-(def dark-forward-arrow-uuid
-  "e4a70b53-905f-449b-86f1-e8d5c327a6df")
-
-(defn dark-back-arrow [attrs]
-  (component/html
-   [:div.rotate-180
-    (ucare-img (merge {:width "24"}
-                      attrs)
-               dark-forward-arrow-uuid)]))
-
-(def light-forward-arrow-uuid
-  "f6d9ea1b-5a27-4582-a422-f25a1e5ba22e")
-
-(defn forward-arrow [attrs]
-  (ucare-img (merge {:width "24"}
-                    (dissoc attrs :disabled?))
-             (if (:disabled? attrs)
-               dark-forward-arrow-uuid
-               light-forward-arrow-uuid)))
-
 (defn clickable-logo [{:as attrs :keys [height event]}]
   (component/html
    [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.p-color

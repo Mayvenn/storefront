@@ -55,6 +55,8 @@
 
 (def adventure-quiz-routes
   {"/adv/quiz"                                   (edn->bidi events/navigate-adventure-quiz)
+   ;; TODO(ellie, 2021-07-15): Is this the right path?
+   "/appointment-booking"                        (edn->bidi events/navigate-adventure-appointment-booking)
    "/quiz/unified-freeinstall/intro"             (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-intro)
    "/quiz/unified-freeinstall/question"          (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-question)
    "/quiz/unified-freeinstall/recommendations"   (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-recommendations)

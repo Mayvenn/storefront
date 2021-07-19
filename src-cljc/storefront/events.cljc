@@ -754,3 +754,21 @@
 (defpath stylist-gallery-posts-reordered)
 
 (defpath top-stylist-navigation-decided)
+
+;; Appointment Booking TODO consider moving to own namespace
+(defpath flow|appointment-booking|initialized)
+(defpath flow|appointment-booking|date-selected)
+(defpath flow|appointment-booking|time-selected)
+(defpath flow|appointment-booking|done)
+(defpath flow|appointment-booking|skipped)
+
+(defpath biz|appointment-booking|requested)
+
+(defpath navigate-adventure-appointment-booking)
+
+(defpath control-appointment-booking-week-left-chevron-clicked)
+(defpath control-appointment-booking-week-right-chevron-clicked)
+(defpath control-appointment-booking-date-clicked)
+(defpath control-appointment-booking-time-clicked)
+(defpath control-appointment-booking-submit-clicked)
+(defpath control-appointment-booking-skip-clicked)

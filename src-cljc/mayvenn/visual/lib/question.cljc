@@ -13,7 +13,7 @@
             [storefront.platform.component-utils :as utils]))
 
 ;; TODO(corey) parameterize for color
-(def checkmark-circle-atom
+(def ^:private checkmark-circle-atom
   [:div.circle.bg-p-color.flex.items-center.justify-center
    {:style {:height "20px" :width "20px"}}
    (svg/check-mark {:height "12px" :width "16px" :class "fill-white"})])
