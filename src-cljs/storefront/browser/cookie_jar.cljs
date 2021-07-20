@@ -65,6 +65,12 @@
    :optional-keys []
    :required-keys [:affiliate-stylist-id]})
 
+(def unified-fi-quiz
+  {:domain        (root-domain)
+   :max-age       one-day
+   :optional-keys []
+   :required-keys [:unified-fi-quiz]})
+
 (def account-specs [user order pending-promo])
 
 (defn all-keys [spec]
@@ -155,6 +161,9 @@
 
 (def save-affiliate-stylist-id (partial save-cookie affiliate-stylist-id))
 (def retrieve-affiliate-stylist-id (partial retrieve affiliate-stylist-id))
+
+(def save-unified-fi-quiz-entered (partial save-cookie unified-fi-quiz))
+(def retrieve-unified-fi-quiz-entered (partial retrieve unified-fi-quiz))
 
 (defn save-adventure
   [cookie adventure-attrs]

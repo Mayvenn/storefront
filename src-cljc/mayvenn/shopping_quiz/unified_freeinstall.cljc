@@ -5,6 +5,7 @@
   (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
                        [storefront.history :as history]
                        [storefront.hooks.quadpay :as quadpay]
+                       [storefront.browser.cookie-jar :as cookie-jar]
                        [stylist-matching.search.filters-modal :as filter-menu]])
             [api.catalog :refer [select ?service ?discountable]]
             api.current
@@ -625,8 +626,10 @@
       (c/build intro-template (intro< undo-history step)))))
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-intro
-  [_ _ _ _ _]
-  #?(:cljs (google-maps/insert))
+  [_ _ _ state _]
+  #?(:cljs (do
+             (google-maps/insert)
+             (cookie-jar/save-unified-fi-quiz-entered (get-in state k/cookie) {:unified-fi-quiz true})))
   (publish e/biz|progression|reset
            #:progression
             {:id    id
@@ -720,12 +723,17 @@
          stylist-ids        :s
          latitude           :lat
          longitude          :long
-         address            :address} :query-params} state state']
-  #?(:cljs (google-maps/insert))
-  (publish e/biz|progression|progressed
-           #:progression
-            {:id    id
-             :value 3})
+         address            :address} :query-params
+        :as                           args} state state']
+  #?(:cljs
+     (if-not (:unified-fi-quiz (cookie-jar/retrieve-unified-fi-quiz-entered (get-in state k/cookie)))
+       (publish e/redirect {:nav-message [e/navigate-adventure-stylist-results args]})
+       (do
+         (google-maps/insert)
+         (publish e/biz|progression|progressed
+                  #:progression
+                  {:id    id
+                   :value 3}))))
 
 
   ;; Init the model if there isn't one, e.g. Direct load
