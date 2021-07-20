@@ -311,6 +311,10 @@
           number token features
           (fn [order]
             (let [success-event (cond
+
+                                  (experiments/easy-booking? state)
+                                  e/navigate-adventure-appointment-booking
+
                                   (experiments/shopping-quiz-unified-fi? state)
                                   e/navigate-shopping-quiz-unified-freeinstall-match-success
 

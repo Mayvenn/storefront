@@ -38,11 +38,14 @@
 
 (defmethod t/transition-state e/navigate-adventure-appointment-booking
   [_ _event {:keys [] :as _args} state]
-  )
+  state)
 
 (defmethod fx/perform-effects e/navigate-adventure-appointment-booking
   [_ _ _ _ state]
-  (publish e/flow|appointment-booking|initialized {}))
+  #?(:cljs
+     (if (experiments/easy-booking? state)
+       (publish e/flow|appointment-booking|initialized {})
+       (history/enqueue-redirect e/navigate-home {}))))
 
 (defmethod fx/perform-effects e/flow|appointment-booking|initialized
   [_ _ _ _ state]
@@ -57,3 +60,7 @@
 (defmethod fx/perform-effects e/control-appointment-booking-week-chevron-clicked
   [_ _event {:keys [date] :as _args} _prev-state state]
   (publish e/flow|appointment-booking|date-selected {:date date}))
+
+(defmethod fx/perform-effects e/control-appointment-booking-time-clicked
+  [_ _event {:keys [slot-id] :as _args} _prev-state state]
+  (publish e/flow|appointment-booking|time-selected {:time-slot slot-id}))
