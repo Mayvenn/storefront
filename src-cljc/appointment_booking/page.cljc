@@ -318,7 +318,7 @@
                                :disabled? (not (and selected-time-slot selected-date))
                                :target    [e/redirect
                                            {:nav-message
-                                            [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})
+                                            [e/navigate-shopping-quiz-unified-freeinstall-match-success]}]})
      (within :skip.action {:id     "booking-skip"
                            :label  "skip this step"
                            :target [e/redirect
