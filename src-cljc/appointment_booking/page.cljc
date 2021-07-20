@@ -140,22 +140,19 @@
                     (utils/fake-href e/flow|appointment-booking|date-selected {:date date}))))
      day-of-month]))
 
-(defn week-arrow [rotation disabled?]
+(def arrow-directions
+  {:left {:style {:transform "rotate(90deg)"}}
+   :right {:style {:transform "rotate(-90deg)"}}})
+(defn week-arrow [direction disabled?]
   (svg/dropdown-arrow
-   {:height "15px"
-    :width  "15px"
-    :class  (if disabled?
-              "stroke-gray"
-              "stroke-p-color")
-    :style  {:transform     rotation
-             :stroke-width "1px"}}))
-
-(def prev-week-arrow
-  (partial week-arrow "rotate(90deg)"))
-
-(def next-week-arrow
-  (partial week-arrow "rotate(-90deg)"))
-
+   (maps/deep-merge
+    {:height "15px"
+     :width  "15px"
+     :class  (if disabled?
+               "stroke-gray"
+               "stroke-p-color")
+     :style  {:stroke-width "1px"}}
+    (arrow-directions direction))))
 
 (defn week-contains-date? [selected-date week]
   (first (filter #(= selected-date %) week)))
@@ -164,37 +161,53 @@
   (first (filter (partial week-contains-date? selected-date)
                  shown-weeks)))
 
-(defn week-view [{:keys [shown-weeks
+(defn disablable-arrow [{:keys [disabled? direction target target-args attrs]}]
+  (conj (if disabled?
+          [:div.center attrs]
+          [:a.center
+           (maps/deep-merge attrs
+                            (when disabled?
+                              {:aria-disabled "true"
+                               :disabled      "true"})
+                            (utils/fake-href target target-args))])
+        (week-arrow direction disabled?)))
+
+(defn week-view [{:keys [week
+                         first-available-week?
+                         last-available-week?
                          earliest-available-date
                          selected-date]}]
-  (let [week                  (or (get-week shown-weeks selected-date)
-                                  (first shown-weeks))
-        first-available-week? (= week (first shown-weeks))
-        last-available-week?  (= week (last shown-weeks))]
-    [:div {:style {:display               "grid"
-                   :grid-template-columns "repeat(7, 1fr)"
-                   :grid-auto-rows        "max-content"
-                   :align-items           "center"
-                   :justify-items         "center"}}
-     [:a.center (grid-attrs [1 1]
-                            (when-not first-available-week?
-                              (utils/fake-href e/control-appointment-booking-week-left-chevron-clicked)))
-      (prev-week-arrow first-available-week?)]
+  [:div {:style {:display               "grid"
+                 :grid-template-columns "repeat(7, 1fr)"
+                 :grid-auto-rows        "max-content"
+                 :align-items           "center"
+                 :justify-items         "center"}}
+   (disablable-arrow {:disabled?   first-available-week?
+                      :direction   :left
+                      :target      e/control-appointment-booking-week-chevron-clicked
+                      :target-args {:date
+                                    (let [one-week-before-selected-date
+                                          (date/add-delta selected-date {:days -7})]
+                                      (if (date/after? one-week-before-selected-date earliest-available-date)
+                                        one-week-before-selected-date
+                                        earliest-available-date))}
+                      :attrs       (grid-attrs [1 1])})
 
-     [:div.center (grid-attrs [1 "2 / span 5"])
-      [:div.title-3.canela.col-12 (split-month week)]]
+   [:div.center (grid-attrs [1 "2 / span 5"])
+    [:div.title-3.canela.col-12 (split-month week)]]
 
-     [:a.center (grid-attrs [1 7]
-                            (when-not last-available-week?
-                              (utils/fake-href e/control-appointment-booking-week-right-chevron-clicked)))
-      (next-week-arrow last-available-week?)]
+   (disablable-arrow {:disabled?   last-available-week?
+                      :direction   :right
+                      :target      e/control-appointment-booking-week-chevron-clicked
+                      :target-args {:date (date/add-delta selected-date {:days 7})}
+                      :attrs       (grid-attrs [1 7])})
 
-     (week-day-headers week)
+   (week-day-headers week)
 
-     [:div.col-11 (grid-attrs [3 "1 / span 7"])
-      [:div.mb4.border-bottom.border-gray]]
+   [:div.col-11 (grid-attrs [3 "1 / span 7"])
+    [:div.mb4.border-bottom.border-gray]]
 
-     (week-day-selectors selected-date earliest-available-date week)]))
+   (week-day-selectors selected-date earliest-available-date week)])
 
 (def ^:private
   time-slots [{:slot/id "08-to-11"
@@ -285,32 +298,42 @@
      {:bar/units 6}]
 
     #_#_#_#_#_#_:appointment.header.back-navigation/id "adventure-back"
-    :appointment.header.back-navigation/target         target
-    :appointment.header.back-navigation/back           back
+            :appointment.header.back-navigation/target         target
+        :appointment.header.back-navigation/back           back
 
-    :appointment.picker.time-slot/selected nil
-    }
+    :appointment.picker.time-slot/selected nil}
    (within :continue.action {:id     "summary-continue"
                              :label  "Continue"
                              :target [e/redirect
-                                                      {:nav-message
-                                                       [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})
+                                      {:nav-message
+                                       [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})
    (within :skip.action {:id     "booking-skip"
                          :label  "skip this step"
                          :target [e/redirect
                                   {:nav-message
                                    [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})
    (let  [earliest-available-date (-> (date/now)
-                                      start-of-day
-                                      (date/add-delta {:days 2}))]
+                                      (start-of-day)
+                                      (date/add-delta {:days 2}))
+          selected-date           (or
+                                   (get-in app-state keypaths/booking-selected-date)
+                                   earliest-available-date)
+
+          shown-weeks             (-> earliest-available-date
+                                      find-previous-sunday
+                                      get-weeks)
+          week                    (or (get-week shown-weeks selected-date)
+                                      (first shown-weeks))
+          first-available-week?   (= week (first shown-weeks))
+          last-available-week?    (= week (last shown-weeks))]
+
      (within :appointment.picker.date
-             {:earliest-available-date earliest-available-date
-              :shown-weeks             (-> earliest-available-date
-                                           find-previous-sunday
-                                           get-weeks)
-              :selected-date           (or
-                                        (get-in app-state keypaths/booking-selected-date)
-                                        earliest-available-date)}))
+             (maps/auto-map week
+                            earliest-available-date
+                            selected-date
+                            first-available-week?
+                            last-available-week?)))
+
    (within :appointment.header
            {:forced-mobile-layout? true
             :target                e/navigate-home

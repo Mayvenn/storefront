@@ -766,8 +766,7 @@
 
 (defpath navigate-adventure-appointment-booking)
 
-(defpath control-appointment-booking-week-left-chevron-clicked)
-(defpath control-appointment-booking-week-right-chevron-clicked)
+(defpath control-appointment-booking-week-chevron-clicked)
 (defpath control-appointment-booking-date-clicked)
 (defpath control-appointment-booking-time-clicked)
 (defpath control-appointment-booking-submit-clicked)

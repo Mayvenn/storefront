@@ -3,3 +3,4 @@
 
 (def booking [:booking])
 (def booking-selected-date (conj booking :selected-date))
+(def booking-earliest-available-date (conj booking :earliest-available-date))

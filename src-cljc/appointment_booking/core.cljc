@@ -54,14 +54,6 @@
   [_ _event {:keys [date] :as _args} state]
   (assoc-in state k/booking-selected-date date))
 
-(defmethod fx/perform-effects e/control-appointment-booking-week-left-chevron-clicked
-  [_ _event _args _prev-state state]
-  (publish e/flow|appointment-booking|date-selected {:date (-> state
-                                                               (get-in k/booking-selected-date)
-                                                               (date/add-delta {:days -7}))}))
-
-(defmethod fx/perform-effects e/control-appointment-booking-week-right-chevron-clicked
-  [_ _event _args _prev-state state]
-  (publish e/flow|appointment-booking|date-selected {:date (-> state
-                                                               (get-in k/booking-selected-date)
-                                                               (date/add-delta {:days 7}))}))
+(defmethod fx/perform-effects e/control-appointment-booking-week-chevron-clicked
+  [_ _event {:keys [date] :as _args} _prev-state state]
+  (publish e/flow|appointment-booking|date-selected {:date date}))
