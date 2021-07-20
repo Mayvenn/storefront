@@ -27,9 +27,10 @@
             [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
-            [appointment-booking.keypaths :as keypaths]
+            [appointment-booking.keypaths :as k]
             [storefront.effects :as fx]
             [storefront.events :as e]
+            [storefront.keypaths :as storefront.k]
             [storefront.platform.messages
              :refer [handle-message]
              :rename {handle-message publish}]
@@ -44,7 +45,9 @@
     :style {:height "70px"}}
    (c/html
     [:a.block.black.p2.flex.justify-center.items-center
-     #_(apply utils/route-back-or-to back target)
+     (utils/route-back-or-to
+            back
+            target)
      (svg/left-arrow {:width  "20"
                       :height "20"})])
    (c/html (titles/proxima-content (with :title data)))
@@ -143,6 +146,7 @@
 (def arrow-directions
   {:left {:style {:transform "rotate(90deg)"}}
    :right {:style {:transform "rotate(-90deg)"}}})
+
 (defn week-arrow [direction disabled?]
   (svg/dropdown-arrow
    (maps/deep-merge
@@ -217,6 +221,7 @@
               {:slot/id "14-to-17"
                :slot/copy "2:00pm - 5:00pm"}])
 
+ ;; TODO(ellie, 2021-07-20): Move to a visual lib namespace
 (defn ^:private radio-section-v2
   [{:as   data
     :state/keys [checked disabled]}]
@@ -248,10 +253,13 @@
                      :dial.attrs/data-test     radio-name
                      :dial.attrs/class         "order-last"
                      :label.attrs/data-test-id id
-                     :label.attrs/on-click     nil
+                     :label.attrs/on-click     (utils/send-event-callback e/control-appointment-booking-time-clicked
+                                                                          {:slot-id id}
+                                                                          {:prevent-default?  true
+                                                                           :stop-propagation? true})
                      :label.attrs/class        "col-12 py3 px5"
                      :copy.attrs/class         "order-0 flex-auto proxima"
-                     :copy.content/text       copy}
+                     :copy.content/text        copy}
                     (when (= id selected-time-slot-id)
                       {:state/checked "checked"})))))))
 
@@ -287,61 +295,58 @@
                     (range (* num-of-shown-weeks length-of-week))))))
 
 (defn query [app-state]
-  (merge
-   {:title/primary "When do you want to get your hair done?"
-    ;; :title/secondary "secondary"
-    :title/id      "id"
-    :title/icon    nil
-    :appointment.progression/portions
-    [{:bar/units   6
-      :bar/img-url "//ucarecdn.com/92611996-290e-47ae-bffa-e6daba5dd60b/"}
-     {:bar/units 6}]
+  (let [selected-time-slot      (get-in app-state k/booking-selected-time-slot)
+        earliest-available-date (-> (date/now)
+                                    (start-of-day)
+                                    (date/add-delta {:days 2}))
+        selected-date           (or (get-in app-state k/booking-selected-date)
+                                    earliest-available-date)
+        nav-undo-stack          (get-in app-state storefront.k/navigation-undo-stack)]
+    (merge
+     {:title/primary "When do you want to get your hair done?"
+      ;; :title/secondary "secondary"
+      :title/id      "id"
+      :title/icon    nil
+      :appointment.progression/portions
+      [{:bar/units   6
+        :bar/img-url "//ucarecdn.com/92611996-290e-47ae-bffa-e6daba5dd60b/"}
+       {:bar/units 6}]
 
-    #_#_#_#_#_#_:appointment.header.back-navigation/id "adventure-back"
-            :appointment.header.back-navigation/target         target
-        :appointment.header.back-navigation/back           back
-
-    :appointment.picker.time-slot/selected nil}
-   (within :continue.action {:id     "summary-continue"
-                             :label  "Continue"
-                             :target [e/redirect
-                                      {:nav-message
-                                       [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})
-   (within :skip.action {:id     "booking-skip"
-                         :label  "skip this step"
-                         :target [e/redirect
-                                  {:nav-message
-                                   [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})
-   (let  [earliest-available-date (-> (date/now)
-                                      (start-of-day)
-                                      (date/add-delta {:days 2}))
-          selected-date           (or
-                                   (get-in app-state keypaths/booking-selected-date)
-                                   earliest-available-date)
-
-          shown-weeks             (-> earliest-available-date
+      :appointment.picker.time-slot/selected-time-slot-id selected-time-slot}
+     (within :continue.action {:id        "summary-continue"
+                               :label     "Continue"
+                               :disabled? (not (and selected-time-slot selected-date))
+                               :target    [e/redirect
+                                           {:nav-message
+                                            [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})
+     (within :skip.action {:id     "booking-skip"
+                           :label  "skip this step"
+                           :target [e/redirect
+                                    {:nav-message
+                                     [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})
+     (let  [shown-weeks           (-> earliest-available-date
                                       find-previous-sunday
                                       get-weeks)
-          week                    (or (get-week shown-weeks selected-date)
+            week                  (or (get-week shown-weeks selected-date)
                                       (first shown-weeks))
-          first-available-week?   (= week (first shown-weeks))
-          last-available-week?    (= week (last shown-weeks))]
+            first-available-week? (= week (first shown-weeks))
+            last-available-week?  (= week (last shown-weeks))]
 
-     (within :appointment.picker.date
-             (maps/auto-map week
-                            earliest-available-date
-                            selected-date
-                            first-available-week?
-                            last-available-week?)))
+       (within :appointment.picker.date
+               (maps/auto-map week
+                              earliest-available-date
+                              selected-date
+                              first-available-week?
+                              last-available-week?)))
 
-   (within :appointment.header
-           {:forced-mobile-layout? true
-            :target                e/navigate-home
-            :back                  nil
-            :title/primary         "Some great copy can go here"
-            :title/secondary       nil
-            :title/id              "appointment.header.title"
-            :title/icon            nil})))
+     (within :appointment.header
+             {:forced-mobile-layout? true
+              :target                e/navigate-adventure-find-your-stylist
+              :back                  (first nav-undo-stack)
+              :title/primary         "Some great copy can go here"
+              :title/secondary       nil
+              :title/id              "appointment.header.title"
+              :title/icon            nil}))))
 
 (defn ^:export page
   [app-state _]

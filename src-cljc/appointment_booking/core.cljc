@@ -47,6 +47,12 @@
        (publish e/flow|appointment-booking|initialized {})
        (history/enqueue-redirect e/navigate-home {}))))
 
+(defmethod t/transition-state e/flow|appointment-booking|initialized
+  [_ _event {:keys [date] :as _args} state]
+  (-> state
+      (assoc-in k/booking-selected-date nil)
+      (assoc-in k/booking-selected-time-slot nil)))
+
 (defmethod fx/perform-effects e/flow|appointment-booking|initialized
   [_ _ _ _ state]
   (publish e/flow|appointment-booking|date-selected {:date (-> (date/now)
@@ -57,10 +63,14 @@
   [_ _event {:keys [date] :as _args} state]
   (assoc-in state k/booking-selected-date date))
 
+(defmethod t/transition-state e/flow|appointment-booking|time-slot-selected
+  [_ _event {:keys [time-slot] :as _args} state]
+  (assoc-in state k/booking-selected-time-slot time-slot))
+
 (defmethod fx/perform-effects e/control-appointment-booking-week-chevron-clicked
   [_ _event {:keys [date] :as _args} _prev-state state]
   (publish e/flow|appointment-booking|date-selected {:date date}))
 
 (defmethod fx/perform-effects e/control-appointment-booking-time-clicked
   [_ _event {:keys [slot-id] :as _args} _prev-state state]
-  (publish e/flow|appointment-booking|time-selected {:time-slot slot-id}))
+  (publish e/flow|appointment-booking|time-slot-selected {:time-slot slot-id}))

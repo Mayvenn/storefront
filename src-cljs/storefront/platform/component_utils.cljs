@@ -50,10 +50,13 @@
   ;; checkboxes (and possibly other controls)
   ([event] (send-event-callback event nil))
   ([event args] (send-event-callback event args nil))
-  ([event args {:keys [prevent-default?] :or {prevent-default? true}}]
+  ([event args {:keys [prevent-default?
+                       stop-propagation?] :or {prevent-default? true}}]
    (fn [e]
      (when prevent-default?
        (.preventDefault e))
+     (when stop-propagation?
+       (.stopPropagation e))
      (handle-message event args)
      nil)))
 
@@ -107,7 +110,6 @@
   (if back
     (route-back back)
     (route-to navigation-event navigation-args)))
-
 
 (defn requesting?
   "Look in app-state to see if we are waiting on a request to a particular

@@ -114,7 +114,7 @@
                    disabled?                                                 (assoc :data-test-disabled "yes")
                    spinning?                                                 (assoc :data-test-spinning "yes")
                    :always                                                   (update :class str " " additional-classes)
-                   disabled?                                                 (update :class str (str " btn-gray btn-disabled cursor-not-allowed " (or disabled-class "is-disabled"))))
+                   disabled?                                                 (update :class str " btn-gray btn-disabled cursor-not-allowed " (or disabled-class "is-disabled")))
          content (cond
                    spinning?
                    [spinner]

@@ -758,7 +758,7 @@
 ;; Appointment Booking TODO consider moving to own namespace
 (defpath flow|appointment-booking|initialized)
 (defpath flow|appointment-booking|date-selected)
-(defpath flow|appointment-booking|time-selected)
+(defpath flow|appointment-booking|time-slot-selected)
 (defpath flow|appointment-booking|done)
 (defpath flow|appointment-booking|skipped)
 

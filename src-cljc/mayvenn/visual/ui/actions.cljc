@@ -19,12 +19,13 @@
        label)])))
 
 (defn medium-primary
-  [{:keys [id label target]}]
+  [{:keys [id disabled? label target]}]
   (when id
     (c/html
      [:div
       (ui/button-medium-primary
        (merge {:data-test id}
+              (when disabled? {:disabled? disabled?})
               (apply utils/route-to target))
        label)])))
 
