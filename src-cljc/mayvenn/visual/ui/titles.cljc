@@ -51,7 +51,7 @@
    :tertiary/content-3  {:tertiary/size "content-3"}})
 
 
-(defn styling<
+(defn ^:private styling<
   "Given a collection of `style` keywords (see styles above)
   merge the corresponding maps for those styles together into a `styling`,
 
@@ -72,7 +72,7 @@
                  (str style-kws)))
     (apply merge style-maps)))
 
-(defn class<
+(defn ^:private class<
   "Takes a keyword and a `styling` (see styling< above) and produces a class string
   to be used on a hiccup attribute map
 
@@ -88,17 +88,17 @@
   [kw styling]
   (string/join " " (map second (with kw styling))))
 
-(defn should-interpose? [value]
+(defn ^:private should-interpose? [value]
   (and (vector? value)
        (not (-> value first keyword?))))
 
-(defn build-if-value [tag attr value]
+(defn ^:private build-if-value [tag attr value]
   (cond
     (not value) nil
     (should-interpose? value) [tag attr (interpose [:br] value)]
     :else [tag attr value]))
 
-(defn title [style-kws {:keys [id icon primary secondary tertiary]}]
+(defn ^:private title [style-kws {:keys [id icon primary secondary tertiary]}]
   (let [styling (styling< style-kws)]
     (c/html
      [:div {:class (class< :align styling)}
