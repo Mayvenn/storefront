@@ -82,9 +82,12 @@
 (defmethod fx/perform-effects e/flow|appointment-booking|done
   [_ _event _args _prev-state state]
   #?(:cljs
-     (let [slot-id (get-in state k/booking-selected-time-slot)
-           date    (get-in state k/booking-selected-date)]
-       (api/set-appointment-time-slot {:slot-id slot-id
+     (let [{:keys [number token]} (get-in state storefront.keypaths/order)
+           slot-id                (get-in state k/booking-selected-time-slot)
+           date                   (get-in state k/booking-selected-date)]
+       (api/set-appointment-time-slot {:number  number
+                                       :token   token
+                                       :slot-id slot-id
                                        :date    date}))))
 
 (defmethod fx/perform-effects e/control-appointment-booking-skip-clicked
