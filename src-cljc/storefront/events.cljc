@@ -651,6 +651,9 @@
 ;; TODO(corey) think about general solutions to the api handlers problem
 (defpath api-success-presearch-name)
 
+(defpath api-success-set-appointment-time-slot)
+(defpath api-failure-set-appointment-time-slot)
+
 ;; Flow - Service Addon Selection in the Cart
 
 (defpath flow|cart-service-addons|toggled)

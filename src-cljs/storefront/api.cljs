@@ -12,6 +12,7 @@
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [catalog.skuers :as skuers]
+            [spice.date :as date]
             [spice.maps :as maps]
             [clojure.set :as set]
             [storefront.accessors.promos :as promos]))
@@ -1181,3 +1182,15 @@
                     (when (and token number) {:token token :number number}))
     :handler (comp handler
                    orders/TEMP-pretend-service-items-do-not-exist)}))
+
+(defn set-appointment-time-slot
+  [{:as params :keys [slot-id date]}]
+  (let [date-without-time (-> date date/to-iso spice.core/spy (string/split "T") first)]
+    (storeback-api-req
+     POST "/set-appointment-time-slot"
+     (conj request-keys/set-appointment-time-slot)
+     {:params        (merge (select-keys params [:user-id :user-token :token :number]) ; Can we assume token and number?
+                            {:slot-id slot-id
+                             :date    date-without-time})
+      :handler       (partial messages/handle-message events/api-success-set-appointment-time-slot)
+      :error-handler (partial messages/handle-message events/api-failure-set-appointment-time-slot)})))

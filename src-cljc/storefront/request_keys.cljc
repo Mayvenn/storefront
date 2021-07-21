@@ -59,6 +59,7 @@
 (def create-order-from-shared-cart [:create-order-from-shared-cart])
 (def assign-servicing-stylist [:assign-servicing-stylist])
 (def remove-servicing-stylist [:remove-servicing-stylist])
+(def set-appointment-time-slot [:set-appointment-time-slot])
 
 (def stripe-create-token [:stripe-create-token])
 

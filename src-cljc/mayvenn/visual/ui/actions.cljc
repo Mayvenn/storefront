@@ -24,9 +24,9 @@
     (c/html
      [:div
       (ui/button-medium-primary
-       (merge {:data-test id}
-              (when disabled? {:disabled? disabled?})
-              (apply utils/route-to target))
+       (merge {:data-test id
+               :disabled? disabled?}
+              (apply utils/fake-href target))
        label)])))
 
 (defn large-primary
@@ -83,6 +83,7 @@
     (c/html
      [:div.center
       [:a.p-color.center.title-2.shout.bold.underline.proxima
-       (merge {:data-test id}
-              (apply utils/route-to target))
+       (merge
+        {:data-test id}
+        (apply utils/fake-href target))
        label]])))

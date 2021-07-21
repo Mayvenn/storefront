@@ -300,8 +300,7 @@
                                       (date/add-delta {:days 2}))
         selected-date             (or (get-in app-state k/booking-selected-date)
                                       earliest-available-date)
-        nav-undo-stack            (get-in app-state storefront.k/navigation-undo-stack)
-        shopping-quiz-unified-fi? (experiments/shopping-quiz-unified-fi? app-state)]
+        nav-undo-stack            (get-in app-state storefront.k/navigation-undo-stack)]
     (merge
      {:title/primary "When do you want to get your hair done?"
       ;; :title/secondary "secondary"
@@ -316,15 +315,10 @@
      (within :continue.action {:id        "summary-continue"
                                :label     "Continue"
                                :disabled? (not (and selected-time-slot selected-date))
-                               :target    (if shopping-quiz-unified-fi?
-                                            ;; TODO save to order
-                                            [e/navigate-shopping-quiz-unified-freeinstall-match-success]
-                                            [e/navigate-adventure-match-success])})
+                               :target    [e/control-appointment-booking-submit-clicked]})
      (within :skip.action {:id     "booking-skip"
                            :label  "skip this step"
-                           :target (if shopping-quiz-unified-fi?
-                                     [e/navigate-shopping-quiz-unified-freeinstall-match-success]
-                                     [e/navigate-adventure-match-success])})
+                           :target [e/control-appointment-booking-skip-clicked]})
      (let  [shown-weeks           (-> earliest-available-date
                                       find-previous-sunday
                                       get-weeks)

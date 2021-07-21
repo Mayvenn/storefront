@@ -74,3 +74,33 @@
 (defmethod fx/perform-effects e/control-appointment-booking-time-clicked
   [_ _event {:keys [slot-id] :as _args} _prev-state state]
   (publish e/flow|appointment-booking|time-slot-selected {:time-slot slot-id}))
+
+(defmethod fx/perform-effects e/control-appointment-booking-submit-clicked
+  [_ _event _args _prev-state state]
+  (publish e/flow|appointment-booking|done))
+
+(defmethod fx/perform-effects e/flow|appointment-booking|done
+  [_ _event _args _prev-state state]
+  #?(:cljs
+     (let [slot-id (get-in state k/booking-selected-time-slot)
+           date    (get-in state k/booking-selected-date)]
+       (api/set-appointment-time-slot {:slot-id slot-id
+                                       :date    date}))))
+
+(defmethod fx/perform-effects e/control-appointment-booking-skip-clicked
+  [_ _event _args _prev-state state]
+  (publish e/flow|appointment-booking|skipped))
+
+(defmethod fx/perform-effects e/flow|appointment-booking|skipped
+  [_ _event _args _prev-state state]
+  #?(:cljs
+     (history/enqueue-navigate (if (experiments/shopping-quiz-unified-fi? state)
+                                 e/navigate-shopping-quiz-unified-freeinstall-match-success
+                                 e/navigate-adventure-match-success))))
+
+(defmethod fx/perform-effects e/api-success-set-appointment-time-slot
+  [_ _event _args _prev-state state]
+  #?(:cljs
+     (history/enqueue-navigate (if (experiments/shopping-quiz-unified-fi? state)
+                                 e/navigate-shopping-quiz-unified-freeinstall-match-success
+                                 e/navigate-adventure-match-success))))
