@@ -267,7 +267,6 @@
   [data _ _]
   [:div.flex.flex-auto.flex-column.items-center.stretch
    [:div.bg-white.self-stretch
-    #_[:div "suyp"]
     (c/build header
              (with :appointment.header data))
     (c/build progress-bar/variation-1
@@ -295,13 +294,14 @@
                     (range (* num-of-shown-weeks length-of-week))))))
 
 (defn query [app-state]
-  (let [selected-time-slot      (get-in app-state k/booking-selected-time-slot)
-        earliest-available-date (-> (date/now)
-                                    (start-of-day)
-                                    (date/add-delta {:days 2}))
-        selected-date           (or (get-in app-state k/booking-selected-date)
-                                    earliest-available-date)
-        nav-undo-stack          (get-in app-state storefront.k/navigation-undo-stack)]
+  (let [selected-time-slot        (get-in app-state k/booking-selected-time-slot)
+        earliest-available-date   (-> (date/now)
+                                      (start-of-day)
+                                      (date/add-delta {:days 2}))
+        selected-date             (or (get-in app-state k/booking-selected-date)
+                                      earliest-available-date)
+        nav-undo-stack            (get-in app-state storefront.k/navigation-undo-stack)
+        shopping-quiz-unified-fi? (experiments/shopping-quiz-unified-fi? app-state)]
     (merge
      {:title/primary "When do you want to get your hair done?"
       ;; :title/secondary "secondary"
@@ -316,14 +316,15 @@
      (within :continue.action {:id        "summary-continue"
                                :label     "Continue"
                                :disabled? (not (and selected-time-slot selected-date))
-                               :target    [e/redirect
-                                           {:nav-message
-                                            [e/navigate-shopping-quiz-unified-freeinstall-match-success]}]})
+                               :target    (if shopping-quiz-unified-fi?
+                                            ;; TODO save to order
+                                            [e/navigate-shopping-quiz-unified-freeinstall-match-success]
+                                            [e/navigate-adventure-match-success])})
      (within :skip.action {:id     "booking-skip"
                            :label  "skip this step"
-                           :target [e/redirect
-                                    {:nav-message
-                                     [e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist]}]})
+                           :target (if shopping-quiz-unified-fi?
+                                     [e/navigate-shopping-quiz-unified-freeinstall-match-success]
+                                     [e/navigate-adventure-match-success])})
      (let  [shown-weeks           (-> earliest-available-date
                                       find-previous-sunday
                                       get-weeks)
