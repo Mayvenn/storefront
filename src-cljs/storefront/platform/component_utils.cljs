@@ -106,10 +106,13 @@
      ;; use history.back(), so that events/browser-navigate is triggered
      (js/history.back))})
 
-(defn route-back-or-to [back navigation-event & [navigation-args]]
-  (if back
-    (route-back back)
-    (route-to navigation-event navigation-args)))
+(defn route-back-or-to
+  ([back navigation-event navigation-args]
+   (if back
+     (route-back back)
+     (route-to navigation-event navigation-args)))
+  ([back navigation-event]
+   (route-back-or-to back navigation-event nil)))
 
 (defn requesting?
   "Look in app-state to see if we are waiting on a request to a particular
