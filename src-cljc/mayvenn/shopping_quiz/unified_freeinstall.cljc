@@ -154,7 +154,7 @@
     (merge
      (progress< quiz-progression)
      (header< undo-history step)
-     {:title/primary               "You are all set!"
+     {:title/primary               "You're all set!"
       :summary/icon                [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
                                                        :height "2em" :width "2em"}]
       :summary-subtotal/primary    "Hair + Install"
