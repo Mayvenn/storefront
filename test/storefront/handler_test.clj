@@ -1,15 +1,12 @@
 (ns storefront.handler-test
   (:require [cheshire.core :refer [generate-string parse-string]]
             [clojure.edn :as edn]
-            [cemerick.url :as cemerick-url]
             [clojure.string :as string]
             [clojure.test :refer [are deftest is testing]]
-            [compojure.core :refer [GET POST routes]]
+            [compojure.core :refer [GET routes]]
             [lambdaisland.uri :as uri]
             [ring.mock.request :as mock]
             [ring.util.codec :as codec]
-            [ring.util.response :refer [content-type response status]]
-            [spice.maps :as maps]
             [standalone-test-server.core
              :refer
              [txfm-request txfm-requests with-requests-chan]]
@@ -18,9 +15,7 @@
              common
              :refer
              [with-handler with-services]]
-            [clojure.string :as str]
             [clojure.xml :as xml]
-            [clojure.java.io :as io]
             [storefront.config :as config])
   (:import java.io.ByteArrayInputStream))
 
