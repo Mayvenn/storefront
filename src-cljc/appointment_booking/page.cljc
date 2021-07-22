@@ -1,43 +1,24 @@
 (ns appointment-booking.page
-  (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
-                       [storefront.history :as history]])
-            [api.catalog :refer [select ?service]]
+  (:require #?@(:cljs [[clojure.string :refer [join]]
+                       [storefront.components.formatters :as formatters]])
             api.current
             api.orders
-            [clojure.string :refer [starts-with? split join]]
-            [mayvenn.concept.follow :as follow]
-            [mayvenn.concept.looks-suggestions :as looks-suggestions]
-            [mayvenn.concept.progression :as progression]
-            [mayvenn.concept.questioning :as questioning]
-            [mayvenn.concept.wait :as wait]
-            [mayvenn.live-help.core :as live-help]
-            [mayvenn.visual.lib.card :as card]
-            [mayvenn.visual.lib.escape-hatch :as escape-hatch]
+            appointment-booking.core
             [mayvenn.visual.lib.progress-bar :as progress-bar]
-            [mayvenn.visual.lib.question :as question]
             [mayvenn.visual.tools :refer [with within]]
             [mayvenn.visual.ui.actions :as actions]
             [mayvenn.visual.ui.titles :as titles]
-            [spice.core :as spice]
             [spice.maps :as maps]
             [spice.date :as date]
-            [storefront.accessors.experiments :as experiments]
             [storefront.component :as c]
             [storefront.components.header :as header]
-            [storefront.components.money-formatters :as mf]
-            [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [appointment-booking.keypaths :as k]
-            [storefront.effects :as fx]
             [storefront.events :as e]
             [storefront.keypaths :as storefront.k]
-            [storefront.platform.messages
-             :refer [handle-message]
-             :rename {handle-message publish}]
-            [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]))
+            [storefront.platform.component-utils :as utils]))
 
-(c/defcomponent header  [{:keys [forced-mobile-layout? primary target back] :as data} _opts _owner]
+(c/defcomponent header  [{:keys [forced-mobile-layout? target back] :as data} _opts _owner]
   (header/mobile-nav-header
    {:class (str "border-bottom border-gray "
                 (when-not forced-mobile-layout?
@@ -53,28 +34,6 @@
    (c/html (titles/proxima-content (with :title data)))
    (c/html [:div])))
 
-;; TODO(ellie, 2021-07-15): [START] Move to spice.date
-(def ^:private months ["Jan."
-                       "Feb."
-                       "Mar."
-                       "Apr."
-                       "May"
-                       "Jun."
-                       "Jul."
-                       "Aug."
-                       "Sep."
-                       "Oct."
-                       "Nov."
-                       "Dec."])
-
-(def ^:private days ["Mon"
-                     "Tue"
-                     "Wed"
-                     "Thu"
-                     "Fri"
-                     "Sat"
-                     "Sun"])
-
 (defn ^:private start-of-day [date]
   #?(:cljs
      (doto date
@@ -83,23 +42,12 @@
        (.setSeconds 0)
        (.setMilliseconds 0))))
 
-(defn ^:private name-of-day [date]
-  (let [idx (dec (date/weekday-index date))]
-    (get days idx)))
-
-(defn ^:private name-of-month [date]
-  (get months (.getMonth date)))
-
-;; TODO(ellie, 2021-07-15): [END] Move to spice.date
-
 (defn split-month [week]
-  (->> week
-       (map (fn [date]
-              (str (name-of-month date)
-                   " "
-                   (.getFullYear date))))
-       distinct
-       (join " / ")))
+  #?(:cljs
+     (->> week
+          (map (partial formatters/format-date {:month "short" :year "numeric"}))
+          distinct
+          (join " / "))))
 
 (defn day-of-month-class [selectable? selected?]
   (cond
@@ -124,7 +72,7 @@
         :let [col (date/weekday-index date)]]
     [:div.pt3.title-3.proxima.shout (grid-attrs [2 (get day-column col)]
                                                 {:style {:width "2em"}})
-     (name-of-day date)]))
+     #?(:cljs (formatters/format-date {:weekday "short"} date))]))
 
 (defn week-day-selectors [selected-date earliest-available-date week]
   (for [date week
