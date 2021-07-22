@@ -25,11 +25,13 @@
             [mayvenn.visual.ui.actions :as actions]
             [mayvenn.visual.ui.titles :as titles]
             [spice.core :as spice]
+            [spice.date :as date]
             [spice.maps :as maps]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.sites :as accessors.sites]
             [storefront.component :as c]
+            [storefront.components.formatters :as formatters]
             [storefront.components.header :as header]
             [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
@@ -154,28 +156,28 @@
     (merge
      (progress< quiz-progression)
      (header< undo-history step)
-     {:title/primary               "You're All Set"
-      :summary/icon                [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
-                                                       :height "2em" :width "2em"}]
-      :summary-subtotal/primary    "Hair + Install"
-      :summary-slash/primary       (some-> waiter-order :total mf/as-money)
-      :or/primary                  "or"
+     {:title/primary              "You're All Set"
+      :summary/icon               [:svg/discount-tag {:class  "mxnp6 fill-s-color pr1"
+                                                      :height "2em" :width "2em"}]
+      :summary-subtotal/primary   "Hair + Install"
+      :summary-slash/primary      (some-> waiter-order :total mf/as-money)
+      :or/primary                 "or"
       :escape-hatch.title/primary "Wanna explore more options?"
       :escape-hatch.action/id     "quiz-result-alternative"
       :escape-hatch.action/target [e/navigate-category
                                    {:page/slug           "mayvenn-install"
                                     :catalog/category-id "23"}]
       :escape-hatch.action/label  "Browse Hair"
-      :summary-total/primary       (mf/as-money order-total)
+      :summary-total/primary      (mf/as-money order-total)
 
       :checkout/label  "Checkout"
       :checkout/target [e/control-checkout-cart-submit]
       :checkout/id     "start-checkout-button"
 
-      :paypal/target  [e/control-checkout-cart-paypal-setup]
+      :paypal/target    [e/control-checkout-cart-paypal-setup]
       :paypal/spinning? paypal-redirect?
       :paypal/disabled? nil #_updating?
-      :paypal/id "paypal-checkout"
+      :paypal/id        "paypal-checkout"
 
       :quadpay.quadpay/show?       quadpay-loaded?
       :quadpay.quadpay/order-total order-total
@@ -205,16 +207,27 @@
                   :thumbnail/ucare-id      (hacky-cart-image item)})))
              items)
        (let [{:stylist/keys [id name]} current-stylist
+             {:keys [slot-id date]}    (:appointment-time-slot waiter-order)
+             date-copy                 #?(:clj nil
+                                          :cljs (formatters/long-date date))
+             time-copy                 (->> appointment-booking.core/time-slots
+                                            (filter (fn [{:slot/keys [id]}]
+                                                      (= id slot-id)))
+                                            first
+                                            :slot.card/copy)
              idx                       (count items)]
-         {:id                   (str idx "-cart-item-stylist-" id)
-          :idx                  idx
-          :title/id             "line-item-title-stylist"
-          :title/primary        name
-          :title/secondary      "Your Certified Mayvenn Stylist"
-          :thumbnail/id         id
-          :thumbnail/ucare-id   (hacky-stylist-image current-stylist)
-          :stylist.rating/id    id
-          :stylist.rating/value (:stylist.rating/score current-stylist)}))})))
+         {:id                         (str idx "-cart-item-stylist-" id)
+          :idx                        idx
+          :title/id                   "line-item-title-stylist"
+          :title/primary              name
+          :title/secondary            "Your Certified Mayvenn Stylist"
+          :thumbnail/id               id
+          :thumbnail/ucare-id         (hacky-stylist-image current-stylist)
+          :stylist.rating/id          id
+          :stylist.rating/value       (:stylist.rating/score current-stylist)
+          :appointment-time-slot/copy (when (and (seq date-copy)
+                                                 (seq time-copy))
+                                        (str date-copy " at " time-copy))}))})))
 
 ;; Template: 3/Stylist Results
 (def ^:private scrim-atom
@@ -272,9 +285,7 @@
                                                just-added-experience?
                                                stylist-results-test?)}))
 
-
 ;; Template: 3/Find your stylist
-
 
 (c/defcomponent find-your-stylist-template
   [data _ _]
@@ -443,9 +454,9 @@
        {:action/id        "quiz-see-results"
         :action/disabled? (not (zero? unanswered))
         :action/target    [e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-recommendations
-                                                           {:query-params
-                                                            (->> answers
-                                                                 (maps/map-values spice/kw-name))}]}]
+                                                      {:query-params
+                                                       (->> answers
+                                                            (maps/map-values spice/kw-name))}]}]
         :action/label     "See Results"}))
    (progress< quiz-progression)
    (header< undo-history (apply max quiz-progression))
@@ -639,17 +650,17 @@
   [_ _ _ _ state]
   (let [progress (progression/<- state id)]
     (if (nil? progress)
-     (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-intro]})
-     (do
-       (publish e/biz|progression|progressed
-                #:progression
-                {:id    id
-                 :value 1
-                 :regress #{2 3}})
-       (publish e/biz|questioning|reset
-                {:questioning/id id})
-       (publish e/biz|looks-suggestions|reset
-                {:id id})))))
+      (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-intro]})
+      (do
+        (publish e/biz|progression|progressed
+                 #:progression
+                  {:id    id
+                   :value 1
+                   :regress #{2 3}})
+        (publish e/biz|questioning|reset
+                 {:questioning/id id})
+        (publish e/biz|looks-suggestions|reset
+                 {:id id})))))
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-recommendations
   [_ _ {params :query-params} _ _]
@@ -673,8 +684,8 @@
   (if (looks-suggestions/selected<- state id)
     (publish e/biz|progression|progressed
              #:progression
-             {:id    id
-              :value 2
+             {:id      id
+              :value   2
               :regress #{3}})
     (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-intro]})))
 
@@ -732,13 +743,11 @@
          (google-maps/insert)
          (publish e/biz|progression|progressed
                   #:progression
-                  {:id    id
-                   :value 3}))))
+                   {:id    id
+                    :value 3}))))
 
-
-  ;; Init the model if there isn't one, e.g. Direct load
+;; Init the model if there isn't one, e.g. Direct load
   ;; NOTE(corey) perhaps reify params capture as event, for reuse
-
 
   (when-not (stylist-matching<- state')
     (publish e/flow|stylist-matching|initialized))
@@ -784,8 +793,8 @@
   (if (stylist-matching<- state)
     (publish e/biz|progression|progressed
              #:progression
-             {:id    id
-              :value 3})
+              {:id    id
+               :value 3})
     (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-intro]})))
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall

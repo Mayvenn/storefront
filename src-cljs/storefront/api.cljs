@@ -1185,12 +1185,12 @@
 
 (defn set-appointment-time-slot
   [{:as params :keys [slot-id date]}]
-  (let [date-without-time (-> date date/to-iso spice.core/spy (string/split "T") first)]
+  (let [date-without-time (-> date date/to-iso (string/split "T") first)]
     (storeback-api-req
      POST "/v2/set-appointment-time-slot"
      (conj request-keys/set-appointment-time-slot)
      {:params        (merge (select-keys params [:user-id :user-token :token :number])
                             {:slot-id slot-id
                              :date    date-without-time})
-      :handler       (partial messages/handle-message events/api-success-set-appointment-time-slot)
-      :error-handler (partial messages/handle-message events/api-failure-set-appointment-time-slot)})))
+      :handler       #(messages/handle-message events/api-success-set-appointment-time-slot {:order %})
+      :error-handler #(messages/handle-message events/api-failure-set-appointment-time-slot {:response %})})))

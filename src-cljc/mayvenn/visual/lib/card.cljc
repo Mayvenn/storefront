@@ -9,6 +9,7 @@
   (:require [mayvenn.visual.ui.actions :as actions]
             [mayvenn.visual.ui.titles :as titles]
             [mayvenn.visual.ui.thumbnails :as thumbnails]
+            [storefront.components.svg :as svg]
             ui.molecules
             [mayvenn.visual.tools :refer [with]]
             [storefront.component :as c]
@@ -46,7 +47,14 @@
      [:div.flex-grow-1
       (titles/proxima-content (with :title data))
       [:div
-       (ui.molecules/stars-rating-molecule (with :stylist data))]]
+       (ui.molecules/stars-rating-molecule (with :stylist data))]
+      (when-let [copy (:appointment-time-slot/copy data)]
+        [:div.content-3.pt1.flex
+         (svg/calendar {:class  "mr1 fill-p-color"
+                        :width  "1.1em"
+                        :height "1.1em"})
+         [:div.pb1 copy]])]
+
 
      ;; price group
      [:div.flex.flex-column.self-stretch.items-end

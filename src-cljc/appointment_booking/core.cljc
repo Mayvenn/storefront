@@ -1,30 +1,19 @@
 (ns appointment-booking.core
   (:require #?@(:cljs [[storefront.api :as api]
-                       [storefront.browser.cookie-jar :as cookie-jar]
-                       [storefront.frontend-effects :as ffx]
-                       [storefront.frontend-trackings :as ftx]
                        [storefront.history :as history]
-                       [storefront.hooks.stringer :as stringer]
-                       [storefront.request-keys :as request-keys]])
-            [api.catalog :refer [select ?base ?service ?physical ?discountable-install]]
+                       [storefront.hooks.stringer :as stringer]])
             api.orders
             api.stylist
-            [mayvenn.concept.follow :as follow]
             storefront.keypaths
-            [spice.maps :as maps]
             [spice.date :as date]
-            [spice.selector :as selector]
             [storefront.effects :as fx]
             [storefront.events :as e]
             [appointment-booking.keypaths :as k]
-            [stylist-matching.search.accessors.filters :as filters]
-            [storefront.accessors.orders :as accessors.orders]
             [storefront.trackings :as trackings]
             [storefront.platform.messages
              :as messages
              :refer [handle-message] :rename {handle-message publish}]
             clojure.set
-            [clojure.string :as string]
             [storefront.transitions :as t]
             [storefront.accessors.experiments :as experiments]))
 
@@ -68,15 +57,15 @@
   (assoc-in state k/booking-selected-time-slot time-slot))
 
 (defmethod fx/perform-effects e/control-appointment-booking-week-chevron-clicked
-  [_ _event {:keys [date] :as _args} _prev-state state]
+  [_ _event {:keys [date] :as _args} _prev-state _state]
   (publish e/flow|appointment-booking|date-selected {:date date}))
 
 (defmethod fx/perform-effects e/control-appointment-booking-time-clicked
-  [_ _event {:keys [slot-id] :as _args} _prev-state state]
+  [_ _event {:keys [slot-id] :as _args} _prev-state _state]
   (publish e/flow|appointment-booking|time-slot-selected {:time-slot slot-id}))
 
 (defmethod fx/perform-effects e/control-appointment-booking-submit-clicked
-  [_ _event _args _prev-state state]
+  [_ _event _args _prev-state _state]
   (publish e/flow|appointment-booking|done))
 
 (defmethod fx/perform-effects e/flow|appointment-booking|done
@@ -91,7 +80,7 @@
                                        :date    date}))))
 
 (defmethod fx/perform-effects e/control-appointment-booking-skip-clicked
-  [_ _event _args _prev-state state]
+  [_ _event _args _prev-state _state]
   (publish e/flow|appointment-booking|skipped))
 
 (defmethod fx/perform-effects e/flow|appointment-booking|skipped
@@ -102,7 +91,8 @@
                                  e/navigate-adventure-match-success))))
 
 (defmethod fx/perform-effects e/api-success-set-appointment-time-slot
-  [_ _event _args _prev-state state]
+  [_ _event {:keys [order] :as _args} _prev-state state]
+  (publish e/save-order {:order order})
   #?(:cljs
      (history/enqueue-navigate (if (experiments/shopping-quiz-unified-fi? state)
                                  e/navigate-shopping-quiz-unified-freeinstall-match-success
@@ -110,8 +100,11 @@
 
 (def time-slots
   [{:slot/id "08-to-11"
-    :slot/copy "8:00am - 11:00am"}
+    :slot.picker/copy "8:00am - 11:00am"
+    :slot.card/copy "8:00am"}
    {:slot/id "11-to-14"
-    :slot/copy "11:00am - 2:00pm"}
+    :slot.picker/copy "11:00am - 2:00pm"
+    :slot.card/copy "11:00am"}
    {:slot/id "14-to-17"
-    :slot/copy "2:00pm - 5:00pm"}])
+    :slot.picker/copy "2:00pm - 5:00pm"
+    :slot.card/copy "2:00pm"}])

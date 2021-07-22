@@ -187,8 +187,9 @@
 (defn time-radio-group [{:keys [selected-time-slot-id]}]
   (let [radio-name "appointment-time-slot-radio"]
     (into [:div]
-          (for [{:slot/keys [id copy]} appointment-booking.core/time-slots
-                :let                   [radio-id (str radio-name "-" id)]]
+          (for [{:slot/keys        [id]
+                 :slot.picker/keys [copy]} appointment-booking.core/time-slots
+                :let                       [radio-id (str radio-name "-" id)]]
             (radio-section-v2
              (merge {:dial.attrs/name          radio-name
                      :dial.attrs/id            radio-id
