@@ -107,3 +107,11 @@
      (history/enqueue-navigate (if (experiments/shopping-quiz-unified-fi? state)
                                  e/navigate-shopping-quiz-unified-freeinstall-match-success
                                  e/navigate-adventure-match-success))))
+
+(def time-slots
+  [{:slot/id "08-to-11"
+    :slot/copy "8:00am - 11:00am"}
+   {:slot/id "11-to-14"
+    :slot/copy "11:00am - 2:00pm"}
+   {:slot/id "14-to-17"
+    :slot/copy "2:00pm - 5:00pm"}])

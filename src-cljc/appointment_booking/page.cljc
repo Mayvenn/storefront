@@ -161,13 +161,7 @@
 
    (week-day-selectors selected-date earliest-available-date week)])
 
-(def ^:private
-  time-slots [{:slot/id "08-to-11"
-               :slot/copy "8:00am - 11:00am"}
-              {:slot/id "11-to-14"
-               :slot/copy "11:00am - 2:00pm"}
-              {:slot/id "14-to-17"
-               :slot/copy "2:00pm - 5:00pm"}])
+
 
  ;; TODO(ellie, 2021-07-20): Move to a visual lib namespace
 (defn ^:private radio-section-v2
@@ -193,7 +187,7 @@
 (defn time-radio-group [{:keys [selected-time-slot-id]}]
   (let [radio-name "appointment-time-slot-radio"]
     (into [:div]
-          (for [{:slot/keys [id copy]} time-slots
+          (for [{:slot/keys [id copy]} appointment-booking.core/time-slots
                 :let                   [radio-id (str radio-name "-" id)]]
             (radio-section-v2
              (merge {:dial.attrs/name          radio-name
