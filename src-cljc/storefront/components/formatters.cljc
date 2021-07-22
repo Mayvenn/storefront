@@ -1,9 +1,7 @@
 (ns storefront.components.formatters
   (:require [spice.date :as date]
             [storefront.platform.numbers :as numbers]
-            [clojure.string :as string]
-            #?@(:cljs [[goog.string.format]
-                       [goog.string]])))
+            [clojure.string :as string]))
 
 (def month-names ["January"
                   "February"
@@ -18,86 +16,65 @@
                   "November"
                   "December"])
 
-(def month-abbr ["Jan"
-                 "Feb"
-                 "Mar"
-                 "Apr"
-                 "May"
-                 "June"
-                 "July"
-                 "Aug"
-                 "Sept"
-                 "Oct"
-                 "Nov"
-                 "Dec"])
 
-(def day-abbr ["Sun"
-               "Mon"
-               "Tue"
-               "Wed"
-               "Thu"
-               "Fri"
-               "Sat"])
 
-(defn day->day-abbr [date]
-  ;; This is actually the recommended way to do this in JavaScript.
-  ;; The other option is to use a time library, but goog.i18n adds 500K to the
-  ;; page size.
-  #?(:cljs (get day-abbr (.getDay date))
+
+;; TODO: perhaps we should make this work with clojure as well
+(do
+  #?@(:cljs
+      [(defn format-date
+         "Formats a date into a string given the formatting system described here:
+        https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat"
+         [fmt date-like]
+         (when-let [date (date/to-datetime date-like)]
+           (-> (Intl.DateTimeFormat. 'en-US' (clj->js fmt))
+               (.format date))))
+
+       (defn format-date-to-parts
+         "Formats a date into parts given the formatting system described here:
+        https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat"
+         [fmt date-like]
+         (when-let [date (date/to-datetime date-like)]
+           (into {}
+                 (comp
+                  (map (fn [date-part] (js->clj date-part :keywordize-keys true)))
+                  (remove (fn [date-part] (= "literal" (:type date-part))))
+                  (map (fn [date-part] [(keyword (:type date-part)) (:value date-part)])))
+                 (-> (Intl.DateTimeFormat. 'en-US' (clj->js fmt))
+                     (.formatToParts date)))))
+
+       (defn long-date [date-like]
+         (format-date {:dateStyle "long"} date-like))
+
+       (defn abbr-date [date-like]
+         (format-date {:month "short"
+                       :day   "numeric"
+                       :year  "full"} date-like))
+
+       (defn date-tuple [date-like]
+         (let [parts (format-date-to-parts {:month "short"
+                                            :day   "numeric"
+                                            :year  "full"}
+                                           date-like)]
+           (vec ((juxt :year :month :day) parts))))]))
+
+(defn day->day-abbr [date-like]
+  #?(:cljs
+     (format-date {:weekday "short"} date-like)
      :clj nil))
 
 (defn month+day [date-like]
   (when-let [date (date/to-datetime date-like)]
-    #?(:cljs (goog.string/format "%d/%d" (inc (.getMonth date)) (.getDate date))
+    #?(:cljs (format-date {:month "numeric" :day "numeric"} date)
        :clj (.print (org.joda.time.format.DateTimeFormat/forPattern "M/d") date))))
 
 (defn short-date [date-like]
   #?(:clj date-like
      :cljs
-     (when-let [date (date/to-datetime date-like)]
-       (goog.string/format "%02d.%02d.%d"
-                           (inc (.getMonth date))
-                           (.getDate date)
-                           (.getFullYear date)))))
-
-;; TODO: perhaps we should make this work with clojure as well
-(do
-  #?@(:cljs
-      [(defn short-date-with-interposed-str [date-like s]
-         (when-let [date (date/to-datetime date-like)]
-           (goog.string/format "%d%s%ds%d" (inc (.getMonth date)) s (.getDate date) s (.getFullYear date))))
-
-       (defn less-year-more-day-date [date-like]
-         (when-let [date (date/to-datetime date-like)]
-           (goog.string/format "%02d/%02d/%d" (inc (.getMonth date)) (.getDate date) (mod (.getFullYear date) 100))))
-
-       (defn date->month-name [date]
-         ;; This is actually the recommended way to do this in JavaScript.
-         ;; The other option is to use a time library, but goog.i18n adds 500K to the
-         ;; page size.
-         (get month-names (.getMonth date)))
-
-       (defn date->month-abbr [date]
-         ;; This is actually the recommended way to do this in JavaScript.
-         ;; The other option is to use a time library, but goog.i18n adds 500K to the
-         ;; page size.
-         (get month-abbr (.getMonth date)))
-
-       (defn long-date [date-like]
-         (when-let [date (date/to-datetime date-like)]
-           (goog.string/format "%s %d, %d" (date->month-name date) (.getDate date) (.getFullYear date))))
-
-       (defn abbr-date [date-like]
-         (when-let [date (date/to-datetime date-like)]
-           (goog.string/format "%s %d, %d" (date->month-abbr date) (.getDate date) (.getFullYear date))))
-
-       (defn epoch-date [date-like]
-         (some-> (date/to-datetime date-like)
-                 (.toLocaleDateString)))
-
-       (defn date-tuple [date-like]
-         (when-let [date (date/to-datetime date-like)]
-           [(.getFullYear date) (.getMonth date) (.getDate date)]))]))
+     (let [{:keys [month day year]}
+           (format-date-to-parts {:month "2-digit" :day "2-digit" :year "numeric"}
+                                 date-like)]
+       (string/join "." [month day year]))))
 
 (defn phone-number [phone]
   {:pre [(#{10 11} (->> phone str numbers/digits-only count))]}
