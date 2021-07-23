@@ -562,9 +562,9 @@
 
               requesting?
               (or
-               (utils/requesting-from-endpoint? state request-keys/fetch-matched-stylists)
-               (utils/requesting-from-endpoint? state request-keys/fetch-stylists-matching-filters)
-               (utils/requesting-from-endpoint? state request-keys/get-products))
+               (utils/requesting? state request-keys/fetch-matched-stylists)
+               (utils/requesting? state request-keys/fetch-stylists-matching-filters)
+               (utils/requesting? state request-keys/get-products))
 
               ;; Experiments
               just-added-control?    (experiments/just-added-control? state)
@@ -615,7 +615,7 @@
       2 (let [looks-suggestions (looks-suggestions/<- state id)
               selected-look     (looks-suggestions/selected<- state id)]
           (cond
-            (utils/requesting-from-endpoint? state request-keys/new-order-from-sku-ids)
+            (utils/requesting? state request-keys/new-order-from-sku-ids)
             (c/build waiting-template
                      waiting<)
 
