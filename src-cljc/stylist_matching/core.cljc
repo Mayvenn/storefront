@@ -299,8 +299,9 @@
 
 (defmethod fx/perform-effects e/flow|stylist-matching|matched
   [_ _ {:keys [stylist result-index]} _ state]
-  #?@(:cljs
-      [(cookie-jar/save-adventure (get-in state storefront.keypaths/cookie)
+  #?(:cljs
+     (do
+       (cookie-jar/save-adventure (get-in state storefront.keypaths/cookie)
                                   (get-in state adventure.keypaths/adventure))
        (let [features               (get-in state storefront.keypaths/features)
              waiter-order           (:waiter/order (api.orders/current state))
@@ -330,7 +331,7 @@
                         :prev-free-mayvenn-service free-mayvenn-service
                         :stylist                   stylist
                         :on/success                #(history/enqueue-navigate success-event)
-                        :result-index              result-index})))))]))
+                        :result-index              result-index}))))))))
 
 (defmethod trackings/perform-track e/biz|current-stylist|selected
   [_ _ {:keys [order stylist result-index prev-free-mayvenn-service]} state]
