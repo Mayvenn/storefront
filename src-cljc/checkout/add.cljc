@@ -79,8 +79,8 @@
   [data {:keys    [catalog/sku-id sku/price legacy/variant-id copy/description addon-unavailable-reason selected?]
          sku-name :sku/name
          :as sku}]
-  (let [any-updates? (or (utils/requesting? data request-keys/add-to-bag)
-                         (utils/requesting? data request-keys/delete-line-item))]
+  (let [any-updates? (or (utils/requesting-from-endpoint? data request-keys/add-to-bag)
+                         (utils/requesting-from-endpoint? data request-keys/delete-line-item))]
     {:addon-service-entry/id                 (str "addon-service-" sku-id)
      :addon-service-entry/disabled-classes   (when addon-unavailable-reason "bg-refresh-gray dark-gray")
      :addon-service-entry/warning            addon-unavailable-reason

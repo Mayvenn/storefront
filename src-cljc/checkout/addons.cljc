@@ -49,8 +49,8 @@
    {:facet/keys   [slug name description unavailable-reason]
     :service/keys [price]}]
   (let [checked?     (contains? (get service-item slug) true)
-        any-updates? (or (utils/requesting? state request-keys/add-to-bag)
-                         (utils/requesting? state request-keys/delete-line-item))]
+        any-updates? (or (utils/requesting-from-endpoint? state request-keys/add-to-bag)
+                         (utils/requesting-from-endpoint? state request-keys/delete-line-item))]
     {:addon-service-entry/id                 (str "addon-service-" slug)
      :addon-service-entry/disabled-classes   (when unavailable-reason
                                                "bg-refresh-gray dark-gray")

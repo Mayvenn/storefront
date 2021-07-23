@@ -69,8 +69,8 @@
               addon-unavailable-reason]
     sku-name :sku/name}]
   (let [selected?    (boolean (select {:catalog/sku-id #{sku-id}} addons))
-        any-updates? (or (utils/requesting? state request-keys/add-to-bag)
-                         (utils/requesting? state request-keys/delete-line-item))]
+        any-updates? (or (utils/requesting-from-endpoint? state request-keys/add-to-bag)
+                         (utils/requesting-from-endpoint? state request-keys/delete-line-item))]
     {:addon-service-entry/id                 (str "addon-service-" sku-id)
      :addon-service-entry/disabled-classes   (when addon-unavailable-reason
                                                "bg-refresh-gray dark-gray")

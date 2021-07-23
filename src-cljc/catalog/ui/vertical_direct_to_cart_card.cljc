@@ -42,7 +42,7 @@
                         ;; GROT(SRV)
                         (boolean (some (comp #{sku-id} :sku)
                                        (orders/service-line-items (get-in data keypaths/order)))))
-        any-updates?  (utils/requesting? data request-keys/add-to-bag)]
+        any-updates?  (utils/requesting-from-endpoint? data request-keys/add-to-bag)]
     (cond-> {:card-image/src                             (str (:url image) "-/format/auto/" (:filename image))
              :card/type                                  :vertical-direct-to-cart-card
              :sort/value                                 [(:sku/price service-sku)]

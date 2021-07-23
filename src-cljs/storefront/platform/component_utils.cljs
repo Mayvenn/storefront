@@ -126,6 +126,17 @@
       {request-search [request-key]})
     (get-in data keypaths/api-requests))))
 
+(defn requesting-from-endpoint?
+  " *DEPRECATED* as requesting? now does this and is more semantically consistent by doing so.
+  Determines if a request to a particular endpoint is in flight regardless of
+  additional args. e.g. If there are requests to [:search-v2-product criteria-a]
+  and [:search-v2-product criteria-b] either will match
+  (requesting-from-endpoint? data [:search-v2-product])"
+  [data request-key]
+  (js/console.warn "requesting-from-endpoint? is deprecated and will be removed soon")
+  request-key
+  (requesting? data request-key))
+
 (defn suppress-return-key [e]
   (when (= 13 (.-keyCode e))
     (.preventDefault e)))
