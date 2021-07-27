@@ -211,6 +211,8 @@
      (api/add-skus-to-bag (get-in app-state keypaths/session-id)
                           {:number           (get-in app-state keypaths/order-number)
                            :token            (get-in app-state keypaths/order-token)
+                           :user-id          (get-in app-state keypaths/user-id)
+                           :user-token       (get-in app-state keypaths/user-token)
                            :sku-id->quantity (into {}
                                                    (map (fn [[sku-id skus]] [sku-id (count skus)])
                                                         (group-by :catalog/sku-id skus)))}

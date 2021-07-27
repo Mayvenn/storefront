@@ -946,7 +946,7 @@
    POST
    "/v2/bulk-add-to-bag"
    (conj request-keys/add-to-bag (set (keys sku-id->quantity)))
-   {:params  (merge (select-keys params [:stylist-id])
+   {:params  (merge (select-keys params [:stylist-id :user-id :user-token])
                     {:session-id       session-id
                      :sku-id->quantity sku-id->quantity}
                     (when heat-feature-flags {:heat-feature-flags heat-feature-flags})
@@ -966,6 +966,7 @@
                :servicing-stylist-id servicing-stylist-id
                :session-id           session-id
                :sku-id->quantity     sku-id->quantity}
+              (select-keys params [:user-id :user-token])
               (when heat-feature-flags {:heat-feature-flags heat-feature-flags}))
     :handler (fn [order]
                (handler {:order            (orders/TEMP-pretend-service-items-do-not-exist order)

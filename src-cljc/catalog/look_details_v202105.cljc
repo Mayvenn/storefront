@@ -799,18 +799,20 @@
   [_ event {:keys [items look-id] :as args} _ app-state]
   #?(:cljs
      (api/new-order-from-sku-ids (get-in app-state keypaths/session-id)
-                                   {:store-stylist-id     (get-in app-state keypaths/store-stylist-id)
-                                    :servicing-stylist-id (get-in app-state keypaths/order-servicing-stylist-id)
-                                    :sku-id->quantity     items}
-                                   (fn [{:keys [order]}]
-                                     (messages/handle-message
-                                      events/api-success-update-order
-                                      {:order    order
-                                       :navigate events/navigate-added-to-cart})
-                                     (trackings/track-cart-initialization
-                                      "look-customization"
-                                     look-id
-                                      {:skus-db          (get-in app-state keypaths/v2-skus)
-                                       :image-catalog    (get-in app-state keypaths/v2-images)
-                                       :store-experience (get-in app-state keypaths/store-experience)
-                                       :order            order})))))
+                                 {:store-stylist-id     (get-in app-state keypaths/store-stylist-id)
+                                  :user-id              (get-in app-state keypaths/user-id)
+                                  :user-token           (get-in app-state keypaths/user-token)
+                                  :servicing-stylist-id (get-in app-state keypaths/order-servicing-stylist-id)
+                                  :sku-id->quantity     items}
+                                 (fn [{:keys [order]}]
+                                   (messages/handle-message
+                                    events/api-success-update-order
+                                    {:order    order
+                                     :navigate events/navigate-added-to-cart})
+                                   (trackings/track-cart-initialization
+                                    "look-customization"
+                                    look-id
+                                    {:skus-db          (get-in app-state keypaths/v2-skus)
+                                     :image-catalog    (get-in app-state keypaths/v2-images)
+                                     :store-experience (get-in app-state keypaths/store-experience)
+                                     :order            order})))))

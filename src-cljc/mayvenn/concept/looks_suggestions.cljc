@@ -532,12 +532,14 @@
 (defmethod fx/perform-effects e/biz|looks-suggestions|selected
   [_ _ {:keys [selected-look] success :on/success} _ state]
   (let [{product-sku-ids :product/sku-ids
-         service-sku-id  :service/sku-id} selected-look
+         service-sku-id  :service/sku-id}           selected-look
         {servicing-stylist-id :services/stylist-id} (api.orders/services state (get-in state k/order))]
     #?(:cljs
        (api/new-order-from-sku-ids (get-in state k/session-id)
                                    {:store-stylist-id     (get-in state k/store-stylist-id)
                                     :servicing-stylist-id servicing-stylist-id
+                                    :user-id              (get-in state k/user-id)
+                                    :user-token           (get-in state k/user-token)
                                     :sku-id->quantity     (->> (conj product-sku-ids service-sku-id)
                                                                (map (fn [s] [s 1]))
                                                                (into {}))}
