@@ -577,7 +577,10 @@
             #?(:clj nil :cljs (filter-menu/query state))
             #?(:clj nil :cljs (c/build filter-menu/component (filter-menu/query state)))
 
-            (:matched/stylist matching)
+            (or (:matched/stylist matching)
+                (and
+                 (not matching)
+                 (api.current/stylist state)))
             (c/build matched-success-template
                      (matched-success< quiz-progression
                                        items
@@ -790,7 +793,8 @@
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-match-success
   [_ _ _ _ state]
   #?(:cljs (google-maps/insert))
-  (if (stylist-matching<- state)
+  (if (or (stylist-matching<- state)
+          (api.current/stylist state))
     (publish e/biz|progression|progressed
              #:progression
               {:id    id
