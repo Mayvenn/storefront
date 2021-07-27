@@ -62,6 +62,7 @@
    "/quiz/unified-freeinstall/recommendations"   (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-recommendations)
    "/quiz/unified-freeinstall/summary"           (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-summary)
    "/quiz/unified-freeinstall/find-your-stylist" (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist)
+   "/quiz/unified-freeinstall/top-stylist"       (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-top-stylist)
    "/quiz/unified-freeinstall/stylist-results"   (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-stylist-results)
    "/quiz/unified-freeinstall/match-success"     (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-match-success)})
 

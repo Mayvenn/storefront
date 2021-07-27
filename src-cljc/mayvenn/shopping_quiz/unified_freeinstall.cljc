@@ -316,7 +316,7 @@
             :follow/after-id e/flow|stylist-matching|resulted
             :follow/then     [e/top-stylist-navigation-decided
                               {:decision
-                               {:top-stylist     e/navigate-adventure-top-stylist
+                               {:top-stylist     e/navigate-shopping-quiz-unified-freeinstall-top-stylist
                                 :stylist-results e/navigate-shopping-quiz-unified-freeinstall-stylist-results}}]}]}))
 
 (defmethod fx/perform-effects e/top-stylist-navigation-decided

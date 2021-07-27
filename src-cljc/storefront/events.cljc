@@ -719,6 +719,7 @@
 (defpath navigate-shopping-quiz-unified-freeinstall-recommendations)
 (defpath navigate-shopping-quiz-unified-freeinstall-summary)
 (defpath navigate-shopping-quiz-unified-freeinstall-find-your-stylist)
+(defpath navigate-shopping-quiz-unified-freeinstall-top-stylist)
 (defpath navigate-shopping-quiz-unified-freeinstall-stylist-results)
 (defpath navigate-shopping-quiz-unified-freeinstall-match-success)
 

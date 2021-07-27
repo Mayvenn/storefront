@@ -130,15 +130,38 @@
 
    events/navigate-adventure-quiz                                      (constantly mayvenn.shopping-quiz.unnamed-v1/page)
    events/navigate-adventure-appointment-booking                       (constantly appointment-booking.page/page)
-   events/navigate-shopping-quiz-unified-freeinstall-intro             (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
-   events/navigate-shopping-quiz-unified-freeinstall-question          (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
-   events/navigate-shopping-quiz-unified-freeinstall-recommendations   (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
-   events/navigate-shopping-quiz-unified-freeinstall-summary           (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
-   events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
-   events/navigate-shopping-quiz-unified-freeinstall-stylist-results   (constantly mayvenn.shopping-quiz.unified-freeinstall/page)
-   events/navigate-shopping-quiz-unified-freeinstall-match-success     #(ui/lazy-load-component :checkout
-                                                                                                'mayvenn.shopping-quiz.unified-freeinstall/page
-                                                                                                events/navigate-shopping-quiz-unified-freeinstall-match-success)})
+   events/navigate-shopping-quiz-unified-freeinstall-intro             #(ui/lazy-load-component
+                                                                         :catalog
+                                                                         'mayvenn.shopping-quiz.unified-freeinstall/page
+                                                                         events/navigate-shopping-quiz-unified-freeinstall-intro)
+   events/navigate-shopping-quiz-unified-freeinstall-question          #(ui/lazy-load-component
+                                                                         :catalog
+                                                                         'mayvenn.shopping-quiz.unified-freeinstall/page
+                                                                         events/navigate-shopping-quiz-unified-freeinstall-question)
+   events/navigate-shopping-quiz-unified-freeinstall-recommendations   #(ui/lazy-load-component
+                                                                         :catalog
+                                                                         'mayvenn.shopping-quiz.unified-freeinstall/page
+                                                                         events/navigate-shopping-quiz-unified-freeinstall-recommendations)
+   events/navigate-shopping-quiz-unified-freeinstall-summary           #(ui/lazy-load-component
+                                                                         :catalog
+                                                                         'mayvenn.shopping-quiz.unified-freeinstall/page
+                                                                         events/navigate-shopping-quiz-unified-freeinstall-summary)
+   events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist #(ui/lazy-load-component
+                                                                         :catalog
+                                                                         'mayvenn.shopping-quiz.unified-freeinstall/page
+                                                                         events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist)
+   events/navigate-shopping-quiz-unified-freeinstall-stylist-results   #(ui/lazy-load-component
+                                                                         :catalog
+                                                                         'mayvenn.shopping-quiz.unified-freeinstall/page
+                                                                         events/navigate-shopping-quiz-unified-freeinstall-stylist-results)
+   events/navigate-shopping-quiz-unified-freeinstall-top-stylist       #(ui/lazy-load-component
+                                                                         :catalog
+                                                                         'stylist-matching.top-stylist/page
+                                                                         events/navigate-shopping-quiz-unified-freeinstall-top-stylist)
+   events/navigate-shopping-quiz-unified-freeinstall-match-success     #(ui/lazy-load-component
+                                                                         :checkout
+                                                                         'mayvenn.shopping-quiz.unified-freeinstall/page
+                                                                         events/navigate-shopping-quiz-unified-freeinstall-match-success)})
 
 (defn main-component
   [nav-event]
