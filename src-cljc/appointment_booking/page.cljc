@@ -230,7 +230,8 @@
     (date/add-delta today {:days (- i)})))
 
 (defn get-weeks [starting-sunday]
-  (let [num-of-shown-weeks 4
+  (let [num-of-shown-weeks 5 ;; NOTE: We want to show 4 weeks *after* the current date,
+                             ;;       for a total of 5 weeks.
         length-of-week     7]
     (partition length-of-week
                (map #(date/add-delta starting-sunday {:days %})
