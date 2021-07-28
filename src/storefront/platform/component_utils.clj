@@ -2,10 +2,12 @@
   (:require [storefront.routes :as routes]))
 
 (defn route-to
-  ([navigation-event args]
+  ([navigation-event args _nav-item-stack]
    {:href (routes/path-for navigation-event args)})
+  ([navigation-event args]
+   (route-to navigation-event args nil))
   ([navigation-event]
-   (route-to navigation-event nil)))
+   (route-to navigation-event nil nil)))
 
 (defn route-to-shop [navigation-event & [args]]
   ;; TODO(jeff): make it work on acceptance

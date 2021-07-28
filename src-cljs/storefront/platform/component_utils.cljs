@@ -73,25 +73,31 @@
    {:href "#"
     :on-click (send-event-callback event args)}))
 
-(defn route-to [navigation-event & [navigation-args nav-stack-item]]
-  (if-let [routable-path (try
-                           (routes/path-for navigation-event navigation-args)
-                           (catch js/Error e
-                             (throw
-                              (ex-info
-                               (str "Cannot find path for event: " navigation-event " and args:" navigation-args)
-                               {:navigation-event navigation-event
-                                :navigation-args  navigation-args}
-                               e))))]
-    {:href routable-path
-     :on-click
-     (fn [e]
-       (.preventDefault e)
-       ;; We're about to give control over to the browser; when we get control
-       ;; back, we'll need some info about where we've come from
-       (handle-message events/stash-nav-stack-item nav-stack-item)
-       (history/enqueue-navigate navigation-event navigation-args))}
-    (fake-href navigation-event navigation-args)))
+(defn route-to
+  ([navigation-event navigation-args nav-stack-item]
+   (if-let [routable-path (try
+                            (routes/path-for navigation-event navigation-args)
+                            (catch js/Error e
+                              (throw
+                               (ex-info
+                                (str "Cannot find path for event: " navigation-event " and args:" navigation-args)
+                                {:navigation-event navigation-event
+                                 :navigation-args  navigation-args}
+                                e))))]
+     {:href routable-path
+      :on-click
+      (fn [e]
+        (.preventDefault e)
+        ;; We're about to give control over to the browser; when we get control
+        ;; back, we'll need some info about where we've come from
+        (when nav-stack-item
+          (handle-message events/stash-nav-stack-item nav-stack-item))
+        (history/enqueue-navigate navigation-event navigation-args))}
+     (fake-href navigation-event navigation-args)))
+  ([navigation-event navigation-args]
+   (route-to navigation-event navigation-args nil))
+  ([navigation-event]
+   (route-to navigation-event nil nil)))
 
 (defn route-to-shop [navigation-event & [args]]
   {:href
