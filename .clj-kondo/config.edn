@@ -1,1 +1,2 @@
-{:lint-as {storefront.component/defcomponent clojure.core/defn}}
+{:lint-as {storefront.component/defcomponent                  clojure.core/defn}
+ :hooks   {:analyze-call {storefront.macros/defpath hooks.macros/defpath}}}
