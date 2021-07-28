@@ -736,7 +736,7 @@
 (defmethod effects/perform-effects events/cart-cleared [_ _ _ _ app-state]
   (api/add-sku-to-bag
    (get-in app-state keypaths/session-id)
-   {:sku                {:catalog/sku-id                     "SRV-LBI-000"
+   {:sku                {:catalog/sku-id                     "SV2-LBI-X"
                          :promo.mayvenn-install/discountable true}
     :quantity           1
     :stylist-id         (get-in app-state keypaths/store-stylist-id)
