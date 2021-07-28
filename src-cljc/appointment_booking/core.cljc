@@ -1,7 +1,7 @@
 (ns appointment-booking.core
   (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.history :as history]
-                       [storefront.hooks.stringer :as stringer]])
+                       [storefront.accessors.experiments :as experiments]])
             api.orders
             api.stylist
             storefront.keypaths
@@ -9,13 +9,11 @@
             [storefront.effects :as fx]
             [storefront.events :as e]
             [appointment-booking.keypaths :as k]
-            [storefront.trackings :as trackings]
             [storefront.platform.messages
              :as messages
              :refer [handle-message] :rename {handle-message publish}]
             clojure.set
-            [storefront.transitions :as t]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.transitions :as t]))
 
 (defn ^:private start-of-day [date]
   #?(:cljs
@@ -37,7 +35,7 @@
        (history/enqueue-redirect e/navigate-home {}))))
 
 (defmethod t/transition-state e/flow|appointment-booking|initialized
-  [_ _event {:keys [date] :as _args} state]
+  [_ _event _args state]
   (-> state
       (assoc-in k/booking-selected-date nil)
       (assoc-in k/booking-selected-time-slot nil)))

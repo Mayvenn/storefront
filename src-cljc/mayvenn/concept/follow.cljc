@@ -28,6 +28,7 @@
              (assoc f-args
                     :follow/args event-args))))
 
+ ;; TODO(ellie, 2021-07-28): Make this consistent with publish-all; allow multiple follow ups
 (defmethod t/transition-state e/biz|follow|defined
   [_ _ {:follow/keys [after-id then]} state]
   (-> state
@@ -36,5 +37,5 @@
 
 (defmethod fx/perform-effects e/biz|follow|defined
   [_ _ {:follow/keys [start]} _ _]
-  (apply publish start))
-
+  (when start
+    (apply publish start)))

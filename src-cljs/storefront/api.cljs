@@ -1193,5 +1193,6 @@
      {:params        (merge (select-keys params [:user-id :user-token :token :number])
                             {:slot-id slot-id
                              :date    date-without-time})
-      :handler       #(messages/handle-message events/api-success-set-appointment-time-slot {:order %})
+      :handler       (comp #(messages/handle-message events/api-success-set-appointment-time-slot {:order %})
+                           orders/TEMP-pretend-service-items-do-not-exist)
       :error-handler #(messages/handle-message events/api-failure-set-appointment-time-slot {:response %})})))

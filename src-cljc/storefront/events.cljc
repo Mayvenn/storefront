@@ -711,6 +711,10 @@
 (defpath biz|progression|reset)
 (defpath biz|progression|progressed)
 
+;; TODO come up with btter name
+
+(defpath control-stylist-matching-card-cta-clicked)
+
 ;; Shopping Quiz iterations
 (defpath navigate-shopping-quiz)
 (defpath navigate-shopping-quiz-unified-freeinstall)
@@ -722,6 +726,7 @@
 (defpath navigate-shopping-quiz-unified-freeinstall-top-stylist)
 (defpath navigate-shopping-quiz-unified-freeinstall-stylist-results)
 (defpath navigate-shopping-quiz-unified-freeinstall-match-success)
+(defpath navigate-shopping-quiz-unified-freeinstall-appointment-booking)
 
 ;; NOTE
 ;; Models
@@ -766,7 +771,7 @@
 (defpath flow|appointment-booking|done)
 (defpath flow|appointment-booking|skipped)
 
-(defpath biz|appointment-booking|requested)
+(defpath post-stylist-matched-navigation-decided)
 
 (defpath navigate-adventure-appointment-booking)
 

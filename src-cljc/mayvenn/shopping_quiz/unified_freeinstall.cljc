@@ -2,52 +2,52 @@
   "
   Visual Layer: Unified-Free Install shopping quiz
   "
-  (:require #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
+  (:require
+   [api.catalog :refer [?service select]]
+   api.current
+   api.orders
+   [appointment-booking.core]
+   [appointment-booking.page]
+   [clojure.string :refer [split starts-with?]]
+   [mayvenn.concept.looks-suggestions :as looks-suggestions]
+   [mayvenn.concept.progression :as progression]
+   [mayvenn.concept.questioning :as questioning]
+   [mayvenn.concept.wait :as wait]
+   [mayvenn.live-help.core :as live-help]
+   [mayvenn.visual.lib.card :as card]
+   [mayvenn.visual.lib.escape-hatch :as escape-hatch]
+   [mayvenn.visual.lib.progress-bar :as progress-bar]
+   [mayvenn.visual.lib.question :as question]
+   [mayvenn.visual.tools :refer [with]]
+   [mayvenn.visual.ui.actions :as actions]
+   [mayvenn.visual.ui.titles :as titles]
+   #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
                        [storefront.history :as history]
                        [storefront.hooks.quadpay :as quadpay]
                        [storefront.browser.cookie-jar :as cookie-jar]
                        [stylist-matching.search.filters-modal :as filter-menu]])
-            [api.catalog :refer [select ?service ?discountable]]
-            api.current
-            api.orders
-            [clojure.string :refer [starts-with? split]]
-            [mayvenn.concept.follow :as follow]
-            [mayvenn.concept.looks-suggestions :as looks-suggestions]
-            [mayvenn.concept.progression :as progression]
-            [mayvenn.concept.questioning :as questioning]
-            [mayvenn.concept.wait :as wait]
-            [mayvenn.live-help.core :as live-help]
-            [mayvenn.visual.lib.card :as card]
-            [mayvenn.visual.lib.escape-hatch :as escape-hatch]
-            [mayvenn.visual.lib.progress-bar :as progress-bar]
-            [mayvenn.visual.lib.question :as question]
-            [mayvenn.visual.tools :refer [with within]]
-            [mayvenn.visual.ui.actions :as actions]
-            [mayvenn.visual.ui.titles :as titles]
-            [spice.core :as spice]
-            [spice.date :as date]
-            [spice.maps :as maps]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.orders :as orders]
-            [storefront.accessors.sites :as accessors.sites]
-            [storefront.component :as c]
-            [storefront.components.formatters :as formatters]
-            [storefront.components.header :as header]
-            [storefront.components.money-formatters :as mf]
-            [storefront.components.ui :as ui]
-            [storefront.components.svg :as svg]
-            [storefront.keypaths :as k]
-            [storefront.effects :as fx]
-            [storefront.events :as e]
-            [storefront.platform.messages
+   [spice.core :as spice]
+   [spice.maps :as maps]
+   [storefront.accessors.experiments :as experiments]
+   [storefront.accessors.orders :as orders]
+   [storefront.accessors.sites :as accessors.sites]
+   [storefront.component :as c]
+   [storefront.components.money-formatters :as mf]
+   [storefront.components.formatters :as formatters]
+   [storefront.components.svg :as svg]
+   [storefront.components.ui :as ui]
+   [storefront.effects :as fx]
+   [storefront.events :as e]
+   [storefront.keypaths :as k]
+   [storefront.platform.component-utils :as utils]
+   [storefront.platform.messages
              :refer [handle-message]
              :rename {handle-message publish}]
-            [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]
-            [stylist-matching.core :refer [stylist-matching<- query-params<- service-delimiter]]
-            [stylist-matching.keypaths :as matching.k]
-            [stylist-matching.stylist-results :as stylist-results]
-            [stylist-matching.ui.stylist-search :as stylist-search]))
+   [storefront.request-keys :as request-keys]
+   [stylist-matching.core :refer [query-params<- service-delimiter stylist-matching<-]]
+   [stylist-matching.keypaths :as matching.k]
+   [stylist-matching.stylist-results :as stylist-results]
+   [stylist-matching.ui.stylist-search :as stylist-search]))
 
 (def ^:private id :unified-freeinstall)
 
@@ -104,6 +104,15 @@
       [:div {:key "center"}]))
    (c/html [:div.content-1.proxima.center primary])
    (c/html [:div {:key "right"}])))
+
+;; Template: 3/Appointment Booking
+(c/defcomponent appointment-booking-template
+  [data _ _]
+  [:div
+   [:div.bg-white
+    (quiz-header (with :header data))]
+   (c/build progress-bar/variation-1 (with :progress data))
+   (c/build appointment-booking.page/body data)])
 
 ;; Template: 3/Match Success
 (c/defcomponent matched-success-template
@@ -317,6 +326,7 @@
           :stylist-search.button/disabled?                (or (empty? location)
                                                               (empty? input))
           :stylist-search.button/label                    "Search"
+
           :stylist-search.button/target
           [e/biz|follow|defined
            {:follow/start    [e/control-adventure-location-submit]
@@ -546,6 +556,8 @@
         step             (apply max quiz-progression)
         undo-history     (get-in state storefront.keypaths/navigation-undo-stack)]
     (case step
+
+      ;; STEP 3:
       3 (let [matching                    (stylist-matching<- state)
               current-stylist             (api.current/stylist state)
               skus-db                     (get-in state k/v2-skus)
@@ -561,25 +573,36 @@
 
               requesting?
               (or
-               (utils/requesting-from-endpoint? state request-keys/fetch-matched-stylists)
-               (utils/requesting-from-endpoint? state request-keys/fetch-stylists-matching-filters)
-               (utils/requesting-from-endpoint? state request-keys/get-products))
+               (utils/requesting? state request-keys/fetch-matched-stylists)
+               (utils/requesting? state request-keys/fetch-stylists-matching-filters)
+               (utils/requesting? state request-keys/get-products))
 
               ;; Experiments
               just-added-control?    (experiments/just-added-control? state)
               just-added-only?       (experiments/just-added-only? state)
               just-added-experience? (experiments/just-added-experience? state)
               stylist-results-test?  (experiments/stylist-results-test? state)
+              easy-booking?          (experiments/easy-booking? state)
 
-              address-field-errors (get-in state matching.k/address-field-errors)]
+              address-field-errors (get-in state matching.k/address-field-errors)
+              stylist-matched?     (or (:matched/stylist matching)
+                                       (and
+                                        (not matching)
+                                        (api.current/stylist state)))]
           (cond
+            ;; If the filter menu is open, render it
             #?(:clj nil :cljs (filter-menu/query state))
             #?(:clj nil :cljs (c/build filter-menu/component (filter-menu/query state)))
 
-            (or (:matched/stylist matching)
-                (and
-                 (not matching)
-                 (api.current/stylist state)))
+            (and stylist-matched?
+                 easy-booking?
+                 (not (:appointment-time-slot order)))
+            (c/build appointment-booking-template
+                     (merge (header< undo-history (apply max quiz-progression))
+                            (progress< quiz-progression)
+                            (appointment-booking.page/query state)))
+
+            stylist-matched?
             (c/build matched-success-template
                      (matched-success< quiz-progression
                                        items
@@ -607,13 +630,17 @@
                                        just-added-experience?
                                        stylist-results-test?
                                        address-field-errors))
+
+            ;; Waiting for Google to load
             (not google-loaded?) ;; TODO(corey) different spinner
             (c/build waiting-template
                      waiting<)
 
+            ;; Find your stylist
             :else
             (c/build find-your-stylist-template
                      (find-your-stylist< quiz-progression matching undo-history))))
+      ;; STEP 2: choosing a look
       2 (let [looks-suggestions (looks-suggestions/<- state id)
               selected-look     (looks-suggestions/selected<- state id)]
           (cond
@@ -628,6 +655,7 @@
             :else
             (c/build suggestions-template
                      (suggestions< quiz-progression looks-suggestions undo-history))))
+      ;; STEP 1: Taking the quiz
       1 (let [{:keys [questions answers progression]} (questioning/<- state id)
               wait                                    (wait/<- state id)]
           (if wait
@@ -686,9 +714,9 @@
   (if (looks-suggestions/selected<- state id)
     (publish e/biz|progression|progressed
              #:progression
-             {:id      id
-              :value   2
-              :regress #{3}})
+              {:id      id
+               :value   2
+               :regress #{3}})
     (publish e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-intro]})))
 
 (def ^:private sv2-codes->srvs
@@ -738,6 +766,15 @@
          longitude          :long
          address            :address} :query-params
         :as                           args} state state']
+  (publish e/biz|follow|defined
+           {:follow/after-id e/flow|stylist-matching|matched
+            :follow/then     [e/post-stylist-matched-navigation-decided
+                              {:decision
+                               {:ufi-booking       e/navigate-shopping-quiz-unified-freeinstall-appointment-booking
+                                :adv-booking       e/navigate-adventure-appointment-booking
+                                :ufi-match-success e/navigate-shopping-quiz-unified-freeinstall-match-success
+                                :cart              e/navigate-cart
+                                :adv-success       e/navigate-adventure-match-success}}]})
   #?(:cljs
      (if-not (:unified-fi-quiz (cookie-jar/retrieve-unified-fi-quiz-entered (get-in state k/cookie)))
        (publish e/redirect {:nav-message [e/navigate-adventure-stylist-results args]})
@@ -745,8 +782,8 @@
          (google-maps/insert)
          (publish e/biz|progression|progressed
                   #:progression
-                   {:id    id
-                    :value 3}))))
+                  {:id    id
+                   :value 3}))))
 
 ;; Init the model if there isn't one, e.g. Direct load
   ;; NOTE(corey) perhaps reify params capture as event, for reuse

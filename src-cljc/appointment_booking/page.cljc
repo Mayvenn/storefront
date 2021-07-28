@@ -206,14 +206,8 @@
                     (when (= id selected-time-slot-id)
                       {:state/checked "checked"})))))))
 
-(c/defcomponent template
-  [data _ _]
+(c/defcomponent body [data _opts _owner]
   [:div.flex.flex-auto.flex-column.items-center.stretch
-   [:div.bg-white.self-stretch
-    (c/build header
-             (with :appointment.header data))
-    (c/build progress-bar/variation-1
-             (with :appointment.progression data))]
    [:div.col-10.py8
     (titles/canela-left (with :title data))]
    [:div.col-12.px2
@@ -224,6 +218,16 @@
     (actions/medium-primary (with :continue.action data))]
    [:div.col-6.pt4
     (actions/medium-tertiary (with :skip.action data))]])
+
+(c/defcomponent template
+  [data _ _]
+  [:div.flex.flex-auto.flex-column.items-center.stretch
+   [:div.bg-white.self-stretch
+    (c/build header
+             (with :appointment.header data))
+    (c/build progress-bar/variation-1
+             (with :appointment.progression data))]
+   (c/build body data)])
 
 (defn find-previous-sunday [today]
   (let [i     (date/weekday-index today)]

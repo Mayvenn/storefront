@@ -254,6 +254,13 @@
   #?(:cljs
      (let [nav-event      (first (get-in state' storefront.keypaths/navigation-message))
            service-params (-> state' stylist-matching<- :param/services)]
+       (publish e/biz|follow|defined
+                {:follow/after-id e/flow|stylist-matching|matched
+                 :follow/then     [e/post-stylist-matched-navigation-decided
+                                   {:decision
+                                    {:adv-booking       e/navigate-adventure-appointment-booking
+                                     :cart              e/navigate-cart
+                                     :adv-success       e/navigate-adventure-match-success}}]})
        (if (and (= e/navigate-adventure-find-your-stylist nav-event)
                 (experiments/top-stylist? state')
                 (contains-top-stylist? service-params results))
@@ -286,10 +293,10 @@
 ;; ------------------- Matched
 ;; -> current stylist: selected
 (defmethod t/transition-state e/flow|stylist-matching|matched
-  [_ _ {:keys [stylist]} state]
+  [_ event {:keys [stylist]} state]
   (-> state
-      (assoc-in k/matched-stylist
-                stylist)))
+      (assoc-in k/matched-stylist stylist)
+      (follow/clear event)))
 
 (defmethod t/transition-state e/flow|stylist-matching|unmatched
   [_ _ {:keys [stylist]} state]
@@ -298,40 +305,56 @@
                 nil)))
 
 (defmethod fx/perform-effects e/flow|stylist-matching|matched
-  [_ _ {:keys [stylist result-index]} _ state]
+  [_ event {:keys [stylist result-index]} prev-state state]
   #?(:cljs
      (do
        (cookie-jar/save-adventure (get-in state storefront.keypaths/cookie)
                                   (get-in state adventure.keypaths/adventure))
        (let [features               (get-in state storefront.keypaths/features)
              waiter-order           (:waiter/order (api.orders/current state))
-             {:keys [number token]} waiter-order
-             free-mayvenn-service   (api.orders/free-mayvenn-service nil waiter-order)]
+             {:keys [number token]} waiter-order]
          (api/assign-servicing-stylist
           (:stylist-id stylist) 1
           number token features
           (fn [order]
-            (let [success-event (cond
+            (let [success-target (cond
+                                   (and (experiments/easy-booking? state)
+                                        (experiments/shopping-quiz-unified-fi? state))
+                                   :ufi-booking
 
-                                  (experiments/easy-booking? state)
-                                  e/navigate-adventure-appointment-booking
+                                   (experiments/easy-booking? state)
+                                   :adv-booking
 
-                                  (experiments/shopping-quiz-unified-fi? state)
-                                  e/navigate-shopping-quiz-unified-freeinstall-match-success
+                                   (experiments/shopping-quiz-unified-fi? state)
+                                   :ufi-match-success
 
-                                  (->> order
-                                       (api.orders/free-mayvenn-service stylist)
-                                       :free-mayvenn-service/discounted?)
-                                  e/navigate-cart
+                                   (->> order
+                                        (api.orders/free-mayvenn-service stylist)
+                                        :free-mayvenn-service/discounted?)
+                                   :cart
 
-                                  :else
-                                  e/navigate-adventure-match-success)]
-              (publish e/biz|current-stylist|selected
-                       {:order                     order
-                        :prev-free-mayvenn-service free-mayvenn-service
-                        :stylist                   stylist
-                        :on/success                #(history/enqueue-navigate success-event)
-                        :result-index              result-index}))))))))
+                                   :else
+                                   :adv-success)]
+              (follow/publish-all prev-state event {:decided-on success-target
+                                               :order order
+                                               :stylist stylist
+                                               :result-index result-index}))))))))
+
+   (defmethod fx/perform-effects e/post-stylist-matched-navigation-decided
+     [_ event {:keys                  [decision]
+               {:keys [order
+                       decided-on
+                       stylist
+                       result-index]} :follow/args} prev-state state]
+     #?(:cljs
+        (let [waiter-order         (:waiter/order (api.orders/current state))
+              free-mayvenn-service (api.orders/free-mayvenn-service nil waiter-order)]
+          (publish e/biz|current-stylist|selected
+                   {:order                     order
+                    :prev-free-mayvenn-service free-mayvenn-service
+                    :stylist                   stylist
+                    :on/success                #(history/enqueue-navigate (decision (or decided-on :adv-success)))
+                    :result-index              result-index}))))
 
 (defmethod trackings/perform-track e/biz|current-stylist|selected
   [_ _ {:keys [order stylist result-index prev-free-mayvenn-service]} state]

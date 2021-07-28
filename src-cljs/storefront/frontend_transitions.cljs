@@ -9,13 +9,9 @@
             [spice.maps :as maps]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.experiments :as experiments]
             catalog.keypaths
-            [storefront.config :as config]
             [storefront.events :as events]
-            [storefront.hooks.stripe :as stripe]
             [storefront.keypaths :as keypaths]
-            [storefront.routes :as routes]
             [storefront.state :as state]
             [storefront.transitions
              :refer [transition-state
@@ -39,7 +35,7 @@
 (defn clear-field-errors [app-state]
   (assoc-in app-state keypaths/errors {}))
 
-(defmethod transition-state events/control-account-profile-submit [_ event args app-state]
+(defmethod transition-state events/control-account-profile-submit [_ _event _args app-state]
   (let [password              (get-in app-state keypaths/manage-account-password)
         field-errors          (cond-> {}
                                 (> 6 (count password))
