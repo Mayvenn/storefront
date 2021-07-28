@@ -108,10 +108,6 @@
    (display-feature? data "past-appointments")
    (display-feature? data "edit-gallery")))
 
-(defn shopping-quiz?
-  [data]
-  (display-feature? data "shopping-quiz"))
-
 (defn past-appointments?
   [data]
   (display-feature? data "past-appointments"))

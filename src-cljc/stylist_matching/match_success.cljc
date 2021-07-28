@@ -37,25 +37,15 @@
     (merge {:header.back-navigation/back (first browser-history)})))
 
 (defn congrats-query
-  [stylist shopping-quiz?]
-  (if shopping-quiz?
-    {:stylist-matching.ui.congrats.title/primary   (str
-                                                    "You matched with "
-                                                    (stylists/->display-name stylist) "!")
-     :stylist-matching.ui.congrats.title/secondary ["Now it's time to choose your hair."
-                                                    "There's no end to what your hair can do."]
-     :stylist-matching.ui.congrats.cta/id          "hair-quiz"
-     :stylist-matching.ui.congrats.cta/label       "Take Our Hair Quiz"
-     :stylist-matching.ui.congrats.cta/target      [e/navigate-adventure-quiz]}
-    {:stylist-matching.ui.congrats.title/primary   (str
-                                                    "Congratulations on matching with "
-                                                    (stylists/->display-name stylist) "!")
-     :stylist-matching.ui.congrats.title/secondary ["Now for the fun part!"
-                                                    "Let's pick your hair!"]
-     :stylist-matching.ui.congrats.cta/id          "pick-my-hair"
-     :stylist-matching.ui.congrats.cta/label       "Pick My Hair"
-     :stylist-matching.ui.congrats.cta/target      [e/navigate-category {:page/slug           "mayvenn-install"
-                                                                         :catalog/category-id "23"}]}))
+  [stylist]
+  {:stylist-matching.ui.congrats.title/primary   (str
+                                                  "You matched with "
+                                                  (stylists/->display-name stylist) "!")
+   :stylist-matching.ui.congrats.title/secondary ["Now it's time to choose your hair."
+                                                  "There's no end to what your hair can do."]
+   :stylist-matching.ui.congrats.cta/id          "hair-quiz"
+   :stylist-matching.ui.congrats.cta/label       "Take Our Hair Quiz"
+   :stylist-matching.ui.congrats.cta/target      [e/navigate-adventure-quiz]})
 
 (defcomponent template
   [{:keys [header congrats]} _ _]
@@ -68,8 +58,7 @@
   [app-state _]
   (let [servicing-stylist (:diva/stylist (api.current/stylist app-state))
         order             (api.orders/current app-state)
-        browser-history   (get-in app-state storefront.keypaths/navigation-undo-stack)
-        shopping-quiz?    (experiments/shopping-quiz? app-state)]
+        browser-history   (get-in app-state storefront.keypaths/navigation-undo-stack)]
     (component/build template
                      {:header   (header-query order browser-history)
-                      :congrats (congrats-query servicing-stylist shopping-quiz?)})))
+                      :congrats (congrats-query servicing-stylist)})))
