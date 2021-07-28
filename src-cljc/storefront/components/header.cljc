@@ -438,7 +438,8 @@
 
                                  (and shop? unified-fi?)
                                  (concat
-                                  [{:slide-out-nav-menu-item/target      [events/navigate-shopping-quiz-unified-freeinstall-intro]
+                                  [{:slide-out-nav-menu-item/target      [events/navigate-shopping-quiz-unified-freeinstall-intro
+                                                                          {:query-params {:location "hamburger"}}]
                                     :slide-out-nav-menu-item/id          "menu-shop-quiz-unified-fi"
                                     :slide-out-nav-menu-item/new-primary "NEW"
                                     :slide-out-nav-menu-item/primary     "Start Hair Quiz"}])
@@ -505,7 +506,8 @@
 
                            (and shop? unified-fi?)
                            (concat
-                            [{:header-menu-item/navigation-target [events/navigate-shopping-quiz-unified-freeinstall-intro]
+                            [{:header-menu-item/navigation-target [events/navigate-shopping-quiz-unified-freeinstall-intro
+                                                                   {:query-params {:location "desktop_heade"}}]
                               :header-menu-item/id                "desktop-shop-quiz-unified-fi"
                               :header-menu-item/new-label?        true
                               :header-menu-item/content           "Start Hair Quiz"}])

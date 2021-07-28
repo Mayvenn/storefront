@@ -24,6 +24,7 @@
    #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
                        [storefront.history :as history]
                        [storefront.hooks.quadpay :as quadpay]
+                       [storefront.hooks.stringer :as stringer]
                        [storefront.browser.cookie-jar :as cookie-jar]
                        [stylist-matching.search.filters-modal :as filter-menu]])
    [spice.core :as spice]
@@ -43,11 +44,13 @@
    [storefront.platform.messages
              :refer [handle-message]
              :rename {handle-message publish}]
-   [storefront.request-keys :as request-keys]
-   [stylist-matching.core :refer [query-params<- service-delimiter stylist-matching<-]]
-   [stylist-matching.keypaths :as matching.k]
-   [stylist-matching.stylist-results :as stylist-results]
-   [stylist-matching.ui.stylist-search :as stylist-search]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]
+            [storefront.trackings :as trackings]
+            [stylist-matching.core :refer [stylist-matching<- query-params<- service-delimiter]]
+            [stylist-matching.keypaths :as matching.k]
+            [stylist-matching.stylist-results :as stylist-results]
+            [stylist-matching.ui.stylist-search :as stylist-search]))
 
 (def ^:private id :unified-freeinstall)
 
@@ -675,6 +678,12 @@
            #:progression
             {:id    id
              :value #{0}}))
+
+(defmethod trackings/perform-track e/navigate-shopping-quiz-unified-freeinstall-intro
+  [_ _ args state]
+  #?(:cljs
+     (let [location (get-in args [:query-params :location] "direct_load")]
+       (stringer/track-event "unified_fi-initiated" {:location location}))))
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-question
   [_ _ _ _ state]

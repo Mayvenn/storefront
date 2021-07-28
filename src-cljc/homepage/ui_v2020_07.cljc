@@ -174,7 +174,7 @@
                                  (if (experiments/shopping-quiz-unified-fi? app-state)
                                    {:cta/value  "Start Hair Quiz"
                                     :cta/id     "homepage-take-hair-quiz"
-                                    :cta/target [e/navigate-shopping-quiz-unified-freeinstall-intro]}
+                                    :cta/target [e/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "homepage_cta"}}]}
                                    {:cta/value  "Browse Stylists"
                                     :cta/id     "browse-stylist"
                                     :cta/target [e/navigate-adventure-find-your-stylist]}))

@@ -175,7 +175,7 @@
                                          :sort-order  1
                                          :id          "quiz-unified-fi"
                                          :new-link?   true
-                                         :nav-message [events/navigate-shopping-quiz-unified-freeinstall-intro]}]
+                                         :nav-message [events/navigate-shopping-quiz-unified-freeinstall-intro {:query-params {:location "footer"}}]}]
                                        [{:title       "Find a Stylist"
                                          :sort-order  1
                                          :id          "find-a-stylist"
