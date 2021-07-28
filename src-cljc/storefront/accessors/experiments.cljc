@@ -118,10 +118,8 @@
 
 (defn shopping-quiz-unified-fi?
   [data]
-  true #_
   (display-feature? data "shopping-quiz-unified-fi"))
 
 (defn easy-booking?
   [data]
-  true #_
   (display-feature? data "easy-booking"))
