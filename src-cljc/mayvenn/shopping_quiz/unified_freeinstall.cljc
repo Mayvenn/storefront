@@ -644,7 +644,7 @@
       2 (let [looks-suggestions (looks-suggestions/<- state id)
               selected-look     (looks-suggestions/selected<- state id)]
           (cond
-            (utils/requesting-from-endpoint? state request-keys/new-order-from-sku-ids)
+            (utils/requesting? state request-keys/new-order-from-sku-ids)
             (c/build waiting-template
                      waiting<)
 

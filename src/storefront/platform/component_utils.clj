@@ -40,8 +40,6 @@
   ([_data _request-key] false)
   ([_data _request-search _request-key] false))
 
-(defn requesting-from-endpoint? [_data _request-key] false)
-
 (defn select-all-text [_e]
   nil)
 

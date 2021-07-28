@@ -208,11 +208,11 @@
                                                  :quantity              (or quantity 0)}]
 
     (cond
-      (utils/requesting-from-endpoint? state request-keys/new-order-from-sku-ids)
+      (utils/requesting? state request-keys/new-order-from-sku-ids)
       (c/build loading-template)
 
       (or (wait/<- state id)
-          (utils/requesting-from-endpoint? state request-keys/get-products))
+          (utils/requesting? state request-keys/get-products))
       (c/build waiting-template)
 
       (seq looks-suggestions)
