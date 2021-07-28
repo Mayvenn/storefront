@@ -182,26 +182,6 @@
          [:div.container
           (component/build faq/organism faq-section opts)])])))
 
-
-(defn min-of-maps
-  ([k] {})
-  ([k a b]
-   (if (<= (get a k) (get b k))
-     a b)))
-
-(defn lowest [k ms]
-  (reduce (partial min-of-maps k) ms))
-
-(defn lowest-sku-price [skus]
-  (:sku/price (lowest :sku/price skus)))
-
-(defn lowest-sku-price-for-option-kw [skus option-kw]
-  (into {}
-        (map (fn [[option-kw skus]]
-               {(first option-kw)
-                (lowest-sku-price skus)})
-             (group-by option-kw skus))))
-
 (defn ugc-query [product sku data]
   (let [shop?              (= :shop (sites/determine-site data))
         album-keyword      (storefront.ugc/product->album-keyword shop? product)
