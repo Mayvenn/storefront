@@ -1,11 +1,9 @@
 (ns storefront.handler
   (:require [api.catalog :refer [?a-la-carte ?discountable]]
-            api.stylist
             [bidi.bidi :as bidi]
             [catalog.categories :as categories]
             catalog.keypaths
             [catalog.facets :as facets]
-            [catalog.product-details :as product-details]
             [catalog.products :as products]
             [catalog.skuers :as skuers]
             [cheshire.core :as json]
@@ -14,14 +12,14 @@
             [clojure.string :as string]
             [clojure.xml :as xml]
             [comb.template :as template]
-            [compojure.core :refer :all]
+            [compojure.core :refer [routes GET]]
             [compojure.route :as route]
             [lambdaisland.uri :as uri]
             [noir-exception.core :refer [wrap-exceptions wrap-internal-error]]
             [ring-logging.core :as ring-logging]
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.cookies :refer [wrap-cookies]]
-            [ring.middleware.defaults :refer :all]
+            [ring.middleware.defaults :refer [site-defaults secure-site-defaults wrap-defaults]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.util.codec :as codec]
@@ -137,7 +135,7 @@
 (defn ->html-resp [h]
   (util.response/content-type (util.response/response h) "text/html"))
 
-(defn store-scheme-and-authority [store-slug environment {:keys [scheme server-name server-port] :as req}]
+(defn store-scheme-and-authority [store-slug environment {:keys [scheme server-name server-port] :as _req}]
   (let [dev? (config/development? environment)]
     (str (if dev? (name scheme) "https") "://"
          store-slug "." (parse-root-domain server-name)
@@ -158,7 +156,7 @@
    (util.response/redirect (store-homepage (first subdomains) environment req)
                            redirect-type)))
 
-(defn redirect-to-product-details [environment {:keys [subdomains params] :as req}]
+(defn redirect-to-product-details [_environment {:keys [params] :as _req}]
   (util.response/redirect (str "/products/" (:id-and-slug params) "?SKU=" (:sku params))
                           :moved-permanently))
 
@@ -207,15 +205,13 @@
       (h req))))
 
 (defn- storeback-offline-response [environment]
-  (do
-    (config/dev-print! environment "Could not connect to storeback")
-    (->html-resp (views/error-page (config/development? environment) "Could not connect to storeback"))))
+  (config/dev-print! environment "Could not connect to storeback")
+  (->html-resp (views/error-page (config/development? environment) "Could not connect to storeback")))
 
 (defn wrap-stylist-not-found-redirect [h environment]
   (fn [{server-name                        :server-name
         {store-slug :store-slug :as store} :store
         subdomains                         :subdomains
-        cookies                            :cookies
         :as                                req}]
     (cond
       (= store :storefront.backend-api/storeback-unavailable)
@@ -235,7 +231,6 @@
 (defn wrap-redirect-affiliates [h environment]
   (fn [{{experience :experience
          stylist-id :stylist-id} :store
-        [nav-event _] :nav-message
         :as         req}]
     (if (routes/should-redirect-affiliate-route? experience)
       (util.response/redirect
@@ -281,7 +276,7 @@
 (defn wrap-set-initial-state [h environment]
   (fn [req]
     (let [nav-message        (:nav-message req)
-          [nav-event params] nav-message
+          [nav-event _params] nav-message
           nav-uri            (-> (into {} (:nav-uri req))
                                  (assoc :protocol (-> req :scheme name))
                                  (assoc :query (-> req :query-params)))]
@@ -302,8 +297,7 @@
          (= "affiliate" experience)
          (assoc-in-req-state keypaths/return-navigation-message [events/navigate-stylist-account-profile {}])))))
 
-(defn copy-cms-to-data
-  ([cms-data data] data)
+(defn ^:private copy-cms-to-data
   ([cms-data data keypath]
    (assoc-in data
              keypath
@@ -385,9 +379,8 @@
              (assoc-in-req-state keypaths/store store))))))
 
 (defn wrap-fetch-order [h storeback-config]
-  (fn [{:as req :keys [nav-message]}]
-    (let [params       (second nav-message)
-          order-number (cookies/get req "number")
+  (fn [req]
+    (let [order-number (cookies/get req "number")
           order-token  (cookies/get-and-attempt-parsing-poorly-encoded req "token")]
       (h (cond-> req
            (and order-number order-token
@@ -396,7 +389,7 @@
 
 (defn wrap-fetch-completed-order [h storeback-config]
   (fn [{:as req :keys [nav-message]}]
-    (let [[nav-event params] nav-message
+    (let [[nav-event _params] nav-message
           order-number       (cookies/get req "completed-order-number")
           order-token        (cookies/get-and-attempt-parsing-poorly-encoded req "completed-order-token")]
       (h (cond-> req
@@ -586,14 +579,14 @@
                          (update-in keypaths/v2-skus merge (products/index-skus skus))
                          (update-in keypaths/v2-products merge (products/index-products products)))))))
 
-(defn generic-server-render [render-ctx data req params]
+(defn generic-server-render [render-ctx data _req _params]
   (html-response render-ctx data))
 
 (defn redirect-to-cart [query-params]
   (util.response/redirect (str "/cart?" (codec/form-encode query-params))))
 
 (defn redirect-named-search
-  [render-ctx data req {:keys [named-search-slug]}]
+  [_render-ctx data req {:keys [named-search-slug]}]
   (let [categories (get-in data keypaths/categories)]
     (when-let [category (accessors.categories/named-search->category named-search-slug categories)]
       (-> (path-for req events/navigate-category category)
@@ -649,7 +642,7 @@
     [events/navigate-adventure-find-your-stylist]))
 
 (defn render-category
-  [{:keys [environment] :as render-ctx} data {:keys [subdomains] :as req} {:keys [catalog/category-id page/slug]}]
+  [{:keys [environment] :as render-ctx} data req {:keys [catalog/category-id page/slug]}]
   (let [virgin-category (get dyed-virgin-category-id->virgin-category category-id)
         temporary-service-redirect  (service-category-ids->redirect category-id)]
     (cond
@@ -719,7 +712,7 @@
 
 (defn render-product-details [{:keys [environment] :as render-ctx}
                               data
-                              {:keys [params subdomains] :as req}
+                              {:keys [params] :as req}
                               {:keys [catalog/product-id
                                       page/slug]}]
   (let [permanent-redirect (get discontinued-product-id->redirect product-id)
@@ -771,7 +764,7 @@
         (update-in keypaths/v2-products merge (products/index-products products))
         (update-in keypaths/v2-skus merge skus))))
 
-(defn frontend-routes [{:keys [storeback-config environment client-version] :as ctx}]
+(defn frontend-routes [{:keys [storeback-config environment client-version] :as _ctx}]
   (fn [{:keys [state] :as req}]
     (let [nav-message        (get-in-req-state req keypaths/navigation-message)
           [nav-event params] nav-message]
@@ -867,7 +860,7 @@
                                                         :query-params        query-params}))
       "0.80"])))
 
-(defn sitemap-pages [{:keys [storeback-config sitemap-cache]} {:keys [subdomains] :as req}]
+(defn sitemap-pages [{:keys [storeback-config sitemap-cache]} {:keys [subdomains] :as _req}]
   (if (seq subdomains)
     (if-let [hit (not-empty @(:atom sitemap-cache))]
       hit
@@ -940,7 +933,7 @@
     (-> (util.response/response "")
         (util.response/status 404))))
 
-(defn paypal-routes [{:keys [storeback-config]}]
+(defn paypal-routes [_ctx]
   (GET "/orders/:order-number/paypal/:order-token" [order-number order-token :as request]
     (let [order          (get-in-req-state request keypaths/order)]
       (cond
@@ -959,7 +952,7 @@
 (defn quadpay-routes
   "NOTE: Quadpay's successful charges are known to storefront only through the
   client-side pinging so that we can track the placed order event."
-  [ctx]
+  [_ctx]
   (GET "/orders/:order-number/quadpay" [order-number :as request]
     (let [order-from-cookie (get-in-req-state request keypaths/order)
           order-token       (get (:query-params request) "order-token")]
@@ -970,7 +963,7 @@
         (util.response/redirect "/checkout/processing")))))
 
 (defn static-routes [_]
-  (fn [{:keys [uri] :as req}]
+  (fn [{:keys [uri] :as _req}]
     ;; can't use (:nav-message req) because routes/static-api-routes are not
     ;; included in routes/app-routes
     (let [{nav-event :handler} (bidi/match-route routes/static-api-routes uri)]
@@ -1027,7 +1020,7 @@
                      (assoc-in-req-state adventure.keypaths/stylist-profile-id (:stylist-id stylist))
                      (assoc-in-req-state (conj stylist-directory.keypaths/stylists (:stylist-id stylist)) stylist) ;; Original diva format, get rid of soon
                      (assoc-in-req-state (conj keypaths/models-stylists
-                                               (:stylist-id stylist)) (api.stylist/stylist<- {} stylist))
+                                               (:stylist-id stylist)) (stylist/stylist<- {} stylist))
                      (assoc-in-req-state keypaths/v2-products
                                          (products/index-products service-products))
                      (assoc-in-req-state keypaths/v2-skus service-skus)
@@ -1109,7 +1102,7 @@
                (GET "/robots.txt" req (-> (robots req) util.response/response (util.response/content-type "text/plain")))
                (GET "/sitemap.xml" req (sitemap-index req))
                (GET "/sitemap-pages.xml" req (sitemap-pages ctx req))
-               (GET "/googlee2783b8646cb0bdd.html" req
+               (GET "/googlee2783b8646cb0bdd.html" _req
                     (-> "google-site-verification: googlee2783b8646cb0bdd.html"
                         (util.response/response) (util.response/content-type "text/html")))
                (GET "/blog" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/blog/"))))
@@ -1129,7 +1122,7 @@
                (GET "/products" req (redirect-to-home environment req))
                (GET "/products/" req (redirect-to-home environment req))
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
-               (GET "/how-it-works" req (wrap-set-cache-header (partial redirect-to-home environment) "max-age=604800"))
+               (GET "/how-it-works" _req (wrap-set-cache-header (partial redirect-to-home environment) "max-age=604800"))
                (GET "/mayvenn-made" req (util.response/redirect
                                          (store-url "shop" environment
                                                     (assoc req :uri "/"))))

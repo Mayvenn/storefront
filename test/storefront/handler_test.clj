@@ -6,7 +6,6 @@
             [compojure.core :refer [GET routes]]
             [lambdaisland.uri :as uri]
             [ring.mock.request :as mock]
-            [ring.util.codec :as codec]
             [standalone-test-server.core
              :refer
              [txfm-request txfm-requests with-requests-chan]]
@@ -21,10 +20,6 @@
 
 (defn set-cookies [req cookies]
   (update req :headers assoc "cookie" (string/join "; " (map (fn [[k v]] (str k "=" v)) cookies))))
-
-(defn parsed-url [url]
-  (let [[base query] (.split (str url) "\\?")]
-    [base (codec/form-decode query)]))
 
 (defn parse-json-body [req]
   (update req :body #(parse-string % true)))
@@ -76,11 +71,11 @@
 
 (deftest affiliate-store-urls-redirect-to-shop
   (with-services {:storeback-handler (routes
-                                      (GET "/v3/products" req {:status 200
+                                      (GET "/v3/products" _req {:status 200
                                                                :body "{}"})
-                                      (GET "/v2/facets" req {:status 200
+                                      (GET "/v2/facets" _req {:status 200
                                                              :body   "{}"})
-                                      (GET "/store" _ common/storeback-affiliate-stylist-response))}
+                                      (GET "/store" _req common/storeback-affiliate-stylist-response))}
     (with-handler handler
       (testing "every page redirects to shop"
         (doseq [[to-path redirect-path] [["/categories/2-virgin-straight" "/categories/2-virgin-straight?affiliate_stylist_id=10"]
@@ -147,7 +142,7 @@
         (let [resp (handler (mock/request :get "https://bob.mayvenn.com/?utm_source=blog&utm_medium=social&&utm_campaign=HomePage&utm_term=Button"))
               data-edn (->> resp :body (re-find #"var data = (.*);") last)]
           (is (edn/read-string (parse-string data-edn))
-              (format "Invalid EDN read-string: " (pr-str data-edn)))
+              (format "Invalid EDN read-string: %s" (pr-str data-edn)))
           (is (= 200 (:status resp))))))))
 
 (defmacro has-canonized-link [handler url]
@@ -170,10 +165,10 @@
   (testing "when the product does not exist storefront returns 404"
     (let [[_ storeback-handler] (with-requests-chan (routes
                                                      common/default-storeback-handler
-                                                     (GET "/v2/orders/:number"
-                                                          req {:status 404
-                                                               :body   "{}"})
-                                                     (GET "/v3/products" req
+                                                     (GET "/v2/orders/:number" _req
+                                                          {:status 404
+                                                           :body   "{}"})
+                                                     (GET "/v3/products" _req
                                                           {:status 200
                                                            :body   (generate-string {:products []
                                                                                      :skus     []
@@ -185,7 +180,7 @@
   (testing "when whitelisted for discontinued"
     (let [[_ storeback-handler] (with-requests-chan (routes
                                                      common/default-storeback-handler
-                                                     (GET "/v3/products" req
+                                                     (GET "/v3/products" _req
                                                           {:status 200
                                                            :body   (generate-string {:products []
                                                                                      :skus     []
@@ -197,9 +192,9 @@
   (testing "when the product exists"
     (let [[_ storeback-handler]
           (with-requests-chan (routes
-                               (GET "/v2/orders/:number" req {:status 404
+                               (GET "/v2/orders/:number" _req {:status 404
                                                               :body   "{}"})
-                               (GET "/v3/products" req
+                               (GET "/v3/products" _req
                                     {:status 200
                                      :body   (generate-string {:products [{:catalog/product-id  "67"
                                                                            :catalog/department  #{"hair"}
@@ -278,7 +273,7 @@
           token                                  "iA1bjIUAqCfyS3cuvdNYindmlRZ3ICr3g+vSfzvUM1c="
           [storeback-requests storeback-handler] (with-requests-chan (routes
                                                                       common/default-storeback-handler
-                                                                      (GET "/v2/orders/:number" req {:status 200
+                                                                      (GET "/v2/orders/:number" _req {:status 200
                                                                                                      :body (generate-string {:number "W123456"})})))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
@@ -294,7 +289,7 @@
                 (is (= {"token" token} (:query-params waiter-request)))))))))))
 
 (deftest sitemap-on-a-valid-store-domain
-  (let [[requests handler] (with-requests-chan (constantly {:status 200
+  (let [[_requests handler] (with-requests-chan (constantly {:status 200
                                                             :body   (generate-string {:skus []
                                                                                       :products []})}))]
     (with-services {:storeback-handler handler}
@@ -303,7 +298,7 @@
           (is (= 200 (:status resp))))))))
 
 (deftest sitemap-does-not-exist-on-root-domain
-  (let [[requests handler] (with-requests-chan (constantly {:status 200
+  (let [[_requests handler] (with-requests-chan (constantly {:status 200
                                                             :body   (generate-string {:skus []
                                                                                       :products []})}))]
     (with-services {:storeback-handler handler}
@@ -312,7 +307,7 @@
           (is (= 404 (:status resp))))))))
 
 (deftest sitemap-includes-blog-sitemap-and-pages-sitemap
-  (let [[requests handler] (with-requests-chan (constantly {:status 200
+  (let [[_requests handler] (with-requests-chan (constantly {:status 200
                                                             :body   (generate-string {:skus []
                                                                                       :products []})}))]
     (with-services {:storeback-handler handler}
@@ -331,13 +326,13 @@
                urls)))))))
 
 (deftest most-sitemap-urls-are-their-own-canonical-url
-  "- marketing/branded pages
-   - product category ICP
-   - child product category
-   - non-texture product category URLs
-   - non-parameter PDP
-   - non-parameter /shop/ pages"
   (with-services {}
+    "- marketing/branded pages
+     - product category ICP
+     - child product category
+     - non-texture product category URLs
+     - non-parameter PDP
+     - non-parameter /shop/ pages"
     (with-handler handler
       (let [{:keys [body]} (handler (mock/request :get "https://shop.mayvenn.com/sitemap-pages.xml"))
             parsed-body    (xml/parse (ByteArrayInputStream. (.getBytes ^String body)))
@@ -400,21 +395,20 @@
 (deftest fetches-data-from-contentful
   (testing "transforming content"
     (testing "transforming 'homepage' content"
-      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+      (let [[_contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
                                                                               {:status 200
                                                                                :body   (generate-string (:body common/contentful-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
-            (let [responses                         (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
-                  requests                          (txfm-requests contentful-requests identity)
+            (let [responses                          (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
                   {:keys [hero feature-1
                           feature-2 feature-3]
-                   :as   classic-homepage-response} (-> (mock/request :get "https://bob.mayvenn.com/cms/homepage")
-                                                        handler
-                                                        :body
-                                                        (parse-string true)
-                                                        :homepage
-                                                        :classic)]
+                   :as   _classic-homepage-response} (-> (mock/request :get "https://bob.mayvenn.com/cms/homepage")
+                                                         handler
+                                                         :body
+                                                         (parse-string true)
+                                                         :homepage
+                                                         :classic)]
               (is (every? #(= 200 (:status %)) responses))
               (is (=
                    #{:title :alt :desktop :mobile :path}
@@ -424,14 +418,12 @@
                    (set (keys hero)))))))))
 
     (testing "transforming ugc-collections"
-      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+      (let [[_contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
                                                                               {:status 200
                                                                                :body   (generate-string (:body common/contentful-ugc-collection-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
-            (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
-                  requests  (txfm-requests contentful-requests identity)
-                  look-1    {:content/type          "look"
+            (let [look-1    {:content/type          "look"
                              :content/id            "2zSbLYFcRYjVoEMMlsWLsJ"
                              :content/updated-at    1558565998189
                              :title                 "Acceptance Virgin Peruvian Deep Wave 16 18 20 "
@@ -495,14 +487,14 @@
                          :ugc-collection))))))))
 
     (testing "transforming faqs"
-      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
                                                                               {:status 200
                                                                                :body   (generate-string (:body common/contentful-faq-response))}))]
 
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
-            (let [responses (repeatedly 3 (partial handler (mock/request :get "https://shop.mayvenn.com/categories/13-wigs")))
-                  requests  (txfm-requests contentful-requests identity)]
+            (let [_responses (repeatedly 3 (partial handler (mock/request :get "https://shop.mayvenn.com/categories/13-wigs")))
+                  _requests  (txfm-requests contentful-requests identity)]
               (is (=  {:icp-virgin-lace-front-wigs
                        {:slug "icp-virgin-lace-front-wigs", :question-answers []},
                        :icp-wigs
@@ -532,7 +524,7 @@
 
   (let [number-of-contentful-entities-to-fetch 4]
     (testing "caching content"
-      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
                                                                               {:status 200
                                                                                :body   (generate-string (:body common/contentful-response))}))]
         (with-services {:contentful-handler contentful-handler}
@@ -543,15 +535,14 @@
               (is (= number-of-contentful-entities-to-fetch (count requests))))))))
 
     (testing "fetches data on system start"
-      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
                                                                               {:status 200
                                                                                :body   (generate-string (:body common/contentful-response))}))]
         (with-services {:contentful-handler contentful-handler}
-          (with-handler handler
-            (is (= number-of-contentful-entities-to-fetch (count (txfm-requests contentful-requests identity))))))))
+          (is (= number-of-contentful-entities-to-fetch (count (txfm-requests contentful-requests identity)))))))
 
     (testing "attempts-to-retry-fetch-from-contentful"
-      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" _req
                                                                               {:status 500
                                                                                :body   "{}"}))]
         (with-services {:contentful-handler contentful-handler}
@@ -569,8 +560,8 @@
                                            :body    (generate-string {:number "W123456"
                                                                       :token  "order-token"
                                                                       :state  "cart"})}))]
-      (with-services {:storeback-handler (routes (GET "/store" req common/storeback-stylist-response)
-                                                 (GET "/v2/facets" req {:status 200
+      (with-services {:storeback-handler (routes (GET "/store" _req common/storeback-stylist-response)
+                                                 (GET "/v2/facets" _req {:status 200
                                                                         :body   ""})
                                                  storeback-handler)}
         (with-handler handler
