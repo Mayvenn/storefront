@@ -72,6 +72,13 @@
        (mapv (comp #(str % suffix) k))
        (interpose delim)))
 
+(defn ^:private formatted-lengths<
+  [bundles closures]
+  (apply str
+         (cond-> (fmt bundles :hair/length "”" ", ")
+           (seq closures)
+           (concat [" + " (-> closures first :hair/length) "” Closure"]))))
+
 (defn mobile-nav-header [attrs left center right]
   (let [size {:width "80px" :height "55px"}]
     (c/html
@@ -364,11 +371,7 @@
             :suggestion/id            "selected-look"
             :suggestion/ucare-id      img-id
             :suggestion/primary       (str origin " " texture)
-            :suggestion/secondary     (apply str
-                                             (cond-> (fmt bundles :hair/length "”" ", ")
-                                               (seq closures)
-                                               (concat [" + "]
-                                                       (fmt closures :hair/length "”" ""))))
+            :suggestion/secondary     (formatted-lengths< bundles closures)
             :suggestion/tertiary      (->> skus (mapv :sku/price) (reduce + 0) mf/as-money)
             :suggestion/tertiary-note "Install Included"
             :action/id                "summary-continue"
@@ -416,11 +419,7 @@
        :index-label   (str "Hair + Service Bundle " (inc idx))
        :ucare-id      img-id
        :primary       (str origin " " texture)
-       :secondary     (apply str
-                             (cond-> (fmt bundles :hair/length "”" ", ")
-                               (seq closures)
-                               (concat [" + "]
-                                       (fmt closures :hair/length "”" ""))))
+       :secondary     (formatted-lengths< bundles closures)
        :tertiary      (->> skus (mapv :sku/price) (reduce + 0) mf/as-money)
        :tertiary-note "Install Included"
        :action/id     (str "result-option-" idx)

@@ -112,6 +112,13 @@
        (mapv (comp #(str % suffix) k))
        (interpose delim)))
 
+(defn ^:private formatted-lengths<
+  [bundles closures]
+  (apply str
+         (cond-> (fmt bundles :hair/length "”" ", ")
+           (seq closures)
+           (concat [" + " (-> closures first :hair/length) "” Closure"]))))
+
 (defn quiz-result-option<
   [idx {:as           looks-suggestion
         :product/keys [sku-ids]
@@ -124,11 +131,7 @@
      :quiz.result/index-label   (str "Option " (inc idx))
      :quiz.result/ucare-id      img-id
      :quiz.result/primary       (str origin " " texture)
-     :quiz.result/secondary     (apply str
-                                       (cond-> (fmt bundles :hair/length "”" ", ")
-                                         (seq closures)
-                                         (concat [" + "]
-                                                 (fmt closures :hair/length "”" ""))))
+     :quiz.result/secondary     (formatted-lengths< bundles closures)
      :quiz.result/tertiary      (->> skus (mapv :sku/price) (reduce + 0) mf/as-money)
      :quiz.result/cta-label     "Add To Bag"
      :quiz.result/cta-target    [e/biz|looks-suggestions|selected
