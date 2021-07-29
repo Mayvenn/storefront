@@ -9,10 +9,6 @@
   ([navigation-event]
    (route-to navigation-event nil nil)))
 
-(defn route-to-shop [navigation-event & [args]]
-  ;; TODO(jeff): make it work on acceptance
-  {:href (str "https://shop.mayvenn.com" (routes/path-for navigation-event args))})
-
 (defn route-back-or-to [_back navigation-event & [navigation-args]]
   (route-to navigation-event navigation-args))
 
@@ -32,20 +28,12 @@
      :value   checked-val}
     {}))
 
-(defn expand-menu-callback [_keypath]
-  noop-callback)
-
-(defn collapse-menus-callback [_menus]
-  noop-callback)
-
 (defn requesting?
   ([_data _request-key] false)
   ([_data _request-search _request-key] false))
 
 (defn select-all-text [_e]
   nil)
-
-
 
 (defn scroll-href [anchor-id]
   {:href (str "#" anchor-id)})
