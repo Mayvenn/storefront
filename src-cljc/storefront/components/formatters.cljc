@@ -49,12 +49,12 @@
        (defn abbr-date [date-like]
          (format-date {:month "short"
                        :day   "numeric"
-                       :year  "full"} date-like))
+                       :year  "numeric"} date-like))
 
        (defn date-tuple [date-like]
          (let [parts (format-date-to-parts {:month "short"
                                             :day   "numeric"
-                                            :year  "full"}
+                                            :year  "numeric"}
                                            date-like)]
            (vec ((juxt :year :month :day) parts))))]))
 
