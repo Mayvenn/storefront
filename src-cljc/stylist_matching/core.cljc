@@ -254,14 +254,14 @@
   #?(:cljs
      (let [nav-event      (first (get-in state' storefront.keypaths/navigation-message))
            service-params (-> state' stylist-matching<- :param/services)]
-       (publish e/biz|follow|defined
-                {:follow/after-id e/flow|stylist-matching|matched
-                 :follow/then     [e/post-stylist-matched-navigation-decided
-                                   {:decision
-                                    {:adv-booking       e/navigate-adventure-appointment-booking
-                                     :cart              e/navigate-cart
-                                     :adv-success       e/navigate-adventure-match-success
-                                     :ufi-match-success e/navigate-shopping-quiz-unified-freeinstall-match-success}}]})
+       (when (= e/navigate-adventure-find-your-stylist nav-event)
+         (publish e/biz|follow|defined
+                  {:follow/after-id e/flow|stylist-matching|matched
+                   :follow/then     [e/post-stylist-matched-navigation-decided
+                                     {:decision
+                                      {:booking e/navigate-adventure-appointment-booking
+                                       :cart    e/navigate-cart
+                                       :success e/navigate-adventure-match-success}}]}))
        (if (and (= e/navigate-adventure-find-your-stylist nav-event)
                 (experiments/top-stylist? state')
                 (contains-top-stylist? service-params results))
@@ -319,15 +319,8 @@
           number token features
           (fn [order]
             (let [success-target (cond
-                                   (and (experiments/easy-booking? state)
-                                        (experiments/shopping-quiz-unified-fi? state))
-                                   :ufi-booking
-
                                    (experiments/easy-booking? state)
-                                   :adv-booking
-
-                                   (experiments/shopping-quiz-unified-fi? state)
-                                   :ufi-match-success
+                                   :booking
 
                                    (->> order
                                         (api.orders/free-mayvenn-service stylist)
@@ -335,10 +328,10 @@
                                    :cart
 
                                    :else
-                                   :adv-success)]
-              (follow/publish-all prev-state event {:decided-on   success-target
-                                                    :order        order
-                                                    :stylist      stylist
+                                   :success)]
+              (follow/publish-all prev-state event {:decided-on success-target
+                                                    :order order
+                                                    :stylist stylist
                                                     :result-index result-index}))))))))
 
    (defmethod fx/perform-effects e/post-stylist-matched-navigation-decided

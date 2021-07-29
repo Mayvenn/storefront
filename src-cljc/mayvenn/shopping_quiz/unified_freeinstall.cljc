@@ -792,11 +792,9 @@
            {:follow/after-id e/flow|stylist-matching|matched
             :follow/then     [e/post-stylist-matched-navigation-decided
                               {:decision
-                               {:ufi-booking       e/navigate-shopping-quiz-unified-freeinstall-appointment-booking
-                                :adv-booking       e/navigate-adventure-appointment-booking
-                                :ufi-match-success e/navigate-shopping-quiz-unified-freeinstall-match-success
-                                :cart              e/navigate-cart
-                                :adv-success       e/navigate-adventure-match-success}}]})
+                               {:booking e/navigate-shopping-quiz-unified-freeinstall-appointment-booking
+                                :success e/navigate-shopping-quiz-unified-freeinstall-match-success
+                                :cart    e/navigate-cart}}]})
   #?(:cljs
      (if-not (:unified-fi-quiz (cookie-jar/retrieve-unified-fi-quiz-entered (get-in state k/cookie)))
        (publish e/redirect {:nav-message [e/navigate-adventure-stylist-results args]})
