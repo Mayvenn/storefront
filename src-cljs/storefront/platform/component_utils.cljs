@@ -60,6 +60,12 @@
      (handle-message event args)
      nil)))
 
+(defn expand-menu-callback [keypath]
+  (send-event-callback events/control-menu-expand {:keypath keypath}))
+
+(defn collapse-menus-callback [menus]
+  (send-event-callback events/control-menu-collapse-all {:menus menus}))
+
 (defn fake-href
   "You probably want to use a link with route-to instead of this, as fake-href hides the url"
   ([event] (fake-href event nil))
@@ -91,7 +97,12 @@
   ([navigation-event navigation-args]
    (route-to navigation-event navigation-args nil))
   ([navigation-event]
-   (route-to navigation-event nil) nil))
+   (route-to navigation-event nil nil)))
+
+(defn route-to-shop [navigation-event & [args]]
+  {:href
+   (str (uri/map->URI {:host (str/replace-first js/location.host #"^[^\.]*\." "shop.")
+                       :path (routes/path-for navigation-event args)}))})
 
 (defn ^:private route-back [{:keys [navigation-message]}]
   {:href (apply routes/path-for navigation-message)
