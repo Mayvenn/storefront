@@ -6,8 +6,8 @@
    [api.catalog :refer [?service select]]
    api.current
    api.orders
-   [appointment-booking.core]
-   [appointment-booking.page]
+   [appointment-booking.core :as booking]
+   [appointment-booking.page :as booking.page]
    [clojure.string :refer [split starts-with?]]
    [mayvenn.concept.looks-suggestions :as looks-suggestions]
    [mayvenn.concept.progression :as progression]
@@ -115,8 +115,8 @@
   [:div
    [:div.bg-white
     (quiz-header (with :header data))]
-   (c/build progress-bar/variation-1 (with :progress data))
-   (c/build appointment-booking.page/body data)])
+   (c/build progress-bar/variation-1 (with "progress" data))
+   (c/build booking.page/body data)])
 
 ;; Template: 3/Match Success
 (c/defcomponent matched-success-template
@@ -230,7 +230,7 @@
              {:keys [slot-id date]}    (:appointment-time-slot waiter-order)
              date-copy                 #?(:clj nil
                                           :cljs (formatters/long-date date))
-             time-copy                 (->> appointment-booking.core/time-slots
+             time-copy                 (->> booking/time-slots
                                             (filter (fn [{:slot/keys [id]}]
                                                       (= id slot-id)))
                                             first
@@ -587,6 +587,7 @@
               just-added-experience? (experiments/just-added-experience? state)
               stylist-results-test?  (experiments/stylist-results-test? state)
               easy-booking?          (experiments/easy-booking? state)
+              booking                (booking/<- state)
 
               address-field-errors (get-in state matching.k/address-field-errors)
               stylist-matched?     (or (:matched/stylist matching)
@@ -598,8 +599,9 @@
             #?(:clj nil :cljs (filter-menu/query state))
             #?(:clj nil :cljs (c/build filter-menu/component (filter-menu/query state)))
 
-            (and stylist-matched?
-                 easy-booking?
+            (and easy-booking?
+                 stylist-matched?
+                 (not (get-in booking [:state :skipped]))
                  (not (:appointment-time-slot order)))
             (c/build appointment-booking-template
                      (merge (header< undo-history (apply max quiz-progression))
@@ -793,8 +795,7 @@
             :follow/then     [e/post-stylist-matched-navigation-decided
                               {:decision
                                {:booking e/navigate-shopping-quiz-unified-freeinstall-appointment-booking
-                                :success e/navigate-shopping-quiz-unified-freeinstall-match-success
-                                :cart    e/navigate-cart}}]})
+                                :success e/navigate-shopping-quiz-unified-freeinstall-match-success}}]})
   #?(:cljs
      (if-not (:unified-fi-quiz (cookie-jar/retrieve-unified-fi-quiz-entered (get-in state k/cookie)))
        (publish e/redirect {:nav-message [e/navigate-adventure-stylist-results args]})

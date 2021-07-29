@@ -1,7 +1,6 @@
 (ns appointment-booking.core
   (:require #?@(:cljs [[storefront.api :as api]
-                       [storefront.history :as history]
-                       [storefront.accessors.experiments :as experiments]])
+                       [storefront.history :as history]])
             api.orders
             api.stylist
             storefront.keypaths
@@ -12,6 +11,7 @@
             [storefront.platform.messages
              :as messages
              :refer [handle-message] :rename {handle-message publish}]
+            [storefront.accessors.experiments :as experiments]
             clojure.set
             [storefront.transitions :as t]))
 
@@ -23,11 +23,30 @@
        (.setSeconds 0)
        (.setMilliseconds 0))))
 
+ ;; TODO(ellie, 2021-07-29): This should nav to cart when apropos
 (defmethod t/transition-state e/navigate-adventure-appointment-booking
   [_ _event {:keys [] :as _args} state]
-  state)
+  (->
+   state
+   (assoc-in k/booking-finish-target
+             e/navigate-adventure-match-success)))
 
 (defmethod fx/perform-effects e/navigate-adventure-appointment-booking
+  [_ _ _ _ state]
+  #?(:cljs
+     (if (experiments/easy-booking? state)
+       (publish e/flow|appointment-booking|initialized {})
+       (history/enqueue-redirect e/navigate-home {}))))
+
+ ;; TODO(ellie, 2021-07-29): Refactor to follow
+(defmethod t/transition-state e/navigate-shopping-quiz-unified-freeinstall-appointment-booking
+  [_ _event {:keys [] :as _args} state]
+  (->
+   state
+   (assoc-in k/booking-finish-target
+             e/navigate-shopping-quiz-unified-freeinstall-match-success)))
+
+(defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-appointment-booking
   [_ _ _ _ state]
   #?(:cljs
      (if (experiments/easy-booking? state)
@@ -84,17 +103,23 @@
 (defmethod fx/perform-effects e/flow|appointment-booking|skipped
   [_ _event _args _prev-state state]
   #?(:cljs
-     (history/enqueue-navigate (if (experiments/shopping-quiz-unified-fi? state)
-                                 e/navigate-shopping-quiz-unified-freeinstall-match-success
-                                 e/navigate-adventure-match-success))))
+     (history/enqueue-navigate (get-in state k/booking-finish-target))))
+
+
+(defmethod t/transition-state e/flow|appointment-booking|skipped
+  [_ _event {:keys [date] :as _args} state]
+  (assoc-in state k/booking-state-skipped true))
 
 (defmethod fx/perform-effects e/api-success-set-appointment-time-slot
   [_ _event {:keys [order] :as _args} _prev-state state]
   (publish e/save-order {:order order})
   #?(:cljs
-     (history/enqueue-navigate (if (experiments/shopping-quiz-unified-fi? state)
-                                 e/navigate-shopping-quiz-unified-freeinstall-match-success
-                                 e/navigate-adventure-match-success))))
+     (history/enqueue-navigate (get-in state k/booking-finish-target))))
+
+
+;; Move to concept
+(defn <- [state]
+  (get-in state k/booking))
 
 (def time-slots
   [{:slot/id "08-to-11"

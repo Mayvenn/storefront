@@ -54,17 +54,18 @@
    "/about-mayvenn-install"                                      (edn->bidi events/navigate-about-mayvenn-install)})
 
 (def adventure-quiz-routes
-  {"/adv/quiz"                                   (edn->bidi events/navigate-adventure-quiz)
-   ;; TODO(ellie, 2021-07-15): Is this the right path?
-   "/appointment-booking"                        (edn->bidi events/navigate-adventure-appointment-booking)
-   "/quiz/unified-freeinstall/intro"             (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-intro)
-   "/quiz/unified-freeinstall/question"          (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-question)
-   "/quiz/unified-freeinstall/recommendations"   (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-recommendations)
-   "/quiz/unified-freeinstall/summary"           (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-summary)
-   "/quiz/unified-freeinstall/find-your-stylist" (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist)
-   "/quiz/unified-freeinstall/top-stylist"       (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-top-stylist)
-   "/quiz/unified-freeinstall/stylist-results"   (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-stylist-results)
-   "/quiz/unified-freeinstall/match-success"     (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-match-success)})
+  {"/adv/quiz"                                     (edn->bidi events/navigate-adventure-quiz)
+   "/adv/quiz/appointment-booking"                 (edn->bidi events/navigate-adventure-appointment-booking)
+   "/quiz/unified-freeinstall/intro"               (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-intro)
+   "/quiz/unified-freeinstall/question"            (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-question)
+   "/quiz/unified-freeinstall/recommendations"     (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-recommendations)
+   "/quiz/unified-freeinstall/summary"             (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-summary)
+   "/quiz/unified-freeinstall/find-your-stylist"   (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-find-your-stylist)
+   "/quiz/unified-freeinstall/top-stylist"         (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-top-stylist)
+   "/quiz/unified-freeinstall/stylist-results"     (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-stylist-results)
+   "/quiz/unified-freeinstall/match-success"       (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-match-success)
+   "/quiz/unified-freeinstall/appointment-booking" (edn->bidi events/navigate-shopping-quiz-unified-freeinstall-appointment-booking)})
+
 
 (def catalog-routes
   ;; NOTE: if you update category url, don't forget to update the fast-inverse-catalog-routes below

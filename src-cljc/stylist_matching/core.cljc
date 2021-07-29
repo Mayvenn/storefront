@@ -319,7 +319,8 @@
           number token features
           (fn [order]
             (let [success-target (cond
-                                   (experiments/easy-booking? state)
+                                   (and (experiments/easy-booking? state)
+                                        (not (:appointment-time-slot order)))
                                    :booking
 
                                    (->> order
@@ -329,26 +330,28 @@
 
                                    :else
                                    :success)]
-              (follow/publish-all prev-state event {:decided-on success-target
-                                                    :order order
-                                                    :stylist stylist
+              (follow/publish-all prev-state event {:decided-on   success-target
+                                                    :order        order
+                                                    :stylist      stylist
                                                     :result-index result-index}))))))))
 
-   (defmethod fx/perform-effects e/post-stylist-matched-navigation-decided
-     [_ event {:keys                  [decision]
-               {:keys [order
-                       decided-on
-                       stylist
-                       result-index]} :follow/args} prev-state state]
-     #?(:cljs
-        (let [waiter-order         (:waiter/order (api.orders/current state))
-              free-mayvenn-service (api.orders/free-mayvenn-service nil waiter-order)]
-          (publish e/biz|current-stylist|selected
-                   {:order                     order
-                    :prev-free-mayvenn-service free-mayvenn-service
-                    :stylist                   stylist
-                    :on/success                #(history/enqueue-navigate (decision (or decided-on :adv-success)))
-                    :result-index              result-index}))))
+(defmethod fx/perform-effects e/post-stylist-matched-navigation-decided
+  [_ event {:keys                  [decision]
+            {:keys [order
+                    decided-on
+                    stylist
+                    result-index]} :follow/args} prev-state state]
+  #?(:cljs
+     (let [waiter-order         (:waiter/order (api.orders/current state))
+           free-mayvenn-service (api.orders/free-mayvenn-service nil waiter-order)
+           success-target       (or (get decision decided-on)
+                                    (get decision :success))]
+       (publish e/biz|current-stylist|selected
+                {:order                     order
+                 :prev-free-mayvenn-service free-mayvenn-service
+                 :stylist                   stylist
+                 :on/success                #(history/enqueue-navigate success-target)
+                 :result-index              result-index}))))
 
 (defmethod trackings/perform-track e/biz|current-stylist|selected
   [_ _ {:keys [order stylist result-index prev-free-mayvenn-service]} state]
