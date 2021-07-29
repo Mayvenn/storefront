@@ -23,6 +23,7 @@
    [mayvenn.visual.ui.titles :as titles]
    #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
                        [storefront.history :as history]
+                       [storefront.hooks.exception-handler :as exception-handler]
                        [storefront.hooks.quadpay :as quadpay]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.browser.cookie-jar :as cookie-jar]
@@ -682,8 +683,20 @@
 (defmethod trackings/perform-track e/navigate-shopping-quiz-unified-freeinstall-intro
   [_ _ args state]
   #?(:cljs
-     (let [location (get-in args [:query-params :location] "direct_load")]
-       (stringer/track-event "unified_fi-initiated" {:location location}))))
+     (let [direct-load? (and (empty? (get-in state k/navigation-redo-stack))
+                             (empty? (get-in state k/navigation-undo-stack)))
+           double-nav?  (= :module-load (:navigate/caused-by args))
+           nav-location (get-in args [:query-params :location])
+           location     (cond
+                          nav-location                                 nav-location
+                          (and direct-load? (not double-nav?))         "direct_load"
+                          (and direct-load? double-nav?)               :double-nav
+                          (seq (get-in state k/navigation-redo-stack)) "back_button"
+                          :else                                        (try
+                                                                         (exception-handler/report "Navigated to Unified FI Intro without giving a previous location")
+                                                                         (catch :default _ nil)))]
+       (when-not (= :double-nav location)
+         (stringer/track-event "unified_fi-initiated" {:location location})))))
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-question
   [_ _ _ _ state]
