@@ -4,7 +4,8 @@
                        [storefront.history :as history]
                        [stylist-matching.search.filters-modal :as filter-menu]])
             adventure.keypaths
-            [stylist-matching.core :refer [stylist-matching<- service-delimiter]]
+            [stylist-matching.core :as core
+             :refer [stylist-matching<- service-delimiter]]
             [stylist-matching.keypaths :as k]
             api.orders
             clojure.set
@@ -25,14 +26,15 @@
             [storefront.effects :as effects]
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
-            [storefront.platform.messages :as messages]
+            [storefront.platform.messages :as messages
+             :refer [handle-message]
+             :rename {handle-message publish}]
             [storefront.platform.component-utils :as utils]
             [storefront.utils :as general-utils]
             [storefront.request-keys :as request-keys]
             [spice.date :as date]
             storefront.keypaths
-            [mayvenn.live-help.core :as live-help]
-            [stylist-matching.core :as core]))
+            [mayvenn.live-help.core :as live-help]))
 
 ;;  Navigating to the results page causes the effect of searching for stylists
 ;;
@@ -53,22 +55,30 @@
     (do
       #?(:cljs (google-maps/insert))
 
+      (publish e/biz|follow|defined
+               {:follow/after-id e/flow|stylist-matching|matched
+                :follow/then     [e/post-stylist-matched-navigation-decided
+                                  {:decision
+                                   {:booking e/navigate-adventure-appointment-booking
+                                    :cart    e/navigate-cart
+                                    :success e/navigate-adventure-match-success}}]})
+
       ;; Init the model if there isn't one, e.g. Direct load
       (when-not (stylist-matching<- state)
-        (messages/handle-message e/flow|stylist-matching|initialized))
+        (publish e/flow|stylist-matching|initialized))
 
       ;; Pull stylist-ids (s) from URI; predetermined search results
       (when (seq stylist-ids)
-        (messages/handle-message e/flow|stylist-matching|param-ids-constrained
+        (publish e/flow|stylist-matching|param-ids-constrained
                                  {:ids stylist-ids}))
       ;; Pull name search from URI
-      (messages/handle-message e/flow|stylist-matching|set-presearch-field
+      (publish e/flow|stylist-matching|set-presearch-field
                                {:name moniker})
-      (messages/handle-message e/flow|stylist-matching|param-name-constrained
+      (publish e/flow|stylist-matching|param-name-constrained
                                {:name moniker})
 
       ;; Address from URI
-      (messages/handle-message e/flow|stylist-matching|set-address-field
+      (publish e/flow|stylist-matching|set-address-field
                                {:address address})
 
       ;; Pull preferred services from URI; filters for service types
@@ -76,20 +86,20 @@
                                   not-empty
                                   (string/split (re-pattern service-delimiter))
                                   set)]
-        (messages/handle-message e/flow|stylist-matching|param-services-constrained
+        (publish e/flow|stylist-matching|param-services-constrained
                                  {:services services}))
       ;; Pull lat/long from URI; search by proximity
       (when (and (not-empty latitude)
                  (not-empty longitude))
-        (messages/handle-message e/flow|stylist-matching|param-location-constrained
+        (publish e/flow|stylist-matching|param-location-constrained
                                  {:latitude  (spice/parse-double latitude)
                                   :longitude (spice/parse-double longitude)}))
       ;; FIXME(matching)
       (when-not (= (get-in prev-state storefront.keypaths/navigation-event)
                    (get-in state storefront.keypaths/navigation-event))
-        (messages/handle-message e/initialize-stylist-search-filters))
+        (publish e/initialize-stylist-search-filters))
 
-      (messages/handle-message e/flow|stylist-matching|searched))))
+      (publish e/flow|stylist-matching|searched))))
 
 ;; --------------- gallery modal
 
@@ -116,7 +126,7 @@
      (google-maps/attach "geocode"
                          "stylist-search-input"
                          k/google-location
-                         #(messages/handle-message e/stylist-results-address-selected)
+                         #(publish e/stylist-results-address-selected)
                          ;; HACK: in order to bypass google maps' default enter behavior
                          ;; we are overwriting it to ensure we call our own code that's
                          ;; attched to the blur event. Otherwise it triggered a new search.
@@ -129,7 +139,7 @@
                                  ((.-enterKeyPressed component) true)
                                  (.blur (.-target e))))))
                           (fn [_elem _]
-                            (messages/handle-message e/stylist-results-update-location-from-address))])))
+                            (publish e/stylist-results-update-location-from-address))])))
 
 (defn ^:private address-input
   [elemID]
@@ -159,19 +169,19 @@
           address
           k/google-location
           (fn []
-            (messages/handle-message e/stylist-results-address-selected)
-            (messages/handle-message e/flow|stylist-matching|searched)))))))
+            (publish e/stylist-results-address-selected)
+            (publish e/flow|stylist-matching|searched)))))))
 
 (defmethod effects/perform-effects e/stylist-results-address-selected
   [_ _ _ _ state]
   ;; Unconstrains stylist-id search
-  (messages/handle-message e/flow|stylist-matching|param-ids-constrained)
+  (publish e/flow|stylist-matching|param-ids-constrained)
   ;; Address/Location search
-  (messages/handle-message e/flow|stylist-matching|param-address-constrained
+  (publish e/flow|stylist-matching|param-address-constrained
                            {:address (address-input "stylist-search-input")})
-  (messages/handle-message e/flow|stylist-matching|param-location-constrained
+  (publish e/flow|stylist-matching|param-location-constrained
                            (get-in state k/google-location))
-  (messages/handle-message e/flow|stylist-matching|prepared))
+  (publish e/flow|stylist-matching|prepared))
 
 ;; -------------------------- Matching behavior
 
@@ -345,9 +355,9 @@
      :gallery-modal/initial-index    index}))
 
 (defn execute-named-search [name]
-  (messages/handle-message e/flow|stylist-matching|presearch-canceled)
-  (messages/handle-message e/flow|stylist-matching|param-name-constrained {:name name})
-  (messages/handle-message e/flow|stylist-matching|prepared))
+  (publish e/flow|stylist-matching|presearch-canceled)
+  (publish e/flow|stylist-matching|param-name-constrained {:name name})
+  (publish e/flow|stylist-matching|prepared))
 
 (defcomponent stylist-results-name-input-molecule
   [{:stylist-results.name-input/keys [id value errors keypath]} _ _]
@@ -365,7 +375,7 @@
                     :max-length    100
                     :on-click      (fn [e] (.focus (.-target e)))
                     :on-change     (fn [e]
-                                     (messages/handle-message e/flow|stylist-matching|param-name-presearched
+                                     (publish e/flow|stylist-matching|param-name-presearched
                                                               {:presearch/name (.. e -target -value)}))
                     :on-key-up     (fn name-input-enter-handler [e]
                                      (when (= "Enter" (.. e -key))
@@ -375,8 +385,8 @@
                                                        .-relatedTarget
                                                        (.getAttribute "class")
                                                        (string/includes? "presearch-result"))
-                                       (messages/handle-message e/flow|stylist-matching|presearch-canceled)
-                                       (messages/handle-message e/flow|stylist-matching|set-presearch-field)))
+                                       (publish e/flow|stylist-matching|presearch-canceled)
+                                       (publish e/flow|stylist-matching|set-presearch-field)))
                     :label         "Search by Stylist Name"
                     :wrapper-class "flex items-center col-12 bg-white border-black"
                     :type          "text"}
@@ -395,7 +405,7 @@
                {:enter-key-pressed? false})
   (did-mount
    [this]
-   (messages/handle-message e/stylist-results-address-component-mounted {:component this}))
+   (publish e/stylist-results-address-component-mounted {:component this}))
   (render
    [this]
    (let [{:stylist-results.address-input/keys [id value errors keypath]}
@@ -411,7 +421,7 @@
                       :keypath       keypath
                       :data-test     id
                       :on-blur       (fn [_]
-                                       (messages/handle-message e/flow|stylist-matching|set-address-field {:enter-key-pressed? (:enter-key-pressed? (component/get-state this))})
+                                       (publish e/flow|stylist-matching|set-address-field {:enter-key-pressed? (:enter-key-pressed? (component/get-state this))})
                                        ((.-enterKeyPressed this) false))
                       :id            id
                       :wrapper-class "flex items-center col-12 bg-white border-black"
@@ -463,7 +473,7 @@
    (let [{:keys [stylist.analytics/cards stylist-results-returned?]}
          (component/get-props this)]
      (when stylist-results-returned?
-       (messages/handle-message e/adventure-stylist-search-results-displayed
+       (publish e/adventure-stylist-search-results-displayed
                                 {:cards cards}))))
   (render
    [this]
@@ -736,7 +746,7 @@
 
 (defmethod effects/perform-effects e/control-stylist-matching-presearch-salon-result-selected
   [_ _ args _ state]
-  (messages/handle-message e/flow|stylist-matching|set-presearch-field args)
+  (publish e/flow|stylist-matching|set-presearch-field args)
   (execute-named-search (:name args)))
 
 (defn results<

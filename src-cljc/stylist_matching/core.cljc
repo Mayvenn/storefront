@@ -254,14 +254,6 @@
   #?(:cljs
      (let [nav-event      (first (get-in state' storefront.keypaths/navigation-message))
            service-params (-> state' stylist-matching<- :param/services)]
-       (when (= e/navigate-adventure-find-your-stylist nav-event)
-         (publish e/biz|follow|defined
-                  {:follow/after-id e/flow|stylist-matching|matched
-                   :follow/then     [e/post-stylist-matched-navigation-decided
-                                     {:decision
-                                      {:booking e/navigate-adventure-appointment-booking
-                                       :cart    e/navigate-cart
-                                       :success e/navigate-adventure-match-success}}]}))
        (if (and (= e/navigate-adventure-find-your-stylist nav-event)
                 (experiments/top-stylist? state')
                 (contains-top-stylist? service-params results))
