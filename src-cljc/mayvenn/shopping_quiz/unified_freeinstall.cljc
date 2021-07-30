@@ -601,8 +601,7 @@
 
             (and easy-booking?
                  stylist-matched?
-                 (not (get-in booking [:state :skipped]))
-                 (not (:appointment-time-slot order)))
+                 (not (get booking :done)))
             (c/build appointment-booking-template
                      (merge (header< undo-history (apply max quiz-progression))
                             (progress< quiz-progression)

@@ -57,7 +57,8 @@
   [_ _event _args state]
   (-> state
       (assoc-in k/booking-selected-date nil)
-      (assoc-in k/booking-selected-time-slot nil)))
+      (assoc-in k/booking-selected-time-slot nil)
+      (assoc-in k/booking-done false)))
 
 (defmethod fx/perform-effects e/flow|appointment-booking|initialized
   [_ _ _ _ state]
@@ -107,14 +108,18 @@
 
 
 (defmethod t/transition-state e/flow|appointment-booking|skipped
-  [_ _event {:keys [date] :as _args} state]
-  (assoc-in state k/booking-state-skipped true))
+  [_ _event _args state]
+  (assoc-in state k/booking-done true))
 
 (defmethod fx/perform-effects e/api-success-set-appointment-time-slot
   [_ _event {:keys [order] :as _args} _prev-state state]
   (publish e/save-order {:order order})
   #?(:cljs
      (history/enqueue-navigate (get-in state k/booking-finish-target))))
+
+(defmethod t/transition-state e/api-success-set-appointment-time-slot
+  [_ _event _args state]
+  (assoc-in state k/booking-done true))
 
 
 ;; Move to concept

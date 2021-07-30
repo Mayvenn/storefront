@@ -311,8 +311,7 @@
           number token features
           (fn [order]
             (let [success-target (cond
-                                   (and (experiments/easy-booking? state)
-                                        (not (:appointment-time-slot order)))
+                                   (experiments/easy-booking? state)
                                    :booking
 
                                    (->> order

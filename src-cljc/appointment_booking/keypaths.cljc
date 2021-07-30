@@ -7,5 +7,4 @@
 
 (def booking-finish-target (conj booking :finish-target))
 
-(def booking-state (conj booking :state))
-(def booking-state-skipped (conj booking-state :skipped))
+(def booking-done (conj booking :done))
