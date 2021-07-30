@@ -547,6 +547,12 @@
    :action/target [e/go-to-navigate {:target [e/navigate-shopping-quiz-unified-freeinstall-question]}]})
 
 ;;;
+(c/defcomponent loading-template
+  [_ _ _]
+  [:div.flex.items-center.justify-between.col-12
+   [:div.mx-auto
+    (ui/large-spinner {:style {:height "80px"
+                               :width  "80px"}})]])
 
 (defn ^:export page
   "
@@ -650,8 +656,10 @@
               selected-look     (looks-suggestions/selected<- state id)]
           (cond
             (utils/requesting? state request-keys/new-order-from-sku-ids)
-            (c/build waiting-template
-                     waiting<)
+            (c/build loading-template)
+
+            (utils/requesting? state request-keys/get-products)
+            (c/build waiting-template waiting<)
 
             selected-look
             (c/build summary-template
