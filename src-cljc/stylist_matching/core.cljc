@@ -260,7 +260,8 @@
                                    {:decision
                                     {:adv-booking       e/navigate-adventure-appointment-booking
                                      :cart              e/navigate-cart
-                                     :adv-success       e/navigate-adventure-match-success}}]})
+                                     :adv-success       e/navigate-adventure-match-success
+                                     :ufi-match-success e/navigate-shopping-quiz-unified-freeinstall-match-success}}]})
        (if (and (= e/navigate-adventure-find-your-stylist nav-event)
                 (experiments/top-stylist? state')
                 (contains-top-stylist? service-params results))
@@ -335,10 +336,10 @@
 
                                    :else
                                    :adv-success)]
-              (follow/publish-all prev-state event {:decided-on success-target
-                                               :order order
-                                               :stylist stylist
-                                               :result-index result-index}))))))))
+              (follow/publish-all prev-state event {:decided-on   success-target
+                                                    :order        order
+                                                    :stylist      stylist
+                                                    :result-index result-index}))))))))
 
    (defmethod fx/perform-effects e/post-stylist-matched-navigation-decided
      [_ event {:keys                  [decision]
