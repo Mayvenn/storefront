@@ -80,7 +80,7 @@
                            :width  "2em"}
                    :class (day-of-month-class selectable? selected?)}
                   (when selectable?
-                    (utils/fake-href e/flow|appointment-booking|date-selected {:date date}))))
+                    (utils/fake-href e/biz|appointment-booking|date-selected {:date date}))))
      day-of-month]))
 
 (def arrow-directions
@@ -128,7 +128,7 @@
                  :justify-items         "center"}}
    (disablable-arrow {:disabled?   first-available-week?
                       :direction   :left
-                      :target      e/flow|appointment-booking|date-selected
+                      :target      e/biz|appointment-booking|date-selected
                       :target-args {:date
                                     (let [one-week-before-selected-date
                                           (date/add-delta selected-date {:days -7})]
@@ -142,7 +142,7 @@
 
    (disablable-arrow {:disabled?   last-available-week?
                       :direction   :right
-                      :target      e/flow|appointment-booking|date-selected
+                      :target      e/biz|appointment-booking|date-selected
                       :target-args {:date (date/add-delta selected-date {:days 7})}
                       :attrs       (grid-attrs [1 7])})
 
@@ -188,7 +188,7 @@
                      :dial.attrs/data-test     radio-name
                      :dial.attrs/class         "order-last"
                      :label.attrs/data-test-id id
-                     :label.attrs/on-click     (utils/send-event-callback e/flow|appointment-booking|time-slot-selected
+                     :label.attrs/on-click     (utils/send-event-callback e/biz|appointment-booking|time-slot-selected
                                                                           {:time-slot id}
                                                                           {:prevent-default?  true
                                                                            :stop-propagation? true})
@@ -265,11 +265,11 @@
              {:id        "summary-continue"
               :label     "Continue"
               :disabled? (not (and selected-time-slot selected-date))
-              :target    [e/flow|appointment-booking|submitted]})
+              :target    [e/biz|appointment-booking|submitted]})
      (within :skip.action
              {:id     "booking-skip"
               :label  "skip this step"
-              :target [e/flow|appointment-booking|skipped]}))))
+              :target [e/biz|appointment-booking|skipped]}))))
 
 
 

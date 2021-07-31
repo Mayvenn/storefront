@@ -765,14 +765,14 @@
 (defpath top-stylist-navigation-decided)
 
 ;; Appointment Booking TODO consider moving to own namespace
-(defpath flow|appointment-booking|initialized)
-(defpath flow|appointment-booking|date-selected)
-(defpath flow|appointment-booking|time-slot-selected)
-(defpath flow|appointment-booking|submitted)
-(defpath flow|appointment-booking|skipped)
-(defpath flow|appointment-booking|done)
+(defpath biz|appointment-booking|initialized)
+(defpath biz|appointment-booking|date-selected)
+(defpath biz|appointment-booking|time-slot-selected)
+(defpath biz|appointment-booking|submitted)
+(defpath biz|appointment-booking|skipped)
+(defpath biz|appointment-booking|done)
 
-(defpath flow|appointment-booking|navigation-decided)
+(defpath biz|appointment-booking|navigation-decided)
 
 (defpath post-stylist-matched-navigation-decided)
 
