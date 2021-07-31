@@ -4,7 +4,6 @@
             api.current
             api.orders
             appointment-booking.core
-            [mayvenn.visual.lib.progress-bar :as progress-bar]
             [mayvenn.visual.tools :refer [with within]]
             [mayvenn.visual.ui.actions :as actions]
             [mayvenn.visual.ui.titles :as titles]
@@ -17,30 +16,6 @@
             [storefront.events :as e]
             [storefront.keypaths :as storefront.k]
             [storefront.platform.component-utils :as utils]))
-
-(c/defcomponent header  [{:keys [forced-mobile-layout? target back] :as data} _opts _owner]
-  (header/mobile-nav-header
-   {:class (str "border-bottom border-gray "
-                (when-not forced-mobile-layout?
-                  "hide-on-dt"))
-    :style {:height "70px"}}
-   (c/html
-    [:a.block.black.p2.flex.justify-center.items-center
-     (utils/route-back-or-to
-            back
-            target)
-     (svg/left-arrow {:width  "20"
-                      :height "20"})])
-   (c/html (titles/proxima-content (with :title data)))
-   (c/html [:div])))
-
-(defn ^:private start-of-day [date]
-  #?(:cljs
-     (doto date
-       (.setHours 0)
-       (.setMinutes 0)
-       (.setSeconds 0)
-       (.setMilliseconds 0))))
 
 (defn split-month [week]
   #?(:cljs
@@ -64,6 +39,23 @@
                              :grid-column col}}))
   ([grid-spec]
    (grid-attrs grid-spec {})))
+
+
+(c/defcomponent header  [{:keys [forced-mobile-layout? target back] :as data} _opts _owner]
+  (header/mobile-nav-header
+   {:class (str "border-bottom border-gray "
+                (when-not forced-mobile-layout?
+                  "hide-on-dt"))
+    :style {:height "70px"}}
+   (c/html
+    [:a.block.black.p2.flex.justify-center.items-center
+     (utils/route-back-or-to
+            back
+            target)
+     (svg/left-arrow {:width  "20"
+                      :height "20"})])
+   (c/html (titles/proxima-content (with :title data)))
+   (c/html [:div])))
 
 (def ^:private day-column [::dummy-value 2 3 4 5 6 7 1])
 
@@ -136,7 +128,7 @@
                  :justify-items         "center"}}
    (disablable-arrow {:disabled?   first-available-week?
                       :direction   :left
-                      :target      e/control-appointment-booking-week-chevron-clicked
+                      :target      e/flow|appointment-booking|date-selected
                       :target-args {:date
                                     (let [one-week-before-selected-date
                                           (date/add-delta selected-date {:days -7})]
@@ -150,7 +142,7 @@
 
    (disablable-arrow {:disabled?   last-available-week?
                       :direction   :right
-                      :target      e/control-appointment-booking-week-chevron-clicked
+                      :target      e/flow|appointment-booking|date-selected
                       :target-args {:date (date/add-delta selected-date {:days 7})}
                       :attrs       (grid-attrs [1 7])})
 
@@ -196,8 +188,8 @@
                      :dial.attrs/data-test     radio-name
                      :dial.attrs/class         "order-last"
                      :label.attrs/data-test-id id
-                     :label.attrs/on-click     (utils/send-event-callback e/control-appointment-booking-time-clicked
-                                                                          {:slot-id id}
+                     :label.attrs/on-click     (utils/send-event-callback e/flow|appointment-booking|time-slot-selected
+                                                                          {:time-slot id}
                                                                           {:prevent-default?  true
                                                                            :stop-propagation? true})
                      :label.attrs/class        "col-12 py3 px5"
@@ -209,7 +201,7 @@
 (c/defcomponent body [data _opts _owner]
   [:div.flex.flex-auto.flex-column.items-center.stretch
    [:div.col-10.py8
-    (titles/canela-left (with :title data))]
+    (titles/canela-left (with :top-third.title data))]
    [:div.col-12.px2
     (week-view (with :appointment.picker.date data))]
    [:div.col-12.pt4.px2
@@ -224,9 +216,7 @@
   [:div.flex.flex-auto.flex-column.items-center.stretch
    [:div.bg-white.self-stretch
     (c/build header
-             (with :appointment.header data))
-    (c/build progress-bar/variation-1
-             (with :appointment.progression data))]
+             (with :appointment.header data))]
    (c/build body data)])
 
 (defn find-previous-sunday [today]
@@ -242,46 +232,52 @@
                     (range (* num-of-shown-weeks length-of-week))))))
 
 (defn query [app-state]
-  (let [selected-time-slot        (get-in app-state k/booking-selected-time-slot)
-        earliest-available-date   (-> (date/now)
-                                      (start-of-day)
-                                      (date/add-delta {:days 2}))
-        selected-date             (or (get-in app-state k/booking-selected-date)
-                                      earliest-available-date)
-        nav-undo-stack            (get-in app-state storefront.k/navigation-undo-stack)]
+  (let [selected-time-slot      (get-in app-state k/booking-selected-time-slot)
+        earliest-available-date (-> (date/now)
+                                    (appointment-booking.core/start-of-day)
+                                    (date/add-delta {:days 2}))
+        selected-date           (or (get-in app-state k/booking-selected-date)
+                                    earliest-available-date)
+
+        shown-weeks             (-> earliest-available-date
+                                    find-previous-sunday
+                                    get-weeks)
+        displayed-week                    (or (get-week shown-weeks selected-date)
+                                    (first shown-weeks))
+        first-available-week?   (= displayed-week (first shown-weeks))
+        last-available-week?    (= displayed-week (last shown-weeks))
+        time-slots              appointment-booking.core/time-slots]
     (merge
-     {:title/primary "When do you want to get your hair done?"
-      ;; :title/secondary "secondary"
-      :title/id      "id"
-      :title/icon    nil
-      :appointment.progression/portions
-      [{:bar/units   6
-        :bar/img-url "//ucarecdn.com/92611996-290e-47ae-bffa-e6daba5dd60b/"}
-       {:bar/units 6}]
+     (within :top-third.title
+             {:primary "When do you want to get your hair done?"
+              :id      "id"})
+     (within :appointment.picker.time-slot
+             {:selected-time-slot-id selected-time-slot
+              :time-slots            time-slots})
 
-      :appointment.picker.time-slot/selected-time-slot-id selected-time-slot}
-     (within :continue.action {:id        "summary-continue"
-                               :label     "Continue"
-                               :disabled? (not (and selected-time-slot selected-date))
-                               :target    [e/control-appointment-booking-submit-clicked]})
-     (within :skip.action {:id     "booking-skip"
-                           :label  "skip this step"
-                           :target [e/control-appointment-booking-skip-clicked]})
-     (let  [shown-weeks           (-> earliest-available-date
-                                      find-previous-sunday
-                                      get-weeks)
-            week                  (or (get-week shown-weeks selected-date)
-                                      (first shown-weeks))
-            first-available-week? (= week (first shown-weeks))
-            last-available-week?  (= week (last shown-weeks))]
+     (within :appointment.picker.date
+             {:week                    displayed-week
+              :earliest-available-date earliest-available-date
+              :selected-date           selected-date
+              :first-available-week?   first-available-week?
+              :last-available-week?    last-available-week?})
+     (within :continue.action
+             {:id        "summary-continue"
+              :label     "Continue"
+              :disabled? (not (and selected-time-slot selected-date))
+              :target    [e/flow|appointment-booking|submitted]})
+     (within :skip.action
+             {:id     "booking-skip"
+              :label  "skip this step"
+              :target [e/flow|appointment-booking|skipped]}))))
 
-       (within :appointment.picker.date
-               (maps/auto-map week
-                              earliest-available-date
-                              selected-date
-                              first-available-week?
-                              last-available-week?)))
 
+
+(defn adv-flow-query [app-state]
+  (let [nav-undo-stack (get-in app-state storefront.k/navigation-undo-stack)
+        base           (query app-state)]
+    (merge
+     base
      (within :appointment.header
              {:forced-mobile-layout? true
               :target                e/navigate-adventure-find-your-stylist
@@ -291,6 +287,6 @@
               :title/id              "appointment.header.title"
               :title/icon            nil}))))
 
-(defn ^:export page
+(defn ^:export adv-flow-page
   [app-state _]
-  (c/build template (query app-state)))
+  (c/build template (adv-flow-query app-state)))

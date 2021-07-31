@@ -129,7 +129,7 @@
                                                                         events/navigate-adventure-stylist-gallery)
 
    events/navigate-adventure-quiz                                        (constantly mayvenn.shopping-quiz.unnamed-v1/page)
-   events/navigate-adventure-appointment-booking                         (constantly appointment-booking.page/page)
+   events/navigate-adventure-appointment-booking                         (constantly appointment-booking.page/adv-flow-page)
    events/navigate-shopping-quiz-unified-freeinstall-intro               #(ui/lazy-load-component
                                                                            :catalog
                                                                            'mayvenn.shopping-quiz.unified-freeinstall/page

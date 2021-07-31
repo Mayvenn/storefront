@@ -768,15 +768,12 @@
 (defpath flow|appointment-booking|initialized)
 (defpath flow|appointment-booking|date-selected)
 (defpath flow|appointment-booking|time-slot-selected)
-(defpath flow|appointment-booking|done)
+(defpath flow|appointment-booking|submitted)
 (defpath flow|appointment-booking|skipped)
+(defpath flow|appointment-booking|done)
+
+(defpath flow|appointment-booking|navigation-decided)
 
 (defpath post-stylist-matched-navigation-decided)
 
 (defpath navigate-adventure-appointment-booking)
-
-(defpath control-appointment-booking-week-chevron-clicked)
-(defpath control-appointment-booking-date-clicked)
-(defpath control-appointment-booking-time-clicked)
-(defpath control-appointment-booking-submit-clicked)
-(defpath control-appointment-booking-skip-clicked)
