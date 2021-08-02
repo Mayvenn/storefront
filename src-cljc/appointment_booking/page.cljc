@@ -7,6 +7,7 @@
             [mayvenn.visual.tools :refer [with within]]
             [mayvenn.visual.ui.actions :as actions]
             [mayvenn.visual.ui.titles :as titles]
+            [mayvenn.visual.lib.radio-section :as radio-section]
             [spice.maps :as maps]
             [spice.date :as date]
             [storefront.component :as c]
@@ -154,35 +155,13 @@
    (week-day-selectors selected-date earliest-available-date week)])
 
 
-
- ;; TODO(ellie, 2021-07-20): Move to a visual lib namespace
-(defn ^:private radio-section-v2
-  [{:as   data
-    :state/keys [checked disabled]}]
-  (c/html
-   [:label.flex.items-center
-    (with :label.attrs data)
-    [:div.circle.bg-white.border.flex.items-center.justify-center
-     ^:attrs (cond-> (with :dial.attrs data)
-               true     (assoc :style {:height "22px" :width "22px"})
-               disabled (update :class str " bg-cool-gray border-gray"))
-     (when checked
-       [:div.circle.bg-p-color
-        {:style {:height "10px" :width "10px"}}])]
-    [:input.hide.mx2.h2
-     ^:attrs (merge (with :input data)
-                    {:type "radio"})]
-    (into
-     [:div ^:attrs (with :copy.attrs data)]
-     (:copy.content/text data))]))
-
 (defn time-radio-group [{:keys [selected-time-slot-id]}]
   (let [radio-name "appointment-time-slot-radio"]
     (into [:div]
           (for [{:slot/keys        [id]
                  :slot.picker/keys [copy]} appointment-booking.core/time-slots
                 :let                       [radio-id (str radio-name "-" id)]]
-            (radio-section-v2
+            (radio-section/v2
              (merge {:dial.attrs/name          radio-name
                      :dial.attrs/id            radio-id
                      :dial.attrs/data-test     radio-name
