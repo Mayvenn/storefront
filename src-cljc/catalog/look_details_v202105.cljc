@@ -66,11 +66,12 @@
        :new-coll))
 
 (defn ^:private color-option<
-  [selections {:option/keys [slug] :as option}]
+  [selection-event
+   selections {:option/keys [slug] :as option}]
   (merge
    #:product{:option option}
    #:option{:id               (str "picker-color-" (facets/hacky-fix-of-bad-slugs-on-facets slug))
-            :selection-target [events/control-look-detail-picker-option-select
+            :selection-target [selection-event
                                {:selection [:hair/color]
                                 :value     slug}]
             :checked?         (= (:hair/color selections) slug)
@@ -81,7 +82,8 @@
             :image-src        (:option/sku-swatch option)}))
 
 (defn product-option->length-picker-option
-  [availability
+  [selection-event
+   availability
    {selected-hair-color :hair/color
     per-items           :per-item}
    index
@@ -103,7 +105,7 @@
     (merge
      #:product{:option product-option}
      #:option{:id               (str "picker-length-" index "-" slug)
-              :selection-target [events/control-look-detail-picker-option-select
+              :selection-target [selection-event
                                  {:selection selection-path
                                   :value     slug}]
               :checked?         (= selected-hair-length slug)
@@ -120,10 +122,11 @@
                 :selection-target nil}))))
 
 (defn ^:private hair-length-option<
-  [selections availability index per-item]
+  [selection-event selections availability index per-item]
   (update per-item :hair/length
           (partial mapv
                    (partial product-option->length-picker-option
+                            selection-event
                             availability
                             selections
                             index))))
@@ -145,33 +148,41 @@
   (let [product-skus (mapv #(get skus-db %) (:selector/sku-ids product))]
     (sku-selector/product-options facets product product-skus images-db)))
 
-(defn- initialize-look-picker-options
+(defn ^:private ->look-product-options
   [products-db
    skus-db
    images-db
    facets
-   selections
-   physical-line-items
-   availability]
-  (let [look-options (into []
-                           (comp
-                            (map :catalog/sku-id)
-                            (map #(get skus-db %))
-                            (map (comp first :selector/from-products))
-                            (map #(get products-db %))
-                            (map (partial generate-product-options skus-db images-db facets)))
-                           physical-line-items)]
+   physical-line-items]
+  (into []
+        (comp
+         (map :catalog/sku-id)
+         (map #(get skus-db %))
+         (map (comp first :selector/from-products))
+         (map #(get products-db %))
+         (map (partial generate-product-options skus-db images-db facets)))
+        physical-line-items))
 
-    {:hair/color (->> look-options
-                      (mapcat :hair/color)
-                      (map #(dissoc % :price :stocked?))
-                      (distinct-by :option/slug)
-                      (sort-by :filter/order)
-                      (mapv (partial color-option< selections)))
-     :per-item   (->> look-options
-                      (map #(select-keys % [:hair/length]))
-                      (map-indexed (partial hair-length-option< selections availability))
-                      vec)}))
+(defn initialize-picker-options
+  [selection-event
+   selections
+   availability
+   look-options]
+  {:hair/color (->> look-options
+                    (mapcat :hair/color)
+                    (map #(dissoc % :price :stocked?))
+                    (distinct-by :option/slug)
+                    (sort-by :filter/order)
+                    (mapv (partial color-option<
+                                   selection-event
+                                   selections)))
+   :per-item   (->> look-options
+                    (map #(select-keys % [:hair/length]))
+                    (map-indexed (partial hair-length-option<
+                                          selection-event
+                                          selections
+                                          availability))
+                    vec)})
 
 (defn ^:private
   slice-sku-db
@@ -203,6 +214,19 @@
   [items]
   (mapcat #(repeat (:item/quantity %) (dissoc % :item/quantity)) items))
 
+(defn generate-availability
+  "Electives :: [(a -> [b])]"
+  [electives skus]
+  (let [elective-count (count electives)]
+    (reduce
+     (fn [acc sku]
+       (let [sku-elective-values (map first ((apply juxt electives) sku))]
+         (cond-> acc
+           (= elective-count (count sku-elective-values))
+           (assoc-in sku-elective-values sku))))
+     {}
+     skus)))
+
 (defmethod transitions/transition-state events/initialize-look-details
   [_ _ {:keys [shared-cart]} app-state]
   (let [{physical-line-items false
@@ -220,20 +244,17 @@
                                                          (map (partial maps/map-values first))
                                                          vec)})
         sliced-sku-db              (slice-sku-db (get-in app-state keypaths/v2-skus) shared-cart initial-selections)
-        availability               (reduce (fn [acc {:hair/keys [family color length]
-                                                     in-stock?  :inventory/in-stock?
-                                                     :as        sku}]
-                                             (cond-> acc
-                                               (and family color length)
-                                               (assoc-in [(first family) (first color) (first length)] sku))) {}
-                                           (vals sliced-sku-db))
-        options                    (initialize-look-picker-options (get-in app-state keypaths/v2-products)
-                                                                   sliced-sku-db
-                                                                   (get-in app-state keypaths/v2-images)
-                                                                   (facets/by-slug app-state)
-                                                                   initial-selections
-                                                                   physical-line-items
-                                                                   availability)]
+        availability               (generate-availability [:hair/family :hair/color :hair/length] (vals sliced-sku-db))
+        options                    (initialize-picker-options
+                                    events/control-look-detail-picker-option-select
+                                    initial-selections
+                                    availability
+                                    (->look-product-options
+                                     (get-in app-state keypaths/v2-products)
+                                     sliced-sku-db
+                                     (get-in app-state keypaths/v2-images)
+                                     (facets/by-slug app-state)
+                                     physical-line-items))]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-look-selected-picker nil)
         (assoc-in catalog.keypaths/detailed-look-picker-visible? nil)
@@ -481,7 +502,7 @@
 (defn ^:private picker-modal<
   [picker-options picker-visible? selected-picker]
   (let [picker-type (last selected-picker)
-        options (get-in picker-options selected-picker)]
+        options     (get-in picker-options selected-picker)]
     {:picker-modal/title        (case picker-type
                                   :hair/color  "Color"
                                   :hair/length "Length"
@@ -775,6 +796,7 @@
                                    :hair/length
                                    (partial mapv
                                             (comp (partial product-option->length-picker-option
+                                                           event
                                                            availability
                                                            new-selections
                                                            index)
