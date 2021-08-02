@@ -6,7 +6,7 @@
    [api.catalog :refer [?service select]]
    api.current
    api.orders
-   [appointment-booking.page :as booking.page]
+   [appointment-booking.core :as booking.core]
    [clojure.string :refer [split starts-with?]]
    [mayvenn.concept.looks-suggestions :as looks-suggestions]
    [mayvenn.concept.progression :as progression]
@@ -116,7 +116,7 @@
    [:div.bg-white
     (quiz-header (with :header data))]
    (c/build progress-bar/variation-1 (with "progress" data))
-   (c/build booking.page/body data)])
+   (c/build booking.core/body data)])
 
 ;; Template: 3/Match Success
 (c/defcomponent matched-success-template
@@ -603,7 +603,7 @@
             (c/build appointment-booking-template
                      (merge (header< undo-history (apply max quiz-progression))
                             (progress< quiz-progression)
-                            (appointment-booking.page/query state)))
+                            (booking.core/query state)))
 
             stylist-matched?
             (c/build matched-success-template

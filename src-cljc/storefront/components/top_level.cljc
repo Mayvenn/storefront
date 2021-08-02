@@ -19,7 +19,7 @@
 
             mayvenn-install.about
 
-            appointment-booking.page
+            [appointment-booking.core :as booking.core]
             mayvenn.shopping-quiz.unnamed-v1
             mayvenn.shopping-quiz.unified-freeinstall
 
@@ -129,7 +129,7 @@
                                                                         events/navigate-adventure-stylist-gallery)
 
    events/navigate-adventure-quiz                                        (constantly mayvenn.shopping-quiz.unnamed-v1/page)
-   events/navigate-adventure-appointment-booking                         (constantly appointment-booking.page/adv-flow-page)
+   events/navigate-adventure-appointment-booking                         (constantly booking.core/adv-flow-page)
    events/navigate-shopping-quiz-unified-freeinstall-intro               #(ui/lazy-load-component
                                                                            :catalog
                                                                            'mayvenn.shopping-quiz.unified-freeinstall/page

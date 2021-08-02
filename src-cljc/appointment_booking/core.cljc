@@ -1,4 +1,4 @@
-(ns appointment-booking.page
+(ns appointment-booking.core
   (:require #?@(:cljs [[clojure.string :refer [join]]
                        [storefront.components.formatters :as formatters]])
             api.current
