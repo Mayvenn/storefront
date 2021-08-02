@@ -711,10 +711,6 @@
 (defpath biz|progression|reset)
 (defpath biz|progression|progressed)
 
-;; TODO come up with btter name
-
-(defpath control-stylist-matching-card-cta-clicked)
-
 ;; Shopping Quiz iterations
 (defpath navigate-shopping-quiz)
 (defpath navigate-shopping-quiz-unified-freeinstall)

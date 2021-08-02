@@ -103,15 +103,6 @@
 
 ;; --------------- gallery modal
 
-;; TODO: this does not appear to be used anywhere consider removing?
-(defmethod transitions/transition-state e/control-adventure-stylist-gallery-open
-  [_ _ {:keys [ucare-img-urls initially-selected-image-index]} state]
-  (-> state
-      (assoc-in adventure.keypaths/adventure-stylist-gallery-image-urls
-                ucare-img-urls)
-      (assoc-in adventure.keypaths/adventure-stylist-gallery-image-index
-                initially-selected-image-index)))
-
 (defmethod transitions/transition-state e/control-adventure-stylist-gallery-close
   [_ _ _ state]
   (assoc-in state

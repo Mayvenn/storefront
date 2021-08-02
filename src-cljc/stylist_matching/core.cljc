@@ -45,9 +45,8 @@
 
 (def service-delimiter "~")
 
-;; TODO: string/blank?
 (defn query-params<-
-  [query-params {:param/keys [location services address] moniker :param/name}]
+  [query-params {:param/keys [services address] moniker :param/name}]
   (merge (apply dissoc query-params query-param-keys)
          (when (seq moniker)
            {:name moniker})
