@@ -1,7 +1,6 @@
 (ns catalog.products
   (:require api.orders
             [catalog.keypaths :as k]
-            [storefront.accessors.experiments :as ff]
             [storefront.accessors.products :as accessors.products]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -57,6 +56,24 @@
   (->> products
        (map skuers/->skuer)
        (index-by :catalog/product-id)))
+
+(defn index-by-selectors
+  "Given a collection of SKUs, create a nested hashmap of them indexed according to given selectors.
+  E.g.
+  (index-by-selectors [:hair/family :hair/texture] [sku1 sku2 sku3 sku4])
+  => {\"frontals\" {\"curly\"    [sku1]
+                    \"straight\" [sku2]}
+      \"closures\" {\"curly\" [sku3 sku4]}}"
+  [selectors skus]
+  (let [selector-count (count selectors)]
+    (reduce
+     (fn [acc sku]
+       (let [sku-selector-values (map first ((apply juxt selectors) sku))]
+         (cond-> acc
+           (= selector-count (count sku-selector-values))
+           (assoc-in sku-selector-values sku))))
+     {}
+     skus)))
 
 (defmethod transition-state events/api-success-v3-products
   [_ event {:keys [products skus images] :as response} app-state]
