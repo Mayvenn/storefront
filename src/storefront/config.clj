@@ -92,7 +92,6 @@
 (defn env-config []
   {:environment         (env :environment)
    :bugsnag-token       (env :bugsnag-token)
-   ;;TODO Update env-vars
    :welcome-config      {:url (env :welcome-url)}
    :contentful-config   {:api-key  (env :contentful-content-delivery-api-key)
                          :space-id (env :contentful-space-id)}
