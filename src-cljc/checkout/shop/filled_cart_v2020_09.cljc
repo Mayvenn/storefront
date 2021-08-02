@@ -31,6 +31,7 @@
    [storefront.request-keys :as request-keys]
    [ui.molecules :as ui-molecules]
    [ui.promo-banner :as promo-banner]
+   [mayvenn.visual.tools :refer [within]]
    [mayvenn.live-help.core :as live-help]))
 
 ;; page selectors - maybe they can just be cats
@@ -401,8 +402,8 @@
      :cart-item-service-thumbnail/id        sku-id
      :cart-item-service-thumbnail/image-url (hacky-cart-image item)}))
 
-(defn service-items<-
-  [stylist items remove-in-progress? delete-line-item-requests]
+(defn ^:private service-items<-
+  [stylist items remove-in-progress? delete-line-item-requests order-appointment-time-slot]
   (let [services   (select ?service items)
         stylist-id (:stylist/id stylist)]
     (merge
@@ -411,19 +412,21 @@
        {:service-section-id "service-section"})
 
      {:stylist (if stylist-id
-                 {:servicing-stylist-portrait-url                  (-> stylist :stylist/portrait :resizable-url)
-                  :servicing-stylist-banner/id                     "servicing-stylist-banner"
-                  :servicing-stylist-banner/title                  (:stylist/name stylist)
-                  :servicing-stylist-banner/rating                 {:rating/value (:stylist.rating/score stylist)
-                                                                    :rating/id    "stylist-rating-id"}
-                  :servicing-stylist-banner/image-url              (some-> stylist :stylist/portrait :resizable-url)
-                  :servicing-stylist-banner/title-and-image-target [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
-                                                                                                               :store-slug (:stylist/slug stylist)}]
-                  :servicing-stylist-banner.swap-icon/target       [events/control-change-stylist {:stylist-id stylist-id}]
-                  :servicing-stylist-banner.swap-icon/id           "stylist-swap"
-                  :servicing-stylist-banner.remove-icon/spinning?  remove-in-progress?
-                  :servicing-stylist-banner.remove-icon/target     [events/control-remove-stylist {:stylist-id stylist-id}]
-                  :servicing-stylist-banner.remove-icon/id         "remove-stylist"}
+                 (merge
+                  {:servicing-stylist-portrait-url                      (-> stylist :stylist/portrait :resizable-url)
+                   :servicing-stylist-banner/id                         "servicing-stylist-banner"
+                   :servicing-stylist-banner/title                      (:stylist/name stylist)
+                   :servicing-stylist-banner/rating                     {:rating/value (:stylist.rating/score stylist)
+                                                                         :rating/id    "stylist-rating-id"}
+                   :servicing-stylist-banner/image-url                  (some-> stylist :stylist/portrait :resizable-url)
+                   :servicing-stylist-banner/title-and-image-target     [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
+                                                                                                                    :store-slug (:stylist/slug stylist)}]
+                   :servicing-stylist-banner.swap-icon/target           [events/control-change-stylist {:stylist-id stylist-id}]
+                   :servicing-stylist-banner.swap-icon/id               "stylist-swap"
+                   :servicing-stylist-banner.remove-icon/spinning?      remove-in-progress?
+                   :servicing-stylist-banner.remove-icon/target         [events/control-remove-stylist {:stylist-id stylist-id}]
+                   :servicing-stylist-banner.remove-icon/id             "remove-stylist"}
+                  (within :servicing-stylist-banner.appointment-time-slot order-appointment-time-slot))
                  {:stylist-organism/id            "stylist-organism"
                   :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})}
 
@@ -779,7 +782,8 @@
                                                                       (api.current/stylist app-state)
                                                                       items
                                                                       remove-in-progress?
-                                                                      delete-line-item-requests)
+                                                                      delete-line-item-requests
+                                                                      (:appointment-time-slot waiter-order))
                                         :checkout-caption            (checkout-caption<- items)
                                         :cart-summary                (merge (cart-summary<- waiter-order items)
                                                                             (freeinstall-informational<- waiter-order items adding-freeinstall?)

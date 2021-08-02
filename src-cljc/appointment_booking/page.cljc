@@ -3,20 +3,41 @@
                        [storefront.components.formatters :as formatters]])
             api.current
             api.orders
-            appointment-booking.core
             [mayvenn.visual.tools :refer [with within]]
             [mayvenn.visual.ui.actions :as actions]
             [mayvenn.visual.ui.titles :as titles]
             [mayvenn.visual.lib.radio-section :as radio-section]
+            [mayvenn.concept.booking :as booking]
             [spice.maps :as maps]
             [spice.date :as date]
             [storefront.component :as c]
             [storefront.components.header :as header]
             [storefront.components.svg :as svg]
-            [appointment-booking.keypaths :as k]
             [storefront.events :as e]
-            [storefront.keypaths :as storefront.k]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.effects :as fx]
+            [storefront.keypaths :as k]
+            [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages
+             :as messages
+             :refer [handle-message] :rename {handle-message publish}]))
+
+(defmethod fx/perform-effects e/navigate-adventure-appointment-booking
+  [_ _event _ _ _state]
+  (publish e/biz|follow|defined
+           {:follow/start    [e/biz|appointment-booking|initialized]
+            :follow/after-id e/biz|appointment-booking|done
+            :follow/then     [e/biz|appointment-booking|navigation-decided
+                              {:choices {:cart    e/navigate-cart
+                                         :success e/navigate-adventure-match-success}}]}))
+
+
+(defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-appointment-booking
+  [_ _event _ _ _state]
+  (publish e/biz|follow|defined
+           {:follow/start    [e/biz|appointment-booking|initialized]
+            :follow/after-id e/biz|appointment-booking|done
+            :follow/then     [e/biz|appointment-booking|navigation-decided
+                              {:choices {:success e/navigate-shopping-quiz-unified-freeinstall-match-success}}]}))
 
 (defn split-month [week]
   #?(:cljs
@@ -159,7 +180,7 @@
   (let [radio-name "appointment-time-slot-radio"]
     (into [:div]
           (for [{:slot/keys        [id]
-                 :slot.picker/keys [copy]} appointment-booking.core/time-slots
+                 :slot.picker/keys [copy]} booking/time-slots
                 :let                       [radio-id (str radio-name "-" id)]]
             (radio-section/v2
              (merge {:dial.attrs/name          radio-name
@@ -210,22 +231,23 @@
                (map #(date/add-delta starting-sunday {:days %})
                     (range (* num-of-shown-weeks length-of-week))))))
 
+
 (defn query [app-state]
-  (let [selected-time-slot      (get-in app-state k/booking-selected-time-slot)
+  (let [selected-time-slot      (booking/<- app-state ::booking/selected-time-slot)
         earliest-available-date (-> (date/now)
-                                    (appointment-booking.core/start-of-day)
+                                    (booking/start-of-day)
                                     (date/add-delta {:days 2}))
-        selected-date           (or (get-in app-state k/booking-selected-date)
+        selected-date           (or (booking/<- app-state ::booking/selected-date)
                                     earliest-available-date)
 
-        shown-weeks             (-> earliest-available-date
-                                    find-previous-sunday
-                                    get-weeks)
-        displayed-week                    (or (get-week shown-weeks selected-date)
-                                    (first shown-weeks))
-        first-available-week?   (= displayed-week (first shown-weeks))
-        last-available-week?    (= displayed-week (last shown-weeks))
-        time-slots              appointment-booking.core/time-slots]
+        shown-weeks           (-> earliest-available-date
+                                  find-previous-sunday
+                                  get-weeks)
+        displayed-week        (or (get-week shown-weeks selected-date)
+                                  (first shown-weeks))
+        first-available-week? (= displayed-week (first shown-weeks))
+        last-available-week?  (= displayed-week (last shown-weeks))
+        time-slots            booking/time-slots]
     (merge
      (within :top-third.title
              {:primary "When do you want to get your hair done?"
@@ -253,7 +275,7 @@
 
 
 (defn adv-flow-query [app-state]
-  (let [nav-undo-stack (get-in app-state storefront.k/navigation-undo-stack)
+  (let [nav-undo-stack (get-in app-state k/navigation-undo-stack)
         base           (query app-state)]
     (merge
      base

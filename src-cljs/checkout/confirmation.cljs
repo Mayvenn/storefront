@@ -5,6 +5,7 @@
             [catalog.images :as catalog-images]
             [checkout.ui.cart-item-v202004 :as cart-item-v202004]
             [checkout.ui.cart-summary-v202004 :as cart-summary]
+            [mayvenn.visual.tools :refer [within]]
             [clojure.string :as string]
             [spice.core :as spice]
             [spice.maps :as maps]
@@ -469,6 +470,7 @@
 (defn query
   [data]
   (let [order                                 (get-in data keypaths/order)
+
         selected-quadpay?                     (-> order :cart-payments :quadpay)
         {service-items     :services/items
          servicing-stylist :services/stylist} (api.orders/services data order)
@@ -505,6 +507,9 @@
                                                         (get skus (get-in free-mayvenn-service [:free-mayvenn-service/service-item :sku]))
                                                         addon-service-skus
                                                         (orders/available-store-credit order user))}
+     (within :servicing-stylist-banner.appointment-time-slot
+             (:appointment-time-slot order))
+
      (when (and services-on-order? servicing-stylist)
        {:servicing-stylist-banner/id        "servicing-stylist-banner"
         :servicing-stylist-banner/heading   "Your Mayvenn Certified Stylist"

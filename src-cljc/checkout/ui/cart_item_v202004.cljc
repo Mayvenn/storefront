@@ -7,6 +7,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.routes :as routes]
+            [mayvenn.visual.tools :refer [with]]
             ui.molecules))
 
 (defn cart-item-floating-box-molecule
@@ -222,7 +223,9 @@
            [:a.content-2.proxima.flex.justify-between.inherit-color (apply utils/route-to title-and-image-target) title]
            [:div.content-2.proxima.flex.justify-between title])
          [:div.content-3.proxima "Your Certified Mayvenn Stylist"]
-         [:div.mt1 (ui.molecules/stars-rating-molecule rating)]]]
+         [:div.mt1 (ui.molecules/stars-rating-molecule rating)]
+         (ui.molecules/stylist-appointment-time
+          (with :servicing-stylist-banner.appointment-time-slot data))]]
        [:div.flex.flex-column.justify-between.items-end
         (component/build stylist-remove-molecule data nil)
         (component/build stylist-swap-molecule data nil)]]

@@ -6,19 +6,19 @@
    [api.catalog :refer [?service select]]
    api.current
    api.orders
-   [appointment-booking.core :as booking]
    [appointment-booking.page :as booking.page]
    [clojure.string :refer [split starts-with?]]
    [mayvenn.concept.looks-suggestions :as looks-suggestions]
    [mayvenn.concept.progression :as progression]
    [mayvenn.concept.questioning :as questioning]
+   [mayvenn.concept.booking :as booking]
    [mayvenn.concept.wait :as wait]
    [mayvenn.live-help.core :as live-help]
    [mayvenn.visual.lib.card :as card]
    [mayvenn.visual.lib.escape-hatch :as escape-hatch]
    [mayvenn.visual.lib.progress-bar :as progress-bar]
    [mayvenn.visual.lib.question :as question]
-   [mayvenn.visual.tools :refer [with]]
+   [mayvenn.visual.tools :refer [with within]]
    [mayvenn.visual.ui.actions :as actions]
    [mayvenn.visual.ui.titles :as titles]
    #?@(:cljs [[storefront.hooks.google-maps :as google-maps]
@@ -227,27 +227,19 @@
                   :thumbnail/ucare-id      (hacky-cart-image item)})))
              items)
        (let [{:stylist/keys [id name]} current-stylist
-             {:keys [slot-id date]}    (:appointment-time-slot waiter-order)
-             date-copy                 #?(:clj nil
-                                          :cljs (formatters/long-date date))
-             time-copy                 (->> booking/time-slots
-                                            (filter (fn [{:slot/keys [id]}]
-                                                      (= id slot-id)))
-                                            first
-                                            :slot.card/copy)
+             appointment-time-slot     (:appointment-time-slot waiter-order)
              idx                       (count items)]
-         {:id                         (str idx "-cart-item-stylist-" id)
-          :idx                        idx
-          :title/id                   "line-item-title-stylist"
-          :title/primary              name
-          :title/secondary            "Your Certified Mayvenn Stylist"
-          :thumbnail/id               id
-          :thumbnail/ucare-id         (hacky-stylist-image current-stylist)
-          :stylist.rating/id          id
-          :stylist.rating/value       (:stylist.rating/score current-stylist)
-          :appointment-time-slot/copy (when (and (seq date-copy)
-                                                 (seq time-copy))
-                                        (str date-copy " at " time-copy))}))})))
+         (merge
+          {:id                            (str idx "-cart-item-stylist-" id)
+           :idx                           idx
+           :title/id                      "line-item-title-stylist"
+           :title/primary                 name
+           :title/secondary               "Your Certified Mayvenn Stylist"
+           :thumbnail/id                  id
+           :thumbnail/ucare-id            (hacky-stylist-image current-stylist)
+           :stylist.rating/id             id
+           :stylist.rating/value          (:stylist.rating/score current-stylist)}
+          (within :booking.appointment-time-slot appointment-time-slot))))})))
 
 ;; Template: 3/Stylist Results
 (def ^:private scrim-atom
@@ -593,7 +585,7 @@
               just-added-experience? (experiments/just-added-experience? state)
               stylist-results-test?  (experiments/stylist-results-test? state)
               easy-booking?          (experiments/easy-booking? state)
-              booking                (booking/<- state)
+              booking-done           (booking/<- state ::booking/done)
 
               address-field-errors (get-in state matching.k/address-field-errors)
               stylist-matched?     (or (:matched/stylist matching)
@@ -607,7 +599,7 @@
 
             (and easy-booking?
                  stylist-matched?
-                 (not (get booking :done)))
+                 (not booking-done))
             (c/build appointment-booking-template
                      (merge (header< undo-history (apply max quiz-progression))
                             (progress< quiz-progression)

@@ -2,7 +2,9 @@
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.components.formatters :as formatters]
+            [storefront.platform.component-utils :as utils]
+            [mayvenn.concept.booking :as booking]))
 
 (defn return-link
   [{:return-link/keys [copy id back]
@@ -143,3 +145,23 @@
   (component/html
    [:div.content-3.s-color
     (svg-star-rating value)]))
+
+(defn stylist-appointment-time [{:keys [date slot-id]}]
+  ;; TODO(ellie, 2021-08-02): We are unconvinced this belongs here.
+  (let [date-copy #?(:clj nil
+                     :cljs (formatters/long-date date))
+        time-copy (->> booking/time-slots
+                       (filter (fn [{:slot/keys [id]}]
+                                 (= id slot-id)))
+                       first
+                       :slot.card/copy)
+        copy      (when (and (seq date-copy)
+                             (seq time-copy))
+                    (str date-copy " at " time-copy))]
+    (when copy
+      (component/html
+       [:div.content-3.pt1.flex
+        (svg/calendar {:class  "mr1 fill-p-color"
+                       :width  "1.1em"
+                       :height "1.1em"})
+        [:div.pb1 copy]]))))

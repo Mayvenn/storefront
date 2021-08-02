@@ -9,7 +9,6 @@
   (:require [mayvenn.visual.ui.actions :as actions]
             [mayvenn.visual.ui.titles :as titles]
             [mayvenn.visual.ui.thumbnails :as thumbnails]
-            [storefront.components.svg :as svg]
             ui.molecules
             [mayvenn.visual.tools :refer [with]]
             [storefront.component :as c]
@@ -34,6 +33,7 @@
        {:style {:width "175px"}}
        (actions/small-primary (with :action data))]]]]])
 
+
 ;; TODO(corey) this contract is different, prob should be a new ns
 (c/defcomponent cart-item-1
   [data _ _]
@@ -48,12 +48,7 @@
       (titles/proxima-content (with :title data))
       [:div
        (ui.molecules/stars-rating-molecule (with :stylist data))]
-      (when-let [copy (:appointment-time-slot/copy data)]
-        [:div.content-3.pt1.flex
-         (svg/calendar {:class  "mr1 fill-p-color"
-                        :width  "1.1em"
-                        :height "1.1em"})
-         [:div.pb1 copy]])]
+      (ui.molecules/stylist-appointment-time (with :booking.appointment-time-slot data))]
 
 
      ;; price group
