@@ -44,7 +44,6 @@
 
 (defmethod fx/perform-effects e/control-show-edit-appointment-menu
   [_ _ _args _ _state]
-  (publish e/biz|appointment-booking|initialized)
   (publish e/biz|follow|defined
            {:follow/start    [e/biz|appointment-booking|initialized]
             :follow/after-id e/biz|appointment-booking|done
