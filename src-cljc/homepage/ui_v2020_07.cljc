@@ -2,7 +2,6 @@
   (:require adventure.keypaths
             [storefront.accessors.experiments :as experiments]
             [storefront.keypaths :as k]
-            [storefront.routes :as routes]
             [adventure.components.layered :as layered]
             [homepage.ui.atoms :as A]
             [homepage.ui.contact-us :as contact-us]
@@ -66,21 +65,13 @@
   decomplect:
   - handles extraction from cms
   - schematizes according to reused component"
-  [cms experience unified-fi-shopping-quiz?]
+  [cms experience]
   (let [hero-content
         (or
          (some-> cms :homepage experience :hero)
          ;; TODO handle cms failure fallback
          {})]
-    (assoc-in (if unified-fi-shopping-quiz?
-                (homepage-hero/query hero-content)
-                {:ucare?    true
-                 :alt       "All hail your hair. Hair + service for the price of one"
-                 :file-name "shop-homepage-unified-freeinstall-hero.jpg"
-                 :dsk-uuid  "9ebaefd2-b2f0-4bd4-a8d0-ccd0a723eab9"
-                 :mob-uuid  "a2e7b0f3-e44e-405e-b7b0-d6afa53e7295"
-                 :opts      {:href "/quiz/unified-freeinstall/intro"
-                             :data-test "home-banner"}})
+    (assoc-in (homepage-hero/query hero-content)
               [:opts :data-test]
               "hero-link")))
 
