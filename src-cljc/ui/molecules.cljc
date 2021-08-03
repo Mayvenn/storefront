@@ -4,6 +4,8 @@
             [storefront.components.ui :as ui]
             [storefront.components.formatters :as formatters]
             [storefront.platform.component-utils :as utils]
+            [clojure.string :as string]
+            [spice.core :as spice]
             [mayvenn.concept.booking :as booking]))
 
 (defn return-link
@@ -148,16 +150,18 @@
 
 (defn stylist-appointment-time [{:keys [date slot-id]}]
   ;; TODO(ellie, 2021-08-02): We are unconvinced this belongs here.
-  (let [date-copy #?(:clj nil
-                     :cljs (formatters/long-date date))
-        time-copy (->> booking/time-slots
-                       (filter (fn [{:slot/keys [id]}]
-                                 (= id slot-id)))
-                       first
-                       :slot.card/copy)
-        copy      (when (and (seq date-copy)
-                             (seq time-copy))
-                    (str date-copy " at " time-copy))]
+  (let [[year idx-1-month day] (map spice/parse-int (string/split date "-"))
+        idx-0-month            (dec idx-1-month)
+        date-copy              #?(:clj nil
+                                  :cljs (formatters/long-date (js/Date. year idx-0-month day)))
+        time-copy              (->> booking/time-slots
+                                    (filter (fn [{:slot/keys [id]}]
+                                              (= id slot-id)))
+                                    first
+                                    :slot.card/copy)
+        copy                   (when (and (seq date-copy)
+                                          (seq time-copy))
+                                 (str date-copy " at " time-copy))]
     (when copy
       (component/html
        [:div.content-3.pt1.flex
