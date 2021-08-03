@@ -214,7 +214,18 @@
   [items]
   (mapcat #(repeat (:item/quantity %) (dissoc % :item/quantity)) items))
 
-
+(defn generate-availability
+  "Electives :: [(a -> [b])]"
+  [electives skus]
+  (let [elective-count (count electives)]
+    (reduce
+     (fn [acc sku]
+       (let [sku-elective-values (map first ((apply juxt electives) sku))]
+         (cond-> acc
+           (= elective-count (count sku-elective-values))
+           (assoc-in sku-elective-values sku))))
+     {}
+     skus)))
 
 (defmethod transitions/transition-state events/initialize-look-details
   [_ _ {:keys [shared-cart]} app-state]
@@ -233,9 +244,7 @@
                                                          (map (partial maps/map-values first))
                                                          vec)})
         sliced-sku-db              (slice-sku-db (get-in app-state keypaths/v2-skus) shared-cart initial-selections)
-        availability               (catalog.products/index-by-selectors
-                                    [:hair/family :hair/color :hair/length]
-                                    (vals sliced-sku-db))
+        availability               (generate-availability [:hair/family :hair/color :hair/length] (vals sliced-sku-db))
         options                    (initialize-picker-options
                                     events/control-look-detail-picker-option-select
                                     initial-selections
