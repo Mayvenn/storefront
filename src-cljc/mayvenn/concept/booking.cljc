@@ -8,7 +8,9 @@
    [storefront.routes :as routes]
    [storefront.keypaths :as keypaths]
    #?@(:cljs [[storefront.api :as api]
-              [storefront.history :as history]])
+              [storefront.history :as history]
+              [storefront.hooks.stringer :as stringer]
+              storefront.frontend-trackings])
    [storefront.platform.messages
     :as messages
     :refer [handle-message] :rename {handle-message publish}]
@@ -17,9 +19,8 @@
 
    [spice.date :as date]
    [spice.core :as spice]
-
-
-   ))
+   [storefront.trackings :as trk]
+   [clojure.string :as string]))
 
 (def time-slots
   [{:slot/id "08-to-11"
@@ -113,9 +114,23 @@
                                        :slot-id selected-time-slot
                                        :date    selected-date}))))
 
+(defmethod trk/perform-track e/biz|appointment-booking|submitted
+  [_ _ _args state]
+  (let [{::keys [selected-time-slot selected-date]} (read-model state)
+        date-without-time (-> selected-date date/to-iso (string/split "T") first)]
+    #?(:cljs
+       (stringer/track-event "appointment-requested"
+                             {:date-requested date-without-time
+                              :time-requested selected-time-slot}))))
+
 (defmethod fx/perform-effects e/biz|appointment-booking|skipped
   [_ _event _args _prev-state _state]
   (publish e/biz|appointment-booking|done))
+
+(defmethod trk/perform-track e/biz|appointment-booking|skipped
+  [_ _ _args _state]
+  #?(:cljs
+     (stringer/track-event "appointment_request-skipped")))
 
 
 
