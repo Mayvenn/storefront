@@ -3,6 +3,7 @@
                        [storefront.history :as history]])
             adventure.keypaths
             [stylist-matching.stylist-results :as stylist-results]
+            stylist-matching.core
             api.orders
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
@@ -15,6 +16,9 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
             storefront.keypaths
+            [storefront.platform.messages :as messages
+             :refer [handle-message]
+             :rename {handle-message publish}]
             [mayvenn.visual.ui.titles :as titles]
             [mayvenn.visual.tools :refer [with within]]))
 
@@ -141,6 +145,14 @@
 
 (defmethod fx/perform-effects e/navigate-adventure-top-stylist
   [_ _ _ _ state]
+  (publish e/biz|follow|defined
+           {:follow/after-id e/flow|stylist-matching|matched
+            :follow/then     [e/post-stylist-matched-navigation-decided
+                              {:decision
+                               {:booking e/navigate-adventure-appointment-booking
+                                :cart    e/navigate-cart
+                                :success e/navigate-adventure-match-success}}]})
+
   #?(:cljs
      (when (empty? (get-in state k/stylist-results))
        (history/enqueue-navigate e/navigate-adventure-find-your-stylist))))

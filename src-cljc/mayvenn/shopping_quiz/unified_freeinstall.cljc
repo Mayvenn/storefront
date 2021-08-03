@@ -345,6 +345,16 @@
          [(:top-stylist decision)])
        #?(:cljs (apply history/enqueue-navigate))))
 
+(defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-top-stylist
+  [_ _ _args _ _state]
+  (publish e/biz|follow|defined
+           {:follow/after-id e/flow|stylist-matching|matched
+            :follow/then     [e/post-stylist-matched-navigation-decided
+                              {:decision
+                               {:booking e/navigate-shopping-quiz-unified-freeinstall-appointment-booking
+                                :success e/navigate-shopping-quiz-unified-freeinstall-match-success}}]}))
+
+
 ;; Template: 2/Summary
 
 (c/defcomponent summary-template
