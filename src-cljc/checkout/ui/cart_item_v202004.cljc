@@ -176,23 +176,30 @@
 
 (component/defcomponent stylist-remove-molecule
   [{:servicing-stylist-banner.remove-icon/keys [spinning? target id]} _ _]
-  (when id
-    (if spinning?
-      [:div.h3.flex
-       {:style {:width "1.2em"}}
-       ui/spinner]
-      [:a.block.gray.medium.p1.flex.justify-center.items-center
-       (merge {:data-test id
-               :on-click  (apply utils/send-event-callback target)})
-       (svg/x-sharp {:width  "14px"
-                     :height "14px"
-                     :stroke-width "0.4"
-                     :class  "fill-dark-gray stroke-dark-gray"})])) )
+  (cond
+    ;; Continue to take up space as if the remove icon is there.
+    (not id)
+    [:div {:width "14px"
+           :height "14px"}]
+
+    spinning?
+    [:div.h3.flex
+     {:style {:width "1.2em"}}
+     ui/spinner]
+
+    :else
+    [:a.block.gray.medium.p1.flex.justify-center.items-center
+     (merge {:data-test id
+             :on-click  (apply utils/send-event-callback target)})
+     (svg/x-sharp {:width  "14px"
+                   :height "14px"
+                   :stroke-width "0.4"
+                   :class  "fill-dark-gray stroke-dark-gray"})]))
 
 (component/defcomponent stylist-swap-molecule
   [{:servicing-stylist-banner.swap-icon/keys [id target]} _ _]
   (when id
-    [:a.block.gray.medium.p1.flex.justify-center.items-center
+    [:a.block.gray.medium.p1.flex.justify-center.items-baseline
      (merge {:data-test id
              :href      (routes/path-for events/navigate-adventure-find-your-stylist)
              :on-click  (apply utils/send-event-callback target)})

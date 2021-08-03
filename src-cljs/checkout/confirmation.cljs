@@ -517,7 +517,9 @@
         :servicing-stylist-banner/subtitle  (-> servicing-stylist :salon :name)
         :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)
                                              :rating/id    "stylist-rating-id"}
-        :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)}))))
+        :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)
+        :servicing-stylist-banner.edit-appointment-icon/target [events/control-show-edit-appointment-menu]
+        :servicing-stylist-banner.edit-appointment-icon/id      "edit-appointment"}))))
 
 (defn ^:private built-non-auth-component [data opts]
   (component/build component (query data) opts))
