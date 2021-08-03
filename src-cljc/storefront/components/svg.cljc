@@ -499,6 +499,12 @@
    [:svg opts
     ^:inline (svg-xlink "certified")]))
 
+(defn edit [opts]
+  "A pencil denoting an edit action"
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "edit")]))
+
 (defn symbolic->html
   "Converts a data from query that describes an svg to the appropriate html.
 
@@ -527,5 +533,6 @@
        :svg/experience-badge                ^:inline (experience-badge attrs)
        :svg/certified                       ^:inline (certified attrs)
        :svg/mayvenn-logo                    ^:inline (mayvenn-logo attrs)
+       :svg/edit                            ^:inline (edit attrs)
        [:div])
      [:div])))

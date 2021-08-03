@@ -5,6 +5,7 @@
    [storefront.effects :as fx]
    [storefront.transitions :as t]
    [storefront.events :as e]
+   [storefront.routes :as routes]
    [storefront.keypaths :as keypaths]
    #?@(:cljs [[storefront.api :as api]
               [storefront.history :as history]])
@@ -106,8 +107,7 @@
   [_ _event _args _prev-state state]
   #?(:cljs
      (let [{:keys [number token]}                      (get-in state keypaths/order)
-           {::keys [selected-time-slot selected-date]} (read-model state)
-           ]
+           {::keys [selected-time-slot selected-date]} (read-model state)]
        (api/set-appointment-time-slot {:number  number
                                        :token   token
                                        :slot-id selected-time-slot
@@ -135,11 +135,14 @@
       (follow/clear event)))
 
 (defmethod fx/perform-effects e/biz|appointment-booking|navigation-decided
-  [_ _event {:keys [choices]
-            {:keys [decision]} :follow/args} _prev-state _state]
-  (let [target (or (get choices decision)
-                   (get choices :success))]
-    #?(:cljs (history/enqueue-navigate target))))
+  [_ _event {:keys              [choices]
+             {:keys [decision]} :follow/args} _prev-state _state]
+  (let [target (spice.core/spy (or (get choices decision)
+                                   (get choices :success)))]
+    #?(:cljs
+       (if (routes/sub-page? [target nil] [e/navigate nil])
+         (history/enqueue-navigate target)
+         (publish target)))))
 
 (defmethod fx/perform-effects e/api-success-set-appointment-time-slot
   [_ _event {:keys [order] :as _args} _prev-state _state]

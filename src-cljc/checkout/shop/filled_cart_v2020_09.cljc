@@ -413,19 +413,21 @@
 
      {:stylist (if stylist-id
                  (merge
-                  {:servicing-stylist-portrait-url                      (-> stylist :stylist/portrait :resizable-url)
-                   :servicing-stylist-banner/id                         "servicing-stylist-banner"
-                   :servicing-stylist-banner/title                      (:stylist/name stylist)
-                   :servicing-stylist-banner/rating                     {:rating/value (:stylist.rating/score stylist)
-                                                                         :rating/id    "stylist-rating-id"}
-                   :servicing-stylist-banner/image-url                  (some-> stylist :stylist/portrait :resizable-url)
-                   :servicing-stylist-banner/title-and-image-target     [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
-                                                                                                                    :store-slug (:stylist/slug stylist)}]
-                   :servicing-stylist-banner.swap-icon/target           [events/control-change-stylist {:stylist-id stylist-id}]
-                   :servicing-stylist-banner.swap-icon/id               "stylist-swap"
-                   :servicing-stylist-banner.remove-icon/spinning?      remove-in-progress?
-                   :servicing-stylist-banner.remove-icon/target         [events/control-remove-stylist {:stylist-id stylist-id}]
-                   :servicing-stylist-banner.remove-icon/id             "remove-stylist"}
+                  {:servicing-stylist-portrait-url                        (-> stylist :stylist/portrait :resizable-url)
+                   :servicing-stylist-banner/id                           "servicing-stylist-banner"
+                   :servicing-stylist-banner/title                        (:stylist/name stylist)
+                   :servicing-stylist-banner/rating                       {:rating/value (:stylist.rating/score stylist)
+                                                                           :rating/id    "stylist-rating-id"}
+                   :servicing-stylist-banner/image-url                    (some-> stylist :stylist/portrait :resizable-url)
+                   :servicing-stylist-banner/title-and-image-target       [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
+                                                                                                                      :store-slug (:stylist/slug stylist)}]
+                   :servicing-stylist-banner.swap-icon/target             [events/control-change-stylist {:stylist-id stylist-id}]
+                   :servicing-stylist-banner.swap-icon/id                 "stylist-swap"
+                   :servicing-stylist-banner.edit-appointment-icon/target [events/control-show-edit-appointment-menu]
+                   :servicing-stylist-banner.edit-appointment-icon/id      "edit-appointment"
+                   :servicing-stylist-banner.remove-icon/spinning?        remove-in-progress?
+                   :servicing-stylist-banner.remove-icon/target           [events/control-remove-stylist {:stylist-id stylist-id}]
+                   :servicing-stylist-banner.remove-icon/id               "remove-stylist"}
                   (within :servicing-stylist-banner.appointment-time-slot order-appointment-time-slot))
                  {:stylist-organism/id            "stylist-organism"
                   :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})}

@@ -769,6 +769,8 @@
 (defpath biz|appointment-booking|done)
 
 (defpath biz|appointment-booking|navigation-decided)
+(defpath control-show-edit-appointment-menu)
+(defpath control-dismiss-edit-appointment-menu)
 
 (defpath post-stylist-matched-navigation-decided)
 

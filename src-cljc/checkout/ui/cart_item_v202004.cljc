@@ -200,6 +200,16 @@
                        :height "22px"
                        :class  "fill-dark-gray stroke-dark-gray"})]))
 
+(component/defcomponent edit-appointment-molecule
+  [{:servicing-stylist-banner.edit-appointment-icon/keys [id target]} _ _]
+  (when id
+    [:a.block.gray.medium.p1.flex.justify-center.items-center
+     (merge {:data-test id
+             :on-click  (apply utils/send-event-callback target)})
+     (svg/edit {:width  "1em"
+                :height "1em"
+                :class  "fill-dark-gray stroke-dark-gray"})]))
+
 (component/defcomponent stylist-organism
   [{:as data
     :servicing-stylist-banner/keys
@@ -228,7 +238,9 @@
           (with :servicing-stylist-banner.appointment-time-slot data))]]
        [:div.flex.flex-column.justify-between.items-end
         (component/build stylist-remove-molecule data nil)
-        (component/build stylist-swap-molecule data nil)]]
+        (if (seq (with :servicing-stylist-banner.appointment-time-slot data))
+          (component/build edit-appointment-molecule data nil)
+          (component/build stylist-swap-molecule data nil))]]
       [:div.mt1.border-bottom.border-cool-gray.hide-on-mb]]]))
 
 (component/defcomponent no-stylist-organism
