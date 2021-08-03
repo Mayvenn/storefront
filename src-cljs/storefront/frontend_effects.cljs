@@ -278,9 +278,13 @@
 
 (defmethod effects/perform-effects events/navigate-home
   [_ _ _ _ app-state]
-  (let [homepage-version (if (= :shop (sites/determine-site app-state)) :shop :unified)]
+  (let [homepage-version (if (= :shop (sites/determine-site app-state))
+                           (if (experiments/shopping-quiz-unified-fi? app-state)
+                             :unified-fi
+                             :shop)
+                           :unified)]
     (doseq [keypath [[:advertisedPromo]
-                     [:homepage homepage-version]
+                     [:homepage (spice.core/sspy homepage-version)]
                      [:ugc-collection :free-install-mayvenn]
                      [:faq :free-mayvenn-services]]]
       (effects/fetch-cms-keypath app-state keypath))))

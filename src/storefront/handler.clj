@@ -317,8 +317,11 @@
                               merge
                               (update-data {} [:advertisedPromo])
                               (cond (= events/navigate-home nav-event)
-                                    (-> {}
-                                        (update-data [:homepage (if shop? :shop :unified)])
+                                    (-> (if shop?
+                                          (-> {}
+                                              (update-data [:homepage :unified-fi])
+                                              (update-data [:homepage :shop]))
+                                          (update-data {} [:homepage :unified]))
                                         (update-data [:ugc-collection :free-install-mayvenn])
                                         (update-data [:faq :free-mayvenn-services])
                                         contentful/derive-all-looks)
