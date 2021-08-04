@@ -1186,13 +1186,23 @@
 
 (defn set-appointment-time-slot
   [{:as params :keys [slot-id date]}]
-  (let [date-without-time (-> date date/to-iso (string/split "T") first)]
+  (let [date-without-time (some-> date date/to-iso (string/split "T") first)]
     (storeback-api-req
      POST "/v2/set-appointment-time-slot"
-     (conj request-keys/set-appointment-time-slot)
+     request-keys/set-appointment-time-slot
      {:params        (merge (select-keys params [:user-id :user-token :token :number])
                             {:slot-id slot-id
                              :date    date-without-time})
       :handler       (comp #(messages/handle-message events/api-success-set-appointment-time-slot {:order %})
                            orders/TEMP-pretend-service-items-do-not-exist)
       :error-handler #(messages/handle-message events/api-failure-set-appointment-time-slot {:response %})})))
+
+(defn remove-appointment-time-slot
+  [params]
+  (storeback-api-req
+   POST "/v2/remove-appointment-time-slot"
+   request-keys/remove-appointment-time-slot
+   {:params        (select-keys params [:user-id :user-token :token :number])
+    :handler       (comp #(messages/handle-message events/api-success-remove-appointment-time-slot {:order %})
+                         orders/TEMP-pretend-service-items-do-not-exist)
+    :error-handler #(messages/handle-message events/api-failure-remove-appointment-time-slot {:response %})}))

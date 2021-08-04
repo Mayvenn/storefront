@@ -185,3 +185,7 @@
   [_ _event {:keys [order] :as _args} _prev-state _state]
   (publish e/save-order {:order order})
   (publish e/biz|appointment-booking|done))
+
+(defmethod fx/perform-effects e/api-success-remove-appointment-time-slot
+  [_ _event {:keys [order] :as _args} _prev-state _state]
+  (publish e/save-order {:order order}))

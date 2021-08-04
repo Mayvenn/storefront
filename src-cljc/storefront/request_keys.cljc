@@ -61,6 +61,7 @@
 (def assign-servicing-stylist [:assign-servicing-stylist])
 (def remove-servicing-stylist [:remove-servicing-stylist])
 (def set-appointment-time-slot [:set-appointment-time-slot])
+(def remove-appointment-time-slot [:remove-appointment-time-slot])
 
 (def stripe-create-token [:stripe-create-token])
 

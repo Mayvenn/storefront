@@ -23,6 +23,12 @@
                                            (:number order)
                                            (:token order)))))
 
+(defmethod effects/perform-effects events/api-success-update-order-remove-servicing-stylist
+  [_ _ _ _ app-state]
+  #?(:cljs (let [order (get-in app-state keypaths/order)]
+             (api/remove-appointment-time-slot {:number (:number order)
+                                                :token  (:token order)}))))
+
 (defmethod transitions/transition-state events/control-toggle-promo-code-entry
   [_ _ _ app-state]
   (update-in app-state keypaths/promo-code-entry-open? not))

@@ -654,6 +654,9 @@
 (defpath api-success-set-appointment-time-slot)
 (defpath api-failure-set-appointment-time-slot)
 
+(defpath api-success-remove-appointment-time-slot)
+(defpath api-failure-remove-appointment-time-slot)
+
 ;; Flow - Service Addon Selection in the Cart
 
 (defpath flow|cart-service-addons|toggled)
