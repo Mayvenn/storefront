@@ -1,7 +1,8 @@
 ;; TODO(corey) This should be moved to homepage ns
 ;; It goes with homepage js module
 (ns storefront.components.homepage-hero
-  (:require [storefront.routes :as routes]
+  (:require [cemerick.url :as url]
+            [storefront.routes :as routes]
             [storefront.events :as events]))
 
 (defn info-path? [path]
@@ -9,10 +10,12 @@
 
 (defn query
   [cms-hero-data]
-  (let [path                    (or (:path cms-hero-data) "/shop/look")
+  (let [url                     (some-> cms-hero-data :path url/url)
+        path                    (or (:path url) "/shop/look")
+        query-params            (:query url)
         [event :as routed-path] (if (info-path? path)
                                   [events/external-redirect-info-page {:info-path path}]
-                                  (routes/navigation-message-for path))
+                                  (routes/navigation-message-for path query-params))
         link-options            (assoc (if-not (= events/navigate-not-found event)
                                          {:navigation-message routed-path}
                                          {:href path}) :data-test "home-banner")]
