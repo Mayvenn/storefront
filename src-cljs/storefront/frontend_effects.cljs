@@ -284,7 +284,7 @@
                              :shop)
                            :unified)]
     (doseq [keypath [[:advertisedPromo]
-                     [:homepage (spice.core/sspy homepage-version)]
+                     [:homepage homepage-version]
                      [:ugc-collection :free-install-mayvenn]
                      [:faq :free-mayvenn-services]]]
       (effects/fetch-cms-keypath app-state keypath))))
