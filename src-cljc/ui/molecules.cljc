@@ -150,10 +150,8 @@
 
 (defn stylist-appointment-time [{:keys [date slot-id]}]
   ;; TODO(ellie, 2021-08-02): We are unconvinced this belongs here.
-  (let [[year idx-1-month day] (map spice/parse-int (string/split date "-"))
-        idx-0-month            (dec idx-1-month)
-        date-copy              #?(:clj nil
-                                  :cljs (formatters/long-date (js/Date. year idx-0-month day)))
+  (let [date-copy              #?(:clj nil
+                                  :cljs (formatters/long-date (booking/parse-date-in-client-tz date)))
         time-copy              (->> booking/time-slots
                                     (filter (fn [{:slot/keys [id]}]
                                               (= id slot-id)))

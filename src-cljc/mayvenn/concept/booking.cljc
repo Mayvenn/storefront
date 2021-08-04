@@ -43,10 +43,15 @@
 ;;       even if the order already has the appointment set.
 (s/def ::done (s/nilable boolean?))
 
-(s/def ::model (s/keys
-                :opt [::selected-date
-                      ::selected-time-slot
-                      ::done]))
+(s/def ::model (s/nilable (s/keys
+                           :opt [::selected-date
+                                 ::selected-time-slot
+                                 ::done])))
+
+(defn parse-date-in-client-tz [date-str]
+  (let [[year idx-1-month day] (map spice/parse-int (string/split date-str "-"))
+        idx-0-month            (dec idx-1-month)]
+    #?(:cljs (js/Date. year idx-0-month day))))
 
 (defn ^:private conform!
   [spec value]
@@ -91,10 +96,28 @@
        ::done false}))
 
 (defmethod fx/perform-effects e/biz|appointment-booking|initialized
-[_ _ _args _ _state]
-(publish e/biz|appointment-booking|date-selected {:date (-> (date/now)
-                                                               start-of-day
-                                                               (date/add-delta {:days 2}))}))
+[_ _ _args _ state]
+  (let [{:keys [date slot-id]} (-> state
+                                   api.orders/current
+                                   :waiter/order
+                                   :appointment-time-slot)
+        order-date             (some-> date parse-date-in-client-tz)]
+    (spice.core/spy [date slot-id order-date])
+    (publish e/biz|appointment-booking|date-selected {:date (or order-date
+                                                                (-> (date/now)
+                                                                    start-of-day
+                                                                    (date/add-delta {:days 2})))})
+    (when slot-id
+      (publish e/biz|appointment-booking|time-slot-selected {:time-slot slot-id}))))
+
+(defmethod trk/perform-track e/biz|appointment-booking|initialized
+  [_ _ _args state]
+  (let [{::keys [selected-time-slot selected-date]} (read-model state)
+        date-without-time (-> selected-date date/to-iso (string/split "T") first)]
+    #?(:cljs
+       (stringer/track-event "appointment_request-displayed"
+                             {:date-requested date-without-time
+                              :time-requested selected-time-slot}))))
 
 (defmethod t/transition-state e/biz|appointment-booking|date-selected
   [_ _event {:keys [date] :as _args} state]
@@ -119,7 +142,7 @@
   (let [{::keys [selected-time-slot selected-date]} (read-model state)
         date-without-time (-> selected-date date/to-iso (string/split "T") first)]
     #?(:cljs
-       (stringer/track-event "appointment-requested"
+       (stringer/track-event "appointment_request-requested"
                              {:date-requested date-without-time
                               :time-requested selected-time-slot}))))
 
