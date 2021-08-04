@@ -1,5 +1,6 @@
 (ns storefront.uri
-  (:require [cemerick.url :as cemerick-url])
+  (:require [cemerick.url :as cemerick-url]
+            [clojure.string :as string])
   (:import #?@(:cljs [[goog Uri]]
                :clj [[org.apache.http.client.utils URIBuilder]
                      [org.apache.http.message BasicNameValuePair]])))
@@ -15,6 +16,17 @@
            (interpose "&")
            flatten
            (apply str)))
+
+(defn path->path-base [path]
+  (-> path
+      (string/split #"\?")
+      first))
+
+(defn path->query-params [path]
+  (-> path
+      (string/split #"\?")
+      second
+      cemerick-url/query->map))
 
 (defn set-query-string [s query-params]
   #?(:cljs (-> (Uri.parse s)
