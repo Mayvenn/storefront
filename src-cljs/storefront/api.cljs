@@ -959,7 +959,7 @@
   [session-id {:keys [sku-id->quantity heat-feature-flags store-stylist-id servicing-stylist-id] :as params} handler]
   (storeback-api-req
    POST
-   "/v2/bulk-add-to-bag"
+   "/v2/create-bag"
    request-keys/new-order-from-sku-ids
    {:params  (merge
               {:stylist-id           store-stylist-id
