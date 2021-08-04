@@ -1,6 +1,5 @@
 (ns storefront.routes
   (:require [bidi.bidi :as bidi]
-            [cemerick.url :as cemerick-url]
             [clojure.walk :refer [keywordize-keys]]
             [catalog.categories :as categories]
             [storefront.events :as events]
@@ -181,9 +180,7 @@
   (apply path-for (get-in app-state keypaths/navigation-message)))
 
 (defn navigation-message-for
-  ([uri]
-   (let [query-params (:query (cemerick-url/url uri))]
-     (navigation-message-for uri query-params)))
+  ([uri] (navigation-message-for uri nil))
   ([uri query-params]
    (navigation-message-for uri query-params nil))
   ([uri query-params subdomain]
