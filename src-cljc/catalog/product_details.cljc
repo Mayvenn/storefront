@@ -12,7 +12,7 @@
                        [storefront.hooks.stringer :as stringer]
                        [storefront.hooks.seo :as seo]
                        [storefront.trackings :as trackings]])
-            [api.catalog :refer [select]]
+            [api.catalog :refer [select ?cart-product-image]]
             api.current
             api.orders
             api.products
@@ -38,7 +38,7 @@
             [storefront.accessors.skus :as skus]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.picker.picker :as picker]
+            [storefront.components.picker.picker :as old-picker]
             [storefront.components.tabbed-information :as tabbed-information]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -52,7 +52,10 @@
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
             storefront.ugc
-            [storefront.components.svg :as svg]))
+            [storefront.components.svg :as svg]
+            [catalog.look-details-v202105 :as look-details-v202105]
+            [spice.maps :as maps]
+            [storefront.components.picker.picker-two :as picker-two]))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
@@ -127,11 +130,13 @@
            product
            reviews
            selected-sku
-           picker-data
+           old-picker-data
            ugc
            faq-section
            add-to-cart
-           live-help] :as data} _ opts]
+           live-help
+           picker-modal
+           multiple-lengths-pdp?] :as data} _ opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (if-not product
@@ -139,6 +144,8 @@
        {:style {:height "25em"}}
        (ui/large-spinner {:style {:height "4em"}})]
       [:div
+       (when multiple-lengths-pdp?
+         (component/build picker-two/modal picker-modal))
        [:div.container.pdp-on-tb
         (when (:offset ugc)
           [:div.absolute.overlay.z4.overflow-auto
@@ -160,8 +167,9 @@
               [:div (carousel carousel-images product)])]
             (component/build product-summary-organism data)
             [:div.px2
-             (component/build picker/component picker-data opts)]
-
+             (if multiple-lengths-pdp?
+               (component/build picker-two/picker-one-combo-face (:pickers data) opts)
+               (component/build old-picker/component old-picker-data opts))]
             [:div
              (cond
                unavailable? unavailable-button
@@ -306,6 +314,106 @@
       :content content}
      (select-keys section [:link/content :link/target :link/id]))))
 
+(defn ^:private pickers<
+  [facets-db
+   skus-db
+   selections
+   picker-options
+   availability]
+  {:quantity-picker (let [quantity-options (:quantity picker-options)
+                          selected-option (->> quantity-options
+                                               (filter :option/checked?)
+                                               first)]
+                      {:id               "picker-quantity"
+                       :value-id         "picker-selected-quantity-1"
+                       :options          quantity-options
+                       :primary          (:option/label selected-option)
+                       :selected-value   (:option/value selected-option)
+                       :selection-target [events/control-pdp-picker-option-select
+                                          {:selection [:quantity]}]
+                       :open-target      [events/control-look-detail-picker-open ;; TODO specific to pdp
+                                          {:picker-id [:quantity]}]})
+
+   :color-picker (let [{:option/keys [rectangle-swatch name slug]}
+                       (get-in facets-db [:hair/color
+                                          :facet/options
+                                          (get-in selections [:hair/color])])]
+                   {:id               "picker-color"
+                    :value-id         (str "picker-selected-color-" (facets/hacky-fix-of-bad-slugs-on-facets slug))
+                    :image-src        rectangle-swatch
+                    :primary          name
+                    :options          (:hair/color picker-options)
+                    :selected-value   slug
+                    :selection-target [events/control-pdp-picker-option-select {:selection [:hair/color]}]
+                    :open-target      [events/control-look-detail-picker-open {:picker-id [:hair/color]}]})
+
+   :length-pickers
+   (map-indexed
+    (fn [index length-options]
+      (let [{selected-hair-length :hair/length
+             item-hair-family     :hair/family} (get-in selections [:per-item index])
+            hair-family-and-color-skus
+            (select
+             (merge
+              (dissoc selections :per-item)
+              {:hair/family item-hair-family})
+             skus-db)
+
+            hair-length-facet-option
+            (get-in facets-db [:hair/length
+                               :facet/options
+                               selected-hair-length])
+
+            picker-data {:id               (str "picker-length-" index)
+                         :value-id         (str "picker-selected-length-" index "-" (:option/slug hair-length-facet-option))
+                         :image-src        (->> hair-family-and-color-skus first :selector/images (select ?cart-product-image) first :url)
+                         :options          length-options
+                         :primary          (:option/name hair-length-facet-option)
+                         :selected-value   (:option/slug hair-length-facet-option)
+                         :selection-target [events/control-pdp-picker-option-select {:selection [:per-item index :hair/length]}]
+                         :open-target      [events/control-look-detail-picker-open {:picker-id [:per-item index :hair/length]}]}]
+        (cond
+          (not (boolean
+                (get-in availability [item-hair-family
+                                      (:hair/color selections)
+                                      selected-hair-length])))
+          (-> picker-data
+              (update :primary str " - Unavailable")
+              (assoc :primary-attrs {:class "red"}  ;; TODO: too low contrast
+                     :image-attrs {:style {:opacity "50%"}}))
+
+          (not (boolean
+                (get-in availability [item-hair-family
+                                      (:hair/color selections)
+                                      selected-hair-length
+                                      :inventory/in-stock?])))
+          (-> picker-data
+              (update :primary str " - Sold Out")
+              (assoc :primary-attrs {:class "red"}  ;; TODO: too low contrast
+                     :image-attrs {:style {:opacity "50%"}}))
+
+          :else picker-data)))
+    (->> picker-options :per-item (mapv :hair/length)))})
+
+(defn ^:private picker-modal<
+  [picker-options picker-visible? selected-picker length-guide-image]
+  (let [picker-type (last selected-picker)
+        options     (get-in picker-options selected-picker)]
+    {:picker-modal/title        (case picker-type
+                                  :hair/color  "Color"
+                                  :hair/length "Length"
+                                  :quantity    "Quantity"
+                                  nil)
+     :picker-modal/type         picker-type
+     :picker-modal/options      options
+     ;; NOTE: There is a difference between selected and visible. We toggle
+     ;; picker visibility to signal that the modal should close but we don't remove
+     ;; the options so the close animation isn't stopped prematurely due to the
+     ;; child options re-rendering.
+     :picker-modal/visible?     (and picker-visible? options selected-picker)
+     :picker-modal/close-target [events/control-look-detail-picker-close]
+     :picker-modal/length-guide-image length-guide-image}))
+
 (defn query [data selected-sku]
   (let [selections (get-in data catalog.keypaths/detailed-product-selections)
         product    (products/current-product data)
@@ -348,15 +456,26 @@
       :selected-options                   (get-selected-options selections options)
       :selected-sku                       selected-sku
       :facets                             facets
-      :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
-      :picker-data                        (picker/query data length-guide-image)
       :faq-section                        (when (and shop? faq)
                                             (let [{:keys [question-answers]} faq]
                                               {:faq/expanded-index (get-in data keypaths/faq-expanded-section)
                                                :list/sections      (for [{:keys [question answer]} question-answers]
                                                                      {:faq/title   (:text question)
                                                                       :faq/content answer})}))
-      :carousel-images                    carousel-images}
+      :carousel-images                    carousel-images
+      :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
+      :old-picker-data                    (old-picker/query data length-guide-image)
+      :picker-modal                       (picker-modal< (get-in data catalog.keypaths/detailed-look-options)
+                                                         (get-in data catalog.keypaths/detailed-look-picker-visible?)
+                                                         (get-in data catalog.keypaths/detailed-look-selected-picker)
+                                                         length-guide-image)
+      :pickers                            (pickers< facets
+                                                    product-skus
+                                                    (get-in data catalog.keypaths/detailed-look-selections)
+                                                    (get-in data catalog.keypaths/detailed-look-options)
+                                                    (get-in data catalog.keypaths/detailed-look-availability))
+      :multiple-lengths-pdp?              (experiments/multiple-lengths-pdp? data)}
+
 
      (when sku-price
        {:price-block/primary   (mf/as-money sku-price)
@@ -466,6 +585,7 @@
                                             (live-help/banner-query "product-detail-page-banner"))})
                      opts)))
 
+;; GROT
 (defn determine-sku-id
   [app-state product]
   (let [selected-sku-id    (get-in app-state catalog.keypaths/detailed-product-selected-sku-id)
@@ -526,9 +646,8 @@
          first-when-only)))
 
 (defn generate-product-options
-  [app-state]
-  (let [product-id   (get-in app-state catalog.keypaths/detailed-product-id)
-        product      (products/product-by-id app-state product-id)
+  [product-id app-state]
+  (let [product      (products/product-by-id app-state product-id)
         facets       (facets/by-slug app-state)
         product-skus (products/extract-product-skus app-state product)
         images       (get-in app-state keypaths/v2-images)]
@@ -564,29 +683,78 @@
                               {}
                               (select-keys sku (:selector/electives product))))))))
 
-(defmethod transitions/transition-state events/initialize-product-details
-  [_ event {:as args :keys [catalog/product-id query-params]} app-state]
-  (let [ugc-offset (:offset query-params)
-        sku        (or (->> (:SKU query-params)
-                            (conj keypaths/v2-skus)
-                            (get-in app-state))
-                       (get-in app-state catalog.keypaths/detailed-product-selected-sku))
-        options    (generate-product-options app-state)]
-    (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-id product-id)
-        (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
-        (assoc-in keypaths/ui-ugc-category-popup-offset ugc-offset)
-        (assoc-in keypaths/browse-sku-quantity 1)
-        (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
-        (assoc-in catalog.keypaths/detailed-product-picker-visible? nil)
-        (cond-> sku (assoc-selections sku))  ; can be nil if not yet fetched
-        (assoc-in catalog.keypaths/detailed-product-options options))))
+;; NEW
+#?(:cljs
+   (defmethod storefront.trackings/perform-track events/control-pdp-picker-option-select
+     [_ _ {:keys [selection value]} app-state]
+     (let [picker-name (name (last selection))]
+       ;; TODO: make sure option tracking is working on PDP picker v1
+       #_(stringer/track-event "look_facet-changed"
+                             (merge (case picker-name
+                                      "color"
+                                      {:selected-color value}
 
+                                      "length"
+                                      {:position        (second selection)
+                                       :selected-length value}
+                                      nil)
+                                    {:facet-selected picker-name}
+                                    (->data-event-format
+                                     (get-in app-state catalog.keypaths/detailed-look-selections)
+                                     (get-in app-state catalog.keypaths/detailed-look-availability)
+                                     (get-in app-state catalog.keypaths/detailed-look-services)))))))
+
+;; NEW
+(defmethod transitions/transition-state events/control-pdp-picker-option-select
+  [_ event {:keys [selection value]} app-state]
+  (let [new-selections (-> app-state
+                           (get-in catalog.keypaths/detailed-look-selections)
+                           (assoc-in selection value))]
+    (cond->
+        (-> app-state
+            (assoc-in catalog.keypaths/detailed-look-selections new-selections)
+            (update-in (concat catalog.keypaths/detailed-look-options selection)
+                       (partial mapv (fn [option] (assoc option :option/checked? (= (:option/value option) value))))))
+      (= [:hair/color] selection)
+      ;; TODO(jjh) What does this part do???
+      (update-in (conj catalog.keypaths/detailed-look-options :per-item)
+                 (fn [per-item-options]
+                   (->> per-item-options
+                        (map-indexed
+                         (fn [index per-item-options]
+                           (update per-item-options
+                                   :hair/length
+                                   (partial mapv
+                                            identity
+                                            #_(comp (partial product-option->length-picker-option
+                                                           availability
+                                                           new-selections
+                                                           index)
+                                                    :product/option)))))
+                        vec))))))
+
+(defmethod effects/perform-effects events/control-pdp-picker-option-select
+  [_ event _args _ app-state]
+  (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)
+        availability         (get-in app-state catalog.keypaths/detailed-look-availability)
+        selections           (get-in app-state catalog.keypaths/detailed-look-selections)
+        color                (:hair/color selections)
+        {:hair/keys
+         [family length]}    (-> selections :per-item first)
+        new-sku-id           (get-in availability [family color length :catalog/sku-id])]
+    (effects/redirect nav-event
+                      (assoc-in nav-args [:query-params :SKU] new-sku-id)
+                      :sku-option-select)
+    #?(:cljs (scroll/enable-body-scrolling)) ; TODO(jjh): cargo cult
+    ))
+
+;; OLD
 (defmethod transitions/transition-state events/control-product-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]
   (let [selected-sku (->> {selection #{value}}
                           (determine-sku-from-selections app-state))
-        options      (generate-product-options app-state)]
+        options      (generate-product-options (get-in app-state catalog.keypaths/detailed-product-id)
+                      app-state)]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-selected-sku selected-sku)
         (update-in catalog.keypaths/detailed-product-selections merge {selection value})
@@ -631,6 +799,89 @@
      (scroll/enable-body-scrolling)))
 
 #?(:cljs
+   (defmethod effects/perform-effects events/navigate-product-details
+     [_ event args prev-app-state app-state]
+     (let [[prev-event prev-args] (get-in prev-app-state keypaths/navigation-message)
+           product-id (:catalog/product-id args)
+           product (get-in app-state (conj keypaths/v2-products product-id))
+           navigating-to-self? (and (= events/navigate-product-details prev-event)
+                                    (apply = (map :catalog/product-id [args prev-args])))]
+       (if (nil? product)
+         (fetch-product-details app-state product-id)
+         (messages/handle-message events/initialize-product-details
+                                  (assoc args :origin-nav-event event))))))
+
+#?(:cljs
+   (defmethod trackings/perform-track events/navigate-product-details
+     [_ event {:keys [catalog/product-id]} app-state]
+     (when (-> product-id
+               ((get-in app-state keypaths/v2-products))
+               accessors.products/wig-product?)
+       (facebook-analytics/track-event "wig_content_fired"))))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/api-success-v3-products-for-details
+     [_ event _ _ app-state]
+     (messages/handle-message events/initialize-product-details (get-in app-state keypaths/navigation-args))))
+
+(defmethod transitions/transition-state events/initialize-product-details
+  [_ event {:as args :keys [catalog/product-id query-params]} app-state]
+  (let [ugc-offset      (:offset query-params)
+        sku             (or (->> (:SKU query-params)
+                                 (conj keypaths/v2-skus)
+                                 (get-in app-state))
+                            (get-in app-state catalog.keypaths/detailed-product-selected-sku))
+        product-options (generate-product-options product-id app-state)
+
+        ;; Picker Two Refactor
+        product-electives  [:hair/family :hair/color :hair/length]
+        initial-selections (let [{:hair/keys [length color family]}
+                                 (maps/map-values first (select-keys sku product-electives))]
+                             {:hair/color color
+                              :per-item   [{:hair/length length
+                                            :hair/family family}]})
+        product            (products/product-by-id app-state product-id)
+        product-skus       (products/extract-product-skus app-state product)
+        availability       (catalog.products/index-by-selectors
+                            product-electives
+                            product-skus)
+
+
+        picker-two-options (assoc (look-details-v202105/initialize-picker-options
+                                   events/control-pdp-picker-option-select
+                                   initial-selections
+                                   availability
+                                   [product-options])
+                                  :quantity
+                                  (map-indexed (fn [index quantity]
+                                                 {:option/available?       true
+                                                  :option/checked?         (zero? index)
+                                                  :option/selection-target [events/control-product-detail-picker-option-quantity-select]
+                                                  :option/label            (str quantity)
+                                                  :option/value            (str quantity)
+                                                  :option/id               (str "quantity-" quantity)})
+                                               (range 1 11)))]
+    (-> app-state
+
+        ;; START refactor (temp)
+        (assoc-in catalog.keypaths/detailed-look-selected-picker nil)
+        (assoc-in catalog.keypaths/detailed-look-picker-visible? nil)
+        (assoc-in catalog.keypaths/detailed-look-selections initial-selections)
+        (assoc-in catalog.keypaths/detailed-look-options picker-two-options)
+        (assoc-in catalog.keypaths/detailed-look-skus-db product-skus)
+        (assoc-in catalog.keypaths/detailed-look-availability availability)
+        ;; END Refactor
+
+        (assoc-in catalog.keypaths/detailed-product-id product-id)
+        (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
+        (assoc-in keypaths/ui-ugc-category-popup-offset ugc-offset)
+        (assoc-in keypaths/browse-sku-quantity 1)
+        (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
+        (assoc-in catalog.keypaths/detailed-product-picker-visible? nil)
+        (assoc-selections sku)
+        (assoc-in catalog.keypaths/detailed-product-options product-options))))
+
+#?(:cljs
    (defmethod effects/perform-effects events/initialize-product-details
      [_ _ {:keys [catalog/product-id page/slug query-params origin-nav-event]} _ app-state]
      (let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)
@@ -643,50 +894,12 @@
                             (when selected-sku
                               {:query-params {:SKU (:catalog/sku-id selected-sku)}})))
          (let [product (get-in app-state (conj keypaths/v2-products product-id))]
+           (seo/set-tags app-state)
            (when-let [album-keyword (storefront.ugc/product->album-keyword shop? product)]
              (effects/fetch-cms-keypath app-state [:ugc-collection album-keyword]))
            (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
-             (effects/fetch-cms-keypath app-state [:faq pdp-faq-id]))
-           (fetch-product-details app-state product-id))))))
+             (effects/fetch-cms-keypath app-state [:faq pdp-faq-id])))))))
 
-#?(:cljs
-   (defmethod effects/perform-effects events/navigate-product-details
-     [_ event args _ state]
-     (messages/handle-message events/initialize-product-details
-                              (assoc args :origin-nav-event event))))
-
-#?(:cljs
-   (defmethod trackings/perform-track events/navigate-product-details
-     [_ event {:keys [catalog/product-id]} app-state]
-     (when (-> product-id
-               ((get-in app-state keypaths/v2-products))
-               accessors.products/wig-product?)
-       (facebook-analytics/track-event "wig_content_fired"))))
-
-;; When a sku for combination is not found return nil sku -> 'Unavailable'
-;; When no sku id is given in the query parameters we must find and use an epitome
-
-(defmethod transitions/transition-state events/api-success-v3-products-for-details
-  ;; for pre-selecting skus by url
-  [_ event {:keys [skus]} app-state]
-  (let [product      (products/current-product app-state)
-        skus         skus
-        sku-id       (determine-sku-id app-state product)
-        sku          (get skus sku-id)
-        product-skus (products/extract-product-skus app-state product)
-        options      (generate-product-options app-state)]
-    (-> app-state
-        (assoc-selections sku)
-        (assoc-in catalog.keypaths/detailed-product-product-skus product-skus)
-        (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
-        (assoc-in catalog.keypaths/detailed-product-options options))))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/api-success-v3-products-for-details
-     [_ event _ _ app-state]
-     ;; "Setting seo tags for the product detail page relies on the product
-     ;; being available"
-     (seo/set-tags app-state)))
 
 (defmethod effects/perform-effects events/control-add-sku-to-bag
   [_ _ {:keys [sku quantity]} _ state]
