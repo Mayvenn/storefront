@@ -102,7 +102,6 @@
                                    :waiter/order
                                    :appointment-time-slot)
         order-date             (some-> date parse-date-in-client-tz)]
-    (spice.core/spy [date slot-id order-date])
     (publish e/biz|appointment-booking|date-selected {:date (or order-date
                                                                 (-> (date/now)
                                                                     start-of-day
@@ -175,8 +174,8 @@
 (defmethod fx/perform-effects e/biz|appointment-booking|navigation-decided
   [_ _event {:keys              [choices]
              {:keys [decision]} :follow/args} _prev-state _state]
-  (let [target (spice.core/spy (or (get choices decision)
-                                   (get choices :success)))]
+  (let [target (or (get choices decision)
+                   (get choices :success))]
     #?(:cljs
        (if (routes/sub-page? [target nil] [e/navigate nil])
          (history/enqueue-navigate target)
