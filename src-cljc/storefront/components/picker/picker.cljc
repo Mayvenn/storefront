@@ -153,7 +153,7 @@
        product-sold-out-style)
       (:option/name selected-length)]))
    vertical-border
-   [:div.flex-auto
+   [:div.flex-auto.bg-pink
     (field
      (merge {:data-test "picker-quantity"}
             (utils/fake-href events/control-product-detail-picker-open {:facet-slug :item/quantity}))
