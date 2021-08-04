@@ -536,9 +536,8 @@
   {:title/icon      [:svg/heart {:style {:height "41px" :width "37px"}
                                  :class "fill-p-color"}]
    :title/primary   ["Hair + Service" "One Price"]
-   :title/secondary (str "This short quiz (2-3 minutes) will help "
-                         "you find the look and a stylist to complete "
-                         "your install in your area")
+   :title/secondary (str "This short quiz will help you find your look "
+                         "and stylist to complete your install in your area.")
 
    :header/back     (not-empty (first undo-history))
    :header/target   [e/navigate-home]
