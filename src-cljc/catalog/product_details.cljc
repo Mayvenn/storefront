@@ -314,6 +314,7 @@
       :content content}
      (select-keys section [:link/content :link/target :link/id]))))
 
+;; NEW
 (defn ^:private pickers<
   [facets-db
    skus-db
@@ -331,7 +332,7 @@
                        :selected-value   (:option/value selected-option)
                        :selection-target [events/control-pdp-picker-option-select
                                           {:selection [:quantity]}]
-                       :open-target      [events/control-look-detail-picker-open ;; TODO specific to pdp
+                       :open-target      [events/control-look-detail-picker-open
                                           {:picker-id [:quantity]}]})
 
    :color-picker (let [{:option/keys [rectangle-swatch name slug]}
@@ -733,6 +734,7 @@
                                                     :product/option)))))
                         vec))))))
 
+;; NEW
 (defmethod effects/perform-effects events/control-pdp-picker-option-select
   [_ event _args _ app-state]
   (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)
@@ -760,6 +762,7 @@
         (update-in catalog.keypaths/detailed-product-selections merge {selection value})
         (assoc-in catalog.keypaths/detailed-product-options options))))
 
+;; OLD
 (defmethod effects/perform-effects events/control-product-detail-picker-option-select
   [_ event {:keys [navigation-event]} _ app-state]
   (let [sku-id-for-selection (-> app-state
@@ -772,27 +775,32 @@
     (effects/redirect navigation-event params-with-sku-id :sku-option-select)
     #?(:cljs (scroll/enable-body-scrolling))))
 
+;; OLD
 (defmethod transitions/transition-state events/control-product-detail-picker-open
   [_ event {:keys [facet-slug]} app-state]
   (-> app-state
       (assoc-in catalog.keypaths/detailed-product-selected-picker facet-slug)
       (assoc-in catalog.keypaths/detailed-product-picker-visible? true)))
 
+;; OLD
 (defmethod transitions/transition-state events/control-product-detail-picker-option-quantity-select
   [_ event {:keys [value]} app-state]
   (-> app-state
       (assoc-in keypaths/browse-sku-quantity value)
       (assoc-in catalog.keypaths/detailed-product-picker-visible? false)))
 
+;; OLD
 (defmethod transitions/transition-state events/control-product-detail-picker-close
   [_ event _ app-state]
   (assoc-in app-state catalog.keypaths/detailed-product-picker-visible? false))
 
+;; OLD
 #?(:cljs
    (defmethod effects/perform-effects events/control-product-detail-picker-open
      [_ _ _ _ _]
      (scroll/disable-body-scrolling)))
 
+;; OLD
 #?(:cljs
    (defmethod effects/perform-effects events/control-product-detail-picker-close
      [_ _ _ _ _]
@@ -964,5 +972,5 @@
                                    :sku      sku})))))
 
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
-  [_ event {:keys [quantity sku]} app-state] ;; TODO: why does this have a quantity always set as 1?
+  [_ event {:keys [quantity sku]} app-state]
   (assoc-in app-state keypaths/browse-sku-quantity 1))
