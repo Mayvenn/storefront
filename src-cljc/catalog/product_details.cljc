@@ -333,7 +333,7 @@
                        :primary          (:option/label selected-option)
                        :selected-value   (:option/value selected-option)
                        :selection-target (:option/selection-target selected-option)
-                       :open-target      [events/control-look-detail-picker-open
+                       :open-target      [events/control-pdp-picker-open
                                           {:picker-id [:quantity]}]})
 
    :color-picker (let [{:option/keys [rectangle-swatch name slug]}
@@ -351,7 +351,7 @@
                     :options          (:hair/color picker-options)
                     :selected-value   slug
                     :selection-target (:option/selection-target selected-option)
-                    :open-target      [events/control-look-detail-picker-open {:picker-id [:hair/color]}]})
+                    :open-target      [events/control-pdp-picker-open {:picker-id [:hair/color]}]})
 
    :length-pickers
    (map-indexed
@@ -377,7 +377,7 @@
                          :primary          (:option/name hair-length-facet-option)
                          :selected-value   (:option/slug hair-length-facet-option)
                          :selection-target [events/control-pdp-picker-option-select {:selection [:per-item index :hair/length]}]
-                         :open-target      [events/control-look-detail-picker-open {:picker-id [:per-item index :hair/length]}]}]
+                         :open-target      [events/control-pdp-picker-open {:picker-id [:per-item index :hair/length]}]}]
         (cond
           (not (boolean
                 (get-in availability [item-hair-family
@@ -417,7 +417,7 @@
      ;; the options so the close animation isn't stopped prematurely due to the
      ;; child options re-rendering.
      :picker-modal/visible?     (and picker-visible? options selected-picker)
-     :picker-modal/close-target [events/control-look-detail-picker-close]
+     :picker-modal/close-target [events/control-pdp-picker-close]
      :picker-modal/length-guide-image length-guide-image}))
 
 (defn query [data selected-sku]
@@ -689,6 +689,26 @@
                               {}
                               (select-keys sku (:selector/electives product))))))))
 
+(defmethod transitions/transition-state events/control-pdp-picker-open
+  [_ event {:keys [picker-id]} app-state]
+  (-> app-state
+      (assoc-in catalog.keypaths/detailed-look-selected-picker picker-id)
+      (assoc-in catalog.keypaths/detailed-look-picker-visible? true)))
+
+#?(:cljs
+   (defmethod storefront.trackings/perform-track events/control-pdp-picker-open
+     [_ _ {:keys [picker-id] :as args} _]
+     ;; TODO
+     #_
+     (let [picker-name (name (last picker-id))]
+       (stringer/track-event "look_facet-clicked" (merge {:facet-selected picker-name}
+                                                         (when (= "length" picker-name)
+                                                           {:position (second picker-id)}))))))
+
+(defmethod transitions/transition-state events/control-pdp-picker-close
+  [_ event _ app-state]
+  (assoc-in app-state catalog.keypaths/detailed-look-picker-visible? false))
+
 ;; NEW
 #?(:cljs
    (defmethod storefront.trackings/perform-track events/control-pdp-picker-option-select
@@ -753,7 +773,7 @@
             :query-params
             :SKU
             (= new-sku-id))
-      (messages/handle-message events/control-look-detail-picker-close)
+      (messages/handle-message events/control-pdp-picker-close)
       (effects/redirect nav-event
                        (assoc-in nav-args [:query-params :SKU] new-sku-id)
                        :sku-option-select))

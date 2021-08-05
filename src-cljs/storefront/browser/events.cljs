@@ -88,17 +88,24 @@
   (when (get-in app-state stylist-directory.keypaths/stylist-search-show-filters?)
     events/control-stylist-search-filters-dismiss))
 
-(defn dismiss-picker-modal-event
+(defn dismiss-look-detail-picker-modal-event
   [app-state]
   (when (get-in app-state catalog.keypaths/detailed-look-picker-visible?)
     events/control-look-detail-picker-close))
+
+(defn dismiss-product-detail-picker-modal-event
+  [app-state]
+  (when (get-in app-state catalog.keypaths/detailed-look-picker-visible?)
+    events/control-pdp-picker-close))
 
 (defmethod effects/perform-effects events/escape-key-pressed [_ event args _ app-state]
   (when-let [message-to-handle (get popup-dismiss-events (get-in app-state keypaths/popup))]
     (handle-message message-to-handle))
   (when-let [message-to-handle (dismiss-stylist-filter-modal-event app-state)]
     (handle-message message-to-handle))
-  (when-let [message-to-handle (dismiss-picker-modal-event app-state)]
+  (when-let [message-to-handle (dismiss-look-detail-picker-modal-event app-state)]
+    (handle-message message-to-handle))
+  (when-let [message-to-handle (dismiss-product-detail-picker-modal-event app-state)]
     (handle-message message-to-handle)))
 
 (defn click-away-handler [e]
