@@ -87,6 +87,7 @@
   ([state key model]
    (assoc-in state (conj model-keypath key) (conform! key model))))
 
+;; NOTE: This is to meet the standard concept shape
 (def <- read-model)
 
 (defn read-view-model
@@ -101,13 +102,7 @@
   ([state key view-model]
    (assoc-in state (conj view-model-keypath key) (conform! key view-model))))
 
-;; NOTE: This is to meet the standard concept shape
 
-(defn write-model
-  ([state model]
-   (assoc-in state model-keypath (conform! ::model model)))
-  ([state key model]
-   (assoc-in state (conj model-keypath key) (conform! key model))))
 
 (defn start-of-day [date]
   #?(:cljs
