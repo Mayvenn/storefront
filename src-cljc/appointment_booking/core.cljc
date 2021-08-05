@@ -19,7 +19,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages
              :as messages
-             :refer [handle-message] :rename {handle-message publish}]))
+             :refer [handle-message] :rename {handle-message publish}]
+            [ui.molecules]))
 
 (defmethod fx/perform-effects e/navigate-adventure-appointment-booking
   [_ _event _ _ _state]
@@ -207,6 +208,8 @@
    [:div.col-12.pt4.px2
     (time-radio-group (with :appointment.picker.time-slot data))]
    [:div.col-6.pt8
+    [:div.flex.justify-center.items-center.dark-gray.content-4
+     (:appointment-time-notice/primary data)]
     (actions/medium-primary (with :continue.action data))]
    [:div.col-6.pt4
     (actions/medium-tertiary (with :skip.action data))]])
@@ -239,15 +242,14 @@
                                     (date/add-delta {:days 2}))
         selected-date           (or (booking/<- app-state ::booking/selected-date)
                                     earliest-available-date)
-
-        shown-weeks           (-> earliest-available-date
+        shown-weeks             (-> earliest-available-date
                                   find-previous-sunday
                                   get-weeks)
-        displayed-week        (or (get-week shown-weeks selected-date)
+        displayed-week          (or (get-week shown-weeks selected-date)
                                   (first shown-weeks))
-        first-available-week? (= displayed-week (first shown-weeks))
-        last-available-week?  (= displayed-week (last shown-weeks))
-        time-slots            booking/time-slots]
+        first-available-week?   (= displayed-week (first shown-weeks))
+        last-available-week?    (= displayed-week (last shown-weeks))
+        time-slots              booking/time-slots]
     (merge
      (within :top-third.title
              {:primary "When do you want to get your hair done?"
@@ -255,13 +257,14 @@
      (within :appointment.picker.time-slot
              {:selected-time-slot-id selected-time-slot
               :time-slots            time-slots})
-
      (within :appointment.picker.date
              {:week                    displayed-week
               :earliest-available-date earliest-available-date
               :selected-date           selected-date
               :first-available-week?   first-available-week?
               :last-available-week?    last-available-week?})
+     (within :appointment-time-notice
+             {:primary (ui.molecules/human-readable-appointment-date (spice.core/spy selected-date) selected-time-slot)})
      (within :continue.action
              {:id        "summary-continue"
               :label     "Continue"

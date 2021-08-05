@@ -148,18 +148,23 @@
    [:div.content-3.s-color
     (svg-star-rating value)]))
 
+(defn human-readable-appointment-date [date slot-id]
+  (let [date-copy #?(:clj nil
+                     :cljs (formatters/long-date date))
+        time-copy (->> booking/time-slots
+                       (filter (fn [{:slot/keys [id]}]
+                                 (= id slot-id)))
+                       first
+                       :slot.card/copy)
+        copy      (when (and (seq date-copy)
+                             (seq time-copy))
+                    (str date-copy " at " time-copy))]
+    copy))
+
 (defn stylist-appointment-time [{:keys [date slot-id]}]
   ;; TODO(ellie, 2021-08-02): We are unconvinced this belongs here.
-  (let [date-copy              #?(:clj nil
-                                  :cljs (formatters/long-date (booking/parse-date-in-client-tz date)))
-        time-copy              (->> booking/time-slots
-                                    (filter (fn [{:slot/keys [id]}]
-                                              (= id slot-id)))
-                                    first
-                                    :slot.card/copy)
-        copy                   (when (and (seq date-copy)
-                                          (seq time-copy))
-                                 (str date-copy " at " time-copy))]
+  (let [parsed-date (booking/parse-date-in-client-tz date)
+        copy        (human-readable-appointment-date parsed-date slot-id)]
     (when copy
       (component/html
        [:div.content-3.pt1.flex
