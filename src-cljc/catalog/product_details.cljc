@@ -288,7 +288,9 @@
       :cta/label                   "Add to Bag"
       :cta/target                  [events/control-add-sku-to-bag
                                     {:sku      selected-sku
-                                     :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
+                                     :quantity (get-in app-state (if (experiments/multiple-lengths-pdp? app-state)
+                                                                   (conj catalog.keypaths/detailed-look-selections :quantity)
+                                                                   keypaths/browse-sku-quantity) 1)}]
       :cta/spinning?               (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
       :cta/disabled?               (not (:inventory/in-stock? selected-sku))
       :add-to-cart.quadpay/price   sku-price
@@ -322,30 +324,33 @@
    picker-options
    availability]
   {:quantity-picker (let [quantity-options (:quantity picker-options)
-                          selected-option (->> quantity-options
-                                               (filter :option/checked?)
-                                               first)]
+                          selected-option  (->> quantity-options
+                                                (filter :option/checked?)
+                                                first)]
                       {:id               "picker-quantity"
                        :value-id         "picker-selected-quantity-1"
                        :options          quantity-options
                        :primary          (:option/label selected-option)
                        :selected-value   (:option/value selected-option)
-                       :selection-target [events/control-pdp-picker-option-select
-                                          {:selection [:quantity]}]
+                       :selection-target (:option/selection-target selected-option)
                        :open-target      [events/control-look-detail-picker-open
                                           {:picker-id [:quantity]}]})
 
    :color-picker (let [{:option/keys [rectangle-swatch name slug]}
                        (get-in facets-db [:hair/color
                                           :facet/options
-                                          (get-in selections [:hair/color])])]
+                                          (get-in selections [:hair/color])])
+                       color-option    (:hair/color picker-options)
+                       selected-option (->> color-option
+                                            (filter :option/checked?)
+                                            first)]
                    {:id               "picker-color"
                     :value-id         (str "picker-selected-color-" (facets/hacky-fix-of-bad-slugs-on-facets slug))
                     :image-src        rectangle-swatch
                     :primary          name
                     :options          (:hair/color picker-options)
                     :selected-value   slug
-                    :selection-target [events/control-pdp-picker-option-select {:selection [:hair/color]}]
+                    :selection-target (:option/selection-target selected-option)
                     :open-target      [events/control-look-detail-picker-open {:picker-id [:hair/color]}]})
 
    :length-pickers
@@ -744,9 +749,14 @@
         {:hair/keys
          [family length]}    (-> selections :per-item first)
         new-sku-id           (get-in availability [family color length :catalog/sku-id])]
-    (effects/redirect nav-event
-                      (assoc-in nav-args [:query-params :SKU] new-sku-id)
-                      :sku-option-select)
+    (if (-> nav-args
+            :query-params
+            :SKU
+            (= new-sku-id))
+      (messages/handle-message events/control-look-detail-picker-close)
+      (effects/redirect nav-event
+                       (assoc-in nav-args [:query-params :SKU] new-sku-id)
+                       :sku-option-select))
     #?(:cljs (scroll/enable-body-scrolling)) ; TODO(jjh): cargo cult
     ))
 
@@ -832,6 +842,51 @@
      [_ event _ _ app-state]
      (messages/handle-message events/initialize-product-details (get-in app-state keypaths/navigation-args))))
 
+(defn distinct-by
+  [f coll]
+  (->> coll
+       (reduce
+        (fn [acc i]
+          (let [v (f i)]
+            (if (contains? (:state acc) v)
+              acc
+              (-> acc
+                  (update :state conj v)
+                  (update :new-coll conj i)))))
+        {:state    #{}
+         :new-coll []})
+       :new-coll))
+
+(defn initialize-picker-options
+  [selection-event
+   selections
+   availability
+   options]
+  {:hair/color (->> options
+                    (mapcat :hair/color)
+                    (map #(dissoc % :price :stocked?))
+                    (distinct-by :option/slug)
+                    (sort-by :filter/order)
+                    (mapv (partial look-details-v202105/color-option<
+                                   selection-event
+                                   selections)))
+   :per-item   (->> options
+                    (map #(select-keys % [:hair/length]))
+                    (map-indexed (partial look-details-v202105/hair-length-option<
+                                          selection-event
+                                          selections
+                                          availability))
+                    vec)
+   :quantity   (map-indexed (fn [index quantity]
+                              {:option/available?       true
+                               :option/checked?         (zero? index)
+                               :option/selection-target [selection-event {:selection [:quantity]
+                                                                          :value quantity}]
+                               :option/label            (str quantity)
+                               :option/value            quantity
+                               :option/id               (str "quantity-" quantity)})
+                            (range 1 11))})
+
 (defmethod transitions/transition-state events/initialize-product-details
   [_ event {:as args :keys [catalog/product-id query-params]} app-state]
   (let [ugc-offset      (:offset query-params)
@@ -854,21 +909,11 @@
                             product-electives
                             product-skus)
 
-
-        picker-two-options (assoc (look-details-v202105/initialize-picker-options
-                                   events/control-pdp-picker-option-select
-                                   initial-selections
-                                   availability
-                                   [product-options])
-                                  :quantity
-                                  (map-indexed (fn [index quantity]
-                                                 {:option/available?       true
-                                                  :option/checked?         (zero? index)
-                                                  :option/selection-target [events/control-product-detail-picker-option-quantity-select]
-                                                  :option/label            (str quantity)
-                                                  :option/value            (str quantity)
-                                                  :option/id               (str "quantity-" quantity)})
-                                               (range 1 11)))]
+        picker-two-options (initialize-picker-options
+                            events/control-pdp-picker-option-select
+                            initial-selections
+                            availability
+                            [product-options])]
     (-> app-state
 
         ;; START refactor (temp)
