@@ -838,16 +838,18 @@
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
-     [_ event args prev-app-state app-state]
-     (let [[prev-event prev-args] (get-in prev-app-state keypaths/navigation-message)
+     [_ event args _ app-state]
+     (let [[prev-event prev-args] (get-in app-state (conj keypaths/navigation-undo-stack 0))
            product-id (:catalog/product-id args)
            product (get-in app-state (conj keypaths/v2-products product-id))
            navigating-to-self? (and (= events/navigate-product-details prev-event)
                                     (apply = (map :catalog/product-id [args prev-args])))]
-       (if (nil? product)
-         (fetch-product-details app-state product-id)
-         (messages/handle-message events/initialize-product-details
-                                  (assoc args :origin-nav-event event))))))
+       (when (nil? product)
+         (fetch-product-details app-state product-id))
+       (when-not navigating-to-self?
+         (messages/handle-message events/initialize-product-details (assoc args :origin-nav-event event)))
+       (messages/handle-message events/control-pdp-picker-close))))
+
 
 #?(:cljs
    (defmethod trackings/perform-track events/navigate-product-details
@@ -938,7 +940,6 @@
 
         ;; START refactor (temp)
         (assoc-in catalog.keypaths/detailed-pdp-selected-picker nil)
-        (assoc-in catalog.keypaths/detailed-pdp-picker-visible? nil)
         (assoc-in catalog.keypaths/detailed-pdp-selections initial-selections)
         (assoc-in catalog.keypaths/detailed-pdp-options picker-two-options)
         (assoc-in catalog.keypaths/detailed-pdp-skus-db product-skus)
