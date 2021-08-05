@@ -20,7 +20,7 @@
             [storefront.platform.messages
              :as messages
              :refer [handle-message] :rename {handle-message publish}]
-            [ui.molecules]))
+            ui.molecules))
 
 (defmethod fx/perform-effects e/navigate-adventure-appointment-booking
   [_ _event _ _ _state]
@@ -182,6 +182,22 @@
                     (when (= id selected-time-slot-id)
                       {:state/checked "checked"})))))))
 
+
+(c/defcomponent modal-body [data _opts _owner]
+  [:div.flex.flex-auto.flex-column.items-center.stretch
+   [:div.col-10.py8
+    (titles/canela (with :top-third.title data))]
+   [:div.col-12.px2
+    (week-view (with :appointment.picker.date data))]
+   [:div.col-12.pt4.px2
+    (time-radio-group (with :appointment.picker.time-slot data))]
+   [:div.col-6.pt8
+    [:div.flex.justify-center.items-center.dark-gray.content-4
+     (:appointment-time-notice/primary data)]
+    (actions/medium-primary (with :continue.action data))]
+   [:div.col-6.pt4
+    (actions/medium-tertiary (with :skip.action data))]])
+
 (c/defcomponent body [data _opts _owner]
   [:div.flex.flex-auto.flex-column.items-center.stretch
    [:div.col-10.py8
@@ -217,7 +233,7 @@
                     (range (* num-of-shown-weeks length-of-week))))))
 
 
-(defn query [app-state]
+(defn ^:private query [app-state]
   (let [selected-time-slot      (booking/<- app-state ::booking/selected-time-slot)
         earliest-available-date (-> (date/now)
                                     (booking/start-of-day)
@@ -225,10 +241,10 @@
         selected-date           (or (booking/<- app-state ::booking/selected-date)
                                     earliest-available-date)
         shown-weeks             (-> earliest-available-date
-                                  find-previous-sunday
-                                  get-weeks)
+                                    find-previous-sunday
+                                    get-weeks)
         displayed-week          (or (get-week shown-weeks selected-date)
-                                  (first shown-weeks))
+                                    (first shown-weeks))
         first-available-week?   (= displayed-week (first shown-weeks))
         last-available-week?    (= displayed-week (last shown-weeks))
         time-slots              booking/time-slots]
@@ -246,16 +262,13 @@
               :first-available-week?   first-available-week?
               :last-available-week?    last-available-week?})
      (within :appointment-time-notice
-             {:primary (ui.molecules/human-readable-appointment-date (spice.core/spy selected-date) selected-time-slot)})
+             {:primary (ui.molecules/human-readable-appointment-date selected-date
+                                                                     selected-time-slot)})
      (within :continue.action
              {:id        "summary-continue"
               :label     "Continue"
               :disabled? (not (and selected-time-slot selected-date))
-              :target    [e/biz|appointment-booking|submitted]})
-     (within :skip.action
-             {:id     "booking-skip"
-              :label  "skip this step"
-              :target [e/biz|appointment-booking|skipped]}))))
+              :target    [e/biz|appointment-booking|submitted]}))))
 
 
 
@@ -264,6 +277,9 @@
         current-order (api.orders/current app-state)]
     (merge
      (query app-state)
+     (within :top-third.title
+             {:primary "When do you want to get your hair done?"
+              :id      "id"})
      (within :appointment.header
              {:header.title/id               "adventure-title"
               :header.title/primary          "Appointment Booking"
@@ -272,7 +288,36 @@
               :header.back-navigation/back   (first nav-undo-stack)
               :header.cart/id                "mobile-cart"
               :header.cart/value             (or (:order.items/quantity current-order) 0)
-              :header.cart/color             "white"}))))
+              :header.cart/color             "white"})
+     (within :skip.action
+             {:id     "booking-skip"
+              :label  "skip this step"
+              :target [e/biz|appointment-booking|skipped]}))))
+
+(defn ufi-query [app-state]
+ (let [nav-undo-stack (get-in app-state k/navigation-undo-stack)
+        current-order (api.orders/current app-state)]
+    (merge
+     (query app-state)
+     (within :top-third.title
+             {:primary "When do you want to get your hair done?"
+              :id      "id"})
+     (within :skip.action
+             {:id     "booking-skip"
+              :label  "skip this step"
+              :target [e/biz|appointment-booking|skipped]}))))
+
+(defn modal-query [app-state]
+  (let [nav-undo-stack (get-in app-state k/navigation-undo-stack)
+        current-order  (api.orders/current app-state)]
+    (merge
+     (query app-state)
+     (within :top-third.title
+             {:primary "Edit Appointment"
+              :id      "id"
+              :icon    [:svg/calendar {:class  "fill-p-color"
+                                       :width  "27px"
+                                       :height "30px"}]}))))
 
 (defn ^:export adv-flow-page
   [app-state _]

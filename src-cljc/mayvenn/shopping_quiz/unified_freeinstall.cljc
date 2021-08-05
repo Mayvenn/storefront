@@ -612,7 +612,7 @@
             (c/build appointment-booking-template
                      (merge (header< undo-history (apply max quiz-progression))
                             (progress< quiz-progression)
-                            (booking.core/query state)))
+                            (booking.core/ufi-query state)))
 
             stylist-matched?
             (c/build matched-success-template

@@ -25,18 +25,19 @@
      :col-class   "col-12"}
     [:div.bg-white
      (components.header/mobile-nav-header
-      {:class "border-bottom border-gray"} nil
-      (c/html [:div.center.proxima.content-1 "Edit Appointment"])
+      {:class ""}
+      nil
+      nil
       (c/html [:a (merge {:data-test "edit-appointment-popup-close"}
                          (utils/fake-href e/control-dismiss-edit-appointment-menu))
                (svg/close-x {:class  "stroke-black fill-white"
                              :width  "2em"
                              :height "2em"})]))
-     (c/build booking.core/body data)])))
+     (c/build booking.core/modal-body data)])))
 
 (defmethod popup/query :edit-appointment-menu
   [state]
-  (booking.core/query state))
+  (booking.core/modal-query state))
 
 (defmethod t/transition-state e/control-show-edit-appointment-menu
   [_ _ _ state]
@@ -53,3 +54,4 @@
 (defmethod t/transition-state e/control-dismiss-edit-appointment-menu
   [_ _ _ state]
   (assoc-in state keypaths/popup nil))
+

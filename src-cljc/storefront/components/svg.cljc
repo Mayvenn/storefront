@@ -499,8 +499,9 @@
    [:svg opts
     ^:inline (svg-xlink "certified")]))
 
-(defn edit [opts]
+(defn edit
   "A pencil denoting an edit action"
+  [opts]
   (component/html
    [:svg opts
     ^:inline (svg-xlink "edit")]))
