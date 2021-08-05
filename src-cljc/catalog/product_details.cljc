@@ -695,16 +695,6 @@
       (assoc-in catalog.keypaths/detailed-pdp-selected-picker picker-id)
       (assoc-in catalog.keypaths/detailed-pdp-picker-visible? true)))
 
-#?(:cljs
-   (defmethod storefront.trackings/perform-track events/control-pdp-picker-open
-     [_ _ {:keys [picker-id] :as args} _]
-     ;; TODO
-     #_
-     (let [picker-name (name (last picker-id))]
-       (stringer/track-event "look_facet-clicked" (merge {:facet-selected picker-name}
-                                                         (when (= "length" picker-name)
-                                                           {:position (second picker-id)}))))))
-
 (defmethod transitions/transition-state events/control-pdp-picker-close
   [_ event _ app-state]
   (assoc-in app-state catalog.keypaths/detailed-pdp-picker-visible? false))
@@ -712,25 +702,12 @@
 ;; NEW
 #?(:cljs
    (defmethod storefront.trackings/perform-track events/control-pdp-picker-option-select
-     [_ _ {:keys [selection value]} app-state]
+     [_ _ {:keys [selection value]} _]
      (let [picker-name (name (last selection))]
-       ;; TODO: make sure option tracking is working on PDP picker v1
-       #_(stringer/track-event "look_facet-changed"
-                             (merge (case picker-name
-                                      "color"
-                                      {:selected-color value}
+       (when (not= "quantity" picker-name)
+         (stringer/track-event "select_bundle_option" {:option_name  picker-name
+                                                       :option_value value})))))
 
-                                      "length"
-                                      {:position        (second selection)
-                                       :selected-length value}
-                                      nil)
-                                    {:facet-selected picker-name}
-                                    (->data-event-format
-                                     (get-in app-state catalog.keypaths/detailed-pdp-selections)
-                                     (get-in app-state catalog.keypaths/detailed-pdp-availability)
-                                     (get-in app-state catalog.keypaths/detailed-pdp-services)))))))
-
-;; NEW
 (defmethod transitions/transition-state events/control-pdp-picker-option-select
   [_ event {:keys [selection value]} app-state]
   (let [new-selections (-> app-state
