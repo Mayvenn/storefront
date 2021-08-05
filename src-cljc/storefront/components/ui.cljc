@@ -985,7 +985,7 @@
                                                opts)]
                (if (:child-handles-ref? opts) embed-comp [:div embed-comp]))))
      :cljs (component/create-dynamic
-            "screen-aware-component"
+            screen-aware-component
             (constructor [this props]
                          (component/create-ref! this "trigger")
                          {:seen?    false

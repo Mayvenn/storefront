@@ -247,7 +247,7 @@
   #?(:clj (fn [_ _ _] (component/create "sticky-footer" [:div]))
      :cljs
      (component/create-dynamic
-      "sticky-footer"
+      sticky-footer
       (constructor [this props]
                    (component/create-ref! this "content-height")
                    (set! (.-set-height this)

@@ -1,4 +1,6 @@
 {:lint-as {storefront.component/defcomponent                  clojure.core/defn}
  :hooks   {:analyze-call {storefront.macros/defpath hooks.macros/defpath
                           storefront.handler-test.common/with-handler hooks.macros/with-handler
-                          storefront.handler-test.common/with-services hooks.macros/with-services}}}
+                          storefront.handler-test.common/with-services hooks.macros/with-services
+                          storefront.component/defdynamic-component hooks.macros/defdynamic-component
+                          storefront.component/create-dynamic hooks.macros/create-dynamic}}}
