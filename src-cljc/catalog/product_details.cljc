@@ -6,6 +6,7 @@
                        [storefront.api :as api]
                        [storefront.browser.scroll :as scroll]
                        [storefront.components.popup :as popup]
+                       [storefront.components.svg :as svg]
                        [storefront.history :as history]
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.reviews :as review-hooks]
@@ -52,8 +53,7 @@
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
             storefront.ugc
-            [storefront.components.svg :as svg]
-            [catalog.look-details-v202105 :as look-details-v202105]
+
             [spice.maps :as maps]
             [storefront.components.picker.picker-two :as picker-two]))
 
@@ -865,6 +865,7 @@
      (messages/handle-message events/initialize-product-details (get-in app-state keypaths/navigation-args))))
 
 (defn distinct-by
+  ;; TODO use the one in spice
   [f coll]
   (->> coll
        (reduce
@@ -879,6 +880,72 @@
          :new-coll []})
        :new-coll))
 
+(defn color-option<
+  [selection-event
+   selections {:option/keys [slug] :as option}]
+  (merge
+   #:product{:option option}
+   #:option{:id               (str "picker-color-" (facets/hacky-fix-of-bad-slugs-on-facets slug))
+            :selection-target [selection-event
+                               {:selection [:hair/color]
+                                :value     slug}]
+            :checked?         (= (:hair/color selections) slug)
+            :label            (:option/name option)
+            :value            slug
+            :bg-image-src     (:option/rectangle-swatch option)
+            :available?       true
+            :image-src        (:option/sku-swatch option)}))
+
+(defn product-option->length-picker-option
+  [selection-event
+   availability
+   {selected-hair-color :hair/color
+    per-items           :per-item}
+   index
+   {:option/keys [slug]
+    option-name  :option/name
+    :as          product-option}]
+  (let [{selected-hair-length :hair/length
+         selected-hair-family :hair/family} (get per-items index)
+        selection-path                      [:per-item index :hair/length]
+        available?                          (boolean
+                                             (get-in availability [selected-hair-family
+                                                                   selected-hair-color
+                                                                   slug]))
+        sold-out?                           (not (boolean
+                                                  (get-in availability [selected-hair-family
+                                                                        selected-hair-color
+                                                                        slug
+                                                                        :inventory/in-stock?])))]
+    (merge
+     #:product{:option product-option}
+     #:option{:id               (str "picker-length-" index "-" slug)
+              :selection-target [selection-event
+                                 {:selection selection-path
+                                  :value     slug}]
+              :checked?         (= selected-hair-length slug)
+              :label            option-name
+              :value            slug
+              :available?       available?}
+     (when sold-out?
+       #:option{:label-attrs      {:class "dark-gray"}
+                :label            (str option-name " - Sold Out")
+                :selection-target nil})
+     (when-not available?
+       #:option{:label-attrs      {:class "dark-gray"}
+                :label            (str option-name " - Unavailable")
+                :selection-target nil}))))
+
+(defn hair-length-option<
+  [selection-event selections availability index per-item]
+  (update per-item :hair/length
+          (partial mapv
+                   (partial product-option->length-picker-option
+                            selection-event
+                            availability
+                            selections
+                            index))))
+
 (defn initialize-picker-options
   [selection-event
    selections
@@ -889,15 +956,10 @@
                     (map #(dissoc % :price :stocked?))
                     (distinct-by :option/slug)
                     (sort-by :filter/order)
-                    (mapv (partial look-details-v202105/color-option<
-                                   selection-event
-                                   selections)))
+                    (mapv (partial color-option< selection-event selections)))
    :per-item   (->> options
                     (map #(select-keys % [:hair/length]))
-                    (map-indexed (partial look-details-v202105/hair-length-option<
-                                          selection-event
-                                          selections
-                                          availability))
+                    (map-indexed (partial hair-length-option< selection-event selections availability))
                     vec)
    :quantity   (map-indexed (fn [index quantity]
                               {:option/available?       true

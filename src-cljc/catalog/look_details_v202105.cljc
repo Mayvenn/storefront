@@ -50,6 +50,7 @@
 ;; For now services are handled separately since we don't customize the services
 
 (defn distinct-by
+  ;; TODO use the one in spice
   [f coll]
   (->> coll
        (reduce
@@ -64,7 +65,6 @@
          :new-coll []})
        :new-coll))
 
-;; TODO move to picker two or copy to pdp
 (defn color-option<
   [selection-event
    selections {:option/keys [slug] :as option}]
@@ -121,7 +121,6 @@
                 :label            (str option-name " - Unavailable")
                 :selection-target nil}))))
 
-;; TODO move to picker two or copy to pdp
 (defn hair-length-option<
   [selection-event selections availability index per-item]
   (update per-item :hair/length
