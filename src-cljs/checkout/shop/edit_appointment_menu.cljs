@@ -23,7 +23,7 @@
     {:body-style  {:max-width "625px"}
      :close-attrs (utils/fake-href e/control-addon-service-menu-dismiss)
      :col-class   "col-12"}
-    [:div.bg-white
+    [:div.m4.bg-white
      (components.header/mobile-nav-header
       {:class ""}
       nil

@@ -191,7 +191,7 @@
    [:div.col-6.pt8
     [:div.flex.justify-center.items-center.dark-gray.content-4
      (:appointment-time-notice/primary data)]
-    (actions/medium-primary (with :continue.action data))]
+    (actions/medium-primary (with :finish.action data))]
    [:div.col-6.pt4
     (actions/medium-tertiary (with :skip.action data))]])
 
@@ -206,7 +206,7 @@
    [:div.col-6.pt8
     [:div.flex.justify-center.items-center.dark-gray.content-4
      (:appointment-time-notice/primary data)]
-    (actions/medium-primary (with :continue.action data))]
+    (actions/medium-primary (with :finish.action data))]
    [:div.col-6.pt4
     (actions/medium-tertiary (with :skip.action data))]])
 
@@ -260,22 +260,19 @@
                                             (inc week-idx))
               :earliest-available-date earliest-available-date
               :selected-date           selected-date})
+     (within :finish.action
+             {:disabled? (not (and selected-time-slot selected-date))
+              :target    [e/biz|appointment-booking|submitted]})
      (within :appointment-time-notice
              {:primary (ui.molecules/human-readable-appointment-date selected-date
-                                                                     selected-time-slot)})
-     (within :continue.action
-             {:id        "summary-continue"
-              :label     "Continue"
-              :disabled? (not (and selected-time-slot selected-date))
-              :target    [e/biz|appointment-booking|submitted]}))))
-
-
+                                                                     selected-time-slot)}))))
 
 (defn adv-flow-query [app-state]
   (let [nav-undo-stack (get-in app-state k/navigation-undo-stack)
-        current-order (api.orders/current app-state)]
+        current-order  (api.orders/current app-state)
+        basic-query    (query app-state)]
     (merge
-     (query app-state)
+     basic-query
      (within :top-third.title
              {:primary "When do you want to get your hair done?"
               :id      "id"})
@@ -288,6 +285,9 @@
               :header.cart/id                "mobile-cart"
               :header.cart/value             (or (:order.items/quantity current-order) 0)
               :header.cart/color             "white"})
+     (within :finish.action
+             {:id        "appointment-booking-continue"
+              :label     "Continue"})
      (within :skip.action
              {:id     "booking-skip"
               :label  "skip this step"
@@ -299,6 +299,9 @@
    (within :top-third.title
            {:primary "When do you want to get your hair done?"
             :id      "id"})
+   (within :finish.action
+           {:id        "appointment-booking-continue"
+            :label     "Continue"})
    (within :skip.action
            {:id     "booking-skip"
             :label  "skip this step"
@@ -312,7 +315,10 @@
             :id      "id"
             :icon    [:svg/calendar {:class  "fill-p-color"
                                      :width  "27px"
-                                     :height "30px"}]})))
+                                     :height "30px"}]})
+   (within :finish.action
+           {:id        "appointment-booking-update"
+            :label     "Update"})))
 
 (defn ^:export adv-flow-page
   [app-state _]
