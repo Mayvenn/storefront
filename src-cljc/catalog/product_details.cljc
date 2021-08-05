@@ -841,7 +841,7 @@
      [_ event _ _ app-state]
      (messages/handle-message events/initialize-product-details (get-in app-state keypaths/navigation-args))))
 
-(defn distinct-by
+(defn ^:private distinct-by
   ;; TODO use the one in spice
   [f coll]
   (->> coll
@@ -857,7 +857,7 @@
          :new-coll []})
        :new-coll))
 
-(defn color-option<
+(defn ^:private color-option<
   [selection-event
    selections {:option/keys [slug] :as option}]
   (merge
@@ -873,7 +873,7 @@
             :available?       true
             :image-src        (:option/sku-swatch option)}))
 
-(defn product-option->length-picker-option
+(defn ^:private product-option->length-picker-option
   [selection-event
    availability
    {selected-hair-color :hair/color
@@ -913,7 +913,7 @@
                 :label            (str option-name " - Unavailable")
                 :selection-target nil}))))
 
-(defn hair-length-option<
+(defn ^:private hair-length-option<
   [selection-event selections availability index per-item]
   (update per-item :hair/length
           (partial mapv
@@ -923,7 +923,7 @@
                             selections
                             index))))
 
-(defn initialize-picker-options
+(defn ^:private initialize-picker-options
   [selection-event
    selections
    availability

@@ -65,7 +65,7 @@
          :new-coll []})
        :new-coll))
 
-(defn color-option<
+(defn ^:private color-option<
   [selection-event
    selections {:option/keys [slug] :as option}]
   (merge
@@ -81,7 +81,7 @@
             :available?       true
             :image-src        (:option/sku-swatch option)}))
 
-(defn product-option->length-picker-option
+(defn ^:private product-option->length-picker-option
   [selection-event
    availability
    {selected-hair-color :hair/color
@@ -121,7 +121,7 @@
                 :label            (str option-name " - Unavailable")
                 :selection-target nil}))))
 
-(defn hair-length-option<
+(defn ^:private hair-length-option<
   [selection-event selections availability index per-item]
   (update per-item :hair/length
           (partial mapv
@@ -163,7 +163,7 @@
          (map (partial generate-product-options skus-db images-db facets)))
         physical-line-items))
 
-(defn initialize-picker-options
+(defn ^:private initialize-picker-options
   [selection-event
    selections
    availability
@@ -184,8 +184,7 @@
                                           availability))
                     vec)})
 
-(defn ^:private
-  slice-sku-db
+(defn ^:private slice-sku-db
   "Returns the portion of the sku-db that meets the texture, origin, families of
   the look along with the service when available"
   [full-skus-db shared-cart selections]
@@ -313,11 +312,11 @@
                                         :items       1}
                              :slides   (:carousel/images data)}})))
 
-(defn yotpo-reviews-summary-component [{:keys [yotpo-data-attributes]}]
+(defn ^:private yotpo-reviews-summary-component [{:keys [yotpo-data-attributes]}]
   (when yotpo-data-attributes
     (component/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil)))
 
-(defn yotpo-reviews-component [{:keys [yotpo-data-attributes]}]
+(defn ^:private yotpo-reviews-component [{:keys [yotpo-data-attributes]}]
   (when yotpo-data-attributes
     [:div.col-10-on-dt.mx-auto
      (component/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)]))
@@ -383,7 +382,7 @@
     (yotpo-reviews-summary-component queried-data)
     (component/build look-card-caption queried-data)]])
 
-(component/defcomponent small-cta
+(component/defcomponent ^:private small-cta
   [{:cta/keys [id target small-label disabled? disabled-content spinning?]} _ _]
   (ui/button-small-primary (merge (apply utils/fake-href target)
                                   {:data-test        id
@@ -410,7 +409,7 @@
      [:div.shout.button-font-4 quaternary]]
     [:div.right-align (component/build small-cta data nil)]]])
 
-(component/defcomponent look-total
+(component/defcomponent ^:private look-total
   [{:look-total/keys [primary secondary tertiary]}_ _]
   [:div.center.pt4.bg-white-on-mb
    (when primary
