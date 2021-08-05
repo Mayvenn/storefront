@@ -63,23 +63,6 @@
   ([grid-spec]
    (grid-attrs grid-spec {})))
 
-
-(c/defcomponent header  [{:keys [forced-mobile-layout? target back] :as data} _opts _owner]
-  (header/mobile-nav-header
-   {:class (str "border-bottom border-gray "
-                (when-not forced-mobile-layout?
-                  "hide-on-dt"))
-    :style {:height "70px"}}
-   (c/html
-    [:a.block.black.p2.flex.justify-center.items-center
-     (utils/route-back-or-to
-            back
-            target)
-     (svg/left-arrow {:width  "20"
-                      :height "20"})])
-   (c/html (titles/proxima-content (with :title data)))
-   (c/html [:div])))
-
 (def ^:private day-column [::dummy-value 2 3 4 5 6 7 1])
 
 (defn week-day-headers [week]
@@ -218,8 +201,7 @@
   [data _ _]
   [:div.flex.flex-auto.flex-column.items-center.stretch
    [:div.bg-white.self-stretch
-    (c/build header
-             (with :appointment.header data))]
+    (header/adventure-header (with :appointment.header data))]
    (c/build body data)])
 
 (defn find-previous-sunday [today]
@@ -279,17 +261,18 @@
 
 (defn adv-flow-query [app-state]
   (let [nav-undo-stack (get-in app-state k/navigation-undo-stack)
-        base           (query app-state)]
+        current-order (api.orders/current app-state)]
     (merge
-     base
+     (query app-state)
      (within :appointment.header
-             {:forced-mobile-layout? true
-              :target                e/navigate-adventure-find-your-stylist
-              :back                  (first nav-undo-stack)
-              :title/primary         "Some great copy can go here"
-              :title/secondary       nil
-              :title/id              "appointment.header.title"
-              :title/icon            nil}))))
+             {:header.title/id               "adventure-title"
+              :header.title/primary          "Appointment Booking"
+              :header.back-navigation/id     "adventure-back"
+              :header.back-navigation/target [e/navigate-adventure-find-your-stylist]
+              :header.back-navigation/back   (first nav-undo-stack)
+              :header.cart/id                "mobile-cart"
+              :header.cart/value             (or (:order.items/quantity current-order) 0)
+              :header.cart/color             "white"}))))
 
 (defn ^:export adv-flow-page
   [app-state _]
