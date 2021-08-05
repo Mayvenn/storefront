@@ -289,7 +289,7 @@
       :cta/target                  [events/control-add-sku-to-bag
                                     {:sku      selected-sku
                                      :quantity (get-in app-state (if (experiments/multiple-lengths-pdp? app-state)
-                                                                   (conj catalog.keypaths/detailed-look-selections :quantity)
+                                                                   (conj catalog.keypaths/detailed-pdp-selections :quantity)
                                                                    keypaths/browse-sku-quantity) 1)}]
       :cta/spinning?               (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
       :cta/disabled?               (not (:inventory/in-stock? selected-sku))
@@ -471,15 +471,15 @@
       :carousel-images                    carousel-images
       :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
       :old-picker-data                    (old-picker/query data length-guide-image)
-      :picker-modal                       (picker-modal< (get-in data catalog.keypaths/detailed-look-options)
-                                                         (get-in data catalog.keypaths/detailed-look-picker-visible?)
-                                                         (get-in data catalog.keypaths/detailed-look-selected-picker)
+      :picker-modal                       (picker-modal< (get-in data catalog.keypaths/detailed-pdp-options)
+                                                         (get-in data catalog.keypaths/detailed-pdp-picker-visible?)
+                                                         (get-in data catalog.keypaths/detailed-pdp-selected-picker)
                                                          length-guide-image)
       :pickers                            (pickers< facets
                                                     product-skus
-                                                    (get-in data catalog.keypaths/detailed-look-selections)
-                                                    (get-in data catalog.keypaths/detailed-look-options)
-                                                    (get-in data catalog.keypaths/detailed-look-availability))
+                                                    (get-in data catalog.keypaths/detailed-pdp-selections)
+                                                    (get-in data catalog.keypaths/detailed-pdp-options)
+                                                    (get-in data catalog.keypaths/detailed-pdp-availability))
       :multiple-lengths-pdp?              (experiments/multiple-lengths-pdp? data)}
 
 
@@ -692,8 +692,8 @@
 (defmethod transitions/transition-state events/control-pdp-picker-open
   [_ event {:keys [picker-id]} app-state]
   (-> app-state
-      (assoc-in catalog.keypaths/detailed-look-selected-picker picker-id)
-      (assoc-in catalog.keypaths/detailed-look-picker-visible? true)))
+      (assoc-in catalog.keypaths/detailed-pdp-selected-picker picker-id)
+      (assoc-in catalog.keypaths/detailed-pdp-picker-visible? true)))
 
 #?(:cljs
    (defmethod storefront.trackings/perform-track events/control-pdp-picker-open
@@ -707,7 +707,7 @@
 
 (defmethod transitions/transition-state events/control-pdp-picker-close
   [_ event _ app-state]
-  (assoc-in app-state catalog.keypaths/detailed-look-picker-visible? false))
+  (assoc-in app-state catalog.keypaths/detailed-pdp-picker-visible? false))
 
 ;; NEW
 #?(:cljs
@@ -726,24 +726,24 @@
                                       nil)
                                     {:facet-selected picker-name}
                                     (->data-event-format
-                                     (get-in app-state catalog.keypaths/detailed-look-selections)
-                                     (get-in app-state catalog.keypaths/detailed-look-availability)
-                                     (get-in app-state catalog.keypaths/detailed-look-services)))))))
+                                     (get-in app-state catalog.keypaths/detailed-pdp-selections)
+                                     (get-in app-state catalog.keypaths/detailed-pdp-availability)
+                                     (get-in app-state catalog.keypaths/detailed-pdp-services)))))))
 
 ;; NEW
 (defmethod transitions/transition-state events/control-pdp-picker-option-select
   [_ event {:keys [selection value]} app-state]
   (let [new-selections (-> app-state
-                           (get-in catalog.keypaths/detailed-look-selections)
+                           (get-in catalog.keypaths/detailed-pdp-selections)
                            (assoc-in selection value))]
     (cond->
         (-> app-state
-            (assoc-in catalog.keypaths/detailed-look-selections new-selections)
-            (update-in (concat catalog.keypaths/detailed-look-options selection)
+            (assoc-in catalog.keypaths/detailed-pdp-selections new-selections)
+            (update-in (concat catalog.keypaths/detailed-pdp-options selection)
                        (partial mapv (fn [option] (assoc option :option/checked? (= (:option/value option) value))))))
       (= [:hair/color] selection)
       ;; TODO(jjh) What does this part do???
-      (update-in (conj catalog.keypaths/detailed-look-options :per-item)
+      (update-in (conj catalog.keypaths/detailed-pdp-options :per-item)
                  (fn [per-item-options]
                    (->> per-item-options
                         (map-indexed
@@ -763,8 +763,8 @@
 (defmethod effects/perform-effects events/control-pdp-picker-option-select
   [_ event _args _ app-state]
   (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)
-        availability         (get-in app-state catalog.keypaths/detailed-look-availability)
-        selections           (get-in app-state catalog.keypaths/detailed-look-selections)
+        availability         (get-in app-state catalog.keypaths/detailed-pdp-availability)
+        selections           (get-in app-state catalog.keypaths/detailed-pdp-selections)
         color                (:hair/color selections)
         {:hair/keys
          [family length]}    (-> selections :per-item first)
@@ -937,12 +937,12 @@
     (-> app-state
 
         ;; START refactor (temp)
-        (assoc-in catalog.keypaths/detailed-look-selected-picker nil)
-        (assoc-in catalog.keypaths/detailed-look-picker-visible? nil)
-        (assoc-in catalog.keypaths/detailed-look-selections initial-selections)
-        (assoc-in catalog.keypaths/detailed-look-options picker-two-options)
-        (assoc-in catalog.keypaths/detailed-look-skus-db product-skus)
-        (assoc-in catalog.keypaths/detailed-look-availability availability)
+        (assoc-in catalog.keypaths/detailed-pdp-selected-picker nil)
+        (assoc-in catalog.keypaths/detailed-pdp-picker-visible? nil)
+        (assoc-in catalog.keypaths/detailed-pdp-selections initial-selections)
+        (assoc-in catalog.keypaths/detailed-pdp-options picker-two-options)
+        (assoc-in catalog.keypaths/detailed-pdp-skus-db product-skus)
+        (assoc-in catalog.keypaths/detailed-pdp-availability availability)
         ;; END Refactor
 
         (assoc-in catalog.keypaths/detailed-product-id product-id)

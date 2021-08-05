@@ -95,7 +95,7 @@
 
 (defn dismiss-product-detail-picker-modal-event
   [app-state]
-  (when (get-in app-state catalog.keypaths/detailed-look-picker-visible?)
+  (when (get-in app-state catalog.keypaths/detailed-pdp-picker-visible?)
     events/control-pdp-picker-close))
 
 (defmethod effects/perform-effects events/escape-key-pressed [_ event args _ app-state]
