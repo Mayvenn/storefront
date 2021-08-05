@@ -24,7 +24,7 @@
 
 (defmethod fx/perform-effects e/navigate-adventure-appointment-booking
   [_ _event _ _ _state]
-  (publish e/biz|follow|defined
+ (publish e/biz|follow|defined
            {:follow/start    [e/biz|appointment-booking|initialized]
             :follow/after-id e/biz|appointment-booking|done
             :follow/then     [e/biz|appointment-booking|navigation-decided
@@ -123,8 +123,9 @@
         (week-arrow direction disabled?)))
 
 (defn week-view [{:keys [week
-                         first-available-week?
-                         last-available-week?
+                         week-idx
+                         prev-week-idx
+                         next-week-idx
                          earliest-available-date
                          selected-date]}]
   [:div {:style {:display               "grid"
@@ -132,25 +133,21 @@
                  :grid-auto-rows        "max-content"
                  :align-items           "center"
                  :justify-items         "center"}}
-   (disablable-arrow {:disabled?   first-available-week?
+   (disablable-arrow {:disabled?   (= week-idx prev-week-idx)
                       :direction   :left
-                      :target      e/biz|appointment-booking|date-selected
-                      :target-args {:date
-                                    (let [one-week-before-selected-date
-                                          (date/add-delta selected-date {:days -7})]
-                                      (if (date/after? one-week-before-selected-date earliest-available-date)
-                                        one-week-before-selected-date
-                                        earliest-available-date))}
+                      :target      e/control-appointment-booking-caret-clicked
+                      :target-args {:week-idx prev-week-idx}
                       :attrs       (grid-attrs [1 1])})
 
    [:div.center (grid-attrs [1 "2 / span 5"])
     [:div.title-3.canela.col-12 (split-month week)]]
 
-   (disablable-arrow {:disabled?   last-available-week?
+   (disablable-arrow {:disabled?   (= week-idx next-week-idx)
                       :direction   :right
-                      :target      e/biz|appointment-booking|date-selected
-                      :target-args {:date (date/add-delta selected-date {:days 7})}
+                      :target      e/control-appointment-booking-caret-clicked
+                      :target-args {:week-idx next-week-idx}
                       :attrs       (grid-attrs [1 7])})
+
 
    (week-day-headers week)
 
@@ -243,10 +240,11 @@
         shown-weeks             (-> earliest-available-date
                                     find-previous-sunday
                                     get-weeks)
-        displayed-week          (or (get-week shown-weeks selected-date)
-                                    (first shown-weeks))
-        first-available-week?   (= displayed-week (first shown-weeks))
-        last-available-week?    (= displayed-week (last shown-weeks))
+        week-idx                (or (-> app-state
+                                        booking/read-view-model
+                                        ::booking/week-idx)
+                                    0)
+        displayed-week          (nth shown-weeks week-idx)
         time-slots              booking/time-slots]
     (merge
      (within :top-third.title
@@ -257,10 +255,12 @@
               :time-slots            time-slots})
      (within :appointment.picker.date
              {:week                    displayed-week
+              :week-idx                week-idx
+              :prev-week-idx           (max 0 (dec week-idx))
+              :next-week-idx           (min (dec (count shown-weeks))
+                                            (inc week-idx))
               :earliest-available-date earliest-available-date
-              :selected-date           selected-date
-              :first-available-week?   first-available-week?
-              :last-available-week?    last-available-week?})
+              :selected-date           selected-date})
      (within :appointment-time-notice
              {:primary (ui.molecules/human-readable-appointment-date selected-date
                                                                      selected-time-slot)})
@@ -295,29 +295,25 @@
               :target [e/biz|appointment-booking|skipped]}))))
 
 (defn ufi-query [app-state]
- (let [nav-undo-stack (get-in app-state k/navigation-undo-stack)
-        current-order (api.orders/current app-state)]
-    (merge
-     (query app-state)
-     (within :top-third.title
-             {:primary "When do you want to get your hair done?"
-              :id      "id"})
-     (within :skip.action
-             {:id     "booking-skip"
-              :label  "skip this step"
-              :target [e/biz|appointment-booking|skipped]}))))
+  (merge
+   (query app-state)
+   (within :top-third.title
+           {:primary "When do you want to get your hair done?"
+            :id      "id"})
+   (within :skip.action
+           {:id     "booking-skip"
+            :label  "skip this step"
+            :target [e/biz|appointment-booking|skipped]})))
 
 (defn modal-query [app-state]
-  (let [nav-undo-stack (get-in app-state k/navigation-undo-stack)
-        current-order  (api.orders/current app-state)]
-    (merge
-     (query app-state)
-     (within :top-third.title
-             {:primary "Edit Appointment"
-              :id      "id"
-              :icon    [:svg/calendar {:class  "fill-p-color"
-                                       :width  "27px"
-                                       :height "30px"}]}))))
+  (merge
+   (query app-state)
+   (within :top-third.title
+           {:primary "Edit Appointment"
+            :id      "id"
+            :icon    [:svg/calendar {:class  "fill-p-color"
+                                     :width  "27px"
+                                     :height "30px"}]})))
 
 (defn ^:export adv-flow-page
   [app-state _]

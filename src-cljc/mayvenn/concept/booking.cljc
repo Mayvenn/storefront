@@ -34,6 +34,7 @@
     :slot.card/copy "2:00pm"}])
 
 (def model-keypath [:models :booking])
+(def view-model-keypath [:ui :booking])
 
 (s/def ::selected-date (s/nilable date/date?))
 (s/def ::selected-time-slot (->> (map :slot/id time-slots)
@@ -47,6 +48,16 @@
                            :opt [::selected-date
                                  ::selected-time-slot
                                  ::done])))
+
+(s/def ::week-idx (s/nilable int?))
+
+;; TODO Find a better name and location for this.
+
+
+
+(s/def ::view-model (s/nilable
+                     (s/keys
+                      :opt [::week-idx])))
 
 (defn parse-date-in-client-tz [date-str]
   (let [[year idx-1-month day] (map spice/parse-int (string/split date-str "-"))
@@ -66,12 +77,31 @@
 
 (defn read-model
   ([state]
-   (conform! ::model (get-in state model-keypath)))
+   (get-in state model-keypath))
   ([state key]
-   (conform! key (get-in state (conj model-keypath key)))))
+   (get-in state (conj model-keypath key))))
+
+(defn write-model
+  ([state model]
+   (assoc-in state model-keypath (conform! ::model model)))
+  ([state key model]
+   (assoc-in state (conj model-keypath key) (conform! key model))))
+
+(def <- read-model)
+
+(defn read-view-model
+  ([state]
+   (get-in state view-model-keypath))
+  ([state key]
+   (get-in state (conj view-model-keypath key))))
+
+(defn write-view-model
+  ([state view-model]
+   (assoc-in state view-model-keypath (conform! ::view-model view-model)))
+  ([state key view-model]
+   (assoc-in state (conj view-model-keypath key) (conform! key view-model))))
 
 ;; NOTE: This is to meet the standard concept shape
-(def <- read-model)
 
 (defn write-model
   ([state model]
@@ -97,15 +127,12 @@
 
 (defmethod fx/perform-effects e/biz|appointment-booking|initialized
 [_ _ _args _ state]
-  (let [{:keys [date slot-id]} (-> state
-                                   api.orders/current
-                                   :waiter/order
-                                   :appointment-time-slot)
+  (let [{:keys [date slot-id]} (some-> state
+                                       api.orders/current
+                                       :waiter/order
+                                       :appointment-time-slot)
         order-date             (some-> date parse-date-in-client-tz)]
-    (publish e/biz|appointment-booking|date-selected {:date (or order-date
-                                                                (-> (date/now)
-                                                                    start-of-day
-                                                                    (date/add-delta {:days 2})))})
+    (publish e/biz|appointment-booking|date-selected {:date order-date})
     (when slot-id
       (publish e/biz|appointment-booking|time-slot-selected {:time-slot slot-id}))))
 
@@ -124,7 +151,8 @@
 
 (defmethod t/transition-state e/biz|appointment-booking|time-slot-selected
   [_ _event {:keys [time-slot] :as _args} state]
-  (write-model state ::selected-time-slot time-slot))
+  (-> state
+      (write-model ::selected-time-slot time-slot)))
 
 (defmethod fx/perform-effects e/biz|appointment-booking|submitted
   [_ _event _args _prev-state state]
@@ -180,6 +208,11 @@
        (if (routes/sub-page? [target nil] [e/navigate nil])
          (history/enqueue-navigate target)
          (publish target)))))
+
+(defmethod t/transition-state e/control-appointment-booking-caret-clicked
+  [_ event {:keys [week-idx]} state]
+  (-> state
+      (write-view-model ::week-idx week-idx)))
 
 (defmethod fx/perform-effects e/api-success-set-appointment-time-slot
   [_ _event {:keys [order] :as _args} _prev-state _state]

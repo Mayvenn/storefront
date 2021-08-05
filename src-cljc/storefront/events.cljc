@@ -776,8 +776,10 @@
 (defpath biz|appointment-booking|submitted)
 (defpath biz|appointment-booking|skipped)
 (defpath biz|appointment-booking|done)
-
 (defpath biz|appointment-booking|navigation-decided)
+
+(defpath control-appointment-booking-caret-clicked)
+
 (defpath control-show-edit-appointment-menu)
 (defpath control-dismiss-edit-appointment-menu)
 
