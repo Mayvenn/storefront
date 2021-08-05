@@ -4,6 +4,7 @@
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.events :as e]
             [storefront.css-transitions :as css-transitions]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]))
@@ -92,6 +93,135 @@
                         options)})
       (picker-face (update face-data :id str "-desktop"))]]))
 
+(def vertical-border
+  [:div.border-right.border-cool-gray.mx3 {:style {:height "45px"}}])
+
+;; START V1 User Interface backed by V2 Data Model (the model designed from work on the look customization page)
+(def v1-picker-chevron
+  (svg/dropdown-arrow {:height "13px"
+                       :width  "13px"}))
+
+(defn v1-picker-face
+  [{:v1-picker-face/keys [title id primary-attrs image-src label]}]
+  [:div.col-12.flex.flex-column.flex-auto
+   (merge primary-attrs {:style {:height "75px"}})
+   [:div.flex.items-center
+    {:style {:height "100%"}}
+    [:div.proxima.title-3.shout title]
+    (when image-src
+      [:img.border.border-gray.ml4.mr1
+       {:height "20px"
+        :width  "21px"
+        :src    image-src}])
+    [:div.ml2.flex-auto.medium {:data-test id} label]
+    [:div.self-center ^:inline v1-picker-chevron]]])
+
+(defn v1-invisible-select
+  [{:keys                            [id selected-value options]
+    [selection-event selection-args] :selection-target}
+   face-data]
+  [:div.hide-on-mb.relative.col-12
+   (invisible-select
+    {:value     selected-value
+     :on-change #(messages/handle-message selection-event
+                                          (assoc selection-args :value (.-value (.-target %))))
+     :options   (map (fn [{:option/keys [value label available?]}]
+                       [:option (merge {:value value
+                                        :label label
+                                        :key   (str id "-" value)}
+                                       (when-not available?
+                                         {:disabled true}))])
+                     options)})
+   (v1-picker-face (update face-data :id str "-desktop"))])
+
+(defn ^:private color-picker-v1
+  [{:as picker
+    :keys
+    [id
+     value-id
+     primary
+     image-src
+     open-target
+     primary-attrs
+     image-attrs]}]
+  (let [face-data #:v1-picker-face{:id            value-id
+                                    :title         "Color"
+                                    :primary-attrs primary-attrs
+                                    :image-attrs   image-attrs
+                                    :image-src     image-src
+                                    :label         primary}]
+    [:div.flex.flex-column.relative.flex-auto.px1
+     [:div.hide-on-tb-dt.inherit-color
+      (merge
+       {:data-test id}
+       (apply utils/fake-href open-target))
+      (v1-picker-face face-data)]
+     (v1-invisible-select picker face-data)]))
+
+(defn ^:private length-picker-v1
+  [{:as picker
+    :keys
+    [id
+     value-id
+     primary
+     image-src
+     open-target
+     primary-attrs
+     image-attrs]}]
+  (let [face-data #:v1-picker-face{:id            value-id
+                                    :title         "Length"
+                                    :primary-attrs primary-attrs
+                                    :image-attrs   image-attrs
+                                    :image-src     image-src
+                                    :label         primary}]
+    [:div.col-7.pl1
+     [:div.hide-on-tb-dt.inherit-color
+      (merge
+       {:data-test id}
+       (when open-target
+         (apply utils/fake-href open-target)))
+      (v1-picker-face face-data)]
+     (v1-invisible-select picker face-data)]))
+
+(defn ^:private quantity-picker-v1
+  [{:as picker
+    :keys
+    [id
+     value-id
+     primary
+     image-src
+     open-target
+     primary-attrs
+     image-attrs]}]
+  (let [face-data #:v1-picker-face{:id            value-id
+                                    :title         "QTY"
+                                    :primary-attrs primary-attrs
+                                    :image-attrs   image-attrs
+                                    :image-src     image-src
+                                    :label         primary}]
+    [:div.flex.flex-column.relative.flex-auto.pr1
+     [:div.hide-on-tb-dt.inherit-color
+      (merge
+       {:data-test id}
+       (apply utils/fake-href open-target))
+      (v1-picker-face face-data)]
+     (v1-invisible-select picker face-data)]))
+
+(component/defcomponent picker-one-combo-face
+  [{:keys [color-picker
+           length-pickers
+           quantity-picker]
+    :as   pickers}
+   _ _]
+  (when (and color-picker length-pickers quantity-picker)
+    [:div.border-top.border-cool-gray.border-width-2
+     (color-picker-v1 color-picker)
+     [:div.flex.items-center.border-top.border-cool-gray.border-width-2
+      (length-picker-v1 (first length-pickers))
+      vertical-border
+      (quantity-picker-v1 quantity-picker)]]))
+;; END V1
+
 (defn ^:private length-option
   [{:option/keys
     [id
@@ -174,7 +304,6 @@
       :data-test id)
      primary)))
 
-
 "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
 (component/defdynamic-component ^:private picker-dialog
   (did-mount [_]
@@ -208,12 +337,37 @@
                  {:class "flex flex-wrap"})
                (mapv cell-component-fn items)]]))))
 
+(defn ^:private quantity-option
+  [{:option/keys
+    [id
+     label
+     checked?
+     selection-target
+     label-attrs]}]
+  [:div {:key       id
+         :data-test id}
+   (ui/option (merge
+               {:height   "4em"
+                :key      (str id "-option")
+                :href     "#"}
+               (when selection-target
+                 {:on-click (apply utils/send-event-callback selection-target)}))
+              (simple-content-layer
+               [:div
+                (merge {:key "primary-label"}
+                       label-attrs)
+                label])
+              [:div
+               (when checked?
+                 (simple-selected-layer))])])
+
 (defcomponent modal
   [{:picker-modal/keys
     [options
      visible?
      title
-     close-target]
+     close-target
+     length-guide-image]
     picker-type :picker-modal/type} _ _]
   [:div
    (slide-animate
@@ -230,9 +384,21 @@
 
       :hair/length
       (component/build
-       picker-dialog {:title             title
-                      :close-target      close-target
-                      :items             options}
+       picker-dialog (merge {:title             title
+                             :close-target      close-target
+                             :items             options}
+                            (when length-guide-image
+                              {:title-cta/id      "length-picker-length-guide"
+                               :title-cta/target  [e/popup-show-length-guide {:length-guide-image length-guide-image
+                                                                                   :location           "length-picker"}]
+                               :title-cta/primary "Length Guide"}))
        {:opts {:cell-component-fn length-option}})
+
+      :quantity
+      (component/build
+       picker-dialog {:title        title
+                      :close-target close-target
+                      :items        options}
+       {:opts {:cell-component-fn quantity-option}})
 
       nil))])

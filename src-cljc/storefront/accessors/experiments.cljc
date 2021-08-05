@@ -123,3 +123,7 @@
 (defn easy-booking?
   [data]
   (display-feature? data "easy-booking"))
+
+(defn multiple-lengths-pdp?
+  [data]
+  (display-feature? data "multiple-lengths-pdp"))

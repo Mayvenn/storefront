@@ -252,10 +252,16 @@
 (defpath control-category-option-unselect)
 (defpath control-category-option-clear)
 
+;; OLD PICKER
 (defpath control-product-detail-picker-open)
 (defpath control-product-detail-picker-close)
 (defpath control-product-detail-picker-option-select)
 (defpath control-product-detail-picker-option-quantity-select)
+
+;; NEW PICKER
+(defpath control-pdp-picker-option-select)
+(defpath control-pdp-picker-open)
+(defpath control-pdp-picker-close)
 
 (defpath control-look-detail-picker-option-select)
 (defpath control-look-detail-picker-open)
