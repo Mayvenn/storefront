@@ -17,6 +17,7 @@
                  [storefront.api :as api]
                  storefront.frontend-trackings])
             api.orders
+            [mayvenn.concept.booking :as booking]
             [mayvenn.concept.questioning :as questioning]
             [clojure.string :refer [join]]
             [storefront.events :as e]
@@ -532,8 +533,9 @@
 (defmethod fx/perform-effects e/biz|looks-suggestions|selected
   [_ _ {:keys [selected-look] success :on/success} _ state]
   (let [{product-sku-ids :product/sku-ids
-         service-sku-id  :service/sku-id}           selected-look
-        {servicing-stylist-id :services/stylist-id} (api.orders/services state (get-in state k/order))]
+         service-sku-id  :service/sku-id}                   selected-look
+        {servicing-stylist-id :services/stylist-id}         (api.orders/services state (get-in state k/order))
+        {::booking/keys [selected-time-slot selected-date]} (-> state spice.core/spy booking/<- spice.core/spy)]
     #?(:cljs
        (api/new-order-from-sku-ids (get-in state k/session-id)
                                    {:store-stylist-id     (get-in state k/store-stylist-id)
@@ -552,6 +554,11 @@
                                        (if success
                                          {:on/success success}
                                          {:navigate e/navigate-cart})))
+                                     (when (and selected-time-slot selected-date)
+                                       (api/set-appointment-time-slot {:slot-id selected-time-slot
+                                                                       :date    selected-date
+                                                                       :number  (:number order)
+                                                                       :token   (:token order)}))
                                      (storefront.frontend-trackings/track-cart-initialization
                                       "shopping-quiz"
                                       nil
