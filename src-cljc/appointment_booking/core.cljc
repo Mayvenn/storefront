@@ -235,8 +235,7 @@
         earliest-available-date (-> (date/now)
                                     (booking/start-of-day)
                                     (date/add-delta {:days 2}))
-        selected-date           (or (booking/<- app-state ::booking/selected-date)
-                                    earliest-available-date)
+        selected-date           (booking/<- app-state ::booking/selected-date)
         shown-weeks             (-> earliest-available-date
                                     find-previous-sunday
                                     get-weeks)
