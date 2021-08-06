@@ -51,13 +51,17 @@
 
 (s/def ::week-idx (s/nilable int?))
 
+(s/def ::earliest-available-date date/date?)
+(s/def ::week (s/coll-of date/date?))
+(s/def ::weeks (s/coll-of ::week))
+
 ;; TODO Find a better name and location for this.
-
-
 
 (s/def ::view-model (s/nilable
                      (s/keys
-                      :opt [::week-idx])))
+                      :opt [::week-idx
+                            ::weeks
+                            ::earliest-available-date])))
 
 (defn parse-date-in-client-tz [date-str]
   (let [[year idx-1-month day] (map spice/parse-int (string/split date-str "-"))
@@ -81,11 +85,16 @@
   ([state key]
    (get-in state (conj model-keypath key))))
 
+(defn assoc-and-conform! [model spec key value]
+  (conform! spec (assoc model key value)))
+
+;;TODO Check order of operations on conform
 (defn write-model
   ([state model]
    (assoc-in state model-keypath (conform! ::model model)))
-  ([state key model]
-   (assoc-in state (conj model-keypath key) (conform! key model))))
+  ([state key value]
+   (update-in state model-keypath
+              assoc-and-conform! ::model key value)))
 
 ;; NOTE: This is to meet the standard concept shape
 (def <- read-model)
@@ -97,10 +106,11 @@
    (get-in state (conj view-model-keypath key))))
 
 (defn write-view-model
-  ([state view-model]
-   (assoc-in state view-model-keypath (conform! ::view-model view-model)))
-  ([state key view-model]
-   (assoc-in state (conj view-model-keypath key) (conform! key view-model))))
+  ([state model]
+   (assoc-in state view-model-keypath (conform! ::model model)))
+  ([state key value]
+   (update-in state view-model-keypath
+              assoc-and-conform! ::view-model key value)))
 
 
 
@@ -112,13 +122,44 @@
        (.setSeconds 0)
        (.setMilliseconds 0))))
 
+(defn find-previous-sunday [today]
+  (let [i     (date/weekday-index today)]
+    (date/add-delta today {:days (- i)})))
+
+(defn week-contains-date? [selected-date week]
+  (first (filter #(= selected-date %) week)))
+
+(defn get-week-idx-for-date [shown-weeks selected-date]
+  (->> shown-weeks
+       (keep-indexed (fn [idx week]
+                       (when (week-contains-date? selected-date week)
+                         idx)))
+       first))
+
+(defn get-weeks [starting-sunday]
+  (let [num-of-shown-weeks 5 ;; NOTE: We want to show 4 weeks *after* the current date,
+        ;;       for a total of 5 weeks.
+        length-of-week     7]
+    (partition length-of-week
+               (map #(date/add-delta starting-sunday {:days %})
+                    (range (* num-of-shown-weeks length-of-week))))))
+
 
 (defmethod t/transition-state e/biz|appointment-booking|initialized
   [_ _event _args state]
-  (write-model state
-      {::selected-date nil
-       ::selected-time-slot nil
-       ::done false}))
+  (let [earliest-available-date (-> (date/now)
+                                    (start-of-day)
+                                    (date/add-delta {:days 2}))
+        weeks                   (-> earliest-available-date
+                                    find-previous-sunday
+                                    get-weeks)]
+    (-> state
+        (write-model {::selected-date      nil
+                      ::selected-time-slot nil
+                      ::done               false})
+        (write-view-model {::weeks                   weeks
+                           ::week-idx                0
+                           ::earliest-available-date earliest-available-date}))))
 
 (defmethod fx/perform-effects e/biz|appointment-booking|initialized
 [_ _ _args _ state]
@@ -142,7 +183,10 @@
 
 (defmethod t/transition-state e/biz|appointment-booking|date-selected
   [_ _event {:keys [date] :as _args} state]
-  (write-model state ::selected-date date))
+  (let [weeks (read-view-model state ::weeks)]
+    (-> state
+        (write-model ::selected-date date)
+        (write-view-model ::week-idx (get-week-idx-for-date weeks date)))))
 
 (defmethod t/transition-state e/biz|appointment-booking|time-slot-selected
   [_ _event {:keys [time-slot] :as _args} state]

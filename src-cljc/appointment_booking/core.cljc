@@ -104,13 +104,6 @@
      :style  {:stroke-width "1px"}}
     (arrow-directions direction))))
 
-(defn week-contains-date? [selected-date week]
-  (first (filter #(= selected-date %) week)))
-
-(defn get-week [shown-weeks selected-date]
-  (first (filter (partial week-contains-date? selected-date)
-                 shown-weeks)))
-
 (defn disablable-arrow [{:keys [disabled? direction target target-args attrs]}]
   (conj (if disabled?
           [:div.center attrs]
@@ -217,34 +210,18 @@
     (header/adventure-header (with :appointment.header data))]
    (c/build body data)])
 
-(defn find-previous-sunday [today]
-  (let [i     (date/weekday-index today)]
-    (date/add-delta today {:days (- i)})))
-
-(defn get-weeks [starting-sunday]
-  (let [num-of-shown-weeks 5 ;; NOTE: We want to show 4 weeks *after* the current date,
-                             ;;       for a total of 5 weeks.
-        length-of-week     7]
-    (partition length-of-week
-               (map #(date/add-delta starting-sunday {:days %})
-                    (range (* num-of-shown-weeks length-of-week))))))
-
-
 (defn ^:private query [app-state]
-  (let [selected-time-slot      (booking/<- app-state ::booking/selected-time-slot)
-        earliest-available-date (-> (date/now)
-                                    (booking/start-of-day)
-                                    (date/add-delta {:days 2}))
-        selected-date           (booking/<- app-state ::booking/selected-date)
-        shown-weeks             (-> earliest-available-date
-                                    find-previous-sunday
-                                    get-weeks)
-        week-idx                (or (-> app-state
-                                        booking/read-view-model
-                                        ::booking/week-idx)
-                                    0)
-        displayed-week          (nth shown-weeks week-idx)
-        time-slots              booking/time-slots]
+  (let [{::booking/keys [selected-time-slot
+                         selected-date]} (booking/<- app-state)
+        {::booking/keys [earliest-available-date
+                         weeks]}         (booking/read-view-model app-state)
+
+        week-idx       (or (-> app-state
+                                         booking/read-view-model
+                                         ::booking/week-idx)
+                                     0)
+        displayed-week (nth weeks week-idx)
+        time-slots     booking/time-slots]
     (merge
      (within :top-third.title
              {:primary "When do you want to get your hair done?"
@@ -256,7 +233,7 @@
              {:week                    displayed-week
               :week-idx                week-idx
               :prev-week-idx           (max 0 (dec week-idx))
-              :next-week-idx           (min (dec (count shown-weeks))
+              :next-week-idx           (min (dec (count weeks))
                                             (inc week-idx))
               :earliest-available-date earliest-available-date
               :selected-date           selected-date})

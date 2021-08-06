@@ -4,7 +4,6 @@
             [storefront.events :as e]
             [appointment-booking.core :as booking.core]
             mayvenn.concept.booking
-            [mayvenn.concept.follow :as follow]
             [storefront.components.header :as components.header]
             [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as utils]
