@@ -122,9 +122,11 @@
        (.setSeconds 0)
        (.setMilliseconds 0))))
 
-(defn find-previous-sunday [today]
+(defn find-previous-or-this-sunday [today]
   (let [i     (date/weekday-index today)]
-    (date/add-delta today {:days (- i)})))
+    (if (= 7 i) ;;if today is sunday
+      today
+      (date/add-delta today {:days (- i)}))))
 
 (defn week-contains-date? [selected-date week]
   (first (filter #(= selected-date %) week)))
@@ -151,7 +153,7 @@
                                     (start-of-day)
                                     (date/add-delta {:days 2}))
         weeks                   (-> earliest-available-date
-                                    find-previous-sunday
+                                    find-previous-or-this-sunday
                                     get-weeks)]
     (-> state
         (write-model {::selected-date      nil
