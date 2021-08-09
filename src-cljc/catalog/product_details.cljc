@@ -883,17 +883,18 @@
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
      [_ event args prev-app-state app-state]
-     (let [[prev-event prev-args] (get-in prev-app-state keypaths/navigation-message)
+     (let [[prev-event prev-args] (spice.core/sspy (get-in prev-app-state keypaths/navigation-message))
            product-id (:catalog/product-id args)
            product (get-in app-state (conj keypaths/v2-products product-id))
-           navigating-to-self? (and (= events/navigate-product-details prev-event)
-                                    (apply = (map :catalog/product-id [args prev-args])))]
+           just-arrived? (or (not= events/navigate-product-details prev-event)
+                             (not= (:catalog/product-id args)
+                                   (:catalog/product-id prev-args))
+                             (= :first-nav (:navigate/caused-by args)))]
        (when (nil? product)
          (fetch-product-details app-state product-id))
-       (when-not navigating-to-self?
+       (when just-arrived?
          (messages/handle-message events/initialize-product-details (assoc args :origin-nav-event event)))
        (messages/handle-message events/control-pdp-picker-close))))
-
 
 #?(:cljs
    (defmethod trackings/perform-track events/navigate-product-details
