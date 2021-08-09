@@ -72,7 +72,7 @@
                                                 {:style {:width "2em"}})
      #?(:cljs (formatters/format-date {:weekday "short"} date))]))
 
-(defn week-day-selectors [selected-date earliest-available-date week]
+(defn week-day-selectors [selected-date earliest-available-date week week-idx]
   (for [date week
         :let [col (date/weekday-index date)
               day-of-month (.getDate date)
@@ -82,9 +82,15 @@
     [:a.black.flex.items-center.justify-center
      (grid-attrs [4 (get day-column col)]
                  (merge
-                  {:style {:height "2em"
-                           :width  "2em"}
-                   :class (day-of-month-class selectable? selected?)}
+                  (let [id (str "date-selector--week-idx--"
+                                week-idx
+                                "--col--"
+                                col)]
+                    {:id        id
+                     :date-test id
+                     :style     {:height "2em"
+                                 :width  "2em"}
+                     :class     (day-of-month-class selectable? selected?)})
                   (when selectable?
                     (utils/fake-href e/biz|appointment-booking|date-selected {:date date}))))
      day-of-month]))
@@ -147,7 +153,7 @@
    [:div.col-11 (grid-attrs [3 "1 / span 7"])
     [:div.mb4.border-bottom.border-gray]]
 
-   (week-day-selectors selected-date earliest-available-date week)])
+   (week-day-selectors selected-date earliest-available-date week week-idx)])
 
 
 (defn time-radio-group [{:keys [selected-time-slot-id]}]
