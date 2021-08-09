@@ -3,7 +3,6 @@
   (:require [storefront.component :as c]
             [mayvenn.visual.tools :refer [with]]))
 
-
 (defn v2
    [{:as   data
      :state/keys [checked disabled]}]
@@ -18,7 +17,7 @@
         [:div.circle.bg-p-color
          {:style {:height "10px" :width "10px"}}])]
      [:input.hide.mx2.h2
-      ^:attrs (merge (with :input data)
+      ^:attrs (merge (with :input.attrs data)
                      {:type "radio"})]
      (into
       [:div ^:attrs (with :copy.attrs data)]

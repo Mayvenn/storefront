@@ -166,9 +166,8 @@
             (radio-section/v2
              (merge {:dial.attrs/name          radio-name
                      :dial.attrs/id            radio-id
-                     :dial.attrs/data-test     radio-name
+                     :dial.attrs/data-test     radio-id
                      :dial.attrs/class         "order-last"
-                     :label.attrs/data-test-id id
                      :label.attrs/on-click     (utils/send-event-callback e/biz|appointment-booking|time-slot-selected
                                                                           {:time-slot id}
                                                                           {:prevent-default?  true
