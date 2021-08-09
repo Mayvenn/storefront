@@ -49,7 +49,8 @@
             storefront.accessors.contentful
             [storefront.accessors.sites :as sites]
             catalog.look-details-v202105
-            [api.stylist :as stylist]))
+            [api.stylist :as stylist]
+            [mayvenn.tracer :as tracer]))
 
 (defn- transition [app-state [event args]]
   (reduce (fn [app-state dispatch]
@@ -1155,6 +1156,10 @@
        (wrap-filter-params)
        (wrap-params)
        (wrap-no-cache)
+       (tracer/wrap-http-segment {::tracer/segment-name        "storefront"
+                                  ::tracer/record-headers?     true
+                                  ::tracer/include-subsegment? false
+                                  ::tracer/annotations         {"environment" environment}})
        (#(if (#{"development" "test"} environment)
            (wrap-exceptions %)
            (wrap-internal-error %
