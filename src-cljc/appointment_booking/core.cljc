@@ -87,7 +87,7 @@
                                 "--col--"
                                 col)]
                     {:id        id
-                     :date-test id
+                     :data-test id
                      :style     {:height "2em"
                                  :width  "2em"}
                      :class     (day-of-month-class selectable? selected?)})
@@ -105,8 +105,8 @@
     {:height "15px"
      :width  "15px"
      :class  (if disabled?
-               "stroke-gray"
-               "stroke-p-color")
+                  "stroke-gray"
+                  "stroke-p-color")
      :style  {:stroke-width "1px"}}
     (arrow-directions direction))))
 
@@ -118,6 +118,7 @@
                             (when disabled?
                               {:aria-disabled "true"
                                :disabled      "true"})
+                            {:data-test (str "arrow-week-" (:week-idx target-args))}
                             (utils/fake-href target target-args))])
         (week-arrow direction disabled?)))
 

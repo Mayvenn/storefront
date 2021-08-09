@@ -168,6 +168,7 @@
     (when copy
       (component/html
        [:div.content-3.pt1.flex
+        {:data-test "stylist-appointment"}
         (svg/calendar {:class  "mr1 fill-p-color"
                        :width  "1.1em"
                        :height "1.1em"})
