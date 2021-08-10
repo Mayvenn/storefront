@@ -421,7 +421,13 @@
      :picker-modal/length-guide-image length-guide-image}))
 
 (defn query [data selected-sku]
-  (let [selections (get-in data catalog.keypaths/detailed-product-selections)
+  (let [selections (if (experiments/multiple-lengths-pdp? data)
+                     (let [v2-selections (get-in data catalog.keypaths/detailed-pdp-selections)
+                           first-per-item (first (:per-item v2-selections))]
+                       (-> v2-selections
+                           (dissoc :per-item)
+                           (merge first-per-item)))
+                     (get-in data catalog.keypaths/detailed-product-selections))
         product    (products/current-product data)
 
         product-skus       (products/extract-product-skus data product)
@@ -582,7 +588,9 @@
 
 (defn ^:export built-component
   [state opts]
-  (let [selected-sku (get-in state catalog.keypaths/detailed-product-selected-sku)]
+  (let [selected-sku (if (experiments/multiple-lengths-pdp? state)
+                       (get-in state catalog.keypaths/detailed-pdp-selected-sku)
+                       (get-in state catalog.keypaths/detailed-product-selected-sku))]
     (component/build component
                      (merge (query state selected-sku)
                             {:add-to-cart (add-to-cart-query state
@@ -590,31 +598,6 @@
                              :live-help   (when (live-help/kustomer-started? state)
                                             (live-help/banner-query "product-detail-page-banner"))})
                      opts)))
-
-;; GROT
-(defn determine-sku-id
-  [app-state product]
-  (let [selected-sku-id    (get-in app-state catalog.keypaths/detailed-product-selected-sku-id)
-        valid-product-skus (products/extract-product-skus app-state product)
-        valid-sku-ids      (set (map :catalog/sku-id valid-product-skus))
-        direct-load?       (zero? (count (get-in app-state keypaths/navigation-undo-stack)))
-        direct-to-details? (contains? (->> (get-in app-state keypaths/categories)
-                                           (keep :direct-to-details/sku-id)
-                                           set)
-                                      (or (:SKU (:query-params (get-in app-state storefront.keypaths/navigation-args)))
-                                          selected-sku-id))]
-    ;; When given a sku-id use it
-    ;; Else on direct load use the epitome
-    ;; otherwise return nil to indicate an unavailable combination of items
-    (or (valid-sku-ids selected-sku-id)
-        (when (or direct-load?
-                  direct-to-details?
-                  ;; HACK: Handle the case with services that the product and sku are 1-1
-                  (:SKU (:query-params (get-in app-state storefront.keypaths/navigation-args))))
-          (:catalog/sku-id
-           (skus/determine-epitome
-            (facets/color-order-map (get-in app-state storefront.keypaths/v2-facets))
-            valid-product-skus))))))
 
 (defn url-points-to-invalid-sku? [selected-sku query-params]
   (boolean
@@ -628,7 +611,9 @@
                        {:catalog/product-id product-id}
                        (fn [response]
                          (messages/handle-message events/api-success-v3-products-for-details response)
-                         (when-let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)]
+                         (when-let [selected-sku (if (experiments/multiple-lengths-pdp? app-state)
+                                                   (get-in app-state catalog.keypaths/detailed-pdp-selected-sku)
+                                                   (get-in app-state catalog.keypaths/detailed-product-selected-sku))]
                            (messages/handle-message events/viewed-sku {:sku selected-sku}))))
 
      (when-let [current-product (products/current-product app-state)]
@@ -640,6 +625,7 @@
   (when (= 1 (count coll))
     (first coll)))
 
+;; Old picker
 (defn determine-sku-from-selections
   [app-state new-selections]
   (let [product-id     (get-in app-state catalog.keypaths/detailed-product-id)
@@ -649,6 +635,26 @@
     (->> product-skus
          (selector/match-all {}
                              (merge old-selections new-selections))
+         first-when-only)))
+
+;; New picker
+(defn determine-sku-from-multiple-pdp-selections
+  [app-state new-selections]
+  (let [product-id     (get-in app-state catalog.keypaths/detailed-product-id)
+        product        (products/product-by-id app-state product-id)
+        product-skus   (products/extract-product-skus app-state product)
+        new-first-per-item (first (:per-item new-selections))
+        old-selections (get-in app-state catalog.keypaths/detailed-pdp-selections)
+        first-per-item (first (:per-item old-selections))
+        conformed-old-selections (-> old-selections
+                                     (dissoc :per-item)
+                                     (merge first-per-item))
+        conformed-new-selections (-> new-selections
+                                     (dissoc :per-item)
+                                     (merge new-first-per-item))]
+    (->> product-skus
+         (selector/match-all {}
+                             (merge conformed-old-selections conformed-new-selections))
          first-when-only)))
 
 (defn generate-product-options
@@ -786,12 +792,14 @@
         product-options    (generate-product-options product-id app-state)
         product            (products/product-by-id app-state product-id)
         product-skus       (products/extract-product-skus app-state product)
+        sku                (determine-sku-from-multiple-pdp-selections app-state selections)
         availability       (catalog.products/index-by-selectors
                             product-electives
                             product-skus)]
     (cond->
         (-> app-state
             (assoc-in catalog.keypaths/detailed-pdp-selections selections)
+            (assoc-in catalog.keypaths/detailed-pdp-selected-sku sku)
             (update-in (concat catalog.keypaths/detailed-pdp-options selection)
                        (partial mapv (fn [option] (assoc option :option/checked? (= (:option/value option) value))))))
       (= [:hair/color] selection)
@@ -819,7 +827,9 @@
             (= new-sku-id))
       (messages/handle-message events/control-pdp-picker-close)
       (effects/redirect nav-event
-                       (assoc-in nav-args [:query-params :SKU] new-sku-id)
+                        (if new-sku-id
+                          (assoc-in nav-args [:query-params :SKU] new-sku-id)
+                          (update nav-args :query-params dissoc :SKU))
                        :sku-option-select))
     #?(:cljs (scroll/enable-body-scrolling)) ; TODO(jjh): cargo cult
     ))
@@ -883,7 +893,7 @@
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
      [_ event args prev-app-state app-state]
-     (let [[prev-event prev-args] (spice.core/sspy (get-in prev-app-state keypaths/navigation-message))
+     (let [[prev-event prev-args] (get-in prev-app-state keypaths/navigation-message)
            product-id (:catalog/product-id args)
            product (get-in app-state (conj keypaths/v2-products product-id))
            just-arrived? (or (not= events/navigate-product-details prev-event)
@@ -953,11 +963,17 @@
 (defmethod transitions/transition-state events/initialize-product-details
   [_ event {:as args :keys [catalog/product-id query-params]} app-state]
   (let [ugc-offset      (:offset query-params)
+        product-options (generate-product-options product-id app-state)
+        product         (products/product-by-id app-state product-id)
+        product-skus    (products/extract-product-skus app-state product)
         sku             (or (->> (:SKU query-params)
                                  (conj keypaths/v2-skus)
                                  (get-in app-state))
-                            (get-in app-state catalog.keypaths/detailed-product-selected-sku))
-        product-options (generate-product-options product-id app-state)
+
+                            (if (experiments/multiple-lengths-pdp? app-state)
+                              (get-in app-state catalog.keypaths/detailed-pdp-selected-sku)
+                              (get-in app-state catalog.keypaths/detailed-product-selected-sku))
+                            (first product-skus))
 
         ;; Picker Two Refactor
         product-electives  [:hair/family :hair/color :hair/length]
@@ -966,8 +982,6 @@
                              {:hair/color color
                               :per-item   [{:hair/length length
                                             :hair/family family}]})
-        product            (products/product-by-id app-state product-id)
-        product-skus       (products/extract-product-skus app-state product)
         availability       (catalog.products/index-by-selectors
                             product-electives
                             product-skus)
@@ -984,6 +998,7 @@
         (assoc-in catalog.keypaths/detailed-pdp-selections initial-selections)
         (assoc-in catalog.keypaths/detailed-pdp-options picker-two-options)
         (assoc-in catalog.keypaths/detailed-pdp-skus-db product-skus)
+        (assoc-in catalog.keypaths/detailed-pdp-selected-sku sku)
         (assoc-in catalog.keypaths/detailed-pdp-availability availability)
         ;; END Refactor
 
@@ -999,7 +1014,9 @@
 #?(:cljs
    (defmethod effects/perform-effects events/initialize-product-details
      [_ _ {:keys [catalog/product-id page/slug query-params origin-nav-event]} _ app-state]
-     (let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)
+     (let [selected-sku (if (experiments/multiple-lengths-pdp? app-state)
+                          (get-in app-state catalog.keypaths/detailed-pdp-selected-sku)
+                          (get-in app-state catalog.keypaths/detailed-product-selected-sku))
            shop?        (= :shop (sites/determine-site app-state))]
        (if (url-points-to-invalid-sku? selected-sku query-params)
          (effects/redirect origin-nav-event

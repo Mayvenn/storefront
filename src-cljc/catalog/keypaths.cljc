@@ -18,6 +18,7 @@
 (def detailed-pdp-options (conj detailed-pdp :options))
 (def detailed-pdp-selections (conj detailed-pdp :selections))
 (def detailed-pdp-skus-db (conj detailed-pdp :skus-db))
+(def detailed-pdp-selected-sku (conj detailed-pdp :selected-sku))
 (def detailed-pdp-availability (conj detailed-pdp :availability))
 (def detailed-pdp-selected-picker (conj detailed-pdp :selected-picker))
 (def detailed-pdp-picker-visible? (conj detailed-pdp :picker-visible?))
