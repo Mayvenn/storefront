@@ -308,7 +308,6 @@
       :content content}
      (select-keys section [:link/content :link/target :link/id]))))
 
-;; NEW
 (defn ^:private pickers<
   [facets-db
    skus-db
@@ -451,7 +450,7 @@
                                                                         (:catalog/product-id product)))
       :adding-to-bag?                     (utils/requesting? data (conj request-keys/add-to-bag
                                                                         (:catalog/sku-id selected-sku)))
-      :sku-quantity                       (get-in data keypaths/browse-sku-quantity 1)
+      :sku-quantity                       (get-in data catalog.keypaths/detailed-pdp-selections-quantity 1)
       :options                            options
       :product                            product
       :selections                         selections
@@ -712,7 +711,6 @@
   [_ event _ app-state]
   (assoc-in app-state catalog.keypaths/detailed-pdp-picker-visible? false))
 
-;; NEW
 #?(:cljs
    (defmethod storefront.trackings/perform-track events/control-pdp-picker-option-select
      [_ _ {:keys [selection value]} _]
@@ -720,8 +718,6 @@
        (when (not= "quantity" picker-name)
          (stringer/track-event "select_bundle_option" {:option_name  picker-name
                                                        :option_value value})))))
-
-
 
 (defmethod transitions/transition-state events/control-pdp-picker-option-select
   [_ event {:keys [selection value]} app-state]
@@ -743,6 +739,10 @@
             (assoc-in catalog.keypaths/detailed-pdp-selected-sku sku)
             (update-in (concat catalog.keypaths/detailed-pdp-options selection)
                        (partial mapv (fn [option] (assoc option :option/checked? (= (:option/value option) value))))))
+
+      ;; (= [:quantity] selection)
+      ;; (assoc-in catalog.keypaths/detailed-pdp-selections-quantity value)
+
       (= [:hair/color] selection)
       (update-in (conj catalog.keypaths/detailed-pdp-options :per-item)
                  (fn [per-items]
@@ -752,7 +752,6 @@
                            (hair-length-option< event selections availability index product-options)))
                         vec))))))
 
-;; NEW
 (defmethod effects/perform-effects events/control-pdp-picker-option-select
   [_ event _args _ app-state]
   (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)
@@ -881,7 +880,7 @@
         (assoc-in catalog.keypaths/detailed-pdp-selected-sku sku)
         (assoc-in catalog.keypaths/detailed-pdp-availability availability)
         (assoc-in keypaths/ui-ugc-category-popup-offset ugc-offset)
-        (assoc-in keypaths/browse-sku-quantity 1))))
+        (assoc-in catalog.keypaths/detailed-pdp-selections-quantity 1))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/initialize-product-details
@@ -965,6 +964,7 @@
                                    :quantity quantity
                                    :sku      sku})))))
 
+;; I don't think we need this
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
   [_ event {:keys [quantity sku]} app-state]
-  (assoc-in app-state keypaths/browse-sku-quantity 1))
+  (assoc-in app-state catalog.keypaths/detailed-pdp-selections-quantity 1))
