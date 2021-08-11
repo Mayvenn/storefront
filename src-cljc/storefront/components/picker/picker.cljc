@@ -1,4 +1,4 @@
-(ns storefront.components.picker.picker-two
+(ns storefront.components.picker.picker
   "Exists temporarily to allow us to refactor the interface for use in varying contexts"
   (:require #?@(:cljs [[storefront.browser.scroll :as scroll]])
             [storefront.component :as component :refer [defcomponent]]
