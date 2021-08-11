@@ -320,7 +320,7 @@
                                                 (filter :option/checked?)
                                                 first)]
                       {:id               "picker-quantity"
-                       :value-id         "picker-selected-quantity-1"
+                       :value-id         (str "picker-selected-quantity-" (:option/value selected-option))
                        :options          quantity-options
                        :primary          (:option/label selected-option)
                        :selected-value   (:option/value selected-option)
@@ -846,7 +846,7 @@
                                                                           :value quantity}]
                                :option/label            (str quantity)
                                :option/value            quantity
-                               :option/id               (str "quantity-" quantity)})
+                               :option/id               (str "picker-quantity-" quantity)})
                             (range 1 11))})
 
 (defmethod transitions/transition-state events/initialize-product-details
