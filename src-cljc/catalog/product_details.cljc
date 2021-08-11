@@ -30,6 +30,8 @@
             [mayvenn.visual.lib.call-out-box :as call-out-box]
             [mayvenn.visual.tools :refer [with]]
             [mayvenn.visual.ui.titles :as titles]
+            [spice.core :as spice]
+            [spice.maps :as maps]
             [spice.selector :as selector]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
@@ -53,7 +55,6 @@
             [storefront.transitions :as transitions]
             storefront.ugc
 
-            [spice.maps :as maps]
             [storefront.components.picker.picker :as picker]))
 
 (defn page [wide-left wide-right-and-narrow]
@@ -721,18 +722,21 @@
 
 (defmethod transitions/transition-state events/control-pdp-picker-option-select
   [_ event {:keys [selection value]} app-state]
-  (let [selections (-> app-state
-                       (get-in catalog.keypaths/detailed-pdp-selections)
-                       (assoc-in selection value))
-        product-electives  [:hair/family :hair/color :hair/length]
-        product-id         (get-in app-state catalog.keypaths/detailed-pdp-product-id)
-        product-options    (generate-product-options product-id app-state)
-        product            (products/product-by-id app-state product-id)
-        product-skus       (products/extract-product-skus app-state product)
-        sku                (determine-sku-from-multiple-pdp-selections app-state selections)
-        availability       (catalog.products/index-by-selectors
-                            product-electives
-                            product-skus)]
+  (let [value             (if (= [:quantity] selection)
+                            (spice/parse-int value) ; html option can only return string
+                            value)
+        selections        (-> app-state
+                              (get-in catalog.keypaths/detailed-pdp-selections)
+                              (assoc-in selection value))
+        product-electives [:hair/family :hair/color :hair/length]
+        product-id        (get-in app-state catalog.keypaths/detailed-pdp-product-id)
+        product-options   (generate-product-options product-id app-state)
+        product           (products/product-by-id app-state product-id)
+        product-skus      (products/extract-product-skus app-state product)
+        sku               (determine-sku-from-multiple-pdp-selections app-state selections)
+        availability      (catalog.products/index-by-selectors
+                           product-electives
+                           product-skus)]
     (cond->
         (-> app-state
             (assoc-in catalog.keypaths/detailed-pdp-selections selections)
