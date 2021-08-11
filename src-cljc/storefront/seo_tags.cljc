@@ -92,7 +92,7 @@
 (defn product-details-tags [data]
   (let [product        (products/current-product data)
         images-catalog (get-in data keypaths/v2-images)
-        sku            (get-in data k/detailed-product-selected-sku)
+        sku            (get-in data k/detailed-pdp-selected-sku)
         image-url      (some->> sku
                                 (seo-image images-catalog)
                                 first

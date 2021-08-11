@@ -130,7 +130,6 @@
 
      :ui {:api-requests              []
           :carousel                  {:certified-stylist-index 0}
-          :catalog                   {:detailed-product {:selected-addon-items #{}}}
           :navigation-message        [events/navigate-home {}]
           :return-navigation-message [events/navigate-home {}]
           :errors                    {}

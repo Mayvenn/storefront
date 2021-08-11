@@ -13,8 +13,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [clojure.string :as string]
-            [storefront.components.svg :as svg]
-            [storefront.components.picker.picker :as picker]))
+            [storefront.components.svg :as svg]))
 
 (defn- header [name]
   [:h2.h3.py1.my3.shout.medium.border-bottom [:a {:name (string/lower-case name)} name]])
@@ -653,14 +652,15 @@
     (ui/option {:key      primary-label
                 :height   "4em"
                 :on-click on-click}
-               (picker/simple-content-layer
+               ;; TODO: picker-v2
+               #_(picker/simple-content-layer
                 (list
                  [:div.col-2
                   (when label-style
                     {:class label-style})
                   primary-label]
                  [:div.gray.flex-auto secondary-label]))
-               (cond
+               #_(cond
                  sold-out? (picker/simple-sold-out-layer "Sold Out")
                  selected? (picker/simple-selected-layer)
                  :else     nil))))
@@ -696,33 +696,6 @@
     (simple-option
      {:primary-label "2"
       :selected?     true})]])
-
-(def swatch-custom-options
-  [:section.flex.flex-column
-   [:div.col-5
-    (picker/color-option
-     {:color     {:option/name             "Natural Black"
-                  :option/rectangle-swatch swatch-img}
-      :model-img model-img
-      :selected? true
-      :sold-out? false})]
-
-   [:div.col-5
-    (picker/color-option
-     {:color     {:option/name             "Natural Black"
-                  :option/rectangle-swatch swatch-img}
-      :model-img model-img
-      :selected? false
-      :sold-out? false})]
-
-   [:div.col-5
-    (picker/color-option
-     {:color
-      {:option/name             "Natural Black"
-       :option/rectangle-swatch swatch-img}
-      :model-img model-img
-      :selected? false
-      :sold-out? true})]])
 
 (def alerts
   (let [content

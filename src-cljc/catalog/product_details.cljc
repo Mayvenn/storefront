@@ -39,7 +39,6 @@
             [storefront.accessors.skus :as skus]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.picker.picker :as old-picker]
             [storefront.components.tabbed-information :as tabbed-information]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -130,13 +129,11 @@
            product
            reviews
            selected-sku
-           old-picker-data
            ugc
            faq-section
            add-to-cart
            live-help
-           picker-modal
-           multiple-lengths-pdp?] :as data} _ opts]
+           picker-modal] :as data} _ opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (if-not product
@@ -144,8 +141,7 @@
        {:style {:height "25em"}}
        (ui/large-spinner {:style {:height "4em"}})]
       [:div
-       (when multiple-lengths-pdp?
-         (component/build picker-two/modal picker-modal))
+       (component/build picker-two/modal picker-modal)
        [:div.container.pdp-on-tb
         (when (:offset ugc)
           [:div.absolute.overlay.z4.overflow-auto
@@ -167,9 +163,7 @@
               [:div (carousel carousel-images product)])]
             (component/build product-summary-organism data)
             [:div.px2
-             (if multiple-lengths-pdp?
-               (component/build picker-two/picker-one-combo-face (:pickers data) opts)
-               (component/build old-picker/component old-picker-data opts))]
+             (component/build picker-two/picker-one-combo-face (:pickers data) opts)]
             [:div
              (cond
                unavailable? unavailable-button
@@ -288,9 +282,7 @@
       :cta/label                   "Add to Bag"
       :cta/target                  [events/control-add-sku-to-bag
                                     {:sku      selected-sku
-                                     :quantity (get-in app-state (if (experiments/multiple-lengths-pdp? app-state)
-                                                                   (conj catalog.keypaths/detailed-pdp-selections :quantity)
-                                                                   keypaths/browse-sku-quantity) 1)}]
+                                     :quantity (get-in app-state (conj catalog.keypaths/detailed-pdp-selections :quantity) 1)}]
       :cta/spinning?               (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
       :cta/disabled?               (not (:inventory/in-stock? selected-sku))
       :add-to-cart.quadpay/price   sku-price
@@ -421,13 +413,11 @@
      :picker-modal/length-guide-image length-guide-image}))
 
 (defn query [data selected-sku]
-  (let [selections (if (experiments/multiple-lengths-pdp? data)
-                     (let [v2-selections (get-in data catalog.keypaths/detailed-pdp-selections)
-                           first-per-item (first (:per-item v2-selections))]
-                       (-> v2-selections
-                           (dissoc :per-item)
-                           (merge first-per-item)))
-                     (get-in data catalog.keypaths/detailed-product-selections))
+  (let [selections (let [v2-selections (get-in data catalog.keypaths/detailed-pdp-selections)
+                         first-per-item (first (:per-item v2-selections))]
+                     (-> v2-selections
+                         (dissoc :per-item)
+                         (merge first-per-item)))
         product    (products/current-product data)
 
         product-skus       (products/extract-product-skus data product)
@@ -440,7 +430,7 @@
                                 (images/for-skuer images-catalog)
                                 (select {:use-case #{"length-guide"}})
                                 first)
-        options            (get-in data catalog.keypaths/detailed-product-options)
+        options            (get-in data catalog.keypaths/detailed-pdp-options)
         ugc                (ugc-query product selected-sku data)
         sku-price          (or (:product/essential-price selected-sku)
                                (:sku/price selected-sku))
@@ -475,8 +465,6 @@
                                                                      {:faq/title   (:text question)
                                                                       :faq/content answer})}))
       :carousel-images                    carousel-images
-      :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
-      :old-picker-data                    (old-picker/query data length-guide-image)
       :picker-modal                       (picker-modal< (get-in data catalog.keypaths/detailed-pdp-options)
                                                          (get-in data catalog.keypaths/detailed-pdp-picker-visible?)
                                                          (get-in data catalog.keypaths/detailed-pdp-selected-picker)
@@ -485,8 +473,7 @@
                                                     product-skus
                                                     (get-in data catalog.keypaths/detailed-pdp-selections)
                                                     (get-in data catalog.keypaths/detailed-pdp-options)
-                                                    (get-in data catalog.keypaths/detailed-pdp-availability))
-      :multiple-lengths-pdp?              (experiments/multiple-lengths-pdp? data)}
+                                                    (get-in data catalog.keypaths/detailed-pdp-availability))}
 
 
      (when sku-price
@@ -588,9 +575,7 @@
 
 (defn ^:export built-component
   [state opts]
-  (let [selected-sku (if (experiments/multiple-lengths-pdp? state)
-                       (get-in state catalog.keypaths/detailed-pdp-selected-sku)
-                       (get-in state catalog.keypaths/detailed-product-selected-sku))]
+  (let [selected-sku (get-in state catalog.keypaths/detailed-pdp-selected-sku)]
     (component/build component
                      (merge (query state selected-sku)
                             {:add-to-cart (add-to-cart-query state
@@ -611,9 +596,7 @@
                        {:catalog/product-id product-id}
                        (fn [response]
                          (messages/handle-message events/api-success-v3-products-for-details response)
-                         (when-let [selected-sku (if (experiments/multiple-lengths-pdp? app-state)
-                                                   (get-in app-state catalog.keypaths/detailed-pdp-selected-sku)
-                                                   (get-in app-state catalog.keypaths/detailed-product-selected-sku))]
+                         (when-let [selected-sku (get-in app-state catalog.keypaths/detailed-pdp-selected-sku)]
                            (messages/handle-message events/viewed-sku {:sku selected-sku}))))
 
      (when-let [current-product (products/current-product app-state)]
@@ -625,22 +608,10 @@
   (when (= 1 (count coll))
     (first coll)))
 
-;; Old picker
-(defn determine-sku-from-selections
-  [app-state new-selections]
-  (let [product-id     (get-in app-state catalog.keypaths/detailed-product-id)
-        product        (products/product-by-id app-state product-id)
-        product-skus   (products/extract-product-skus app-state product)
-        old-selections (get-in app-state catalog.keypaths/detailed-product-selections)]
-    (->> product-skus
-         (selector/match-all {}
-                             (merge old-selections new-selections))
-         first-when-only)))
-
 ;; New picker
 (defn determine-sku-from-multiple-pdp-selections
   [app-state new-selections]
-  (let [product-id     (get-in app-state catalog.keypaths/detailed-product-id)
+  (let [product-id     (get-in app-state catalog.keypaths/detailed-pdp-product-id)
         product        (products/product-by-id app-state product-id)
         product-skus   (products/extract-product-skus app-state product)
         new-first-per-item (first (:per-item new-selections))
@@ -664,36 +635,6 @@
         product-skus (products/extract-product-skus app-state product)
         images       (get-in app-state keypaths/v2-images)]
     (sku-selector/product-options facets product product-skus images)))
-
-(defn ^:private assoc-selections
-  "Selections are ultimately a function of three inputs:
-   1. options of the cheapest sku
-   2. prior selections on another product, but validated for this product
-   3. options of the sku from the URI
-
-   They are merged together each (possibly partially) overriding the
-   previous selection map of options.
-
-   NB: User clicks for selections are indirectly used by changing the URI."
-  [app-state sku]
-  (let [product-id   (get-in app-state catalog.keypaths/detailed-product-id)
-        product      (products/product-by-id app-state product-id)
-        facets       (facets/by-slug app-state)
-        product-skus (products/extract-product-skus app-state product)
-        images       (get-in app-state keypaths/v2-images)]
-    (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-selections
-                  (merge
-                   (default-selections facets product product-skus images)
-                   (let [{:catalog/keys [department]
-                          :product?essential-service/keys [electives]}
-                         (api.products/product<- app-state product)]
-                     (when (= #{"service"} department)
-                       electives))
-                   (get-in app-state catalog.keypaths/detailed-product-selections)
-                   (reduce-kv #(assoc %1 %2 (first %3))
-                              {}
-                              (select-keys sku (:selector/electives product))))))))
 
 (defn ^:private color-option<
   [selection-event
@@ -788,7 +729,7 @@
                        (get-in catalog.keypaths/detailed-pdp-selections)
                        (assoc-in selection value))
         product-electives  [:hair/family :hair/color :hair/length]
-        product-id         (get-in app-state catalog.keypaths/detailed-product-id)
+        product-id         (get-in app-state catalog.keypaths/detailed-pdp-product-id)
         product-options    (generate-product-options product-id app-state)
         product            (products/product-by-id app-state product-id)
         product-skus       (products/extract-product-skus app-state product)
@@ -833,62 +774,6 @@
                        :sku-option-select))
     #?(:cljs (scroll/enable-body-scrolling)) ; TODO(jjh): cargo cult
     ))
-
-;; OLD
-(defmethod transitions/transition-state events/control-product-detail-picker-option-select
-  [_ event {:keys [selection value]} app-state]
-  (let [selected-sku (->> {selection #{value}}
-                          (determine-sku-from-selections app-state))
-        options      (generate-product-options (get-in app-state catalog.keypaths/detailed-product-id)
-                      app-state)]
-    (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-selected-sku selected-sku)
-        (update-in catalog.keypaths/detailed-product-selections merge {selection value})
-        (assoc-in catalog.keypaths/detailed-product-options options))))
-
-;; OLD
-(defmethod effects/perform-effects events/control-product-detail-picker-option-select
-  [_ event {:keys [navigation-event]} _ app-state]
-  (let [sku-id-for-selection (-> app-state
-                                 (get-in catalog.keypaths/detailed-product-selected-sku)
-                                 :catalog/sku-id)
-        params-with-sku-id   (cond-> (select-keys (products/current-product app-state)
-                                                  [:catalog/product-id :page/slug])
-                               (some? sku-id-for-selection)
-                               (assoc :query-params {:SKU sku-id-for-selection}))]
-    (effects/redirect navigation-event params-with-sku-id :sku-option-select)
-    #?(:cljs (scroll/enable-body-scrolling))))
-
-;; OLD
-(defmethod transitions/transition-state events/control-product-detail-picker-open
-  [_ event {:keys [facet-slug]} app-state]
-  (-> app-state
-      (assoc-in catalog.keypaths/detailed-product-selected-picker facet-slug)
-      (assoc-in catalog.keypaths/detailed-product-picker-visible? true)))
-
-;; OLD
-(defmethod transitions/transition-state events/control-product-detail-picker-option-quantity-select
-  [_ event {:keys [value]} app-state]
-  (-> app-state
-      (assoc-in keypaths/browse-sku-quantity value)
-      (assoc-in catalog.keypaths/detailed-product-picker-visible? false)))
-
-;; OLD
-(defmethod transitions/transition-state events/control-product-detail-picker-close
-  [_ event _ app-state]
-  (assoc-in app-state catalog.keypaths/detailed-product-picker-visible? false))
-
-;; OLD
-#?(:cljs
-   (defmethod effects/perform-effects events/control-product-detail-picker-open
-     [_ _ _ _ _]
-     (scroll/disable-body-scrolling)))
-
-;; OLD
-#?(:cljs
-   (defmethod effects/perform-effects events/control-product-detail-picker-close
-     [_ _ _ _ _]
-     (scroll/enable-body-scrolling)))
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
@@ -969,13 +854,9 @@
         sku             (or (->> (:SKU query-params)
                                  (conj keypaths/v2-skus)
                                  (get-in app-state))
-
-                            (if (experiments/multiple-lengths-pdp? app-state)
-                              (get-in app-state catalog.keypaths/detailed-pdp-selected-sku)
-                              (get-in app-state catalog.keypaths/detailed-product-selected-sku))
+                            (get-in app-state catalog.keypaths/detailed-pdp-selected-sku)
                             (first product-skus))
 
-        ;; Picker Two Refactor
         product-electives  [:hair/family :hair/color :hair/length]
         initial-selections (let [{:hair/keys [length color family]}
                                  (maps/map-values first (select-keys sku product-electives))]
@@ -986,37 +867,26 @@
                             product-electives
                             product-skus)
 
-        picker-two-options (initialize-picker-options
+        picker-options (initialize-picker-options
                             events/control-pdp-picker-option-select
                             initial-selections
                             availability
                             [product-options])]
     (-> app-state
-
-        ;; START refactor (temp)
         (assoc-in catalog.keypaths/detailed-pdp-selected-picker nil)
         (assoc-in catalog.keypaths/detailed-pdp-selections initial-selections)
-        (assoc-in catalog.keypaths/detailed-pdp-options picker-two-options)
+        (assoc-in catalog.keypaths/detailed-pdp-options picker-options)
+        (assoc-in catalog.keypaths/detailed-pdp-product-id product-id)
         (assoc-in catalog.keypaths/detailed-pdp-skus-db product-skus)
         (assoc-in catalog.keypaths/detailed-pdp-selected-sku sku)
         (assoc-in catalog.keypaths/detailed-pdp-availability availability)
-        ;; END Refactor
-
-        (assoc-in catalog.keypaths/detailed-product-id product-id)
-        (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
         (assoc-in keypaths/ui-ugc-category-popup-offset ugc-offset)
-        (assoc-in keypaths/browse-sku-quantity 1)
-        (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
-        (assoc-in catalog.keypaths/detailed-product-picker-visible? nil)
-        (assoc-selections sku)
-        (assoc-in catalog.keypaths/detailed-product-options product-options))))
+        (assoc-in keypaths/browse-sku-quantity 1))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/initialize-product-details
      [_ _ {:keys [catalog/product-id page/slug query-params origin-nav-event]} _ app-state]
-     (let [selected-sku (if (experiments/multiple-lengths-pdp? app-state)
-                          (get-in app-state catalog.keypaths/detailed-pdp-selected-sku)
-                          (get-in app-state catalog.keypaths/detailed-product-selected-sku))
+     (let [selected-sku (get-in app-state catalog.keypaths/detailed-pdp-selected-sku)
            shop?        (= :shop (sites/determine-site app-state))]
        (if (url-points-to-invalid-sku? selected-sku query-params)
          (effects/redirect origin-nav-event
