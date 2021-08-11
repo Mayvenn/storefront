@@ -54,7 +54,7 @@
             storefront.ugc
 
             [spice.maps :as maps]
-            [storefront.components.picker.picker-two :as picker-two]))
+            [storefront.components.picker.picker :as picker]))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
@@ -141,7 +141,7 @@
        {:style {:height "25em"}}
        (ui/large-spinner {:style {:height "4em"}})]
       [:div
-       (component/build picker-two/modal picker-modal)
+       (component/build picker/modal picker-modal)
        [:div.container.pdp-on-tb
         (when (:offset ugc)
           [:div.absolute.overlay.z4.overflow-auto
@@ -163,7 +163,7 @@
               [:div (carousel carousel-images product)])]
             (component/build product-summary-organism data)
             [:div.px2
-             (component/build picker-two/picker-one-combo-face (:pickers data) opts)]
+             (component/build picker/picker-one-combo-face (:pickers data) opts)]
             [:div
              (cond
                unavailable? unavailable-button
@@ -740,6 +740,7 @@
             (update-in (concat catalog.keypaths/detailed-pdp-options selection)
                        (partial mapv (fn [option] (assoc option :option/checked? (= (:option/value option) value))))))
 
+      ;; TODO I don't think we actually need this
       ;; (= [:quantity] selection)
       ;; (assoc-in catalog.keypaths/detailed-pdp-selections-quantity value)
 
