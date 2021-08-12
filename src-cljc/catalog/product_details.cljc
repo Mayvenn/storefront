@@ -55,6 +55,7 @@
             storefront.ugc
 
             [spice.maps :as maps]
+            [spice.core :as spice]
             [storefront.components.picker.picker-two :as picker-two]))
 
 (defn page [wide-left wide-right-and-narrow]

@@ -59,17 +59,20 @@
                              {:use-case #{"cart"}}
                              (images/for-skuer images-catalog sku))))
 
+
 (defn product-options
   [facets {:as product :keys [selector/electives]} product-skus images-catalog]
   (not-empty
    (reduce (fn [acc-options [facet-slug {:as facet :keys [facet/options]}]]
              (->> product-skus
-                  (group-by facet-slug)
+                  (group-by (comp set facet-slug))
                   (map (fn [[option-slug option-skus]]
                          (let [cheapest-sku     (apply min-key :sku/price option-skus)
                                no-price-family? (not (empty? (clojure.set/intersection #{"closures" "360-frontals" "frontals"} (:hair/family product))))
                                option           (merge (dissoc (get options (first option-slug)) :sku/name)
-                                                       {:price             (if no-price-family? nil (:sku/price cheapest-sku))
+                                                       {:price             (if no-price-family?
+                                                                             nil
+                                                                             (:sku/price cheapest-sku))
                                                         :stocked?          (when (seq option-skus)
                                                                              (some :inventory/in-stock? option-skus))
                                                         :option/sku-swatch (:url (find-swatch-sku-image images-catalog cheapest-sku))

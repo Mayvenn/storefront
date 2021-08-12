@@ -37,18 +37,18 @@
   (svg/dropdown-arrow {:height "13px"
                        :width  "13px"}) )
 
-(defn color-mobile-dropdown [label-html selected-value-html selected-color]
+(defn color-mobile-dropdown [label-html selected-value-html selected-color-swatch]
   [:div.flex.items-center.flex-auto
    {:style {:height "100%"}}
    label-html
    [:img.border.border-gray.ml4.mr1
     {:height "20px"
      :width  "21px"
-     :src    selected-color}]
+     :src    selected-color-swatch}]
    [:div.ml2.flex-auto selected-value-html]
    [:div.self-center ^:inline picker-chevron]])
 
-(defn color-desktop-dropdown [label-html selected-value-html select-html selected-color]
+(defn color-desktop-dropdown [label-html selected-value-html select-html selected-color-swatch]
   [:div.flex.flex-column.relative.flex-auto {:style {:height "100%"}}
    [:div.flex.items-center
     {:style {:height "100%"}}
@@ -56,7 +56,23 @@
     [:img.border.border-gray.ml4.mr1
      {:height "20px"
       :width  "21px"
-      :src    selected-color}]
+      :src    selected-color-swatch}]
+    [:div.ml2.flex-auto selected-value-html]
+    [:div.self-center ^:inline picker-chevron]]
+   select-html])
+
+(defn base-material-mobile-dropdown [label-html selected-value-html]
+  [:div.flex.items-center.flex-auto
+   {:style {:height "100%"}}
+   label-html
+   [:div.ml2.flex-auto selected-value-html]
+   [:div.self-center ^:inline picker-chevron]])
+
+(defn base-material-desktop-dropdown [label-html selected-value-html select-html]
+  [:div.flex.flex-column.relative.flex-auto {:style {:height "100%"}}
+   [:div.flex.items-center
+    {:style {:height "100%"}}
+    label-html
     [:div.ml2.flex-auto selected-value-html]
     [:div.self-center ^:inline picker-chevron]]
    select-html])
@@ -201,6 +217,41 @@
       (:option/name selected-color)]
      (:option/rectangle-swatch selected-color)))])
 
+(defn desktop-base-material-picker-row
+  [{:keys [navigation-event selected-base-material selections options product-sold-out-style]}]
+  [:div.hide-on-mb.border-top.border-cool-gray.border-width-2
+   (field
+    (base-material-desktop-dropdown
+     [:span.proxima.title-3.shout
+      "Base Material"]
+     [:span product-sold-out-style (:option/name selected-base-material)]
+     (invisible-select
+      {:value     (:hair/base-material selections)
+       :on-change #(messages/handle-message events/control-product-detail-picker-option-select
+                                            {:selection        :hair/base-material
+                                             :navigation-event navigation-event
+                                             :value            (.-value (.-target %))})
+       :options   (map (fn [option]
+                         [:option {:value (:option/slug option)
+                                   :key   (str "base-material-" (:option/slug option))}
+                          (:option/name option)])
+                       (:hair/base-material options))})))])
+
+(defn mobile-base-material-picker-row
+  [{:keys [selected-base-material product-sold-out-style]}]
+  [:div.hide-on-tb-dt.border-top.border-cool-gray.border-width-2
+   (field
+    (merge {:data-test "picker-material"}
+           (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/base-material}))
+    (base-material-mobile-dropdown
+     [:span.proxima.title-3.shout
+      "Base Material"]
+     [:span (merge
+             {:data-test (str "picker-selected-base-material-" (facets/hacky-fix-of-bad-slugs-on-facets (:option/slug selected-base-material)))}
+             product-sold-out-style)
+      (:option/name selected-base-material)]))])
+
+
 (defn picker-rows
   "individual elements as in: https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b21aa0352b1d5e31a32ac53"
   [data]
@@ -208,6 +259,10 @@
    [:div.px3
     (mobile-color-picker-row data)
     (desktop-color-picker-row data)]
+   (when (contains? (:options data) :hair/base-material)
+     [:div.px3
+      (mobile-base-material-picker-row data)
+      (desktop-base-material-picker-row data)])
    [:div.px3
     (desktop-length-and-quantity-picker-rows data)
     (mobile-length-and-quantity-picker-rows data)]])
@@ -234,28 +289,6 @@
                  (when checked?
                    (simple-selected-layer))])]))
 
-(defn length-option
-  [{:keys [item key primary-label secondary-label checked? selected-picker navigation-event close-event select-event]}]
-  [:div {:key       key
-         :data-test (str "picker-length-" (:option/slug item))}
-   (ui/option {:height   "4em"
-               :key      (str key "-option")
-               :href     "#"
-               :on-click #(select-and-close close-event select-event {:selection        selected-picker
-                                                                      :navigation-event navigation-event
-                                                                      :value            (:option/slug item)})}
-              (simple-content-layer
-               (list
-                [:div.col-2
-                 {:key "primary-label"}
-                 primary-label]
-                [:div.gray.flex-auto
-                 {:key "secondary-label"}
-                 secondary-label]))
-              [:div
-               (when checked?
-                 (simple-selected-layer))])])
-
 (defn swatch-content-layer [{:option/keys [name rectangle-swatch]} sku-img checked?]
   [:div.flex.flex-column.bg-white
    [:div.flex
@@ -272,7 +305,7 @@
       {:class "bold"})
     name]])
 
-(defn color-option
+(defn color-option-drop-down-item
   [{:keys [key color sku-image checked? selected-picker navigation-event close-event select-event]}]
   [:div {:key       key
          :data-test (str "picker-color-" (facets/hacky-fix-of-bad-slugs-on-facets (:option/slug color)))}
@@ -292,6 +325,28 @@
                                    :retina-quality  "better"
                                    :default-quality "better"}
                                   "9e2a48b3-9811-46d2-840b-31c9f85670ad")]]])])])
+
+(defn simple-option-drop-down-item
+  [{:keys [item key data-test primary-label secondary-label checked? selected-picker navigation-event close-event select-event]}]
+  [:div {:key       key
+         :data-test data-test}
+   (ui/option {:height   "4em"
+               :key      (str key "-option")
+               :href     "#"
+               :on-click #(select-and-close close-event select-event {:selection        selected-picker
+                                                                      :navigation-event navigation-event
+                                                                      :value            (:option/slug item)})}
+              (simple-content-layer
+               (list
+                [:div.col-2
+                 {:key "primary-label"}
+                 primary-label]
+                [:div.gray.flex-auto
+                 {:key "secondary-label"}
+                 secondary-label]))
+              [:div
+               (when checked?
+                 (simple-selected-layer))])])
 
 (defn slide-animate [enabled? content]
   (css-transitions/transition-group
@@ -349,27 +404,49 @@
   [:div
    (slide-animate
     picker-visible?
-    (condp = selected-picker
-      :hair/color  (picker-dialog {:title             (get-in facets [selected-picker :facet/name])
-                                   :items             (sort-by :option/order (get options selected-picker))
-                                   :wrap?             false
-                                   :cell-component-fn (fn [item]
-                                                        (color-option
-                                                         {:key              (str "color-" (:option/name item))
-                                                          :selected-picker  selected-picker
-                                                          :navigation-event navigation-event
-                                                          :color            item
-                                                          :checked?         (= (:hair/color selections)
-                                                                               (:option/slug item))
-                                                          :sku-image        (:option/sku-swatch item)
-                                                          :close-event      events/control-product-detail-picker-close
-                                                          :select-event     events/control-product-detail-picker-option-select}))})
+    (case selected-picker
+      :hair/color         (picker-dialog {:title             (get-in facets [selected-picker :facet/name])
+                                          :items             (sort-by :option/order (get options selected-picker))
+                                          :wrap?             false
+                                          :cell-component-fn (fn [item]
+                                                               (color-option-drop-down-item
+                                                                {:key              (str "color-" (:option/name item))
+                                                                 :selected-picker  selected-picker
+                                                                 :navigation-event navigation-event
+                                                                 :color            item
+                                                                 :checked?         (= (:hair/color selections)
+                                                                                      (:option/slug item))
+                                                                 :sku-image        (:option/sku-swatch item)
+                                                                 :close-event      events/control-product-detail-picker-close
+                                                                 :select-event     events/control-product-detail-picker-option-select}))})
+      :hair/base-material (picker-dialog (merge
+                                          {:title             (get-in facets [selected-picker :facet/name])
+                                           :items             (sort-by :option/order (get options selected-picker))
+                                           :cell-component-fn (fn [item]
+                                                                (simple-option-drop-down-item
+                                                                 {:key              (str "base-material-" (:option/name item))
+                                                                  :data-test        (str "picker-base-material-" (:option/slug item))
+                                                                  :primary-label    (:option/name item)
+                                                                  :navigation-event navigation-event
+                                                                  :checked?         (= (:hair/base-material selections)
+                                                                                       (:option/slug item))
+                                                                  :selected-picker  selected-picker
+                                                                  :item             item
+                                                                  :close-event      events/control-product-detail-picker-close
+                                                                  :select-event     events/control-product-detail-picker-option-select}))}
+
+                                          (when length-guide-image
+                                            {:title-cta/id      "length-picker-length-guide"
+                                             :title-cta/target  [events/popup-show-length-guide {:length-guide-image length-guide-image
+                                                                                                 :location           "length-picker"}]
+                                             :title-cta/primary "Length Guide"})))
       :hair/length (picker-dialog (merge
                                    {:title             (get-in facets [selected-picker :facet/name])
                                     :items             (sort-by :option/order (get options selected-picker))
                                     :cell-component-fn (fn [item]
-                                                         (length-option
+                                                         (simple-option-drop-down-item
                                                           {:key              (str "length-" (:option/name item))
+                                                           :data-test        (str "picker-length-" (:option/slug item))
                                                            :primary-label    (:option/name item)
                                                            :navigation-event navigation-event
                                                            :checked?         (= (:hair/length selections)
@@ -379,11 +456,11 @@
                                                            :close-event      events/control-product-detail-picker-close
                                                            :select-event     events/control-product-detail-picker-option-select}))}
 
-                                   (when length-guide-image
-                                     {:title-cta/id      "length-picker-length-guide"
-                                      :title-cta/target  [events/popup-show-length-guide {:length-guide-image length-guide-image
-                                                                                          :location           "length-picker"}]
-                                      :title-cta/primary "Length Guide"})))
+                                          (when length-guide-image
+                                            {:title-cta/id      "length-picker-length-guide"
+                                             :title-cta/target  [events/popup-show-length-guide {:length-guide-image length-guide-image
+                                                                                                 :location           "length-picker"}]
+                                             :title-cta/primary "Length Guide"})))
       :item/quantity (picker-dialog {:title             "Quantity"
                                      :items             (range 1 11)
                                      :cell-component-fn (fn [quantity]
@@ -392,8 +469,8 @@
                                                             :primary-label (str quantity)
                                                             :checked?      (= quantity sku-quantity)
                                                             :quantity      quantity
-                                                            :close-event      events/control-product-detail-picker-close
-                                                            :select-event     events/control-product-detail-picker-option-quantity-select}))})
+                                                            :close-event   events/control-product-detail-picker-close
+                                                            :select-event  events/control-product-detail-picker-option-quantity-select}))})
       nil))
    (if (seq options)
      (picker-rows data)
@@ -415,6 +492,7 @@
      :options                options
      :selected-color         (get-in facets [:hair/color :facet/options (:hair/color selections)])
      :selected-length        (get-in facets [:hair/length :facet/options (:hair/length selections)])
+     :selected-base-material (get-in facets [:hair/base-material :facet/options (:hair/base-material selections)])
      :product-sold-out-style (when product-sold-out? {:class "gray"})
      :sku-quantity           (get-in data keypaths/browse-sku-quantity 1)
      :navigation-event       events/navigate-product-details

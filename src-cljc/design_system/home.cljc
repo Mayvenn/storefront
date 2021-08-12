@@ -700,7 +700,7 @@
 (def swatch-custom-options
   [:section.flex.flex-column
    [:div.col-5
-    (picker/color-option
+    (picker/color-option-drop-down-item
      {:color     {:option/name             "Natural Black"
                   :option/rectangle-swatch swatch-img}
       :model-img model-img
@@ -708,7 +708,7 @@
       :sold-out? false})]
 
    [:div.col-5
-    (picker/color-option
+    (picker/color-option-drop-down-item
      {:color     {:option/name             "Natural Black"
                   :option/rectangle-swatch swatch-img}
       :model-img model-img
@@ -716,7 +716,7 @@
       :sold-out? false})]
 
    [:div.col-5
-    (picker/color-option
+    (picker/color-option-drop-down-item
      {:color
       {:option/name             "Natural Black"
        :option/rectangle-swatch swatch-img}
