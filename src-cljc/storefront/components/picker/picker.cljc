@@ -1,6 +1,7 @@
 (ns storefront.components.picker.picker
   "Exists temporarily to allow us to refactor the interface for use in varying contexts"
   (:require #?@(:cljs [[storefront.browser.scroll :as scroll]])
+            [clojure.string :as string]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -227,7 +228,6 @@
         (length-picker-v1 (first length-pickers))
         vertical-border
         (quantity-picker-v1 quantity-picker)])]))
-;; END V1
 
 (defn ^:private length-option
   [{:option/keys

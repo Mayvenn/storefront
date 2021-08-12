@@ -18,7 +18,9 @@
             api.orders
             api.products
             [catalog.facets :as facets]
+            catalog.images
             catalog.keypaths
+            [catalog.product-details-multilength :as product-details-multilength]
             [catalog.product-details-ugc :as ugc]
             [catalog.products :as products]
             [catalog.selector.sku :as sku-selector]
@@ -38,7 +40,6 @@
             [storefront.accessors.images :as images]
             [storefront.accessors.products :as accessors.products]
             [storefront.accessors.sites :as sites]
-            [storefront.accessors.skus :as skus]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
             [storefront.components.tabbed-information :as tabbed-information]
@@ -51,7 +52,6 @@
             [storefront.platform.messages :as messages]
             [storefront.platform.reviews :as review-component]
             [storefront.request-keys :as request-keys]
-            [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
             storefront.ugc
 
@@ -217,21 +217,6 @@
                             :image/of #{"model" "product"}})
        (sort-by :order)))
 
-(defn default-selections
-  "Using map of current selections (which can be empty)
-  for un-selected values picks first option from the available options.
-  e.g.: if there's no `hair/color` in `selections` map - it sets it to whatever the first in the list, e.g.: \"black\""
-  [facets product product-skus images]
-  (let [options (sku-selector/product-options facets product product-skus images)]
-    ;; PERF(jeff): can use transients here
-    (reduce
-     (fn [a k]
-       (if (get a k)
-         a
-         (assoc a k (-> options k first :option/slug))))
-     {}
-     (keys options))))
-
 #?(:cljs
    [(defmethod popup/query :length-guide [state]
       (when-let [image (get-in state catalog.keypaths/length-guide-image)]
@@ -312,9 +297,11 @@
 (defn ^:private pickers<
   [facets-db
    skus-db
+   images-db
    selections
    picker-options
-   availability]
+   availability
+   multiple-lengths-pdp?]
   {:quantity-picker (let [quantity-options (:quantity picker-options)
                           selected-option  (->> quantity-options
                                                 (filter :option/checked?)
@@ -350,21 +337,23 @@
     (fn [index length-options]
       (let [{selected-hair-length :hair/length
              item-hair-family     :hair/family} (get-in selections [:per-item index])
-            hair-family-and-color-skus
-            (select
-             (merge
-              (dissoc selections :per-item)
-              {:hair/family item-hair-family})
-             skus-db)
+            hair-family-and-color-skus          (select
+                                                 (merge
+                                                  (dissoc selections :per-item :quantity)
+                                                  {:hair/family item-hair-family})
+                                                 skus-db)
 
-            hair-length-facet-option
-            (get-in facets-db [:hair/length
-                               :facet/options
-                               selected-hair-length])
+            hair-length-facet-option (get-in facets-db [:hair/length
+                                                        :facet/options
+                                                        selected-hair-length])
 
             picker-data {:id               (str "picker-length-" index)
                          :value-id         (str "picker-selected-length-" index "-" (:option/slug hair-length-facet-option))
-                         :image-src        (->> hair-family-and-color-skus first :selector/images (select ?cart-product-image) first :url)
+                         :image-src        (when multiple-lengths-pdp?
+                                             (->> hair-family-and-color-skus
+                                                  first
+                                                  (catalog.images/image images-db "cart")
+                                                  :ucare/id))
                          :options          length-options
                          :primary          (:option/name hair-length-facet-option)
                          :selected-value   (:option/slug hair-length-facet-option)
@@ -471,9 +460,11 @@
                                                          length-guide-image)
       :pickers                            (pickers< facets
                                                     product-skus
+                                                    images-catalog
                                                     (get-in data catalog.keypaths/detailed-pdp-selections)
                                                     (get-in data catalog.keypaths/detailed-pdp-options)
-                                                    (get-in data catalog.keypaths/detailed-pdp-availability))}
+                                                    (get-in data catalog.keypaths/detailed-pdp-availability)
+                                                    (experiments/multiple-lengths-pdp? data))}
 
 
      (when sku-price
@@ -575,8 +566,18 @@
 
 (defn ^:export built-component
   [state opts]
-  (let [selected-sku (get-in state catalog.keypaths/detailed-pdp-selected-sku)]
-    (component/build component
+  (let [multiple-lengths-pdp? (experiments/multiple-lengths-pdp? state)
+        selected-sku          (get-in state catalog.keypaths/detailed-pdp-selected-sku)
+        product               (->> catalog.keypaths/detailed-pdp-product-id
+                                   (get-in state)
+                                   (conj keypaths/v2-products)
+                                   (get-in state))
+        bundles-pdp?          (->> product
+                                   :hair/family
+                                   (= #{"bundles"}))]
+    (component/build (if (and multiple-lengths-pdp? bundles-pdp?)
+                       product-details-multilength/component
+                       component)
                      (merge (query state selected-sku)
                             {:add-to-cart (add-to-cart-query state
                                                              selected-sku)
