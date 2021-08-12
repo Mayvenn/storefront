@@ -169,11 +169,11 @@
      primary-attrs
      image-attrs]}]
   (let [face-data #:v1-picker-face{:id            value-id
-                                    :title         "Length"
-                                    :primary-attrs primary-attrs
-                                    :image-attrs   image-attrs
-                                    :image-src     image-src
-                                    :label         primary}]
+                                   :title         "Length"
+                                   :primary-attrs primary-attrs
+                                   :image-attrs   image-attrs
+                                   :image-src     image-src
+                                   :label         primary}]
     [:div.col-7.pl1
      [:div.hide-on-tb-dt.inherit-color
       (merge
@@ -210,16 +210,23 @@
 (component/defcomponent picker-one-combo-face
   [{:keys [color-picker
            length-pickers
+           base-material-picker
            quantity-picker]
     :as   pickers}
    _ _]
   (when (and color-picker length-pickers quantity-picker)
-    [:div.border-top.border-cool-gray.border-width-2
-     (color-picker-v1 color-picker)
-     [:div.flex.items-center.border-top.border-cool-gray.border-width-2
-      (length-picker-v1 (first length-pickers))
-      vertical-border
-      (quantity-picker-v1 quantity-picker)]]))
+    [:div
+     (when color-picker
+       [:div.border-top.border-cool-gray.border-width-2
+                         (color-picker-v1 color-picker)])
+     (when base-material-picker
+       [:div.border-top.border-cool-gray.border-width-2
+        (color-picker-v1 color-picker)])
+     (when (and length-pickers quantity-picker)
+       [:div.flex.items-center.border-top.border-cool-gray.border-width-2
+        (length-picker-v1 (first length-pickers))
+        vertical-border
+        (quantity-picker-v1 quantity-picker)])]))
 ;; END V1
 
 (defn ^:private length-option

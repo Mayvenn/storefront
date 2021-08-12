@@ -134,7 +134,8 @@
            faq-section
            add-to-cart
            live-help
-           picker-modal] :as data} _ opts]
+           picker-modal
+           pickers] :as data} _ opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (if-not product
@@ -164,7 +165,7 @@
               [:div (carousel carousel-images product)])]
             (component/build product-summary-organism data)
             [:div.px2
-             (component/build picker/picker-one-combo-face (:pickers data) opts)]
+             (component/build picker/picker-one-combo-face pickers opts)]
             [:div
              (cond
                unavailable? unavailable-button
@@ -276,8 +277,7 @@
                                                (= "retail-location" (get-in app-state keypaths/store-experience)))
         sku-price                          (:sku/price selected-sku)
         quadpay-loaded?                    (get-in app-state keypaths/loaded-quadpay)
-        sku-family                         (-> selected-sku :hair/family first)
-        mayvenn-install-incentive-families #{"bundles" "closures" "frontals" "360-frontals"}]
+        mayvenn-install-eligible           (some-> selected-sku :promo.mayvenn-install/eligible first)]
     (merge
      {:cta/id                      "add-to-cart"
       :cta/label                   "Add to Bag"
@@ -289,7 +289,7 @@
       :add-to-cart.quadpay/price   sku-price
       :add-to-cart.quadpay/loaded? quadpay-loaded?}
      (when (and shop?
-                (mayvenn-install-incentive-families sku-family))
+                mayvenn-install-eligible)
        {:add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
         :add-to-cart.incentive-block/footnote    "*Mayvenn Services cannot be combined with other promotions"
         :add-to-cart.incentive-block/link-id     "learn-more-mayvenn-install"
@@ -728,14 +728,13 @@
         selections        (-> app-state
                               (get-in catalog.keypaths/detailed-pdp-selections)
                               (assoc-in selection value))
-        product-electives [:hair/family :hair/color :hair/length]
         product-id        (get-in app-state catalog.keypaths/detailed-pdp-product-id)
         product-options   (generate-product-options product-id app-state)
         product           (products/product-by-id app-state product-id)
         product-skus      (products/extract-product-skus app-state product)
         sku               (determine-sku-from-multiple-pdp-selections app-state selections)
         availability      (catalog.products/index-by-selectors
-                           product-electives
+                           (:selector/electives product)
                            product-skus)]
     (cond->
         (-> app-state
