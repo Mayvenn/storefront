@@ -207,40 +207,6 @@
       [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
       [:h2.center "Processing your order..."]])])
 
-(defn item-card-query
-  [data]
-  (let [order               (get-in data keypaths/order)
-        skus                (get-in data keypaths/v2-skus)
-        images              (get-in data keypaths/v2-images)
-        facets              (maps/index-by :facet/slug (get-in data keypaths/v2-facets))
-        color-options->name (->> facets
-                                 :hair/color
-                                 :facet/options
-                                 (maps/index-by :option/slug)
-                                 (maps/map-values :option/name))]
-    {:items (mapv (fn [{sku-id :sku :as line-item}]
-                    (let [sku   (get skus sku-id)
-                          price (:unit-price line-item)]
-                      {:react/key                 (str (:id line-item)
-                                                       "-"
-                                                       (:catalog/sku-id sku)
-                                                       "-"
-                                                       (:quantity line-item))
-                       :circle/id                 (str "line-item-length-" sku-id)
-                       :circle/value              (-> sku :hair/length first (str "”"))
-                       :image/id                  (str "line-item-img-" (:catalog/sku-id sku))
-                       :image/value               (->> sku (catalog-images/image images "cart") :ucare/id)
-                       :title/id                  (str "line-item-title-" sku-id)
-                       :title/value               (or (:product-title line-item)
-                                                      (:product-name line-item))
-                       :detail-top-left/id        (str "line-item-color-" sku-id)
-                       :detail-top-left/value     (-> sku :hair/color first color-options->name str)
-                       :detail-bottom-right/id    (str "line-item-price-ea-" sku-id)
-                       :detail-bottom-right/value (str (mf/as-money price) " ea")
-                       :detail-bottom-left/id     (str "line-item-quantity-" sku-id)
-                       :detail-bottom-left/value  (str "Qty " (:quantity line-item))}))
-                  (orders/product-items order))}))
-
 (defn ^:private text->data-test-name [name]
   (-> name
       (string/replace #"[0-9]" (comp spice/number->word int))
