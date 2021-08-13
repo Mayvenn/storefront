@@ -148,7 +148,7 @@
                                :cart-item/index                          i
                                :cart-item-title/id                       (str "line-item-title-" sku-id)
                                :cart-item-title/primary                  (or product-name title)
-                               :cart-item-title/secondary                (some-> facets :hair/color :option/name)
+                               :cart-item-title/secondary                (ui/sku-card-secondary-text item)
                                :cart-item-copy/lines                     [{:id    (str "line-item-quantity-" sku-id)
                                                                            :value (str "qty. " quantity)}]
                                :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku-id)

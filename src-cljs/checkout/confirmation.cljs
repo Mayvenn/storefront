@@ -444,7 +444,7 @@
                                                          (:product-name line-item))
            :cart-item-copy/lines                     [{:id    (str "line-item-quantity-" sku-id)
                                                        :value (str "qty. " (:quantity line-item))}]
-           :cart-item-title/secondary                (:color-name line-item)
+           :cart-item-title/secondary                (ui/sku-card-secondary-text line-item)
            :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku-id)
            :cart-item-floating-box/contents          [{:text  (mf/as-money price)
                                                        :attrs {:data-test (str "line-item-price-ea-" sku-id)}}
@@ -456,16 +456,25 @@
            :cart-item-square-thumbnail/ucare-id      (->> sku (catalog-images/image images "cart") :ucare/id)})]
     cart-items))
 
-(defn add-product-title-and-color-to-line-item [products facets line-item]
-  (merge line-item {:product-title (->> line-item
-                                        :sku
-                                        (products/find-product-by-sku-id products)
-                                        :copy/title)
-                    :color-name    (-> line-item
-                                       :variant-attrs
-                                       :color
-                                       (facets/get-color facets)
-                                       :option/name)}))
+(defn add-product-title-and-color-to-line-item [skus products facets line-item]
+  (let [sku (get skus (:sku line-item))]
+    (spice.core/spy (merge line-item {:product-title (->> line-item
+                                                          :sku
+                                                          (products/find-product-by-sku-id products)
+                                                          :copy/title)
+                                      ;; This is probably not where this should go, but gotta go fast
+                                      :join/facets        (into {} (comp (map
+                                                                     (fn [facet]
+                                                                       (spice.core/spy facet)
+                                                                       (let [facet-slug  (:facet/slug facet)
+                                                                             facet-value (first (get sku facet-slug))]
+                                                                         [facet-slug (->> facet
+                                                                                          :facet/options
+                                                                                          (filter (fn [option]
+                                                                                                    (= facet-value (:option/slug option))))
+                                                                                          first)])))
+                                                                    (remove (comp nil? second)))
+                                                           facets)}))))
 
 (defn query
   [data]
@@ -480,7 +489,7 @@
         skus                                  (get-in data keypaths/v2-skus)
         products                              (get-in data keypaths/v2-products)
         facets                                (get-in data keypaths/v2-facets)
-        physical-line-items                   (map (partial add-product-title-and-color-to-line-item products facets)
+        physical-line-items                   (map (partial add-product-title-and-color-to-line-item skus products facets)
                                                    (orders/product-items order))
         addon-service-line-items              (->> order
                                                    orders/service-line-items

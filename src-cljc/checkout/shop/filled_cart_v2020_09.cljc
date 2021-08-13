@@ -445,16 +445,16 @@
          :item/keys    [id quantity unit-price product-name]
          :hacky/keys   [cart-title]
          :join/keys    [facets]}
-
         (select ?physical items)
+
         :let
         [qty-adjustment-args {:variant {:id id :sku sku-id}}
-         removing?            (get delete-line-item-requests id)
-         updating?            (get update-line-item-requests sku-id)]]
+         removing?           (get delete-line-item-requests id)
+         updating?           (get update-line-item-requests sku-id)]]
     {:react/key                                      (str sku-id "-" quantity)
      :cart-item-title/id                             (str "line-item-title-" sku-id)
      :cart-item-title/primary                        (or cart-title product-name)
-     :cart-item-title/secondary                      (some-> facets :hair/color :option/name)
+     :cart-item-title/secondary                      (ui/sku-card-secondary-text item)
      :cart-item-floating-box/id                      (str "line-item-price-ea-with-label-" sku-id)
      :cart-item-floating-box/contents                (let [price (mf/as-money (or price unit-price))]
                                                        [{:text price :attrs {:data-test (str "line-item-price-ea-" sku-id)}}

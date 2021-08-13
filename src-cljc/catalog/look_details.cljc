@@ -236,7 +236,7 @@
     {:react/key                                (str sku-id "-" (:item/quantity item))
      :cart-item-title/id                       (str "line-item-title-" sku-id)
      :cart-item-title/primary                  (:hacky/cart-title item)
-     :cart-item-title/secondary                (-> item :join/facets :hair/color :sku/name)
+     :cart-item-title/secondary                (ui/sku-card-secondary-text item)
      :cart-item-copy/lines                     [{:id    (str "line-item-quantity-" sku-id)
                                                  :value (str "qty. " (:item/quantity item))}]
      :cart-item-floating-box/id                (str "line-item-price-ea-with-label-" sku-id)
