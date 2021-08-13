@@ -657,7 +657,7 @@
            :catalog/department               #{"hair"}
            :hair/family                      #{"360-wigs" "lace-front-wigs" "ready-wigs"}
            :selector/essentials              [:hair/family :catalog/department]
-           :selector/electives               [:hair/family :hair/texture :hair/origin]
+           :selector/electives               [:hair/family :hair/texture :hair/origin :hair/base-material]
            :page/title                       "Human Hair Wigs: 100% Human Hair Wigs | Mayvenn"
            :page.meta/description            (copy "Mayvenn’s virgin human hair wigs allow you to achieve a new look in minutes"
                                                    "& come in different variations such as Brazilian, Malaysian, straight,"
@@ -713,7 +713,7 @@
            :catalog/department    #{"hair"}
            :hair/family           #{"lace-front-wigs"}
            :selector/essentials   [:hair/family :catalog/department]
-           :selector/electives    [:hair/texture :hair/origin]
+           :selector/electives    [:hair/texture :hair/origin :hair/base-material]
            :contentful/faq-id     :category-virgin-lace-front-wigs
            :opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our"
                                         "30 Day Quality Guarantee, our Wigs can be customized to fit"
