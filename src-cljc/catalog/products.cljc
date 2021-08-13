@@ -37,7 +37,7 @@
 
 (defn current-product [app-state]
   (product-by-id app-state
-                 (get-in app-state k/detailed-pdp-product-id)))
+                 (get-in app-state k/detailed-product-id)))
 
 (defn index-by [f coll]
   (persistent!

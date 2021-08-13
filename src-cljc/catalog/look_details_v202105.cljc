@@ -23,7 +23,7 @@
             [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.picker.picker :as picker]
+            [storefront.components.picker.picker-two :as picker]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]

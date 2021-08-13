@@ -54,11 +54,13 @@
                                                       (assoc category-selections :inventory/in-stock? #{true})
                                                       skus)
         skus-to-search            (or (not-empty in-stock-skus) skus)
-        product-detail-selections (let [v2-selections (get-in data catalog.keypaths/detailed-pdp-selections)
-                                        first-per-item (first (:per-item v2-selections))]
-                                    (-> v2-selections
-                                        (dissoc :per-item)
-                                        (merge first-per-item)))
+        product-detail-selections (if (experiments/multiple-lengths-pdp? data)
+                                    (let [v2-selections (get-in data catalog.keypaths/detailed-pdp-selections)
+                                          first-per-item (first (:per-item v2-selections))]
+                                      (-> v2-selections
+                                          (dissoc :per-item)
+                                          (merge first-per-item)))
+                                    (get-in data catalog.keypaths/detailed-product-selections))
 
         product-slug       (:page/slug product)
         product-colors     (product-options facets skus :hair/color)

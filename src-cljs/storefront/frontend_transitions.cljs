@@ -161,6 +161,12 @@
     (= previous-nav-event events/navigate-added-to-cart)
     (assoc-in keypaths/cart-recently-added-skus {})))
 
+(defn clear-detailed-product-related-addons
+  [app-state [previous-nav-event _]]
+  (cond-> app-state
+    (= previous-nav-event events/navigate-product-details)
+    (assoc-in catalog.keypaths/detailed-product-related-addons nil)))
+
 (defn update-flash [app-state caused-by]
   (cond-> app-state
     (not= caused-by :module-load)
@@ -182,6 +188,7 @@
         (assoc-in keypaths/footer-email-submitted nil)
         (clean-up-open-category-panels new-nav-message previous-nav-message)
         (clear-recently-added-skus previous-nav-message)
+        (clear-detailed-product-related-addons previous-nav-message)
         (add-pending-promo-code args)
         (add-affiliate-stylist-id args)
         clear-completed-order
