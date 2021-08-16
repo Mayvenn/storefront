@@ -640,6 +640,7 @@
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-id product-id)
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
+        (assoc-in catalog.keypaths/detailed-product-auxiliary-selections [{} {}])
         (assoc-in keypaths/ui-ugc-category-popup-offset ugc-offset)
         (assoc-in keypaths/browse-sku-quantity 1)
         (assoc-in catalog.keypaths/detailed-product-selected-picker nil)

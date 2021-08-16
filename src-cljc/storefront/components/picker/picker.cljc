@@ -4,7 +4,7 @@
             [catalog.keypaths :as catalog.keypaths]
             [catalog.products :as products]
             [spice.core :as spice]
-            [storefront.accessors.images :as images]
+            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -153,6 +153,46 @@
                            quantity])
                         (range 1 11))})))]])
 
+(defn desktop-length-picker-rows
+  [{:keys [product-sold-out-style selected-length selections options selected-auxiliary-lengths sku-quantity navigation-event]}]
+  [:div.hide-on-mb.items-center.border-top.border-cool-gray.border-width-2
+   (field
+    {:class "col-7"}
+    (desktop-dropdown
+     [:div.proxima.title-3.shout "Length"]
+     [:span.medium
+      product-sold-out-style
+      (:option/name selected-length)]
+     (invisible-select
+      {:on-change #(messages/handle-message events/control-product-detail-picker-option-select
+                                            {:selection        :hair/length
+                                             :navigation-event navigation-event
+                                             :value            (.-value (.-target %))})
+       :value     (:hair/length selections)
+       :options   (map (fn [option]
+                         [:option {:value (:option/slug option)
+                                   :key   (str "length-" (:option/slug option))}
+                          (:option/name option)])
+                       (:hair/length options))})))
+   (for [[idx auxiliary-selection] (zipmap (range) selected-auxiliary-lengths)]
+     (field
+      {:class "col-7"}
+      (desktop-dropdown
+       [:div.proxima.title-3.shout.bg-pink "Length"]
+       [:span.medium
+        product-sold-out-style
+        (pr-str auxiliary-selection)] ; TODO thread in aux selected lengths
+       (invisible-select
+        {:on-change #(messages/handle-message events/control-product-detail-picker-option-auxiliary-select ; TODO make effect handler to save off the selection
+                                              {:index            idx
+                                               :value            (.-value (.-target %))})
+         :value     (:hair/length auxiliary-selection)
+         :options   (map (fn [option]
+                           [:option {:value (:option/slug option)
+                                     :key   (str "length-" (:option/slug option))}
+                            (:option/name option)])
+                         (:hair/length options))}))))])
+
 (defn mobile-length-and-quantity-picker-rows
   [{:keys [selected-length product-sold-out-style sku-quantity]}]
   [:div.flex.hide-on-tb-dt.items-center.border-top.border-cool-gray.border-width-2
@@ -180,6 +220,37 @@
         {:data-test (str "picker-selected-quantity-" sku-quantity)}
         product-sold-out-style)
        sku-quantity]))]])
+
+;; TODO on second thought, split this into two parts
+(defn mobile-length-picker-rows
+  [{:keys [selected-length product-sold-out-style selected-auxiliary-lengths sku-quantity]}]
+  [:div.hide-on-tb-dt.items-center.border-top.border-cool-gray.border-width-2
+   (field
+    (merge
+     {:class     " col-7 py2"
+      :data-test "picker-length"}
+     (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/length}))
+    (mobile-dropdown
+     [:div.h8.proxima.title-3.shout "Length"]
+     [:span.medium.canela.content-2
+      (merge
+       {:data-test (str "picker-selected-length-" (:option/slug selected-length))}
+       product-sold-out-style)
+      (:option/name selected-length)]))
+   (for [[idx auxiliary-selection] (zipmap (range) selected-auxiliary-lengths)]
+     (field
+      (merge
+       {:class     " col-7 py2 bg-yellow"
+        :data-test "picker-length"}
+       (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/length
+                                                                   :index      idx}))
+      (mobile-dropdown
+       [:div.h8.proxima.title-3.shout "Length"]
+       [:span.medium.canela.content-2
+        (merge
+         {:data-test (str "picker-selected-length-" (:option/slug auxiliary-selection))}
+         product-sold-out-style)
+        (:option/name auxiliary-selection)])))])
 
 (defn desktop-color-picker-row
   [{:keys [navigation-event selected-color selections options product-sold-out-style]}]
@@ -252,9 +323,10 @@
       (:option/name selected-base-material)]))])
 
 
+;; The main panel, containing the faces of all pickers
 (defn picker-rows
   "individual elements as in: https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b21aa0352b1d5e31a32ac53"
-  [data]
+  [{:as data :keys [multiple-lengths-pdp?]}]
   [:div.mxn2.mt2
    [:div.px3
     (mobile-color-picker-row data)
@@ -264,8 +336,12 @@
       (mobile-base-material-picker-row data)
       (desktop-base-material-picker-row data)])
    [:div.px3
-    (desktop-length-and-quantity-picker-rows data)
-    (mobile-length-and-quantity-picker-rows data)]])
+    (if multiple-lengths-pdp?
+      (desktop-length-picker-rows data)
+      (desktop-length-and-quantity-picker-rows data))
+    (if multiple-lengths-pdp?
+      (mobile-length-picker-rows data)
+      (mobile-length-and-quantity-picker-rows data))]])
 
 (defn select-and-close [close-event select-event options]
   (messages/handle-message select-event options)
@@ -478,22 +554,27 @@
 
 (defn query
   [data length-guide-image]
-  (let [options           (get-in data catalog.keypaths/detailed-product-options)
-        selected-picker   (get-in data catalog.keypaths/detailed-product-selected-picker)
-        picker-visible?   (get-in data catalog.keypaths/detailed-product-picker-visible?)
-        product-skus      (products/extract-product-skus data (products/current-product data))
-        product-sold-out? (every? (comp not :inventory/in-stock?) product-skus)
-        facets            (facets/by-slug data)
-        selections        (get-in data catalog.keypaths/detailed-product-selections)]
-    {:selected-picker        selected-picker
-     :picker-visible?        (and options selected-picker picker-visible?)
-     :facets                 facets
-     :selections             selections
-     :options                options
-     :selected-color         (get-in facets [:hair/color :facet/options (:hair/color selections)])
-     :selected-length        (get-in facets [:hair/length :facet/options (:hair/length selections)])
-     :selected-base-material (get-in facets [:hair/base-material :facet/options (:hair/base-material selections)])
-     :product-sold-out-style (when product-sold-out? {:class "gray"})
-     :sku-quantity           (get-in data keypaths/browse-sku-quantity 1)
-     :navigation-event       events/navigate-product-details
-     :length-guide-image     length-guide-image}))
+  (let [options              (get-in data catalog.keypaths/detailed-product-options)
+        selected-picker      (get-in data catalog.keypaths/detailed-product-selected-picker)
+        picker-visible?      (get-in data catalog.keypaths/detailed-product-picker-visible?)
+        current-product      (products/current-product data)
+        product-skus         (products/extract-product-skus data current-product)
+        product-sold-out?    (every? (comp not :inventory/in-stock?) product-skus)
+        facets               (facets/by-slug data)
+        selections           (get-in data catalog.keypaths/detailed-product-selections)
+        auxiliary-selections (get-in data catalog.keypaths/detailed-product-auxiliary-selections)]
+    {:selected-picker            selected-picker
+     :picker-visible?            (and options selected-picker picker-visible?)
+     :facets                     facets
+     :selections                 selections
+     :options                    options
+     :selected-color             (get-in facets [:hair/color :facet/options (:hair/color selections)])
+     :selected-length            (get-in facets [:hair/length :facet/options (:hair/length selections)])
+     :selected-auxiliary-lengths (map #(get-in facets [:hair/length :facet/options (:hair/length %)]) auxiliary-selections)
+     :selected-base-material     (get-in facets [:hair/base-material :facet/options (:hair/base-material selections)])
+     :product-sold-out-style     (when product-sold-out? {:class "gray"})
+     :sku-quantity               (get-in data keypaths/browse-sku-quantity 1)
+     :navigation-event           events/navigate-product-details
+     :length-guide-image         length-guide-image
+     :multiple-lengths-pdp?      (and (-> current-product :hair/family first (= "bundles"))
+                                      (experiments/multiple-lengths-pdp? data))}))
