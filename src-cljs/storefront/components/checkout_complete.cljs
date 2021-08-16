@@ -20,49 +20,6 @@
              :border-left 0
              :border-right 0}}]))
 
-(defn servicing-stylist-card-title-molecule
-  [{:stylist-card.title/keys [id primary secondary]}]
-  (component/html
-   [:div
-    (when id
-      (list
-       [:div.content-2.mbn1 {:key secondary} secondary]
-       [:div.proxima.title-2.shout
-        {:data-test id
-         :key       primary}
-        primary]))]))
-
-(defn servicing-stylist-card-thumbnail-molecule
-  "We want ucare-ids here but we do not have them"
-  [{:stylist-card.thumbnail/keys [id ucare-id]}]
-  (component/html
-   [:div
-    (when id
-      (ui/circle-picture
-       {:width "72px"}
-       (ui/square-image {:resizable-url ucare-id} 72)))]))
-
-(defn servicing-stylist-phone-molecule
-  [{:phone-link/keys [phone-number]}]
-  (when phone-number
-    (ui/link :link/phone
-             :a.inherit-color
-             {:data-test "stylist-phone"
-              :class     "block flex items-center content-2"}
-             phone-number)))
-
-(defn servicing-stylist-card-molecule
-  [{:stylist-card/keys [id] :as data}]
-  (when id
-    [:div.flex.px6.py4.bg-white.top-lit
-     [:div.flex.justify-center.items-center
-      (servicing-stylist-card-thumbnail-molecule data)]
-     [:div.px2.flex-grow
-      (servicing-stylist-card-title-molecule data)
-      [:span.proxima.title-2
-       (ui.molecules/svg-star-rating-molecule data)]
-      (servicing-stylist-phone-molecule data)]]))
-
 (defn matched-component-message-molecule
   [{:matched-component.message/keys [id title body]}]
   (when id
@@ -77,7 +34,6 @@
     [:div.bg-white.pt8.pb4.px3.bg-refresh-gray
      {:data-test id}
      (matched-component-message-molecule queried-data)
-     [:div.my2 (servicing-stylist-card-molecule queried-data)]
      (let [{:matched-component.cta/keys [id label target]} queried-data]
        (when id
          [:div.col-10.my2.mx-auto
@@ -133,30 +89,12 @@
     (component/build guest-sign-up data nil)]))
 
 (defn shop-query [data]
-  (let [{completed-waiter-order :waiter/order
-         customer-phone         :order.shipping/phone} (api.orders/completed data)
-        {servicing-stylist    :services/stylist
-         service-items        :services/items}         (api.orders/services data completed-waiter-order)]
+  (let [{completed-waiter-order :waiter/order} (api.orders/completed data)
+        {service-items        :services/items} (api.orders/services data completed-waiter-order)]
     (when (seq service-items)
       (merge
        {:thank-you/primary
-        "We've received your order and a Mayvenn Concierge representative will contact you to make an appointment within 3 business days."}
-       (when-let [stylist-display-name (some-> servicing-stylist not-empty stylists/->display-name)]
-         {:matched-component.message/id    "servicing-stylist-name"
-          :matched-component.message/title (str "Chat with Concierge")
-          :matched-component.message/body  [:span
-                                            "A Mayvenn Concierge Representative will contact you to coordinate your appointment with your stylist, "
-                                            [:span.nowrap {:data-test "servicing-stylist-name"}
-                                             stylist-display-name] "."]
-
-          :stylist-card/id                 "stylist-card"
-          :stylist-card.thumbnail/id       "portrait"
-          :stylist-card.thumbnail/ucare-id (-> servicing-stylist :portrait :resizable-url)
-          :rating/value                    (:rating servicing-stylist)
-          :stylist-card.title/id           "stylist-name"
-          :stylist-card.title/primary      stylist-display-name
-          :stylist-card.title/secondary    (-> servicing-stylist :salon :name)
-          :phone-link/phone-number         (some-> servicing-stylist :address :phone formatters/phone-number-parens)})))))
+        "We've received your order and a Mayvenn Concierge representative will contact you to make an appointment within 3 business days."}))))
 
 (defn query
   [data]
