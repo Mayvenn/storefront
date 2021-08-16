@@ -400,7 +400,7 @@
                                                                                :body   (generate-string (:body common/contentful-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
-            (let [responses                          (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
+            (let [responses                          (doall (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/"))))
                   {:keys [hero feature-1
                           feature-2 feature-3]
                    :as   _classic-homepage-response} (-> (mock/request :get "https://bob.mayvenn.com/cms/homepage")
