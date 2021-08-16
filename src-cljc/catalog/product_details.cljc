@@ -39,7 +39,7 @@
             [storefront.accessors.skus :as skus]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.picker.picker :as old-picker]
+            [storefront.components.picker.picker :as picker]
             [storefront.components.tabbed-information :as tabbed-information]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -130,7 +130,7 @@
            product
            reviews
            selected-sku
-           old-picker-data
+           picker-data
            ugc
            faq-section
            add-to-cart
@@ -165,7 +165,7 @@
               [:div (carousel carousel-images product)])]
             (component/build product-summary-organism data)
             [:div.px2
-             (component/build old-picker/component old-picker-data opts)]
+             (component/build picker/component picker-data opts)]
             [:div
              (cond
                unavailable? unavailable-button
@@ -364,7 +364,7 @@
                                                                       :faq/content answer})}))
       :carousel-images                    carousel-images
       :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
-      :old-picker-data                    (old-picker/query data length-guide-image)
+      :picker-data                        (picker/query data length-guide-image)
       :multiple-lengths-pdp?              (experiments/multiple-lengths-pdp? data)}
 
      (when sku-price
