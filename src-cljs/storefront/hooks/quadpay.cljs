@@ -51,8 +51,7 @@
 (defcomponent component [{:quadpay/keys [show? order-total directive]} owner opts]
   [:div.bg-white.proxima.content-3
    (when show?
-     (let [qp-logo            ^:inline (svg/quadpay-logo {:class "mbnp3"
-                                                          :style {:width "70px" :height "14px"}})
+     (let [qp-logo            ^:inline (svg/quadpay-logo)
            expanded-directive ({:no-total      [:span "Split payment into 4 interest-free" [:br] "installments with " qp-logo]
                                 :just-select   [:span "Just select " qp-logo " at check out."]
                                 :continue-with [:span "Continue with " qp-logo " below."]}

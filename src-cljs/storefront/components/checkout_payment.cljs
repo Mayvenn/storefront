@@ -124,8 +124,7 @@
      [:div.overflow-hidden
       [:div.flex
        [:div.mr1 "Pay with "]
-       [:div.mt1 {:style {:width "85px" :height "17px"}}
-        ^:inline (svg/quadpay-logo)]]
+       [:div ^:inline (svg/quadpay-logo)]]
       [:div.h6 "4 interest-free payments with QuadPay. "
        [:a.quadpay.block {:href     "#"
                           :on-click (fn [e]

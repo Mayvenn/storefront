@@ -1,6 +1,7 @@
 (ns storefront.components.svg
   (:require [spice.maps :as maps]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.assets :as assets]))
 
 ;; OPTIMIZATION TOOLS:
 ;; hiccup -> xml:           Let the browser do it... then delete the data-reactid's
@@ -120,13 +121,19 @@
    [:svg.rotate-45 {:class class :style {:width (or width "1.2em") :height (or height "1.2em")}}
     ^:inline (svg-xlink "counter-inc")]))
 
+;; NOTE(jeff): was an SVG, but upgrading to zip logo is a PNG.
+;;             longer term, we should move away from SVG sprites and into individual images (because of http/2)
 (defn quadpay-logo
-  ([] (quadpay-logo {}))
+  ([] (quadpay-logo nil))
   ([opts]
    (component/html
-    [:svg.container-size
-     opts
-     ^:inline (svg-xlink "quadpay-logo")])))
+    [:img
+     (merge
+     {:src    "//ucarecdn.com/6ed38929-a47b-4e45-bd03-1e955dc831de/-/format/auto/-/resize/38x14/zip"
+      :width  "38"
+      :height "14"
+      :alt    "zip logo"} 
+      opts)])))
 
 ;; Social
 (defn instagram
