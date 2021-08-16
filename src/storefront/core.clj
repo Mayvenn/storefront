@@ -4,7 +4,8 @@
             [tocsin.core :as tocsin]
             [environ.core :refer [env]]
             [storefront.jetty :as jetty]
-            [storefront.system :as system]))
+            [storefront.system :as system]
+            [mayvenn.tracer :as tracer]))
 
 (def the-system nil)
 
@@ -18,6 +19,7 @@
 
 (defn -main [& args]
   (try
+    (tracer/configure-xray!)
     (alter-var-root #'the-system (constantly (system/create-system)))
     (alter-var-root #'the-system component/start)
     (catch Exception e

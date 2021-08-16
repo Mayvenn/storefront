@@ -8,8 +8,7 @@
             [storefront.jetty :as jetty]
             [storefront.system.contentful :as contentful]
             [spice.logger.core :as logger]
-            [tocsin.core :as tocsin]
-            [mayvenn.tracer :as tracer]))
+            [tocsin.core :as tocsin]))
 
 (defrecord AppHandler [logger exception-handler storeback-config welcome-config environment client-version]
   component/Lifecycle
@@ -52,7 +51,6 @@
   ([] (create-system {}))
   ([config-overrides] (create-system config-overrides identity))
   ([config-overrides component-overrides-fn]
-   (tracer/configure-xray!)
    (let [config (config/system-config config-overrides)]
      (component/system-using
       (component-overrides-fn (system-map config))
