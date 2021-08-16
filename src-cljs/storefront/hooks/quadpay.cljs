@@ -7,6 +7,7 @@
             [storefront.events :as events]))
 
 (def uri "https://widgets.quadpay.com/mayvenn/quadpay-widget-2.2.1.js")
+;; (def uri "https://cdn.quadpay.com/v1/quadpay.js?tag-name=quadpay-widget")
 
 (defn insert []
   (when-not (pos? (.-length (.querySelectorAll js/document ".quadpay-tag")))
@@ -18,15 +19,25 @@
   "Requires component to be on the page"
   []
   (when-let [quadpay-widget (js/document.querySelector "quadpay-widget")]
-    (when (.-displayModal quadpay-widget)
-      (.displayModal quadpay-widget))))
+    (or
+     (when (.-displayModal quadpay-widget)
+       (.displayModal quadpay-widget)
+       true)
+     (when-let [c (.-vueComponent quadpay-widget)]
+       (.displayModal c)
+       true))))
 
 (defn hide-modal
   "Requires component to be on the page"
   []
   (when-let [quadpay-widget (js/document.querySelector "quadpay-widget")]
-    (when (.-hideModal quadpay-widget)
-      (.hideModal quadpay-widget))))
+    (or
+     (when (.-hideModal quadpay-widget)
+       (.hideModal quadpay-widget)
+       true)
+     (when-let [c (.-vueComponent quadpay-widget)]
+       (.hideModal c)
+       true))))
 
 (defn calc-installment-amount [full-amount]
   (.toFixed (/ full-amount 4) 2))

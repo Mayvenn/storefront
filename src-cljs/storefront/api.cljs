@@ -426,9 +426,9 @@
    "/users"
    request-keys/update-account
    {:params (merge  {:session-id session-id
-                     :id    id
-                     :email email
-                     :token token}
+                     :id         id
+                     :email      email
+                     :token      token}
                     (when (seq password)
                       {:password password}))
     :handler
