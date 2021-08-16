@@ -406,19 +406,20 @@
   [picker-options picker-visible? selected-picker length-guide-image]
   (let [picker-type (last selected-picker)
         options     (get-in picker-options selected-picker)]
-    {:picker-modal/title        (case picker-type
-                                  :hair/color  "Color"
-                                  :hair/length "Length"
-                                  :quantity    "Quantity"
-                                  nil)
-     :picker-modal/type         picker-type
-     :picker-modal/options      options
+    {:picker-modal/title              (case picker-type
+                                        :hair/color         "Color"
+                                        :hair/length        "Length"
+                                        :hair/base-material "Base Material"
+                                        :quantity           "Quantity"
+                                        nil)
+     :picker-modal/type               picker-type
+     :picker-modal/options            options
      ;; NOTE: There is a difference between selected and visible. We toggle
      ;; picker visibility to signal that the modal should close but we don't remove
      ;; the options so the close animation isn't stopped prematurely due to the
      ;; child options re-rendering.
-     :picker-modal/visible?     (and picker-visible? options selected-picker)
-     :picker-modal/close-target [events/control-pdp-picker-close]
+     :picker-modal/visible?           (and picker-visible? options selected-picker)
+     :picker-modal/close-target       [events/control-pdp-picker-close]
      :picker-modal/length-guide-image length-guide-image}))
 
 (defn query [data selected-sku]
@@ -435,7 +436,9 @@
         images-catalog     (get-in data keypaths/v2-images)
         facets             (facets/by-slug data)
         carousel-images    (find-carousel-images product product-skus images-catalog
-                                                 (select-keys selections [:hair/color])
+                                                 ;;TODO These selection election keys should not be hard coded
+                                                 (select-keys selections [:hair/color
+                                                                          :hair/base-material])
                                                  selected-sku)
         length-guide-image (->> product
                                 (images/for-skuer images-catalog)
