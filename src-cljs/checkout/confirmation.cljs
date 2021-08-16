@@ -432,23 +432,23 @@
 
 (defn add-product-title-and-color-to-line-item [skus products facets line-item]
   (let [sku (get skus (:sku line-item))]
-    (spice.core/spy (merge line-item {:product-title (->> line-item
-                                                          :sku
-                                                          (products/find-product-by-sku-id products)
-                                                          :copy/title)
-                                      ;; This is probably not where this should go, but gotta go fast
-                                      :join/facets        (into {} (comp (map
-                                                                     (fn [facet]
-                                                                       (spice.core/spy facet)
-                                                                       (let [facet-slug  (:facet/slug facet)
-                                                                             facet-value (first (get sku facet-slug))]
-                                                                         [facet-slug (->> facet
-                                                                                          :facet/options
-                                                                                          (filter (fn [option]
-                                                                                                    (= facet-value (:option/slug option))))
-                                                                                          first)])))
-                                                                    (remove (comp nil? second)))
-                                                           facets)}))))
+    (merge line-item {:product-title (->> line-item
+                                          :sku
+                                          (products/find-product-by-sku-id products)
+                                          :copy/title)
+                      ;; This is probably not where this should go, but gotta go fast
+                      :join/facets        (into {} (comp (map
+                                                          (fn [facet]
+                                                            (spice.core/spy facet)
+                                                            (let [facet-slug  (:facet/slug facet)
+                                                                  facet-value (first (get sku facet-slug))]
+                                                              [facet-slug (->> facet
+                                                                               :facet/options
+                                                                               (filter (fn [option]
+                                                                                         (= facet-value (:option/slug option))))
+                                                                               first)])))
+                                                         (remove (comp nil? second)))
+                                                facets)})))
 
 (defn query
   [data]
