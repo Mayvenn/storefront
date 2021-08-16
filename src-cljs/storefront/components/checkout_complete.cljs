@@ -11,7 +11,8 @@
             [storefront.accessors.sites :as sites]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            ui.molecules))
+            ui.molecules
+            [mayvenn.concept.booking :as booking]))
 
 (defn ^:private divider []
   (component/html
@@ -89,12 +90,19 @@
     (component/build guest-sign-up data nil)]))
 
 (defn shop-query [data]
-  (let [{completed-waiter-order :waiter/order} (api.orders/completed data)
-        {service-items        :services/items} (api.orders/services data completed-waiter-order)]
+  (let [{completed-waiter-order :waiter/order}                             (api.orders/completed data)
+        {service-items :services/items}                                    (api.orders/services data completed-waiter-order)
+        {:mayvenn.concept.booking/keys [selected-date selected-time-slot]} (booking/<- data)
+        appointment-selected                                               (and selected-date selected-time-slot)
+        easy-booking?                                                      (experiments/easy-booking? data)]
     (when (seq service-items)
       (merge
        {:thank-you/primary
-        "We've received your order and a Mayvenn Concierge representative will contact you to make an appointment within 3 business days."}))))
+        (str "We've received your order and a Mayvenn Concierge representative will contact you to "
+             (if (and easy-booking? appointment-selected)
+               "confirm your"
+               "make an")
+             " appointment within 3 business days.")}))))
 
 (defn query
   [data]

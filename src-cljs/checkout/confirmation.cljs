@@ -11,6 +11,7 @@
             [spice.maps :as maps]
             [storefront.accessors.adjustments :as adjustments]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.images :as images]
             [storefront.accessors.products :as products]
             [storefront.accessors.shipping :as shipping]
@@ -34,7 +35,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
             [storefront.effects :as effects]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            [mayvenn.concept.booking :as booking]))
 
 (defn requires-additional-payment?
   [data]
@@ -116,6 +118,8 @@
            cart-items
            order
            loaded-quadpay?
+           easy-booking?
+           booking
            payment
            requires-additional-payment?
            selected-quadpay?
@@ -201,7 +205,11 @@
             (if servicing-stylist
               (str "You've selected "
                    (stylists/->display-name servicing-stylist)
-                   " as your stylist. A Concierge Specialist will reach out to you within 3 business days to coordinate your appointment.")
+                   " as your stylist. A Concierge Specialist will reach out to you within 3 business days to "
+                   (if (and easy-booking? (:mayvenn.concept.booking/selected-date booking) (:mayvenn.concept.booking/selected-time-slot booking))
+                     "confirm"
+                     "coordinate")
+                   " your appointment.")
               "You’ll be able to select your Certified Mayvenn Stylist after checkout.")]])]]]
      [:div.py6.h2
       [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
@@ -463,6 +471,8 @@
         addon-service-skus                    (map (fn [addon-service] (get skus (:sku addon-service))) addon-service-line-items)]
     (merge
      {:order                        order
+      :easy-booking?                (experiments/easy-booking? data)
+      :booking                      (booking/<- data)
       :store-slug                   (get-in data keypaths/store-slug)
       :requires-additional-payment? (requires-additional-payment? data)
       :checkout-steps               (checkout-steps/query data)

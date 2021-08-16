@@ -32,7 +32,8 @@
              :refer [handle-message] :rename {handle-message publish}]
             [storefront.transitions :as transitions]
             [api.orders :as api.orders]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.accessors.experiments :as experiments]
+            [mayvenn.concept.booking :as booking]))
 
 (defn ^:private hacky-cart-image
   [item]
@@ -234,12 +235,17 @@
    :quadpay/directive   :just-select})
 
 (defn servicing-stylist-sms-info<-
-  [items servicing-stylist]
+  [items servicing-stylist easy-booking? {:mayvenn.concept.booking/keys [selected-date selected-time-slot]}]
   (when (select ?service items)
     (if servicing-stylist
-      {:copy          (str "You've selected "
-                           (stylists/->display-name servicing-stylist)
-                           " as your stylist. A Concierge Specialist will reach out to you within 3 business days to coordinate your appointment.")
+      {:copy          (let [appointment-selected (and selected-date selected-time-slot)]
+                        (str "You've selected "
+                            (stylists/->display-name servicing-stylist)
+                            " as your stylist. A Concierge Specialist will reach out to you within 3 business days to "
+                            (if (and easy-booking? appointment-selected)
+                              "confirm"
+                              "coordinate")
+                            " your appointment."))
        :servicing-stylist-portrait-url (-> servicing-stylist :portrait :resizable-url)}
       {:copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
        :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})))
@@ -410,14 +416,16 @@
         physical-items      (select ?physical order-items)
         pending-request?    (utils/requesting? state request-keys/create-order-from-shared-cart)
         advertised-price    (-> order :waiter/order :total)
-        spinning-button     (get-in state keypaths/shared-cart-redirect)]
+        spinning-button     (get-in state keypaths/shared-cart-redirect)
+        easy-booking?       (experiments/easy-booking? state)
+        booking             (booking/<- state)]
     (component/build template (merge {:hero/title    "Your Bag"
                                       :hero/subtitle (str cart-creator-copy " has created a bag for you!")}
                                      (service-items<- servicing-stylist order-items number pending-request?)
                                      (physical-items<- physical-items)
                                      (quadpay<- state order)
                                      (cart-summary<- order)
-                                     {:servicing-stylist-sms-info (servicing-stylist-sms-info<- order-items (:diva/stylist servicing-stylist))
+                                     {:servicing-stylist-sms-info (servicing-stylist-sms-info<- order-items (:diva/stylist servicing-stylist) easy-booking? booking)
                                       :cta                        {:cta/id        "start-checkout-button"
                                                                    :cta/disabled? pending-request?
                                                                    :cta/target    [events/control-shared-cart-checkout-clicked

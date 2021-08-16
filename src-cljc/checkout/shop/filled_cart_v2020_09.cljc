@@ -32,6 +32,7 @@
    [ui.molecules :as ui-molecules]
    [ui.promo-banner :as promo-banner]
    [mayvenn.visual.tools :refer [within]]
+   [mayvenn.concept.booking :as booking]
    [mayvenn.live-help.core :as live-help]))
 
 ;; page selectors - maybe they can just be cats
@@ -723,12 +724,17 @@
 
 (defn checkout-caption<-
   ;; TODO(corey) This name seems confusing to me
-  [items]
+  [items easy-booking? {:mayvenn.concept.booking/keys [selected-date selected-time-slot]}]
   (when-let [services (select ?service items)]
     (if-let [stylist (:item.service/stylist (first services))]
-      {:checkout-caption-copy          (str "You've selected "
-                                            (stylists/->display-name stylist)
-                                            " as your stylist. A Concierge Specialist will reach out to you within 3 business days to coordinate your appointment.")
+      {:checkout-caption-copy          (let [booking-selected (and selected-date selected-time-slot)]
+                                         (str "You've selected "
+                                             (stylists/->display-name stylist)
+                                             " as your stylist. A Concierge Specialist will reach out to you within 3 business days to "
+                                             (if (and easy-booking? booking-selected)
+                                               "confirm"
+                                               "coordinate")
+                                             " your appointment."))
        :servicing-stylist-portrait-url (-> stylist :portrait :resizable-url)}
       {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
        :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})))
@@ -760,6 +766,8 @@
         pending-requests?         (update-pending? app-state)
         remove-in-progress?       (utils/requesting? app-state request-keys/remove-servicing-stylist)
         adding-freeinstall?       (utils/requesting? app-state (conj request-keys/add-to-bag "SV2-LBI-X"))
+        easy-booking?             (experiments/easy-booking? app-state)
+        booking                   (booking/<- app-state)
         update-line-item-requests (merge-with #(or %1 %2)
                                               (->> (map :catalog/sku-id items)
                                                    (variants-requests app-state request-keys/add-to-bag))
@@ -786,7 +794,8 @@
                                                                       remove-in-progress?
                                                                       delete-line-item-requests
                                                                       (:appointment-time-slot waiter-order))
-                                        :checkout-caption            (checkout-caption<- items)
+
+                                        :checkout-caption            (checkout-caption<- items easy-booking? booking)
                                         :cart-summary                (merge (cart-summary<- waiter-order items)
                                                                             (freeinstall-informational<- waiter-order items adding-freeinstall?)
                                                                             (promo-input<- app-state
