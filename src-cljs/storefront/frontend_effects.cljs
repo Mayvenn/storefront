@@ -393,7 +393,7 @@
   (js/history.back))
 
 (def cart-error-codes
-  {"quadpay"                     "There was an issue authorizing your QuadPay payment. Please check out again or use a different payment method."
+  {"quadpay"                     "There was an issue authorizing your Zip payment. Please check out again or use a different payment method."
    "paypal-incomplete"           "We were unable to complete your order with PayPal. Please try again."
    "paypal-cancel"               "We were unable to complete your order with PayPal. Please try again."
    "paypal-invalid-address"      (str "Unfortunately, Mayvenn products cannot be delivered to this address at this time. "

@@ -51,7 +51,7 @@
 (defn checkout-button
   [selected-quadpay? {:keys [spinning? disabled?]}]
   (ui/submit-button (if selected-quadpay?
-                      "Place Order with QuadPay"
+                      "Place Order with Zip"
                       "Place Order")
                     {:spinning? spinning?
                      :disabled? disabled?

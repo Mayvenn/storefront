@@ -125,7 +125,7 @@
       [:div.flex
        [:div.mr1 "Pay with "]
        [:div ^:inline (svg/quadpay-logo)]]
-      [:div.h6 "4 interest-free payments with QuadPay. "
+      [:div.h6 "4 interest-free payments with Zip. "
        [:a.quadpay.block {:href     "#"
                           :on-click (fn [e]
                                       (.preventDefault e)
@@ -136,7 +136,7 @@
 
     (when selected-quadpay?
       [:div.h6.px2.ml5
-       "Before completing your purchase, you will be redirected to Quadpay to securely set up your payment plan."]))])
+       "Before completing your purchase, you will be redirected to Zip to securely set up your payment plan."]))])
 
 (defn cta-submit [{:cta/keys [id saving? disabled? label]}]
   (when id
