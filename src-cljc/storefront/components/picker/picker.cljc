@@ -158,7 +158,6 @@
   [{:keys [product-sold-out-style selected-length selections options selected-auxiliary-lengths navigation-event]}]
   [:div.hide-on-mb.items-center.border-top.border-cool-gray.border-width-2
    (field
-    {:class "col-7"}
     (desktop-dropdown
      [:div.proxima.title-3.shout "Length"]
      [:span.medium
@@ -177,12 +176,12 @@
                        (:hair/length options))})))
    (for [[auxiliary-index auxiliary-selection] (zipmap (range) selected-auxiliary-lengths)]
      (field
-      {:class "col-7"}
       (desktop-dropdown
        [:div.proxima.title-3.shout.bg-pink "Length"]
        [:span.medium
         product-sold-out-style
-        (:option/name auxiliary-selection)]
+        (or (seq (:option/name auxiliary-selection))
+            "Choose Length (optional)")]
        (invisible-select
         {:on-change #(messages/handle-message events/control-product-detail-picker-option-auxiliary-select
                                               {:auxiliary-index  auxiliary-index
@@ -190,8 +189,10 @@
                                                :value            (.-value (.-target %))})
          :value     (:hair/length auxiliary-selection)
          :options   (concat
-                     [[:option {:value ""
-                                :key   (str "length-nil")} "Remove Length"]]
+                     (when auxiliary-selection
+                       [[:option {:value ""
+                                  :placeholder "test"
+                                  :key   (str "length-nil")} "Remove Length"]])
                      (map (fn [option]
                             [:option {:value (:option/slug option)
                                       :key   (str "length-" (:option/slug option))}
