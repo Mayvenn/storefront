@@ -409,6 +409,9 @@
                                    {:slide-out-nav-content-item/target  [events/navigate-content-our-hair]
                                     :slide-out-nav-content-item/id      "content-our-hair"
                                     :slide-out-nav-content-item/primary "Our Hair"}
+                                   {:slide-out-nav-content-item/target  {:href "https://looks.mayvenn.com/hd-lace-wigs "}
+                                    :slide-out-nav-content-item/id      "content-hd-lace"
+                                    :slide-out-nav-content-item/primary "HD Lace"}
                                    {:slide-out-nav-content-item/target  {:href wigs-101-url}
                                     :slide-out-nav-content-item/id      "content-wigs-101"
                                     :slide-out-nav-content-item/primary "Wigs 101"}
