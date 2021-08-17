@@ -206,11 +206,14 @@
                         :page/slug          (:page/slug product)
                         :query-params       {:SKU (:catalog/sku-id sku)}}]})))
 
+(defn ^:private get-essential-critera-from-skuer [skuer]
+  (select-keys skuer (:selector/essentials skuer)))
+
 (defn find-carousel-images [product product-skus images-catalog selections selected-sku]
   (->> (selector/match-all {}
-                           (or selected-sku
-                               selections
-                               (first product-skus))
+                           (or (not-empty (get-essential-critera-from-skuer selected-sku))
+                               (not-empty selections)
+                               (not-empty (get-essential-critera-from-skuer (first product-skus))))
                            (images/for-skuer images-catalog product))
        (selector/match-all {:selector/strict? true}
                            {:use-case #{"carousel"}
