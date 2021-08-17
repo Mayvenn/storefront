@@ -167,7 +167,7 @@
             [:div.px2
              (component/build picker/component picker-data opts)
              (let [{:keys [id event]} (with :add-auxiliary data)]
-               (when id
+               (when (and id multiple-lengths-pdp?)
                  [:div.center.py1 (ui/button-medium-underline-primary (merge
                                                                        (utils/fake-href event)
                                                                        {:data-test "auxiliary-add-length"}) "Add Another Length")]))]
