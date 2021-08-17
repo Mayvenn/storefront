@@ -155,7 +155,7 @@
                         (range 1 11))})))]])
 
 (defn desktop-length-picker-rows
-  [{:keys [product-sold-out-style selected-length selections options selected-auxiliary-lengths sku-quantity navigation-event]}]
+  [{:keys [product-sold-out-style selected-length selections options selected-auxiliary-lengths navigation-event]}]
   [:div.hide-on-mb.items-center.border-top.border-cool-gray.border-width-2
    (field
     {:class "col-7"}
@@ -182,18 +182,21 @@
        [:div.proxima.title-3.shout.bg-pink "Length"]
        [:span.medium
         product-sold-out-style
-        (pr-str auxiliary-selection)] ; TODO thread in aux selected lengths
+        (:option/name auxiliary-selection)]
        (invisible-select
         {:on-change #(messages/handle-message events/control-product-detail-picker-option-auxiliary-select
                                               {:auxiliary-index  auxiliary-index
                                                :selection        :hair/length
                                                :value            (.-value (.-target %))})
          :value     (:hair/length auxiliary-selection)
-         :options   (map (fn [option]
-                           [:option {:value (:option/slug option)
-                                     :key   (str "length-" (:option/slug option))}
-                            (:option/name option)])
-                         (:hair/length options))}))))])
+         :options   (concat
+                     [[:option {:value ""
+                                :key   (str "length-nil")} "Remove Length"]]
+                     (map (fn [option]
+                            [:option {:value (:option/slug option)
+                                      :key   (str "length-" (:option/slug option))}
+                             (:option/name option)])
+                          (:hair/length options)))}))))])
 
 (defn mobile-length-and-quantity-picker-rows
   [{:keys [selected-length product-sold-out-style sku-quantity]}]
@@ -223,13 +226,13 @@
         product-sold-out-style)
        sku-quantity]))]])
 
-;; TODO on second thought, split this into two parts
+;; TODO on second thought, split this into two parts?
 (defn mobile-length-picker-rows
-  [{:keys [selected-length product-sold-out-style selected-auxiliary-lengths sku-quantity]}]
+  [{:keys [selected-length product-sold-out-style selected-auxiliary-lengths]}]
   [:div.hide-on-tb-dt.items-center.border-top.border-cool-gray.border-width-2
    (field
     (merge
-     {:class     " col-7 py2"
+     {:class     " py2"
       :data-test "picker-length"}
      (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/length}))
     (mobile-dropdown
@@ -242,8 +245,9 @@
    (for [[auxiliary-index auxiliary-selection] (zipmap (range) selected-auxiliary-lengths)]
      (field
       (merge
-       {:class     " col-7 py2 bg-yellow"
-        :data-test "picker-length"}
+       {:class     " py2 bg-yellow"
+        :data-test "picker-length"
+        :key (str "picker-length-" auxiliary-index)}
        (utils/fake-href events/control-product-detail-picker-open {:facet-slug      :hair/length
                                                                    :auxiliary-index auxiliary-index}))
       (mobile-dropdown
@@ -252,7 +256,9 @@
         (merge
          {:data-test (str "picker-selected-length-" (:option/slug auxiliary-selection))}
          product-sold-out-style)
-        (:option/name auxiliary-selection)])))])
+        (if auxiliary-selection
+          (:option/name auxiliary-selection)
+          "Choose Length (optional)")])))])
 
 (defn desktop-color-picker-row
   [{:keys [navigation-event selected-color selections options product-sold-out-style]}]
@@ -449,7 +455,7 @@
 
 (defn picker-dialog
   "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
-  [{:keys [title items cell-component-fn wrap?]
+  [{:keys [title items cell-component-fn wrap? unselector auxiliary-index]
     :as data}]
   [:div.hide-on-tb-dt.z5.fixed.overlay.overflow-auto.bg-cool-gray
    {:key (str "picker-dialog-" title) :data-test "picker-dialog"}
@@ -470,7 +476,18 @@
    [:div.py3.px1 ;; body
     (when wrap?
       {:class "flex flex-wrap"})
-    (mapv cell-component-fn items)]])
+    (concat
+     (when-let [{:keys [id label selected-picker]} unselector]
+       [(simple-option-drop-down-item
+         {:key              (str "length-" id)
+          :data-test        (str "picker-length-" id)
+          :primary-label    label
+          :checked?         false
+          :selected-picker  selected-picker
+          :auxiliary-index  auxiliary-index
+          :close-event      events/control-product-detail-picker-close
+          :select-event     events/control-product-detail-picker-option-auxiliary-select})])
+     (mapv cell-component-fn items))]])
 
 (defcomponent component
   [{:keys [navigation-event
@@ -528,6 +545,7 @@
                      (picker-dialog (merge
                                      {:title             (get-in facets [selected-picker :facet/name])
                                       :items             (sort-by :option/order (get options selected-picker))
+                                      :auxiliary-index   auxiliary-index
                                       :cell-component-fn (fn [item]
                                                            (simple-option-drop-down-item
                                                             {:key              (str "length-" (:option/name item))
@@ -541,12 +559,15 @@
                                                                                   (:option/slug item))
                                                              :selected-picker  selected-picker
                                                              :item             item
-                                                             :auxiliary-index  auxiliary-index
+                                                             :auxiliary-index  auxiliary-index ; This feels wrong
                                                              :close-event      events/control-product-detail-picker-close
                                                              :select-event     (if auxiliary?
                                                                                  events/control-product-detail-picker-option-auxiliary-select
                                                                                  events/control-product-detail-picker-option-select)}))}
-
+                                     (when (and auxiliary? (seq (get-in auxiliary-selections [auxiliary-index :hair/length])))
+                                       {:unselector {:id "unselector"
+                                                     :selected-picker  selected-picker
+                                                     :label "Remove length"}})
                                      (when length-guide-image
                                        {:title-cta/id      "length-picker-length-guide"
                                         :title-cta/target  [events/popup-show-length-guide {:length-guide-image length-guide-image
