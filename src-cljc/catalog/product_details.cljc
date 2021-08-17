@@ -165,7 +165,12 @@
               [:div (carousel carousel-images product)])]
             (component/build product-summary-organism data)
             [:div.px2
-             (component/build picker/component picker-data opts)]
+             (component/build picker/component picker-data opts)
+             (let [{:keys [id event]} (with :add-auxiliary data)]
+               (when id
+                 [:div.center.py1 (ui/button-medium-underline-primary (merge
+                                                                       (utils/fake-href event)
+                                                                       {:data-test "auxiliary-add-length"}) "Add Another Length")]))]
             [:div
              (cond
                unavailable? unavailable-button
@@ -369,7 +374,9 @@
       :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
       :picker-data                        (picker/query data length-guide-image)
       :multiple-lengths-pdp?              (experiments/multiple-lengths-pdp? data)}
-
+     (when (-> (get-in data catalog.keypaths/detailed-product-auxiliary-selections) count (< 4))
+       #:add-auxiliary{:id    "add-auxiliary"
+                       :event events/control-product-detail-picker-add})
      (when sku-price
        {:price-block/primary   (mf/as-money sku-price)
         :price-block/secondary "each"})
@@ -744,3 +751,8 @@
 (defmethod transitions/transition-state events/control-product-detail-picker-option-auxiliary-select
   [_ event {:keys [selection value auxiliary-index]} app-state]
   (update-in app-state (conj catalog.keypaths/detailed-product-auxiliary-selections auxiliary-index) merge {selection value}))
+
+(defmethod transitions/transition-state events/control-product-detail-picker-add
+  [_ _ {} state]
+  (-> state
+      (update-in catalog.keypaths/detailed-product-auxiliary-selections conj {})))
