@@ -29,9 +29,10 @@
    [:div.self-center.flex.items-center.mr4
     text]])
 
-(defn simple-content-layer [content]
+(defn simple-content-layer [attrs & content]
   [:div.flex.items-center.p4.absolute.overlay.bg-white
-   [:div.ml1 content]])
+   (into [:div.ml1 attrs]
+         content)])
 
 (def picker-chevron
   (svg/dropdown-arrow {:height "13px"
@@ -357,6 +358,7 @@
                  :key      (str key "-option")
                  :on-click #(select-and-close close-event select-event {:value quantity})}
                 (simple-content-layer
+                 {}
                  [:div.col-2
                   (when label-style
                     {:class label-style})
@@ -413,13 +415,13 @@
                                                                       :navigation-event navigation-event
                                                                       :value            (:option/slug item)})}
               (simple-content-layer
-               (list
-                [:div.col-2
-                 {:key "primary-label"}
-                 primary-label]
-                [:div.gray.flex-auto
-                 {:key "secondary-label"}
-                 secondary-label]))
+               {}
+               [:div
+                {:key "primary-label"}
+                primary-label]
+               [:div.gray.flex-auto
+                {:key "secondary-label"}
+                secondary-label])
               [:div
                (when checked?
                  (simple-selected-layer))])])
