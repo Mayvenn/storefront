@@ -439,7 +439,6 @@
                       ;; This is probably not where this should go, but gotta go fast
                       :join/facets        (into {} (comp (map
                                                           (fn [facet]
-                                                            (spice.core/spy facet)
                                                             (let [facet-slug  (:facet/slug facet)
                                                                   facet-value (first (get sku facet-slug))]
                                                               [facet-slug (->> facet
