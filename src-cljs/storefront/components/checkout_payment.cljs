@@ -115,7 +115,7 @@
      (merge {:name         "payment-method"
              :id           "payment-method-quadpay"
              :data-test    "payment-method"
-             :data-test-id "quadpay"
+             :data-test-id "zip"
              :on-click     (utils/send-event-callback events/control-checkout-payment-select
                                                       {:payment-method :quadpay})}
             (when selected-quadpay?

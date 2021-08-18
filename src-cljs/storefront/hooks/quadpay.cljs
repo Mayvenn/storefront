@@ -59,12 +59,12 @@
        [:div.border.border-quadpay.my2.p2.center
         (when order-total
           [:span.mb2
-           "4 interest-free payments of $" [:span {:data-test "quadpay-payment-amount"}
+           "4 interest-free payments of $" [:span {:data-test "zip-payment-amount"}
                                             (calc-installment-amount order-total)]])
         [:div.block
          expanded-directive
          [:a.quadpay.mx1 {:href      "#"
-                          :data-test "quadpay-learn-more"
+                          :data-test "zip-learn-more"
                           :on-click  (fn [e]
                                        (.preventDefault e)
                                        (show-modal))}

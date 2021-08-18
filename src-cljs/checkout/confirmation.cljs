@@ -102,7 +102,7 @@
         store-slug   (get-in app-state keypaths/store-slug)
         order-total  (get-in app-state keypaths/order-total)
         redirect-url (-> (get-in app-state keypaths/order) :cart-payments :quadpay :redirect-url)]
-    (stringer/track-event "customer-sent-to-quadpay"
+    (stringer/track-event "customer-sent-to-zip"
                           {:order_number order-number
                            :store_slug   store-slug
                            :order_total  order-total}
