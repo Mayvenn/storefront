@@ -9,6 +9,7 @@
 (def detailed-product-id (conj detailed-product :id))
 (def detailed-product-selections (conj detailed-product :selections))
 (def detailed-product-auxiliary-selections (conj detailed-product :auxiliary-selections)) ;; TODO better name?
+(def detailed-product-auxiliary-index (conj detailed-product :auxiliary-index))
 (def detailed-product-selected-sku (conj detailed-product :selected-sku))
 (def detailed-product-selected-sku-id (conj detailed-product-selected-sku :catalog/sku-id))
 (def detailed-product-selected-picker (conj detailed-product :selected-picker))

@@ -165,7 +165,12 @@
               [:div (carousel carousel-images product)])]
             (component/build product-summary-organism data)
             [:div.px2
-             (component/build picker/component picker-data opts)]
+             (component/build picker/component picker-data opts)
+             (let [{:keys [id event]} (with :add-auxiliary data)]
+               (when (and id multiple-lengths-pdp?)
+                 [:div.center.py1 (ui/button-medium-underline-primary (merge
+                                                                       (utils/fake-href event)
+                                                                       {:data-test "auxiliary-add-length"}) "Add Another Length")]))]
             [:div
              (cond
                unavailable? unavailable-button
@@ -369,7 +374,9 @@
       :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
       :picker-data                        (picker/query data length-guide-image)
       :multiple-lengths-pdp?              (experiments/multiple-lengths-pdp? data)}
-
+     (when (-> (get-in data catalog.keypaths/detailed-product-auxiliary-selections) count (< 4))
+       #:add-auxiliary{:id    "add-auxiliary"
+                       :event events/control-product-detail-picker-add})
      (when sku-price
        {:price-block/primary   (mf/as-money sku-price)
         :price-block/secondary "each"})
@@ -575,10 +582,11 @@
     #?(:cljs (scroll/enable-body-scrolling))))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-open
-  [_ event {:keys [facet-slug]} app-state]
+  [_ event {:keys [facet-slug auxiliary-index]} app-state]
   (-> app-state
       (assoc-in catalog.keypaths/detailed-product-selected-picker facet-slug)
-      (assoc-in catalog.keypaths/detailed-product-picker-visible? true)))
+      (assoc-in catalog.keypaths/detailed-product-picker-visible? true)
+      (assoc-in catalog.keypaths/detailed-product-auxiliary-index auxiliary-index)))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-option-quantity-select
   [_ event {:keys [value]} app-state]
@@ -588,7 +596,10 @@
 
 (defmethod transitions/transition-state events/control-product-detail-picker-close
   [_ event _ app-state]
-  (assoc-in app-state catalog.keypaths/detailed-product-picker-visible? false))
+  (-> app-state
+      (assoc-in catalog.keypaths/detailed-product-picker-visible? false)
+      (assoc-in catalog.keypaths/detailed-product-auxiliary-index nil)
+      (assoc-in catalog.keypaths/detailed-product-selected-picker nil)))
 
 #?(:cljs
    (defmethod effects/perform-effects events/control-product-detail-picker-open
@@ -736,3 +747,12 @@
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
   [_ event {:keys [quantity sku]} app-state]
   (assoc-in app-state keypaths/browse-sku-quantity 1))
+
+(defmethod transitions/transition-state events/control-product-detail-picker-option-auxiliary-select
+  [_ event {:keys [selection value auxiliary-index]} app-state]
+  (update-in app-state (conj catalog.keypaths/detailed-product-auxiliary-selections auxiliary-index) merge {selection value}))
+
+(defmethod transitions/transition-state events/control-product-detail-picker-add
+  [_ _ {} state]
+  (-> state
+      (update-in catalog.keypaths/detailed-product-auxiliary-selections conj {})))
