@@ -23,8 +23,12 @@
 
 (defmethod component :basic basic
   [{:keys [promo]} _ {hide-dt? :hide-dt?}]
-  [:div.inherit-color.center.pp5.bg-warm-gray.h5.bold
-   {:data-test (when-not hide-dt? "promo-banner")}
+  [:div
+   (merge {:data-test (when-not hide-dt? "promo-banner")
+           :class     "inherit-color center pp5 bg-warm-gray h5 bold"}
+          (when-let [uri (:uri promo)]
+            {:class "inherit-color center pp5 bg-warm-gray h5 bold underline"
+             :href  uri}))
    (:description promo)])
 
 (defn ^:private promotion-to-advertise
@@ -41,6 +45,7 @@
           {:id          -1
            :code        nil
            :description default-advertised-promo-text
+           :uri         (get-in data keypaths/cms-advertised-promo-uri)
            :advertised  true}
           (promos/default-advertised-promotion promotion-db)))))
 

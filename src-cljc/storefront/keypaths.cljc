@@ -12,6 +12,8 @@
 (def cms-homepage-hero (conj cms-homepage :hero))
 (def cms-advertised-promo (conj cms :advertisedPromo))
 (def cms-advertised-promo-text (conj cms-advertised-promo :advertised-text))
+(def cms-advertised-promo-uri (conj cms-advertised-promo :uri))
+
 (def cms-faq (conj cms :faq))
 
 (def features [:features])
