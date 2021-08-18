@@ -560,13 +560,24 @@
 
 (defmethod transitions/transition-state events/control-product-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]
-  (let [selected-sku (->> {selection #{value}}
+  ;; HACK [#179260091]
+  (let [switching-to-short-hd-lace? (and (= [selection value] [:hair/base-material "hd-lace"])
+                                         (-> app-state
+                                             (get-in catalog.keypaths/detailed-product-selections)
+                                             :hair/length
+                                             spice.core/parse-int
+                                             (< 16)))
+        selected-sku (->> (if switching-to-short-hd-lace?
+                            {selection #{value} :hair/length #{"16"}}
+                            {selection #{value}})
                           (determine-sku-from-selections app-state))
         options      (generate-product-options (get-in app-state catalog.keypaths/detailed-product-id)
                       app-state)]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-selected-sku selected-sku)
-        (update-in catalog.keypaths/detailed-product-selections merge {selection value})
+        (update-in catalog.keypaths/detailed-product-selections merge (if switching-to-short-hd-lace?
+                                                                        {selection value :hair/length "16"}
+                                                                        {selection value}))
         (assoc-in catalog.keypaths/detailed-product-options options))))
 
 (defmethod effects/perform-effects events/control-product-detail-picker-option-select
