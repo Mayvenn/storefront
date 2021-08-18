@@ -129,7 +129,7 @@
    (component/html
     [:img
      (merge
-     {:src    "//ucarecdn.com/6ed38929-a47b-4e45-bd03-1e955dc831de/-/format/auto/-/resize/38x14/zip"
+     {:src    "//ucarecdn.com/6ed38929-a47b-4e45-bd03-1e955dc831de/-/format/auto/-/resize/76x28/zip"
       :width  "38"
       :height "14"
       :alt    "zip logo"} 
