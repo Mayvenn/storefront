@@ -6,8 +6,11 @@
             [storefront.platform.messages :refer [handle-message]]
             [storefront.events :as events]))
 
-(def uri "https://widgets.quadpay.com/mayvenn/quadpay-widget-2.2.1.js")
-;; (def uri "https://cdn.quadpay.com/v1/quadpay.js?tag-name=quadpay-widget")
+(def uri "https://cdn.quadpay.com/v1/quadpay.js?tagname=quadpay-widget")
+
+(defn- get-widget-id []
+  (when (.-quadpay js/window)
+    (first (js/quadpay.widget.getWidgetIds))))
 
 (defn insert []
   (when-not (pos? (.-length (.querySelectorAll js/document ".quadpay-tag")))
@@ -18,26 +21,30 @@
 (defn show-modal
   "Requires component to be on the page"
   []
-  (when-let [quadpay-widget (js/document.querySelector "quadpay-widget")]
-    (or
-     (when (.-displayModal quadpay-widget)
-       (.displayModal quadpay-widget)
-       true)
-     (when-let [c (.-vueComponent quadpay-widget)]
-       (.displayModal c)
-       true))))
+  (when-let [wid (get-widget-id)]
+    ;; quadpay.widget.displayModal isn't defensive enough to validate the element is there
+    ;; so we have to implement that behavior ourselves
+    (when-let [container (some-> (js/document.querySelector (str "#qp-modal-" wid))
+                                 (.-shadowRoot)
+                                 (.getElementById "qp-modal__overlay"))]
+      (try
+        (js/quadpay.widget.displayModal wid)
+        (catch js/Error err nil)))
+    true))
 
 (defn hide-modal
   "Requires component to be on the page"
   []
-  (when-let [quadpay-widget (js/document.querySelector "quadpay-widget")]
-    (or
-     (when (.-hideModal quadpay-widget)
-       (.hideModal quadpay-widget)
-       true)
-     (when-let [c (.-vueComponent quadpay-widget)]
-       (.hideModal c)
-       true))))
+  (when-let [wid (get-widget-id)]
+    ;; quadpay.widget.hideModal isn't defensive enough to validate the element is there
+    ;; so we have to implement that behavior ourselves
+    (when-let [container (some-> (js/document.querySelector (str "#qp-modal-" wid))
+                                 (.-shadowRoot)
+                                 (.getElementById "qp-modal__overlay"))]
+      (try
+        (js/quadpay.widget.hideModal wid)
+        (catch js/Error err nil)))
+    true))
 
 (defn calc-installment-amount [full-amount]
   (.toFixed (/ full-amount 4) 2))
