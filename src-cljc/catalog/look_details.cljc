@@ -15,7 +15,6 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.images :as images]
             [storefront.accessors.products :as products]
-            [storefront.accessors.line-items :as line-items]
             [storefront.accessors.shared-cart :as shared-cart]
             [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
@@ -136,6 +135,17 @@
                             nil))
         (component/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)]))])
 
+(defn ^:private add-product-title-and-color-to-line-item [products facets line-item]
+  (merge line-item {:product-title (->> line-item
+                                        :catalog/sku-id
+                                        (products/find-product-by-sku-id products)
+                                        :copy/title)
+                    :color-name    (-> line-item
+                                       :hair/color
+                                       first
+                                       (facets/get-color facets)
+                                       :option/name)}))
+
 (defn ^:private get-model-image
   [images-catalog {:keys [copy/title] :as skuer}]
   (when-let [image (->> (images/for-skuer images-catalog skuer)
@@ -247,7 +257,7 @@
         line-items            (some->> shared-cart
                                      :line-items
                                      (shared-cart/enrich-line-items-with-sku-data skus)
-                                     (map (partial line-items/prep-for-display products facets)))
+                                     (map (partial add-product-title-and-color-to-line-item products facets)))
         album-keyword         (get-in data keypaths/selected-album-keyword)
         look                  (contentful/look->look-detail-social-card album-keyword
                                                                       (contentful/selected-look data))

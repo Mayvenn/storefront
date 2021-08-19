@@ -4,7 +4,7 @@
             [spice.core :as spice]
             [spice.maps :as maps]
             [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.line-items :as line-items]
+            [storefront.accessors.line-items :as line-items-accessors]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.sales :as sales]
             [storefront.accessors.shipping :as shipping]
@@ -102,20 +102,15 @@
 (defn line-item<-
   [shipment-number
    show-price?
-   {:keys [product-title unit-price quantity returned-quantity product-name sku variant-attrs]
-    :join/keys [facets]}]
+   {:keys [product-title color-name unit-price quantity returned-quantity product-name sku variant-attrs]}]
   (let [base-dt (str "shipment-" shipment-number "-line-item-" sku)]
     {:line-item/id      (str base-dt "-title")
      :line-item/primary (or product-title product-name)
      :line-item/secondary-information
      (keep identity
-           [(when-some [color-copy (-> facets :hair/color :option/name)]
+           [(when color-name
               {:line-item.secondary-information/id    (str base-dt "-color")
-               :line-item.secondary-information/value color-copy})
-
-            (when-some [base-material-copy (-> facets :hair/base-material :option/name)]
-              {:line-item.secondary-information/id    (str base-dt "-base-material")
-               :line-item.secondary-information/value base-material-copy})
+               :line-item.secondary-information/value color-name})
 
             (when show-price?
               {:line-item.secondary-information/id    (str base-dt "-price-ea")
@@ -285,7 +280,7 @@
                                  (dissoc :voucher))
         shipments-enriched     (for [shipment (-> sale :order :shipments)]
                                  (let [product-line-items          (remove (comp #{"waiter"} :source) (:line-items shipment))
-                                       enriched-product-line-items (mapv (partial line-items/prep-for-display
+                                       enriched-product-line-items (mapv (partial checkout.classic-cart/add-product-title-and-color-to-line-item
                                                                                   (get-in app-state keypaths/v2-products)
                                                                                   (get-in app-state keypaths/v2-facets))
                                                                          product-line-items)]
@@ -337,5 +332,5 @@
                                           (map :order)
                                           (mapcat :shipments)
                                           (mapcat :line-items)
-                                          (filter line-items/product-or-service?)
+                                          (filter line-items-accessors/product-or-service?)
                                           (map :sku))}))

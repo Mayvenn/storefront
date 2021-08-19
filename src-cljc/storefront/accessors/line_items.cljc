@@ -1,5 +1,4 @@
-(ns storefront.accessors.line-items
-  (:require [storefront.accessors.products :as products]))
+(ns storefront.accessors.line-items)
 
 (defn service? [{:keys [source]}]
   (= "service" source))
@@ -65,30 +64,3 @@
     :keys [applied-promotions unit-price]}]
   (when line-item
     (= 0 (+ unit-price (->> applied-promotions (keep :amount) (reduce + 0))))))
-
-(defn add-product-title-to-line-item [products line-item]
-  (assoc line-item :product-title (->> line-item
-                                       :sku
-                                       (products/find-product-by-sku-id products)
-                                       :copy/title)))
-
-(defn join-facets-to-line-item [skus facets line-item]
-  (let [sku (get skus (:sku line-item))]
-    (assoc line-item
-           :join/facets
-           (into {} (comp (map
-                           (fn [facet]
-                             (let [facet-slug  (:facet/slug facet)
-                                   facet-value (first (get sku facet-slug))]
-                               [facet-slug (->> facet
-                                                :facet/options
-                                                (filter (fn [option]
-                                                          (= facet-value (:option/slug option))))
-                                                first)])))
-                          (remove (comp nil? second)))
-                 facets))))
-
-(defn prep-for-display [products skus facets line-item]
-  (->> line-item
-       (add-product-title-to-line-item products)
-       (join-facets-to-line-item skus facets)))
