@@ -70,6 +70,9 @@
                          (let [cheapest-sku     (apply min-key :sku/price option-skus)
                                no-price-family? (not (empty? (clojure.set/intersection #{"closures" "360-frontals" "frontals"} (:hair/family product))))
                                option           (merge (dissoc (get options (first option-slug)) :sku/name)
+                                                       ;; HACK [#179259250] Return to if changing cellar base material `lace` to `standard-lace` (Also in storefront.components.picker.picker)
+                                                       (when (= option-slug #{"lace"})
+                                                         {:option/name "Standard Lace"})
                                                        {:price             (if no-price-family?
                                                                              nil
                                                                              (:sku/price cheapest-sku))

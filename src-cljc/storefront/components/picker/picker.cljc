@@ -591,15 +591,16 @@
 
 (defn query
   [data length-guide-image]
-  (let [options              (get-in data catalog.keypaths/detailed-product-options)
-        selected-picker      (get-in data catalog.keypaths/detailed-product-selected-picker)
-        picker-visible?      (get-in data catalog.keypaths/detailed-product-picker-visible?)
-        current-product      (products/current-product data)
-        product-skus         (products/extract-product-skus data current-product)
-        product-sold-out?    (every? (comp not :inventory/in-stock?) product-skus)
-        facets               (facets/by-slug data)
-        selections           (get-in data catalog.keypaths/detailed-product-selections)
-        auxiliary-selections (get-in data catalog.keypaths/detailed-product-auxiliary-selections)]
+  (let [options                (get-in data catalog.keypaths/detailed-product-options)
+        selected-picker        (get-in data catalog.keypaths/detailed-product-selected-picker)
+        picker-visible?        (get-in data catalog.keypaths/detailed-product-picker-visible?)
+        current-product        (products/current-product data)
+        product-skus           (products/extract-product-skus data current-product)
+        product-sold-out?      (every? (comp not :inventory/in-stock?) product-skus)
+        facets                 (facets/by-slug data)
+        selections             (get-in data catalog.keypaths/detailed-product-selections)
+        selected-base-material (get-in facets [:hair/base-material :facet/options (:hair/base-material selections)])
+        auxiliary-selections   (get-in data catalog.keypaths/detailed-product-auxiliary-selections)]
     {:selected-picker            selected-picker
      :picker-visible?            (and options selected-picker picker-visible?)
      :facets                     facets
@@ -610,7 +611,10 @@
      :selected-color             (get-in facets [:hair/color :facet/options (:hair/color selections)])
      :selected-length            (get-in facets [:hair/length :facet/options (:hair/length selections)])
      :selected-auxiliary-lengths (map #(get-in facets [:hair/length :facet/options (:hair/length %)]) auxiliary-selections)
-     :selected-base-material     (get-in facets [:hair/base-material :facet/options (:hair/base-material selections)])
+     ;; HACK [#179259250] Return to if changing cellar base material `lace` to `standard-lace` (Also in catalog.selector.sku)
+     :selected-base-material     (if (= "lace" (:option/slug selected-base-material))
+                                   (merge selected-base-material {:option/name "Standard Lace"})
+                                   selected-base-material)
      :product-sold-out-style     (when product-sold-out? {:class "gray"})
      :sku-quantity               (get-in data keypaths/browse-sku-quantity 1)
      :navigation-event           events/navigate-product-details
