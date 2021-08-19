@@ -23,13 +23,13 @@
 
 (defmethod component :basic basic
   [{:keys [promo]} _ {hide-dt? :hide-dt?}]
-  [:div
-   (merge {:data-test (when-not hide-dt? "promo-banner")
-           :class     "inherit-color center pp5 bg-warm-gray h5 bold"}
-          (when-let [uri (:uri promo)]
-            {:class "inherit-color center pp5 bg-warm-gray h5 bold underline"
-             :href  uri}))
-   (:description promo)])
+  [:div.inherit-color.center.pp5.bg-warm-gray.h5.bold
+   {:data-test (when-not hide-dt? "promo-banner")}
+   (if-let [uri (:uri promo)]
+     [:a.underline.inherit-color
+      {:href  uri}
+      (:description promo)]
+     (:description promo))])
 
 (defn ^:private promotion-to-advertise
   [data]
