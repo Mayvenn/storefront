@@ -19,13 +19,15 @@
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
    [storefront.components.money-formatters :as mf]
+   [storefront.accessors.categories :as cat-accessors]
    [ui.promo-banner :as promo-banner]
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
-   [storefront.request-keys :as request-keys]))
+   [storefront.request-keys :as request-keys]
+   [spice.maps :as maps]))
 
 (defn display-adjustable-line-items
   [line-items skus images update-line-item-requests delete-line-item-requests]
@@ -67,7 +69,7 @@
        [:div.flex.justify-between.mt1
         [:div
          {:data-test (str "line-item-color-" sku-id)}
-         (:color-name line-item)]
+         (-> line-item :hair/color :option/name)]
         [:div.flex.items-center.justify-between
          (if removing?
            [:div.h3 {:style {:width "1.2em"}} ui/spinner]
@@ -192,29 +194,20 @@
            [request-key-prefix request-keys/update-line-item]
            [request-key-prefix request-keys/delete-line-item]])))
 
-(defn add-product-title-and-color-to-line-item [products facets line-item]
-  (merge line-item {:product-title (->> line-item
-                                        :sku
-                                        (products/find-product-by-sku-id products)
-                                        :copy/title)
-                    :color-name    (-> line-item
-                                       :variant-attrs
-                                       :color
-                                       (facets/get-color facets)
-                                       :option/name)}))
 
 (defn full-cart-query [data]
   (let [order       (get-in data keypaths/order)
         products    (get-in data keypaths/v2-products)
+        skus        (get-in data keypaths/v2-skus)
         images      (get-in data keypaths/v2-images)
         facets      (get-in data keypaths/v2-facets)
-        line-items  (map (partial add-product-title-and-color-to-line-item products facets)
+        line-items  (map (partial line-items/prep-for-display skus products facets)
                          (orders/product-items order))
         variant-ids (map :id line-items)]
     {:suggestions               (suggestions/query data)
      :order                     order
      :line-items                line-items
-     :skus                      (get-in data keypaths/v2-skus)
+     :skus                      skus
      :products                  products
      :images                    images
      :promo-banner              (when (zero? (orders/product-quantity order))

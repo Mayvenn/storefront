@@ -151,7 +151,7 @@
 (defn ^:private category->allowed-query-params
   [{:keys [selector/electives]}]
   (->> electives
-       (select-keys (set/map-invert accessors.categories/query-params->facet-slugs))
+       (select-keys facets/slug>query-param)
        vals
        (map name)
        set))
@@ -184,7 +184,7 @@
                                    (:page.meta/description-template category))
         selected-facet-string (when (and indexable? (seq selected-options))
                                 (->> selected-options
-                                     (maps/map-keys (comp accessors.categories/query-params->facet-slugs keyword str))
+                                     (maps/map-keys (comp facets/query-param>slug keyword str))
                                      (mapv (partial facet-option->option-name facets))
                                      (string/join " ")))
 

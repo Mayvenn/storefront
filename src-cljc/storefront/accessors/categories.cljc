@@ -5,21 +5,10 @@
             [clojure.string :as string]
             clojure.set
             [spice.maps :as maps]
+            [catalog.facets :as facets]
             [storefront.keypaths :as keypaths]))
 
 (def query-param-separator "~")
-
-(def query-params->facet-slugs
-  {:grade         :hair/grade
-   :family        :hair/family
-   :origin        :hair/origin
-   :weight        :hair/weight
-   :texture       :hair/texture
-   :base-material :hair/base-material
-   :color         :hair/color
-   :length        :hair/length
-   :color.process :hair/color.process
-   :style         :wig/trait})
 
 (defn sort-query-params
   [params]
@@ -36,18 +25,15 @@
                       (get ordering key2 100))))
           params)))
 
-(def ^:private facet-slugs->query-params
-  (clojure.set/map-invert query-params->facet-slugs))
-
 (defn category-selections->query-params
   [category-selections]
   (->> category-selections
        (maps/map-values (fn [s] (string/join query-param-separator s)))
-       (maps/map-keys (comp (fnil name "") facet-slugs->query-params))
+       (maps/map-keys (comp (fnil name "") facets/slug>query-param))
        sort-query-params))
 
 (defn query-params->selector-electives [query-params]
-  (->> (maps/select-rename-keys query-params query-params->facet-slugs)
+  (->> (maps/select-rename-keys query-params facets/query-param>slug)
        (maps/map-values #(set (.split (str %) query-param-separator)))))
 
 (defn id->category [id categories]

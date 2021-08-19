@@ -430,25 +430,6 @@
            :cart-item-square-thumbnail/ucare-id      (->> sku (catalog-images/image images "cart") :ucare/id)})]
     cart-items))
 
-(defn add-product-title-and-color-to-line-item [skus products facets line-item]
-  (let [sku (get skus (:sku line-item))]
-    (merge line-item {:product-title (->> line-item
-                                          :sku
-                                          (products/find-product-by-sku-id products)
-                                          :copy/title)
-                      ;; This is probably not where this should go, but gotta go fast
-                      :join/facets        (into {} (comp (map
-                                                          (fn [facet]
-                                                            (let [facet-slug  (:facet/slug facet)
-                                                                  facet-value (first (get sku facet-slug))]
-                                                              [facet-slug (->> facet
-                                                                               :facet/options
-                                                                               (filter (fn [option]
-                                                                                         (= facet-value (:option/slug option))))
-                                                                               first)])))
-                                                         (remove (comp nil? second)))
-                                                facets)})))
-
 (defn query
   [data]
   (let [order                                 (get-in data keypaths/order)
@@ -462,7 +443,7 @@
         skus                                  (get-in data keypaths/v2-skus)
         products                              (get-in data keypaths/v2-products)
         facets                                (get-in data keypaths/v2-facets)
-        physical-line-items                   (map (partial add-product-title-and-color-to-line-item skus products facets)
+        physical-line-items                   (map (partial line-items/prep-for-display skus products facets)
                                                    (orders/product-items order))
         addon-service-line-items              (->> order
                                                    orders/service-line-items

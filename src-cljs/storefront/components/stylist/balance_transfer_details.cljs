@@ -35,10 +35,12 @@
 
 (defn ^:private display-line-item
   ([line-item] (display-line-item line-item true))
-  ([{:keys [product-title color-name unit-price quantity sku id legacy/variant-id variant-attrs]} show-price?]
+  ([{:keys [product-title unit-price quantity sku id legacy/variant-id variant-attrs]
+     :join/keys [facets]} show-price?]
    [:div.h6.pb2 {:key (or variant-id id)}
     [:div.medium {:data-test (str "line-item-title-" sku)} product-title]
-    [:div {:data-test (str "line-item-color-" sku)} color-name]
+    [:div {:data-test (str "line-item-color-" sku)} (-> facets :hair/color :option/name)]
+    [:div {:data-test (str "line-item-base-material-" sku)} (-> facets :hair/base-material :option/name)]
     (when show-price?
       [:div {:data-test (str "line-item-price-ea-" sku)} "Price: " (mf/as-money unit-price) " ea"])
     [:div
@@ -328,7 +330,7 @@
        (let [line-items (->> (:order (:data balance-transfer))
                              orders/first-commissioned-shipment
                              orders/product-items-for-shipment)]
-         {:line-items (mapv (partial checkout.classic-cart/add-product-title-and-color-to-line-item
+         {:line-items (mapv (partial accessors.line-items/prep-for-display
                                      (get-in app-state keypaths/v2-products)
                                      (get-in app-state keypaths/v2-facets))
                             line-items)})))))
