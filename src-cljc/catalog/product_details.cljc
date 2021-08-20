@@ -299,25 +299,31 @@
                                                (= "retail-location" (get-in app-state keypaths/store-experience)))
         selected-sku                       (get-in app-state catalog.keypaths/detailed-product-selected-sku)
         selections                         (get-in app-state catalog.keypaths/detailed-look-selections)
-        sku-price                          (:sku/price selected-sku)
         quadpay-loaded?                    (get-in app-state keypaths/loaded-quadpay)
         sku-family                         (-> selected-sku :hair/family first)
         mayvenn-install-incentive-families #{"bundles" "closures" "frontals" "360-frontals"}
         selected-skus                      (->> (get-in app-state catalog.keypaths/detailed-product-auxiliary-selections)
-                                                         (filterv not-empty)
-                                                         (mapv
-                                                          #(determine-sku-from-selections app-state (merge selections %)))
-                                                         (concat [selected-sku]))
+                                                (filterv not-empty)
+                                                (mapv
+                                                 #(determine-sku-from-selections app-state (merge selections %)))
+                                                (concat [selected-sku]))
+        sku-price                          (->> selected-skus
+                                                (mapv :sku/price)
+                                                (filterv identity)
+                                                (apply +))
         sku-id->quantity                   (into {}
                                                  (map (fn [[sku-id skus]] [sku-id (count skus)])
-                                                      (group-by :catalog/sku-id selected-skus)))]
+                                                      (group-by :catalog/sku-id selected-skus)))
+        multiple-skus                      (and (experiments/multiple-lengths-pdp? app-state)
+                                                (< 1 (count selected-skus)))]
     (merge
      {:cta/id    "add-to-cart"
-      :cta/label "Add to Bag"
+      :cta/label (if multiple-skus
+                   "Add Product to Bag"
+                   "Add to Bag")
 
       ;; Fork here to use bulk add to cart
-      :cta/target                  (if (and (experiments/multiple-lengths-pdp? app-state)
-                                            (< 1 (count selected-skus)))
+      :cta/target                  (if multiple-skus
                                      [events/control-bulk-add-skus-to-bag
                                       {:sku-id->quantity sku-id->quantity}]
                                      [events/control-add-sku-to-bag
