@@ -278,25 +278,54 @@
      (stringer/track-event "length_guide_link_pressed"
                            {:location location})))
 
+(defn first-when-only [coll]
+  (when (= 1 (count coll))
+    (first coll)))
+
+(defn determine-sku-from-selections
+  [app-state new-selections]
+  (let [product-id     (get-in app-state catalog.keypaths/detailed-product-id)
+        product        (products/product-by-id app-state product-id)
+        product-skus   (products/extract-product-skus app-state product)
+        old-selections (get-in app-state catalog.keypaths/detailed-product-selections)]
+    (->> product-skus
+         (selector/match-all {}
+                             (merge old-selections new-selections))
+         first-when-only)))
+
 (defn add-to-cart-query
-  [app-state
-   selected-sku]
+  [app-state]
   (let [shop?                              (or (= "shop" (get-in app-state keypaths/store-slug))
                                                (= "retail-location" (get-in app-state keypaths/store-experience)))
+        selected-sku                       (get-in app-state catalog.keypaths/detailed-product-selected-sku)
+        selections                         (get-in app-state catalog.keypaths/detailed-look-selections)
         sku-price                          (:sku/price selected-sku)
         quadpay-loaded?                    (get-in app-state keypaths/loaded-quadpay)
         sku-family                         (-> selected-sku :hair/family first)
-        mayvenn-install-incentive-families #{"bundles" "closures" "frontals" "360-frontals"}]
+        mayvenn-install-incentive-families #{"bundles" "closures" "frontals" "360-frontals"}
+        selected-skus                      (->> (get-in app-state catalog.keypaths/detailed-product-auxiliary-selections)
+                                                         (filterv not-empty)
+                                                         (mapv
+                                                          #(determine-sku-from-selections app-state (merge selections %)))
+                                                         (concat [selected-sku]))
+        sku-id->quantity                   (into {}
+                                                 (map (fn [[sku-id skus]] [sku-id (count skus)])
+                                                      (group-by :catalog/sku-id selected-skus)))]
     (merge
-     {:cta/id                      "add-to-cart"
-      :cta/label                   "Add to Bag"
+     {:cta/id    "add-to-cart"
+      :cta/label "Add to Bag"
 
       ;; Fork here to use bulk add to cart
-      :cta/target                  [events/control-add-sku-to-bag
-                                    {:sku      selected-sku
-                                     :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
-      :cta/spinning?               (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-      :cta/disabled?               (not (:inventory/in-stock? selected-sku))
+      :cta/target                  (if (and (experiments/multiple-lengths-pdp? app-state)
+                                            (< 1 (count selected-skus)))
+                                     [events/control-bulk-add-skus-to-bag
+                                      {:sku-id->quantity sku-id->quantity}]
+                                     [events/control-add-sku-to-bag
+                                      {:sku      selected-sku
+                                       :quantity (get-in app-state keypaths/browse-sku-quantity 1)}])
+      :cta/spinning?               (or (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+                                       (utils/requesting? app-state (conj request-keys/add-to-bag (set (keys sku-id->quantity)))))
+      :cta/disabled?               (some #(not (:inventory/in-stock? %)) selected-skus)
       :add-to-cart.quadpay/price   sku-price
       :add-to-cart.quadpay/loaded? quadpay-loaded?}
      (when (and shop?
@@ -320,13 +349,14 @@
       :content content}
      (select-keys section [:link/content :link/target :link/id]))))
 
-(defn query [data selected-sku]
+(defn query [data]
   (let [selections (get-in data catalog.keypaths/detailed-product-selections)
         product    (products/current-product data)
 
         product-skus       (products/extract-product-skus data product)
         images-catalog     (get-in data keypaths/v2-images)
         facets             (facets/by-slug data)
+        selected-sku       (get-in data catalog.keypaths/detailed-product-selected-sku)
         carousel-images    (find-carousel-images product product-skus images-catalog
                                                  ;;TODO These selection election keys should not be hard coded
                                                  (select-keys selections [:hair/color
@@ -476,11 +506,10 @@
 
 (defn ^:export built-component
   [state opts]
-  (let [selected-sku (get-in state catalog.keypaths/detailed-product-selected-sku)]
+  (let []
     (component/build component
-                     (merge (query state selected-sku)
-                            {:add-to-cart (add-to-cart-query state
-                                                             selected-sku)
+                     (merge (query state)
+                            {:add-to-cart (add-to-cart-query state)
                              :live-help   (when (live-help/kustomer-started? state)
                                             (live-help/banner-query "product-detail-page-banner"))})
                      opts)))
@@ -504,21 +533,6 @@
        (if (auth/permitted-product? app-state current-product)
          (review-hooks/insert-reviews)
          (effects/redirect events/navigate-home)))))
-
-(defn first-when-only [coll]
-  (when (= 1 (count coll))
-    (first coll)))
-
-(defn determine-sku-from-selections
-  [app-state new-selections]
-  (let [product-id     (get-in app-state catalog.keypaths/detailed-product-id)
-        product        (products/product-by-id app-state product-id)
-        product-skus   (products/extract-product-skus app-state product)
-        old-selections (get-in app-state catalog.keypaths/detailed-product-selections)]
-    (->> product-skus
-         (selector/match-all {}
-                             (merge old-selections new-selections))
-         first-when-only)))
 
 (defn generate-product-options
   [product-id app-state]
@@ -705,6 +719,26 @@
                                 :service-swap? false
                                 :quantity      quantity}))))
 
+(defmethod effects/perform-effects events/control-bulk-add-skus-to-bag
+  [_ _ {:keys [sku-id->quantity]} _ app-state]
+  #?(:cljs
+     (let [nav-event          (get-in app-state keypaths/navigation-event)
+           cart-interstitial? (= :shop (sites/determine-site app-state))]
+       (api/add-skus-to-bag (get-in app-state keypaths/session-id)
+                            {:stylist-id       (get-in app-state keypaths/store-stylist-id)
+                             :number           (get-in app-state keypaths/order-number)
+                             :token            (get-in app-state keypaths/order-token)
+                             :user-id          (get-in app-state keypaths/user-id)
+                             :user-token       (get-in app-state keypaths/user-token)
+                             :sku-id->quantity sku-id->quantity}
+                            #(do
+                               (messages/handle-message events/api-success-add-multiple-skus-to-bag
+                                                        {:order         (:order %)})
+                               (when (not (= events/navigate-cart nav-event))
+                                 (history/enqueue-navigate (if cart-interstitial?
+                                                             events/navigate-added-to-cart
+                                                             events/navigate-cart))))))))
+
 ;; TODO(corey) Move this to cart
 (defmethod effects/perform-effects events/add-sku-to-bag
   [dispatch event {:keys [sku quantity stay-on-page? service-swap?] :as args} _ app-state]
@@ -761,7 +795,9 @@
 
 (defmethod transitions/transition-state events/control-product-detail-picker-option-auxiliary-select
   [_ event {:keys [selection value auxiliary-index]} app-state]
-  (update-in app-state (conj catalog.keypaths/detailed-product-auxiliary-selections auxiliary-index) merge {selection value}))
+  (if (empty? value)
+    (update-in app-state (conj catalog.keypaths/detailed-product-auxiliary-selections auxiliary-index) empty)
+    (update-in app-state (conj catalog.keypaths/detailed-product-auxiliary-selections auxiliary-index) merge {selection value})))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-add
   [_ _ {} state]

@@ -915,6 +915,11 @@
   (messages/handle-message events/save-order {:order order})
   (messages/handle-later events/added-to-bag))
 
+
+(defmethod effects/perform-effects events/api-success-add-multiple-skus-to-bag [dispatch event {:keys [order]} _ app-state]
+  (messages/handle-message events/save-order {:order order})
+  (messages/handle-later events/added-to-bag))
+
 (defmethod effects/perform-effects events/added-to-bag [_ _ _ _ app-state]
   (when-let [el (.querySelector js/document "[data-ref=cart-button]")]
     (scroll/scroll-to-elem el)))

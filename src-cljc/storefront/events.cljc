@@ -461,7 +461,9 @@
 (defpath control-wigs-customization-dismiss)
 
 (defpath add-sku-to-bag)
+(defpath api-success-add-multiple-skus-to-bag)
 (defpath bulk-add-sku-to-bag)
+(defpath control-bulk-add-skus-to-bag)
 (defpath add-servicing-stylist-and-sku)
 
 (defpath cart-swap-popup-show)
