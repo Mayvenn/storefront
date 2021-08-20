@@ -184,20 +184,20 @@
             "Choose Length (optional)")]
        (invisible-select
         {:on-change #(messages/handle-message events/control-product-detail-picker-option-auxiliary-select
-                                              {:auxiliary-index  auxiliary-index
-                                               :selection        :hair/length
-                                               :value            (.-value (.-target %))})
-         :value     (:hair/length auxiliary-selection)
+                                              {:auxiliary-index auxiliary-index
+                                               :selection       :hair/length
+                                               :value           (.-value (.-target %))})
+         :value     (or (:hair/length auxiliary-selection) false)
          :options   (concat
-                     (when auxiliary-selection
+                     (if auxiliary-selection
                        [[:option {:value ""
-                                  :placeholder "test"
-                                  :key   (str "length-nil")} "Remove Length"]])
-                     (map (fn [option]
-                            [:option {:value (:option/slug option)
-                                      :key   (str "length-" (:option/slug option))}
-                             (:option/name option)])
-                          (:hair/length options)))}))))])
+                                  :key   (str "length-nil")} "Remove Length"]]
+                       [[:option]])
+                     (mapv (fn [option]
+                             [:option {:value (:option/slug option)
+                                       :key   (str "length-" (:option/slug option))}
+                              (:option/name option)])
+                           (:hair/length options)))}))))])
 
 (defn mobile-length-and-quantity-picker-rows
   [{:keys [selected-length product-sold-out-style sku-quantity]}]
