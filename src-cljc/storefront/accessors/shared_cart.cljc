@@ -3,10 +3,6 @@
             [spice.maps :as maps]
             [api.orders :as orders]))
 
-(defn base-service?
-  [line-item]
-  (-> line-item :service/type first #{"base"} boolean))
-
 (defn discountable?
   [line-item]
   (-> line-item :promo.mayvenn-install/discountable first true?))

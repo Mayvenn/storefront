@@ -26,21 +26,12 @@
   (contains? (set (:promo.mayvenn-install/discountable product))
              true))
 
-(defn wig-construction-service?
-  [product]
-  (= #{"construction"} (:service/category product)))
-
 (defn service? [product]
   (seq (:service/type product)))
 
 (defn hair? [product]
   (contains? (set (:catalog/department product))
              "hair"))
-
-(defn base-service?
-  [product]
-  (contains? (set (:service/type product))
-             "base"))
 
 (defn product->faq-id [product]
   (case (:hair/family product)
