@@ -201,7 +201,7 @@
         skus        (get-in data keypaths/v2-skus)
         images      (get-in data keypaths/v2-images)
         facets      (get-in data keypaths/v2-facets)
-        line-items  (map (partial line-items/prep-for-display skus products facets)
+        line-items  (map (partial line-items/prep-for-display products skus facets)
                          (orders/product-items order))
         variant-ids (map :id line-items)]
     {:suggestions               (suggestions/query data)

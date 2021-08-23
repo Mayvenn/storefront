@@ -443,7 +443,7 @@
         skus                                  (get-in data keypaths/v2-skus)
         products                              (get-in data keypaths/v2-products)
         facets                                (get-in data keypaths/v2-facets)
-        physical-line-items                   (map (partial line-items/prep-for-display skus products facets)
+        physical-line-items                   (map (partial line-items/prep-for-display products skus facets)
                                                    (orders/product-items order))
         addon-service-line-items              (->> order
                                                    orders/service-line-items
