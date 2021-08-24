@@ -11,7 +11,8 @@
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.hooks.stringer :as stringer]
-                       [storefront.hooks.seo :as seo]])
+                       [storefront.hooks.seo :as seo]
+                       [storefront.trackings :as trackings]])
             [api.catalog :refer [select]]
             api.current
             api.orders
@@ -49,6 +50,7 @@
             [storefront.platform.messages :as messages]
             [storefront.platform.reviews :as review-component]
             [storefront.request-keys :as request-keys]
+            [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
             storefront.ugc
             [spice.core :as spice]))
