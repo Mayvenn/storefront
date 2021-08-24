@@ -311,7 +311,7 @@
   (let [shop?                              (or (= "shop" (get-in app-state keypaths/store-slug))
                                                (= "retail-location" (get-in app-state keypaths/store-experience)))
         selected-sku                       (get-in app-state catalog.keypaths/detailed-product-selected-sku)
-        selections                         (get-in app-state catalog.keypaths/detailed-look-selections)
+        selections                         (get-in app-state catalog.keypaths/detailed-product-selections)
         quadpay-loaded?                    (get-in app-state keypaths/loaded-quadpay)
         sku-family                         (-> selected-sku :hair/family first)
         mayvenn-install-incentive-families #{"bundles" "closures" "frontals" "360-frontals"}
