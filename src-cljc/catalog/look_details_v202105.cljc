@@ -421,7 +421,7 @@
    [:div.title-1.proxima.bold.my1 secondary]])
 
 (defn ^:private look-details-body
-  [{:keys             [spinning?
+  [{:keys       [spinning?
                  picker-modal
                  color-picker
                  length-pickers
