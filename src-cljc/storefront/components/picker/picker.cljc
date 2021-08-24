@@ -154,51 +154,6 @@
                            quantity])
                         (range 1 11))})))]])
 
-(defn desktop-length-picker-rows
-  [{:keys [product-sold-out-style selected-length selections options selected-auxiliary-lengths navigation-event]}]
-  [:div.hide-on-mb.items-center.border-top.border-cool-gray.border-width-2
-   (field
-    (desktop-dropdown
-     [:div.proxima.title-3.shout "Length"]
-     [:span.medium
-      product-sold-out-style
-      (:option/name selected-length)]
-     (invisible-select
-      {:on-change #(messages/handle-message events/control-product-detail-picker-option-select
-                                            {:selection        :hair/length
-                                             :navigation-event navigation-event
-                                             :value            (.-value (.-target %))})
-       :value     (:hair/length selections)
-       :options   (map (fn [option]
-                         [:option {:value (:option/slug option)
-                                   :key   (str "length-" (:option/slug option))}
-                          (:option/name option)])
-                       (:hair/length options))})))
-   (for [[auxiliary-index auxiliary-selection] (zipmap (range) selected-auxiliary-lengths)]
-     (field
-      (desktop-dropdown
-       [:div.proxima.title-3.shout.bg-pink "Length"]
-       [:span.medium
-        product-sold-out-style
-        (or (seq (:option/name auxiliary-selection))
-            "Choose Length (optional)")]
-       (invisible-select
-        {:on-change #(messages/handle-message events/control-product-detail-picker-option-auxiliary-select
-                                              {:auxiliary-index auxiliary-index
-                                               :selection       :hair/length
-                                               :value           (.-value (.-target %))})
-         :value     (or (:hair/length auxiliary-selection) false)
-         :options   (concat
-                     (if auxiliary-selection
-                       [[:option {:value ""
-                                  :key   (str "length-nil")} "Remove Length"]]
-                       [[:option]])
-                     (mapv (fn [option]
-                             [:option {:value (:option/slug option)
-                                       :key   (str "length-" (:option/slug option))}
-                              (:option/name option)])
-                           (:hair/length options)))}))))])
-
 (defn mobile-length-and-quantity-picker-rows
   [{:keys [selected-length product-sold-out-style sku-quantity]}]
   [:div.flex.hide-on-tb-dt.items-center.border-top.border-cool-gray.border-width-2
@@ -226,40 +181,6 @@
         {:data-test (str "picker-selected-quantity-" sku-quantity)}
         product-sold-out-style)
        sku-quantity]))]])
-
-;; TODO on second thought, split this into two parts?
-(defn mobile-length-picker-rows
-  [{:keys [selected-length product-sold-out-style selected-auxiliary-lengths]}]
-  [:div.hide-on-tb-dt.items-center.border-top.border-cool-gray.border-width-2
-   (field
-    (merge
-     {:class     " py2"
-      :data-test "picker-length"}
-     (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/length}))
-    (mobile-dropdown
-     [:div.h8.proxima.title-3.shout "Length"]
-     [:span.medium.canela.content-2
-      (merge
-       {:data-test (str "picker-selected-length-" (:option/slug selected-length))}
-       product-sold-out-style)
-      (:option/name selected-length)]))
-   (for [[auxiliary-index auxiliary-selection] (zipmap (range) selected-auxiliary-lengths)]
-     (field
-      (merge
-       {:class     " py2 bg-yellow"
-        :data-test "picker-length"
-        :key (str "picker-length-" auxiliary-index)}
-       (utils/fake-href events/control-product-detail-picker-open {:facet-slug      :hair/length
-                                                                   :auxiliary-index auxiliary-index}))
-      (mobile-dropdown
-       [:div.h8.proxima.title-3.shout "Length"]
-       [:span.medium.canela.content-2
-        (merge
-         {:data-test (str "picker-selected-length-" (:option/slug auxiliary-selection))}
-         product-sold-out-style)
-        (if auxiliary-selection
-          (:option/name auxiliary-selection)
-          "Choose Length (optional)")])))])
 
 (defn desktop-color-picker-row
   [{:keys [navigation-event selected-color selections options product-sold-out-style]}]
@@ -335,7 +256,7 @@
 ;; The main panel, containing the faces of all pickers
 (defn picker-rows
   "individual elements as in: https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b21aa0352b1d5e31a32ac53"
-  [{:as data :keys [multiple-lengths-pdp?]}]
+  [data]
   [:div.mxn2.mt2
    [:div.px3
     (mobile-color-picker-row data)
@@ -345,12 +266,9 @@
       (mobile-base-material-picker-row data)
       (desktop-base-material-picker-row data)])
    [:div.px3
-    (if multiple-lengths-pdp?
-      (desktop-length-picker-rows data)
-      (desktop-length-and-quantity-picker-rows data))
-    (if multiple-lengths-pdp?
-      (mobile-length-picker-rows data)
-      (mobile-length-and-quantity-picker-rows data))]])
+    [:div
+     (desktop-length-and-quantity-picker-rows data)
+     (mobile-length-and-quantity-picker-rows data)]]])
 
 (defn select-and-close [close-event select-event options]
   (messages/handle-message select-event options)
@@ -413,14 +331,13 @@
                                   "9e2a48b3-9811-46d2-840b-31c9f85670ad")]]])])])
 
 (defn simple-option-drop-down-item
-  [{:keys [item key data-test primary-label auxiliary-index secondary-label checked? selected-picker navigation-event close-event select-event]}]
+  [{:keys [item key data-test primary-label secondary-label checked? selected-picker navigation-event close-event select-event]}]
   [:div {:key       key
          :data-test data-test}
    (ui/option {:height   "4em"
                :key      (str key "-option")
                :href     "#"
                :on-click #(select-and-close close-event select-event (merge {:selection        selected-picker
-                                                                             :auxiliary-index  auxiliary-index
                                                                              :value            (:option/slug item)}
                                                                             (when navigation-event
                                                                               {:navigation-event navigation-event})))}
@@ -456,7 +373,7 @@
 
 (defn picker-dialog
   "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
-  [{:keys [title items cell-component-fn wrap? unselector auxiliary-index]
+  [{:keys [title items cell-component-fn wrap?]
     :as data}]
   [:div.hide-on-tb-dt.z5.fixed.overlay.overflow-auto.bg-cool-gray
    {:key (str "picker-dialog-" title) :data-test "picker-dialog"}
@@ -477,18 +394,7 @@
    [:div.py3.px1 ;; body
     (when wrap?
       {:class "flex flex-wrap"})
-    (concat
-     (when-let [{:keys [id label selected-picker]} unselector]
-       [(simple-option-drop-down-item
-         {:key              (str "length-" id)
-          :data-test        (str "picker-length-" id)
-          :primary-label    label
-          :checked?         false
-          :selected-picker  selected-picker
-          :auxiliary-index  auxiliary-index
-          :close-event      events/control-product-detail-picker-close
-          :select-event     events/control-product-detail-picker-option-auxiliary-select})])
-     (mapv cell-component-fn items))]])
+    (mapv cell-component-fn items)]])
 
 (defcomponent component
   [{:keys [navigation-event
@@ -498,9 +404,6 @@
            options
            sku-quantity
            picker-visible?
-           auxiliary-selections
-           auxiliary-index
-           multiple-lengths-pdp?
            length-guide-image]
     :as   data} owner _]
   [:div
@@ -542,38 +445,26 @@
                                              :title-cta/target  [events/popup-show-length-guide {:length-guide-image length-guide-image
                                                                                                  :location           "length-picker"}]
                                              :title-cta/primary "Length Guide"})))
-      :hair/length (let [auxiliary? (boolean auxiliary-index)]
-                     (picker-dialog (merge
-                                     {:title             (get-in facets [selected-picker :facet/name])
-                                      :items             (sort-by :option/order (get options selected-picker))
-                                      :auxiliary-index   auxiliary-index
-                                      :cell-component-fn (fn [item]
-                                                           (simple-option-drop-down-item
-                                                            {:key              (str "length-" (:option/name item))
-                                                             :data-test        (str "picker-length-" (:option/slug item))
-                                                             :primary-label    (:option/name item)
-                                                             :navigation-event (when-not auxiliary?
-                                                                                 navigation-event)
-                                                             :checked?         (= (if auxiliary?
-                                                                                    (get-in auxiliary-selections [auxiliary-index :hair/length])
-                                                                                    (:hair/length selections))
-                                                                                  (:option/slug item))
-                                                             :selected-picker  selected-picker
-                                                             :item             item
-                                                             :auxiliary-index  auxiliary-index ; This feels wrong
-                                                             :close-event      events/control-product-detail-picker-close
-                                                             :select-event     (if auxiliary?
-                                                                                 events/control-product-detail-picker-option-auxiliary-select
-                                                                                 events/control-product-detail-picker-option-select)}))}
-                                     (when (and auxiliary? (seq (get-in auxiliary-selections [auxiliary-index :hair/length])))
-                                       {:unselector {:id "unselector"
-                                                     :selected-picker  selected-picker
-                                                     :label "Remove length"}})
-                                     (when length-guide-image
-                                       {:title-cta/id      "length-picker-length-guide"
-                                        :title-cta/target  [events/popup-show-length-guide {:length-guide-image length-guide-image
-                                                                                            :location           "length-picker"}]
-                                        :title-cta/primary "Length Guide"}))))
+      :hair/length (picker-dialog (merge
+                                   {:title             (get-in facets [selected-picker :facet/name])
+                                    :items             (sort-by :option/order (get options selected-picker))
+                                    :cell-component-fn (fn [item]
+                                                         (simple-option-drop-down-item
+                                                          {:key              (str "length-" (:option/name item))
+                                                           :data-test        (str "picker-length-" (:option/slug item))
+                                                           :primary-label    (:option/name item)
+                                                           :navigation-event navigation-event
+                                                           :checked?         (= (:hair/length selections)
+                                                                                (:option/slug item))
+                                                           :selected-picker  selected-picker
+                                                           :item             item
+                                                           :close-event      events/control-product-detail-picker-close
+                                                           :select-event     events/control-product-detail-picker-option-select}))}
+                                   (when length-guide-image
+                                     {:title-cta/id      "length-picker-length-guide"
+                                      :title-cta/target  [events/popup-show-length-guide {:length-guide-image length-guide-image
+                                                                                          :location           "length-picker"}]
+                                      :title-cta/primary "Length Guide"})))
       :item/quantity (picker-dialog {:title             "Quantity"
                                      :items             (range 1 11)
                                      :cell-component-fn (fn [quantity]
@@ -591,29 +482,26 @@
 
 (defn query
   [data length-guide-image]
-  (let [options              (get-in data catalog.keypaths/detailed-product-options)
-        selected-picker      (get-in data catalog.keypaths/detailed-product-selected-picker)
-        picker-visible?      (get-in data catalog.keypaths/detailed-product-picker-visible?)
-        current-product      (products/current-product data)
-        product-skus         (products/extract-product-skus data current-product)
-        product-sold-out?    (every? (comp not :inventory/in-stock?) product-skus)
-        facets               (facets/by-slug data)
-        selections           (get-in data catalog.keypaths/detailed-product-selections)
-        auxiliary-selections (get-in data catalog.keypaths/detailed-product-auxiliary-selections)]
-    {:selected-picker            selected-picker
-     :picker-visible?            (and options selected-picker picker-visible?)
-     :facets                     facets
-     :selections                 selections
-     :auxiliary-selections       auxiliary-selections
-     :options                    options
-     :auxiliary-index            (get-in data catalog.keypaths/detailed-product-auxiliary-index)
-     :selected-color             (get-in facets [:hair/color :facet/options (:hair/color selections)])
-     :selected-length            (get-in facets [:hair/length :facet/options (:hair/length selections)])
-     :selected-auxiliary-lengths (map #(get-in facets [:hair/length :facet/options (:hair/length %)]) auxiliary-selections)
-     :selected-base-material     (get-in facets [:hair/base-material :facet/options (:hair/base-material selections)])
-     :product-sold-out-style     (when product-sold-out? {:class "gray"})
-     :sku-quantity               (get-in data keypaths/browse-sku-quantity 1)
-     :navigation-event           events/navigate-product-details
-     :length-guide-image         length-guide-image
-     :multiple-lengths-pdp?      (and (-> current-product :hair/family first (= "bundles"))
+  (let [options           (get-in data catalog.keypaths/detailed-product-options)
+        selected-picker   (get-in data catalog.keypaths/detailed-product-selected-picker)
+        picker-visible?   (get-in data catalog.keypaths/detailed-product-picker-visible?)
+        current-product   (products/current-product data)
+        product-skus      (products/extract-product-skus data current-product)
+        product-sold-out? (every? (comp not :inventory/in-stock?) product-skus)
+        facets            (facets/by-slug data)
+        selections        (get-in data catalog.keypaths/detailed-product-selections)
+        sold-out-style    (when product-sold-out? {:class "gray"})] ; rethink "sold out"
+    {:selected-picker        selected-picker
+     :picker-visible?        (and options selected-picker picker-visible?)
+     :facets                 facets
+     :selections             selections
+     :options                options
+     :selected-length        (get-in facets [:hair/length :facet/options (:hair/length selections)])
+     :selected-color         (get-in facets [:hair/color :facet/options (:hair/color selections)])
+     :selected-base-material (get-in facets [:hair/base-material :facet/options (:hair/base-material selections)])
+     :product-sold-out-style sold-out-style
+     :sku-quantity           (get-in data keypaths/browse-sku-quantity 1)
+     :navigation-event       events/navigate-product-details
+     :length-guide-image     length-guide-image
+     :multiple-lengths-pdp?  (and (-> current-product :hair/family first (= "bundles"))
                                       (experiments/multiple-lengths-pdp? data))}))

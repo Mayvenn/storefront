@@ -11,9 +11,8 @@
                        [storefront.hooks.facebook-analytics :as facebook-analytics]
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.hooks.stringer :as stringer]
-                       [storefront.hooks.seo :as seo]
-                       [storefront.trackings :as trackings]])
-            [api.catalog :refer [select ?cart-product-image]]
+                       [storefront.hooks.seo :as seo]])
+            [api.catalog :refer [select]]
             api.current
             api.orders
             api.products
@@ -28,7 +27,7 @@
             [homepage.ui.faq :as faq]
             [mayvenn.live-help.core :as live-help]
             [mayvenn.visual.lib.call-out-box :as call-out-box]
-            [mayvenn.visual.tools :refer [with]]
+            [mayvenn.visual.tools :refer [with within]]
             [mayvenn.visual.ui.titles :as titles]
             [spice.selector :as selector]
             [storefront.accessors.contentful :as contentful]
@@ -36,10 +35,10 @@
             [storefront.accessors.images :as images]
             [storefront.accessors.products :as accessors.products]
             [storefront.accessors.sites :as sites]
-            [storefront.accessors.skus :as skus]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
             [storefront.components.picker.picker :as picker]
+            [storefront.components.picker.picker-two :as picker-two]
             [storefront.components.tabbed-information :as tabbed-information]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -50,11 +49,8 @@
             [storefront.platform.messages :as messages]
             [storefront.platform.reviews :as review-component]
             [storefront.request-keys :as request-keys]
-            [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
             storefront.ugc
-
-            [spice.maps :as maps]
             [spice.core :as spice]))
 
 (defn page [wide-left wide-right-and-narrow]
@@ -165,7 +161,22 @@
               [:div (carousel carousel-images product)])]
             (component/build product-summary-organism data)
             [:div.px2
-             (component/build picker/component picker-data opts)
+             (if (and (-> product :hair/family first (= "bundles"))
+                      (experiments/multiple-lengths-pdp? data))
+               [:div.bg-refresh-gray
+                [:div.px3.my4
+                 [:div.proxima.title-3.shout "Color"]
+                 (picker-two/component (with :color.picker data))
+
+                 ;;TODO: material picker row?
+
+                 [:div.proxima.title-3.shout "Lengths"]
+                 [:div
+                  (picker-two/component (with :length-main.picker data))
+                  (for [auxiliary-data (:queries (with :length-auxiliary.picker data))]
+                    (picker-two/component auxiliary-data))]]]
+
+                 (component/build picker/component picker-data opts))
              (let [{:keys [id event]} (with :add-auxiliary data)]
                (when (and id multiple-lengths-pdp?)
                  [:div.center.py1 (ui/button-medium-underline-primary (merge
@@ -355,33 +366,102 @@
       :content content}
      (select-keys section [:link/content :link/target :link/id]))))
 
-(defn query [data]
-  (let [selections (get-in data catalog.keypaths/detailed-product-selections)
-        product    (products/current-product data)
+(defn ^:private picker-query
+  [{:keys [facets selections options auxiliary-selections]}]
+  (let [selected-color             (get-in facets [:hair/color :facet/options (:hair/color selections)])
+        selected-auxiliary-lengths (map #(get-in facets [:hair/length :facet/options (:hair/length %)]) auxiliary-selections)
+        image-src                  (->> options
+                                        :hair/color
+                                        (filter #(= (:option/slug selected-color) (:option/slug %)) )
+                                        first
+                                        :option/sku-swatch)]
+    (merge
+     (within :color.picker (let [{:option/keys [rectangle-swatch name slug]}
+                                 (get-in facets [:hair/color
+                                                 :facet/options
+                                                 (get-in selections [:hair/color])])]
+                             {:id               "picker-color"
+                              :value-id         (str "picker-selected-color-" (facets/hacky-fix-of-bad-slugs-on-facets slug))
+                              :image-src        rectangle-swatch
+                              :primary          name
+                              :options          (map (fn[option]
+                                                       {:option/value      (:option/slug option)
+                                                        :option/label      (:option/name option)
+                                                        :option/available? (:stocked? option)})
+                                                     (:hair/color options))
+                              :selected-value   slug
+                              :selection-target [events/control-product-detail-picker-option-select {:selection        :hair/color
+                                                                                                     :navigation-event events/navigate-product-details}]
+                              :open-target      [events/control-product-detail-picker-open {:picker-id [:hair/color]}]}))
+     (within :length-main.picker (let [{:option/keys [name slug]} (get-in facets [:hair/length :facet/options (get-in selections [:hair/length])])]
+                                   {:id               "picker-length-main"
+                                    :value-id         (str "picker-selected-length-main-" (facets/hacky-fix-of-bad-slugs-on-facets slug))
+                                    :image-src        image-src
+                                    :primary          name
+                                    :options          (map (fn[option]
+                                                             {:option/value      (:option/slug option)
+                                                              :option/label      (:option/name option)
+                                                              :option/available? (:stocked? option)})
+                                                           (:hair/length options))
+                                    :selected-value   slug
+                                    :selection-target [events/control-product-detail-picker-option-select {:selection :hair/length}]
+                                    :open-target      [events/control-product-detail-picker-open {:facet-slug :hair/length}]}))
+     (within :length-auxiliary.picker {:queries (map-indexed (fn [idx selection]
+                                                               {:id        (str "picker-length-" idx)
+                                                                :value-id  (str "picker-length-" (:hair/length selection) "-" idx)
+                                                                :image-src image-src
+                                                                :primary   (if-let [picker-label (:option/name selection)]
+                                                                             picker-label
+                                                                             "Choose Length (optional)")
+                                                                :options   (concat
+                                                                            (if selection
+                                                                              [{:option/value      ""
+                                                                                :option/label      "Remove Length"
+                                                                                :option/available? true}]
+                                                                              [{:option/value      nil
+                                                                                :option/label      nil
+                                                                                :option/available? true}])
 
-        product-skus       (products/extract-product-skus data product)
-        images-catalog     (get-in data keypaths/v2-images)
-        facets             (facets/by-slug data)
-        selected-sku       (get-in data catalog.keypaths/detailed-product-selected-sku)
-        carousel-images    (find-carousel-images product product-skus images-catalog
-                                                 ;;TODO These selection election keys should not be hard coded
-                                                 (select-keys selections [:hair/color
-                                                                          :hair/base-material])
-                                                 selected-sku)
-        length-guide-image (->> product
-                                (images/for-skuer images-catalog)
-                                (select {:use-case #{"length-guide"}})
-                                first)
-        options            (get-in data catalog.keypaths/detailed-product-options)
-        ugc                (ugc-query product selected-sku data)
-        sku-price          (or (:product/essential-price selected-sku)
-                               (:sku/price selected-sku))
-        review-data        (review-component/query data)
-        shop?              (or (= "shop" (get-in data keypaths/store-slug))
-                               (= "retail-location" (get-in data keypaths/store-experience)))
-        hair?              (accessors.products/hair? product)
-        faq                (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
-                             (get-in data (conj keypaths/cms-faq pdp-faq-id)))]
+                                                                            (mapv (fn[option]
+                                                                                    {:option/value      (:option/slug option)
+                                                                                     :option/label      (:option/name option)
+                                                                                     :option/available? (:stocked? option)})
+                                                                                  (:hair/length options)))
+                                                                :selected-value   (:hair/length selection)
+                                                                :selection-target [events/control-product-detail-picker-option-auxiliary-select {:auxiliary-index idx
+                                                                                                                                                 :selection       :hair/length}]
+                                                                :open-target      [events/control-product-detail-picker-open {:facet-slug      :hair/length
+                                                                                                                              :auxiliary-index idx}]})
+                                                             selected-auxiliary-lengths)}))))
+
+(defn query [data]
+  (let [selections            (get-in data catalog.keypaths/detailed-product-selections)
+        product               (products/current-product data)
+        product-skus          (products/extract-product-skus data product)
+        images-catalog        (get-in data keypaths/v2-images)
+        facets                (facets/by-slug data)
+        selected-sku          (get-in data catalog.keypaths/detailed-product-selected-sku)
+        carousel-images       (find-carousel-images product product-skus images-catalog
+                                                    ;;TODO These selection election keys should not be hard coded
+                                                    (select-keys selections [:hair/color
+                                                                             :hair/base-material])
+                                                    selected-sku)
+        length-guide-image    (->> product
+                                   (images/for-skuer images-catalog)
+                                   (select {:use-case #{"length-guide"}})
+                                   first)
+        options               (get-in data catalog.keypaths/detailed-product-options)
+        ugc                   (ugc-query product selected-sku data)
+        sku-price             (or (:product/essential-price selected-sku)
+                                  (:sku/price selected-sku))
+        review-data           (review-component/query data)
+        shop?                 (or (= "shop" (get-in data keypaths/store-slug))
+                                  (= "retail-location" (get-in data keypaths/store-experience)))
+        hair?                 (accessors.products/hair? product)
+        faq                   (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
+                                (get-in data (conj keypaths/cms-faq pdp-faq-id)))
+        multiple-lengths-pdp? (experiments/multiple-lengths-pdp? data)
+        auxiliary-selections  (get-in data catalog.keypaths/detailed-product-auxiliary-selections)]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -409,13 +489,21 @@
       :carousel-images                    carousel-images
       :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
       :picker-data                        (picker/query data length-guide-image)
-      :multiple-lengths-pdp?              (experiments/multiple-lengths-pdp? data)}
+      :multiple-lengths-pdp?              multiple-lengths-pdp?}
+     (picker-query {:facets               facets
+                    :selections           selections
+                    :options              options
+                    :auxiliary-selections auxiliary-selections})
      (when (-> (get-in data catalog.keypaths/detailed-product-auxiliary-selections) count (< 4))
        #:add-auxiliary{:id    "add-auxiliary"
                        :event events/control-product-detail-picker-add})
      (when sku-price
-       {:price-block/primary   (mf/as-money sku-price)
-        :price-block/secondary "each"})
+       {:price-block/primary   (if multiple-lengths-pdp?
+                                 "starting at"
+                                 (mf/as-money sku-price))
+        :price-block/secondary (if multiple-lengths-pdp?
+                                 (mf/as-money sku-price)
+                                 "each")})
 
      (if hair?
        (let [active-tab-name (get-in data keypaths/product-details-information-tab)]
@@ -512,13 +600,12 @@
 
 (defn ^:export built-component
   [state opts]
-  (let []
-    (component/build component
-                     (merge (query state)
-                            {:add-to-cart (add-to-cart-query state)
-                             :live-help   (when (live-help/kustomer-started? state)
-                                            (live-help/banner-query "product-detail-page-banner"))})
-                     opts)))
+  (component/build component
+                   (merge (query state)
+                          {:add-to-cart (add-to-cart-query state)
+                           :live-help   (when (live-help/kustomer-started? state)
+                                          (live-help/banner-query "product-detail-page-banner"))})
+                   opts))
 
 (defn url-points-to-invalid-sku? [selected-sku query-params]
   (boolean
@@ -585,7 +672,7 @@
                                          (-> app-state
                                              (get-in catalog.keypaths/detailed-product-selections)
                                              :hair/length
-                                             spice.core/parse-int
+                                             spice/parse-int
                                              (< 16)))
         selected-sku (->> (if switching-to-short-hd-lace?
                             {selection #{value} :hair/length #{"16"}}
