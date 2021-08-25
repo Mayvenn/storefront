@@ -775,8 +775,9 @@
             [sku-id])))
 
 (defmethod fx/perform-effects e/navigate-shopping-quiz-unified-freeinstall-find-your-stylist
-  [_ _ _ _ state]
-  #?(:cljs (google-maps/insert))
+  [_ _ {:keys [navigate/caused-by]} _prev-state state]
+  (when (not= caused-by :first-nav)
+    #?(:cljs (google-maps/insert)))
   (publish e/biz|progression|progressed
            #:progression
             {:id    id
