@@ -51,7 +51,7 @@
       [:div.p3.flex.flex-wrap.col-12.content-start
        {:key       id
         :data-test id
-        :class     "col-4-on-tb-dt"}
+        :class     "col-3-on-tb-dt"}
        [:div.col-12-on-tb-dt.col-3
         [:div.hide-on-tb-dt.flex.justify-end.mr4.mt1
          (when image-id
@@ -223,7 +223,9 @@
 
 (defn page
   [state _]
-  (let [interstitial-category               (accessors.categories/current-category state)
+  (let [interstitial-category               (cond-> (accessors.categories/current-category state)
+                                              (experiments/headband-wigs? state)
+                                              (update :subcategories/ids conj "40"))
         facet-filtering-state               (assoc (get-in state catalog.keypaths/k-models-facet-filtering)
                                                    :facet-filtering/item-label "item")
         selections                          (:facet-filtering/filters facet-filtering-state)

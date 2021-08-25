@@ -655,7 +655,7 @@
            :seo/sitemap          true
 
            :catalog/department               #{"hair"}
-           :hair/family                      #{"360-wigs" "lace-front-wigs" "ready-wigs"}
+           :hair/family                      #{"360-wigs" "lace-front-wigs" "ready-wigs" "headband-wigs"}
            :selector/essentials              [:hair/family :catalog/department]
            :selector/electives               [:hair/family :hair/texture :hair/origin :hair/base-material :hair/color]
            :page/title                       "Human Hair Wigs: 100% Human Hair Wigs | Mayvenn"
@@ -675,7 +675,9 @@
                                               {:subsection/title    "360 Wigs"
                                                :subsection/selector {:hair/family #{"360-wigs"}}}
                                               {:subsection/title    "Ready-to-Wear Wigs"
-                                               :subsection/selector {:hair/family #{"ready-wigs"}}}]
+                                               :subsection/selector {:hair/family #{"ready-wigs"}}}
+                                              {:subsection/title    "Headband Wigs"
+                                               :subsection/selector {:hair/family #{"headband-wigs"}}}]
            :contentful/faq-id                :icp-wigs
            :content-block/type               :about-attributes
            :content-block/title              "Wigs 101:"
