@@ -703,7 +703,9 @@
                           (and direct-load? double-nav?)               :double-nav
                           (seq (get-in state k/navigation-redo-stack)) "back_button"
                           :else                                        (try
-                                                                         (exception-handler/report "Navigated to Unified FI Intro without giving a previous location")
+                                                                         (exception-handler/report
+                                                                          (ex-info "Navigated to Unified FI Intro without giving a previous location"
+                                                                                   {:nav-args args}))
                                                                          (catch :default _ nil)))]
        (when-not (= :double-nav location)
          (stringer/track-event "unified_fi-initiated" {:location location})))))
