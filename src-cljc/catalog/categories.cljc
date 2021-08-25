@@ -714,10 +714,7 @@
            :hair/family           #{"lace-front-wigs"}
            :selector/essentials   [:hair/family :catalog/department]
            :selector/electives    [:hair/texture :hair/origin :hair/base-material]
-           :contentful/faq-id     :category-virgin-lace-front-wigs
-           :opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our"
-                                        "30 Day Quality Guarantee, our Wigs can be customized to fit"
-                                        "your unique look using the built-in combs and adjustable strap.")}
+           :contentful/faq-id     :category-virgin-lace-front-wigs}
           (category->seo "Lace Front Wigs: Virgin Lace Front Wigs"
                          (copy "Mayvenn’s human hair lace front wigs mimic a natural hairline"
                                "and come in different variations such as Brazilian, Malaysian,"
@@ -741,9 +738,7 @@
            :hair/family                    #{"ready-wigs"}
            :selector/essentials            [:hair/family :catalog/department]
            :selector/electives             [:hair/texture :wig/trait]
-           :opengraph/description          (copy "100% virgin human hair, machine-wefted and backed by our"
-                                                 "30 Day Quality Guarantee, our Wigs can be customized to fit"
-                                                 "your unique look using the built-in combs and adjustable strap.")
+
            :page/title-template            [:computed/selected-facet-string " Wigs: " :computed/selected-facet-string " " :seo/title " | Mayvenn"]
            :page.meta/description-template ["Mayvenn’s "
                                             :computed/selected-facet-string
@@ -770,16 +765,33 @@
            :catalog/department    #{"hair"}
            :hair/family           #{"360-wigs"}
            :selector/essentials   [:hair/family :catalog/department]
-           :selector/electives    [:hair/texture :hair/origin]
-           :opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our"
-                                        "30 Day Quality Guarantee, our Wigs can be customized to fit"
-                                        "your unique look using the built-in combs and adjustable strap.")}
+           :selector/electives    [:hair/texture :hair/origin]}
           (category->seo "360 Lace Wigs: Virgin 360 Lace Frontal Wigs"
                          (copy "Mayvenn’s human hair 360 lace wigs give you all around protection and"
                                "come in different variations such as Brazilian, Malaysian, straight,"
                                "and deep wave.")
                          "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/")
-          wig-templates)])
+          wig-templates)
+   (merge {:catalog/category-id "40"
+           :category/new?       true
+
+           :copy/title "Virgin Headband Wigs"
+           :page/slug  "virgin-headband-wigs"
+           :seo/title  "Virgin Headband Wigs"
+
+           :category/description (copy "") ;;TODO get copy
+           :subcategory/image-id "fe34e6e9-8927-4b62-94ac-91b37f0a137f" ;;TODO Fill with cart 0
+
+           :contentful/faq-id     :category-headband-wigs
+           :catalog/department    #{"hair"}
+           :hair/family           #{"headband-wigs"}
+           :selector/essentials   [:hair/family :catalog/department]
+           :selector/electives    [:hair/texture :hair/origin]}
+          (category->seo "Headband Wigs: Virgin Headband Wigs"
+                         (copy "") ;;TODO get copy
+                         "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/") ;;TODO get image?
+          wig-templates)
+   ])
 
 (def mayvenn-install-eligible
   [{:catalog/category-id              "23"
