@@ -187,7 +187,7 @@
 (defn ^:private slice-sku-db
   "Returns the portion of the sku-db that meets the texture, origin, families of
   the look along with the service when available"
-  [full-skus-db shared-cart selections]
+  [full-skus-db services selections]
   (let [criteria (-> (merge-selection-criteria selections)
                      (assoc :catalog/department #{"hair"})
                      (dissoc :hair/length :hair/color))]
@@ -195,8 +195,7 @@
                 vals
                 (selector/match-all {} criteria)
                 (maps/index-by :catalog/sku-id))
-           (->> shared-cart
-                :line-items
+           (->> services
                 (mapv :catalog/sku-id)
                 (select-keys full-skus-db)))))
 
@@ -224,14 +223,13 @@
                                         (group-by (comp #(string/starts-with? % "SV2") :catalog/sku-id)))
         initial-selections         (let [{:hair/keys [origin texture color]} (-> physical-line-items first)]
                                      ;; TODO make this more tolerable
-                                     {:hair/origin  (first origin)
-                                      :hair/texture (first texture)
+                                     {:hair/texture (first texture)
                                       :hair/color   (first color)
                                       :per-item     (->> physical-line-items
-                                                         (map #(select-keys % [:hair/family :hair/length]))
+                                                         (map #(select-keys % [:hair/origin :hair/family :hair/length]))
                                                          (map (partial maps/map-values first))
                                                          vec)})
-        sliced-sku-db              (slice-sku-db (get-in app-state keypaths/v2-skus) shared-cart initial-selections)
+        sliced-sku-db              (slice-sku-db (get-in app-state keypaths/v2-skus) services initial-selections)
         availability               (catalog.products/index-by-selectors
                                     [:hair/family :hair/color :hair/length]
                                     (vals sliced-sku-db))
