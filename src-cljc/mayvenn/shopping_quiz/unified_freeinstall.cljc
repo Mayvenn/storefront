@@ -693,20 +693,16 @@
 (defmethod trackings/perform-track e/navigate-shopping-quiz-unified-freeinstall-intro
   [_ _ args state]
   #?(:cljs
-     (let [direct-load? (and (empty? (get-in state k/navigation-redo-stack))
-                             (empty? (get-in state k/navigation-undo-stack)))
+     (let [has-undo-stack? (seq (get-in state k/navigation-undo-stack))
+           has-redo-stack? (seq (get-in state k/navigation-redo-stack))
            double-nav?  (= :module-load (:navigate/caused-by args))
            nav-location (get-in args [:query-params :location])
            location     (cond
                           nav-location                                 nav-location
-                          (and direct-load? (not double-nav?))         "direct_load"
-                          (and direct-load? double-nav?)               :double-nav
-                          (seq (get-in state k/navigation-redo-stack)) "back_button"
-                          :else                                        (try
-                                                                         (exception-handler/report
-                                                                          (ex-info "Navigated to Unified FI Intro without giving a previous location"
-                                                                                   {:nav-args args}))
-                                                                         (catch :default _ nil)))]
+                          has-undo-stack?                              "back_button"
+                          has-redo-stack?                              "back_button"
+                          double-nav?                                  :double-nav
+                          :else                                        "direct_load")]
        (when-not (= :double-nav location)
          (stringer/track-event "unified_fi-initiated" {:location location})))))
 
