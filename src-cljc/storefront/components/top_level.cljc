@@ -79,7 +79,7 @@
    events/navigate-about-mayvenn-install   (constantly mayvenn-install.about/built-component)
    events/navigate-shop-by-look            #(ui/lazy-load-component :catalog 'catalog.looks/built-component
                                                                     events/navigate-shop-by-look)
-   events/navigate-shop-by-look-details    #(ui/lazy-load-component :catalog 'catalog.look-details/built-component
+   events/navigate-shop-by-look-details    #(ui/lazy-load-component :catalog 'catalog.look-details-v202105/built-component
                                                                     events/navigate-shop-by-look-details)
    events/navigate-category                #(ui/lazy-load-component :catalog  'catalog.category/built-component events/navigate-category)
    events/navigate-product-details         #(ui/lazy-load-component :catalog  'catalog.product-details/built-component events/navigate-product-details)

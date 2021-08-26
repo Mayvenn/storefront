@@ -4,7 +4,7 @@
 
             ;; Looks
             catalog.looks
-            catalog.look-details
+            catalog.look-details-v202105
 
             ;; Shared Carts
             storefront.components.shared-cart

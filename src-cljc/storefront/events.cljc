@@ -192,7 +192,6 @@
 (defpath control-suggested-add-to-bag)
 
 (defpath control-create-order-from-customized-look)
-(defpath control-create-order-from-look)
 (defpath control-initalize-cart-from-look)
 (defpath control-shared-cart-checkout-clicked)
 (defpath control-shared-cart-paypal-checkout-clicked)

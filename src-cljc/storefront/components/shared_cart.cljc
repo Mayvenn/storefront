@@ -491,9 +491,7 @@
                (api/fetch-matched-stylist api-cache servicing-stylist-id
                                           {:error-handler   #(publish events/shared-cart-error-matched-stylist-not-eligible %)
                                            :success-handler #(publish events/api-success-fetch-shared-cart-matched-stylist %)}))
-             (when (and
-                    (= events/navigate-shop-by-look-details (get-in app-state keypaths/navigation-event))
-                    (experiments/look-customization? app-state))
+             (when (= events/navigate-shop-by-look-details (get-in app-state keypaths/navigation-event))
                (messages/handle-message events/initialize-look-details
                                         (assoc args :shared-cart shared-cart))))))))
 

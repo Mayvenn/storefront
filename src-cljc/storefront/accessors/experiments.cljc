@@ -98,10 +98,6 @@
   [data]
   (display-feature? data "reinstall-services"))
 
-(defn look-customization?
-  [data]
-  (display-feature? data "look-customization"))
-
 (defn edit-gallery?
   [data]
   (or
