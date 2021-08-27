@@ -1,4 +1,4 @@
-(ns catalog.product-details
+(ns catalog.product-details.multiple-lengths
   (:require #?@(:cljs [[goog.dom]
                        [goog.events]
                        [goog.style]
@@ -49,7 +49,6 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.platform.reviews :as review-component]
-            [catalog.product-details.multiple-lengths :as multiple-lengths]
             [storefront.request-keys :as request-keys]
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
@@ -163,7 +162,28 @@
               [:div (carousel carousel-images product)])]
             (component/build product-summary-organism data)
             [:div.px2
-             (component/build picker/component picker-data opts)]
+             (if (-> product :hair/family first (= "bundles"))
+               [:div
+                (component/build picker-two/modal picker-modal)
+                [:div.bg-refresh-gray
+                 [:div.px3.my4
+                  [:div.proxima.title-3.shout "Color"]
+                  (picker-two/component (with :color.picker data))
+
+                  ;;TODO: material picker row?
+
+                  [:div.proxima.title-3.shout "Lengths"]
+                  [:div
+                   (picker-two/component (with :length-main.picker data))
+                   (for [auxiliary-data (:queries (with :length-auxiliary.picker data))]
+                     (picker-two/component auxiliary-data))]]]]
+
+                 (component/build picker/component picker-data opts))
+             (let [{:keys [id event]} (with :add-auxiliary data)]
+               (when id
+                 [:div.center.py1 (ui/button-medium-underline-primary (merge
+                                                                       (utils/fake-href event)
+                                                                       {:data-test "auxiliary-add-length"}) "Add Another Length")]))]
             [:div
              (cond
                unavailable? unavailable-button
@@ -306,15 +326,21 @@
                                                 (apply +))
         sku-id->quantity                   (into {}
                                                  (map (fn [[sku-id skus]] [sku-id (count skus)])
-                                                      (group-by :catalog/sku-id selected-skus)))]
+                                                      (group-by :catalog/sku-id selected-skus)))
+        multiple-skus                      (< 1 (count selected-skus))]
     (merge
      {:cta/id    "add-to-cart"
-      :cta/label "Add to Bag"
+      :cta/label (if multiple-skus
+                   "Add Product to Bag"
+                   "Add to Bag")
 
       ;; Fork here to use bulk add to cart
-      :cta/target                  [events/control-add-sku-to-bag
-                                    {:sku      selected-sku
-                                     :quantity (get-in app-state keypaths/browse-sku-quantity 1)}]
+      :cta/target                  (if multiple-skus
+                                     [events/control-bulk-add-skus-to-bag
+                                      {:sku-id->quantity sku-id->quantity}]
+                                     [events/control-add-sku-to-bag
+                                      {:sku      selected-sku
+                                       :quantity (get-in app-state keypaths/browse-sku-quantity 1)}])
       :cta/spinning?               (or (utils/requesting? app-state (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
                                        (utils/requesting? app-state (conj request-keys/add-to-bag (set (keys sku-id->quantity)))))
       :cta/disabled?               (some #(not (:inventory/in-stock? %)) selected-skus)
@@ -504,8 +530,8 @@
        #:add-auxiliary{:id    "add-auxiliary"
                        :event events/control-product-detail-picker-add})
      (when sku-price
-       {:price-block/primary   (mf/as-money sku-price)
-        :price-block/secondary "each"})
+       {:price-block/primary   "starting at"
+        :price-block/secondary (mf/as-money sku-price)})
 
      (if hair?
        (let [active-tab-name (get-in data keypaths/product-details-information-tab)]
@@ -599,389 +625,3 @@
                                                         weights)
                                 :learn-more-nav-event (when-not (contains? (:stylist-exclusives/family product) "kits")
                                                         events/navigate-content-our-hair)})))))
-
-(defn ^:export built-component
-  [state opts]
-  (if (and (-> (products/current-product state) :hair/family first (= "bundles"))
-           (experiments/multiple-lengths-pdp? state))
-    (component/build multiple-lengths/component (merge (multiple-lengths/query state)
-                                                       {:add-to-cart (multiple-lengths/add-to-cart-query state)
-                                                        :live-help   (when (live-help/kustomer-started? state)
-                                                                       (live-help/banner-query "product-detail-page-banner"))})
-                     opts)
-    (component/build component
-                     (merge (query state)
-                            {:add-to-cart (add-to-cart-query state)
-                             :live-help   (when (live-help/kustomer-started? state)
-                                            (live-help/banner-query "product-detail-page-banner"))})
-                     opts)))
-
-(defn url-points-to-invalid-sku? [selected-sku query-params]
-  (boolean
-   (and (:catalog/sku-id selected-sku)
-        (not= (:catalog/sku-id selected-sku)
-              (:SKU query-params)))))
-
-#?(:cljs
-   (defn fetch-product-details [app-state product-id]
-     (api/get-products (get-in app-state keypaths/api-cache)
-                       {:catalog/product-id product-id}
-                       (fn [response]
-                         (messages/handle-message events/api-success-v3-products-for-details response)
-                         (when-let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)]
-                           (messages/handle-message events/viewed-sku {:sku selected-sku}))))
-
-     (when-let [current-product (products/current-product app-state)]
-       (if (auth/permitted-product? app-state current-product)
-         (review-hooks/insert-reviews)
-         (effects/redirect events/navigate-home)))))
-
-(defn generate-product-options
-  [product-id app-state]
-  (let [product      (products/product-by-id app-state product-id)
-        facets       (facets/by-slug app-state)
-        product-skus (products/extract-product-skus app-state product)
-        images       (get-in app-state keypaths/v2-images)]
-    (sku-selector/product-options facets product product-skus images)))
-
-(defn ^:private assoc-selections
-  "Selections are ultimately a function of three inputs:
-   1. options of the cheapest sku
-   2. prior selections on another product, but validated for this product
-   3. options of the sku from the URI
-
-   They are merged together each (possibly partially) overriding the
-   previous selection map of options.
-
-   NB: User clicks for selections are indirectly used by changing the URI."
-  [app-state sku]
-  (let [product-id   (get-in app-state catalog.keypaths/detailed-product-id)
-        product      (products/product-by-id app-state product-id)
-        facets       (facets/by-slug app-state)
-        product-skus (products/extract-product-skus app-state product)
-        images       (get-in app-state keypaths/v2-images)]
-    (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-selections
-                  (merge
-                   (default-selections facets product product-skus images)
-                   (let [{:catalog/keys [department]
-                          :product?essential-service/keys [electives]}
-                         (api.products/product<- app-state product)]
-                     (when (= #{"service"} department)
-                       electives))
-                   (get-in app-state catalog.keypaths/detailed-product-selections)
-                   (reduce-kv #(assoc %1 %2 (first %3))
-                              {}
-                              (select-keys sku (:selector/electives product))))))))
-
-(defmethod transitions/transition-state events/control-product-detail-picker-option-select
-  [_ event {:keys [selection value]} app-state]
-  ;; HACK [#179260091]
-  (let [switching-to-short-hd-lace? (and (= [selection value] [:hair/base-material "hd-lace"])
-                                         (-> app-state
-                                             (get-in catalog.keypaths/detailed-product-selections)
-                                             :hair/length
-                                             spice/parse-int
-                                             (< 16)))
-        selected-sku (->> (if switching-to-short-hd-lace?
-                            {selection #{value} :hair/length #{"16"}}
-                            {selection #{value}})
-                          (determine-sku-from-selections app-state))
-        options      (generate-product-options (get-in app-state catalog.keypaths/detailed-product-id)
-                      app-state)]
-    (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-picker-visible? false)
-        (assoc-in catalog.keypaths/detailed-product-selected-sku selected-sku)
-        (update-in catalog.keypaths/detailed-product-selections merge (if switching-to-short-hd-lace?
-                                                                        {selection value :hair/length "16"}
-                                                                        {selection value}))
-        (assoc-in catalog.keypaths/detailed-product-options options))))
-
-(defmethod effects/perform-effects events/control-product-detail-picker-option-select
-  [_ event {:keys [navigation-event]} _ app-state]
-  (let [sku-id-for-selection (-> app-state
-                                 (get-in catalog.keypaths/detailed-product-selected-sku)
-                                 :catalog/sku-id)
-        params-with-sku-id   (cond-> (select-keys (products/current-product app-state)
-                                                  [:catalog/product-id :page/slug])
-                               (some? sku-id-for-selection)
-                               (assoc :query-params {:SKU sku-id-for-selection}))]
-    (effects/redirect navigation-event params-with-sku-id :sku-option-select)
-    #?(:cljs (scroll/enable-body-scrolling))))
-
-(defmethod transitions/transition-state events/control-product-detail-picker-open
-  [_ event {:keys [facet-slug auxiliary-index]} app-state]
-  (-> app-state
-      (assoc-in catalog.keypaths/detailed-product-selected-picker facet-slug)
-      (assoc-in catalog.keypaths/detailed-product-picker-visible? true)
-      (assoc-in catalog.keypaths/detailed-product-auxiliary-index auxiliary-index)))
-
-(defmethod transitions/transition-state events/control-product-detail-picker-option-quantity-select
-  [_ event {:keys [value]} app-state]
-  (-> app-state
-      (assoc-in keypaths/browse-sku-quantity value)
-      (assoc-in catalog.keypaths/detailed-product-picker-visible? false)))
-
-(defmethod transitions/transition-state events/control-product-detail-picker-close
-  [_ event _ app-state]
-  (-> app-state
-      (assoc-in catalog.keypaths/detailed-product-picker-visible? false)
-      (assoc-in catalog.keypaths/detailed-product-auxiliary-index nil)
-      (assoc-in catalog.keypaths/detailed-product-selected-picker nil)))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/control-product-detail-picker-open
-     [_ _ _ _ _]
-     (scroll/disable-body-scrolling)))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/control-product-detail-picker-close
-     [_ _ _ _ _]
-     (scroll/enable-body-scrolling)))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/navigate-product-details
-     [_ event args prev-app-state app-state]
-     (let [[prev-event prev-args] (get-in prev-app-state keypaths/navigation-message)
-           product-id (:catalog/product-id args)
-           product (get-in app-state (conj keypaths/v2-products product-id))
-           just-arrived? (or (not= events/navigate-product-details prev-event)
-                             (not= (:catalog/product-id args)
-                                   (:catalog/product-id prev-args))
-                             (= :first-nav (:navigate/caused-by args)))]
-       (when (nil? product)
-         (fetch-product-details app-state product-id))
-       (when just-arrived?
-         (messages/handle-message events/initialize-product-details (assoc args :origin-nav-event event))))))
-
-#?(:cljs
-   (defmethod trackings/perform-track events/navigate-product-details
-     [_ event {:keys [catalog/product-id]} app-state]
-     (when (-> product-id
-               ((get-in app-state keypaths/v2-products))
-               accessors.products/wig-product?)
-       (facebook-analytics/track-event "wig_content_fired"))))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/api-success-v3-products-for-details
-     [_ event _ _ app-state]
-     (messages/handle-message events/initialize-product-details (get-in app-state keypaths/navigation-args))))
-
-(defn ^:private color-option<
-  [selection-event
-   selections
-   {:option/keys [slug] :as option}]
-  (merge
-   #:product{:option option}
-   #:option{:id               (str "picker-color-" (facets/hacky-fix-of-bad-slugs-on-facets slug))
-            :selection-target [selection-event
-                               (merge {:selection        :hair/color
-                                       :value            slug
-                                       :navigation-event events/navigate-product-details})]
-            :checked?         (= (:hair/color selections) slug)
-            :label            (:option/name option)
-            :value            slug
-            :bg-image-src     (:option/rectangle-swatch option)
-            :available?       true
-            :image-src        (:option/sku-swatch option)}))
-
-(defn ^:private length-option<
-  [selection-event
-   {selected-hair-color :hair/color :as selection}
-   availability
-   {:option/keys [slug name] :as option}]
-  (let [available? (boolean (get-in availability [selected-hair-color slug]))
-        sold-out?  (not (boolean
-                         (get-in availability [selected-hair-color
-                                               slug
-                                               :inventory/in-stock?])))]
-    (merge
-     #:product{:option option}
-     #:option{:id               (str "picker-length-" slug)
-              :selection-target [selection-event
-                                 {:selection :hair/length
-                                  :value     slug}]
-              :checked?         (= (:hair/length selection) slug)
-              :label            name
-              :value            slug
-              :available?       available?}
-     (when sold-out?
-       #:option{:label-attrs      {:class "dark-gray"}
-                :label            (str name " - Sold Out")
-                :selection-target nil})
-     (when-not available?
-       #:option{:label-attrs      {:class "dark-gray"}
-                :label            (str name " - Unavailable")
-                :selection-target nil}))))
-
-(defn ^:private initialize-picker-options
-  [selection-event
-   selections
-   availability
-   product-options]
-  {:hair/color  (->> product-options
-                    :hair/color
-                    (map #(dissoc % :price :stocked?))
-                    (sort-by :filter/order)
-                    (mapv (partial color-option<
-                                   selection-event
-                                   selections)))
-   :hair/length (->> product-options
-                       :hair/length
-                       (sort-by :filter/order)
-                       (mapv (partial length-option<
-                                      selection-event
-                                      selections
-                                      availability)))})
-
-(defmethod transitions/transition-state events/initialize-product-details
-  [_ event {:as args :keys [catalog/product-id query-params]} app-state]
-  (let [ugc-offset               (:offset query-params)
-        product-options          (generate-product-options product-id app-state)
-        product                  (products/product-by-id app-state product-id)
-        product-skus             (products/extract-product-skus app-state product)
-        sku                      (or (->> (:SKU query-params)
-                                          (conj keypaths/v2-skus)
-                                          (get-in app-state))
-                                     (get-in app-state catalog.keypaths/detailed-product-selected-sku)
-                                     (first product-skus))
-        picker-options           (initialize-picker-options
-                                  events/control-product-detail-picker-option-select
-                                  {:hair/color  (first (:hair/color sku))
-                                   :hair/length (first (:hair/length sku))}
-                                  (catalog.products/index-by-selectors
-                                   [:hair/color :hair/length]
-                                   product-skus)
-                                  product-options)
-       #_ #_auxiliary-picker-options (initialize-auxiliary-picker-options picker-options)]
-    (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-id product-id)
-        (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
-        (assoc-in catalog.keypaths/detailed-product-auxiliary-selections [{} {}])
-       ; (assoc-in catalog.keypaths/detailed-product-auxiliary-picker-options auxiliary-picker-options )
-        (assoc-in catalog.keypaths/detailed-product-picker-options picker-options)
-        (assoc-in keypaths/ui-ugc-category-popup-offset ugc-offset)
-        (assoc-in keypaths/browse-sku-quantity 1)
-        (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
-        (assoc-in catalog.keypaths/detailed-product-picker-visible? nil)
-        (assoc-selections sku)
-        (assoc-in catalog.keypaths/detailed-product-options product-options))))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/initialize-product-details
-     [_ _ {:keys [catalog/product-id page/slug query-params origin-nav-event]} _ app-state]
-     (let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)
-           shop?        (= :shop (sites/determine-site app-state))]
-       (if (url-points-to-invalid-sku? selected-sku query-params)
-         (effects/redirect origin-nav-event
-                           (merge
-                            {:catalog/product-id product-id
-                             :page/slug          slug}
-                            (when selected-sku
-                              {:query-params {:SKU (:catalog/sku-id selected-sku)}})))
-         (let [product (get-in app-state (conj keypaths/v2-products product-id))]
-           (seo/set-tags app-state)
-           (when-let [album-keyword (storefront.ugc/product->album-keyword shop? product)]
-             (effects/fetch-cms-keypath app-state [:ugc-collection album-keyword]))
-           (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
-             (effects/fetch-cms-keypath app-state [:faq pdp-faq-id])))))))
-
-
-(defmethod effects/perform-effects events/control-add-sku-to-bag
-  [_ _ {:keys [sku quantity]} _ state]
-  (let [cart-swap (swap/cart-swap<- state {:service/intended sku})]
-    (if (:service/swap? cart-swap)
-      (messages/handle-message events/cart-swap-popup-show
-                               cart-swap)
-      (messages/handle-message events/add-sku-to-bag
-                               {:sku           sku
-                                :stay-on-page? false
-                                :service-swap? false
-                                :quantity      quantity}))))
-
-(defmethod effects/perform-effects events/control-bulk-add-skus-to-bag
-  [_ _ {:keys [sku-id->quantity]} _ app-state]
-  #?(:cljs
-     (let [nav-event          (get-in app-state keypaths/navigation-event)
-           cart-interstitial? (= :shop (sites/determine-site app-state))]
-       (api/add-skus-to-bag (get-in app-state keypaths/session-id)
-                            {:stylist-id       (get-in app-state keypaths/store-stylist-id)
-                             :number           (get-in app-state keypaths/order-number)
-                             :token            (get-in app-state keypaths/order-token)
-                             :user-id          (get-in app-state keypaths/user-id)
-                             :user-token       (get-in app-state keypaths/user-token)
-                             :sku-id->quantity sku-id->quantity}
-                            #(do
-                               (messages/handle-message events/api-success-add-multiple-skus-to-bag
-                                                        {:order         (:order %)})
-                               (when (not (= events/navigate-cart nav-event))
-                                 (history/enqueue-navigate (if cart-interstitial?
-                                                             events/navigate-added-to-cart
-                                                             events/navigate-cart))))))))
-
-;; TODO(corey) Move this to cart
-(defmethod effects/perform-effects events/add-sku-to-bag
-  [dispatch event {:keys [sku quantity stay-on-page? service-swap?] :as args} _ app-state]
-  #?(:cljs
-     (let [nav-event          (get-in app-state keypaths/navigation-event)
-           cart-interstitial? (and
-                               (not service-swap?)
-                               (= :shop (sites/determine-site app-state)))]
-       (api/add-sku-to-bag
-        (get-in app-state keypaths/session-id)
-        {:sku                sku
-         :quantity           quantity
-         :stylist-id         (get-in app-state keypaths/store-stylist-id)
-         :token              (get-in app-state keypaths/order-token)
-         :number             (get-in app-state keypaths/order-number)
-         :user-id            (get-in app-state keypaths/user-id)
-         :user-token         (get-in app-state keypaths/user-token)
-         :heat-feature-flags (get-in app-state keypaths/features)}
-        #(do
-           (messages/handle-message events/api-success-add-sku-to-bag
-                                    {:order         %
-                                     :quantity      quantity
-                                     :sku           sku})
-           (when (not (or (= events/navigate-cart nav-event) stay-on-page?))
-             (history/enqueue-navigate (if cart-interstitial?
-                                         events/navigate-added-to-cart
-                                         events/navigate-cart))))))))
-
-(defmethod effects/perform-effects events/add-servicing-stylist-and-sku
-  [_ _ {:keys [sku quantity servicing-stylist]} _ state]
-  (let [token  (get-in state keypaths/order-token)
-        number (get-in state keypaths/order-number)]
-    #?(:cljs
-       (api/add-servicing-stylist-and-sku
-        (get-in state keypaths/session-id)
-        (cond-> {:sku                sku
-                 :servicing-stylist  servicing-stylist
-                 :quantity           quantity
-                 :stylist-id         (get-in state keypaths/store-stylist-id)
-                 :user-id            (get-in state keypaths/user-id)
-                 :user-token         (get-in state keypaths/user-token)
-                 :heat-feature-flags (get-in state keypaths/features)}
-          (and token number)
-          (merge {:token  token
-                  :number number}))
-        #(messages/handle-message events/api-success-add-sku-to-bag
-                                  {:order    %
-                                   :quantity quantity
-                                   :sku      sku})))))
-
-(defmethod transitions/transition-state events/api-success-add-sku-to-bag
-  [_ event {:keys [quantity sku]} app-state]
-  (assoc-in app-state keypaths/browse-sku-quantity 1))
-
-(defmethod transitions/transition-state events/control-product-detail-picker-option-auxiliary-select
-  [_ event {:keys [selection value auxiliary-index]} app-state]
-  (if (empty? value)
-    (update-in app-state (conj catalog.keypaths/detailed-product-auxiliary-selections auxiliary-index) empty)
-    (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-picker-visible? false)
-        (update-in (conj catalog.keypaths/detailed-product-auxiliary-selections auxiliary-index) merge {selection value}))))
-
-(defmethod transitions/transition-state events/control-product-detail-picker-add
-  [_ _ {} state]
-  (-> state
-      (update-in catalog.keypaths/detailed-product-auxiliary-selections conj {})))
