@@ -64,10 +64,6 @@
      :variant_department   (-> line-item-skuer :catalog/department first)
      :line_item_group      (-> line-item-skuer :line-item-group)}))
 
-(defmethod perform-track events/app-start [_ event args app-state]
-  (when (get-in app-state keypaths/user-id)
-    (stringer/identify (get-in app-state keypaths/user))))
-
 (defn- nav-was-selecting-bundle-option? [app-state]
   (when-let [prev-nav-message (:navigation-message (first (get-in app-state keypaths/navigation-undo-stack)))]
     (let [[nav-event nav-args]           (get-in app-state keypaths/navigation-message)
@@ -299,8 +295,6 @@
      :total_quantity          (orders/product-quantity order)}))
 
 (defmethod perform-track events/order-placed [_ event order app-state]
-  (stringer/identify {:id    (-> order :user :id)
-                      :email (-> order :user :email)})
   (stringer/track-event "checkout-complete" (stringer-order-completed order))
   (let [order-total (:total order)
 
@@ -345,9 +339,6 @@
                                                    :number           (:number order)
                                                    :line-item-skuers line-item-skuers}))))
 
-(defmethod perform-track events/api-success-auth [_ event args app-state]
-  (stringer/identify (get-in app-state keypaths/user)))
-
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow user] :as args} app-state]
   (stringer/track-event "sign_in" {:type flow})
   (facebook-analytics/track-custom-event "user_logged_in" {:store_url stylist-urls/store-url}))
@@ -382,7 +373,6 @@
   (convert/track-conversion "paypal-checkout"))
 
 (defmethod perform-track events/api-success-update-order-update-guest-address [_ event {:keys [order]} app-state]
-  (stringer/identify (:user order))
   (stringer/track-event "checkout-identify_guest")
   (stringer/track-event "checkout-address_enter" {:order_number (:number order)}))
 
@@ -503,3 +493,7 @@
   (->> (orders/product-and-service-items order)
        (waiter-line-items->line-item-skuer skus-db)
        (mapv (partial line-item-skuer->stringer-cart-item images-db))))
+
+(defmethod perform-track events/user-identified
+  [_ _ {:keys [user]} _]
+  (stringer/identify user))
