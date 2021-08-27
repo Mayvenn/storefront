@@ -410,26 +410,15 @@
                                                              selected-auxiliary-lengths)}))))
 
 (defn ^:private picker-modal<
-  [picker-options picker-visible? selected-picker auxiliary-index]
-  (let [picker-type           (last selected-picker)
-        options               (get-in picker-options selected-picker)
-        options-for-auxiliary (when auxiliary-index
-                                (mapv (fn[option]
-                                        (assoc-in
-                                         option
-                                         [:option/selection-target]
-                                         [events/control-product-detail-picker-option-auxiliary-select {:auxiliary-index auxiliary-index
-                                                                                                        :selection       :hair/length
-                                                                                                        :value           (:option/value option)}]))
-                                      options))]
+  [picker-options picker-visible? selected-picker]
+  (let [picker-type           selected-picker
+        options               (get-in picker-options [selected-picker])]
     {:picker-modal/title        (case picker-type
                                   :hair/color  "Color"
                                   :hair/length "Length"
                                   nil)
      :picker-modal/type         picker-type
-     :picker-modal/options      (if auxiliary-index
-                                  options-for-auxiliary
-                                  options)
+     :picker-modal/options      options
      ;; NOTE: There is a difference between selected and visible. We toggle
      ;; picker visibility to signal that the modal should close but we don't remove
      ;; the options so the close animation isn't stopped prematurely due to the
@@ -438,33 +427,34 @@
      :picker-modal/close-target [events/control-product-detail-picker-close]}))
 
 (defn query [data]
-  (let [selections            (get-in data catalog.keypaths/detailed-product-selections)
-        product               (products/current-product data)
-        product-skus          (products/extract-product-skus data product)
-        images-catalog        (get-in data keypaths/v2-images)
-        facets                (facets/by-slug data)
-        selected-sku          (get-in data catalog.keypaths/detailed-product-selected-sku)
-        carousel-images       (find-carousel-images product product-skus images-catalog
+  (let [selections           (get-in data catalog.keypaths/detailed-product-selections)
+        product              (products/current-product data)
+        product-skus         (products/extract-product-skus data product)
+        images-catalog       (get-in data keypaths/v2-images)
+        facets               (facets/by-slug data)
+        selected-sku         (get-in data catalog.keypaths/detailed-product-selected-sku)
+        carousel-images      (find-carousel-images product product-skus images-catalog
                                                     ;;TODO These selection election keys should not be hard coded
                                                     (select-keys selections [:hair/color
                                                                              :hair/base-material])
                                                     selected-sku)
-        length-guide-image    (->> product
+        length-guide-image   (->> product
                                    (images/for-skuer images-catalog)
                                    (select {:use-case #{"length-guide"}})
                                    first)
-        picker-options        (get-in data catalog.keypaths/detailed-product-picker-options)
-        product-options       (get-in data catalog.keypaths/detailed-product-options)
-        ugc                   (ugc-query product selected-sku data)
-        sku-price             (or (:product/essential-price selected-sku)
+        picker-options       (get-in data catalog.keypaths/detailed-product-picker-options)
+        product-options      (get-in data catalog.keypaths/detailed-product-options)
+        ugc                  (ugc-query product selected-sku data)
+        sku-price            (or (:product/essential-price selected-sku)
                                   (:sku/price selected-sku))
-        review-data           (review-component/query data)
-        shop?                 (or (= "shop" (get-in data keypaths/store-slug))
+        review-data          (review-component/query data)
+        shop?                (or (= "shop" (get-in data keypaths/store-slug))
                                   (= "retail-location" (get-in data keypaths/store-experience)))
-        hair?                 (accessors.products/hair? product)
-        faq                   (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
+        hair?                (accessors.products/hair? product)
+        faq                  (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
                                 (get-in data (conj keypaths/cms-faq pdp-faq-id)))
-        auxiliary-selections  (get-in data catalog.keypaths/detailed-product-auxiliary-selections)]
+        auxiliary-selections (get-in data catalog.keypaths/detailed-product-auxiliary-selections)
+        selected-picker      (get-in data catalog.keypaths/detailed-product-selected-picker)]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -490,12 +480,11 @@
                                                                      {:faq/title   (:text question)
                                                                       :faq/content answer})}))
       :carousel-images                    carousel-images
-      :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
+      :selected-picker                    selected-picker
       :picker-data                        (picker/query data length-guide-image) ; non-multiple-lengths picker
       :picker-modal                       (picker-modal< picker-options
                                                          (get-in data catalog.keypaths/detailed-product-picker-visible?)
-                                                         (get-in data catalog.keypaths/detailed-product-selected-picker)
-                                                         (get-in data catalog.keypaths/detailed-product-auxiliary-index))}
+                                                         selected-picker)}
      (picker-query {:facets               facets
                     :selections           selections
                     :options              product-options
