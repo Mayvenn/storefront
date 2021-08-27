@@ -279,18 +279,6 @@
                            :max-size 600
                            :src      image-url}))]))])
 
-(defmethod transitions/transition-state events/popup-show-length-guide
-  [_ _ {:keys [length-guide-image]} state]
-  (-> state
-      (assoc-in keypaths/popup :length-guide)
-      (assoc-in catalog.keypaths/length-guide-image length-guide-image)))
-
-#?(:cljs
-   (defmethod trackings/perform-track events/popup-show-length-guide
-     [_ event {:keys [location] :as args} state]
-     (stringer/track-event "length_guide_link_pressed"
-                           {:location location})))
-
 (defn first-when-only [coll]
   (when (= 1 (count coll))
     (first coll)))
