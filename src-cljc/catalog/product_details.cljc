@@ -841,8 +841,7 @@
                                   (catalog.products/index-by-selectors
                                    [:hair/color :hair/length]
                                    product-skus)
-                                  product-options)
-       #_ #_auxiliary-picker-options (initialize-auxiliary-picker-options picker-options)]
+                                  product-options)]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-id product-id)
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
@@ -965,7 +964,9 @@
 (defmethod transitions/transition-state events/control-product-detail-picker-option-auxiliary-select
   [_ event {:keys [selection value auxiliary-index]} app-state]
   (if (empty? value)
-    (update-in app-state (conj catalog.keypaths/detailed-product-auxiliary-selections auxiliary-index) empty)
+    (-> app-state
+        (assoc-in catalog.keypaths/detailed-product-picker-visible? false)
+        (update-in  (conj catalog.keypaths/detailed-product-auxiliary-selections auxiliary-index) empty))
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-picker-visible? false)
         (update-in (conj catalog.keypaths/detailed-product-auxiliary-selections auxiliary-index) merge {selection value}))))

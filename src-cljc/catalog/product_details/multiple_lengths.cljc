@@ -424,18 +424,27 @@
                                                              selected-auxiliary-lengths)}))))
 
 (defn ^:private picker-modal<
-  [picker-options picker-visible? selected-picker auxiliary-index]
+  [picker-options picker-visible? selected-picker auxiliary-index auxiliary-selections]
   (let [picker-type           (last selected-picker)
         options               (get-in picker-options selected-picker)
+        auxiliary-selection   (:hair/length (get auxiliary-selections auxiliary-index))
         options-for-auxiliary (when auxiliary-index
-                                (mapv (fn[option]
-                                        (assoc-in
-                                         option
-                                         [:option/selection-target]
-                                         [events/control-product-detail-picker-option-auxiliary-select {:auxiliary-index auxiliary-index
-                                                                                                        :selection       :hair/length
-                                                                                                        :value           (:option/value option)}]))
-                                      options))]
+                                (concat
+                                 (when auxiliary-selection
+                                   [{:option/value            ""
+                                     :option/label            "Remove Length"
+                                     :option/available?       true
+                                     :option/selection-target [events/control-product-detail-picker-option-auxiliary-select {:auxiliary-index auxiliary-index
+                                                                                                                             :selection       :hair/length
+                                                                                                                             :value           ""}]}])
+                                 (mapv (fn[option]
+                                         (assoc-in
+                                          option
+                                          [:option/selection-target]
+                                          [events/control-product-detail-picker-option-auxiliary-select {:auxiliary-index auxiliary-index
+                                                                                                         :selection       :hair/length
+                                                                                                         :value           (:option/value option)}]))
+                                       options)))]
     {:picker-modal/title        (case picker-type
                                   :hair/color  "Color"
                                   :hair/length "Length"
@@ -509,7 +518,8 @@
       :picker-modal                       (picker-modal< picker-options
                                                          (get-in data catalog.keypaths/detailed-product-picker-visible?)
                                                          (get-in data catalog.keypaths/detailed-product-selected-picker)
-                                                         (get-in data catalog.keypaths/detailed-product-auxiliary-index))}
+                                                         (get-in data catalog.keypaths/detailed-product-auxiliary-index)
+                                                         auxiliary-selections)}
      (picker-query {:facets               facets
                     :selections           selections
                     :options              product-options
