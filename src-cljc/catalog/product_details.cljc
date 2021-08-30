@@ -39,7 +39,6 @@
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
             [storefront.components.picker.picker :as picker]
-            [storefront.components.picker.picker-two :as picker-two]
             [storefront.components.tabbed-information :as tabbed-information]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -133,8 +132,7 @@
            ugc
            faq-section
            add-to-cart
-           live-help
-           picker-modal] :as data} _ opts]
+           live-help] :as data} _ opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (if-not product
@@ -341,91 +339,6 @@
       :content content}
      (select-keys section [:link/content :link/target :link/id]))))
 
-(defn ^:private picker-query
-  [{:keys [facets selections options auxiliary-selections]}]
-  (let [selected-color             (get-in facets [:hair/color :facet/options (:hair/color selections)])
-        selected-auxiliary-lengths (map #(get-in facets [:hair/length :facet/options (:hair/length %)]) auxiliary-selections)
-        image-src                  (->> options
-                                        :hair/color
-                                        (filter #(= (:option/slug selected-color) (:option/slug %)) )
-                                        first
-                                        :option/sku-swatch)]
-    (merge
-     (within :color.picker (let [{:option/keys [rectangle-swatch name slug]}
-                                 (get-in facets [:hair/color
-                                                 :facet/options
-                                                 (get-in selections [:hair/color])])]
-                             {:id               "picker-color"
-                              :value-id         (str "picker-selected-color-" (facets/hacky-fix-of-bad-slugs-on-facets slug))
-                              :image-src        rectangle-swatch
-                              :primary          name
-                              :options          (map (fn[option]
-                                                       {:option/value      (:option/slug option)
-                                                        :option/label      (:option/name option)
-                                                        :option/available? (:stocked? option)})
-                                                     (:hair/color options))
-                              :selected-value   slug
-                              :selection-target [events/control-product-detail-picker-option-select {:selection        :hair/color
-                                                                                                     :navigation-event events/navigate-product-details}]
-                              :open-target      [events/control-product-detail-picker-open {:facet-slug [:hair/color]}]}))
-     (within :length-main.picker (let [{:option/keys [name slug]} (get-in facets [:hair/length :facet/options (get-in selections [:hair/length])])]
-                                   {:id               "picker-length-main"
-                                    :value-id         (str "picker-selected-length-main-" (facets/hacky-fix-of-bad-slugs-on-facets slug))
-                                    :image-src        image-src
-                                    :primary          name
-                                    :options          (map (fn[option]
-                                                             {:option/value      (:option/slug option)
-                                                              :option/label      (:option/name option)
-                                                              :option/available? (:stocked? option)})
-                                                           (:hair/length options))
-                                    :selected-value   slug
-                                    :selection-target [events/control-product-detail-picker-option-select {:selection :hair/length}]
-                                    :open-target      [events/control-product-detail-picker-open {:facet-slug [:hair/length]}]}))
-     (within :length-auxiliary.picker {:queries (map-indexed (fn [idx selection]
-                                                               {:id        (str "picker-length-" idx)
-                                                                :value-id  (str "picker-length-" (:hair/length selection) "-" idx)
-                                                                :image-src image-src
-                                                                :primary   (if-let [picker-label (:option/name selection)]
-                                                                             picker-label
-                                                                             "Choose Length (optional)")
-                                                                :options   (concat
-                                                                            (if selection
-                                                                              [{:option/value      ""
-                                                                                :option/label      "Remove Length"
-                                                                                :option/available? true}]
-                                                                              [{:option/value      nil
-                                                                                :option/label      nil
-                                                                                :option/available? true}])
-
-                                                                            (mapv (fn[option]
-                                                                                    {:option/value      (:option/slug option)
-                                                                                     :option/label      (:option/name option)
-                                                                                     :option/available? (:stocked? option)})
-                                                                                  (:hair/length options)))
-                                                                :selected-value   (:hair/length selection)
-                                                                :selection-target [events/control-product-detail-picker-option-auxiliary-select {:auxiliary-index idx
-                                                                                                                                                 :selection       :hair/length}]
-                                                                :open-target      [events/control-product-detail-picker-open {:facet-slug      [:hair/length]
-                                                                                                                              :auxiliary-index idx}]})
-                                                             selected-auxiliary-lengths)}))))
-
-(defn ^:private picker-modal<
-  [picker-options picker-visible? selected-picker]
-  (let [picker-type           selected-picker
-        options               (get-in picker-options [selected-picker])]
-    {:picker-modal/title        (case picker-type
-                                  :hair/color  "Color"
-                                  :hair/length "Length"
-                                  nil)
-     :picker-modal/type         picker-type
-     :picker-modal/options      options
-     ;; NOTE: There is a difference between selected and visible. We toggle
-     ;; picker visibility to signal that the modal should close but we don't remove
-     ;; the options so the close animation isn't stopped prematurely due to the
-     ;; child options re-rendering.
-     :picker-modal/visible?     (and picker-visible? options selected-picker)
-     :picker-modal/close-target [events/control-product-detail-picker-close]}))
-
 (defn query [data]
   (let [selections           (get-in data catalog.keypaths/detailed-product-selections)
         product              (products/current-product data)
@@ -453,7 +366,6 @@
         hair?                (accessors.products/hair? product)
         faq                  (when-let [pdp-faq-id (accessors.products/product->faq-id product)]
                                 (get-in data (conj keypaths/cms-faq pdp-faq-id)))
-        auxiliary-selections (get-in data catalog.keypaths/detailed-product-auxiliary-selections)
         selected-picker      (get-in data catalog.keypaths/detailed-product-selected-picker)]
     (merge
      {:reviews                            review-data
@@ -481,17 +393,7 @@
                                                                       :faq/content answer})}))
       :carousel-images                    carousel-images
       :selected-picker                    selected-picker
-      :picker-data                        (picker/query data length-guide-image) ; non-multiple-lengths picker
-      :picker-modal                       (picker-modal< picker-options
-                                                         (get-in data catalog.keypaths/detailed-product-picker-visible?)
-                                                         selected-picker)}
-     (picker-query {:facets               facets
-                    :selections           selections
-                    :options              product-options
-                    :auxiliary-selections auxiliary-selections})
-     (when (-> (get-in data catalog.keypaths/detailed-product-auxiliary-selections) count (< 4))
-       #:add-auxiliary{:id    "add-auxiliary"
-                       :event events/control-product-detail-picker-add})
+      :picker-data                        (picker/query data length-guide-image)}
      (when sku-price
        {:price-block/primary   (mf/as-money sku-price)
         :price-block/secondary "each"})
@@ -846,7 +748,6 @@
         (assoc-in catalog.keypaths/detailed-product-id product-id)
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
         (assoc-in catalog.keypaths/detailed-product-auxiliary-selections [{} {}])
-       ; (assoc-in catalog.keypaths/detailed-product-auxiliary-picker-options auxiliary-picker-options )
         (assoc-in catalog.keypaths/detailed-product-picker-options picker-options)
         (assoc-in keypaths/ui-ugc-category-popup-offset ugc-offset)
         (assoc-in keypaths/browse-sku-quantity 1)

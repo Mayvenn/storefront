@@ -38,7 +38,6 @@
             [storefront.accessors.sites :as sites]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.picker.picker :as picker]
             [storefront.components.picker.picker-two :as picker-two]
             [storefront.components.tabbed-information :as tabbed-information]
             [storefront.components.ui :as ui]
@@ -128,7 +127,6 @@
            product
            reviews
            selected-sku
-           picker-data
            ugc
            faq-section
            add-to-cart
@@ -162,23 +160,20 @@
               [:div (carousel carousel-images product)])]
             (component/build product-summary-organism data)
             [:div.px2
-             (if (-> product :hair/family first (= "bundles"))
-               [:div
-                (component/build picker-two/modal picker-modal)
-                [:div.bg-refresh-gray.pb2.pt1
-                 [:div.px3.my4
-                  [:div.proxima.title-3.shout "Color"]
-                  (picker-two/component (with :color.picker data))
+             [:div
+              (component/build picker-two/modal picker-modal)
+              [:div.bg-refresh-gray.pb2.pt1
+               [:div.px3.my4
+                [:div.proxima.title-3.shout "Color"]
+                (picker-two/component (with :color.picker data))
 
-                  ;;TODO: material picker row?
+                ;;TODO: material picker row?
 
-                  [:div.proxima.title-3.shout "Lengths"]
-                  [:div
-                   (picker-two/component (with :length-main.picker data))
-                   (for [auxiliary-data (:queries (with :length-auxiliary.picker data))]
-                     (picker-two/component auxiliary-data))]]]]
-
-                 (component/build picker/component picker-data opts))
+                [:div.proxima.title-3.shout "Lengths"]
+                [:div
+                 (picker-two/component (with :length-main.picker data))
+                 (for [auxiliary-data (:queries (with :length-auxiliary.picker data))]
+                   (picker-two/component auxiliary-data))]]]]
              (let [{:keys [id event]} (with :add-auxiliary data)]
                (when id
                  [:div.center.py1 (ui/button-medium-underline-primary (merge
@@ -514,7 +509,6 @@
                                                                       :faq/content answer})}))
       :carousel-images                    carousel-images
       :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
-      :picker-data                        (picker/query data length-guide-image) ; non-multiple-lengths picker
       :picker-modal                       (picker-modal< picker-options
                                                          (get-in data catalog.keypaths/detailed-product-picker-visible?)
                                                          (get-in data catalog.keypaths/detailed-product-selected-picker)
