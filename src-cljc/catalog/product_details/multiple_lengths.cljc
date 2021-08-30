@@ -165,7 +165,7 @@
              (if (-> product :hair/family first (= "bundles"))
                [:div
                 (component/build picker-two/modal picker-modal)
-                [:div.bg-refresh-gray
+                [:div.bg-refresh-gray.pb2.pt1
                  [:div.px3.my4
                   [:div.proxima.title-3.shout "Color"]
                   (picker-two/component (with :color.picker data))
