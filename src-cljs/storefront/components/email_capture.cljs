@@ -14,7 +14,7 @@
 (defn m-header [id close-dialog-href]
   [:div.flex.justify-between.items-center.p3.bg-white
    [:div]
-   [:div.flex.justify-center
+   [:div.flex.justify-center.pt1
     ^:inline (svg/mayvenn-logo {:width "52px" :height "30px"})]
    (ui/modal-close {:data-test   (str id "-dismiss")
                     :class       "fill-black stroke-black"
@@ -26,7 +26,10 @@
            :src      uuid}))
 
 (defn title [{:email-capture.title/keys [primary]}]
-  [:div.proxima.title-0.mb3 primary])
+  [:div.proxima.mb3
+   {:style {:font "900 30px/32px 'Proxima Nova', Arial, sans-serif"
+            :letter-spacing "letter-spacing: 0.5px"}}
+   primary])
 
 (def hr-divider
   [:hr.border-top.border-gray.col-12.m0
@@ -71,7 +74,8 @@
        {:data-test (str id "-modal")}
        (m-header id close-dialog-href)
        (bg-image data)
-       [:div.bg-p-color.p4.white
+       [:div.p4.white
+        {:style {:background-color "#4427C1"}}
         [:form.col-12.center.px4
          {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
          (title data)
@@ -79,6 +83,7 @@
          (cta data)]
         hr-divider
         [:div.proxima.content-4.px2.pt4
+         {:style {:font "10px/16px 'Proxima Nova', Arial, sans-serif"}}
          "*$35 Off offer is for first-time subscribers only. $200 minimum purchase required. "
          "Mayvenn may choose to modify the promotion at any time. "
          "*I consent to receive Mayvenn marketing content via email. "
@@ -90,12 +95,12 @@
 
 (defn query [app-state]
   (let [capture-modal-id       "first-pageview-email-capture"
-        {:keys [displayable?]} (spice.core/sspy (concept/<-trigger capture-modal-id app-state))
+        {:keys [displayable?]} (concept/<-trigger capture-modal-id app-state)
         errors                 (get-in app-state (conj k/field-errors ["email"]))
         focused                (get-in app-state k/ui-focus)
         textfield-keypath      concept/textfield-keypath
         email                  (get-in app-state textfield-keypath)
-        id                "email-capture" ]
+        id                     "email-capture" ]
     (when displayable?
       {:id                                   id
        :email-capture.dismiss/target         [e/biz|email-capture|dismissed {:id capture-modal-id}]
@@ -103,7 +108,9 @@
                                                                             :email email}]
        :email-capture.photo/uuid             "1ba0870d-dad8-466a-adc9-0d5ec77c9944"
        :email-capture.title/primary          [:span "Join our email list and get "
-                                              [:span.s-color "$35 OFF"]
+                                              [:span
+                                               {:style {:color "#97D5CA"}}
+                                               "$35 OFF"]
                                               " your first order"]
        :email-capture.text-field/id          (str id "-input")
        :email-capture.text-field/placeholder "ENTER EMAIL ADDRESS"
