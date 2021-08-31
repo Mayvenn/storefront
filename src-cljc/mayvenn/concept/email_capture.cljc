@@ -3,6 +3,7 @@
                 [storefront.frontend-trackings
                  [storefront.browser.cookie-jar :as cookie-jar]])
             [clojure.string :as string]
+            [clojure.set :as set]
             [spice.date]
             [storefront.events :as e]
             [storefront.effects :as fx]
@@ -11,12 +12,28 @@
              :as messages
              :refer [handle-message]
              :rename {handle-message publish}]
+            [storefront.routes :as routes]
             [storefront.transitions :as t]
             [storefront.trackings :as trk]))
 
+(def never-show-on-these-pages
+  #{e/navigate-cart
+
+    e/navigate-checkout-address
+    e/navigate-checkout-payment
+    e/navigate-checkout-confirmation
+
+    ;; The modal links to these, so we don't show on these pages (instead of dismissing the modal).
+    e/navigate-content-tos
+    e/navigate-content-privacy})
+
+(def adventure-and-quiz-pages
+  #{e/navigate-adventure
+    e/navigate-shopping-quiz})
+
 (def email-capture-configs
-  {"first-pageview-email-capture" {:nav-events-forbid #{e/navigate-cart}} ; TODO: Add more
-   "example-email-capture" {:nav-events-allow #{e/navigate-adventure-find-your-stylist}}})
+  {"first-pageview-email-capture" {:nav-events-forbid (set/union never-show-on-these-pages adventure-and-quiz-pages)}
+   "example-email-capture" {:nav-events-allow adventure-and-quiz-pages}})
 
 (def model-keypath [:models :email-capture])
 (def textfield-keypath (conj model-keypath :textfield))
@@ -31,9 +48,11 @@
         dismissed?             (boolean (get dismissal-observed-ats id))
         nav-event              (get-in app-state k/navigation-event)
         location-approved?     (if nav-events-allow
-                                 (contains? nav-events-allow nav-event)
-                                 (not (contains? nav-events-forbid nav-event)))]
-    {:id id
+                                 (some #(routes/sub-page? [nav-event {}] [% {}])
+                                       nav-events-allow)
+                                 (not-any? #(routes/sub-page? [nav-event {}] [% {}])
+                                           nav-events-forbid))]
+    {:id                 id
      :captured?          captured?
      :dismissed?         dismissed?
      :location-approved? location-approved?

@@ -157,7 +157,7 @@
   ([title] (submit-button title {}))
   ([title {:keys [spinning? disabled? data-test enabled-classes disabled-classes]
            :as   attrs
-           :or {enabled-classes button-large-primary-classes
+           :or {enabled-classes  button-large-primary-classes
                 disabled-classes disabled-button-large-primary-classes}}]
    (component/html
     (if spinning?

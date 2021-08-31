@@ -1,27 +1,52 @@
 (ns storefront.components.email-capture
   (:require [mayvenn.concept.email-capture :as concept]
-            [clojure.spec.alpha :as s]
-            [clojure.string :as string]
-            [storefront.accessors.experiments :as experiments]
             [storefront.browser.scroll :as scroll]
             [storefront.component :as c]
             [storefront.components.ui :as ui]
-            [storefront.components.popup :as popup]
             [storefront.components.svg :as svg]
-            [storefront.effects :as fx]
             [storefront.events :as e]
             [storefront.keypaths :as k]
             [storefront.platform.messages :as messages
              :refer [handle-message]
              :rename {handle-message publish}]
-            [storefront.platform.component-utils :as utils]
-            [popup.organisms]))
+            [storefront.platform.component-utils :as utils]))
 
-(defn ^:private invalid-email? [email]
-  (not (and (seq email)
-            (< 3 (count email))
-            (string/includes? email "@")
-            (not (string/ends-with? email "@")))))
+(defn m-header [id close-dialog-href]
+  [:div.flex.justify-between.items-center.p3.bg-white
+   [:div]
+   [:div.flex.justify-center
+    ^:inline (svg/mayvenn-logo {:width "52px" :height "30px"})]
+   (ui/modal-close {:data-test   (str id "-dismiss")
+                    :class       "fill-black stroke-black"
+                    :close-attrs close-dialog-href})])
+
+(defn bg-image [{:email-capture.photo/keys [uuid]}]
+  (ui/img {:max-size "500px"
+           :class    "col-12"
+           :src      uuid}))
+
+(defn title [{:email-capture.title/keys [primary]}]
+  [:div.proxima.title-0.mb3 primary])
+
+(def hr-divider
+  [:hr.border-top.border-gray.col-12.m0
+   {:style {:border-bottom 0 :border-left 0 :border-right 0}}])
+
+(defn text-field [{:email-capture.text-field/keys [id placeholder focused keypath errors email]}]
+  [:div.mx-auto.mb3
+   (ui/text-field {:errors    (get errors ["email"])
+                   :keypath   keypath
+                   :focused   focused
+                   :label     placeholder
+                   :name      "email"
+                   :required  true
+                   :type      "email"
+                   :value     email
+                   :class     "col-12 center bg-white title-3 proxima"
+                   :data-test id})])
+
+(defn cta [{:email-capture.cta/keys [value id]}]
+      [:div.mb5 (ui/submit-button-medium-black value {:data-test id})])
 
 (c/defdynamic-component template
   (did-mount
@@ -33,49 +58,35 @@
    (scroll/enable-body-scrolling))
   (render
    [this]
-   (let [props          (c/get-props this)
-         {:keys [id
-                 dismiss-message
-                 submit-message
-                 title
-                 placeholder-text
-                 call-to-action
-                 fine-print
-                 errors
-                 focused
-                 text-field-keypath
-                 email]} props
-         close-dialog-href (apply utils/fake-href dismiss-message)]
+   (let [props             (c/get-props this)
+         {:keys [id]
+          :as   data}      props
+         close-dialog-href (apply utils/fake-href
+                                  (:email-capture.dismiss/target data))]
      (ui/modal
       {:close-attrs close-dialog-href
-       :col-class   "col-11 col-5-on-tb col-4-on-dt flex justify-center"
+       :col-class   "col-12 col-5-on-tb col-4-on-dt flex justify-center"
        :bg-class    "bg-darken-4"}
-      [:div.flex.flex-column.bg-cover.bg-top.bg-white
-
-       {:style {:max-width "400px"}
-        :data-test   (str id "-modal")}
-       [:a.block.flex.justify-end
-        (ui/big-x {:data-test (str id "-dismiss")
-                   :attrs     close-dialog-href})]
-       [:div {:style {:height "110px"}}]
-       [:div.px4.pt1.py3.m4.bg-lighten-4
-        [:form.col-12.flex.flex-column.items-center
-         {:on-submit (apply utils/send-event-callback submit-message)}
-         title
-         [:div.col-12.mx-auto
-          (ui/text-field {:errors    (get errors ["email"])
-                          :keypath   text-field-keypath
-                          :focused   focused
-                          :label     placeholder-text
-                          :name      "email"
-                          :required  true
-                          :type      "email"
-                          :value     email
-                          :class     "col-12 center"
-                          :data-test (str id "-input")})
-          (ui/submit-button call-to-action
-                            {:data-test (str id "-submit")})]]]
-       [:div fine-print]]))))
+      [:div.flex.flex-column
+       {:data-test (str id "-modal")}
+       (m-header id close-dialog-href)
+       (bg-image data)
+       [:div.bg-p-color.p4.white
+        [:form.col-12.center.px4
+         {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
+         (title data)
+         (text-field data)
+         (cta data)]
+        hr-divider
+        [:div.proxima.content-4.px2.pt4
+         "*$35 Off offer is for first-time subscribers only. $200 minimum purchase required. "
+         "Mayvenn may choose to modify the promotion at any time. "
+         "*I consent to receive Mayvenn marketing content via email. "
+         "For further information, please read our "
+         [:a.s-color (utils/route-to e/navigate-content-tos) "Terms"]
+         " and "
+         [:a.s-color (utils/route-to e/navigate-content-privacy) "Privacy Policy"]
+         ". Unsubscribe anytime."]]]))))
 
 (defn query [app-state]
   (let [capture-modal-id       "first-pageview-email-capture"
@@ -83,41 +94,27 @@
         errors                 (get-in app-state (conj k/field-errors ["email"]))
         focused                (get-in app-state k/ui-focus)
         textfield-keypath      concept/textfield-keypath
-        email                  (get-in app-state textfield-keypath)]
+        email                  (get-in app-state textfield-keypath)
+        id                "email-capture" ]
     (when displayable?
-      {:id                 "email-capture"
-       :dismiss-message    [e/biz|email-capture|dismissed {:id capture-modal-id}]
-       :submit-message     [e/biz|email-capture|captured {:id    capture-modal-id
-                                                          :email email}]
-       :title              [:span "Join our email list and get "
-                            [:span "$35 OFF"]
-                            " your first order"]
-       :placeholder-text   "Enter Email Address"
-       :call-to-action     "Save me $35 Now"
-       :fine-print         [:span "*$35 Off offer is for first-time subscribers only. $200 minimum purchase required. "
-                            "Mayvenn may choose to modify the promotion at any time. "
-                            "*I consent to receive Mayvenn marketing content via email. "
-                            "For further information, please read our "
-                            "Terms" ; TODO nav to navigate-content-tos
-                            " and "
-                            "Privacy Policy" ; TODO nav to navigate-content-privacy
-                            ". Unsubscribe anytime."]
-       :errors             errors
-       :focused            focused
-       :text-field-keypath textfield-keypath
-       :email              email})))
+      {:id                                   id
+       :email-capture.dismiss/target         [e/biz|email-capture|dismissed {:id capture-modal-id}]
+       :email-capture.submit/target          [e/biz|email-capture|captured {:id    capture-modal-id
+                                                                            :email email}]
+       :email-capture.photo/uuid             "1ba0870d-dad8-466a-adc9-0d5ec77c9944"
+       :email-capture.title/primary          [:span "Join our email list and get "
+                                              [:span.s-color "$35 OFF"]
+                                              " your first order"]
+       :email-capture.text-field/id          (str id "-input")
+       :email-capture.text-field/placeholder "ENTER EMAIL ADDRESS"
+       :email-capture.text-field/focused     focused
+       :email-capture.text-field/keypath     textfield-keypath
+       :email-capture.text-field/errors      errors
+       :email-capture.text-field/email       email
+       :email-capture.cta/id                 (str id "-submit")
+       :email-capture.cta/value              "Save me $35 Now"})))
 
 (defn ^:export built-component [app-state opts]
   (let [{:as data :keys [id]} (query app-state)]
     (when id
       (c/build template data opts))))
-
-;; (defmethod fx/perform-effects e/control-email-capture-dismissed
-;;   [_ _ {:keys [nav]} state _]
-;;   (publish e/biz|email-capture|dismissed {:reason "nav"}))
-
-;; HOW TO SOLVE THE FOLLOW-LINK-AND-CLOSE-MODAL PROBLEM? OPTIONS
-;; 1. Do it like we do popups: if a popup is showing and you nav, close it
-;; 2. Add interstitial control event to dismissing with an optional nav argument
-;; 3. Make each link a control event that dismissed and navigates
-;; 4. Make one control event with nav arg that dismisses and navigates

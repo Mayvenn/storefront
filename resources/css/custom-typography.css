@@ -43,6 +43,10 @@ h1, h2, h3, h4, h5, h6 {
     font: 18px/36px var(--font-family-canela);
     letter-spacing: 0.45px;
 }
+.title-0.proxima {
+    font: 900 30px/32px var(--font-family-proxima);
+    letter-spacing: 0.5px;
+}
 .title-1.proxima {
     font: 900 24px/30px var(--font-family-proxima);
     letter-spacing: 1.07px;
