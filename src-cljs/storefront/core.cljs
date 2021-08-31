@@ -64,16 +64,11 @@
     (js/console.groupEnd))
   new-app-state)
 
-;; (defn- transition-log [app-state message]
-;;   (log-deltas app-state (transition app-state message) message))
-
 (defn- transition-log [app-state message]
-  (if (-> message first first (= :biz|email))
-    (log-deltas app-state (transition app-state message) message)
-    (transition app-state message)))
+  (log-deltas app-state (transition app-state message) message))
 
 (def msg-transition
-  transition-log)
+  transition)
 
 (defn handle-message
   ([app-state event] (handle-message app-state event nil))
