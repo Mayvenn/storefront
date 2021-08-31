@@ -39,6 +39,7 @@
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
             [storefront.components.picker.picker-two :as picker-two]
+            [storefront.components.svg :as svg]
             [storefront.components.tabbed-information :as tabbed-information]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -122,6 +123,16 @@
      (catalog.M/price-block data)]]
    (catalog.M/yotpo-reviews-summary data)])
 
+(component/defcomponent ^:private total
+  [{:total/keys [primary secondary tertiary]}_ _]
+  [:div.center.pt4.bg-white-on-mb
+   (when primary
+     [:div.center.flex.items-center.justify-center.bold.shout
+      (svg/discount-tag {:height "30px"
+                         :width  "30px"})
+      primary])
+   [:div.title-1.proxima.bold.my1 secondary]])
+
 (defcomponent component
   [{:keys [carousel-images
            product
@@ -167,7 +178,7 @@
                 [:div.proxima.title-3.shout "Color"]
                 (picker-two/component (with :color.picker data))
 
-                ;;TODO: material picker row?
+                ;;TODO(heather): material picker row?
 
                 [:div.proxima.title-3.shout "Lengths"]
                 [:div
@@ -179,6 +190,7 @@
                                                                        (utils/fake-href event)
                                                                        {:data-test "add-length"}) "Add Another Length")]))]
             [:div
+             (component/build total data nil)
              (cond
                unavailable? unavailable-button
                sold-out?    sold-out-button
@@ -380,7 +392,7 @@
                                                              :value-id  (str "picker-length-" (:hair/length selection) "-" idx)
                                                              :image-src image-src
                                                              :primary   (if-let [picker-label (:option/name selection)]
-                                                                          picker-label
+                                                                          (str picker-label " Bundle")
                                                                           "Choose Length (optional)")
                                                              :options   (concat
                                                                          (if selection
@@ -481,6 +493,11 @@
      :picker-modal/visible?     (and picker-visible? options selected-picker)
      :picker-modal/close-target [events/control-product-detail-picker-close]}))
 
+(defn ^:private total-query
+  [multi-length-total]
+  #:total{:primary   "Add for Free Install"
+          :secondary (mf/as-money multi-length-total)})
+
 (defn query [data]
   (let [selections              (get-in data catalog.keypaths/detailed-product-selections)
         product                 (products/current-product data)
@@ -511,7 +528,13 @@
         selected-picker         (get-in data catalog.keypaths/detailed-product-selected-picker)
         sku-availability        (catalog.products/index-by-selectors
                                  [:hair/color :hair/length]
-                                 product-skus)]
+                                 product-skus)
+        multi-length-total      (reduce +
+                                        (->> (get-in data catalog.keypaths/detailed-product-multiple-lengths-selections)
+                                             (filterv not-empty)
+                                             (mapv
+                                              #(determine-sku-from-selections data (merge selections %)))
+                                             (mapv #(:sku/price %))))]
     (merge
      {:reviews                            review-data
       :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
@@ -549,6 +572,7 @@
                     :selections        selections
                     :options           product-options
                     :length-selections multi-length-selections})
+     (total-query multi-length-total)
      (when (-> (get-in data catalog.keypaths/detailed-product-multiple-lengths-selections) count (< 5))
        #:add-length{:id    "add-length"
                     :event events/control-product-detail-picker-add-length})
