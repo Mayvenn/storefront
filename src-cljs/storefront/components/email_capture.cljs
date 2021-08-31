@@ -55,7 +55,8 @@
   (did-mount
    [this]
    (scroll/disable-body-scrolling)
-   (publish e/control-menu-collapse-all))
+   (publish e/control-menu-collapse-all)
+   (publish e/biz|email-capture|deployed {:id (:capture-modal-id (c/get-props this))}))
   (will-unmount
    [this]
    (scroll/enable-body-scrolling))
@@ -74,8 +75,7 @@
        {:data-test (str id "-modal")}
        (m-header id close-dialog-href)
        (bg-image data)
-       [:div.p4.white
-        {:style {:background-color "#4427C1"}}
+       [:div.p4.white.bg-p-color
         [:form.col-12.center.px4
          {:on-submit (apply utils/send-event-callback (:email-capture.submit/target data))}
          (title data)
@@ -103,6 +103,7 @@
         id                     "email-capture" ]
     (when displayable?
       {:id                                   id
+       :capture-modal-id                     capture-modal-id
        :email-capture.dismiss/target         [e/biz|email-capture|dismissed {:id capture-modal-id}]
        :email-capture.submit/target          [e/biz|email-capture|captured {:id    capture-modal-id
                                                                             :email email}]

@@ -3,6 +3,7 @@
             api.orders
             [storefront.accessors.contentful :as contentful]
             [clojure.set :as set]
+            [mayvenn.concept.email-capture :as email-capture]
             [spice.maps :as maps]
             [lambdaisland.uri :as uri]
             [storefront.accessors.auth :as auth]
@@ -219,7 +220,7 @@
     (cookie-jar/save-user cookie (get-in app-state keypaths/user))
     (refresh-account app-state)
 
-    (cookie-jar/refresh-email-capture-dismissed-at {:id "first-pageview-email-capture"} cookie)
+    (email-capture/refresh-dismissed-ats cookie)
 
     (when-not (or module-load? (#{:first-nav} caused-by))
       (api/get-promotions (get-in app-state keypaths/api-cache)

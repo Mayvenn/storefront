@@ -187,13 +187,6 @@
   [capture-modal-id cookie]
   (.get cookie (str "email-capture-dismissed-at-" capture-modal-id)))
 
-(defn refresh-email-capture-dismissed-at
-  [capture-modal-id cookie]
-  ;; This cookie gets refreshed on every navigate so that it will expire only
-  ;; after 30 minutes of inactivity
-  (when-let [dismissed-at (retrieve-email-capture-dismissed-at capture-modal-id cookie)]
-    (save-email-capture-dismissed-at capture-modal-id cookie dismissed-at)))
-
 (defn save-email-captured-at
   [cookie value]
   (.set cookie

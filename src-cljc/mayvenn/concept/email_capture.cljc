@@ -1,7 +1,9 @@
 (ns mayvenn.concept.email-capture
   (:require #?@(:cljs
-                [storefront.frontend-trackings
-                 [storefront.browser.cookie-jar :as cookie-jar]])
+                [[storefront.browser.cookie-jar :as cookie-jar]
+                 [storefront.hooks.facebook-analytics :as facebook-analytics]
+                 [storefront.hooks.google-tag-manager :as google-tag-manager]
+                 [storefront.hooks.stringer :as stringer]])
             [clojure.string :as string]
             [clojure.set :as set]
             [spice.date]
@@ -60,6 +62,15 @@
                               (not dismissed?)
                               location-approved?)}))
 
+(defn refresh-dismissed-ats [cookie]
+  #?(:clj nil
+     :cljs
+     (doseq [capture-modal-id (keys email-capture-configs)]
+       ;; These cookies get refreshed on every navigate so that they expire only
+       ;; after 30 minutes of inactivity
+       (when-let [dismissed-at (cookie-jar/retrieve-email-capture-dismissed-at capture-modal-id cookie)]
+         (cookie-jar/save-email-capture-dismissed-at capture-modal-id cookie dismissed-at)))))
+
 (defmethod t/transition-state e/biz|email-capture|reset
   [_ _ _ state]
   (assoc-in state model-keypath {}))
@@ -75,11 +86,6 @@
        (when (cookie-jar/retrieve-email-captured-at cookie)
          (publish e/biz|email-capture|capture-observed {:reason "cookie"})))))
 
-(defmethod t/transition-state e/biz|email-capture|deployed
-    [_ _ _ state]
-    ;; TODO: tracking
-  )
-
 (defn now-iso []
   (spice.date/to-iso (spice.date/now)))
 
@@ -93,7 +99,7 @@
 ;; * an email address has been entered in the modal (see also "captured", below)
 ;; * em_hash query param has been consumed
 ;; * user is logged in
-(defmethod t/transition-state e/biz|email-capture|capture-observed ;;consider "inferred"
+(defmethod t/transition-state e/biz|email-capture|capture-observed
   [_ _ _ state]
   (assoc-in state capture-observed-at-keypath (now-iso)))
 
@@ -107,3 +113,29 @@
 (defmethod t/transition-state e/biz|email-capture|dismissal-observed
   [_ _ {:keys [id]} state]
   (assoc-in state (conj dismissal-observed-ats-keypath id) (now-iso)))
+
+(defmethod trk/perform-track e/biz|email-capture|deployed ; TODO fire
+  [_ events {:keys [id]} app-state]
+  #?(:cljs
+     (stringer/track-event "email_capture-deploy" {:email-capture-id id})))
+
+(defmethod trk/perform-track e/biz|email-capture|captured
+  [_ event {:keys [id]} app-state]
+  #?(:cljs
+     (let [no-errors?     (empty? (get-in app-state k/errors))
+           captured-email (get-in app-state textfield-keypath)]
+       (when no-errors?
+         ;; TODO: CONSIDER READDING THESE
+         ;; (facebook-analytics/subscribe)
+         ;; (google-tag-manager/track-email-capture-capture {:email captured-email})
+         (stringer/track-event "email_capture-capture"
+                               {:email            captured-email
+                                :email-capture-id id
+                                :test-variations  (get-in app-state k/features)
+                                :store-slug       (get-in app-state k/store-slug)
+                                :store-experience (get-in app-state k/store-experience)})))))
+
+(defmethod trk/perform-track e/biz|email-capture|dismissed
+  [_ events {:keys [id]} app-state]
+  #?(:cljs
+     (stringer/track-event "email_capture-dismiss" {:email-capture-id id})))
