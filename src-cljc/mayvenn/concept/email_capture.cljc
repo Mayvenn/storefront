@@ -16,7 +16,8 @@
              :rename {handle-message publish}]
             [storefront.routes :as routes]
             [storefront.transitions :as t]
-            [storefront.trackings :as trk]))
+            [storefront.trackings :as trk]
+            [storefront.accessors.experiments :as experiments]))
 
 (def never-show-on-these-pages
   #{e/navigate-cart
@@ -60,7 +61,8 @@
      :location-approved? location-approved?
      :displayable?       (and (not captured?)
                               (not dismissed?)
-                              location-approved?)}))
+                              location-approved?
+                              (experiments/in-house-email-capture? app-state))}))
 
 (defn refresh-dismissed-ats [cookie]
   #?(:clj nil
